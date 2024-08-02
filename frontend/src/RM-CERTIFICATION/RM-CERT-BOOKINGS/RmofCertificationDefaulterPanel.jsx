@@ -23,6 +23,7 @@ import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
+import Nodata from '../../components/Nodata';
 
 function RmofCertificationDefaulterPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -245,7 +246,7 @@ const [error, setError] = useState('')
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                   { rmServicesData && rmServicesData.length > 0 ? ( <table className="table table-vcenter table-nowrap rm_table_inprocess">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
@@ -472,7 +473,14 @@ const [error, setError] = useState('')
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table>)
+                    :(
+                        <table className='no_data_table'>
+                                <div className='no_data_table_inner'>
+                                    <Nodata />
+                                </div>
+                            </table>
+                    )}
                 </div>
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}

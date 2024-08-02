@@ -22,6 +22,7 @@ import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
+import Nodata from '../../components/Nodata';
 
 
 function RmofCertificationProcessPanel() {
@@ -211,229 +212,238 @@ function RmofCertificationProcessPanel() {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table_inprocess">
-                        <thead>
-                            <tr className="tr-sticky">
-                                <th className="rm-sticky-left-1">Sr.No</th>
-                                <th className="rm-sticky-left-2">Company Name</th>
-                                <th>Company Number</th>
-                                <th>Company Email</th>
-                                <th>CA Number</th>
-                                <th>Service Name</th>
-                                <th>Status</th>
-                                <th>Remark</th>
-                                <th>Website Link/Brief</th>
-                                <th>DSC Applicable</th>
-                                <th>DSC Status</th>
-                                <th>Content Writer</th>
-                                <th>Content Status</th>
-                                <th>Brochure Designer</th>
-                                <th>Brochure Status</th>
-                                <th>NSWS Email Id</th>
-                                <th>NSWS Password</th>
-                                <th>Industry</th>
-                                <th>Sector</th>
-                                <th>Booking Date</th>
-                                <th>BDE Name</th>
-                                <th>BDM name</th>
-                                <th>Total Payment</th>
-                                <th>Received Payment</th>
-                                <th>Pending Payment</th>
-                                <th className="rm-sticky-action">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rmServicesData && rmServicesData.map((obj, index) => (
-                                <tr key={index}>
-                                    <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj["Company Number"]}</div>
-                                            <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                                <FaWhatsapp />
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>{obj["Company Email"]}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
-                                            {obj.caCase === "Yes" && (
+                    {rmServicesData && rmServicesData.length > 0 ? (
+                        <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                            <thead>
+                                <tr className="tr-sticky">
+                                    <th className="rm-sticky-left-1">Sr.No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
+                                    <th>Company Number</th>
+                                    <th>Company Email</th>
+                                    <th>CA Number</th>
+                                    <th>Service Name</th>
+                                    <th>Status</th>
+                                    <th>Remark</th>
+                                    <th>Website Link/Brief</th>
+                                    <th>DSC Applicable</th>
+                                    <th>DSC Status</th>
+                                    <th>Content Writer</th>
+                                    <th>Content Status</th>
+                                    <th>Brochure Designer</th>
+                                    <th>Brochure Status</th>
+                                    <th>NSWS Email Id</th>
+                                    <th>NSWS Password</th>
+                                    <th>Industry</th>
+                                    <th>Sector</th>
+                                    <th>Booking Date</th>
+                                    <th>BDE Name</th>
+                                    <th>BDM name</th>
+                                    <th>Total Payment</th>
+                                    <th>Received Payment</th>
+                                    <th>Pending Payment</th>
+                                    <th className="rm-sticky-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rmServicesData && rmServicesData.map((obj, index) => (
+                                    <tr key={index}>
+                                        <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
+                                        <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj["Company Number"]}</div>
                                                 <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                     <FaWhatsapp />
                                                 </a>
-                                            )}
-                                        </div>
-                                    </td>
-
-                                    <td>{obj.serviceName}</td>
-                                    <td>
-                                        <div>
-                                            {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                <StatusDropdown
-                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                    mainStatus={obj.mainCategoryStatus}
-                                                    subStatus={obj.subCategoryStatus}
-                                                    setNewSubStatus={setNewStatusProcess}
-                                                    companyName={obj["Company Name"]}
-                                                    serviceName={obj.serviceName}
-                                                    refreshData={refreshData}
-                                                />
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className='td_of_remarks'>
-                                        <div className="d-flex align-items-center justify-content-between wApp">
-                                            <div
-                                                className="My_Text_Wrap"
-                                                title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
-                                            >
-                                                {
-                                                    obj.Remarks && obj.Remarks.length > 0
-                                                        ? obj.Remarks
-                                                            .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
-                                                        : "No Remarks"
-                                                }
                                             </div>
-                                            <button className='td_add_remarks_btn'
-                                                onClick={() => {
-                                                    setOpenRemarksPopUp(true)
-                                                    setCurrentCompanyName(obj["Company Name"])
-                                                    setCurrentServiceName(obj.serviceName)
-                                                    setHistoryRemarks(obj.Remarks)
-                                                    handleOpenRemarksPopup(
-                                                        obj["Company Name"],
-                                                        obj.serviceName
-                                                    )
-                                                }}
-                                            >
-                                                <FaPencilAlt />
-                                            </button>
-                                        </div>
-                                    </td>
-                                    <td className='td_of_weblink'>
-                                        <WebsiteLink
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
-                                            companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
-                                        />
-                                    </td>
-                                    <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                    <td>
-                                        <div>{obj.withDSC ? (
-                                            // <DscStatusDropdown 
-                                            // companyName = {obj["Company Name"]}
-                                            // serviceName = {obj.serviceName}
-                                            // mainStatus = {obj.mainCategoryStatus}
-                                            // dscStatus = {obj.dscStatus}
-                                            // />
-                                            "Not Started"
-                                        ) :
-                                            ("Not Applicable")}</div>
-                                    </td>
-                                    <td>
-                                        <ContentWriterDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
-                                            refreshData={refreshData}
-                                        /></td>
-                                    <td>
-                                        <ContentStatusDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
-                                            writername={obj.contentWriter}
-                                            refreshData={refreshData}
-                                        /></td>
-                                    {/* For Brochure */}
-                                    <td>
-                                        <BrochureDesignerDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                            refreshData={refreshData}
-                                        />
-                                    </td>
-                                    <td>
-                                        <BrochureStatusDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            brochureStatus={obj.brochureStatus}
-                                            designername={obj.brochureDesigner}
-                                        /></td>
-                                    <td className='td_of_NSWSeMAIL'>
-                                        <NSWSEmailInput
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
-                                        />
-                                    </td>
-                                    <td className='td_of_weblink'>
-                                        <NSWSPasswordInput
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refresData={refreshData}
-                                            nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Enter Password"}
-                                        />
-                                    </td>
-                                    <td className='td_of_Industry'>
-                                        <IndustryDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
-                                        /></td>
-                                    <td className='td_of_Industry'>
-                                        <SectorDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            sectorOptions={sectorOptions}
-                                            industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
-                                            sector={obj.sector || ""} // Default to "" if sector is not provided
-                                        />
-                                    </td>
-                                    <td>{formatDatePro(obj.bookingDate)}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center">
-                                            <div>{obj.bdeName}</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center">
-                                            <div>{obj.bdmName}</div>
-                                        </div>
-                                    </td>
-                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
-                                    <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
+                                        </td>
+                                        <td>{obj["Company Email"]}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                                {obj.caCase === "Yes" && (
+                                                    <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </td>
 
-                                    ><FaRegEye /></button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
+                                        <td>{obj.serviceName}</td>
+                                        <td>
+                                            <div>
+                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                    <StatusDropdown
+                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                        mainStatus={obj.mainCategoryStatus}
+                                                        subStatus={obj.subCategoryStatus}
+                                                        setNewSubStatus={setNewStatusProcess}
+                                                        companyName={obj["Company Name"]}
+                                                        serviceName={obj.serviceName}
+                                                        refreshData={refreshData}
+                                                    />
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className='td_of_remarks'>
+                                            <div className="d-flex align-items-center justify-content-between wApp">
+                                                <div
+                                                    className="My_Text_Wrap"
+                                                    title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
+                                                >
+                                                    {
+                                                        obj.Remarks && obj.Remarks.length > 0
+                                                            ? obj.Remarks
+                                                                .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
+                                                            : "No Remarks"
+                                                    }
+                                                </div>
+                                                <button className='td_add_remarks_btn'
+                                                    onClick={() => {
+                                                        setOpenRemarksPopUp(true)
+                                                        setCurrentCompanyName(obj["Company Name"])
+                                                        setCurrentServiceName(obj.serviceName)
+                                                        setHistoryRemarks(obj.Remarks)
+                                                        handleOpenRemarksPopup(
+                                                            obj["Company Name"],
+                                                            obj.serviceName
+                                                        )
+                                                    }}
+                                                >
+                                                    <FaPencilAlt />
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className='td_of_weblink'>
+                                            <WebsiteLink
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
+                                                companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
+                                            />
+                                        </td>
+                                        <td>{obj.withDSC ? "Yes" : "No"}</td>
+                                        <td>
+                                            <div>{obj.withDSC ? (
+                                                // <DscStatusDropdown 
+                                                // companyName = {obj["Company Name"]}
+                                                // serviceName = {obj.serviceName}
+                                                // mainStatus = {obj.mainCategoryStatus}
+                                                // dscStatus = {obj.dscStatus}
+                                                // />
+                                                "Not Started"
+                                            ) :
+                                                ("Not Applicable")}</div>
+                                        </td>
+                                        <td>
+                                            <ContentWriterDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
+                                                refreshData={refreshData}
+                                            /></td>
+                                        <td>
+                                            <ContentStatusDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                                writername={obj.contentWriter}
+                                                refreshData={refreshData}
+                                            /></td>
+                                        {/* For Brochure */}
+                                        <td>
+                                            <BrochureDesignerDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                                refreshData={refreshData}
+                                            />
+                                        </td>
+                                        <td>
+                                            <BrochureStatusDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                brochureStatus={obj.brochureStatus}
+                                                designername={obj.brochureDesigner}
+                                            /></td>
+                                        <td className='td_of_NSWSeMAIL'>
+                                            <NSWSEmailInput
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
+                                            />
+                                        </td>
+                                        <td className='td_of_weblink'>
+                                            <NSWSPasswordInput
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refresData={refreshData}
+                                                nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Enter Password"}
+                                            />
+                                        </td>
+                                        <td className='td_of_Industry'>
+                                            <IndustryDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                onIndustryChange={handleIndustryChange}
+                                                industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
+                                            /></td>
+                                        <td className='td_of_Industry'>
+                                            <SectorDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                sectorOptions={sectorOptions}
+                                                industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
+                                                sector={obj.sector || ""} // Default to "" if sector is not provided
+                                            />
+                                        </td>
+                                        <td>{formatDatePro(obj.bookingDate)}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div>{obj.bdeName}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <div>{obj.bdmName}</div>
+                                            </div>
+                                        </td>
+                                        <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
 
-                    </table>
+                                        ><FaRegEye /></button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+
+                        </table>
+                    ) :
+                        (
+                            <table className='no_data_table'>
+                                <div className='no_data_table_inner'>
+                                    <Nodata />
+                                </div>
+                            </table>
+                        )}
                 </div>
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
