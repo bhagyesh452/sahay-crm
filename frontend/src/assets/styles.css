@@ -3075,6 +3075,12 @@ td input {
   background-color: #cfcfcf;
   border: 1px solid #9b9b9b;
 }
+.status_change
+{
+  height: 200px;
+  overflow-y: auto;
+  background: #fff;
+}
 .dfault_approved-status
 {
   background-color: #7ee48c;
