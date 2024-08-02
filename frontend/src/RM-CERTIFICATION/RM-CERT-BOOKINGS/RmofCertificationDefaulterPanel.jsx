@@ -94,7 +94,13 @@ const [error, setError] = useState('')
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Defaulter")
+            const servicesData = response.data
+            .filter(item => item.mainCategoryStatus === "Defaulter")
+            .sort((a, b) => {
+                const dateA = new Date(a.dateOfChangingMainStatus);
+                const dateB = new Date(b.dateOfChangingMainStatus);
+                return dateB - dateA; // Sort in descending order
+            });
             console.log("servicesdata" , servicesData)
             setRmServicesData(servicesData)
             //console.log(response.data)

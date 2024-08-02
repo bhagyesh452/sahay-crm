@@ -118,7 +118,13 @@ function RmofCertificationSubmittedPanel() {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Submitted")
+            const servicesData = response.data
+            .filter(item => item.mainCategoryStatus === "Submitted")
+            .sort((a, b) => {
+                const dateA = new Date(a.dateOfChangingMainStatus);
+                const dateB = new Date(b.dateOfChangingMainStatus);
+                return dateB - dateA; // Sort in descending order
+            });;
             console.log("servicesData", servicesData)
             setRmServicesData(servicesData)
             //console.log(response.data)
