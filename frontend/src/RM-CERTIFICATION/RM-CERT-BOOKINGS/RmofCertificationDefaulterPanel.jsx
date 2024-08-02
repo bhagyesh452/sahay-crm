@@ -371,44 +371,44 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td>
-                                        <ContentWriterDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
-                                            refreshData={refreshData}
-                                        /></td>
-                                    <td>
-                                        <ContentStatusDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
-                                            writername={obj.contentWriter}
-                                            refreshData={refreshData}
-                                        /></td>
-                                    
-                                   <td>
-                                        <BrochureDesignerDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                            refreshData={refreshData}
-                                        />
-                                    </td>
-                                    <td>
-                                        <BrochureStatusDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            brochureStatus={obj.brochureStatus}
-                                            designername={obj.brochureDesigner}
-                                        /></td>
+                                            <ContentWriterDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                                refreshData={refreshData}
+                                            /></td>
+                                        <td>
+                                            <ContentStatusDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                                writername={obj.contentWriter}
+                                                refreshData={refreshData}
+                                            /></td>
+                                        {/* For Brochure */}
+                                        <td>
+                                            <BrochureDesignerDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                                refreshData={refreshData}
+                                            />
+                                        </td>
+                                        <td>
+                                            <BrochureStatusDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                brochureStatus={obj.brochureStatus}
+                                                designername={obj.brochureDesigner}
+                                            /></td>
                                          <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key

@@ -200,14 +200,15 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   contentStatus:{
      type:String,
-    //default:"Not Applicable"
+    default:"Not Started"
   },
   contentWriter:{
     type:String,
+    default:"Drashti Thakkar"
  },
   brochureStatus:{
     type:String,
-   //default:"Not Applicable"
+   default:"Not Applicable"
  },
  brochureDesigner:{
   type:String,

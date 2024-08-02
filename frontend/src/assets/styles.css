@@ -3215,6 +3215,11 @@ td input {
     width: 93% !important;
   }
 }
+.disabled {
+  pointer-events: none; /* Prevents clicks */
+  opacity: 0.5; /* Makes it look disabled */
+  cursor: not-allowed; /* Changes the cursor to indicate the item is disabled */
+}
 /*****************************Basic Information Form******************************************/
 .form-control,  
 .form-select {

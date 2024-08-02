@@ -343,7 +343,7 @@ function RmofCertificationProcessPanel() {
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 mainStatus={obj.mainCategoryStatus}
-                                                writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
+                                                writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
                                                 refreshData={refreshData}
                                             /></td>
                                         <td>
