@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import Header from "../Header/Header";
 import Navbar from "../Navbar/Navbar";
 import Swal from "sweetalert2";
-import { FaCopy } from "react-icons/fa";
 
 const steps = ['Personal Information', 'Employment Information',
   'Payroll Information', 'Emergency Contact', ' Employee Documents', 'Preview'];
@@ -22,7 +21,13 @@ export default function HorizontalNonLinearStepper() {
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
   const [empId, setEmpId] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
+
+  const [isPersonalInfoNext, setIsPersonalInfoNext] = useState(false);
+  const [isEmployeementInfoNext, setIsEmployeementInfoNext] = useState(false);
+  const [isPayrollInfoNext, setIsPayrollInfoNext] = useState(false);
+  const [isEmergencyInfoNext, setIsEmergencyInfoNext] = useState(false);
+  const [isDocumentInfoNext, setIsDocumentInfoNext] = useState(false);
+
   const [offerLetterDocument, setOfferLetterDocument] = useState([]);
   const [aadharCardDocument, setAadharCardDocument] = useState([]);
   const [panCardDocument, setPanCardDocument] = useState([]);
@@ -30,6 +35,7 @@ export default function HorizontalNonLinearStepper() {
   const [relievingCertificateDocument, setRelievingCertificateDocument] = useState([]);
   const [salarySlipDocument, setSalarySlipDocument] = useState([]);
   const [profilePhotoDocument, setProfilePhotoDocument] = useState([]);
+
   const [isPersonalInfoEditable, setIsPersonalInfoEditable] = useState(true);
   const [isEmployeementInfoEditable, setIsEmployeementInfoEditable] = useState(true);
   const [isDesignationEnabled, setIsDesignationEnabled] = useState(false);
@@ -432,84 +438,20 @@ export default function HorizontalNonLinearStepper() {
 
   const handleNext = async () => {
     if (activeStep === 0 && validatePersonalInfo()) {
-      // try {
-      // if (!empId) {
-      // const res = await axios.post(`${secretKey}/employee/einfo`, personalInfo);  // store data in local storage
-      // setEmpId(res.data.empId); // Set the empId after employee creation
-      // console.log("Employee created successfully", res.data);
-      // } else {
-      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, personalInfo);
-      //   console.log("Employee updated successfully", res.data);
-      // }
-      //   setCompleted((prevCompleted) => ({
-      //     ...prevCompleted,
-      //     [activeStep]: true
-      //   }));
-      //   setIsPersonalInfoEditable(false);
-      // } catch (error) {
-      //   console.log("Error creating or updating employee:", error);
-      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsPersonalInfoNext(true);
     } else if (activeStep === 1 && validateEmploymentInfo()) {
-      // try {
-      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, employeementInfo);
-      //   console.log("Employee updated successfully at step-1 :", res.data.data);
-      //   setCompleted((prevCompleted) => ({
-      //     ...prevCompleted,
-      //     [activeStep]: true
-      //   }));
-      //   setIsEmployeementInfoEditable(false);
-      // } catch (error) {
-      //   console.log("Error updating employee :", error);
-      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsEmployeementInfoNext(true);
     } else if (activeStep === 2 && validatePayrollInfo()) {
-      // try {
-      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, payrollInfo, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data'
-      //     }
-      //   });
-      //   console.log("Employee updated successfully at step-2 :", res.data.data);
-      //   setCompleted((prevCompleted) => ({
-      //     ...prevCompleted,
-      //     [activeStep]: true
-      //   }));
-      //   setIsPayrollInfoEditable(false);
-      // } catch (error) {
-      //   console.log("Error updating employee:", error);
-      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsPayrollInfoNext(true);
     } else if (activeStep === 3 && validateEmergencyInfo()) {
-      // try {
-      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, emergencyInfo);
-      //   console.log("Emergency info updated successfully at step-3 :", res.data.data);
-      //   setCompleted((prevCompleted) => ({
-      //     ...prevCompleted,
-      //     [activeStep]: true
-      //   }));
-      //   setIsEmergencyInfoEditable(false);
-      // } catch (error) {
-      //   console.log("Error updating emergency info:", error);
-      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsEmergencyInfoNext(true);
     } else if (activeStep === 4 && validateEmpDocumentInfo()) {
-      // try {
-      //   const res = await axios.put(`${secretKey}/employee/updateEmployeeFromPersonalEmail/${personalInfo.personalEmail}`, empDocumentInfo, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data'
-      //     }
-      //   });
-      //   console.log("Document info updated successfully at step-4 :", res.data.data);
-      //   setCompleted((prevCompleted) => ({
-      //     ...prevCompleted,
-      //     [activeStep]: true
-      //   }));
-      //   setIsEmployeeDocsInfoEditable(false);
-      // } catch (error) {
-      //   console.log("Error updating document info:", error);
-      // }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsDocumentInfoNext(true);
     }
   };
 
@@ -527,82 +469,175 @@ export default function HorizontalNonLinearStepper() {
 
   // console.log("Active step :", activeStep);
 
+  // const saveDraft = async () => {
+  //   if (activeStep === 0) {
+  //     try {
+  //       if (!empId) {
+  //         const res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, {personalInfo, activeStep});  // store data in local storage
+  //         console.log("Employee created successfully", res.data);
+  //         console.log("Active step :", activeStep);
+  //       } else {
+  //         const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, {personalInfo, activeStep});
+  //         console.log("Employee updated successfully", res.data);
+  //         console.log("Active step :", activeStep);
+  //       }
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsPersonalInfoEditable(false);
+  //       setIsPersonalInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error creating or updating employee:", error);
+  //     }
+  //   } else if (activeStep === 1) {
+  //     try {
+  //       const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, {employeementInfo, activeStep});
+  //       console.log("Employee updated successfully at step-1 :", res.data.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsEmployeementInfoEditable(false);
+  //       setIsEmployeementInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating employee :", error);
+  //     }
+  //   } else if (activeStep === 2) {
+  //     try {
+  //       const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, {
+  //         payrollInfo:payrollInfo,
+  //         activeStep:activeStep
+  //       }, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data'
+  //         }
+  //       });
+  //       console.log("Employee updated successfully at step-2 :", res.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsPayrollInfoEditable(false);
+  //       setIsPayrollInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating employee:", error);
+  //     }
+  //   } else if (activeStep === 3) {
+  //     try {
+  //       const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, emergencyInfo);
+  //       console.log("Emergency info updated successfully at step-3 :", res.data.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsEmergencyInfoEditable(false);
+  //       setIsEmergencyInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating emergency info:", error);
+  //     }
+  //   } else if (activeStep === 4) {
+  //     try {
+  //       const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data'
+  //         }
+  //       });
+  //       console.log("Document info updated successfully at step-4 :", res.data.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsEmployeeDocsInfoEditable(false);
+  //       setIsDocumentInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating document info:", error);
+  //     }
+  //   }
+  // };
+
+
   const saveDraft = async () => {
-    if (activeStep === 0) {
-      try {
+    const formData = new FormData();
+    formData.append('activeStep', activeStep);
+  
+    try {
+      let res;
+  
+      if (activeStep === 0) {
+        formData.append('personalInfo', JSON.stringify(personalInfo));
         if (!empId) {
-          const res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, personalInfo);  // store data in local storage
-          console.log("Employee created successfully", res.data);
+          res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
         } else {
-          const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, personalInfo);
-          console.log("Employee updated successfully", res.data);
+          res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
         }
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
+      } else if (activeStep === 1) {
+        formData.append('employeementInfo', JSON.stringify(employeementInfo));
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else if (activeStep === 2) {
+        formData.append('payrollInfo', JSON.stringify(payrollInfo));
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else if (activeStep === 3) {
+        formData.append('emergencyInfo', JSON.stringify(emergencyInfo));
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else if (activeStep === 4) {
+        Object.keys(empDocumentInfo).forEach(key => {
+          formData.append(key, empDocumentInfo[key]);
+        });
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      }
+  
+      console.log(`Employee updated successfully at step-${activeStep} :`, res.data);
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+      if (activeStep === 0) {
         setIsPersonalInfoEditable(false);
-      } catch (error) {
-        console.log("Error creating or updating employee:", error);
-      }
-    } else if (activeStep === 1) {
-      try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, employeementInfo);
-        console.log("Employee updated successfully at step-1 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
+        setIsPersonalInfoNext(true);
+      } else if (activeStep === 1) {
         setIsEmployeementInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating employee :", error);
-      }
-    } else if (activeStep === 2) {
-      try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, payrollInfo, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        console.log("Employee updated successfully at step-2 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
+        setIsEmployeementInfoNext(true);
+      } else if (activeStep === 2) {
         setIsPayrollInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating employee:", error);
-      }
-    } else if (activeStep === 3) {
-      try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, emergencyInfo);
-        console.log("Emergency info updated successfully at step-3 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
+        setIsPayrollInfoNext(true);
+      } else if (activeStep === 3) {
         setIsEmergencyInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating emergency info:", error);
-      }
-    } else if (activeStep === 4) {
-      try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        console.log("Document info updated successfully at step-4 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
+        setIsEmergencyInfoNext(true);
+      } else if (activeStep === 4) {
         setIsEmployeeDocsInfoEditable(false);
-      } catch (error) {
-        console.log("Error updating document info:", error);
+        setIsDocumentInfoNext(true);
       }
+    } catch (error) {
+      console.log(`Error updating employee at step-${activeStep} :`, error);
     }
   };
+  
+  
 
   const handleComplete = async () => {
     try {
@@ -662,7 +697,7 @@ export default function HorizontalNonLinearStepper() {
       });
 
       setEmployeementInfo({
-        empId: "",
+        empId: data._id,
         department: data.department || "",
         designation: data.designation || "",
         joiningDate: (data.jdate) || "",
@@ -735,6 +770,21 @@ export default function HorizontalNonLinearStepper() {
             </Step>
           ))}
         </Stepper>
+
+        {/* <Stepper sx={{ width: '80%', margin: "30px 130px", padding: '0px' }} nonLinear activeStep={activeStep}>
+          {steps.map((label, index) => (
+            <Step key={label} completed={completed[index]}>
+              <StepButton
+                color="inherit"
+                onClick={handleStep(index)}
+                className={activeStep === index ? "form-tab-active" : "No-active"}
+                disabled={!completed[index] && index !== activeStep}
+              >
+                {label}
+              </StepButton>
+            </Step>
+          ))}
+        </Stepper> */}
 
         <div className="mb-4 steprForm-bg he_steprForm_e_add">
           <div className="steprForm">
@@ -1787,9 +1837,9 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {payrollInfo.firstMonthSalary === "50" && "50%" ||
+                                {(payrollInfo.firstMonthSalary === "50" && "50%" || 
                                   payrollInfo.firstMonthSalary === "75" && "75%" ||
-                                  payrollInfo.firstMonthSalary === "100" && "100%"
+                                  payrollInfo.firstMonthSalary === "100" && "100%") || "-"
                                 }
                               </div>
                             </div>
@@ -2071,11 +2121,11 @@ export default function HorizontalNonLinearStepper() {
                   {completed[activeStep] && activeStep !== totalSteps() - 1 && (
                     <Button
                       onClick={() => {
-                        setIsPersonalInfoEditable(true);
-                        setIsEmployeementInfoEditable(true);
-                        setIsPayrollInfoEditable(true);
-                        setIsEmergencyInfoEditable(true);
-                        setIsEmployeeDocsInfoEditable(true);
+                        activeStep === 0 && setIsPersonalInfoEditable(true);
+                        activeStep === 1 && setIsEmployeementInfoEditable(true);
+                        activeStep === 2 && setIsPayrollInfoEditable(true);
+                        activeStep === 3 && setIsEmergencyInfoEditable(true);
+                        activeStep === 4 && setIsEmployeeDocsInfoEditable(true);
                         setCompleted((prevCompleted) => ({
                           ...prevCompleted,
                           [activeStep]: false,
@@ -2120,6 +2170,13 @@ export default function HorizontalNonLinearStepper() {
                       onClick={handleNext}
                       variant="contained"
                       sx={{ mr: 1 }}
+                      disabled={(
+                        (activeStep === 0 && !isPersonalInfoNext) ||
+                        (activeStep === 1 && !isEmployeementInfoNext) ||
+                        (activeStep === 2 && !isPayrollInfoNext) ||
+                        (activeStep === 3 && !isEmergencyInfoNext) ||
+                        (activeStep === 4 && !isDocumentInfoNext)
+                      )}
                     >
                       Next
                     </Button>

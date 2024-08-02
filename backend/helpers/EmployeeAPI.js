@@ -225,6 +225,7 @@ router.post("/einfo", upload.fields([
       ...(personalInfo.currentAddress && { currentAddress: personalInfo.currentAddress }),
       ...(personalInfo.isAddressSame && { isAddressSame: personalInfo.isAddressSame }),
       ...(personalInfo.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
+
       ...(employeementInfo.department && { department: employeementInfo.department }),
       ...(employeementInfo.designation && { designation: employeementInfo.designation }),
       ...(employeementInfo.joiningDate && { jdate: employeementInfo.joiningDate }),
@@ -233,6 +234,7 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo.manager && { reportingManager: employeementInfo.manager }),
       ...(employeementInfo.officialNo && { number: employeementInfo.officialNo }),
       ...(employeementInfo.officialEmail && { email: employeementInfo.officialEmail }),
+      
       ...(payrollInfo.accountNo && { accountNo: payrollInfo.accountNo }),
       ...(payrollInfo.bankName && { bankName: payrollInfo.bankName }),
       ...(payrollInfo.ifscCode && { ifscCode: payrollInfo.ifscCode }),
@@ -242,9 +244,11 @@ router.post("/einfo", upload.fields([
       ...(payrollInfo.panNumber && { panNumber: payrollInfo.panNumber }),
       ...(payrollInfo.aadharNumber && { aadharNumber: payrollInfo.aadharNumber }),
       ...(payrollInfo.uanNumber && { uanNumber: payrollInfo.uanNumber }),
+
       ...(emergencyInfo.personName && { personal_contact_person: emergencyInfo.personName }),
       ...(emergencyInfo.relationship && { personal_contact_person_relationship: emergencyInfo.relationship }),
       ...(emergencyInfo.personPhoneNo && { personal_contact_person_number: emergencyInfo.personPhoneNo }),
+      
       ...(payrollInfo.offerLetter?.length > 0 && { offerLetter: payrollInfo.offerLetter }),
       ...(empDocumentInfo.aadharCard?.length > 0 && { aadharCard: empDocumentInfo.aadharCard }),
       ...(empDocumentInfo.panCard?.length > 0 && { panCard: empDocumentInfo.panCard }),
