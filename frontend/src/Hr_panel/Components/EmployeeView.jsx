@@ -258,8 +258,8 @@ function EmployeeView() {
         </div>
         <div className="page-body rm_Dtl_box m-0">
           <div className="container-xl">
-            <div className="row mt-1">
-              <div className="col-sm-3">
+            <div className="d-flex mt-1">
+              <div className="E_Id_card_main">
                 <div className="E_Id_card">
                   <div className="E_Id_card_bg">
                     <div className="main_logo_For_ID">
@@ -290,10 +290,55 @@ function EmployeeView() {
                     </div>
                     <div className="E_id_bottom_black_bg">
                     </div>
+                    <div className="E_id_profile_details">
+                      <div className="d-flex E_id_profile_details_items">
+                        <div className="E_id_p_fileld">
+                          ID
+                        </div>
+                        <div className="E_id_p_data">
+                           : 025863
+                        </div>
+                      </div>
+                      <div className="d-flex E_id_profile_details_items">
+                        <div className="E_id_p_fileld">
+                          DOB
+                        </div>
+                        <div className="E_id_p_data">
+                           : 10-03-2000
+                        </div>
+                      </div>
+                      <div className="d-flex E_id_profile_details_items">
+                        <div className="E_id_p_fileld">
+                          Phone
+                        </div>
+                        <div className="E_id_p_data">
+                           : +91 9924283530
+                        </div>
+                      </div>
+                      <div className="d-flex E_id_profile_details_items">
+                        <div className="E_id_p_fileld">
+                          BG
+                        </div>
+                        <div className="E_id_p_data">
+                           : O-
+                        </div>
+                      </div>
+                      <div className="d-flex E_id_profile_details_items">
+                        <div className="E_id_p_fileld">
+                          E-Mail
+                        </div>
+                        <div className="E_id_p_data">
+                           : nirmeshparekh1@gmail.com
+                        </div>
+                      </div>
+                    </div>
+                    <div className="E_id_website">
+                        www.startupsahay.com
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="col-sm-12">
+              <div className="hr_employee_information">
 
               </div>
             </div>
