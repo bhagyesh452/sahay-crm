@@ -161,7 +161,7 @@ function RmofCertificationMyBookings() {
                 <div className="page-wrapper rm-mybookingmain">
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
-                            <div className="d-flex">
+                            <div className="d-flex aling-items-center justify-content-between">
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn mybtn"  >
                                         <IoFilterOutline className='mr-1' /> Filter
@@ -195,7 +195,7 @@ function RmofCertificationMyBookings() {
                     <div className="page-body rm_Dtl_box m-0">
                         <div className="container-xl mt-2">
                             <div className="rm_main_card">
-                                <div className="my-tab card-header">
+                                <div className="my-tab card-header" style={{marginBottom:"-2px"}}>
                                     <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link active" data-bs-toggle="tab" href="#General">

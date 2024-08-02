@@ -9,7 +9,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
 import { FaPencilAlt } from "react-icons/fa";
-import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle, FormHelperText } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
@@ -44,6 +44,7 @@ function RmofCertificationSubmittedPanel() {
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
+    const [error, setError] = useState('')
 
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -75,7 +76,7 @@ function RmofCertificationSubmittedPanel() {
         const strTime = `${hours}:${minutes} ${ampm}`;
         return strTime;
     }
-    
+
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
@@ -118,7 +119,7 @@ function RmofCertificationSubmittedPanel() {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
             const servicesData = response.data.filter(item => item.mainCategoryStatus === "Submitted")
-            console.log("servicesData" , servicesData)
+            console.log("servicesData", servicesData)
             setRmServicesData(servicesData)
             //console.log(response.data)
         } catch (error) {
@@ -165,28 +166,49 @@ function RmofCertificationSubmittedPanel() {
     const handleSubmitRemarks = async () => {
         //console.log("changeremarks", changeRemarks)
         try {
-            const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                currentCompanyName,
-                currentServiceName,
-                changeRemarks,
-                updatedOn: new Date()
-            });
+            if (changeRemarks) {
+                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+                    currentCompanyName,
+                    currentServiceName,
+                    changeRemarks,
+                    updatedOn: new Date()
+                });
 
-            //console.log("response", response.data);
+                //console.log("response", response.data);
 
-            if (response.status === 200) {
-                fetchRMServicesData();
-                functionCloseRemarksPopup();
-                Swal.fire(
-                    'Remarks Added!',
-                    'The remarks have been successfully added.',
-                    'success'
-                );
+                if (response.status === 200) {
+                    fetchRMServicesData();
+                    functionCloseRemarksPopup();
+                    // Swal.fire(
+                    //     'Remarks Added!',
+                    //     'The remarks have been successfully added.',
+                    //     'success'
+                    // );
+                }
+            } else {
+                setError('Remarks Cannot Be Empty!')
             }
+
         } catch (error) {
             console.log("Error Submitting Remarks", error.message);
         }
     };
+
+    const handleDeleteRemarks = async (remarks_id) => {
+        try {
+          const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+          });
+          if(response.status === 200){
+            fetchRMServicesData();
+            functionCloseRemarksPopup(); 
+          }
+         // Refresh the list
+        } catch (error) {
+          console.error("Error deleting remark:", error);
+        }
+      };
+
 
     const handleIndustryChange = (industry, options) => {
         setSelectedIndustry(industry);
@@ -217,7 +239,7 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Service Name</th>
                                 <th>Status</th>
                                 <th>Remark</th>
-                                <th>Website Link</th>
+                                <th>Website Link/Brief</th>
                                 <th>DSC Applicable</th>
                                 <th>DSC Status</th>
                                 <th>Content Writer</th>
@@ -228,7 +250,6 @@ function RmofCertificationSubmittedPanel() {
                                 <th>NSWS Password</th>
                                 <th>Industry</th>
                                 <th>Sector</th>
-                                <th>Submitted By</th>
                                 <th>Booking Date</th>
                                 <th>BDE Name</th>
                                 <th>BDM name</th>
@@ -237,6 +258,7 @@ function RmofCertificationSubmittedPanel() {
                                 <th>Pending Payment</th>
                                 <th>No of Attempt</th>
                                 <th>Submitted On</th>
+                                <th>Submitted By</th>
                                 <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
@@ -269,6 +291,7 @@ function RmofCertificationSubmittedPanel() {
                                         <div>
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                     mainStatus={obj.mainCategoryStatus}
                                                     subStatus={obj.subCategoryStatus}
                                                     setNewSubStatus={setNewStatusSubmitted}
@@ -313,7 +336,9 @@ function RmofCertificationSubmittedPanel() {
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : "Please Enter Website Link"}
+                                            companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
+
                                         />
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
@@ -331,37 +356,42 @@ function RmofCertificationSubmittedPanel() {
                                     </td>
                                     <td>
                                         <ContentWriterDropdown
-                                      companyName={obj["Company Name"]}
-                                      serviceName={obj.serviceName}
-                                      mainStatus={obj.mainCategoryStatus}
-                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
-                                     /></td>
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                        /></td>
                                     <td><ContentStatusDropdown
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
                                         contentStatus={obj.contentStatus}
                                     /></td>
-                                      <td>
-                                    <BrochureDesignerDropdown 
-                                    companyName={obj["Company Name"]}
-                                    serviceName={obj.serviceName}
-                                    mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Drashti Thakkar"}/>
-                                   </td>
+                                    <td>
+                                        <BrochureDesignerDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                            refreshData={refreshData}
+                                        />
+                                    </td>
                                     <td>
                                         <BrochureStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
                                             brochureStatus={obj.brochureStatus}
+                                            designername={obj.brochureDesigner}
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : "Please Enter Email"}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
                                         />
                                     </td>
                                     <td className='td_of_weblink'>
@@ -372,14 +402,15 @@ function RmofCertificationSubmittedPanel() {
                                             nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    
+
                                     <td>
                                         <IndustryDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
+                                            industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
+
                                         /></td>
                                     <td>
                                         <SectorDropdown
@@ -387,10 +418,9 @@ function RmofCertificationSubmittedPanel() {
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             sectorOptions={sectorOptions}
-                                            industry={obj.industry ? obj.industry : "Aeronautics/Aerospace & Defence"}
-                                            sector={obj.sector ? obj.sector : "Others"} />
+                                            industry={obj.industry ? obj.industry : "Select Industry"}
+                                            sector={obj.sector ? obj.sector : "Select Sector"} />
                                     </td>
-                                    <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center">
@@ -410,15 +440,16 @@ function RmofCertificationSubmittedPanel() {
                                     <td>
                                         {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
                                             obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
-                                                "1st"} 
+                                                "1st"}
                                     </td>
                                     <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
+                                    <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary">
                                             <FaRegEye />
                                         </button>
                                     </td>
-                                   
+
                                 </tr>
                             ))}
                         </tbody>
@@ -451,6 +482,21 @@ function RmofCertificationSubmittedPanel() {
                                             <div className="reamrk-card-innerText">
                                                 <pre className="remark-text">{historyItem.remarks}</pre>
                                             </div>
+                                            <div className="dlticon">
+                                                <DeleteIcon
+                                                    style={{
+                                                        cursor: "pointer",
+                                                        color: "#f70000",
+                                                        width: "14px",
+                                                    }}
+                                                    onClick={() => {
+                                                        handleDeleteRemarks(
+                                                            historyItem._id,
+                                                            historyItem.remarks
+                                                        );
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
 
                                         <div className="d-flex card-dateTime justify-content-between">
@@ -474,6 +520,7 @@ function RmofCertificationSubmittedPanel() {
                                         }}
                                     ></textarea>
                                 </div>
+                                {error && <FormHelperText error>{error}</FormHelperText>}
 
                             </div>
                         )}

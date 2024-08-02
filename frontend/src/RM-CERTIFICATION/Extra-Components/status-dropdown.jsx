@@ -9,7 +9,7 @@ import axios from 'axios';
 
 const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData }) => {
   const [status, setStatus] = useState(subStatus);
-  const [statusClass, setStatusClass] = useState("created-status");
+  const [statusClass, setStatusClass] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
@@ -187,83 +187,81 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
       case "General":
         switch (subStatus) {
           case "Untouched":
-            return "created-status";
+            return "untouched_status";
           case "Call Done Brief Pending":
-            return "support-status";
+            return "cdbp-status";
           case "Client Not Responding":
-            return "inprogress-status";
+            return "clnt_no_repond_status";
           case "Documents Pending":
-            return "docs-pending";
+            return "support-status";
           case "Need To Call":
-            return "rejected-status";
+            return "need_to_call";
           default:
-            return "created-status";
+            return "";
         }
       case "Process":
         switch (subStatus) {
           case "Call Done Brief Pending":
-            return "support-status";
+            return "cdbp-status";
           case "Client Not Responding":
-            return "inprogress-status";
+            return "clnt_no_repond_status";
           case "Documents Pending":
-            return "docs-pending";
+            return "support-status";
           case "Ready To Submit":
-            return "rejected-status";
+            return "ready_to_submit";
           case "Submitted":
-            return "rejected-status";
+            return "submited-status";
           case "Working":
-            return "finished-status";
+            return "inprogress-status";
           case "Defaulter":
-            return "finished-status";
+            return "dfaulter-status";
           case "Hold":
-            return "docs-pending";
-          default:
             return "created-status";
+          case "Need To Call":
+            return "need_to_call";
+          default:
+            return "";
         }
       case "Submitted":
         switch (subStatus) {
           case "Submitted":
-            return "rejected-status";
+            return "submited-status";
           case "Incomplete":
-            return "inprogress-status";
+            return "incomplete_status";
           case "Approved":
-            return "docs-pending";
+            return "approved-status";
           case "2nd Time Submitted":
-            return "rejected-status";
+            return "submited-status";
           case "3rd Time Submitted":
-            return "finished-status";
+            return "submited-status";
           case "Rejected":
             return "rejected-status";
           case "Defaulter":
-            return "rejected-status";
+            return "dfaulter-status";
           default:
-            return "created-status";
+            return "";
         }
       case "Defaulter":
         switch (subStatus) {
           case "Working":
-            return "rejected-status";
+            return "inprogress-status";
           case "Defaulter":
-            return "rejected-status";
+            return "dfaulter-status";
           case "Hold":
-            return "docs-pending";
-          default:
             return "created-status";
+          default:
+            return "";
         }case "Hold":
         switch (subStatus) {
           case "Hold":
-            return "docs-pending";
-            case "Defaulter":
-              return "rejected-status";
-              case "Working":
-                return "rejected-status";
-                case "Submitted":
-            return "rejected-status";
-            case "Process":
-              return "docs-pending";
+            return "created-status";
+          case "Defaulter":
+            return "dfaulter-status";
+          case "Working":
+            return "inprogress-status";
         }
       default:
-        return "created-status";
+        return "";
     }
   };
 
@@ -291,7 +289,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Untouched", "created-status")}
+                onClick={() => handleStatusChange("Untouched", "untouched_status")}
                 href="#"
               >
                 Untouched
@@ -300,7 +298,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Call Done Brief Pending", "support-status")}
+                onClick={() => handleStatusChange("Call Done Brief Pending", "cdbp-status")}
                 href="#"
               >
                 Call Done Brief Pending
@@ -309,7 +307,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Client Not Responding", "inprogress-status")}
+                onClick={() => handleStatusChange("Client Not Responding", "clnt_no_repond_status")}
                 href="#"
               >
                 Client Not Responding
@@ -318,7 +316,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Documents Pending", "docs-pending")}
+                onClick={() => handleStatusChange("Documents Pending", "support-status")}
                 href="#"
               >
                 Documents Pending
@@ -327,7 +325,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Need To Call", "rejected-status")}
+                onClick={() => handleStatusChange("Need To Call", "need_to_call")}
                 href="#"
               >
                 Need To Call
@@ -339,7 +337,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Call Done Brief Pending", "support-status")}
+                onClick={() => handleStatusChange("Call Done Brief Pending", "cdbp-status")}
                 href="#"
               >
                 Call Done Brief Pending
@@ -348,7 +346,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Client Not Responding", "inprogress-status")}
+                onClick={() => handleStatusChange("Client Not Responding", "clnt_no_repond_status")}
                 href="#"
               >
                 Client Not Responding
@@ -357,7 +355,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Documents Pending", "docs-pending")}
+                onClick={() => handleStatusChange("Documents Pending", "support-status")}
                 href="#"
               >
                 Documents Pending
@@ -366,7 +364,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Ready To Submit", "rejected-status")}
+                onClick={() => handleStatusChange("Ready To Submit", "ready_to_submit")}
                 href="#"
               >
                 Ready To Submit
@@ -375,7 +373,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "finished-status")}
+                onClick={() => handleStatusChange("Submitted", "submited-status")}
                 href="#"
               >
                 Submitted
@@ -384,7 +382,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Working", "finished-status")}
+                onClick={() => handleStatusChange("Working", "inprogress-status")}
                 href="#"
               >
                 Working
@@ -393,7 +391,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "finished-status")}
+                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
                 href="#"
               >
                 Defaulter
@@ -402,7 +400,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Need To Call", "rejected-status")}
+                onClick={() => handleStatusChange("Need To Call", "need_to_call")}
                 href="#"
               >
                 Need To Call
@@ -411,7 +409,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                onClick={() => handleStatusChange("Hold", "created-status")}
                 href="#"
               >
                 Hold
@@ -420,7 +418,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "finished-status")}
+                onClick={() => handleStatusChange("Undo", "e_task_assign")}
                 href="#"
               >
                 Undo
@@ -432,7 +430,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "rejected-status")}
+                onClick={() => handleStatusChange("Submitted", "submited-status")}
                 href="#"
               >
                 Submitted
@@ -441,7 +439,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Incomplete", "inprogress-status")}
+                onClick={() => handleStatusChange("Incomplete", "incomplete_status")}
                 href="#"
               >
                 Incomplete
@@ -450,7 +448,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Approved", "docs-pending")}
+                onClick={() => handleStatusChange("Approved", "approved-status")}
                 href="#"
               >
                 Approved
@@ -459,7 +457,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("2nd Time Submitted", "rejected-status")}
+                onClick={() => handleStatusChange("2nd Time Submitted", "submited-status")}
                 href="#"
               >
                 2nd Time Submitted
@@ -468,7 +466,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("3rd Time Submitted", "finished-status")}
+                onClick={() => handleStatusChange("3rd Time Submitted", "submited-status")}
                 href="#"
               >
                 3rd Time Submitted
@@ -486,7 +484,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "rejected-status")}
+                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
                 href="#"
               >
                 Defaulter
@@ -495,7 +493,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "finished-status")}
+                onClick={() => handleStatusChange("Undo", "e_task_assign")}
                 href="#"
               >
                 Undo
@@ -507,7 +505,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                onClick={() => handleStatusChange("Hold", "created-status")}
                 href="#"
               >
                 Hold
@@ -516,7 +514,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "rejected-status")}
+                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
                 href="#"
               >
                 Defaulter
@@ -525,7 +523,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Working", "rejected-status")}
+                onClick={() => handleStatusChange("Working", "inprogress-status")}
                 href="#"
               >
                 Working
@@ -534,25 +532,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "finished-status")}
-                href="#"
-              >
-                Submitted
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Process", "docs-pending")}
-                href="#"
-              >
-                In Process
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "finished-status")}
+                onClick={() => handleStatusChange("Undo", "e_task_assign")}
                 href="#"
               >
                 Undo
@@ -564,7 +544,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Working", "rejected-status")}
+                onClick={() => handleStatusChange("Working", "inprogress-status")}
                 href="#"
               >
                 Working
@@ -573,7 +553,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Defaulter", "rejected-status")}
+                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
                 href="#"
               >
                 Defaulter
@@ -582,7 +562,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Hold", "docs-pending")}
+                onClick={() => handleStatusChange("Hold", "created-status")}
                 href="#"
               >
                 Hold
@@ -591,7 +571,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Undo", "finished-status")}
+                onClick={() => handleStatusChange("Undo", "e_task_assign")}
                 href="#"
               >
                 Undo

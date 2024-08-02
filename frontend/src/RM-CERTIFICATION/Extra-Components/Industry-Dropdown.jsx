@@ -9,7 +9,7 @@ import axios from 'axios';
 
 
 const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, serviceName, refreshData, onIndustryChange }) => {
-    const [status, setStatus] = useState(industry);
+    const [status, setStatus] = useState(industry || "");
     const [statusClass, setStatusClass] = useState("created-status");
     const [options, setOptions] = useState([])
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -442,7 +442,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         { name: "Indic Language Startup", options: indicLanguageStartup }
     ];
 
-
+    
 
 
 
@@ -450,7 +450,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         setStatus(industryOption);
         setStatusClass(statusClass);
         onIndustryChange(industryOption, options)
-        try{
+        try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-industry`, {
                 companyName,
                 serviceName,
@@ -462,28 +462,29 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
             }
 
 
-        }catch(error){
-            console.log("Error Sending Industry" , error.message)
+        } catch (error) {
+            console.log("Error Sending Industry", error.message)
 
         }
         //setNewSubStatus(newStatus);
     };
 
     return (
-       
-            <select
-                className="form-select sec-indu-select"
-                aria-labelledby="dropdownMenuButton1"
-                onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
-                value={status} // Set the current value as selected
-            >
-                <option value="">Select an option</option>
-                {dropdownItems.map((item) => (
-                    <option key={item.name} value={item.name}>
-                        {item.name}
-                    </option>
-                ))}
-            </select>
+
+        <select
+            className="form-select sec-indu-select"
+            aria-labelledby="dropdownMenuButton1"
+            onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
+            value={status} // Ensure this matches one of the option values
+        >
+            <option disabled selected value="">Select Industry</option>
+            {dropdownItems.map((item , index) => (
+                <option key={index} value={item.name}>
+                    {item.name}
+                </option>
+            ))}
+        </select>
+
     );
 };
 

@@ -373,7 +373,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sector, sectorO
             onChange={(e) => handleStatusChange(e.target.value)}
             value={status}
         >
-            <option value="">Select a status</option>
+            <option disabled selected value="">Select Sector</option>
             {options.map((option, index) => (
                 <option key={index} value={option}>
                     {option}

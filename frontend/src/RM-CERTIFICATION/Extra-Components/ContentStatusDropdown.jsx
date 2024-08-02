@@ -134,10 +134,10 @@ const ContentStatusDropdown = ({ companyName , serviceName , mainStatus ,content
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("InApproved", "rejected-status")}
+            onClick={() => handleStatusChange("In Approval", "rejected-status")}
             href="#"
           >
-            InApproved
+            In Approval
 
           </a>
         </li>

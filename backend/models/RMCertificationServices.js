@@ -221,6 +221,9 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   websiteLink:{
     type:String
   },
+  companyBriefing:{
+    type:String,
+  },
   industry:{
     type:String
   },
