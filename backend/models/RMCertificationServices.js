@@ -207,7 +207,7 @@ const RMCertificationServicesSchema = new mongoose.Schema({
  },
   brochureStatus:{
     type:String,
-   default:"Not Started"
+   default:"Not Applicable"
  },
  brochureDesigner:{
   type:String,
