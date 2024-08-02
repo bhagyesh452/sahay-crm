@@ -65,9 +65,9 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
   const getStatusClass = (status) => {
     switch (status) {
       case "Not Started":
-        return "created-status";
+        return "untouched_status";
       case "Working":
-        return "rejected-status";
+        return "need_to_call";
       case "Pending":
         return "inprogress-status";
       case "Completed":
@@ -76,6 +76,8 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
         return "rejected-status";
       case "Approved":
         return "support-status";
+      case "Not Applicable":
+        return "e_task_assign";
       default:
         return "created-status";
     }
@@ -93,7 +95,7 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
         className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
         type="button"
         id="dropdownMenuButton1"
-        data-bs-toggle={!designername || designername === "Not Applicable" ? "" : "dropdown"} // Bootstrap data attribute to toggle dropdown
+        data-bs-toggle={!designername || designername === "Not Applicable" ? "Not Applicable" : "dropdown"} // Bootstrap data attribute to toggle dropdown
         aria-expanded="false"
       >
         {status}
@@ -152,6 +154,16 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
             href="#"
           >
             Approved
+
+          </a>
+        </li>
+        <li>
+          <a
+            className="dropdown-item"
+            onClick={() => handleStatusChange("Not Applicable", "e_task_assign")}
+            href="#"
+          >
+            Not Applicable
 
           </a>
         </li>

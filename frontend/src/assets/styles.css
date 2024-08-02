@@ -3153,7 +3153,7 @@ td input {
   width: 100%;
   background-position: right 7px center;
   background-size: 8px 11px;
-  background-color: #f4f4f4;
+  
   border: none !important;
   color: #414141;
 }
@@ -3163,7 +3163,14 @@ td input {
     box-shadow: none !important;
     background: inherit;
 }
-
+.sec-indu-select-white
+{
+    background-color: #fff;
+}
+.sec-indu-select-gray
+{
+    background-color: #f4f4f4;
+}
 .table-container.scrolled .rm-sticky-left-1,
 .table-container.scrolled .rm-sticky-left-2,
 .table-container.scrolled .rm-sticky-action {
