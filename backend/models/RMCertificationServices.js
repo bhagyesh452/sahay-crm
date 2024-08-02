@@ -200,14 +200,14 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   contentStatus:{
      type:String,
-    default:"Not Started"
+    //default:"Not Applicable"
   },
   contentWriter:{
     type:String,
  },
   brochureStatus:{
     type:String,
-   default:"Not Started"
+   //default:"Not Applicable"
  },
  brochureDesigner:{
   type:String,
@@ -231,6 +231,10 @@ const RMCertificationServicesSchema = new mongoose.Schema({
     type:String
   },
   lastActionDate:{
+    type:Date,
+    default: new Date()
+  },
+  dateOfChangingMainStatus:{
     type:Date,
     default: new Date()
   },

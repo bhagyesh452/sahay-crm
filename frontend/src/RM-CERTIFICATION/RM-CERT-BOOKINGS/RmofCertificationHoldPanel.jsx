@@ -23,6 +23,9 @@ import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
+import Nodata from '../../components/Nodata';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function RmofCertificationHoldPanel() {
 
@@ -44,7 +47,7 @@ function RmofCertificationHoldPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
     const [error, setError] = useState('')
-
+    const [openBacdrop, setOpenBacdrop] = useState(false)
 
 
     function formatDatePro(inputDate) {
@@ -74,7 +77,7 @@ function RmofCertificationHoldPanel() {
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchRMServicesData()
+            fetchData()
         });
 
 
@@ -85,43 +88,34 @@ function RmofCertificationHoldPanel() {
 
 
     const fetchData = async () => {
+        setOpenBacdrop(true);
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            // Set the retrieved data in the state
-            const tempData = response.data;
-            console.log(tempData)
-            const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
+
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            setRmServicesData(servicesResponse.data.filter(item => item.mainCategoryStatus === "Hold"))
+            .sort((a, b) => {
+                const dateA = new Date(a.dateOfChangingMainStatus);
+                const dateB = new Date(b.dateOfChangingMainStatus);
+                return dateB - dateA; // Sort in descending order
+            });;
         } catch (error) {
-            console.error("Error fetching data:", error.message);
+            console.error("Error fetching data", error.message);
+        } finally {
+            setOpenBacdrop(false);
         }
     };
-
-    const fetchRMServicesData = async () => {
-        try {
-            setCurrentDataLoading(true)
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data.filter(item => item.mainCategoryStatus === "Hold"))
-            //console.log(response.data)
-        } catch (error) {
-            console.error("Error fetching data", error.message)
-        } finally {
-            setCurrentDataLoading(false)
-        }
-    }
+   
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [rmCertificationUserId, secretKey]);
 
-    useEffect(() => {
-        fetchRMServicesData()
-
-    }, [employeeData])
 
     const refreshData = () => {
-        fetchRMServicesData();
+        fetchData();
     };
 
     function formatDate(dateString) {
@@ -157,7 +151,7 @@ function RmofCertificationHoldPanel() {
                 //console.log("response", response.data);
 
                 if (response.status === 200) {
-                    fetchRMServicesData();
+                    fetchData();
                     functionCloseRemarksPopup();
                     // Swal.fire(
                     //     'Remarks Added!',
@@ -180,7 +174,7 @@ function RmofCertificationHoldPanel() {
             data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
           });
           if(response.status === 200){
-            fetchRMServicesData();
+            fetchData();
             functionCloseRemarksPopup(); 
           }
          // Refresh the list
@@ -195,6 +189,10 @@ function RmofCertificationHoldPanel() {
         setSectorOptions(options);
     };
 
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
+
 
    
 
@@ -208,7 +206,16 @@ function RmofCertificationHoldPanel() {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                {openBacdrop && (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={openBacdrop}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    )}
+                    {rmServicesData.length >0 ? (
+                        <table className="table table-vcenter table-nowrap rm_table_inprocess">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
@@ -313,6 +320,7 @@ function RmofCertificationHoldPanel() {
                                     </td>
                                     <td className='td_of_weblink'>
                                         <WebsiteLink
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
@@ -335,17 +343,23 @@ function RmofCertificationHoldPanel() {
                                     </td>
                                     <td>
                                         <ContentWriterDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
-                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
+                                            refreshData={refreshData}
                                         /></td>
-                                    <td><ContentStatusDropdown
-                                        companyName={obj["Company Name"]}
-                                        serviceName={obj.serviceName}
-                                        mainStatus={obj.mainCategoryStatus}
-                                        contentStatus={obj.contentStatus}
-                                    /></td>
+                                    <td>
+                                        <ContentStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                            writername={obj.contentWriter}
+                                            refreshData={refreshData}
+                                        /></td>
                                     <td>
                                         <BrochureDesignerDropdown
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -367,6 +381,7 @@ function RmofCertificationHoldPanel() {
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
@@ -375,6 +390,7 @@ function RmofCertificationHoldPanel() {
                                     </td>
                                     <td className='td_of_weblink'>
                                         <NSWSPasswordInput
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refresData={refreshData}
@@ -391,14 +407,15 @@ function RmofCertificationHoldPanel() {
                                             industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
 
                                         /></td>
-                                    <td>
+                                   <td className='td_of_Industry'>
                                         <SectorDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             sectorOptions={sectorOptions}
-                                            industry={obj.industry ? obj.industry : "Select Industry"}
-                                            sector={obj.sector ? obj.sector : "Select Sector"} />
+                                            industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
+                                            sector={obj.sector || ""} // Default to "" if sector is not provided
+                                        />
                                     </td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
@@ -424,7 +441,15 @@ function RmofCertificationHoldPanel() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table>)
+                    :
+                    (!openBacdrop && (
+                        <table className='no_data_table'>
+                                <div className='no_data_table_inner'>
+                                    <Nodata />
+                                </div>
+                            </table>)
+                    )}
                 </div>
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}

@@ -5,20 +5,19 @@ import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
-const SectorDropdown = ({ companyName, serviceName, refreshData, sector, sectorOptions, industry }) => {
-    const [status, setStatus] = useState(sector);
-    const [statusClass, setStatusClass] = useState("created-status");
+const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector }) => {
+    const [status, setStatus] = useState(""); // Start with an empty string for default
     const [options, setOptions] = useState([]);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     useEffect(() => {
         const sectorOptionsForIndustry = getSectorOptionsForIndustry(industry);
         setOptions(sectorOptionsForIndustry);
-    }, [industry]);
+        setStatus(sector || ""); // Set the sector value if provided
+    }, [industry, sector]);
 
     const handleStatusChange = async (sectorOption) => {
         setStatus(sectorOption);
-        setStatusClass(statusClass);
         console.log(companyName, serviceName, sectorOption);
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-sector`, {
@@ -364,16 +363,14 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sector, sectorO
         };
         return industrySectors[industry] || [];
     };
-    
-
     return (
         <select
-            className="form-select sec-indu-select"
+            className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value)}
             value={status}
         >
-            <option disabled selected value="">Select Sector</option>
+            <option value="" disabled>Select Sector</option>
             {options.map((option, index) => (
                 <option key={index} value={option}>
                     {option}

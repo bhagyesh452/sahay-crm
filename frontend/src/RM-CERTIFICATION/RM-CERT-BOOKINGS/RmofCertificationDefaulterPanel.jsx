@@ -23,6 +23,9 @@ import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
+import Nodata from '../../components/Nodata';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function RmofCertificationDefaulterPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -43,6 +46,7 @@ function RmofCertificationDefaulterPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
 const [error, setError] = useState('')
+const [openBacdrop, setOpenBacdrop] = useState(false)
 
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -66,7 +70,7 @@ const [error, setError] = useState('')
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchRMServicesData()
+            fetchData()
         });
 
 
@@ -77,45 +81,34 @@ const [error, setError] = useState('')
 
 
     const fetchData = async () => {
+        setOpenBacdrop(true);
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            // Set the retrieved data in the state
-            const tempData = response.data;
-            //console.log(tempData)
-            const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            //console.log(userData)
+            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
+
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            setRmServicesData(servicesResponse.data.filter(item => item.mainCategoryStatus === "Defaulter"))
+            .sort((a, b) => {
+                const dateA = new Date(a.dateOfChangingMainStatus);
+                const dateB = new Date(b.dateOfChangingMainStatus);
+                return dateB - dateA; // Sort in descending order
+            });
         } catch (error) {
-            console.error("Error fetching data:", error.message);
+            console.error("Error fetching data", error.message);
+        } finally {
+            setOpenBacdrop(false);
         }
     };
 
-    const fetchRMServicesData = async () => {
-        try {
-            setCurrentDataLoading(true)
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Defaulter")
-            console.log("servicesdata" , servicesData)
-            setRmServicesData(servicesData)
-            //console.log(response.data)
-        } catch (error) {
-            console.error("Error fetching data", error.message)
-        } finally {
-            setCurrentDataLoading(false)
-        }
-    }
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [rmCertificationUserId, secretKey]);
 
-    useEffect(() => {
-        fetchRMServicesData()
-
-    }, [employeeData])
 
     const refreshData = () => {
-        fetchRMServicesData();
+        fetchData();
     };
 
 
@@ -155,7 +148,7 @@ const [error, setError] = useState('')
                 //console.log("response", response.data);
         
                 if (response.status === 200) {
-                    fetchRMServicesData();
+                    fetchData();
                     functionCloseRemarksPopup();
                     // Swal.fire(
                     //     'Remarks Added!',
@@ -178,7 +171,7 @@ const [error, setError] = useState('')
             data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
           });
           if(response.status === 200){
-            fetchRMServicesData();
+            fetchData();
             functionCloseRemarksPopup(); 
           }
          // Refresh the list
@@ -204,7 +197,7 @@ const [error, setError] = useState('')
                         'The email has been successfully added.',
                         'success'
                     );
-                    fetchRMServicesData()
+                    fetchData()
                     setOpenEmailPopup(false); // Close the popup on success
                 }
             }
@@ -232,14 +225,27 @@ const [error, setError] = useState('')
             options
         );
         return formattedDate;
+    };
+
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
     }
+
 
 
     return (
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                {openBacdrop && (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={openBacdrop}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    )}
+                   {rmServicesData.length > 0 ? ( <table className="table table-vcenter table-nowrap rm_table_inprocess">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
@@ -343,6 +349,7 @@ const [error, setError] = useState('')
                                     </td>
                                     <td className='td_of_weblink'>
                                         <WebsiteLink
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         refreshData={refreshData}
@@ -363,27 +370,26 @@ const [error, setError] = useState('')
                                         ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                  <td>
-                                        <ContentWriterDropdown
-                                      companyName={obj["Company Name"]}
-                                      serviceName={obj.serviceName}
-                                      mainStatus={obj.mainCategoryStatus}
-                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
-                                     /></td>
-                                    <td><ContentStatusDropdown
-                                    companyName = {obj["Company Name"]}
-                                    serviceName = {obj.serviceName}
-                                    mainStatus = {obj.mainCategoryStatus}
-                                    contentStatus = {obj.contentStatus}
-                                    /></td>
                                     <td>
-                                    <BrochureDesignerDropdown 
-                                    companyName={obj["Company Name"]}
-                                    serviceName={obj.serviceName}
-                                    mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                    />
-                                   </td>
+                                        <ContentWriterDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
+                                            refreshData={refreshData}
+                                        /></td>
+                                    <td>
+                                        <ContentStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                            writername={obj.contentWriter}
+                                            refreshData={refreshData}
+                                        /></td>
+                                    
                                    <td>
                                         <BrochureDesignerDropdown
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -403,8 +409,18 @@ const [error, setError] = useState('')
                                             brochureStatus={obj.brochureStatus}
                                             designername={obj.brochureDesigner}
                                         /></td>
+                                         <td className='td_of_NSWSeMAIL'>
+                                        <NSWSEmailInput
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
+                                        />
+                                    </td>
                                     <td className='td_of_weblink'>
                                         <NSWSPasswordInput 
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         refresData={refreshData}
@@ -414,6 +430,7 @@ const [error, setError] = useState('')
                                     
                                     <td>
                                         <IndustryDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
@@ -421,14 +438,16 @@ const [error, setError] = useState('')
                                             industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
 
                                         /></td>
-                                    <td>
+                                  <td className='td_of_Industry'>
                                         <SectorDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             sectorOptions={sectorOptions}
-                                            industry={obj.industry ? obj.industry : "Select Industry"}
-                                            sector={obj.sector ? obj.sector : "Select Sector"} />
+                                            industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
+                                            sector={obj.sector || ""} // Default to "" if sector is not provided
+                                        />
                                     </td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
@@ -454,7 +473,14 @@ const [error, setError] = useState('')
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </table>)
+                    :(!openBacdrop && (
+                        <table className='no_data_table'>
+                                <div className='no_data_table_inner'>
+                                    <Nodata />
+                                </div>
+                            </table>)
+                    )}
                 </div>
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
