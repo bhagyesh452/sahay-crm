@@ -3077,7 +3077,7 @@ td input {
 }
 .status_change
 {
-  height: 200px;
+  max-height: 200px;
   overflow-y: auto;
   background: #fff;
 }
@@ -3866,7 +3866,7 @@ border: 1px solid #ffefc6 !important;
 {
   width: 100%;
   height: 100%;
-  
+  margin-top: 0px !important;
 }
 .no_data_table_inner
 {
@@ -3874,5 +3874,5 @@ border: 1px solid #ffefc6 !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  height: 100%;
 }
