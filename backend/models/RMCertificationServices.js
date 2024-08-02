@@ -200,7 +200,7 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   contentStatus:{
      type:String,
-    default:"Not Started"
+    default:"Not Applicable"
   },
   contentWriter:{
     type:String,

@@ -341,6 +341,7 @@ function RmofCertificationProcessPanel() {
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
                                             writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
+                                            refreshData={refreshData}
                                         /></td>
                                     <td>
                                         <ContentStatusDropdown
@@ -348,8 +349,9 @@ function RmofCertificationProcessPanel() {
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
-                                            contentStatus={obj.contentStatus}
+                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
                                             writername={obj.contentWriter}
+                                            refreshData={refreshData}
                                         /></td>
                                     {/* For Brochure */}
                                     <td>

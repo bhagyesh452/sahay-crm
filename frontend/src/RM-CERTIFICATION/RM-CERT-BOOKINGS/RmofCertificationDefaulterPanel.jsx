@@ -349,6 +349,7 @@ const [error, setError] = useState('')
                                     </td>
                                     <td className='td_of_weblink'>
                                         <WebsiteLink
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         refreshData={refreshData}
@@ -369,21 +370,28 @@ const [error, setError] = useState('')
                                         ) :
                                             ("Not Applicable")}</div>
                                     </td>
-                                  <td>
+                                    <td>
                                         <ContentWriterDropdown
-                                      companyName={obj["Company Name"]}
-                                      serviceName={obj.serviceName}
-                                      mainStatus={obj.mainCategoryStatus}
-                                      writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
-                                     /></td>
-                                    <td><ContentStatusDropdown
-                                    companyName = {obj["Company Name"]}
-                                    serviceName = {obj.serviceName}
-                                    mainStatus = {obj.mainCategoryStatus}
-                                    contentStatus = {obj.contentStatus}
-                                    /></td>
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
+                                            refreshData={refreshData}
+                                        /></td>
+                                    <td>
+                                        <ContentStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                            writername={obj.contentWriter}
+                                            refreshData={refreshData}
+                                        /></td>
                                     <td>
                                     <BrochureDesignerDropdown 
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                     companyName={obj["Company Name"]}
                                     serviceName={obj.serviceName}
                                     mainStatus={obj.mainCategoryStatus}
@@ -411,6 +419,7 @@ const [error, setError] = useState('')
                                         /></td>
                                     <td className='td_of_weblink'>
                                         <NSWSPasswordInput 
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         refresData={refreshData}
@@ -420,6 +429,7 @@ const [error, setError] = useState('')
                                     
                                     <td>
                                         <IndustryDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
@@ -429,6 +439,7 @@ const [error, setError] = useState('')
                                         /></td>
                                   <td className='td_of_Industry'>
                                         <SectorDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
