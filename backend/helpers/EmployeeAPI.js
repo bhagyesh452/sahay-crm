@@ -223,7 +223,6 @@ router.post("/einfo", upload.fields([
       ...(personalInfo.personalPhoneNo && { personal_number: personalInfo.personalPhoneNo }),
       ...(personalInfo.personalEmail && { personal_email: personalInfo.personalEmail }),
       ...(personalInfo.currentAddress && { currentAddress: personalInfo.currentAddress }),
-      ...(personalInfo.isAddressSame && { isAddressSame: personalInfo.isAddressSame }),
       ...(personalInfo.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
 
       ...(employeementInfo.department && { department: employeementInfo.department }),
@@ -234,7 +233,7 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo.manager && { reportingManager: employeementInfo.manager }),
       ...(employeementInfo.officialNo && { number: employeementInfo.officialNo }),
       ...(employeementInfo.officialEmail && { email: employeementInfo.officialEmail }),
-      
+
       ...(payrollInfo.accountNo && { accountNo: payrollInfo.accountNo }),
       ...(payrollInfo.bankName && { bankName: payrollInfo.bankName }),
       ...(payrollInfo.ifscCode && { ifscCode: payrollInfo.ifscCode }),
@@ -248,7 +247,7 @@ router.post("/einfo", upload.fields([
       ...(emergencyInfo.personName && { personal_contact_person: emergencyInfo.personName }),
       ...(emergencyInfo.relationship && { personal_contact_person_relationship: emergencyInfo.relationship }),
       ...(emergencyInfo.personPhoneNo && { personal_contact_person_number: emergencyInfo.personPhoneNo }),
-      
+
       ...(payrollInfo.offerLetter?.length > 0 && { offerLetter: payrollInfo.offerLetter }),
       ...(empDocumentInfo.aadharCard?.length > 0 && { aadharCard: empDocumentInfo.aadharCard }),
       ...(empDocumentInfo.panCard?.length > 0 && { panCard: empDocumentInfo.panCard }),
@@ -405,10 +404,12 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
   { name: "salarySlip", maxCount: 1 },
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
+
   const { empId } = req.params;
-  const { firstName, lastName, dob, personalPhoneNo, personalEmail, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo } = req.body;
+  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo, activeStep } = req.body;
   // console.log("Reqest file is :", req.files);
 
+  console.log("Active step :", activeStep);
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
     fieldname: file.fieldname,
     originalname: file.originalname,
@@ -433,45 +434,42 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       return res.status(404).json({ result: false, message: "Employee not found" });
     }
 
-    const formatDate = (dateStr) => {
-      if (!dateStr) return null;
-      const [day, month, year] = dateStr.split("-");
-      return `${year}-${month}-${day}`;
+    const updateFields = {
+      ...req.body,
+      ...(activeStep && { activeStep: activeStep }),
+      ...(firstName || middleName || lastName) && {
+        ename: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
+      },
+      ...(dob && { dob }),
+      ...(personalPhoneNo && { personal_number: personalPhoneNo }),
+      ...(personalEmail && { personal_email: personalEmail }),
+
+      ...(officialNo && { number: officialNo }),
+      ...(officialEmail && { email: officialEmail }),
+      ...(joiningDate && { jdate: joiningDate }),
+      ...(branch && { branchOffice: branch }),
+      ...(manager && { reportingManager: manager }),
+
+      ...(firstMonthSalary && { firstMonthSalaryCondition: firstMonthSalary }),
+      ...(salaryCalculation && { firstMonthSalary: salaryCalculation }),
+
+      ...(personName && { personal_contact_person: personName }),
+      ...(relationship && { personal_contact_person_relationship: relationship }),
+      ...(personPhoneNo && { personal_contact_person_number: personPhoneNo }),
+
+      ...(offerLetterDetails.length > 0 && { offerLetter: offerLetterDetails }),
+      ...(aadharCardDetails.length > 0 && { aadharCard: aadharCardDetails }),
+      ...(panCardDetails.length > 0 && { panCard: panCardDetails }),
+      ...(educationCertificateDetails.length > 0 && { educationCertificate: educationCertificateDetails }),
+      ...(relievingCertificateDetails.length > 0 && { relievingCertificate: relievingCertificateDetails }),
+      ...(salarySlipDetails.length > 0 && { salarySlip: salarySlipDetails }),
+      ...(profilePhotoDetails.length > 0 && { profilePhoto: profilePhotoDetails })
     };
-
-    const formattedDob = formatDate(dob);
-    const formattedJoiningDate = formatDate(joiningDate);
-
-    console.log("Formatted DOB:", formattedDob);
-    console.log("Formatted Joining Date:", formattedJoiningDate);
 
     const emp = await adminModel.findOneAndUpdate(
       { _id: empId },
-      {
-        ...req.body,
-        ename: `${firstName} ${lastName}`,
-        dob: new Date(formattedDob),
-        personal_number: personalPhoneNo,
-        personal_email: personalEmail,
-        email: officialEmail,
-        number: officialNo,
-        jdate: new Date(formattedJoiningDate),
-        branchOffice: branch,
-        reportingManager: manager,
-        firstMonthSalaryCondition: firstMonthSalary,
-        firstMonthSalary: salaryCalculation,
-        offerLetter: offerLetterDetails || [],
-        personal_contact_person: personName,
-        personal_contact_person_relationship: relationship,
-        personal_contact_person_number: personPhoneNo,
-        aadharCard: aadharCardDetails || [],
-        panCard: panCardDetails || [],
-        educationCertificate: educationCertificateDetails || [],
-        relievingCertificate: relievingCertificateDetails || [],
-        salarySlip: salarySlipDetails || [],
-        profilePhoto: profilePhotoDetails || [],
-      },
-      { new: true } // This option returns the updated document
+      updateFields,
+      { new: true } // Return the updated document
     );
 
     if (!emp) {

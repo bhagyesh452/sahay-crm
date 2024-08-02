@@ -33,9 +33,6 @@ const yourSchema = new mongoose.Schema({
   currentAddress: {
     type: String
   },
-  isAddressSame: {
-    type: String
-  },
   permanentAddress: {
     type: String
   },

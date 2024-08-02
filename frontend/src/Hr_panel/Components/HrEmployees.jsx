@@ -7,7 +7,7 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
