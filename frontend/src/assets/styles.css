@@ -2266,18 +2266,19 @@ td input {
   border-bottom: 1px solid #eee;
 }
 .profile-pic-upload {
-    width: 30px;
-    text-align: center;
-    height: 30px;
-    line-height: 26px;
-    border-radius: 100px;
-    background: #ffba00;
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    cursor: pointer;
-    transition: transform .2s;
-    box-shadow: 3px 4px 12px -3px #686868;
+  width: 30px;
+  text-align: center;
+  height: 30px;
+  line-height: 26px;
+  border-radius: 100px;
+  background: #201f1c;
+  position: absolute;
+  color: #fff;
+  right: 12px;
+  bottom: 4px;
+  cursor: pointer;
+  transition: transform .2s;
+  box-shadow: 3px 4px 12px -3px #686868;
 }
 .employee-personal-details {
     width: 27px;
@@ -3153,7 +3154,7 @@ td input {
   width: 100%;
   background-position: right 7px center;
   background-size: 8px 11px;
-  background-color: #f4f4f4;
+  
   border: none !important;
   color: #414141;
 }
@@ -3163,7 +3164,14 @@ td input {
     box-shadow: none !important;
     background: inherit;
 }
-
+.sec-indu-select-white
+{
+    background-color: #fff;
+}
+.sec-indu-select-gray
+{
+    background-color: #f4f4f4;
+}
 .table-container.scrolled .rm-sticky-left-1,
 .table-container.scrolled .rm-sticky-left-2,
 .table-container.scrolled .rm-sticky-action {

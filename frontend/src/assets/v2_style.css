@@ -819,6 +819,7 @@ table.table.top_5_table tbody tr.myself td {
 .E_id_profile_inner
 {
     padding: 15px;
+    position: relative;
 }
 .E_id_profile_img
 {
@@ -828,6 +829,7 @@ table.table.top_5_table tbody tr.myself td {
     width: 120px;
     border-radius: 100px;
     margin: 0 auto;
+    position: relative;
 }
 .E_id_profile_img img
 {
@@ -854,6 +856,10 @@ table.table.top_5_table tbody tr.myself td {
     font-weight: bold;
     margin: 0px 0 2px 0;
     font-size: 12px;
+}
+.E_id_bottom_black_bg
+{
+    
 }
 @media (max-width: 1528px)
 {

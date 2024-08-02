@@ -202,14 +202,13 @@ function HrEmployees() {
                             <td>{emp.email || ""}</td>
                             <td>
                               <button className="action-btn action-btn-primary">
-                              <Link
-                                        style={{ textDecoration: "none", color: "black" }}
+                                <Link style={{ textDecoration: "none", color:'inherit' }}
                                         to={{
                                             pathname: `/hr-employee-profile-details/${emp._id}`
-                                        }}
-
-                                    ><FaRegEye /></Link>
-                                    </button>
+                                        }} >
+                                  <FaRegEye />
+                                </Link>
+                              </button>
                               <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
                               <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
                             </td>

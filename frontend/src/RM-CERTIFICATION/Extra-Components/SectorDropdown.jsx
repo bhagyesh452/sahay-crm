@@ -365,7 +365,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
     };
     return (
         <select
-            className="form-select sec-indu-select"
+            className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value)}
             value={status}
