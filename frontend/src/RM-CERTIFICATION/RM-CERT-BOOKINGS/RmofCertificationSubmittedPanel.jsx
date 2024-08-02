@@ -25,6 +25,9 @@ import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 import Nodata from '../../components/Nodata';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 
 function RmofCertificationSubmittedPanel() {
@@ -46,6 +49,7 @@ function RmofCertificationSubmittedPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
     const [error, setError] = useState('')
+    const [openBacdrop, setOpenBacdrop] = useState(false)
 
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -117,7 +121,7 @@ function RmofCertificationSubmittedPanel() {
 
     const fetchRMServicesData = async () => {
         try {
-            setCurrentDataLoading(true)
+            setOpenBacdrop(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
             const servicesData = response.data
             .filter(item => item.mainCategoryStatus === "Submitted")
@@ -132,7 +136,7 @@ function RmofCertificationSubmittedPanel() {
         } catch (error) {
             console.error("Error fetching data", error.message)
         } finally {
-            setCurrentDataLoading(false)
+            setOpenBacdrop(false)
         }
     }
 
@@ -227,7 +231,9 @@ function RmofCertificationSubmittedPanel() {
         return new Intl.DateTimeFormat('en-US').format(date);
     }
 
-
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
 
 
 
@@ -564,6 +570,13 @@ function RmofCertificationSubmittedPanel() {
                     Submit
                 </button>
             </Dialog>
+
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
         </div>
     )
 }
