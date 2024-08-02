@@ -109,9 +109,22 @@ function RmofCertificationApprovedPanel() {
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
-
+    
             const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
-            setRmServicesData(servicesResponse.data.filter(item => item.mainCategoryStatus === "Approved"));
+            const servicesData = servicesResponse.data;
+    
+            if (Array.isArray(servicesData)) {
+                const filteredData = servicesData
+                    .filter(item => item.mainCategoryStatus === "Approved")
+                    .sort((a, b) => {
+                        const dateA = new Date(a.dateOfChangingMainStatus);
+                        const dateB = new Date(b.dateOfChangingMainStatus);
+                        return dateB - dateA; // Sort in descending order
+                    });
+                setRmServicesData(filteredData);
+            } else {
+                console.error("Expected an array for services data, but got:", servicesData);
+            }
         } catch (error) {
             console.error("Error fetching data", error.message);
         } finally {
