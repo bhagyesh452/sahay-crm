@@ -23,19 +23,29 @@ export default function HREditEmployee() {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
-  const [employee, setEmployee] = useState({});
-  const [offerLetter, setOfferLetter] = useState({});
-  const [aadharCard, setAadharCard] = useState({});
-  const [panCard, setPanCard] = useState({});
-  const [educationCertificate, setEducationCertificate] = useState({});
-  const [relievingCertificate, setRelievingCertificate] = useState({});
-  const [salarySlip, setSalarySlip] = useState({});
-  const [profilePhoto, setProfilePhoto] = useState({});
-  const [isPersonalInfoEditable, setIsPersonalInfoEditable] = useState(true);
-  const [isEmployeementInfoEditable, setIsEmployeementInfoEditable] = useState(true);
-  const [isPayrollInfoEditable, setIsPayrollInfoEditable] = useState(true);
-  const [isEmergencyInfoEditable, setIsEmergencyInfoEditable] = useState(true);
-  const [isEmployeeDocsInfoEditable, setIsEmployeeDocsInfoEditable] = useState(true);
+
+  const [offerLetterDocument, setOfferLetterDocument] = useState([]);
+  const [aadharCardDocument, setAadharCardDocument] = useState([]);
+  const [panCardDocument, setPanCardDocument] = useState([]);
+  const [educationCertificateDocument, setEducationCertificateDocument] = useState([]);
+  const [relievingCertificateDocument, setRelievingCertificateDocument] = useState([]);
+  const [salarySlipDocument, setSalarySlipDocument] = useState([]);
+  const [profilePhotoDocument, setProfilePhotoDocument] = useState([]);
+
+  const [isPersonalInfoNext, setIsPersonalInfoNext] = useState(true);
+  const [isEmployeementInfoNext, setIsEmployeementInfoNext] = useState(true);
+  const [isPayrollInfoNext, setIsPayrollInfoNext] = useState(true);
+  const [isEmergencyInfoNext, setIsEmergencyInfoNext] = useState(true);
+  const [isDocumentInfoNext, setIsDocumentInfoNext] = useState(true);
+
+  const [isDesignationEnabled, setIsDesignationEnabled] = useState(false);
+  const [isManagerEnabled, setIsManagerEnabled] = useState(false);
+
+  const [isPersonalInfoEditable, setIsPersonalInfoEditable] = useState(false);
+  const [isEmployeementInfoEditable, setIsEmployeementInfoEditable] = useState(false);
+  const [isPayrollInfoEditable, setIsPayrollInfoEditable] = useState(false);
+  const [isEmergencyInfoEditable, setIsEmergencyInfoEditable] = useState(false);
+  const [isEmployeeDocsInfoEditable, setIsEmployeeDocsInfoEditable] = useState(false);
 
   const navigate = useNavigate();
 
@@ -59,7 +69,7 @@ export default function HREditEmployee() {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
-  
+
 
   const isValidEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -83,6 +93,7 @@ export default function HREditEmployee() {
 
   const [personalInfo, setPersonalInfo] = useState({
     firstName: "",
+    middleName: "",
     lastName: "",
     dob: "",
     gender: "",
@@ -93,9 +104,10 @@ export default function HREditEmployee() {
   });
   const validatePersonalInfo = () => {
     const newErrors = {};
-    const { firstName, lastName, dob, gender, personalPhoneNo, personalEmail, currentAddress, permanentAddress } = personalInfo;
+    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, currentAddress, permanentAddress } = personalInfo;
 
     if (!firstName) newErrors.firstName = "First name is required";
+    if (!middleName) newErrors.middleName = "Middle name is required";
     if (!lastName) newErrors.lastName = "Last name is required";
     if (!dob) newErrors.dob = "Date of birth is required";
     if (!gender) newErrors.gender = "Gender is required";
@@ -304,8 +316,8 @@ export default function HREditEmployee() {
     if (!aadharCard) newErrors.aadharCard = "Aadhar Card is required";
     if (!panCard) newErrors.panCard = "PAN Card is required";
     if (!educationCertificate) newErrors.educationCertificate = "Education Certificate is required";
-    if (!relievingCertificate) newErrors.relievingCertificate = "Relieving Certificate is required";
-    if (!salarySlip) newErrors.salarySlip = "Salary Slip is required";
+    // if (!relievingCertificate) newErrors.relievingCertificate = "Relieving Certificate is required";
+    // if (!salarySlip) newErrors.salarySlip = "Salary Slip is required";
     // if (!profilePhoto) newErrors.profilePhoto = "Profile Photo is required";
 
     setErrors(newErrors); // Assuming `setErrors` is used to manage error state
@@ -316,14 +328,15 @@ export default function HREditEmployee() {
     try {
       const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
       const data = res.data.data;
-      // console.log("Fetched employee is :", res.data.data);
+      console.log("Fetched employee is :", res.data.data);
       // setEmployee(res.data.data);
 
       // Update personalInfo state with fetched data
       setPersonalInfo({
         firstName: (data.ename || "").split(" ")[0] || "",
-        lastName: (data.ename || "").split(" ")[1] || "",
-        dob: data.dob ? formatDate(data.dob) : "",
+        middleName: (data.ename || "").split(" ")[1] || "",
+        lastName: (data.ename || "").split(" ")[2] || "",
+        dob: convertToDateInputFormat(data.dob) || "",
         gender: data.gender || "",
         personalPhoneNo: data.personal_number || "",
         personalEmail: data.personal_email || "",
@@ -335,7 +348,7 @@ export default function HREditEmployee() {
         empId: "",
         department: data.department || "",
         designation: data.designation || "",
-        joiningDate: data.jdate ? formatDate(data.jdate) : "",
+        joiningDate: convertToDateInputFormat(data.jdate) || "",
         branch: data.branchOffice || "",
         employeementType: data.employeementType || "",
         manager: data.reportingManager || "",
@@ -350,7 +363,7 @@ export default function HREditEmployee() {
         salary: data.salary || "",
         firstMonthSalary: data.firstMonthSalaryCondition || "",
         salaryCalculation: data.firstMonthSalary || "",
-        offerLetter: "",
+        offerLetter: offerLetterDocument,
         panNumber: data.panNumber || "",
         aadharNumber: data.aadharNumber || "",
         uanNumber: data.uanNumber || ""
@@ -363,21 +376,22 @@ export default function HREditEmployee() {
       });
 
       setEmpDocumentInfo({
-        aadharCard: "",
-        panCard: "",
-        educationCertificate: "",
-        relievingCertificate: "",
-        salarySlip: "",
-        profilePhoto: ""
+        aadharCard: aadharCardDocument,
+        panCard: panCardDocument,
+        educationCertificate: educationCertificateDocument,
+        relievingCertificate: relievingCertificateDocument,
+        salarySlip: salarySlipDocument,
+        profilePhoto: profilePhotoDocument
       });
 
-      setOfferLetter(res.data.data.offerLetter ? res.data.data.offerLetter[0] : "");
-      setAadharCard(res.data.data.aadharCard ? res.data.data.aadharCard[0] : "");
-      setPanCard(res.data.data.panCard ? res.data.data.panCard[0] : "");
-      setEducationCertificate(res.data.data.educationCertificate ? res.data.data.educationCertificate[0] : "");
-      setRelievingCertificate(res.data.data.relievingCertificate ? res.data.data.relievingCertificate[0] : "");
-      setSalarySlip(res.data.data.salarySlip ? res.data.data.salarySlip[0] : "");
-      setProfilePhoto(res.data.data.profilePhoto ? res.data.data.profilePhoto[0] : "");
+      setOfferLetterDocument(data.offerLetter ? data.offerLetter : []);
+      // console.log("Offer letter is :", data.offerLetter);
+      setAadharCardDocument(data.aadharCard ? data.aadharCard : []);
+      setPanCardDocument(data.panCard ? data.panCard : []);
+      setEducationCertificateDocument(data.educationCertificate ? data.educationCertificate : []);
+      setRelievingCertificateDocument(data.relievingCertificate ? data.relievingCertificate : []);
+      setSalarySlipDocument(data.salarySlip ? data.salarySlip : []);
+      setProfilePhotoDocument(data.profilePhoto ? data.profilePhoto : []);
     } catch (error) {
       console.log("Error fetching employee", error);
     }
@@ -385,7 +399,36 @@ export default function HREditEmployee() {
 
   useEffect(() => {
     fetchEmployee();
-  }, [empId]);
+  }, [activeStep]);
+
+  useEffect(() => {
+    if (activeStep === 0 && !isPersonalInfoEditable && personalInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 1 && !isEmployeementInfoEditable && employeementInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 2 && !isPayrollInfoEditable && payrollInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 3 && !isEmergencyInfoEditable && emergencyInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    } else if (activeStep === 4 && !isEmployeeDocsInfoEditable && empDocumentInfo) {
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+    }
+  }, [activeStep])
 
   const calculateSalary = (salary, firstMonthSalary) => {
     if (!salary || !firstMonthSalary) return '';
@@ -399,27 +442,37 @@ export default function HREditEmployee() {
       ...prevState,
       [name]: value
     }));
+
     setEmployeementInfo(prevState => ({
       ...prevState,
       [name]: value
     }));
+    if (name === 'department' && value !== 'Select Department') {
+      setIsDesignationEnabled(true);
+      setIsManagerEnabled(true);
+    } else if (name === 'department' && value === 'Select Department') {
+      setIsDesignationEnabled(false);
+      setIsManagerEnabled(false);
+    }
+
     setPayrollInfo((prevState) => {
-      const updatedState = {
-        ...prevState,
-        [name]: value,
-      };
-      if (name === 'salary' || name === 'firstMonthSalary') {
+      const updatedState = { ...prevState, [name]: value };
+
+      if (name === "salary" || name === "firstMonthSalary") {
         updatedState.salaryCalculation = calculateSalary(
-          updatedState.salary,
-          updatedState.firstMonthSalary
+          name === "salary" ? value : prevState.salary,
+          name === "firstMonthSalary" ? value : prevState.firstMonthSalary
         );
       }
+
       return updatedState;
     });
+
     setEmergencyInfo(prevState => ({
       ...prevState,
       [name]: value
     }));
+
     // Clear error for this field
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -427,27 +480,16 @@ export default function HREditEmployee() {
     }));
   };
 
-  const handleRadioChange = (e) => {
-    const { name, value } = e.target;
-
-    // Update the respective state based on radio button selection
-    if (name === 'firstMonthSalary') {
-      setPayrollInfo((prevState) => {
-        const updatedState = {
-          ...prevState,
-          firstMonthSalary: value,
-        };
-        updatedState.salaryCalculation = calculateSalary(
-          updatedState.salary,
-          value
-        );
-        return updatedState;
-      });
-    }
-    // Clear error for this field
+  const handleAddressChange = (e) => {
+    const { value } = e.target;
+    setPersonalInfo((prevInfo) => ({
+      ...prevInfo,
+      isAddressSame: value,
+      permanentAddress: value === "yes" ? prevInfo.currentAddress : ""
+    }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: ""
+      isAddressSame: ""
     }));
   };
 
@@ -477,14 +519,17 @@ export default function HREditEmployee() {
         }));
         return;
       }
+
       setPayrollInfo(prevState => ({
         ...prevState,
         [name]: files[0] // Get the first file selected
       }));
+
       setEmpDocumentInfo(prevState => ({
         ...prevState,
         [name]: files[0] // Get the first file selected
       }));
+
       // Clear error for this field
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -504,15 +549,43 @@ export default function HREditEmployee() {
   const handleNext = () => {
     if (activeStep === 0 && validatePersonalInfo()) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsPersonalInfoNext(true);
     } else if (activeStep === 1 && validateEmploymentInfo()) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsEmployeementInfoNext(true);
     } else if (activeStep === 2 && validatePayrollInfo()) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsPayrollInfoNext(true);
     } else if (activeStep === 3 && validateEmergencyInfo()) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsEmergencyInfoNext(true);
     } else if (activeStep === 4 && validateEmpDocumentInfo()) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setIsDocumentInfoNext(true);
     }
+  };
+
+  const handleEdit = () => {
+    if (activeStep === 0) {
+      setIsPersonalInfoEditable(true);
+      setIsPersonalInfoNext(false);
+    } else if (activeStep === 1) {
+      setIsEmployeementInfoEditable(true);
+      setIsEmployeementInfoNext(false);
+    } else if (activeStep === 2) {
+      setIsPayrollInfoEditable(true);
+      setIsPayrollInfoNext(false);
+    } else if (activeStep === 3) {
+      setIsEmergencyInfoEditable(true);
+      setIsEmergencyInfoNext(false);
+    } else if (activeStep === 4) {
+      setIsEmployeeDocsInfoEditable(true);
+      setIsDocumentInfoNext(false);
+    }
+    setCompleted((prevCompleted) => ({
+      ...prevCompleted,
+      [activeStep]: false,
+    }));
   };
 
   const handleBack = () => {
@@ -527,10 +600,8 @@ export default function HREditEmployee() {
     setActiveStep(step);
   };
 
-  // console.log("Active step :", activeStep);
-
-  const handleComplete = async () => {
-    if (activeStep === 0 && validatePersonalInfo()) {
+  const saveDraft = async () => {
+    if (activeStep === 0) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, personalInfo);
         console.log("Employee updated successfully at step-0 :", res.data.data);
@@ -539,10 +610,11 @@ export default function HREditEmployee() {
           [activeStep]: true
         }));
         setIsPersonalInfoEditable(false);
+        setIsPersonalInfoNext(true);
       } catch (error) {
         console.log("Error creating or updating employee:", error);
       }
-    } else if (activeStep === 1 && validateEmploymentInfo()) {
+    } else if (activeStep === 1) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, employeementInfo);
         console.log("Employee updated successfully at step-1 :", res.data.data);
@@ -551,10 +623,11 @@ export default function HREditEmployee() {
           [activeStep]: true
         }));
         setIsEmployeementInfoEditable(false);
+        setIsEmployeementInfoNext(true);
       } catch (error) {
         console.log("Error updating employee :", error);
       }
-    } else if (activeStep === 2 && validatePayrollInfo()) {
+    } else if (activeStep === 2) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, payrollInfo, {
           headers: {
@@ -567,10 +640,11 @@ export default function HREditEmployee() {
           [activeStep]: true
         }));
         setIsPayrollInfoEditable(false);
+        setIsPayrollInfoNext(true);
       } catch (error) {
         console.log("Error updating employee:", error);
       }
-    } else if (activeStep === 3 && validateEmergencyInfo()) {
+    } else if (activeStep === 3) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, emergencyInfo);
         console.log("Emergency info updated successfully at step-3 :", res.data.data);
@@ -579,10 +653,11 @@ export default function HREditEmployee() {
           [activeStep]: true
         }));
         setIsEmergencyInfoEditable(false);
+        setIsEmergencyInfoNext(true);
       } catch (error) {
         console.log("Error updating emergency info:", error);
       }
-    } else if (activeStep === 4 && validateEmpDocumentInfo()) {
+    } else if (activeStep === 4) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, empDocumentInfo, {
           headers: {
@@ -595,26 +670,27 @@ export default function HREditEmployee() {
           [activeStep]: true
         }));
         setIsEmployeeDocsInfoEditable(false);
+        setIsDocumentInfoNext(true);
       } catch (error) {
         console.log("Error updating document info:", error);
       }
-    } else if (activeStep === 5) {
-      if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
-        Swal.fire({
-          icon: "success",
-          title: "Form Submitted",
-          text: "Employee created successfully!",
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "There was an error submitting the form. Please try again later.",
-        });
-      }
     }
-    if (activeStep < 5) {
-      handleNext();
+  };
+
+  const handleComplete = () => {
+    if (personalInfo && employeementInfo && payrollInfo && emergencyInfo && employeementInfo) {
+      Swal.fire({
+        icon: "success",
+        title: "Form Submitted",
+        text: "Employee updated successfully!",
+      });
+      navigate("/hr/employees");
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "There was an error updating the form. Please try again later.",
+      });
     }
   };
 
@@ -673,7 +749,7 @@ export default function HREditEmployee() {
                                     <input
                                       type="tefalsext"
                                       name="firstName"
-                                      className="form-control mt-1 text-uppercase"
+                                      className="form-control mt-1"
                                       placeholder="First name"
                                       value={personalInfo.firstName.trim()}
                                       onChange={handleInputChange}
@@ -684,8 +760,20 @@ export default function HREditEmployee() {
                                   <div className="col">
                                     <input
                                       type="text"
+                                      name="middleName"
+                                      className="form-control mt-1"
+                                      placeholder="Middle name"
+                                      value={personalInfo.middleName?.trim()}
+                                      onChange={handleInputChange}
+                                      disabled={!isPersonalInfoEditable}
+                                    />
+                                    {errors.middleName && <p style={{ color: "red" }}>{errors.middleName}</p>}
+                                  </div>
+                                  <div className="col">
+                                    <input
+                                      type="text"
                                       name="lastName"
-                                      className="form-control mt-1 text-uppercase"
+                                      className="form-control mt-1"
                                       placeholder="Last name"
                                       value={personalInfo.lastName.trim()}
                                       onChange={handleInputChange}
@@ -703,7 +791,7 @@ export default function HREditEmployee() {
                                   type="date"
                                   name="dob"
                                   className="form-control mt-1"
-                                  value={convertToDateInputFormat(personalInfo.dob)}
+                                  value={personalInfo.dob}
                                   onChange={handleInputChange}
                                   disabled={!isPersonalInfoEditable}
                                 />
@@ -746,7 +834,7 @@ export default function HREditEmployee() {
                             </div>
                           </div>
                           <div className="row">
-                            <div className="col-sm-4">
+                            <div className="col-sm-3">
                               <div className="form-group mt-2 mb-2">
                                 <label for="email">Email Address<span style={{ color: "red" }}> * </span></label>
                                 <input
@@ -765,43 +853,65 @@ export default function HREditEmployee() {
                             <div className="col-sm-4">
                               <div className="form-group mt-2 mb-2">
                                 <label for="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
-                                <textarea
-                                  rows={1}
-                                  name="currentAddress"
-                                  className="form-control mt-1"
-                                  id="currentAddress"
-                                  placeholder="Current address"
-                                  value={personalInfo.currentAddress}
-                                  onChange={handleInputChange}
-                                  disabled={!isPersonalInfoEditable}
-                                ></textarea>
-                                {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
+                                <div>
+                                  <textarea
+                                    rows={1}
+                                    name="currentAddress"
+                                    className="form-control mt-1"
+                                    id="currentAddress"
+                                    placeholder="Current address"
+                                    value={personalInfo.currentAddress}
+                                    onChange={handleInputChange}
+                                    disabled={!isPersonalInfoEditable}
+                                  ></textarea>
+                                  {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
+                                </div>
                               </div>
                             </div>
-                            <div className="col-sm-4">
+                            {/* <div className="col-sm-3">
                               <div className="form-group mt-2 mb-2">
-                                <label for="permanentAddress" className="d-flex align-items-center justify-content-between">
-                                  <div>Permanent Address<span style={{ color: "red" }}> * </span></div>
-                                  <button style={{ border: "none" }}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      setPersonalInfo((prevState) => ({
-                                        ...prevState,
-                                        permanentAddress: prevState.currentAddress
-                                      }));
-                                    }}
-                                  >
-                                    <div style={{ fontSize: '11px', cursor: 'pointer', color: '#ffb900' }}>
-                                      Same as Current Address<span><FaCopy /></span>
-                                    </div>
-                                  </button>
-                                </label>
+                                <label>Is permanent address same as current?</label>
+                                <select
+                                  className="form-select mt-1"
+                                  name="isAddressSame"
+                                  id="isAddressSame"
+                                  value={personalInfo.isAddressSame}
+                                  onChange={handleAddressChange}
+                                  disabled={!isPersonalInfoEditable}
+                                >
+                                  <option value="Select Option" selected>Select Option</option>
+                                  <option value="yes">Yes</option>
+                                  <option value="no">No</option>
+                                </select>
+                                {errors.isAddressSame && <p style={{ color: "red" }}>{errors.isAddressSame}</p>}
+                              </div>
+                            </div> */}
+                            <div className="col-sm-4">
+                              <div className="form-group mt-1 mb-2">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <label htmlFor="permanentAddress">
+                                    Permanent Address<span style={{ color: "red" }}> *</span>
+                                  </label>
+                                  <div>
+                                    <button className="action-btn action-btn-primary"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        setPersonalInfo(prevState => ({
+                                          ...prevState,
+                                          permanentAddress: prevState.currentAddress
+                                        }));
+                                      }}
+                                    >
+                                      <FaCopy />
+                                    </button>
+                                  </div>
+                                </div>
                                 <textarea
                                   rows={1}
                                   name="permanentAddress"
                                   className="form-control mt-1"
                                   id="permanentAddress"
-                                  placeholder="Current address"
+                                  placeholder="Permanent address"
                                   value={personalInfo.permanentAddress}
                                   onChange={handleInputChange}
                                   disabled={!isPersonalInfoEditable}
@@ -869,7 +979,7 @@ export default function HREditEmployee() {
                                 id="Designation"
                                 value={employeementInfo.designation}
                                 onChange={handleInputChange}
-                                disabled={!isEmployeementInfoEditable}
+                                disabled={!isDesignationEnabled || !isEmployeementInfoEditable}
                               >
                                 <option value="Select Designation">Select Designation</option>
                                 {renderDesignationOptions()}
@@ -886,7 +996,7 @@ export default function HREditEmployee() {
                                 name="joiningDate"
                                 id="DateofJoining"
                                 placeholder="Date of Joining"
-                                value={convertToDateInputFormat(employeementInfo.joiningDate)}
+                                value={employeementInfo.joiningDate}
                                 onChange={handleInputChange}
                                 disabled={!isEmployeementInfoEditable}
                               />
@@ -943,7 +1053,7 @@ export default function HREditEmployee() {
                                 id="Reporting"
                                 value={employeementInfo.manager}
                                 onChange={handleInputChange}
-                                disabled={!isEmployeementInfoEditable}
+                                disabled={!isManagerEnabled || !isEmployeementInfoEditable}
                               >
                                 <option value="Select Manager">Select Manager</option>
                                 {renderManagerOptions()}
@@ -1060,40 +1170,19 @@ export default function HREditEmployee() {
                               <label for="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
                               <div className="d-flex align-items-center">
                                 <div className="stepper_radio_custom mr-1">
-                                  <input
-                                    type="radio"
+                                  <select
+                                    className="form-select mt-1"
                                     name="firstMonthSalary"
-                                    value="50"
-                                    id="r1"
-                                    checked={payrollInfo.firstMonthSalary === "50"}
-                                    onChange={handleRadioChange}
+                                    id="firstMonthSalary"
+                                    value={payrollInfo.firstMonthSalary}
+                                    onChange={handleInputChange}
                                     disabled={!isPayrollInfoEditable}
-                                  />
-                                  <label class="stepper_radio-alias" for="r1">
-                                    <div className="d-flex align-items-center justify-content-center">
-                                      <div className="radio-alias-t ">
-                                        50%
-                                      </div>
-                                    </div>
-                                  </label>
-                                </div>
-                                <div className="stepper_radio_custom">
-                                  <input
-                                    type="radio"
-                                    name="firstMonthSalary"
-                                    value="100"
-                                    id="r2"
-                                    checked={payrollInfo.firstMonthSalary === "100"}
-                                    onChange={handleRadioChange}
-                                    disabled={!isPayrollInfoEditable}
-                                  />
-                                  <label class="stepper_radio-alias" for="r2">
-                                    <div className="d-flex align-items-center justify-content-center">
-                                      <div className="radio-alias-t">
-                                        100%
-                                      </div>
-                                    </div>
-                                  </label>
+                                  >
+                                    <option value="Select First Month Salary Percentage" selected> Select First Month Salary Percentage</option>
+                                    <option value="50">50%</option>
+                                    <option value="75">75%</option>
+                                    <option value="100">100</option>
+                                  </select>
                                 </div>
                               </div>
                               {errors.firstMonthSalary && <p style={{ color: "red" }}>{errors.firstMonthSalary}</p>}
@@ -1126,9 +1215,13 @@ export default function HREditEmployee() {
                               />
                               {errors.offerLetter && <p style={{ color: "red" }}>{errors.offerLetter}</p>}
                             </div>
-                            {offerLetter && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {offerLetter.originalname}
+                            {offerLetterDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{offerLetterDocument[0]?.originalname}</p>
+                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1273,9 +1366,13 @@ export default function HREditEmployee() {
                               />
                               {errors.aadharCard && <p style={{ color: "red" }}>{errors.aadharCard}</p>}
                             </div>
-                            {aadharCard && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {aadharCard.originalname}
+                            {aadharCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{aadharCardDocument[0]?.originalname}</p>
+                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1291,9 +1388,13 @@ export default function HREditEmployee() {
                               />
                               {errors.panCard && <p style={{ color: "red" }}>{errors.panCard}</p>}
                             </div>
-                            {panCard && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {panCard.originalname}
+                            {panCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{panCardDocument[0]?.originalname}</p>
+                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1309,14 +1410,21 @@ export default function HREditEmployee() {
                               />
                               {errors.educationCertificate && <p style={{ color: "red" }}>{errors.educationCertificate}</p>}
                             </div>
-                            {educationCertificate && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {educationCertificate.originalname}
+                            {educationCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{educationCertificateDocument[0]?.originalname}</p>
+                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
                             <div class="form-group mt-3">
-                              <label class="form-label" for="relievingCertificate">Relieving Certificate<span style={{ color: "red" }}> * </span></label>
+                              <label class="form-label" for="relievingCertificate">
+                                Relieving Certificate
+                                {/* <span style={{ color: "red" }}> * </span> */}
+                              </label>
                               <input
                                 type="file"
                                 className="form-control mt-1"
@@ -1325,16 +1433,23 @@ export default function HREditEmployee() {
                                 onChange={handleFileChange}
                                 disabled={!isEmployeeDocsInfoEditable}
                               />
-                              {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>}
+                              {/* {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>} */}
                             </div>
-                            {relievingCertificate && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {relievingCertificate.originalname}
+                            {relievingCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{relievingCertificateDocument[0]?.originalname}</p>
+                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
                             <div class="form-group mt-3">
-                              <label class="form-label" for="salarySlip">Salary Slip<span style={{ color: "red" }}> * </span></label>
+                              <label class="form-label" for="salarySlip">
+                                Salary Slip
+                                {/* <span style={{ color: "red" }}> * </span> */}
+                              </label>
                               <input
                                 type="file"
                                 className="form-control mt-1"
@@ -1343,11 +1458,15 @@ export default function HREditEmployee() {
                                 onChange={handleFileChange}
                                 disabled={!isEmployeeDocsInfoEditable}
                               />
-                              {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>}
+                              {/* {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>} */}
                             </div>
-                            {salarySlip && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {salarySlip.originalname}
+                            {salarySlipDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{salarySlipDocument[0]?.originalname}</p>
+                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                           <div className="col-sm-4">
@@ -1363,9 +1482,13 @@ export default function HREditEmployee() {
                               />
                               {/* {errors.profilePhoto && <p style={{ color: "red" }}>{errors.profilePhoto}</p>} */}
                             </div>
-                            {profilePhoto && <div className="mt-2">
-                              <strong>Current File : </strong>{" "}
-                              {profilePhoto.originalname}
+                            {profilePhotoDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                              <div class="uploaded-fileItem d-flex align-items-center">
+                                <p class="m-0">{profilePhotoDocument[0]?.originalname}</p>
+                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                </button>
+                              </div>
                             </div>}
                           </div>
                         </div>
@@ -1652,7 +1775,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {payrollInfo.salary || "-"}
+                                ₹ {formatSalary(payrollInfo.salary) || 0}
                               </div>
                             </div>
                           </div>
@@ -1664,7 +1787,10 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {payrollInfo.firstMonthSalary === "50" ? "50%" : payrollInfo.firstMonthSalary === "100" ? "100%" : "-"}
+                                {(payrollInfo.firstMonthSalary === "50" && "50%" ||
+                                  payrollInfo.firstMonthSalary === "75" && "75%" ||
+                                  payrollInfo.firstMonthSalary === "100" && "100%") || "-"
+                                }
                               </div>
                             </div>
                           </div>
@@ -1676,7 +1802,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {payrollInfo.salaryCalculation || "-"}
+                                ₹ {formatSalary(payrollInfo.salaryCalculation) || 0}
                               </div>
                             </div>
                           </div>
@@ -1688,7 +1814,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {payrollInfo.offerLetter ? payrollInfo.offerLetter.name : "-"}
+                                {offerLetterDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1798,7 +1924,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.aadharCard ? empDocumentInfo.aadharCard.name : "-"}
+                                {aadharCardDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1810,7 +1936,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.panCard ? empDocumentInfo.panCard.name : "-"}
+                                {panCardDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1822,7 +1948,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.educationCertificate ? empDocumentInfo.educationCertificate.name : "-"}
+                                {educationCertificateDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1834,7 +1960,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.relievingCertificate ? empDocumentInfo.relievingCertificate.name : "-"}
+                                {relievingCertificateDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1846,7 +1972,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.salarySlip ? empDocumentInfo.salarySlip.name : "-"}
+                                {salarySlipDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1858,7 +1984,7 @@ export default function HREditEmployee() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {empDocumentInfo.profilePhoto ? empDocumentInfo.profilePhoto.name : "-"}
+                                {profilePhotoDocument[0]?.originalname || "-"}
                               </div>
                             </div>
                           </div>
@@ -1868,62 +1994,6 @@ export default function HREditEmployee() {
                     </div>
                   </div>
                 )}
-
-                {/* <Box
-                sx={{ display: "flex", flexDirection: "row", pt: 2 }}
-              >
-                <Button
-                  variant="contained"
-                  onClick={handleBack}
-                  sx={{ mr: 1, background: "#ffba00 " }}
-                >
-                  {activeStep !== 0 ? "Back" : "Back to Main"}
-                </Button>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  disabled={activeStep === 0}
-                  sx={{ mr: 1, background: "#ffba00 " }}
-                >
-                  Reset
-                </Button>
-                <Box sx={{ flex: "1 1 auto" }} />
-                <Button
-                  onClick={handleNext}
-                  variant="contained"
-                  sx={{ mr: 1 }}
-                  disabled={!completed[activeStep]}
-                >
-                  Next
-                </Button>
-                {activeStep !== steps.length &&
-                  (completed[activeStep] ? (
-                    <>
-                      <Button
-                        onClick={() => {
-                          setCompleted((prevCompleted) => ({
-                            ...prevCompleted,
-                            [activeStep]: false,
-                          }));
-                        }}
-                        variant="contained"
-                        sx={{ mr: 1, background: "#ffba00 " }}
-                      >
-                        Edit
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      onClick={handleComplete}
-                      variant="contained"
-                      sx={{ mr: 1, background: "#ffba00 " }}
-                    >
-                      {completedSteps() === totalSteps() - 1
-                        ? "Submit"
-                        : "Save Draft"}
-                    </Button>
-                  ))}
-              </Box> */}
 
                 <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                   <Button
@@ -1943,47 +2013,57 @@ export default function HREditEmployee() {
                   </Button>
 
                   <Box sx={{ flex: "1 1 auto" }} />
-                  {activeStep !== steps.length &&
-                    (completed[activeStep] ? (
-                      <>
-                        <Button
-                          onClick={() => {
-                            setIsPersonalInfoEditable(true);
-                            setIsEmployeementInfoEditable(true);
-                            setIsPayrollInfoEditable(true);
-                            setIsEmergencyInfoEditable(true);
-                            setIsEmployeeDocsInfoEditable(true);
-                            setCompleted((prevCompleted) => ({
-                              ...prevCompleted,
-                              [activeStep]: false,
-                            }));
-                          }}
-                          variant="contained"
-                          sx={{ mr: 1, background: "#ffba00 " }}
-                        >
-                          Edit
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        onClick={handleComplete}
-                        variant="contained"
-                        sx={{ mr: 1, background: "#ffba00 " }}
-                      >
-                        {completedSteps() === totalSteps() - 1
-                          ? "Submit"
-                          : "Save Draft"}
-                      </Button>
-                    ))}
-                  <Button
-                    onClick={handleNext}
+                  {!isLastStep() && <Button
+                    onClick={() => handleEdit()}
                     variant="contained"
-                    sx={{ mr: 1 }}
-                    disabled={!completed[activeStep]}
+                    sx={{ mr: 1, background: "#ffba00 " }}
                   >
-                    Next
-                  </Button>
+                    Edit
+                  </Button>}
 
+                  {/* Show "Save Draft" on all steps except the last one */}
+                  {!isLastStep() && (
+                    <Button
+                      onClick={() => {
+                        saveDraft();
+                      }}
+                      variant="contained"
+                      sx={{ mr: 1, background: "#ffba00 " }}
+                    >
+                      Save Draft
+                    </Button>
+                  )}
+
+                  {/* Show "Submit" only on the last step */}
+                  {isLastStep() && (
+                    <Button
+                      onClick={() => {
+                        handleComplete();
+                      }}
+                      variant="contained"
+                      sx={{ mr: 1, background: "#ffba00 " }}
+                    >
+                      Submit
+                    </Button>
+                  )}
+
+                  {/* Show "Next" button if not on the last step */}
+                  {!isLastStep() && (
+                    <Button
+                      onClick={handleNext}
+                      variant="contained"
+                      sx={{ mr: 1 }}
+                      disabled={(
+                        (activeStep === 0 && !isPersonalInfoNext) ||
+                        (activeStep === 1 && !isEmployeementInfoNext) ||
+                        (activeStep === 2 && !isPayrollInfoNext) ||
+                        (activeStep === 3 && !isEmergencyInfoNext) ||
+                        (activeStep === 4 && !isDocumentInfoNext)
+                      )}
+                    >
+                      Next
+                    </Button>
+                  )}
                 </Box>
               </React.Fragment>
             )}
