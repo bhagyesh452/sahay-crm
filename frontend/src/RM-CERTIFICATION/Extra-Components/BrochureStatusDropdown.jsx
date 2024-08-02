@@ -72,7 +72,7 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
         return "inprogress-status";
       case "Completed":
         return "finished-status";
-      case "InApproved":
+      case "In Approval":
         return "rejected-status";
       case "Approved":
         return "support-status";
@@ -104,7 +104,7 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Not Started", "created-status")}
+            onClick={() => handleStatusChange("Not Started", "e_task_assign")}
             href="#"
           >
             Not Started
@@ -113,7 +113,7 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Working", "rejected-status")}
+            onClick={() => handleStatusChange("Working", "need_to_call")}
             href="#"
           >
            Working
@@ -131,7 +131,7 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Completed", "finished-status")}
+            onClick={() => handleStatusChange("Completed", "ready_to_submit")}
             href="#"
           >
             Completed
@@ -143,14 +143,14 @@ const BrochureStatusDropdown = ({ companyName , serviceName , mainStatus ,brochu
             onClick={() => handleStatusChange("InApproved", "rejected-status")}
             href="#"
           >
-            InApproved
+            In Approval
 
           </a>
         </li>
         <li>
           <a
             className="dropdown-item"
-            onClick={() => handleStatusChange("Approved", "support-status")}
+            onClick={() => handleStatusChange("Approved", "approved-status")}
             href="#"
           >
             Approved
