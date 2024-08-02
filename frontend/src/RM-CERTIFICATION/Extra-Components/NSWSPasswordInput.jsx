@@ -78,7 +78,7 @@ const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData
                                 type='text'
                                 placeholder="Enter NSWS Password"
                                 className="form-control"
-                                value={password}
+                                value={password === "Enter Password" ? "" :password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
