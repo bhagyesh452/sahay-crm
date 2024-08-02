@@ -235,7 +235,7 @@ function RmofCertificationSubmittedPanel() {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    {rmServicesData && rmServicesData >0 ? (
+                    {rmServicesData && rmServicesData.length > 0 ? (
                         <table className="table table-vcenter table-nowrap rm_table_submited">
                         <thead>
                             <tr className="tr-sticky">
