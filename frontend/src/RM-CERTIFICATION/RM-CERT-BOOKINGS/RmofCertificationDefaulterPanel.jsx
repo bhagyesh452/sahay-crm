@@ -389,15 +389,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                             writername={obj.contentWriter}
                                             refreshData={refreshData}
                                         /></td>
-                                    <td>
-                                    <BrochureDesignerDropdown 
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                    companyName={obj["Company Name"]}
-                                    serviceName={obj.serviceName}
-                                    mainStatus={obj.mainCategoryStatus}
-                                    designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                    />
-                                   </td>
+                                    
                                    <td>
                                         <BrochureDesignerDropdown
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -417,6 +409,15 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                             brochureStatus={obj.brochureStatus}
                                             designername={obj.brochureDesigner}
                                         /></td>
+                                         <td className='td_of_NSWSeMAIL'>
+                                        <NSWSEmailInput
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
+                                        />
+                                    </td>
                                     <td className='td_of_weblink'>
                                         <NSWSPasswordInput 
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
