@@ -269,8 +269,16 @@ function EmployeeView() {
                     </div>
                     <div className="E_id_profile d-flex align-items-center justify-content-center"> 
                       <div className="E_id_profile_inner">
-                        <div className="E_id_profile_img">
-                          <img src={EmpImg1}></img>
+                        <div className="position-relative">
+                          <div className="E_id_profile_img">
+                            <img src={EmpImg1}></img>
+                          </div>
+                          <div
+                              className="profile-pic-upload"
+                              onClick={handleCameraClick}
+                            >
+                              <FaCamera />
+                          </div>
                         </div>
                         <div className="E_id_profile_Name">
                           Nimesh Parekh
@@ -279,6 +287,8 @@ function EmployeeView() {
                           CTO
                         </div>
                       </div>
+                    </div>
+                    <div className="E_id_bottom_black_bg">
                     </div>
                   </div>
                 </div>
