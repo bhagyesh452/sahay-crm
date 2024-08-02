@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
-import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
 import { FaRegEye } from "react-icons/fa";
 import { CiUndo } from "react-icons/ci";
 import axios from 'axios';
-import io from 'socket.io-client';
-import { Drawer, Icon, IconButton } from "@mui/material";
+import { Drawer, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -14,120 +12,89 @@ import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Nodata from '../../components/Nodata';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function RmofCertificationGeneralPanel() {
-    const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
-    const [employeeData, setEmployeeData] = useState([])
-    const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [currentDataLoading, setCurrentDataLoading] = useState(false)
-    const [isFilter, setIsFilter] = useState(false)
-    const [rmServicesData, setRmServicesData] = useState([])
-    const [newStatus, setNewStatus] = useState("Untouched")
+    const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
+    const [employeeData, setEmployeeData] = useState([]);
+    const [rmServicesData, setRmServicesData] = useState([]);
+    const [newStatus, setNewStatus] = useState("Untouched");
     const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
-    const [currentCompanyName, setCurrentCompanyName] = useState("")
-    const [currentServiceName, setCurrentServiceName] = useState("")
-    const [remarksHistory, setRemarksHistory] = useState([])
+    const [currentCompanyName, setCurrentCompanyName] = useState("");
+    const [currentServiceName, setCurrentServiceName] = useState("");
+    const [remarksHistory, setRemarksHistory] = useState([]);
     const [changeRemarks, setChangeRemarks] = useState("");
-    const [historyRemarks, setHistoryRemarks] = useState([]);
+    const [openBacdrop, setOpenBacdrop] = useState(false);
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+    // Fetch Data Function
+    const fetchData = async () => {
+        setOpenBacdrop(true);
+        try {
+            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+            setEmployeeData(userData);
 
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            setRmServicesData(servicesResponse.data.filter(item => item.mainCategoryStatus === "General"));
+        } catch (error) {
+            console.error("Error fetching data", error.message);
+        } finally {
+            setOpenBacdrop(false);
+        }
+    };
 
-
+    // useEffect to fetch data on component mount
     useEffect(() => {
-        document.title = `RMOFCERT-Sahay-CRM`;
-    }, []);
+        fetchData();
+    }, [rmCertificationUserId, secretKey]);
 
-    function formatDatePro(inputDate) {
+    const refreshData = () => {
+        fetchData();
+    };
+
+    const formatDatePro = (inputDate) => {
         const date = new Date(inputDate);
         const day = date.getDate();
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.getFullYear();
         return `${day} ${month}, ${year}`;
-    }
-
-    useEffect(() => {
-        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: '/socket.io',
-            reconnection: true,
-            transports: ['websocket'],
-        });
-
-        socket.on("rm-general-status-updated", (res) => {
-            fetchRMServicesData()
-        });
-
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [newStatus]);
-
-
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            // Set the retrieved data in the state
-            const tempData = response.data;
-            //console.log(tempData)
-            const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            //console.log(userData)
-            setEmployeeData(userData);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
     };
 
-    const fetchRMServicesData = async () => {
-        try {
-            setCurrentDataLoading(true)
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data.filter(item => item.mainCategoryStatus === "General"))
-            //console.log(response.data)
-        } catch (error) {
-            console.error("Error fetching data", error.message)
-        } finally {
-            setCurrentDataLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        fetchRMServicesData()
-
-    }, [employeeData])
-
-    const refreshData = () => {
-        fetchRMServicesData();
-    };
-
-    function formatDate(dateString) {
+    const formatDate = (dateString) => {
         const [year, month, date] = dateString.split('-');
-        return `${date}/${month}/${year}`
-    }
+        return `${date}/${month}/${year}`;
+    };
 
-
-    //console.log("setnewsubstatus" , newStatus)
-
-    //------------------------Remarks Popup Section-----------------------------
+    // Remarks Popup Section
     const handleOpenRemarksPopup = async (companyName, serviceName) => {
-        console.log("RemarksPopup")
-    }
+        setCurrentCompanyName(companyName);
+        setCurrentServiceName(serviceName);
+        setOpenRemarksPopUp(true);
+
+        try {
+            const response = await axios.get(`${secretKey}/rm-services/get-remarks`, {
+                params: { companyName, serviceName }
+            });
+            setRemarksHistory(response.data);
+        } catch (error) {
+            console.error("Error fetching remarks", error.message);
+        }
+    };
+
     const functionCloseRemarksPopup = () => {
-        setOpenRemarksPopUp(false)
-    }
+        setOpenRemarksPopUp(false);
+    };
+
     const debouncedSetChangeRemarks = useCallback(
         debounce((value) => {
             setChangeRemarks(value);
-        }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
-        [] // Empty dependency array to ensure the function is memoized
+        }, 300),
+        []
     );
 
     const handleSubmitRemarks = async () => {
-
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
                 currentCompanyName,
@@ -136,7 +103,7 @@ function RmofCertificationGeneralPanel() {
                 updatedOn: new Date()
             });
             if (response.status === 200) {
-                fetchRMServicesData();
+                fetchData();
                 functionCloseRemarksPopup();
                 Swal.fire(
                     'Remarks Added!',
@@ -149,14 +116,19 @@ function RmofCertificationGeneralPanel() {
         }
     };
 
-
-
-
     return (
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    {rmServicesData && rmServicesData.length > 0 ? (
+                    {openBacdrop && (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={openBacdrop}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    )}
+                    {rmServicesData.length > 0 ? (
                         <table className="table table-vcenter table-nowrap rm_table">
                             <thead>
                                 <tr className="tr-sticky">
@@ -168,7 +140,6 @@ function RmofCertificationGeneralPanel() {
                                     <th>CA Number</th>
                                     <th>Service Name</th>
                                     <th>Status</th>
-                                    {/* <th>Remark</th> */}
                                     <th>DSC Applicable</th>
                                     <th>BDE Name</th>
                                     <th>BDM name</th>
@@ -179,9 +150,9 @@ function RmofCertificationGeneralPanel() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
+                                {rmServicesData.map((obj, index) => (
                                     <tr key={index}>
-                                        <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
+                                        <td className="G_rm-sticky-left-1">{index + 1}</td>
                                         <td className='G_rm-sticky-left-2'>{formatDatePro(obj.bookingDate)}</td>
                                         <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
                                         <td>
@@ -203,125 +174,145 @@ function RmofCertificationGeneralPanel() {
                                                 )}
                                             </div>
                                         </td>
-
                                         <td>{obj.serviceName}</td>
                                         <td>
-                                            <div>
-
-                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <StatusDropdown
-                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                        mainStatus={obj.mainCategoryStatus}
-                                                        subStatus={obj.subCategoryStatus}
-                                                        setNewSubStatus={setNewStatus}
-                                                        companyName={obj["Company Name"]}
-                                                        serviceName={obj.serviceName}
-                                                        refreshData={refreshData}
-                                                    />
-                                                )}
-                                            </div>
+                                            {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                <StatusDropdown
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`}
+                                                    mainStatus={obj.mainCategoryStatus}
+                                                    subStatus={obj.subCategoryStatus}
+                                                    setNewSubStatus={setNewStatus}
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
+                                                />
+                                            )}
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
-
                                                 <div>{obj.bdeName}</div>
                                             </div>
                                         </td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
-
                                                 <div>{obj.bdmName}</div>
                                             </div>
                                         </td>
                                         <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
                                         <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
-                                        <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
-                                        //onClick={() => setOpenCompanyTaskComponent(true)}
-                                        ><FaRegEye /></button>
-                                            <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
+                                        <td>₹ {(obj.totalPaymentWGST - (obj.firstPayment ? obj.firstPayment : 0)).toLocaleString('en-IN')}</td>
+                                        <td className="rm-sticky-action">
+                                            <div className="actions">
+                                                <IconButton
+                                                    size="small"
+                                                    color="primary"
+                                                    onClick={() => handleOpenRemarksPopup(obj["Company Name"], obj.serviceName)}
+                                                >
+                                                    <FaRegEye />
+                                                </IconButton>
+                                                <IconButton
+                                                    size="small"
+                                                    color="primary"
+                                                    onClick={() => {
+                                                        Swal.fire({
+                                                            title: 'Are you sure?',
+                                                            text: "You won't be able to revert this!",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#3085d6',
+                                                            cancelButtonColor: '#d33',
+                                                            confirmButtonText: 'Yes, delete it!'
+                                                        }).then(async (result) => {
+                                                            if (result.isConfirmed) {
+                                                                try {
+                                                                    await axios.delete(`${secretKey}/rm-services/delete`, {
+                                                                        data: { companyName: obj["Company Name"], serviceName: obj.serviceName }
+                                                                    });
+                                                                    refreshData();
+                                                                    Swal.fire(
+                                                                        'Deleted!',
+                                                                        'The record has been deleted.',
+                                                                        'success'
+                                                                    );
+                                                                } catch (error) {
+                                                                    console.error("Error deleting record", error.message);
+                                                                }
+                                                            }
+                                                        });
+                                                    }}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    ) :
-                        (
-                            <table className='no_data_table'>
+                    ) : ( !openBacdrop && (
+                        <table className='no_data_table'>
                                 <div className='no_data_table_inner'>
                                     <Nodata />
                                 </div>
                             </table>
-                        )}
+                        )
+                    )}
                 </div>
             </div>
-            {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
 
-            <Dialog className='My_Mat_Dialog'
+            <Dialog
                 open={openRemarksPopUp}
                 onClose={functionCloseRemarksPopup}
                 fullWidth
-                maxWidth="sm"
+                maxWidth="md"
             >
                 <DialogTitle>
-                    <span style={{ fontSize: "14px" }}>
-                        {currentCompanyName}'s Remarks
-                    </span>
-                    <IconButton onClick={functionCloseRemarksPopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary"></CloseIcon>
-                    </IconButton>{" "}
+                    Remarks History
+                    <IconButton
+                        edge="end"
+                        color="inherit"
+                        onClick={functionCloseRemarksPopup}
+                        aria-label="close"
+                        sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
                 </DialogTitle>
                 <DialogContent>
-                    <div className="remarks-content">
-                        {historyRemarks.length !== 0 && (
-                            historyRemarks.slice().map((historyItem) => (
-                                <div className="col-sm-12" key={historyItem._id}>
-                                    <div className="card RemarkCard position-relative">
-                                        <div className="d-flex justify-content-between">
-                                            <div className="reamrk-card-innerText">
-                                                <pre className="remark-text">{historyItem.remarks}</pre>
-                                            </div>
-                                        </div>
-
-                                        <div className="d-flex card-dateTime justify-content-between">
-                                            <div className="date">{new Date(historyItem.updatedOn).toLocaleDateString('en-GB')}</div>
-                                            <div className="time">{new Date(historyItem.updatedOn).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
+                    <div>
+                        <h5>Company Name: {currentCompanyName}</h5>
+                        <h5>Service Name: {currentServiceName}</h5>
+                        {remarksHistory.length > 0 ? (
+                            <ul>
+                                {remarksHistory.map((remark, index) => (
+                                    <li key={index}>
+                                        <b>{formatDate(remark.updatedOn)}:</b> {remark.remarks}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No remarks found for this company and service.</p>
                         )}
-                        {remarksHistory && remarksHistory.length === 0 && (
-                            <div class="card-footer">
-                                <div class="mb-3 remarks-input">
-                                    <textarea
-                                        placeholder="Add Remarks Here...  "
-                                        className="form-control"
-                                        id="remarks-input"
-                                        rows="3"
-                                        onChange={(e) => {
-                                            debouncedSetChangeRemarks(e.target.value);
-                                        }}
-                                    ></textarea>
-                                </div>
-
-                            </div>
-                        )}
+                        <textarea
+                            rows="4"
+                            cols="50"
+                            placeholder="Add your remarks here..."
+                            onChange={(e) => debouncedSetChangeRemarks(e.target.value)}
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSubmitRemarks}
+                            style={{ marginTop: '10px' }}
+                        >
+                            Submit Remarks
+                        </Button>
                     </div>
-
                 </DialogContent>
-                <button
-                    onClick={handleSubmitRemarks}
-                    type="submit"
-                    className="btn btn-primary bdr-radius-none"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </button>
             </Dialog>
         </div>
-    )
+    );
 }
 
-export default RmofCertificationGeneralPanel
+export default RmofCertificationGeneralPanel;

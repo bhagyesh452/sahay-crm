@@ -24,6 +24,8 @@ import SectorDropdown from '../Extra-Components/SectorDropdown';
 import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
 import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
 import Nodata from '../../components/Nodata';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function RmofCertificationHoldPanel() {
 
@@ -45,7 +47,7 @@ function RmofCertificationHoldPanel() {
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
     const [error, setError] = useState('')
-
+    const [openBacdrop, setOpenBacdrop] = useState(false)
 
 
     function formatDatePro(inputDate) {
@@ -101,7 +103,7 @@ function RmofCertificationHoldPanel() {
 
     const fetchRMServicesData = async () => {
         try {
-            setCurrentDataLoading(true)
+            setOpenBacdrop(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
             setRmServicesData(response.data
                 .filter(item => item.mainCategoryStatus === "Hold"))
@@ -114,7 +116,7 @@ function RmofCertificationHoldPanel() {
         } catch (error) {
             console.error("Error fetching data", error.message)
         } finally {
-            setCurrentDataLoading(false)
+            setOpenBacdrop(false)
         }
     }
 
@@ -201,6 +203,10 @@ function RmofCertificationHoldPanel() {
         setSelectedIndustry(industry);
         setSectorOptions(options);
     };
+
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
 
 
    
@@ -533,6 +539,13 @@ function RmofCertificationHoldPanel() {
                     Submit
                 </button>
             </Dialog>
+
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
         </div>
     )
 }
