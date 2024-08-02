@@ -336,17 +336,20 @@ function RmofCertificationProcessPanel() {
                                     </td>
                                     <td>
                                         <ContentWriterDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
-                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
                                         /></td>
                                     <td>
                                         <ContentStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             mainStatus={obj.mainCategoryStatus}
                                             contentStatus={obj.contentStatus}
+                                            writername={obj.contentWriter}
                                         /></td>
                                     {/* For Brochure */}
                                     <td>
@@ -370,6 +373,7 @@ function RmofCertificationProcessPanel() {
                                         /></td>
                                     <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
@@ -378,6 +382,7 @@ function RmofCertificationProcessPanel() {
                                     </td>
                                     <td className='td_of_weblink'>
                                         <NSWSPasswordInput
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refresData={refreshData}
@@ -386,6 +391,7 @@ function RmofCertificationProcessPanel() {
                                     </td>
                                     <td className='td_of_Industry'>
                                         <IndustryDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
@@ -394,12 +400,14 @@ function RmofCertificationProcessPanel() {
                                         /></td>
                                     <td className='td_of_Industry'>
                                         <SectorDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             sectorOptions={sectorOptions}
-                                            industry={obj.industry ? obj.industry : "Select Industry"}
-                                            sector={obj.sector ? obj.sector : "Select Sector"} />
+                                            industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
+                                            sector={obj.sector || ""} // Default to "" if sector is not provided
+                                        />
                                     </td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>

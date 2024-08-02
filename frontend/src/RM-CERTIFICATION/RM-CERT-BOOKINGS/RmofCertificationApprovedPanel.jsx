@@ -355,6 +355,7 @@ function RmofCertificationApprovedPanel() {
                                         companyName={obj["Company Name"]}
                                         serviceName={obj.serviceName}
                                         mainStatus={obj.mainCategoryStatus}
+                                        writername={obj.contentWriter}
                                         contentStatus={obj.contentStatus}
                                     /></td>
                                    <td>
@@ -402,14 +403,15 @@ function RmofCertificationApprovedPanel() {
                                             industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
 
                                         /></td>
-                                    <td>
+                                   <td className='td_of_Industry'>
                                         <SectorDropdown
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
                                             sectorOptions={sectorOptions}
-                                            industry={obj.industry ? obj.industry : "Select Industry"}
-                                            sector={obj.sector ? obj.sector : "Select Sector"} />
+                                            industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
+                                            sector={obj.sector || ""} // Default to "" if sector is not provided
+                                        />
                                     </td>
                                     <td>{formatDatePro(obj.bookingDate)}</td>
                                     <td>
