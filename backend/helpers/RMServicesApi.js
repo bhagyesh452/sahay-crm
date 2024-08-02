@@ -433,7 +433,7 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
 
   try {
     const date = new Date();
-    console.log("Company before update:", company);
+    //console.log("Company before update:", company);
 
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       {
@@ -453,18 +453,18 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
       { new: true }
     );
 
-    if (!updatedCompany) {
-      console.error("Failed to save the updated document");
-      return res.status(400).json({ message: "Failed to save the updated document" });
-    }
+    // if (!updatedCompany) {
+    //   console.error("Failed to save the updated document");
+    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // }
 
-    // Log the updated company document
+    // // Log the updated company document
     console.log("Company after update:", updatedCompany);
 
     // Emit socket event if needed
     //socketIO.emit('update', { companyName, serviceName });
-
-    res.status(200).json(updatedCompany);
+    socketIO.emit('rm-general-status-updated', {companyName: companyName });
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
 
   } catch (error) {
     console.error("Error updating document:", error);

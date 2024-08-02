@@ -134,9 +134,6 @@ const handleSubmitRemarks = async () => {
             changeRemarks,
             updatedOn: new Date()
         });
-
-       
-
         if (response.status === 200) {
             fetchRMServicesData();
             functionCloseRemarksPopup();
