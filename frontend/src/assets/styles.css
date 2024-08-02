@@ -3077,7 +3077,7 @@ td input {
 }
 .status_change
 {
-  height: 200px;
+  max-height: 200px;
   overflow-y: auto;
   background: #fff;
 }
