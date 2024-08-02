@@ -763,6 +763,7 @@ table.table.top_5_table tbody tr.myself td {
 .hr_employee_information
 {
     width: calc(100% - 350px);
+    padding-left: 15px;
 }
 .E_Id_card
 {
@@ -916,6 +917,12 @@ table.table.top_5_table tbody tr.myself td {
     font-size: 15px;
     letter-spacing: 1px;
     font-weight: 700;
+}
+.hr_emply_info_inner
+{
+    background: #fafafb;
+    height: calc(100vh - 196px);
+    overflow-y: auto;
 }
 @media (max-width: 1528px)
 {

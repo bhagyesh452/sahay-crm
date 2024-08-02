@@ -271,7 +271,7 @@ function EmployeeView() {
                       <div className="E_id_profile_inner">
                         <div className="position-relative">
                           <div className="E_id_profile_img">
-                            <img src={EmpImg1}></img>
+                            <img src={EmpDfaullt}></img>
                           </div>
                           <div
                               className="profile-pic-upload"
@@ -339,7 +339,9 @@ function EmployeeView() {
                 </div>
               </div>
               <div className="hr_employee_information">
-
+                <div className="my-card hr_emply_info_inner">
+                  
+                </div>
               </div>
             </div>
           </div>
