@@ -27,7 +27,8 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
           subCategoryStatus: newStatus,
           mainCategoryStatus: "Process",
           previousMainCategoryStatus: "General",
-          previousSubCategoryStatus: newStatus
+          previousSubCategoryStatus: newStatus,
+          dateOfChangingMainStatus:new Date()
         });
       }
       else if (mainStatus === "Process") {

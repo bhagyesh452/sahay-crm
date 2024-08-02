@@ -428,27 +428,22 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
 });
 
 router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, res) => {
-  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus } = req.body;
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus , dateOfChangingMainStatus } = req.body;
   const socketIO = req.io;
 
   try {
-    const date = new Date();
-    //console.log("Company before update:", company);
-
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       {
         ["Company Name"]: companyName,
         serviceName: serviceName
       },
       {
-        
           subCategoryStatus: subCategoryStatus,
           mainCategoryStatus: mainCategoryStatus,
           lastActionDate: new Date(),
-          dateOfChangingMainStatus: date, // Ensure this field is included
+          dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
           previousMainCategoryStatus: previousMainCategoryStatus,
           previousSubCategoryStatus: previousSubCategoryStatus
-      
       },
       { new: true }
     );
