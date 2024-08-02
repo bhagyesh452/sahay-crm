@@ -21,7 +21,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
     try {
       let response;
       if (mainStatus === "General") {
-        response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+        response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification-changegeneral`, {
           companyName,
           serviceName,
           subCategoryStatus: newStatus,

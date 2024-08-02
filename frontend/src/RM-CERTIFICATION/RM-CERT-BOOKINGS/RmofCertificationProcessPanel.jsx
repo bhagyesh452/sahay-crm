@@ -106,7 +106,13 @@ function RmofCertificationProcessPanel() {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            const servicesData = response.data.filter(item => item.mainCategoryStatus === "Process");
+            const servicesData = response.data
+                .filter(item => item.mainCategoryStatus === "Process")
+                .sort((a, b) => {
+                    const dateA = new Date(a.dateOfChangingMainStatus);
+                    const dateB = new Date(b.dateOfChangingMainStatus);
+                    return dateB - dateA; // Sort in descending order
+                });;
             console.log("servicesData", servicesData)
             setRmServicesData(servicesData);
         } catch (error) {
@@ -176,22 +182,22 @@ function RmofCertificationProcessPanel() {
 
     const handleDeleteRemarks = async (remarks_id) => {
         try {
-          const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-          });
-          if(response.status === 200){
-            fetchRMServicesData();
-            functionCloseRemarksPopup(); 
-          }
-         // Refresh the list
+            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+            });
+            if (response.status === 200) {
+                fetchRMServicesData();
+                functionCloseRemarksPopup();
+            }
+            // Refresh the list
         } catch (error) {
-          console.error("Error deleting remark:", error);
+            console.error("Error deleting remark:", error);
         }
-      };
+    };
 
 
 
-//--------------------function for industry change--------------------------
+    //--------------------function for industry change--------------------------
 
     const handleIndustryChange = (industry, options) => {
         setSelectedIndustry(industry);

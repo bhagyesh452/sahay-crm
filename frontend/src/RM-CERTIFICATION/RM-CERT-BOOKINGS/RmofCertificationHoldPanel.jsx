@@ -102,7 +102,13 @@ function RmofCertificationHoldPanel() {
         try {
             setCurrentDataLoading(true)
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data.filter(item => item.mainCategoryStatus === "Hold"))
+            setRmServicesData(response.data
+                .filter(item => item.mainCategoryStatus === "Hold"))
+                .sort((a, b) => {
+                    const dateA = new Date(a.dateOfChangingMainStatus);
+                    const dateB = new Date(b.dateOfChangingMainStatus);
+                    return dateB - dateA; // Sort in descending order
+                });;
             //console.log(response.data)
         } catch (error) {
             console.error("Error fetching data", error.message)

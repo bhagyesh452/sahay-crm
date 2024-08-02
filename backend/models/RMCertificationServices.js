@@ -234,6 +234,10 @@ const RMCertificationServicesSchema = new mongoose.Schema({
     type:Date,
     default: new Date()
   },
+  dateOfChangingMainStatus:{
+    type:Date,
+    default: new Date()
+  },
   submittedOn:{
     type:Date
   },

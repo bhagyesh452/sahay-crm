@@ -427,6 +427,53 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
   }
 });
 
+router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, res) => {
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus } = req.body;
+  const socketIO = req.io;
+
+  try {
+    const date = new Date();
+    console.log("Company before update:", company);
+
+    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        
+          subCategoryStatus: subCategoryStatus,
+          mainCategoryStatus: mainCategoryStatus,
+          lastActionDate: new Date(),
+          dateOfChangingMainStatus: date, // Ensure this field is included
+          previousMainCategoryStatus: previousMainCategoryStatus,
+          previousSubCategoryStatus: previousSubCategoryStatus
+      
+      },
+      { new: true }
+    );
+
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Log the updated company document
+    console.log("Company after update:", updatedCompany);
+
+    // Emit socket event if needed
+    //socketIO.emit('update', { companyName, serviceName });
+
+    res.status(200).json(updatedCompany);
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus } = req.body;
   const socketIO = req.io;
@@ -434,22 +481,29 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   try {
     // Step 1: Find the company document
     const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
-    
+
     if (!company) {
       console.error("Company not found");
       return res.status(400).json({ message: "Company not found" });
     }
 
-    // Step 2: Determine the submittedOn date based on conditions
+    // Step 2: Determine the submittedOn date
     let submittedOn = company.submittedOn;
+    let updateFields = {}; // Fields to be updated
+
     if (subCategoryStatus !== "Undo") {
       submittedOn = (mainCategoryStatus === "Submitted")
         ? company.submittedOn || new Date()  // Use existing submittedOn or current date
         : (subCategoryStatus === "Submitted")
-        ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
-        : company.submittedOn;  // Retain existing submittedOn otherwise
+          ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
+          : company.submittedOn;  // Retain existing submittedOn otherwise
 
-      // Step 3: Update the document with the calculated submittedOn date
+      // Conditionally include dateOfChangingMainStatus
+      if (["Process", "Approved", "Submitted", "Hold", "Defaulter"].includes(subCategoryStatus))  {
+        updateFields.dateOfChangingMainStatus = new Date();
+      }
+
+      // Step 3: Update the document with the calculated dates
       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
         {
           ["Company Name"]: companyName,
@@ -460,6 +514,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           mainCategoryStatus: mainCategoryStatus,
           lastActionDate: new Date(),
           submittedOn: submittedOn,
+          ...updateFields, // Conditionally include dateOfChangingMainStatus
           previousMainCategoryStatus: previousMainCategoryStatus,
           previousSubCategoryStatus: previousSubCategoryStatus
         },
@@ -470,11 +525,11 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         console.error("Failed to save the updated document");
         return res.status(400).json({ message: "Failed to save the updated document" });
       }
-      
+
       // Emit socket event
       socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
       res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
-      
+
     } else {
       // If subCategoryStatus is "Undo", update with previous statuses and no new date
       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
@@ -487,17 +542,18 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           mainCategoryStatus: company.previousMainCategoryStatus,  // Restore previous mainCategoryStatus
           lastActionDate: new Date(),
           submittedOn: company.submittedOn,
-          Remarks:[],
-          dscStatus:"Not Started",
-          contentStatus:"Not Started",
-          contentWriter:"",
-          brochureStatus:"Not Started",
-          brochureDesigner:"",
-          nswsMailId:"",
-          nswsPaswsord:"",
-          websiteLink:"",
-          industry:"",
-          sector:""  // Retain existing submittedOn
+          dateOfChangingMainStatus: company.dateOfChangingMainStatus, // Retain existing date
+          Remarks: [],
+          dscStatus: "Not Started",
+          contentStatus: "Not Started",
+          contentWriter: "",
+          brochureStatus: "Not Started",
+          brochureDesigner: "",
+          nswsMailId: "",
+          nswsPaswsord: "",
+          websiteLink: "",
+          industry: "",
+          sector: ""  // Retain existing submittedOn
         },
         { new: true }
       );
@@ -506,7 +562,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         console.error("Failed to save the updated document");
         return res.status(400).json({ message: "Failed to save the updated document" });
       }
-      
+
       // Emit socket event
       socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
       res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
@@ -517,6 +573,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, dscStatus } = req.body;
@@ -529,7 +586,7 @@ router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        dscStatus:dscStatus
+        dscStatus: dscStatus
       },
       { new: true }
     )
@@ -560,7 +617,7 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        contentStatus:contentStatus
+        contentStatus: contentStatus
       },
       { new: true }
     )
@@ -582,7 +639,7 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
 
 router.post(`/update-contentwriter-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, contentWriter } = req.body;
-  console.log("here" , companyName , serviceName ,contentWriter)
+  console.log("here", companyName, serviceName, contentWriter)
   //console.log("dscStatus" , contentStatus)
   const socketIO = req.io;
   try {
@@ -592,7 +649,7 @@ router.post(`/update-contentwriter-rmofcertification/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        contentWriter:contentWriter
+        contentWriter: contentWriter
       },
       { new: true }
     )
@@ -614,7 +671,7 @@ router.post(`/update-contentwriter-rmofcertification/`, async (req, res) => {
 
 router.post(`/update-brochuredesigner-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, brochureDesigner } = req.body;
-  console.log("here" , companyName , serviceName ,brochureDesigner)
+  console.log("here", companyName, serviceName, brochureDesigner)
   //console.log("dscStatus" , contentStatus)
   const socketIO = req.io;
   try {
@@ -624,7 +681,7 @@ router.post(`/update-brochuredesigner-rmofcertification/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        brochureDesigner:brochureDesigner
+        brochureDesigner: brochureDesigner
       },
       { new: true }
     )
@@ -655,7 +712,7 @@ router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        brochureStatus:brochureStatus
+        brochureStatus: brochureStatus
       },
       { new: true }
     )
@@ -677,17 +734,17 @@ router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
 
 
 router.post(`/post-save-nswsemail/`, async (req, res) => {
-  const {  companyName, serviceName, email } = req.body;
+  const { companyName, serviceName, email } = req.body;
   //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
       {
-        ["Company Name"]:  companyName,
+        ["Company Name"]: companyName,
         serviceName: serviceName
       },
       {
-        nswsMailId:email
+        nswsMailId: email
       },
       { new: true }
     )
@@ -708,17 +765,17 @@ router.post(`/post-save-nswsemail/`, async (req, res) => {
 });
 
 router.post(`/post-save-nswsemail/`, async (req, res) => {
-  const {  currentCompanyName, currentServiceName, password } = req.body;
+  const { currentCompanyName, currentServiceName, password } = req.body;
   //console.log("dscStatus" ,password ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
       {
-        ["Company Name"]:  currentCompanyName,
+        ["Company Name"]: currentCompanyName,
         serviceName: currentServiceName
       },
       {
-        nswsPaswsord:password
+        nswsPaswsord: password
       },
       { new: true }
     )
@@ -749,7 +806,7 @@ router.post(`/post-save-nswspassword/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        nswsPaswsord:password
+        nswsPaswsord: password
       },
       { new: true }
     )
@@ -769,8 +826,8 @@ router.post(`/post-save-nswspassword/`, async (req, res) => {
 });
 
 router.post(`/post-save-websitelink/`, async (req, res) => {
-  const { companyName, serviceName, link ,briefing} = req.body;
-  console.log("dscStatus" ,serviceName , companyName , link)
+  const { companyName, serviceName, link, briefing } = req.body;
+  console.log("dscStatus", serviceName, companyName, link)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -779,8 +836,8 @@ router.post(`/post-save-websitelink/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        websiteLink:link,
-        companyBriefing:briefing
+        websiteLink: link,
+        companyBriefing: briefing
 
       },
       { new: true }
@@ -802,7 +859,7 @@ router.post(`/post-save-websitelink/`, async (req, res) => {
 
 router.post(`/post-save-industry/`, async (req, res) => {
   const { companyName, serviceName, industryOption } = req.body;
-  console.log("dscStatus" ,serviceName , companyName , industryOption)
+  console.log("dscStatus", serviceName, companyName, industryOption)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -811,7 +868,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        industry:industryOption
+        industry: industryOption
       },
       { new: true }
     )
@@ -832,7 +889,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
 
 router.post(`/post-save-sector/`, async (req, res) => {
   const { companyName, serviceName, sectorOption } = req.body;
-  console.log("dscStatus" ,serviceName , companyName , sectorOption)
+  console.log("dscStatus", serviceName, companyName, sectorOption)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -841,7 +898,7 @@ router.post(`/post-save-sector/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        sector:sectorOption
+        sector: sectorOption
       },
       { new: true }
     )
@@ -882,7 +939,7 @@ router.delete('/delete-remark-rmcert', async (req, res) => {
       { $set: { Remarks: updatedRemarks } }
     );
 
-    res.json({ message: "Remark deleted successfully" });
+    res.status(200).json({ message: "Remark deleted successfully" });
   } catch (error) {
     console.error("Error deleting remark:", error);
     res.status(500).json({ message: "Internal Server Error" });
