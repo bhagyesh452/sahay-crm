@@ -757,6 +757,13 @@ table.table.top_5_table tbody tr.myself td {
 .hr_emply_list_navitem .nav-link.active::after {
     background: #43474c !important;
 }
+.E_Id_card_main {
+    width: 350px;
+}
+.hr_employee_information
+{
+    width: calc(100% - 350px);
+}
 .E_Id_card
 {
     box-shadow: rgb(235, 235, 235) 2px 2px 10px -3px;
@@ -789,7 +796,7 @@ table.table.top_5_table tbody tr.myself td {
     border-radius: 0 25px 25px 25px;
     position: absolute;
     top: -16px;
-    z-index: 2;
+    z-index: 5;
     left: 0;
 }
 .main_logo_For_ID img
@@ -809,7 +816,7 @@ table.table.top_5_table tbody tr.myself td {
 }
 .E_id_profile
 {
-    z-index: 1;
+    z-index: 3;
     position: relative;
     background: #fbba1c;
     border-radius: 20px;
@@ -859,7 +866,56 @@ table.table.top_5_table tbody tr.myself td {
 }
 .E_id_bottom_black_bg
 {
-    
+    position: absolute;
+    width: 70%;
+    height: 236px;
+    background: #231f20;
+    bottom: 33px;
+    right: 0px;
+    border-radius: 21px 0 0 20px;
+    z-index: 0;
+}
+.E_id_profile_details
+{
+    z-index: 3 !important;
+    position: relative;
+    font-size: 16px;
+}
+.E_id_profile_details_items
+{
+    margin: 10px 0;
+}
+.E_id_p_fileld
+{
+    font-weight: 500;
+    font-size: 14px;
+    width: 88px;
+}
+.E_id_p_data
+{
+    color: #fff;
+    font-weight: 400;
+    font-size: 14px;
+    padding-left: 10px;
+    position: relative;
+}
+.E_id_p_data::after
+{
+    content: "";
+    position: absolute;
+    background: #383535;
+    height: 3px;
+    width: 58px;
+    left: 2px;
+    bottom: -5px;
+}
+.E_id_website
+{
+    text-align: center;
+    margin-top: 40px;
+    font-size: 15px;
+    letter-spacing: 1px;
+    font-weight: 700;
 }
 @media (max-width: 1528px)
 {
