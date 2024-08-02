@@ -246,7 +246,7 @@ function App() {
           <Route path="/hr/employees/" element={<HrEmployees />} />
           <Route path="/hr/add/employee/" element={<HorizontalNonLinearStepper />} />
           <Route path="/hr/edit/employee/:empId" element={<HREditEmployee />} />
-          <Route path='/hr/employee/hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
+          <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
         </Routes>
 
       </BrowserRouter>

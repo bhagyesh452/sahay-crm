@@ -15,7 +15,6 @@ const fileSchema = new mongoose.Schema({
 const EmployeeDraftSchema = new mongoose.Schema({
   activeStep: {
     type: Number,
-    default: 0
   },
   ename: {
     type: String

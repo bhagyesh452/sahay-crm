@@ -7,6 +7,7 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
@@ -29,8 +30,12 @@ function HrEmployees() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB'); // en-GB format is dd/mm/yyyy
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
   };
+  
 
   const calculateProbationStatus = (joiningDate) => {
     const joinDate = new Date(joiningDate);
@@ -60,6 +65,10 @@ function HrEmployees() {
       console.log("Error fetching employees data :", error);
     }
   };
+
+  const handleView = (id) => {
+    navigate(`hr-employee-profile-details/${id}`);
+  }
 
   useEffect(() => {
     fetchEmployee();
@@ -192,7 +201,15 @@ function HrEmployees() {
                             <td>{emp.number || ""}</td>
                             <td>{emp.email || ""}</td>
                             <td>
-                              <button className="action-btn action-btn-primary"><FaRegEye /></button>
+                              <button className="action-btn action-btn-primary">
+                              <Link
+                                        style={{ textDecoration: "none", color: "black" }}
+                                        to={{
+                                            pathname: `/hr-employee-profile-details/${emp._id}`
+                                        }}
+
+                                    ><FaRegEye /></Link>
+                                    </button>
                               <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
                               <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
                             </td>
