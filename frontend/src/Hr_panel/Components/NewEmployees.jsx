@@ -111,98 +111,98 @@
 
 // export default NewEmployees;
 
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Box, Tabs, Tab, Typography } from '@mui/material';
-import { MdOutlinePersonPin } from 'react-icons/md';
-import Header from "../Components/Header/Header";
-import Navbar from "../Components/Navbar/Navbar";
-import HrEmployees from "./HrEmployees"; // Assuming you have these components
-import AddEmployee from "./AddEmployees/AddEmployee"; // Assuming you have these components
+// import React, { useState, useEffect } from 'react';
+// import PropTypes from 'prop-types';
+// import { Box, Tabs, Tab, Typography } from '@mui/material';
+// import { MdOutlinePersonPin } from 'react-icons/md';
+// import Header from "../Components/Header/Header";
+// import Navbar from "../Components/Navbar/Navbar";
+// import HrEmployees from "./HrEmployees"; // Assuming you have these components
+// import AddEmployee from "./AddEmployees/AddEmployee"; // Assuming you have these components
 
-function NewEmployees() {
-    const [value, setValue] = useState(0);
-    const [showAddEmployee, setShowAddEmployee] = useState(false);
+// function NewEmployees() {
+//     const [value, setValue] = useState(0);
+//     const [showAddEmployee, setShowAddEmployee] = useState(false);
 
-    useEffect(() => {
-        document.title = `HR-Sahay-CRM`;
-    }, []);
+//     useEffect(() => {
+//         document.title = `HR-Sahay-CRM`;
+//     }, []);
 
-    function CustomTabPanel(props) {
-        const { children, value, index, ...other } = props;
+//     function CustomTabPanel(props) {
+//         const { children, value, index, ...other } = props;
 
-        return (
-            <div
-                role="tabpanel"
-                hidden={value !== index}
-                id={`simple-tabpanel-${index}`}
-                aria-labelledby={`simple-tab-${index}`}
-                {...other}
-            >
-                {value === index && (
-                    <Box sx={{ p: 3 }}>
-                        <Typography>{children}</Typography>
-                    </Box>
-                )}
-            </div>
-        );
-    }
+//         return (
+//             <div
+//                 role="tabpanel"
+//                 hidden={value !== index}
+//                 id={`simple-tabpanel-${index}`}
+//                 aria-labelledby={`simple-tab-${index}`}
+//                 {...other}
+//             >
+//                 {value === index && (
+//                     <Box sx={{ p: 3 }}>
+//                         <Typography>{children}</Typography>
+//                     </Box>
+//                 )}
+//             </div>
+//         );
+//     }
 
-    CustomTabPanel.propTypes = {
-        children: PropTypes.node,
-        index: PropTypes.number.isRequired,
-        value: PropTypes.number.isRequired,
-    };
+//     CustomTabPanel.propTypes = {
+//         children: PropTypes.node,
+//         index: PropTypes.number.isRequired,
+//         value: PropTypes.number.isRequired,
+//     };
 
-    function a11yProps(index) {
-        return {
-            id: `simple-tab-${index}`,
-            'aria-controls': `simple-tabpanel-${index}`,
-        };
-    }
+//     function a11yProps(index) {
+//         return {
+//             id: `simple-tab-${index}`,
+//             'aria-controls': `simple-tabpanel-${index}`,
+//         };
+//     }
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+//     const handleChange = (event, newValue) => {
+//         setValue(newValue);
+//     };
 
-    const handleAddEmployeeClick = () => {
-        setShowAddEmployee(true);
-    };
+//     const handleAddEmployeeClick = () => {
+//         setShowAddEmployee(true);
+//     };
 
-    return (
-        <div>
-            {/* <Header />
-            <Navbar number={1} />
-            <div className="page-wrapper">
-                <div className="container-xl">
-                    <div className="card mt-3">
-                        {!showAddEmployee && <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                                <Tab label={
-                                    <div style={{ display: "flex", alignItems: "center" }}>
-                                        <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                        <span style={{fontSize:"12px"}}>Employee List</span>
-                                    </div>
-                                } {...a11yProps(0)} />
-                                 <Tab
-                                    label={
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                        </div>
-                                    }
-                                    {...a11yProps(1)}
-                                />
-                            </Tabs>
-                        </Box>}
-                        <CustomTabPanel value={value} index={0}>
-                            {!showAddEmployee && <HrEmployees onAddEmployeeClick={handleAddEmployeeClick} />}
-                            {showAddEmployee && <AddEmployee />}
-                        </CustomTabPanel>
-                    </div>
-                </div>
-            </div> */}
-        </div>
-    );
-}
+//     return (
+//         <div>
+//             {/* <Header />
+//             <Navbar number={1} />
+//             <div className="page-wrapper">
+//                 <div className="container-xl">
+//                     <div className="card mt-3">
+//                         {!showAddEmployee && <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+//                             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+//                                 <Tab label={
+//                                     <div style={{ display: "flex", alignItems: "center" }}>
+//                                         <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+//                                         <span style={{fontSize:"12px"}}>Employee List</span>
+//                                     </div>
+//                                 } {...a11yProps(0)} />
+//                                  <Tab
+//                                     label={
+//                                         <div style={{ display: "flex", alignItems: "center" }}>
+//                                         </div>
+//                                     }
+//                                     {...a11yProps(1)}
+//                                 />
+//                             </Tabs>
+//                         </Box>}
+//                         <CustomTabPanel value={value} index={0}>
+//                             {!showAddEmployee && <HrEmployees onAddEmployeeClick={handleAddEmployeeClick} />}
+//                             {showAddEmployee && <AddEmployee />}
+//                         </CustomTabPanel>
+//                     </div>
+//                 </div>
+//             </div> */}
+//         </div>
+//     );
+// }
 
-export default NewEmployees;
+// export default NewEmployees;
 
