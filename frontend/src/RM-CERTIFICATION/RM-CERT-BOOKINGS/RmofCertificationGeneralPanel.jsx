@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
@@ -13,6 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Nodata from '../../components/Nodata';
 
 function RmofCertificationGeneralPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -31,7 +32,7 @@ function RmofCertificationGeneralPanel() {
 
 
 
-    
+
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
@@ -46,21 +47,21 @@ function RmofCertificationGeneralPanel() {
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-          secure: true, // Use HTTPS
-          path: '/socket.io',
-          reconnection: true,
-          transports: ['websocket'],
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
         });
-    
+
         socket.on("rm-general-status-updated", (res) => {
             fetchRMServicesData()
         });
-    
-        
+
+
         return () => {
-          socket.disconnect();
+            socket.disconnect();
         };
-      }, [newStatus]);
+    }, [newStatus]);
 
 
     const fetchData = async () => {
@@ -109,44 +110,44 @@ function RmofCertificationGeneralPanel() {
     }
 
 
-//console.log("setnewsubstatus" , newStatus)
+    //console.log("setnewsubstatus" , newStatus)
 
-//------------------------Remarks Popup Section-----------------------------
-const handleOpenRemarksPopup = async (companyName, serviceName) => {
-    console.log("RemarksPopup")
-}
-const functionCloseRemarksPopup = () => {
-    setOpenRemarksPopUp(false)
-}
-const debouncedSetChangeRemarks = useCallback(
-    debounce((value) => {
-        setChangeRemarks(value);
-    }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
-    [] // Empty dependency array to ensure the function is memoized
-);
-
-const handleSubmitRemarks = async () => {
-
-    try {
-        const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-            currentCompanyName,
-            currentServiceName,
-            changeRemarks,
-            updatedOn: new Date()
-        });
-        if (response.status === 200) {
-            fetchRMServicesData();
-            functionCloseRemarksPopup();
-            Swal.fire(
-                'Remarks Added!',
-                'The remarks have been successfully added.',
-                'success'
-            );
-        }
-    } catch (error) {
-        console.log("Error Submitting Remarks", error.message);
+    //------------------------Remarks Popup Section-----------------------------
+    const handleOpenRemarksPopup = async (companyName, serviceName) => {
+        console.log("RemarksPopup")
     }
-};
+    const functionCloseRemarksPopup = () => {
+        setOpenRemarksPopUp(false)
+    }
+    const debouncedSetChangeRemarks = useCallback(
+        debounce((value) => {
+            setChangeRemarks(value);
+        }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+        [] // Empty dependency array to ensure the function is memoized
+    );
+
+    const handleSubmitRemarks = async () => {
+
+        try {
+            const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+                currentCompanyName,
+                currentServiceName,
+                changeRemarks,
+                updatedOn: new Date()
+            });
+            if (response.status === 200) {
+                fetchRMServicesData();
+                functionCloseRemarksPopup();
+                Swal.fire(
+                    'Remarks Added!',
+                    'The remarks have been successfully added.',
+                    'success'
+                );
+            }
+        } catch (error) {
+            console.log("Error Submitting Remarks", error.message);
+        }
+    };
 
 
 
@@ -155,95 +156,104 @@ const handleSubmitRemarks = async () => {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap rm_table">
-                        <thead>
-                            <tr className="tr-sticky">
-                                <th className="G_rm-sticky-left-1">Sr.No</th>
-                                <th className="G_rm-sticky-left-2">Booking Date</th>
-                                <th className="G_rm-sticky-left-3">Company Name</th>
-                                <th>Company Number</th>
-                                <th>Company Email</th>
-                                <th>CA Number</th>
-                                <th>Service Name</th>
-                                <th>Status</th>
-                                {/* <th>Remark</th> */}
-                                <th>DSC Applicable</th>
-                                <th>BDE Name</th>
-                                <th>BDM name</th>
-                                <th>Total Payment</th>
-                                <th>received Payment</th>
-                                <th>Pending Payment</th>
-                                <th className="rm-sticky-action">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
-                                <tr key={index}>
-                                    <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className='G_rm-sticky-left-2'>{formatDatePro(obj.bookingDate)}</td>
-                                    <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj["Company Number"]}</div>
-                                            <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                                <FaWhatsapp />
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>{obj["Company Email"]}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
-                                            {obj.caCase === "Yes" && (
+                    {rmServicesData && rmServicesData.length > 0 ? (
+                        <table className="table table-vcenter table-nowrap rm_table">
+                            <thead>
+                                <tr className="tr-sticky">
+                                    <th className="G_rm-sticky-left-1">Sr.No</th>
+                                    <th className="G_rm-sticky-left-2">Booking Date</th>
+                                    <th className="G_rm-sticky-left-3">Company Name</th>
+                                    <th>Company Number</th>
+                                    <th>Company Email</th>
+                                    <th>CA Number</th>
+                                    <th>Service Name</th>
+                                    <th>Status</th>
+                                    {/* <th>Remark</th> */}
+                                    <th>DSC Applicable</th>
+                                    <th>BDE Name</th>
+                                    <th>BDM name</th>
+                                    <th>Total Payment</th>
+                                    <th>received Payment</th>
+                                    <th>Pending Payment</th>
+                                    <th className="rm-sticky-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
+                                    <tr key={index}>
+                                        <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
+                                        <td className='G_rm-sticky-left-2'>{formatDatePro(obj.bookingDate)}</td>
+                                        <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj["Company Number"]}</div>
                                                 <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                     <FaWhatsapp />
                                                 </a>
-                                            )}
-                                        </div>
-                                    </td>
-                                    
-                                    <td>{obj.serviceName}</td>
-                                    <td>
-                                        <div>
-                                           
-                                            {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                <StatusDropdown
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                    mainStatus={obj.mainCategoryStatus}
-                                                    subStatus={obj.subCategoryStatus}
-                                                    setNewSubStatus={setNewStatus}
-                                                    companyName = {obj["Company Name"]}
-                                                    serviceName = {obj.serviceName}
-                                                    refreshData={refreshData}
-                                                />
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center">
+                                            </div>
+                                        </td>
+                                        <td>{obj["Company Email"]}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                                {obj.caCase === "Yes" && (
+                                                    <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </td>
 
-                                            <div>{obj.bdeName}</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center">
+                                        <td>{obj.serviceName}</td>
+                                        <td>
+                                            <div>
 
-                                            <div>{obj.bdmName}</div>
-                                        </div>
-                                    </td>
-                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
-                                    <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
-                                    //onClick={() => setOpenCompanyTaskComponent(true)}
-                                    ><FaRegEye /></button>
-                                        <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                    <StatusDropdown
+                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                        mainStatus={obj.mainCategoryStatus}
+                                                        subStatus={obj.subCategoryStatus}
+                                                        setNewSubStatus={setNewStatus}
+                                                        companyName={obj["Company Name"]}
+                                                        serviceName={obj.serviceName}
+                                                        refreshData={refreshData}
+                                                    />
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td>{obj.withDSC ? "Yes" : "No"}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+
+                                                <div>{obj.bdeName}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+
+                                                <div>{obj.bdmName}</div>
+                                            </div>
+                                        </td>
+                                        <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
+                                        //onClick={() => setOpenCompanyTaskComponent(true)}
+                                        ><FaRegEye /></button>
+                                            <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) :
+                        (
+                            <table className='no_data_table'>
+                                <div className='no_data_table_inner'>
+                                    <Nodata />
+                                </div>
+                            </table>
+                        )}
                 </div>
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
@@ -264,7 +274,7 @@ const handleSubmitRemarks = async () => {
                 </DialogTitle>
                 <DialogContent>
                     <div className="remarks-content">
-                        { historyRemarks.length !== 0 && (
+                        {historyRemarks.length !== 0 && (
                             historyRemarks.slice().map((historyItem) => (
                                 <div className="col-sm-12" key={historyItem._id}>
                                     <div className="card RemarkCard position-relative">
@@ -281,7 +291,7 @@ const handleSubmitRemarks = async () => {
                                     </div>
                                 </div>
                             ))
-                        )} 
+                        )}
                         {remarksHistory && remarksHistory.length === 0 && (
                             <div class="card-footer">
                                 <div class="mb-3 remarks-input">
