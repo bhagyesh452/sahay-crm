@@ -200,14 +200,14 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   contentStatus:{
      type:String,
-    default:"Not Applicable"
+    //default:"Not Applicable"
   },
   contentWriter:{
     type:String,
  },
   brochureStatus:{
     type:String,
-   default:"Not Applicable"
+   //default:"Not Applicable"
  },
  brochureDesigner:{
   type:String,
