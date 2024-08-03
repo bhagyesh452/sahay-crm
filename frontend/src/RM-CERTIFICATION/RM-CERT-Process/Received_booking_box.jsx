@@ -129,11 +129,11 @@ function Received_booking_box() {
     const fetchRedesignedFormData = async (page) => {
         const today = new Date("2024-07-15");
         today.setHours(0, 0, 0, 0); // Set to start of today
-    
+
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
-    
+
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
                 .filter(item => {
@@ -146,7 +146,7 @@ function Received_booking_box() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-    
+
             // Process each document to combine services and filter them
             const processedData = filteredAndSortedData.map(item => {
                 // Combine servicesTakenByRmOfCertification and rmservicestaken for each document
@@ -154,41 +154,41 @@ function Received_booking_box() {
                     ...(item.servicesTakenByRmOfCertification || []),
                     ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByRmOfCertification || [])
                 ];
-    
+
                 // Remove duplicates
                 const uniqueServices = [...new Set(combinedServices)];
-    
+
                 return {
                     ...item,
                     combinedServices: uniqueServices // Add combined services to the document
                 };
             });
-    
+
             // Create an array of filtered service names for each document
             const filteredServicesData = filteredAndSortedData.map(item => {
                 // Extract primary services
                 const primaryServices = item.services || [];
-    
+
                 // Combine services from moreBookings
                 const moreBookingServices = item.moreBookings
                     ? item.moreBookings.flatMap((booking) => booking.services || [])
                     : [];
-    
+
                 // Combine services
                 const combinedServices = [
                     ...primaryServices,
                     ...moreBookingServices
                 ];
-    
+
                 // Filter services based on certificationLabels
                 const filteredServices = combinedServices.filter((service) =>
                     certificationLabels.includes(service.serviceName)
                 );
-    
+
                 // Map through the filtered services to get service names
                 return filteredServices.map((service) => service.serviceName);
             });
-    
+
             // Find companies that do not match the filteredServices
             const nonMatchingCompanies = processedData.filter((item, index) => {
                 // Find the filtered services for the same index
@@ -198,22 +198,22 @@ function Received_booking_box() {
                     item.servicesTakenByRmOfCertification && item.servicesTakenByRmOfCertification.length > 0 ||
                     (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByRmOfCertification && booking.servicesTakenByRmOfCertification.length > 0))
                 );
-    
+
                 // Compare combinedServices with filteredServiceNames
                 return !(item.combinedServices.length === filteredServiceNames.length &&
-                         item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;;
+                    item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;;
             });
 
             const completeData = response.data
-            .sort((a, b) => {
-                const dateA = new Date(a.lastActionDate);
-                const dateB = new Date(b.lastActionDate);
-                return dateB - dateA; // Sort in descending order
-            });
-    
+                .sort((a, b) => {
+                    const dateA = new Date(a.lastActionDate);
+                    const dateB = new Date(b.lastActionDate);
+                    return dateB - dateA; // Sort in descending order
+                });
+
             // Log or use the non-matching data
             console.log("Non-Matching Companies:", nonMatchingCompanies);
-    
+
             // Set state or use non-matching data as needed
             setLeadFormData(nonMatchingCompanies);
             setRedesignedData(nonMatchingCompanies);
@@ -222,8 +222,8 @@ function Received_booking_box() {
             console.error("Error fetching data:", error.message);
         }
     };
-    
-    
+
+
 
 
 
@@ -361,41 +361,82 @@ function Received_booking_box() {
     //     setServiceNames(servicesNames)
     // };
 
-    const handleOpenServices = (companyName) => {
-        // Filter the mainDataSwap array to get the companies that match the provided companyName
-        setSelectedCompanyName(companyName);
+    const certificationLabelsNew = [
+        "Start-Up India Certificate",
+        "Company Incorporation",
+        "Organization DSC",
+        "Director DSC",
+        "Self Certification",
+        "GeM"
+    ];
 
-        const selectedServices = redesignedData
-            .filter((company) => company["Company Name"] === companyName)
-            .flatMap((company) => {
-                const allServices = company.moreBookings.length !== 0
-                    ? [
-                        ...company.services,
-                        ...company.moreBookings.flatMap((item) => item.services),
-                    ]
-                    : company.services || [];
+ const [isSwappingAllServices, setIsSwappingAllServices] = useState(false);
 
-                // Filter out services that are included in servicesTakenByRmOfCertification
-                const filteredServices = allServices.filter((service) => {
-                    const isServiceTakenByRmOfCertification = company.servicesTakenByRmOfCertification?.includes(service.serviceName);
-                    const isServiceTakenInMoreBookings = company.moreBookings.some((booking) =>
-                        booking.servicesTakenByRmOfCertification?.includes(service.serviceName)
-                    );
+const handleOpenServices = (companyName) => {
+    setSelectedCompanyName(companyName);
 
-                    return !isServiceTakenByRmOfCertification && !isServiceTakenInMoreBookings;
-                });
+    const selectedServicesHere = redesignedData
+        .filter((company) => company["Company Name"] === companyName)
+        .flatMap((company) => {
+            const allServices = company.moreBookings.length !== 0
+                ? [
+                    ...company.services,
+                    ...company.moreBookings.flatMap((item) => item.services),
+                ]
+                : company.services || [];
 
-                return filteredServices.filter((service) => certificationLabels.includes(service.serviceName));
+            const filteredServices = allServices.filter((service) => {
+                const isServiceTakenByRmOfCertification = company.servicesTakenByRmOfCertification?.includes(service.serviceName);
+                const isServiceTakenInMoreBookings = company.moreBookings.some((booking) =>
+                    booking.servicesTakenByRmOfCertification?.includes(service.serviceName)
+                );
+
+                return !isServiceTakenByRmOfCertification && !isServiceTakenInMoreBookings;
             });
 
-        console.log("new selected", selectedServices);
+            return filteredServices.filter((service) => certificationLabels.includes(service.serviceName));
+        });
 
-        // Map through the selected services to get the service names
-        const servicesNames = selectedServices.map((service) => service.serviceName);
+    console.log("new selected here", selectedServicesHere);
 
-        // Log the selected services and service names
-        setServiceNames(servicesNames);
-    };
+    const servicesNames = selectedServicesHere.map((service) => service.serviceName);
+    setServiceNames(servicesNames);
+
+    // Check if all service names are included in certificationLabelsNew
+    const allServicesInCertificationLabelsNew = servicesNames.every(serviceName => certificationLabelsNew.includes(serviceName));
+
+    if (allServicesInCertificationLabelsNew) {
+        // Prompt user for confirmation before submitting all services
+        setSelectedServices(servicesNames);
+        Swal.fire({
+            title: 'Confirm Swap',
+            text: 'Do you want to swap all services?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, swap all!',
+            cancelButtonText: 'No, cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setIsSwappingAllServices(true);
+            }
+        });
+    } else {
+        // Otherwise, open the services popup
+        setOpenServicesPopup(true);
+    }
+};
+
+useEffect(() => {
+    if (isSwappingAllServices) {
+        handleSubmitServicesToSwap();
+        setIsSwappingAllServices(false); // Reset the state
+    }
+}, [isSwappingAllServices]);
+
+
+
 
     console.log("serviceNames", serviceNames)
 
@@ -409,127 +450,126 @@ function Received_booking_box() {
     console.log("selected", selectedServices)
     console.log("selectedCompanyData", selectedCompanyData)
 
-    const handleSubmitServicesToSwap = async () => {
-        // Check if selectedCompanyData is defined
-        if (!selectedCompanyData) {
-            console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
-            return;
-        }
-
-        const combinedServices = [
-            ...(selectedCompanyData.services || []),
-            ...(selectedCompanyData.moreBookings.flatMap((item) => item.services) || [])
-        ];
-
-        const primaryServices = selectedCompanyData.services || [];
-
-        // Combine services from selectedCompanyData.moreBookings
-        const moreBookingServices = selectedCompanyData.moreBookings
-            ? selectedCompanyData.moreBookings.flatMap((item) => item.services)
-            : [];
-
-        // Filter services based on certificationLabels
-        const filteredPrimaryServices = primaryServices.filter((service) =>
-            selectedServices.includes(service.serviceName)
-        );
-        const filteredMoreBookingServices = moreBookingServices.filter((service) =>
-            selectedServices.includes(service.serviceName)
-        );
-
-        // Map through the selected services to get the service names
-        const primaryServiceNames = filteredPrimaryServices.map((service) => service.serviceName);
-        const moreBookingServiceNames = filteredMoreBookingServices.map((service) => service.serviceName);
-
-        // Set the service names in the state
-        // setrmSelectedServiceMainBooking(primaryServiceNames);
-        // setRmSelectedServiceMoreBooking(moreBookingServiceNames);
-
-        // Initialize an array to store objects for each selected service
-        const dataToSend = [];
-
-        // Iterate through selectedServices (which contain only service names)
-        selectedServices.forEach(serviceName => {
-            // Find the detailed service object in selectedCompanyData.services
-            const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-
-            // Check if serviceData is found
-            if (serviceData) {
-                // Create an object with the required fields from selectedCompanyData and serviceData
-                const serviceToSend = {
-                    "Company Name": selectedCompanyData["Company Name"],
-                    "Company Number": selectedCompanyData["Company Number"],
-                    "Company Email": selectedCompanyData["Company Email"],
-                    panNumber: selectedCompanyData.panNumber,
-                    bdeName: selectedCompanyData.bdeName,
-                    bdeEmail: selectedCompanyData.bdeEmail || '', // Make sure to handle optional fields if they are not always provided
-                    bdmName: selectedCompanyData.bdmName,
-                    bdmType: selectedCompanyData.bdmType || 'Close-by', // Default value if not provided
-                    bookingDate: selectedCompanyData.bookingDate,
-                    paymentMethod: selectedCompanyData.paymentMethod || '', // Make sure to handle optional fields if they are not always provided
-                    caCase: selectedCompanyData.caCase || false, // Default to false if not provided
-                    caNumber: selectedCompanyData.caNumber || 0, // Default to 0 if not provided
-                    caEmail: selectedCompanyData.caEmail || '', // Make sure to handle optional fields if they are not always provided
-                    serviceName: serviceData.serviceName,
-                    totalPaymentWOGST: serviceData.totalPaymentWOGST || 0, // Default to 0 if not provided
-                    totalPaymentWGST: serviceData.totalPaymentWGST || 0,
-                    withGST: serviceData.withGST,
-                    withDSC: serviceData.withDSC,// Default to 0 if not provided
-                    firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
-                    secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
-                    thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
-                    fourthPayment: serviceData.fourthPayment || 0,
-                    secondPaymentRemarks: serviceData.secondPaymentRemarks || "",
-                    thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
-                    fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "", // Default to 0 if not provided
-                    bookingPublishDate: serviceData.bookingPublishDate || '', // Placeholder for bookingPublishDate, can be set if available
-                };
-
-                // Push the created object to dataToSend array
-                dataToSend.push(serviceToSend);
-            } else {
-                console.error(`Service with name '${serviceName}' not found in selected company data.`);
-            }
-        });
-
-        if (dataToSend.length !== 0) {
-            try {
-                const responses = await Promise.all([
-                    axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
-                        dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
-                    }),
-                    axios.post(`${secretKey}/rm-services/postrmselectedservicestobookings/${selectedCompanyData["Company Name"]}`, {
-                        rmServicesMainBooking: primaryServiceNames || [],
-                        rmServicesMoreBooking: moreBookingServiceNames || []
-                    })
-                ]);
-
-                const response = responses[0];
-                const response2 = responses[1];
-
-                console.log("response", response2.data);
-                if (response.data.successEntries === 0) {
-                    Swal.fire("Please Select Unique Services");
-                } else {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        html: `Bookings Uploaded Successfully<br><br>Successful Entries: ${response.data.successEntries}<br>Failed Entries: ${response.data.failedEntries}`
-                    });
-                }
-                fetchRedesignedFormData()
-                handleCloseServicesPopup();
-            } catch (error) {
-                console.error("Error sending data:", error.message);
-                Swal.fire("Error", "Failed to upload bookings", error.message);
-            }
-        } else {
-            console.log("No data to send.");
-        }
-
-        // Assuming setDataToSend updates state to store dataToSend array
-        setDataToSend(dataToSend);
-        // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
+   const handleSubmitServicesToSwap = async () => {
+    // Check if selectedCompanyData is defined
+    if (!selectedCompanyData) {
+        console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
+        return;
     }
+    console.log("selectedservices" , selectedServices)
+
+    // Default moreBookings to an empty array if it's undefined
+    const moreBookings = selectedCompanyData.moreBookings || [];
+
+    const combinedServices = [
+        ...(selectedCompanyData.services || []),
+        ...moreBookings.flatMap((item) => item.services || [])
+    ];
+
+    const primaryServices = selectedCompanyData.services || [];
+
+    // Combine services from selectedCompanyData.moreBookings
+    const moreBookingServices = moreBookings.flatMap((item) => item.services || []);
+
+    // Filter services based on certificationLabels
+    const filteredPrimaryServices = primaryServices.filter((service) =>
+        selectedServices.includes(service.serviceName)
+    );
+    const filteredMoreBookingServices = moreBookingServices.filter((service) =>
+        selectedServices.includes(service.serviceName)
+    );
+
+    // Map through the selected services to get the service names
+    const primaryServiceNames = filteredPrimaryServices.map((service) => service.serviceName);
+    const moreBookingServiceNames = filteredMoreBookingServices.map((service) => service.serviceName);
+
+    // Initialize an array to store objects for each selected service
+    const dataToSend = [];
+
+    // Iterate through selectedServices (which contain only service names)
+    selectedServices.forEach(serviceName => {
+        // Find the detailed service object in combinedServices
+        const serviceData = combinedServices.find(service => service.serviceName === serviceName);
+
+        // Check if serviceData is found
+        if (serviceData) {
+            // Create an object with the required fields from selectedCompanyData and serviceData
+            const serviceToSend = {
+                "Company Name": selectedCompanyData["Company Name"],
+                "Company Number": selectedCompanyData["Company Number"],
+                "Company Email": selectedCompanyData["Company Email"],
+                panNumber: selectedCompanyData.panNumber,
+                bdeName: selectedCompanyData.bdeName,
+                bdeEmail: selectedCompanyData.bdeEmail || '', // Handle optional fields
+                bdmName: selectedCompanyData.bdmName,
+                bdmType: selectedCompanyData.bdmType || 'Close-by', // Default value if not provided
+                bookingDate: selectedCompanyData.bookingDate,
+                paymentMethod: selectedCompanyData.paymentMethod || '', // Handle optional fields
+                caCase: selectedCompanyData.caCase || false, // Default to false if not provided
+                caNumber: selectedCompanyData.caNumber || 0, // Default to 0 if not provided
+                caEmail: selectedCompanyData.caEmail || '', // Handle optional fields
+                serviceName: serviceData.serviceName,
+                totalPaymentWOGST: serviceData.totalPaymentWOGST || 0, // Default to 0 if not provided
+                totalPaymentWGST: serviceData.totalPaymentWGST || 0,
+                withGST: serviceData.withGST,
+                withDSC: serviceData.withDSC || 0, // Default to 0 if not provided
+                firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
+                secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
+                thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
+                fourthPayment: serviceData.fourthPayment || 0,
+                secondPaymentRemarks: serviceData.secondPaymentRemarks || "",
+                thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
+                fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
+                bookingPublishDate: serviceData.bookingPublishDate || '', // Handle optional fields
+            };
+
+            // Push the created object to dataToSend array
+            dataToSend.push(serviceToSend);
+        } else {
+            console.error(`Service with name '${serviceName}' not found in selected company data.`);
+        }
+    });
+
+    if (dataToSend.length !== 0) {
+        try {
+            const responses = await Promise.all([
+                axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
+                    dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
+                }),
+                axios.post(`${secretKey}/rm-services/postrmselectedservicestobookings/${selectedCompanyData["Company Name"]}`, {
+                    rmServicesMainBooking: primaryServiceNames || [],
+                    rmServicesMoreBooking: moreBookingServiceNames || []
+                })
+            ]);
+
+            const response = responses[0];
+            const response2 = responses[1];
+
+            console.log("response", response2.data);
+            if (response.data.successEntries === 0) {
+                Swal.fire("Please Select Unique Services");
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    html: `Bookings Uploaded Successfully<br><br>Successful Entries: ${response.data.successEntries}<br>Failed Entries: ${response.data.failedEntries}`
+                });
+            }
+            fetchRedesignedFormData();
+            handleCloseServicesPopup();
+        } catch (error) {
+            console.error("Error sending data:", error.message);
+            Swal.fire("Error", "Failed to upload bookings", error.message);
+        }
+    } else {
+        console.log("No data to send.");
+    }
+
+    // Assuming setDataToSend updates state to store dataToSend array
+    setDataToSend(dataToSend);
+    // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
+}
+
 
     //----------function to remove company from rm panel-----------------------
 
@@ -668,7 +708,7 @@ function Received_booking_box() {
                                                         <div className='d-flex'>
                                                             <button className='btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center'
                                                                 onClick={() => (
-                                                                    setOpenServicesPopup(true),
+                                                                    //setOpenServicesPopup(true),
                                                                     setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
                                                                     handleOpenServices(obj["Company Name"])
 
