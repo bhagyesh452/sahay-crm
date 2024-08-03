@@ -41,9 +41,22 @@ function RmofCertificationGeneralPanel() {
             setEmployeeData(userData);
 
             const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
-            const generalServices = servicesResponse.data.filter(item => item.mainCategoryStatus === "General");
-            console.log("Fetched general services data:", generalServices);
-            setRmServicesData(generalServices);
+            const servicesData = servicesResponse.data;
+
+            if (Array.isArray(servicesData)) {
+                const filteredData = servicesData
+                    .filter(item => item.mainCategoryStatus === "General")
+                    .sort((a, b) => {
+                        const dateA = new Date(a.addedOn);
+                        const dateB = new Date(b.addedOn);
+                        return dateB - dateA; // Sort in descending order
+                    });
+                setRmServicesData(filteredData);
+            } else {
+                console.error("Expected an array for services data, but got:", servicesData);
+            }
+            console.log("Fetched general services data:", servicesData);
+            //setRmServicesData(filteredData);
         } catch (error) {
             console.error("Error fetching data", error.message);
         } finally {

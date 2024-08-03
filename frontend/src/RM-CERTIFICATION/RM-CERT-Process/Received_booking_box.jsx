@@ -519,7 +519,8 @@ function Received_booking_box() {
                     secondPaymentRemarks: serviceData.secondPaymentRemarks || "",
                     thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
-                    bookingPublishDate: serviceData.bookingPublishDate || '', // Handle optional fields
+                    bookingPublishDate: serviceData.bookingPublishDate || '',
+                    addedOn:new Date() // Handle optional fields
                 };
 
                 // Push the created object to dataToSend array

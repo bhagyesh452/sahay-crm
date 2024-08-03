@@ -148,7 +148,7 @@ router.post('/post-rmservices-from-listview', async (req, res) => {
 
 router.get("/rm-sevicesgetrequest", async (req, res) => {
   try {
-    const response = await RMCertificationModel.find().sort({ addedOn: -1 });
+    const response = await RMCertificationModel.find();
     res.status(200).json(response);
   } catch (error) {
     console.log("Error fetching data", error);
