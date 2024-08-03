@@ -2306,8 +2306,8 @@ td input {
 .employee_active {
   padding: 3px 10px 3px 10px;
   background: #38e037;
-  margin-left: 18px;
-  margin-top: 2px;
+  /* margin-left: 18px;
+  margin-top: 2px; */
   border-radius: 3px;
   font-size: 11px;
   color: #fff;
@@ -2745,7 +2745,7 @@ td input {
   /* border-radius: 4px !important; */
   overflow: hidden;
   /* border: 1px solid #dadfe5; */
-  flex: 0 0 63%;
+  flex: 0 0 87%;
   border-bottom: none;
   margin-bottom: -1px !important;
   padding-right: 10px !important;
@@ -2761,7 +2761,7 @@ td input {
   border: none !important;
   border-radius: 4px 4px 0 0 !important;
   font-size: 12px;
-  width: 140px !important;
+  width: 166px !important;
   position: relative;
   padding: 6px 10px !important;
   transition: .5s;
@@ -3187,21 +3187,25 @@ td input {
 {
   .rm_task_section_navtabs
   {
-    flex: 0 1 65%;
+    flex: 0 1 96%;
   } 
 }
 @media only screen and (max-width: 1527px) and (min-width: 1400px)
 {
   .rm_task_section_navtabs
   {
-    flex: 0 1 68%;
+    flex: 0 1 92%;
   } 
 }
 @media only screen and (max-width:1399px) and (min-width: 1200px)
 {
+  .rm_task_section_navitem .nav-link
+  {
+    width: 150px !important;
+  }
   .rm_task_section_navtabs
   {
-    flex: 0 1 75%;
+    flex: 0 0 100%;
   } 
 }
 @media only screen and (max-width:1199px) and (min-width: 50px)

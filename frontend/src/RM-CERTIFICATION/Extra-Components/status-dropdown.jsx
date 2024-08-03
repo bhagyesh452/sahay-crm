@@ -303,7 +303,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
         }
       case "ReadyToSubmit":
         switch (subStatus) {
-          case "Ready To Submit":
+          case "ReadyToSubmit":
             return "ready_to_submit";
           case "Submitted":
             return "submited-status";

@@ -757,13 +757,10 @@ table.table.top_5_table tbody tr.myself td {
 .hr_emply_list_navitem .nav-link.active::after {
     background: #43474c !important;
 }
+
+/* ID crade Design Css strat */
 .E_Id_card_main {
     width: 350px;
-}
-.hr_employee_information
-{
-    width: calc(100% - 350px);
-    padding-left: 15px;
 }
 .E_Id_card
 {
@@ -786,6 +783,10 @@ table.table.top_5_table tbody tr.myself td {
     background: #eff0f1;
     border-radius: 10px;
     padding: 5px;
+    background-image: url(../static/bg.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 .main_logo_For_ID
 {
@@ -918,11 +919,165 @@ table.table.top_5_table tbody tr.myself td {
     letter-spacing: 1px;
     font-weight: 700;
 }
+/* ID crade Design Css End */
+
+.emply_e_card
+{
+    width: 350px;
+}
 .hr_emply_info_inner
 {
     background: #fafafb;
     height: calc(100vh - 196px);
     overflow-y: auto;
+}
+.hr_employee_information
+{
+    width: calc(100% - 350px);
+    padding-left: 15px;
+}
+.emply_e_card_profile
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+.emply_e_card_profile_inner_lbl
+{
+    color:rgb(140, 140, 140);
+    font-size: 0.875rem;
+    line-height: 1.4375em;
+    font-family: "Public Sans", sans-serif;
+    font-weight: 400;
+    padding: 0px;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.5s;
+}
+.emply_e_card_profile_div
+{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: "Public Sans", sans-serif;
+    line-height: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    user-select: none;
+    font-size: 1rem;
+    color: rgb(22, 119, 255);
+    background: rgb(230, 244, 255);
+    width: 124px;
+    height: 124px;
+    border: 1px dashed;
+}
+.emply_e_card_profile_div img
+{
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    object-fit: cover;
+    color: transparent;
+    text-indent: 10000px;
+}
+.emply_e_card_profile_update
+{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background: rgba(0, 0, 0, 0.65);
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.emply_e_card_profile_update_inner
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.emply_e_card_profile_update_icon
+{   
+    font-size:26px;
+    color: rgb(245, 245, 245);
+}
+.emply_e_card_profile_update_text
+{
+    margin: 0px;
+    font-size: 0.875rem;
+    line-height: 1.57;
+    font-weight: 400;
+    color: rgb(245, 245, 245);
+}
+.emply_e_card_profile_name
+{
+    text-align: center;
+}
+.emply_e_card_profile_inner_lbl:hover .emply_e_card_profile_update
+{
+    opacity: 1;
+    transition: 0.5s;
+}
+.emply_e_card_profile_name p
+{
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 18px     !important;
+}
+.emply_e_card_profile_name label
+{
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 4px !important;
+    color: #a8a8a8;
+}
+.my-card-style-2
+{
+    border: 1px solid #eee;
+    border-radius: 14px;
+    box-shadow: 2px 2px 10px -3px #ebebeb;
+    background: #fff;
+    overflow: hidden;
+    padding: 10px;
+}
+.my-card-head-style-2
+{
+    border-bottom: 1px solid #eee;
+    padding: 0px 0px 12px 0;
+    font-weight: 500;
+}
+.my-card-body-style-2
+{
+    padding: 12px 0px 12px 0;
+}
+.emply_e_info_head
+{
+    font-size: 10px;
+    color: #808080;
+}
+.emply_e_info_data
+{
+    margin-top: 2px;
+    font-weight: 500;   
+}
+.emply_e_info_data_name
+{
+    color: #495663;
+    font-size: 12px;
+}
+.ee_info_i
+{
+    font-size: 14px;
+    margin-right: 3px;
+    line-height: 13px;
 }
 @media (max-width: 1528px)
 {
