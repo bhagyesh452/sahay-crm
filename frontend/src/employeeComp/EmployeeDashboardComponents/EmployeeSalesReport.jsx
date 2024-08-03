@@ -45,23 +45,20 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
   const functionCalculateMatured = (istrue) => {
     let maturedCount = 0;
     const today = new Date();
-    
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    const cleanString = (str) => {
+        return str.replace(/\u00A0/g, ' ').trim();
+    };
 
     redesignedData.map((mainBooking) => {
         const bookingDate = new Date(mainBooking.bookingDate);
         let condition = false;
-        switch (Filterby) {
-            case 'Today':
-                condition = (bookingDate.toLocaleDateString() === today.toLocaleDateString());
-                break;
-            case 'Last Month':
-                condition = (bookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1));
-                break;
-            case 'This Month':
-                condition = (bookingDate.getMonth() === today.getMonth());
-                break;
-            default:
-                break;
+
+        // Check if the bookingDate is in the current month
+        if (Filterby === 'This Month') {
+            condition = (bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear);
         }
 
         if (condition) {
@@ -79,18 +76,10 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
         mainBooking.moreBookings.map((moreObject) => {
             const moreBookingDate = new Date(moreObject.bookingDate);
             let moreCondition = false;
-            switch (Filterby) {
-                case 'Today':
-                    moreCondition = (moreBookingDate.toLocaleDateString() === today.toLocaleDateString());
-                    break;
-                case 'Last Month':
-                    moreCondition = (moreBookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1));
-                    break;
-                case 'This Month':
-                    moreCondition = (moreBookingDate.getMonth() === today.getMonth());
-                    break;
-                default:
-                    break;
+
+            // Check if the moreBookingDate is in the current month
+            if (Filterby === 'This Month') {
+                moreCondition = (moreBookingDate.getMonth() === currentMonth && moreBookingDate.getFullYear() === currentYear);
             }
 
             if (moreCondition) {
@@ -110,6 +99,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
     totalMaturedCount = totalMaturedCount + maturedCount;
     return maturedCount;
 };
+
 
   const functionCalculateTotalRevenue = (istrue) => {
     let achievedAmount = 0;
