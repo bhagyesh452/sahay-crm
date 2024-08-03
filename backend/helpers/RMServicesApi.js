@@ -494,7 +494,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           : company.submittedOn;  // Retain existing submittedOn otherwise
 
       // Conditionally include dateOfChangingMainStatus
-      if (["Process", "Approved", "Submitted", "Hold", "Defaulter"].includes(subCategoryStatus))  {
+      if (["Process", "Approved", "Submitted", "Hold", "Defaulter","ReadyToSubmit"].includes(subCategoryStatus))  {
         updateFields.dateOfChangingMainStatus = new Date();
       }
 
@@ -603,7 +603,7 @@ router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
 
 router.post(`/update-content-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, contentStatus } = req.body;
-  //console.log("dscStatus" , contentStatus)
+  console.log("contentStatus" , contentStatus , companyName , serviceName)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -993,6 +993,43 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (req, res) => {
+  const { companyName, serviceName } = req.body;
+  try {
+    // Find the document by companyName
+    const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+    
+    if (!document) {
+      console.log("No service found")
+    }
+
+    // Remove serviceName from servicesTakenByRmOfCertification
+    const updatedServices = document.servicesTakenByRmOfCertification.filter(service => service !== serviceName);
+    document.servicesTakenByRmOfCertification = updatedServices;
+
+    // Remove serviceName from morebookings array of objects
+    document.moreBookings.forEach(booking => {
+      booking.servicesTakenByRmOfCertification = booking.servicesTakenByRmOfCertification.filter(service => service !== serviceName);
+    });
+
+    // Save the updated document
+    await document.save();
+
+    // Delete from RMCertificationModel
+    await RMCertificationModel.findOneAndDelete({
+      "Company Name": companyName,
+      serviceName: serviceName
+    });
+
+    res.status(200).json({ message: "Company successfully deleted and service removed from RedesignedLeadModel" });
+  } catch (error) {
+    console.log("Error Deleting Company From Task Manager", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 
 
 

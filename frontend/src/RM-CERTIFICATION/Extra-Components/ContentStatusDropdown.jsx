@@ -15,7 +15,7 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
-
+   
 
     try {
       let response;
@@ -49,6 +49,13 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
           serviceName,
           contentStatus: newStatus
         });
+      }else if (mainStatus === "ReadyToSubmit") {
+        response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+          companyName,
+          serviceName,
+          contentStatus: newStatus
+        });
+        console.log("statuschange" , contentStatus , companyName , serviceName )
       }
 
       refreshData();
@@ -80,10 +87,18 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
   };
 
   useEffect(() => {
+    if (writername === "Not Applicable") {
+      setStatus("Not Applicable");
+    } else {
+      setStatus(contentStatus);
+    }
+  }, [contentStatus, writername]);
+
+  useEffect(() => {
     setStatusClass(getStatusClass(contentStatus));
   }, [contentStatus]);
 
-  console.log("writername", companyName, serviceName, writername)
+  console.log("writername", companyName, serviceName, writername , contentStatus)
 
 
   return (
@@ -99,14 +114,14 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
           {status}
         </button>
         <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li>
+          <li className={writername === "Drashti Thakkar" ? "disabled" : ""}>
             <a
               className="dropdown-item"
               onClick={() => handleStatusChange("Not Applicable", "e_task_assign")}
               href="#"
+              aria-disabled={writername === "Drashti Thakkar"}
             >
               Not Applicable
-
             </a>
           </li>
           <li>

@@ -48,6 +48,12 @@ const BrochureDesignerDropdown = ({ mainStatus, designername, subStatus, setNewS
           serviceName,
           brochureDesigner: newStatus
         });
+      }else if (mainStatus === "ReadyToSubmit") {
+        response = await axios.post(`${secretKey}/rm-services/update-brochuredesigner-rmofcertification`, {
+          companyName,
+          serviceName,
+          brochureDesigner: newStatus
+        });
       }
 
       refreshData();

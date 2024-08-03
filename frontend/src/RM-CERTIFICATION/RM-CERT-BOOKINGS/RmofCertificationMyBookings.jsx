@@ -24,6 +24,7 @@ import RmofCertificationApprovedPanel from "./RmofCertificationApprovedPanel";
 import RmofCertificationDefaulterPanel from "./RmofCertificationDefaulterPanel";
 import RmofCertificationHoldPanel from "./RmofCertificationHoldPanel";
 import io from 'socket.io-client';
+import RmofCertificationReadyToSubmitPanel from "./RmofCertificationReadyToSubmitPanel";
 
 function RmofCertificationMyBookings() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -223,6 +224,19 @@ function RmofCertificationMyBookings() {
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#ReadyToSubmit">
+                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                    <div className="rm_txt_tsn">
+                                                        Ready To Submit
+                                                    </div>
+                                                    <div className="rm_tsn_bdge">
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "ReadyToSubmit").length : 0}
+                                                        
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link" data-bs-toggle="tab" href="#Submited">
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
@@ -282,6 +296,9 @@ function RmofCertificationMyBookings() {
                                     </div>
                                     <div class="tab-pane" id="InProcess">
                                         <RmofCertificationProcessPanel rmServicesData={rmServicesData} />
+                                    </div>
+                                    <div class="tab-pane" id="ReadyToSubmit">
+                                        <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} />
                                     </div>
                                     <div class="tab-pane" id="Submited">
                                         <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} />

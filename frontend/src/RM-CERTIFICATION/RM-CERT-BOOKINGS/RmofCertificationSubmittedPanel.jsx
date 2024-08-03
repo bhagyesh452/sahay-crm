@@ -95,7 +95,7 @@ function RmofCertificationSubmittedPanel() {
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchRMServicesData()
+            fetchData()
         });
 
 
@@ -106,51 +106,40 @@ function RmofCertificationSubmittedPanel() {
 
 
     const fetchData = async () => {
+        setOpenBacdrop(true);
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            // Set the retrieved data in the state
-            const tempData = response.data;
-            //console.log(tempData)
-            const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            //console.log(userData)
+            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
+
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            const servicesData = servicesResponse.data;
+
+            if (Array.isArray(servicesData)) {
+                const filteredData = servicesData
+                    .filter(item => item.mainCategoryStatus === "Submitted")
+                    .sort((a, b) => {
+                        const dateA = new Date(a.dateOfChangingMainStatus);
+                        const dateB = new Date(b.dateOfChangingMainStatus);
+                        return dateB - dateA; // Sort in descending order
+                    });
+                setRmServicesData(filteredData);
+            } else {
+                console.error("Expected an array for services data, but got:", servicesData);
+            }
         } catch (error) {
-            console.error("Error fetching data:", error.message);
+            console.error("Error fetching data", error.message);
+        } finally {
+            setOpenBacdrop(false);
         }
     };
 
-    const fetchRMServicesData = async () => {
-        try {
-            setOpenBacdrop(true)
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            const servicesData = response.data
-            .filter(item => item.mainCategoryStatus === "Submitted")
-            .sort((a, b) => {
-                const dateA = new Date(a.dateOfChangingMainStatus);
-                const dateB = new Date(b.dateOfChangingMainStatus);
-                return dateB - dateA; // Sort in descending order
-            });;
-            console.log("servicesData", servicesData)
-            setRmServicesData(servicesData)
-            //console.log(response.data)
-        } catch (error) {
-            console.error("Error fetching data", error.message)
-        } finally {
-            setOpenBacdrop(false)
-        }
-    }
-
     useEffect(() => {
         fetchData();
-    }, []);
-
-    useEffect(() => {
-        fetchRMServicesData()
-
-    }, [employeeData])
+    }, [rmCertificationUserId, secretKey]);
 
     const refreshData = () => {
-        fetchRMServicesData();
+        fetchData();
     };
 
     function formatDate(dateString) {
@@ -165,6 +154,8 @@ function RmofCertificationSubmittedPanel() {
         console.log("RemarksPopup")
     }
     const functionCloseRemarksPopup = () => {
+        setChangeRemarks('')
+        setError('')
         setOpenRemarksPopUp(false)
     }
     const debouncedSetChangeRemarks = useCallback(
@@ -188,7 +179,7 @@ function RmofCertificationSubmittedPanel() {
                 //console.log("response", response.data);
 
                 if (response.status === 200) {
-                    fetchRMServicesData();
+                    fetchData();
                     functionCloseRemarksPopup();
                     // Swal.fire(
                     //     'Remarks Added!',
@@ -207,18 +198,18 @@ function RmofCertificationSubmittedPanel() {
 
     const handleDeleteRemarks = async (remarks_id) => {
         try {
-          const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-          });
-          if(response.status === 200){
-            fetchRMServicesData();
-            functionCloseRemarksPopup(); 
-          }
-         // Refresh the list
+            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+            });
+            if (response.status === 200) {
+                fetchData();
+                functionCloseRemarksPopup();
+            }
+            // Refresh the list
         } catch (error) {
-          console.error("Error deleting remark:", error);
+            console.error("Error deleting remark:", error);
         }
-      };
+    };
 
 
     const handleIndustryChange = (industry, options) => {
@@ -241,253 +232,269 @@ function RmofCertificationSubmittedPanel() {
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                    {rmServicesData && rmServicesData.length > 0 ? (
+                    {openBacdrop && (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={openBacdrop}
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    )}
+                    {rmServicesData.length > 0 ? (
                         <table className="table table-vcenter table-nowrap rm_table_submited">
-                        <thead>
-                            <tr className="tr-sticky">
-                                <th className="rm-sticky-left-1">Sr.No</th>
-                                <th className="rm-sticky-left-2">Company Name</th>
-                                <th>Company Number</th>
-                                <th>Company Email</th>
-                                <th>CA Number</th>
-                                <th>Service Name</th>
-                                <th>Status</th>
-                                <th>Remark</th>
-                                <th>Website Link/Brief</th>
-                                <th>DSC Applicable</th>
-                                <th>DSC Status</th>
-                                <th>Content Writer</th>
-                                <th>Content Status</th>
-                                <th>Brochure Designer</th>
-                                <th>Brochure Status</th>
-                                <th>NSWS Email Id</th>
-                                <th>NSWS Password</th>
-                                <th>Industry</th>
-                                <th>Sector</th>
-                                <th>Booking Date</th>
-                                <th>BDE Name</th>
-                                <th>BDM name</th>
-                                <th>Total Payment</th>
-                                <th>received Payment</th>
-                                <th>Pending Payment</th>
-                                <th>No of Attempt</th>
-                                <th>Submitted On</th>
-                                <th>Submitted By</th>
-                                <th className="rm-sticky-action">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rmServicesData && rmServicesData.map((obj, index) => (
-                                <tr key={index}>
-                                    <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                    <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj["Company Number"]}</div>
-                                            <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                                <FaWhatsapp />
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td>{obj["Company Email"]}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
-                                            {obj.caCase === "Yes" && (
-                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                            <thead>
+                                <tr className="tr-sticky">
+                                    <th className="rm-sticky-left-1">Sr.No</th>
+                                    <th className="rm-sticky-left-2">Company Name</th>
+                                    <th>Company Number</th>
+                                    <th>Company Email</th>
+                                    <th>CA Number</th>
+                                    <th>Service Name</th>
+                                    <th>Status</th>
+                                    <th>Remark</th>
+                                    <th>Website Link/Brief</th>
+                                    <th>DSC Applicable</th>
+                                    <th>DSC Status</th>
+                                    <th>Content Writer</th>
+                                    <th>Content Status</th>
+                                    <th>Brochure Designer</th>
+                                    <th>Brochure Status</th>
+                                    <th>NSWS Email Id</th>
+                                    <th>NSWS Password</th>
+                                    <th>Industry</th>
+                                    <th>Sector</th>
+                                    <th>Booking Date</th>
+                                    <th>BDE Name</th>
+                                    <th>BDM name</th>
+                                    <th>Total Payment</th>
+                                    <th>received Payment</th>
+                                    <th>Pending Payment</th>
+                                    <th>No of Attempt</th>
+                                    <th>Submitted On</th>
+                                    <th>Submitted By</th>
+                                    <th className="rm-sticky-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rmServicesData && rmServicesData.map((obj, index) => (
+                                    <tr key={index}>
+                                        <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
+                                        <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj["Company Number"]}</div>
+                                                <a
+                                                    href={`https://wa.me/${obj["Company Number"]}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                     <FaWhatsapp />
                                                 </a>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td>{obj.serviceName}</td>
-                                    <td>
-                                        <div>
-                                            {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                <StatusDropdown
-                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                    mainStatus={obj.mainCategoryStatus}
-                                                    subStatus={obj.subCategoryStatus}
-                                                    setNewSubStatus={setNewStatusSubmitted}
-                                                    companyName={obj["Company Name"]}
-                                                    serviceName={obj.serviceName}
-                                                    refreshData={refreshData}
-                                                />
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className='td_of_remarks'>
-                                        <div className="d-flex align-items-center justify-content-between wApp">
-                                            <div
-                                                className="My_Text_Wrap"
-                                                title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
-                                            >
-                                                {
-                                                    obj.Remarks && obj.Remarks.length > 0
-                                                        ? obj.Remarks
-                                                            .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
-                                                        : "No Remarks"
-                                                }
                                             </div>
-                                            <button className='td_add_remarks_btn'
-                                                onClick={() => {
-                                                    setOpenRemarksPopUp(true)
-                                                    setCurrentCompanyName(obj["Company Name"])
-                                                    setCurrentServiceName(obj.serviceName)
-                                                    setHistoryRemarks(obj.Remarks)
-                                                    handleOpenRemarksPopup(
-                                                        obj["Company Name"],
-                                                        obj.serviceName
-                                                    )
-                                                }}
-                                            >
-                                                <FaPencilAlt />
+                                        </td>
+                                        <td>{obj["Company Email"]}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                                {obj.caCase === "Yes" && (
+                                                    <a
+                                                        href={`https://wa.me/${obj.caNumber}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td>{obj.serviceName}</td>
+                                        <td>
+                                            <div>
+                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                    <StatusDropdown
+                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                        mainStatus={obj.mainCategoryStatus}
+                                                        subStatus={obj.subCategoryStatus}
+                                                        setNewSubStatus={setNewStatusSubmitted}
+                                                        companyName={obj["Company Name"]}
+                                                        serviceName={obj.serviceName}
+                                                        refreshData={refreshData}
+                                                    />
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className='td_of_remarks'>
+                                            <div className="d-flex align-items-center justify-content-between wApp">
+                                                <div
+                                                    className="My_Text_Wrap"
+                                                    title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
+                                                >
+                                                    {
+                                                        obj.Remarks && obj.Remarks.length > 0
+                                                            ? obj.Remarks
+                                                                .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
+                                                            : "No Remarks"
+                                                    }
+                                                </div>
+                                                <button className='td_add_remarks_btn'
+                                                    onClick={() => {
+                                                        setOpenRemarksPopUp(true)
+                                                        setCurrentCompanyName(obj["Company Name"])
+                                                        setCurrentServiceName(obj.serviceName)
+                                                        setHistoryRemarks(obj.Remarks)
+                                                        handleOpenRemarksPopup(
+                                                            obj["Company Name"],
+                                                            obj.serviceName
+                                                        )
+                                                    }}
+                                                >
+                                                    <FaPencilAlt />
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className='td_of_weblink'>
+                                            <WebsiteLink
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
+                                                websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
+
+                                            />
+                                        </td>
+                                        <td>{obj.withDSC ? "Yes" : "No"}</td>
+                                        <td>
+                                            <div>{obj.withDSC ? (
+                                                // <DscStatusDropdown 
+                                                // companyName = {obj["Company Name"]}
+                                                // serviceName = {obj.serviceName}
+                                                // mainStatus = {obj.mainCategoryStatus}
+                                                // dscStatus = {obj.dscStatus}
+                                                // />
+                                                "Not Started"
+                                            ) :
+                                                ("Not Applicable")}</div>
+                                        </td>
+                                        <td>
+                                            <ContentWriterDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
+                                                refreshData={refreshData}
+                                            /></td>
+                                        <td>
+                                            <ContentStatusDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                                writername={obj.contentWriter}
+                                                refreshData={refreshData}
+                                            /></td>
+                                        <td>
+                                            <BrochureDesignerDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                                refreshData={refreshData}
+                                            />
+                                        </td>
+                                        <td>
+                                            <BrochureStatusDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                brochureStatus={obj.brochureStatus}
+                                                designername={obj.brochureDesigner}
+                                            /></td>
+                                        <td className='td_of_NSWSeMAIL'>
+                                            <NSWSEmailInput
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
+                                            />
+                                        </td>
+                                        <td className='td_of_weblink'>
+                                            <NSWSPasswordInput
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refresData={refreshData}
+                                                nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                            />
+                                        </td>
+
+                                        <td>
+                                            <IndustryDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                onIndustryChange={handleIndustryChange}
+                                                industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
+
+                                            /></td>
+                                        <td className='td_of_Industry'>
+                                            <SectorDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                sectorOptions={sectorOptions}
+                                                industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
+                                                sector={obj.sector || ""} // Default to "" if sector is not provided
+                                            />
+                                        </td>
+                                        <td>{formatDatePro(obj.bookingDate)}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+
+                                                <div>{obj.bdeName}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
+
+                                                <div>{obj.bdmName}</div>
+                                            </div>
+                                        </td>
+                                        <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td>
+                                            {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
+                                                obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
+                                                    "1st"}
+                                        </td>
+                                        <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
+                                        <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                                        <td className="rm-sticky-action">
+                                            <button className="action-btn action-btn-primary">
+                                                <FaRegEye />
                                             </button>
-                                        </div>
-                                    </td>
-                                    <td className='td_of_weblink'>
-                                        <WebsiteLink
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
-                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
+                                        </td>
 
-                                        />
-                                    </td>
-                                    <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                    <td>
-                                        <div>{obj.withDSC ? (
-                                            // <DscStatusDropdown 
-                                            // companyName = {obj["Company Name"]}
-                                            // serviceName = {obj.serviceName}
-                                            // mainStatus = {obj.mainCategoryStatus}
-                                            // dscStatus = {obj.dscStatus}
-                                            // />
-                                            "Not Started"
-                                        ) :
-                                            ("Not Applicable")}</div>
-                                    </td>
-                                    <td>
-                                        <ContentWriterDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            writername={obj.contentWriter ? obj.contentWriter : "Not Applicable"}
-                                            refreshData={refreshData}
-                                        /></td>
-                                    <td>
-                                        <ContentStatusDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
-                                            writername={obj.contentWriter}
-                                            refreshData={refreshData}
-                                        /></td>
-                                    <td>
-                                        <BrochureDesignerDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                            refreshData={refreshData}
-                                        />
-                                    </td>
-                                    <td>
-                                        <BrochureStatusDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            brochureStatus={obj.brochureStatus}
-                                            designername={obj.brochureDesigner}
-                                        /></td>
-                                    <td className='td_of_NSWSeMAIL'>
-                                        <NSWSEmailInput
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
-                                        />
-                                    </td>
-                                    <td className='td_of_weblink'>
-                                        <NSWSPasswordInput
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refresData={refreshData}
-                                            nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
-                                        />
-                                    </td>
-
-                                    <td>
-                                        <IndustryDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            onIndustryChange={handleIndustryChange}
-                                            industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
-
-                                        /></td>
-                                    <td className='td_of_Industry'>
-                                        <SectorDropdown
-                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                            companyName={obj["Company Name"]}
-                                            serviceName={obj.serviceName}
-                                            refreshData={refreshData}
-                                            sectorOptions={sectorOptions}
-                                            industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
-                                            sector={obj.sector || ""} // Default to "" if sector is not provided
-                                        />
-                                    </td>
-                                    <td>{formatDatePro(obj.bookingDate)}</td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center">
-
-                                            <div>{obj.bdeName}</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center justify-content-center">
-
-                                            <div>{obj.bdmName}</div>
-                                        </div>
-                                    </td>
-                                    <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                    <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                    <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
-                                    <td>
-                                        {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
-                                            obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
-                                                "1st"}
-                                    </td>
-                                    <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
-                                    <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
-                                    <td className="rm-sticky-action">
-                                        <button className="action-btn action-btn-primary">
-                                            <FaRegEye />
-                                        </button>
-                                    </td>
-
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>) 
-                    :
-                    (
-                        <table className='no_data_table'>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>)
+                        :
+                        (!openBacdrop && (
+                            <table className='no_data_table'>
                                 <div className='no_data_table_inner'>
                                     <Nodata />
                                 </div>
-                            </table>
-                    )}
+                            </table>)
+                        )}
                 </div>
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
@@ -570,13 +577,6 @@ function RmofCertificationSubmittedPanel() {
                     Submit
                 </button>
             </Dialog>
-
-            {openBacdrop && (<Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={openBacdrop}
-                onClick={handleCloseBackdrop}>
-                <CircularProgress color="inherit" />
-            </Backdrop>)}
         </div>
     )
 }

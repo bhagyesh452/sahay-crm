@@ -14,68 +14,146 @@ function EmployeeTopSellingServices({redesignedData , ename}) {
 
     const [selectedMonthOption, setSelectedMonthOption] = useState("This Month")
 
-    const functionCalculateServiceCount = () => {
-        const serviceCountMap = new Map();
-        const today = new Date();
+    // const functionCalculateServiceCount = () => {
+    //     const serviceCountMap = new Map();
+    //     const today = new Date();
         
-        redesignedData.forEach((mainObj) => {
-            let condition1 = false;
-            let condition2 = false;
-            switch (selectedMonthOption) {
-              case 'Today':
-                condition1 = (new Date(mainObj.bookingDate).toLocaleDateString() === today.toLocaleDateString())
-                break;
-              case 'Last Month':
-                condition1 = (new Date(mainObj.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-                break;
-              case 'This Month':
-                condition1 = (new Date(mainObj.bookingDate).getMonth() === today.getMonth())
-                break;
-              default:
-                break;
-            }
-          if ((mainObj.bdeName === ename || mainObj.bdmName === ename) && condition1) {
-            mainObj.services.forEach((service) => {
+    //     redesignedData.forEach((mainObj) => {
+    //         let condition1 = false;
+    //         let condition2 = false;
+    //         switch (selectedMonthOption) {
+    //           case 'Today':
+    //             condition1 = (new Date(mainObj.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+    //             break;
+    //           case 'Last Month':
+    //             condition1 = (new Date(mainObj.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+    //             break;
+    //           case 'This Month':
+    //             condition1 = (new Date(mainObj.bookingDate).getMonth() === today.getMonth())
+    //             break;
+    //           default:
+    //             break;
+    //         }
+    //       if ((mainObj.bdeName === ename || mainObj.bdmName === ename) && condition1) {
+    //         mainObj.services.forEach((service) => {
               
-              if (serviceCountMap.has(service.serviceName)) {
+    //           if (serviceCountMap.has(service.serviceName)) {
                
-                serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
-              } else {
-                serviceCountMap.set(service.serviceName, 1);
-              }
-            });
-          }
-          mainObj.moreBookings.length !==0 && mainObj.moreBookings.map((moreObj)=>{
-            switch (selectedMonthOption) {
-                case 'Today':
-                  condition2 = (new Date(moreObj.bookingDate).toLocaleDateString() === today.toLocaleDateString())
-                  break;
-                case 'Last Month':
-                  condition2 = (new Date(moreObj.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
-                  break;
-                case 'This Month':
-                  condition2 = (new Date(moreObj.bookingDate).getMonth() === today.getMonth())
-                  break;
-                default:
-                  break;
-              }
-            if ((moreObj.bdeName === ename || moreObj.bdmName === ename) && condition2) {
-                moreObj.services.forEach((service) => {
-                  if (serviceCountMap.has(service.serviceName)) {
-                    serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
-                  } else {
-                    serviceCountMap.set(service.serviceName, 1);
-                  }
-                });
-              }
-          })
+    //             serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
+    //           } else {
+    //             serviceCountMap.set(service.serviceName, 1);
+    //           }
+    //         });
+    //       }
+    //       mainObj.moreBookings.length !==0 && mainObj.moreBookings.map((moreObj)=>{
+    //         switch (selectedMonthOption) {
+    //             case 'Today':
+    //               condition2 = (new Date(moreObj.bookingDate).toLocaleDateString() === today.toLocaleDateString())
+    //               break;
+    //             case 'Last Month':
+    //               condition2 = (new Date(moreObj.bookingDate).getMonth() === (today.getMonth === 0 ? 11 : today.getMonth() - 1))
+    //               break;
+    //             case 'This Month':
+    //               condition2 = (new Date(moreObj.bookingDate).getMonth() === today.getMonth())
+    //               break;
+    //             default:
+    //               break;
+    //           }
+    //         if ((moreObj.bdeName === ename || moreObj.bdmName === ename) && condition2) {
+    //             moreObj.services.forEach((service) => {
+    //               if (serviceCountMap.has(service.serviceName)) {
+    //                 serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
+    //               } else {
+    //                 serviceCountMap.set(service.serviceName, 1);
+    //               }
+    //             });
+    //           }
+    //       })
          
 
-        });
-        const serviceArray = Array.from(serviceCountMap, ([value, count]) => ({ value, count }));
-        serviceArray.sort((a, b) => b.count - a.count);
-        return serviceArray;
+    //     });
+    //     const serviceArray = Array.from(serviceCountMap, ([value, count]) => ({ value, count }));
+    //     serviceArray.sort((a, b) => b.count - a.count);
+    //     return serviceArray;
+    //   };
+
+    const functionCalculateServiceCount = () => {
+      const serviceCountMap = new Map();
+      const today = new Date();
+      const currentYear = today.getFullYear();
+  
+      const cleanString = (str) => {
+          return str.replace(/\u00A0/g, ' ').trim();
       };
+  
+      redesignedData.forEach((mainObj) => {
+          const bookingDate = new Date(mainObj.bookingDate);
+          let condition1 = false;
+          let condition2 = false;
+  
+          const isSameYear = bookingDate.getFullYear() === currentYear;
+          const isSameMonth = bookingDate.getMonth() === today.getMonth();
+  
+          switch (selectedMonthOption) {
+              case 'Today':
+                  condition1 = (bookingDate.toLocaleDateString() === today.toLocaleDateString()) && isSameYear;
+                  break;
+              case 'Last Month':
+                  condition1 = (bookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && isSameYear;
+                  break;
+              case 'This Month':
+                  condition1 = isSameMonth && isSameYear;
+                  break;
+              default:
+                  break;
+          }
+  
+          if ((cleanString(mainObj.bdeName) === cleanString(ename) || cleanString(mainObj.bdmName) === cleanString(ename)) && condition1) {
+              mainObj.services.forEach((service) => {
+                  if (serviceCountMap.has(service.serviceName)) {
+                      serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
+                  } else {
+                      serviceCountMap.set(service.serviceName, 1);
+                  }
+              });
+          }
+  
+          mainObj.moreBookings.length !== 0 && mainObj.moreBookings.forEach((moreObj) => {
+              const moreBookingDate = new Date(moreObj.bookingDate);
+              const isSameMoreYear = moreBookingDate.getFullYear() === currentYear;
+              const isSameMoreMonth = moreBookingDate.getMonth() === today.getMonth();
+  
+              switch (selectedMonthOption) {
+                  case 'Today':
+                      condition2 = (moreBookingDate.toLocaleDateString() === today.toLocaleDateString()) && isSameMoreYear;
+                      break;
+                  case 'Last Month':
+                      condition2 = (moreBookingDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 1)) && isSameMoreYear;
+                      break;
+                  case 'This Month':
+                      condition2 = isSameMoreMonth && isSameMoreYear;
+                      break;
+                  default:
+                      break;
+              }
+  
+              if ((cleanString(moreObj.bdeName) === cleanString(ename) || cleanString(moreObj.bdmName) === cleanString(ename)) && condition2) {
+                  moreObj.services.forEach((service) => {
+                      if (serviceCountMap.has(service.serviceName)) {
+                          serviceCountMap.set(service.serviceName, serviceCountMap.get(service.serviceName) + 1);
+                      } else {
+                          serviceCountMap.set(service.serviceName, 1);
+                      }
+                  });
+              }
+          });
+      });
+  
+      const serviceArray = Array.from(serviceCountMap, ([value, count]) => ({ value, count }));
+      serviceArray.sort((a, b) => b.count - a.count);
+      return serviceArray;
+  };
+  
       
 
       const serviceArray = functionCalculateServiceCount();
