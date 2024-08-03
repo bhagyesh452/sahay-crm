@@ -15,6 +15,7 @@ import Nodata from '../../components/Nodata';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import io from 'socket.io-client';
+import { BsFilter } from "react-icons/bs";
 
 function RmofCertificationGeneralPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
@@ -227,22 +228,150 @@ function RmofCertificationGeneralPanel() {
                         <table className="table table-vcenter table-nowrap rm_table">
                             <thead>
                                 <tr className="tr-sticky">
-                                    <th className="G_rm-sticky-left-1">Sr.No</th>
-                                    <th className="G_rm-sticky-left-2">Booking Date</th>
-                                    <th className="G_rm-sticky-left-3">Company Name</th>
-                                    <th>Company Number</th>
-                                    <th>Company Email</th>
-                                    <th>CA Number</th>
-                                    <th>Service Name</th>
-                                    <th>Status</th>
+                                    <th className="G_rm-sticky-left-1">
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Sr.No
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th className="G_rm-sticky-left-2">
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Booking Date
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th className="G_rm-sticky-left-3">
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Company Name
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Company Number
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Company Email
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                CA Number
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Service Name
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Status
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
                                     {/* <th>Remark</th> */}
-                                    <th>DSC Applicable</th>
-                                    <th>BDE Name</th>
-                                    <th>BDM name</th>
-                                    <th>Total Payment</th>
-                                    <th>received Payment</th>
-                                    <th>Pending Payment</th>
-                                    <th className="rm-sticky-action">Action</th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                DSC Applicable
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>  
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                BDE Name
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>  
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                BDM Name
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                Total Payment
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                                received Payment
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <div>
+                                            Pending Payment
+                                            </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th className="rm-sticky-action">
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
