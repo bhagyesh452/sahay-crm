@@ -494,7 +494,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           : company.submittedOn;  // Retain existing submittedOn otherwise
 
       // Conditionally include dateOfChangingMainStatus
-      if (["Process", "Approved", "Submitted", "Hold", "Defaulter"].includes(subCategoryStatus))  {
+      if (["Process", "Approved", "Submitted", "Hold", "Defaulter","ReadyToSubmit"].includes(subCategoryStatus))  {
         updateFields.dateOfChangingMainStatus = new Date();
       }
 
@@ -603,7 +603,7 @@ router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
 
 router.post(`/update-content-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, contentStatus } = req.body;
-  //console.log("dscStatus" , contentStatus)
+  console.log("contentStatus" , contentStatus , companyName , serviceName)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(

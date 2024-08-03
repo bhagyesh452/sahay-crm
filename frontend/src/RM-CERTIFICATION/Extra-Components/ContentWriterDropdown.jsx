@@ -48,6 +48,12 @@ const ContentWriterDropdown = ({ mainStatus, writername, subStatus, setNewSubSta
           serviceName,
           contentWriter: newStatus
         });
+      }else if (mainStatus === "ReadyToSubmit") {
+        response = await axios.post(`${secretKey}/rm-services/update-contentwriter-rmofcertification`, {
+          companyName,
+          serviceName,
+          contentWriter: newStatus
+        });
       }
 
       refreshData();

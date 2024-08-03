@@ -27,7 +27,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 
 
-function RmofCertificationProcessPanel() {
+function RmofCertificationReadyToSubmitPanel() {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
@@ -101,7 +101,7 @@ function RmofCertificationProcessPanel() {
 
             if (Array.isArray(servicesData)) {
                 const filteredData = servicesData
-                    .filter(item => item.mainCategoryStatus === "Process")
+                    .filter(item => item.mainCategoryStatus === "ReadyToSubmit")
                     .sort((a, b) => {
                         const dateA = new Date(a.dateOfChangingMainStatus);
                         const dateB = new Date(b.dateOfChangingMainStatus);
@@ -548,4 +548,4 @@ function RmofCertificationProcessPanel() {
     )
 }
 
-export default RmofCertificationProcessPanel
+export default RmofCertificationReadyToSubmitPanel;

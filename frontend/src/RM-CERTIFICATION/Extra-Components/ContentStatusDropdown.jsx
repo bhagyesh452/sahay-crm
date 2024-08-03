@@ -15,7 +15,7 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
-
+   
 
     try {
       let response;
@@ -49,6 +49,13 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
           serviceName,
           contentStatus: newStatus
         });
+      }else if (mainStatus === "ReadyToSubmit") {
+        response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
+          companyName,
+          serviceName,
+          contentStatus: newStatus
+        });
+        console.log("statuschange" , contentStatus , companyName , serviceName )
       }
 
       refreshData();
