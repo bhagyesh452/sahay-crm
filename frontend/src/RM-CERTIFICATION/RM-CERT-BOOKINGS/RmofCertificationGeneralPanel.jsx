@@ -129,106 +129,117 @@ function RmofCertificationGeneralPanel() {
                         </Backdrop>
                     )}
                     {rmServicesData.length > 0 ? (
-                     <table className="table table-vcenter table-nowrap rm_table">
-                     <thead>
-                         <tr className="tr-sticky">
-                             <th className="G_rm-sticky-left-1">Sr.No</th>
-                             <th className="G_rm-sticky-left-2">Booking Date</th>
-                             <th className="G_rm-sticky-left-3">Company Name</th>
-                             <th>Company Number</th>
-                             <th>Company Email</th>
-                             <th>CA Number</th>
-                             <th>Service Name</th>
-                             <th>Status</th>
-                             {/* <th>Remark</th> */}
-                             <th>DSC Applicable</th>
-                             <th>BDE Name</th>
-                             <th>BDM name</th>
-                             <th>Total Payment</th>
-                             <th>received Payment</th>
-                             <th>Pending Payment</th>
-                             <th className="rm-sticky-action">Action</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
-                             <tr key={index}>
-                                 <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                 <td className='G_rm-sticky-left-2'>{formatDatePro(obj.bookingDate)}</td>
-                                 <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
-                                 <td>
-                                     <div className="d-flex align-items-center justify-content-center wApp">
-                                         <div>{obj["Company Number"]}</div>
-                                         <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                             <FaWhatsapp />
-                                         </a>
-                                     </div>
-                                 </td>
-                                 <td>{obj["Company Email"]}</td>
-                                 <td>
-                                     <div className="d-flex align-items-center justify-content-center wApp">
-                                         <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
-                                         {obj.caCase === "Yes" && (
-                                             <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                                 <FaWhatsapp />
-                                             </a>
-                                         )}
-                                     </div>
-                                 </td>
+                        <table className="table table-vcenter table-nowrap rm_table">
+                            <thead>
+                                <tr className="tr-sticky">
+                                    <th className="G_rm-sticky-left-1">Sr.No</th>
+                                    <th className="G_rm-sticky-left-2">Booking Date</th>
+                                    <th className="G_rm-sticky-left-3">Company Name</th>
+                                    <th>Company Number</th>
+                                    <th>Company Email</th>
+                                    <th>CA Number</th>
+                                    <th>Service Name</th>
+                                    <th>Status</th>
+                                    {/* <th>Remark</th> */}
+                                    <th>DSC Applicable</th>
+                                    <th>BDE Name</th>
+                                    <th>BDM name</th>
+                                    <th>Total Payment</th>
+                                    <th>received Payment</th>
+                                    <th>Pending Payment</th>
+                                    <th className="rm-sticky-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rmServicesData && rmServicesData.length !== 0 && rmServicesData.map((obj, index) => (
+                                    <tr key={index}>
+                                        <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
+                                        <td className='G_rm-sticky-left-2'>{formatDatePro(obj.bookingDate)}</td>
+                                        <td className="G_rm-sticky-left-3"><b>{obj["Company Name"]}</b></td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj["Company Number"]}</div>
+                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                    <FaWhatsapp />
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td>{obj["Company Email"]}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center wApp">
+                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                                {obj.caCase === "Yes" && (
+                                                    <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </td>
 
-                                 <td>{obj.serviceName}</td>
-                                 <td>
-                                     <div>
+                                        <td>{obj.serviceName}</td>
+                                        <td>
+                                            <div>
 
-                                         {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                             <StatusDropdown
-                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                 mainStatus={obj.mainCategoryStatus}
-                                                 subStatus={obj.subCategoryStatus}
-                                                 setNewSubStatus={setNewStatus}
-                                                 companyName={obj["Company Name"]}
-                                                 serviceName={obj.serviceName}
-                                                 refreshData={refreshData}
-                                             />
-                                         )}
-                                     </div>
-                                 </td>
-                                 <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                 <td>
-                                     <div className="d-flex align-items-center justify-content-center">
+                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                    <StatusDropdown
+                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                        mainStatus={obj.mainCategoryStatus}
+                                                        subStatus={obj.subCategoryStatus}
+                                                        setNewSubStatus={setNewStatus}
+                                                        companyName={obj["Company Name"]}
+                                                        serviceName={obj.serviceName}
+                                                        refreshData={refreshData}
+                                                    />
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td>{obj.withDSC ? "Yes" : "No"}</td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
 
-                                         <div>{obj.bdeName}</div>
-                                     </div>
-                                 </td>
-                                 <td>
-                                     <div className="d-flex align-items-center justify-content-center">
+                                                <div>{obj.bdeName}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="d-flex align-items-center justify-content-center">
 
-                                         <div>{obj.bdmName}</div>
-                                     </div>
-                                 </td>
-                                 <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                 <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                 <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
-                                 <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
-                                 //onClick={() => setOpenCompanyTaskComponent(true)}
-                                 ><FaRegEye /></button>
-                                     <button className="action-btn action-btn-danger ml-1"><CiUndo /></button>
-                                 </td>
-                             </tr>
-                         ))}
-                     </tbody>
-                 </table>
-                    ) : ( !openBacdrop && (
+                                                <div>{obj.bdmName}</div>
+                                            </div>
+                                        </td>
+                                        <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td className="rm-sticky-action">
+                                            <button className="action-btn action-btn-primary"
+                                            //onClick={() => setOpenCompanyTaskComponent(true)}
+                                            >
+                                                <FaRegEye />
+                                            </button>
+                                            <button className="action-btn action-btn-danger ml-1"
+                                            // onClick={()=>(
+                                            //     handleRevokeCompanyToRecievedBox(
+                                            //         obj["Company "]
+                                            //     )
+                                            // )}
+                                            >
+                                                <CiUndo />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (!openBacdrop && (
                         <table className='no_data_table'>
-                                <div className='no_data_table_inner'>
-                                    <Nodata />
-                                </div>
-                            </table>
-                        )
+                            <div className='no_data_table_inner'>
+                                <Nodata />
+                            </div>
+                        </table>
+                    )
                     )}
                 </div>
             </div>
-
+            {/* ------------------------------------remarks popup-------------------------------------------------------------------- */}
             <Dialog
                 open={openRemarksPopUp}
                 onClose={functionCloseRemarksPopup}

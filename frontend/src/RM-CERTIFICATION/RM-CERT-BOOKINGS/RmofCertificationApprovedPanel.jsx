@@ -164,6 +164,8 @@ function RmofCertificationApprovedPanel() {
         console.log("RemarksPopup")
     }
     const functionCloseRemarksPopup = () => {
+        setChangeRemarks('')
+        setError('')
         setOpenRemarksPopUp(false)
     }
     const debouncedSetChangeRemarks = useCallback(

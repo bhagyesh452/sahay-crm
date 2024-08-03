@@ -136,6 +136,8 @@ function RmofCertificationHoldPanel() {
         console.log("RemarksPopup")
     }
     const functionCloseRemarksPopup = () => {
+        setChangeRemarks('')
+        setError('')
         setOpenRemarksPopUp(false)
     }
     const debouncedSetChangeRemarks = useCallback(
@@ -159,6 +161,7 @@ function RmofCertificationHoldPanel() {
                 //console.log("response", response.data);
 
                 if (response.status === 200) {
+                
                     fetchData();
                     functionCloseRemarksPopup();
                     // Swal.fire(
