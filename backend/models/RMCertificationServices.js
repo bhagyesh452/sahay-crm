@@ -63,6 +63,9 @@ const ServiceSchema = new mongoose.Schema({
   fourthPaymentRemarks: {
     type: String,
   },
+  pendingRecievedPayment:{
+    type: Number,
+  },
   paymentRemarks: {
     type: String,
     default: "No payment remarks",
