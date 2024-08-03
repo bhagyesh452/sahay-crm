@@ -26,6 +26,7 @@ import {
     useIsFocusVisible,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import io from 'socket.io-client';
 
 function Received_booking_box() {
 
@@ -102,9 +103,9 @@ function Received_booking_box() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -212,7 +213,7 @@ function Received_booking_box() {
                 });
 
             // Log or use the non-matching data
-            console.log("Non-Matching Companies:", nonMatchingCompanies);
+            //console.log("Non-Matching Companies:", nonMatchingCompanies);
 
             // Set state or use non-matching data as needed
             setLeadFormData(nonMatchingCompanies);
@@ -235,20 +236,38 @@ function Received_booking_box() {
 
     //-----------------services array-----------------------------
 
+    // const certificationLabels = [
+    //     "Start-Up India Certificate",
+    //     "MSME/UDYAM Certificate",
+    //     "ISO Certificate",
+    //     "IEC CODE Certificate",
+    //     "BIS Certificate",
+    //     "NSIC Certificate",
+    //     "FSSAI Certificate",
+    //     "APEDA Certificate",
+    //     "GST Certificate",
+    //     "Company Incorporation",
+    //     "Trademark Registration",
+    //     "Copyright Registration",
+    //     "Patent Registration",
+    //     "Organization DSC",
+    //     "Director DSC",
+    //     "Self Certification",
+    //     "GeM"
+    // ];
+
     const certificationLabels = [
         "Start-Up India Certificate",
-        "MSME/UDYAM Certificate",
-        "ISO Certificate",
-        "IEC CODE Certificate",
-        "BIS Certificate",
-        "NSIC Certificate",
-        "FSSAI Certificate",
-        "APEDA Certificate",
-        "GST Certificate",
         "Company Incorporation",
-        "Trademark Registration",
-        "Copyright Registration",
-        "Patent Registration",
+        "Organization DSC",
+        "Director DSC",
+        "Self Certification",
+        "GeM"
+    ];
+
+    const certificationLabelsNew = [
+        "Start-Up India Certificate",
+        "Company Incorporation",
         "Organization DSC",
         "Director DSC",
         "Self Certification",
@@ -361,14 +380,7 @@ function Received_booking_box() {
     //     setServiceNames(servicesNames)
     // };
 
-    const certificationLabelsNew = [
-        "Start-Up India Certificate",
-        "Company Incorporation",
-        "Organization DSC",
-        "Director DSC",
-        "Self Certification",
-        "GeM"
-    ];
+    
 
  const [isSwappingAllServices, setIsSwappingAllServices] = useState(false);
 
@@ -397,7 +409,7 @@ const handleOpenServices = (companyName) => {
             return filteredServices.filter((service) => certificationLabels.includes(service.serviceName));
         });
 
-    console.log("new selected here", selectedServicesHere);
+    //console.log("new selected here", selectedServicesHere);
 
     const servicesNames = selectedServicesHere.map((service) => service.serviceName);
     setServiceNames(servicesNames);
@@ -438,7 +450,7 @@ useEffect(() => {
 
 
 
-    console.log("serviceNames", serviceNames)
+    //console.log("serviceNames", serviceNames)
 
     const handleCheckboxChange = (service) => {
         setSelectedServices(prevSelected =>
@@ -447,8 +459,8 @@ useEffect(() => {
                 : [...prevSelected, service]
         );
     };
-    console.log("selected", selectedServices)
-    console.log("selectedCompanyData", selectedCompanyData)
+    //console.log("selected", selectedServices)
+    //console.log("selectedCompanyData", selectedCompanyData)
 
    const handleSubmitServicesToSwap = async () => {
     // Check if selectedCompanyData is defined
@@ -456,7 +468,7 @@ useEffect(() => {
         console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
         return;
     }
-    console.log("selectedservices" , selectedServices)
+    //console.log("selectedservices" , selectedServices)
 
     // Default moreBookings to an empty array if it's undefined
     const moreBookings = selectedCompanyData.moreBookings || [];
@@ -545,7 +557,7 @@ useEffect(() => {
             const response = responses[0];
             const response2 = responses[1];
 
-            console.log("response", response2.data);
+            //console.log("response", response2.data);
             if (response.data.successEntries === 0) {
                 Swal.fire("Please Select Unique Services");
             } else {
@@ -587,7 +599,7 @@ useEffect(() => {
             if (result.isConfirmed) {
                 try {
                     const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
-                    console.log(response.data);
+                    //console.log(response.data);
                     if (response.status === 200) {
                         fetchRedesignedFormData();
                         Swal.fire(
@@ -609,8 +621,8 @@ useEffect(() => {
     };
 
 
-    console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
-    console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
+    //console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
+    //console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
     // console.log("leadformdata", leadFormData)
     // console.log("currentleadform", currentLeadform)
 

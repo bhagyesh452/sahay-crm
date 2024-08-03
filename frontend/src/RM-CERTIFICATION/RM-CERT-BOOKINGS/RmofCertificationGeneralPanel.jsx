@@ -14,6 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Nodata from '../../components/Nodata';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import io from 'socket.io-client';
 
 function RmofCertificationGeneralPanel() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
@@ -26,18 +27,23 @@ function RmofCertificationGeneralPanel() {
     const [remarksHistory, setRemarksHistory] = useState([]);
     const [changeRemarks, setChangeRemarks] = useState("");
     const [openBacdrop, setOpenBacdrop] = useState(false);
+    const [newStatusProcess, setNewStatusProcess] = useState("General")
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+
 
     // Fetch Data Function
     const fetchData = async () => {
         setOpenBacdrop(true);
         try {
+            console.log("Fetching data...");
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
 
             const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
-            setRmServicesData(servicesResponse.data.filter(item => item.mainCategoryStatus === "General"));
+            const generalServices = servicesResponse.data.filter(item => item.mainCategoryStatus === "General");
+            console.log("Fetched general services data:", generalServices);
+            setRmServicesData(generalServices);
         } catch (error) {
             console.error("Error fetching data", error.message);
         } finally {
@@ -45,14 +51,35 @@ function RmofCertificationGeneralPanel() {
         }
     };
 
+    useEffect(() => {
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+        });
+
+        socket.on("rm-general-status-updated", (res) => {
+            fetchData()
+        });
+
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [newStatus]);
+
+
+
+    const refreshData = () => {
+        console.log("Refreshing data...");
+        fetchData();
+    };
+
     // useEffect to fetch data on component mount
     useEffect(() => {
         fetchData();
     }, [rmCertificationUserId, secretKey]);
-
-    const refreshData = () => {
-        fetchData();
-    };
 
     const formatDatePro = (inputDate) => {
         const date = new Date(inputDate);
@@ -130,14 +157,14 @@ function RmofCertificationGeneralPanel() {
                 cancelButtonText: 'No, cancel!',
                 reverseButtons: true
             });
-    
+
             // Check if the user confirmed the action
             if (result.isConfirmed) {
                 const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
                     companyName,
                     serviceName
                 });
-    
+
                 if (response.status === 200) {
                     fetchData();
                     Swal.fire(
@@ -159,7 +186,7 @@ function RmofCertificationGeneralPanel() {
                     'info'
                 );
             }
-    
+
         } catch (error) {
             console.log("Error Deleting Company from task manager", error.message);
             Swal.fire(
@@ -169,8 +196,8 @@ function RmofCertificationGeneralPanel() {
             );
         }
     };
-    
-    
+
+
     return (
         <div>
             <div className="RM-my-booking-lists">
@@ -222,22 +249,23 @@ function RmofCertificationGeneralPanel() {
                                         <td>{obj["Company Email"]}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
-                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
-                                                {obj.caCase === "Yes" && (
-                                                    <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
-                                                        <FaWhatsapp />
-                                                    </a>
-                                                )}
+                                                <div>{obj["Company Number"]}</div>
+                                                <a
+                                                    href={`https://wa.me/${obj["Company Number"]}`}
+                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <FaWhatsapp />
+                                                </a>
                                             </div>
                                         </td>
-
                                         <td>{obj.serviceName}</td>
                                         <td>
                                             <div>
-
                                                 {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                     <StatusDropdown
-                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                        key={`${obj["Company Name"]}-${obj.serviceName}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
                                                         mainStatus={obj.mainCategoryStatus}
                                                         subStatus={obj.subCategoryStatus}
                                                         setNewSubStatus={setNewStatus}
@@ -271,12 +299,12 @@ function RmofCertificationGeneralPanel() {
                                                 <FaRegEye />
                                             </button>
                                             <button className="action-btn action-btn-danger ml-1"
-                                            onClick={()=>(
-                                                handleRevokeCompanyToRecievedBox(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            )}
+                                                onClick={() => (
+                                                    handleRevokeCompanyToRecievedBox(
+                                                        obj["Company Name"],
+                                                        obj.serviceName
+                                                    )
+                                                )}
                                             >
                                                 <CiUndo />
                                             </button>
