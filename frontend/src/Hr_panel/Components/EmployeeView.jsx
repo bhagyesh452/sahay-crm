@@ -8,6 +8,7 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import EmpImg1 from "../../static/EmployeeImg/Emp1.jpeg"
 import EmpImg2 from "../../static/EmployeeImg/Emp2.jpeg"
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
+import { MdOutlineCameraAlt } from "react-icons/md";
 import logo from "../../static/mainLogo.png"
 import { FaCamera } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
@@ -32,6 +33,14 @@ import Swal from 'sweetalert2';
 import CloseIcon from "@mui/icons-material/Close";
 import Navbar from "./Navbar/Navbar.jsx";
 import { HiPencil } from "react-icons/hi";
+import { FcBusinessman } from "react-icons/fc";
+import { FcManager } from "react-icons/fc";
+import { FcCalendar } from "react-icons/fc";
+import { FcBusinesswoman } from "react-icons/fc";
+import { FcIphone } from "react-icons/fc";
+import { FaLocationDot } from "react-icons/fa6";
+import { FcFeedback } from "react-icons/fc";
+import { color } from "@mui/system";
 
 function EmployeeView() {
 
@@ -259,7 +268,7 @@ function EmployeeView() {
         <div className="page-body rm_Dtl_box m-0">
           <div className="container-xl">
             <div className="d-flex mt-1">
-              <div className="E_Id_card_main">
+              {/* <div className="E_Id_card_main">
                 <div className="E_Id_card">
                   <div className="E_Id_card_bg">
                     <div className="main_logo_For_ID">
@@ -334,6 +343,133 @@ function EmployeeView() {
                     </div>
                     <div className="E_id_website">
                         www.startupsahay.com
+                    </div>
+                  </div>
+                </div>
+              </div> */}
+              <div className="emply_e_card">
+                <div className="my-card">
+                  <div className="emply_e_card_profile">
+                    <label className="emply_e_card_profile_inner_lbl">
+                      <div className="emply_e_card_profile_div">
+                        <img src={EmpDfaullt}></img>
+                      </div>
+                      <div className="emply_e_card_profile_update">
+                        <div className="emply_e_card_profile_update_inner">
+                          <MdOutlineCameraAlt className="emply_e_card_profile_update_icon" />
+                          <p className="m-0 emply_e_card_profile_update_text">Upload</p>
+                        </div>
+                      </div>
+                    </label>
+                    <div className="emply_e_card_profile_name">
+                      <p className="m-0">Vishnu Suthar</p>
+                      <label className="m-0">Sales Executive</label>
+                    </div>
+                  </div>
+                </div>
+                <div className="my-card-style-2 mt-3">
+                  <div className="my-card-head-style-2">
+                    Personal Information
+                  </div>
+                  <div className="my-card-body-style-2">
+                    <div className="emply_e_card_dtl">
+                      <div className="emply_e_info_head">
+                        Full Name 
+                      </div>
+                      <div className="emply_e_info_data d-flex align-items-center justify-content-between">
+                        <div className="d-flex align-item-center">
+                          <div className="ee_info_i"><FcManager /></div>
+                          <div className="emply_e_info_data_name">
+                             Vishunu Maheshbhai Suthar
+                          </div>
+                        </div>
+                        <div class="employee_active">Active</div>
+                      </div>
+                    </div>
+                    <div className="row mt-2">
+                      <div className="col">
+                        <div className="emply_e_card_dtl">
+                          <div className="emply_e_info_head">
+                            DOB
+                          </div>
+                          <div className="emply_e_info_data">
+                            <div className="d-flex aling-items-center">
+                              <div className="ee_info_i"><FcCalendar /></div>
+                              <div className="emply_e_info_data_name">
+                                2<sup>nd</sup> Dec 2024
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col">
+                        <div className="emply_e_card_dtl">
+                          <div className="emply_e_info_head">
+                            Gender
+                          </div>
+                          <div className="emply_e_info_data">
+                            <div className="d-flex aling-items-center">
+                              <div className="ee_info_i"><FcBusinessman /></div>
+                              <div className="emply_e_info_data_name">
+                                Male
+                              </div>
+                              {/* <div className="ee_info_i"><FcBusinesswoman  /></div>
+                              <div className="emply_e_info_data_name">
+                                Female
+                              </div> */}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row mt-2">
+                      <div className="col">
+                        <div className="emply_e_card_dtl">
+                          <div className="emply_e_info_head">
+                            Phone No
+                          </div>
+                          <div className="emply_e_info_data">
+                            <div className="d-flex aling-items-center">
+                              <div className="ee_info_i"><FcIphone /></div>
+                              <div className="emply_e_info_data_name">
+                                9924283530
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col">
+                        <div className="emply_e_card_dtl">
+                          <div className="emply_e_info_head">
+                            Email
+                          </div>
+                          <div className="emply_e_info_data">
+                            <div className="d-flex aling-items-center">
+                              <div className="ee_info_i"><FcFeedback /></div>
+                              <div className="emply_e_info_data_name">
+                                Nimesh@incsccale.in
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row mt-2">
+                      <div className="col">
+                        <div className="emply_e_card_dtl">
+                          <div className="emply_e_info_head">
+                            Address
+                          </div>
+                          <div className="emply_e_info_data">
+                            <div className="d-flex aling-items-center">
+                              <div className="ee_info_i" style={{color:"#fbba1c"}}><FaLocationDot  /></div>
+                              <div className="emply_e_info_data_name">
+                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad 
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
