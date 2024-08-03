@@ -241,7 +241,11 @@ function RmofCertificationGeneralPanel() {
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
                                                 <div>{obj["Company Number"]}</div>
-                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                <a
+                                                    href={`https://wa.me/${obj["Company Number"]}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                     <FaWhatsapp />
                                                 </a>
                                             </div>
@@ -249,17 +253,19 @@ function RmofCertificationGeneralPanel() {
                                         <td>{obj["Company Email"]}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
-                                                <div>{obj["Company Number"]}</div>
-                                                <a
-                                                    href={`https://wa.me/${obj["Company Number"]}`}
-                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    <FaWhatsapp />
-                                                </a>
+                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                                {obj.caCase === "Yes" && (
+                                                    <a
+                                                        href={`https://wa.me/${obj.caNumber}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                )}
                                             </div>
                                         </td>
+
                                         <td>{obj.serviceName}</td>
                                         <td>
                                             <div>

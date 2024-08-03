@@ -8,7 +8,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
 import { FaPencilAlt } from "react-icons/fa";
-import { Button, Dialog, DialogContent, DialogTitle , FormHelperText } from "@mui/material";
+import { Button, Dialog, DialogContent, DialogTitle, FormHelperText } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
@@ -45,8 +45,8 @@ function RmofCertificationDefaulterPanel() {
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
-const [error, setError] = useState('')
-const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [error, setError] = useState('')
+    const [openBacdrop, setOpenBacdrop] = useState(false)
 
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -86,10 +86,10 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
-    
+
             const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
             const servicesData = servicesResponse.data;
-    
+
             if (Array.isArray(servicesData)) {
                 const filteredData = servicesData
                     .filter(item => item.mainCategoryStatus === "Defaulter")
@@ -108,7 +108,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
             setOpenBacdrop(false);
         }
     };
-    
+
 
 
     useEffect(() => {
@@ -148,16 +148,16 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
     const handleSubmitRemarks = async () => {
         //console.log("changeremarks", changeRemarks)
         try {
-            if(changeRemarks){
+            if (changeRemarks) {
                 const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
                     currentCompanyName,
                     currentServiceName,
                     changeRemarks,
                     updatedOn: new Date()
                 });
-        
+
                 //console.log("response", response.data);
-        
+
                 if (response.status === 200) {
                     fetchData();
                     functionCloseRemarksPopup();
@@ -167,10 +167,10 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                     //     'success'
                     // );
                 }
-            }else{
+            } else {
                 setError('Remarks Cannot Be Empty!')
             }
-            
+
         } catch (error) {
             console.log("Error Submitting Remarks", error.message);
         }
@@ -178,25 +178,25 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
 
     const handleDeleteRemarks = async (remarks_id) => {
         try {
-          const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-          });
-          if(response.status === 200){
-            fetchData();
-            functionCloseRemarksPopup(); 
-          }
-         // Refresh the list
+            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+            });
+            if (response.status === 200) {
+                fetchData();
+                functionCloseRemarksPopup();
+            }
+            // Refresh the list
         } catch (error) {
-          console.error("Error deleting remark:", error);
+            console.error("Error deleting remark:", error);
         }
-      };
+    };
 
-     //--------------------email function----------------------
+    //--------------------email function----------------------
 
-     const handleSubmitNSWSEmail = async () => {
-       
+    const handleSubmitNSWSEmail = async () => {
+
         try {
-            if(currentCompanyName && currentServiceName){
+            if (currentCompanyName && currentServiceName) {
                 const response = await axios.post(`${secretKey}/rm-services/post-save-nswsemail`, {
                     currentCompanyName,
                     currentServiceName,
@@ -212,8 +212,8 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                     setOpenEmailPopup(false); // Close the popup on success
                 }
             }
-           
-            
+
+
         } catch (error) {
             console.error("Error saving email:", error.message); // Log only the error message
         }
@@ -248,7 +248,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
         <div>
             <div className="RM-my-booking-lists">
                 <div className="table table-responsive table-style-3 m-0">
-                {openBacdrop && (
+                    {openBacdrop && (
                         <Backdrop
                             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                             open={openBacdrop}
@@ -256,7 +256,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                             <CircularProgress color="inherit" />
                         </Backdrop>
                     )}
-                   {rmServicesData.length > 0 ? ( <table className="table table-vcenter table-nowrap rm_table_inprocess">
+                    {rmServicesData.length > 0 ? (<table className="table table-vcenter table-nowrap rm_table_inprocess">
                         <thead>
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
@@ -292,11 +292,14 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                 <tr key={index}>
                                     <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
                                     <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
-
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
                                             <div>{obj["Company Number"]}</div>
-                                            <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                            <a
+                                                href={`https://wa.me/${obj["Company Number"]}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                 <FaWhatsapp />
                                             </a>
                                         </div>
@@ -306,7 +309,11 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                         <div className="d-flex align-items-center justify-content-center wApp">
                                             <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
                                             {obj.caCase === "Yes" && (
-                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                <a
+                                                    href={`https://wa.me/${obj.caNumber}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                     <FaWhatsapp />
                                                 </a>
                                             )}
@@ -315,10 +322,10 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                     <td>{obj.serviceName}</td>
                                     <td>
                                         <div>
-                                           
+
                                             {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                 <StatusDropdown
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                     mainStatus={obj.mainCategoryStatus}
                                                     subStatus={obj.subCategoryStatus}
                                                     setNewSubStatus={setNewStatusDefaulter}
@@ -361,11 +368,11 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                     <td className='td_of_weblink'>
                                         <WebsiteLink
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                        companyName={obj["Company Name"]}
-                                        serviceName={obj.serviceName}
-                                        refreshData={refreshData}
-                                        websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
-                                        companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refreshData={refreshData}
+                                            websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : obj["Company Email"]}
+                                            companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
                                         />
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
@@ -382,45 +389,45 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                             ("Not Applicable")}</div>
                                     </td>
                                     <td>
-                                            <ContentWriterDropdown
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
-                                                refreshData={refreshData}
-                                            /></td>
-                                        <td>
-                                            <ContentStatusDropdown
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
-                                                writername={obj.contentWriter}
-                                                refreshData={refreshData}
-                                            /></td>
-                                        {/* For Brochure */}
-                                        <td>
-                                            <BrochureDesignerDropdown
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
-                                                refreshData={refreshData}
-                                            />
-                                        </td>
-                                        <td>
-                                            <BrochureStatusDropdown
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                brochureStatus={obj.brochureStatus}
-                                                designername={obj.brochureDesigner}
-                                            /></td>
-                                         <td className='td_of_NSWSeMAIL'>
+                                        <ContentWriterDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                            refreshData={refreshData}
+                                        /></td>
+                                    <td>
+                                        <ContentStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                            writername={obj.contentWriter}
+                                            refreshData={refreshData}
+                                        /></td>
+                                    {/* For Brochure */}
+                                    <td>
+                                        <BrochureDesignerDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            designername={obj.brochureDesigner ? obj.brochureDesigner : "Not Applicable"}
+                                            refreshData={refreshData}
+                                        />
+                                    </td>
+                                    <td>
+                                        <BrochureStatusDropdown
+                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            mainStatus={obj.mainCategoryStatus}
+                                            brochureStatus={obj.brochureStatus}
+                                            designername={obj.brochureDesigner}
+                                        /></td>
+                                    <td className='td_of_NSWSeMAIL'>
                                         <NSWSEmailInput
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
@@ -430,15 +437,15 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                         />
                                     </td>
                                     <td className='td_of_weblink'>
-                                        <NSWSPasswordInput 
+                                        <NSWSPasswordInput
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                        companyName={obj["Company Name"]}
-                                        serviceName={obj.serviceName}
-                                        refresData={refreshData}
-                                        nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                            companyName={obj["Company Name"]}
+                                            serviceName={obj.serviceName}
+                                            refresData={refreshData}
+                                            nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
                                         />
                                     </td>
-                                    
+
                                     <td>
                                         <IndustryDropdown
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -449,7 +456,7 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                                             industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
 
                                         /></td>
-                                  <td className='td_of_Industry'>
+                                    <td className='td_of_Industry'>
                                         <SectorDropdown
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                             companyName={obj["Company Name"]}
@@ -485,13 +492,13 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                             ))}
                         </tbody>
                     </table>)
-                    :(!openBacdrop && (
-                        <table className='no_data_table'>
+                        : (!openBacdrop && (
+                            <table className='no_data_table'>
                                 <div className='no_data_table_inner'>
                                     <Nodata />
                                 </div>
                             </table>)
-                    )}
+                        )}
                 </div>
             </div>
             {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
@@ -575,18 +582,18 @@ const [openBacdrop, setOpenBacdrop] = useState(false)
                 </button>
             </Dialog>
 
-             {/* //----------------------emailpopup---------------------------------- */}
+            {/* //----------------------emailpopup---------------------------------- */}
 
-             <Dialog
+            <Dialog
                 open={openEmailPopup}
                 onClose={handleCloseEmailPopup}
                 fullWidth
                 maxWidth="xs"
             >
-                <DialogTitle style={{fontSize:"12px"}} className='d-flex align-items-center justify-content-between'>
+                <DialogTitle style={{ fontSize: "12px" }} className='d-flex align-items-center justify-content-between'>
                     {currentCompanyName}'s Email
                     <IconButton onClick={handleCloseEmailPopup} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{width:"16px"}} />
+                        <CloseIcon color="primary" style={{ width: "16px" }} />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent>

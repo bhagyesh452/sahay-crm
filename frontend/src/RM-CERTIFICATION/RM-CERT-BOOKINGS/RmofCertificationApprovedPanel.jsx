@@ -109,10 +109,10 @@ function RmofCertificationApprovedPanel() {
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
-    
+
             const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
             const servicesData = servicesResponse.data;
-    
+
             if (Array.isArray(servicesData)) {
                 const filteredData = servicesData
                     .filter(item => item.mainCategoryStatus === "Approved")
@@ -279,11 +279,14 @@ function RmofCertificationApprovedPanel() {
                                     <tr key={index}>
                                         <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
                                         <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
-
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
                                                 <div>{obj["Company Number"]}</div>
-                                                <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                <a
+                                                    href={`https://wa.me/${obj["Company Number"]}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                     <FaWhatsapp />
                                                 </a>
                                             </div>
@@ -293,7 +296,11 @@ function RmofCertificationApprovedPanel() {
                                             <div className="d-flex align-items-center justify-content-center wApp">
                                                 <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
                                                 {obj.caCase === "Yes" && (
-                                                    <a style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
+                                                    <a
+                                                        href={`https://wa.me/${obj.caNumber}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}>
                                                         <FaWhatsapp />
                                                     </a>
                                                 )}
