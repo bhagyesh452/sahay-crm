@@ -534,15 +534,17 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         },
         {
           subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
-          mainCategoryStatus: company.previousMainCategoryStatus,  // Restore previous mainCategoryStatus
+          mainCategoryStatus: company.previousMainCategoryStatus,
+          previousMainCategoryStatus:company.mainCategoryStatus,
+          previousSubCategoryStatus:company.subCategoryStatus,// Restore previous mainCategoryStatus
           lastActionDate: new Date(),
           submittedOn: company.submittedOn,
           dateOfChangingMainStatus: company.dateOfChangingMainStatus, // Retain existing date
           Remarks: [],
           dscStatus: "Not Started",
           contentStatus: "Not Started",
-          contentWriter: "",
-          brochureStatus: "Not Started",
+          contentWriter: "Drashti Thakkar",
+          brochureStatus: "Not Applicable",
           brochureDesigner: "",
           nswsMailId: "",
           nswsPaswsord: "",

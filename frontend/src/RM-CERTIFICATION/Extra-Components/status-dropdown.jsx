@@ -73,6 +73,8 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             serviceName,
             subCategoryStatus: newStatus,
             mainCategoryStatus: "ReadyToSubmit",
+            previousMainCategoryStatus: "Process",
+            previousSubCategoryStatus: newStatus
           });
         } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -156,6 +158,8 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             serviceName,
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter",
+            previousMainCategoryStatus: "Submitted",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Undo") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -186,7 +190,9 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold"
+            mainCategoryStatus: "Hold",
+            previousMainCategoryStatus: "Defaulter",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Undo") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -217,7 +223,9 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus
+            mainCategoryStatus: newStatus,
+            previousMainCategoryStatus: "Hold",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Working") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -231,14 +239,18 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus
+            mainCategoryStatus: newStatus,
+            previousMainCategoryStatus: "Hold",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Process") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus
+            mainCategoryStatus: newStatus,
+            previousMainCategoryStatus: "Hold",
+            previousSubCategoryStatus: newStatus
           });
         }
       }
