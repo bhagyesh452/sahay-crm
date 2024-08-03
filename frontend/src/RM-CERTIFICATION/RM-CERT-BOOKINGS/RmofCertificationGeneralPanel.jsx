@@ -116,6 +116,61 @@ function RmofCertificationGeneralPanel() {
         }
     };
 
+    // ------------------------------------------------function to send service back to recieved box --------------------------------
+
+    const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
+        try {
+            // Show confirmation dialog
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to revert the company back to the received box?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, revert it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            });
+    
+            // Check if the user confirmed the action
+            if (result.isConfirmed) {
+                const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
+                    companyName,
+                    serviceName
+                });
+    
+                if (response.status === 200) {
+                    fetchData();
+                    Swal.fire(
+                        'Company Reverted Back!',
+                        'Company has been sent back to the received box.',
+                        'success'
+                    );
+                } else {
+                    Swal.fire(
+                        'Error',
+                        'Failed to revert the company back to the received box.',
+                        'error'
+                    );
+                }
+            } else {
+                Swal.fire(
+                    'Cancelled',
+                    'The company has not been reverted.',
+                    'info'
+                );
+            }
+    
+        } catch (error) {
+            console.log("Error Deleting Company from task manager", error.message);
+            Swal.fire(
+                'Error',
+                'An error occurred while processing your request.',
+                'error'
+            );
+        }
+    };
+    
+    
     return (
         <div>
             <div className="RM-my-booking-lists">
@@ -216,11 +271,12 @@ function RmofCertificationGeneralPanel() {
                                                 <FaRegEye />
                                             </button>
                                             <button className="action-btn action-btn-danger ml-1"
-                                            // onClick={()=>(
-                                            //     handleRevokeCompanyToRecievedBox(
-                                            //         obj["Company "]
-                                            //     )
-                                            // )}
+                                            onClick={()=>(
+                                                handleRevokeCompanyToRecievedBox(
+                                                    obj["Company Name"],
+                                                    obj.serviceName
+                                                )
+                                            )}
                                             >
                                                 <CiUndo />
                                             </button>
