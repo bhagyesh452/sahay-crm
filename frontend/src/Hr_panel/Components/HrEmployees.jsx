@@ -60,7 +60,7 @@ function HrEmployees() {
     try {
       const res = await axios.get(`${secretKey}/employee/einfo`);
       setEmployee(res.data);
-      // console.log("Fetched Employees are :", res.data);
+      console.log("Fetched Employees are :", res.data);
     } catch (error) {
       console.log("Error fetching employees data :", error);
     }

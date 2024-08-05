@@ -56,12 +56,20 @@ export default function HorizontalNonLinearStepper() {
     return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
   };
 
-  const formatDate = (isoDateString) => {
-    const date = new Date(isoDateString);
+  // const formatDate = (isoDateString) => {
+  //   const date = new Date(isoDateString);
+  //   const day = String(date.getDate()).padStart(2, '0');
+  //   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+  //   const year = date.getFullYear();
+  //   return `${day}-${month}-${year}`;
+  // };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const month = date.toLocaleString('default', { month: 'short' });
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${day} ${month} ${year}`;
   };
 
   const convertToDateInputFormat = (dateStr) => {
@@ -1593,7 +1601,7 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {personalInfo.dob || "-"}
+                                      {formatDate(personalInfo.dob) || "-"}
                                     </div>
                                   </div>
                                 </div>
@@ -1710,7 +1718,7 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {employeementInfo.joiningDate || "-"}
+                                      {formatDate(employeementInfo.joiningDate) || "-"}
                                     </div>
                                   </div>
                                 </div>

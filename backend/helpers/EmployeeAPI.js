@@ -39,32 +39,6 @@ const RedesignedLeadformModel = require("../models/RedesignedLeadform");
 //   },
 // });
 
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     const { personalEmail } = req.params;
-//     const empName = `${personalEmail}`;
-//     let destinationPath = "";
-
-//     if (file.fieldname && empName) {
-//       destinationPath = `EmployeeDocs/${empName}`;
-//     }
-
-//     // Create the directory if it doesn't exist
-//     if (!fs.existsSync(destinationPath)) {
-//       fs.mkdirSync(destinationPath, { recursive: true });
-//     }
-
-//     cb(null, destinationPath);
-//   },
-//   filename: function (req, file, cb) {
-//     const { personalEmail } = req.params;
-//     const empName = `${personalEmail}`;
-//     const uniqueSuffix = Date.now();
-//     cb(null, `${uniqueSuffix}-${empName}-${file.originalname}`);
-//   },
-// });
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // const { firstName, lastName } = req.body;
@@ -227,7 +201,9 @@ router.post("/einfo", upload.fields([
       ...(personalInfo.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
 
       ...(employeementInfo.department && { department: employeementInfo.department }),
-      ...(employeementInfo.designation && { designation: employeementInfo.designation }),
+      ...(employeementInfo.designation && { newDesignation: employeementInfo.designation }),
+      ...(employeementInfo.designation && { designation: employeementInfo.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager" ? "Sales Executive" : employeementInfo.designation}),
+      ...(employeementInfo.designation && { bdmWork: employeementInfo.designation === "Business Development Manager" ? true : false}),
       ...(employeementInfo.joiningDate && { jdate: employeementInfo.joiningDate }),
       ...(employeementInfo.branch && { branchOffice: employeementInfo.branch }),
       ...(employeementInfo.employeementType && { employeementType: employeementInfo.employeementType }),
@@ -275,171 +251,6 @@ router.post("/einfo", upload.fields([
 
 
 
-// router.post("/einfo", upload.fields([
-//   { name: "offerLetter", maxCount: 1 },
-//   { name: "aadharCard", maxCount: 1 },
-//   { name: "panCard", maxCount: 1 },
-//   { name: "educationCertificate", maxCount: 1 },
-//   { name: "relievingCertificate", maxCount: 1 },
-//   { name: "salarySlip", maxCount: 1 },
-//   { name: "profilePhoto", maxCount: 1 },
-// ]), async (req, res) => {
-//   try {
-//     const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, aadharCardDocument, panCardDocument, educationCertificateDocument, relievingCertificateDocument, salarySlipDocument, profilePhotoDocument } = req.body;
-
-//     // Parse JSON strings if needed
-//     // const parsedPersonalInfo = personalInfo || '{}';
-//     // const parsedEmployeementInfo = employeementInfo || '{}';
-//     // const parsedPayrollInfo = payrollInfo || '{}';
-//     // const parsedEmergencyInfo = emergencyInfo || '{}';
-//     // const parsedEmpDocumentInfo = empDocumentInfo || '{}';
-
-//     const parsedPersonalInfo = JSON.parse(personalInfo || '{}');
-//     const parsedEmployeementInfo = JSON.parse(employeementInfo || '{}');
-//     const parsedPayrollInfo = JSON.parse(payrollInfo || '{}');
-//     const parsedEmergencyInfo = JSON.parse(emergencyInfo || '{}');
-//     // const parsedEmpDocumentInfo = JSON.parse(empDocumentInfo) || {};
-
-//     // console.log("Personal Info is :", personalInfo);
-//     // console.log("Employeement Info is :", employeementInfo);
-//     // console.log("Payroll info is :", payrollInfo);
-//     // console.log("Emergency info is :", emergencyInfo);
-//     // console.log("Employee document info is :", empDocumentInfo);
-//     console.log("Aadhar card is :", aadharCardDocument);
-
-//     // Helper function to extract file details
-//     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
-//       fieldname: file.fieldname,
-//       originalname: file.originalname,
-//       encoding: file.encoding,
-//       mimetype: file.mimetype,
-//       destination: file.destination,
-//       filename: file.filename,
-//       path: file.path,
-//       size: file.size
-//     })) : [];
-
-//     // Assign files to their respective fields
-//     if (req.files && req.files["offerLetter"]) {
-//       parsedPayrollInfo.offerLetter = getFileDetails(req.files["offerLetter"]);
-//     }
-//     // if (req.files && req.files["aadharCard"]) {
-//     //   // parsedEmpDocumentInfo.aadharCard = getFileDetails(req.files["aadharCard"]);
-//     //   aadharCardDocument = getFileDetails(req.files["aadharCard"]);
-//     // }
-//     // if (req.files && req.files["panCard"]) {
-//     //   // parsedEmpDocumentInfo.panCard = getFileDetails(req.files["panCard"]);
-//     //   panCardDocument = getFileDetails(req.files["panCard"]);
-//     // }
-//     // if (req.files && req.files["educationCertificate"]) {
-//     //   // parsedEmpDocumentInfo.educationCertificate = getFileDetails(req.files["educationCertificate"]);
-//     //   educationCertificateDocument = getFileDetails(req.files["educationCertificate"]);
-//     // }
-//     // if (req.files && req.files["relievingCertificate"]) {
-//     //   // parsedEmpDocumentInfo.relievingCertificate = getFileDetails(req.files["relievingCertificate"]);
-//     //   relievingCertificateDocument = getFileDetails(req.files["relievingCertificate"]);
-//     // }
-//     // if (req.files && req.files["salarySlip"]) {
-//     //   // parsedEmpDocumentInfo.salarySlip = getFileDetails(req.files["salarySlip"]);
-//     //   salarySlipDocument = getFileDetails(req.files["salarySlip"]);
-//     // }
-//     // if (req.files && req.files["profilePhoto"]) {
-//     //   // parsedEmpDocumentInfo.profilePhoto = getFileDetails(req.files["profilePhoto"]);
-//     //   profilePhotoDocument = getFileDetails(req.files["profilePhoto"]);
-//     // }
-
-//     // const empDocumentFields = ["aadharCard", "panCard", "educationCertificate", "relievingCertificate", "salarySlip", "profilePhoto"];
-//     // empDocumentFields.forEach(field => {
-//     //   if (req.files && req.files[field]) {
-//     //     parsedEmpDocumentInfo[field] = getFileDetails(req.files[field]);
-//     //   }
-//     // });
-
-//     // const offerLetterDetails = getFileDetails(req.files ? req.files["offerLetter"] : []);
-//     // const aadharCardDetails = getFileDetails(req.files ? req.files["aadharCard"] : []);
-//     // const panCardDetails = getFileDetails(req.files ? req.files["panCard"] : []);
-//     // const educationCertificateDetails = getFileDetails(req.files ? req.files["educationCertificate"] : []);
-//     // const relievingCertificateDetails = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
-//     // const salarySlipDetails = getFileDetails(req.files ? req.files["salarySlip"] : []);
-//     // const profilePhotoDetails = getFileDetails(req.files ? req.files["profilePhoto"] : []);
-
-//     const emp = {
-//       ename: `${parsedPersonalInfo.firstName || ""} ${parsedPersonalInfo.middleName || ""} ${parsedPersonalInfo.lastName || ""}`,
-//       dob: parsedPersonalInfo.dob || "",
-//       gender: parsedPersonalInfo.gender || "",
-//       personal_number: parsedPersonalInfo.personalPhoneNo || "",
-//       personal_email: parsedPersonalInfo.personalEmail || "",
-//       currentAddress: parsedPersonalInfo.currentAddress || "",
-//       permanentAddress: parsedPersonalInfo.permanentAddress || "",
-
-//       department: parsedEmployeementInfo.department || "",
-//       designation: parsedEmployeementInfo.designation || "",
-//       jdate: parsedEmployeementInfo.joiningDate || "",
-//       branchOffice: parsedEmployeementInfo.branch || "",
-//       employeementType: parsedEmployeementInfo.employeementType || "",
-//       reportingManager: parsedEmployeementInfo.manager || "",
-//       number: parsedEmployeementInfo.officialNo || "",
-//       email: parsedEmployeementInfo.officialEmail || "",
-
-//       accountNo: parsedPayrollInfo.accountNo || "",
-//       bankName: parsedPayrollInfo.bankName || "",
-//       ifscCode: parsedPayrollInfo.ifscCode || "",
-//       salary: parsedPayrollInfo.salary || "",
-//       firstMonthSalaryCondition: parsedPayrollInfo.firstMonthSalary || "",
-//       firstMonthSalary: parsedPayrollInfo.salaryCalculation || "",
-//       panNumber: parsedPayrollInfo.panNumber || "",
-//       aadharNumber: parsedPayrollInfo.aadharNumber || "",
-//       uanNumber: parsedPayrollInfo.uanNumber || "",
-
-//       personal_contact_person: parsedEmergencyInfo.personName || "",
-//       personal_contact_person_relationship: parsedEmergencyInfo.relationship || "",
-//       personal_contact_person_number: parsedEmergencyInfo.personPhoneNo || "",
-
-//       // offerLetter: parsedPayrollInfo.offerLetter || [],
-//       // aadharCard: parsedEmpDocumentInfo.aadharCard || [],
-//       // panCard: parsedEmpDocumentInfo.panCard || [],
-//       // educationCertificate: parsedEmpDocumentInfo.educationCertificate || [],
-//       // relievingCertificate: parsedEmpDocumentInfo.relievingCertificate || [],
-//       // salarySlip: parsedEmpDocumentInfo.salarySlip || [],
-//       // profilePhoto: parsedEmpDocumentInfo.profilePhoto || [],
-
-
-//       offerLetter: parsedPayrollInfo.offerLetter || [],
-//       aadharCard: getFileDetails(req.files["aadharCardDocument"]),
-//       panCard: getFileDetails(req.files["panCardDocument"]),
-//       educationCertificate: getFileDetails(req.files["educationCertificateDocument"]),
-//       relievingCertificate: getFileDetails(req.files["relievingCertificateDocument"]),
-//       salarySlip: getFileDetails(req.files["salarySlipDocument"]),
-//       profilePhoto: getFileDetails(req.files["profilePhotoDocument"]),
-
-
-//       // ...(offerLetterDetails?.length > 0 && { offerLetter: offerLetterDetails }),
-//       // ...(aadharCardDetails?.length > 0 && { aadharCard: aadharCardDetails }),
-//       // ...(panCardDetails?.length > 0 && { panCard: panCardDetails }),
-//       // ...(educationCertificateDetails?.length > 0 && { educationCertificate: educationCertificateDetails }),
-//       // ...(relievingCertificateDetails?.length > 0 && { relievingCertificate: relievingCertificateDetails }),
-//       // ...(salarySlipDetails?.length > 0 && { salarySlip: salarySlipDetails }),
-//       // ...(profilePhotoDetails?.length > 0 && { profilePhoto: profilePhotoDetails })
-//     };
-
-//     // Assign _id field if empId exists
-//     if (parsedEmployeementInfo.empId) {
-//       emp._id = parsedEmployeementInfo.empId;
-//     }
-
-//     const result = await adminModel.create(emp);
-//     res.json(result);
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-
-
-
-
-
 
 // router.post("/einfo", async (req, res) => {
 //   try {
@@ -466,97 +277,6 @@ router.post("/einfo", upload.fields([
 //   }
 // });
 
-router.get("/fetchEmployeeFromPersonalEmail/:personalEmail", async (req, res) => {
-  const { personalEmail } = req.params;
-
-  try {
-    if (!personalEmail) {
-      return res.status(404).json({ result: false, message: "Email not found" });
-    }
-    const emp = await adminModel.findOne({ personal_email: personalEmail });
-
-    if (!emp) {
-      return res.status(404).json({ result: false, message: "Employee not found" });
-    }
-
-    res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
-  } catch (error) {
-    res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
-  }
-});
-
-router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
-  { name: "offerLetter", maxCount: 1 },
-  { name: "aadharCard", maxCount: 1 },
-  { name: "panCard", maxCount: 1 },
-  { name: "educationCertificate", maxCount: 1 },
-  { name: "relievingCertificate", maxCount: 1 },
-  { name: "salarySlip", maxCount: 1 },
-  { name: "profilePhoto", maxCount: 1 },
-]), async (req, res) => {
-  const { personalEmail } = req.params;
-  const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo } = req.body;
-  // console.log("Reqest file is :", req.files);
-
-  const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
-    fieldname: file.fieldname,
-    originalname: file.originalname,
-    encoding: file.encoding,
-    mimetype: file.mimetype,
-    destination: file.destination,
-    filename: file.filename,
-    path: file.path,
-    size: file.size
-  })) : [];
-
-  const offerLetterDetails = getFileDetails(req.files ? req.files["offerLetter"] : []);
-  const aadharCardDetails = getFileDetails(req.files ? req.files["aadharCard"] : []);
-  const panCardDetails = getFileDetails(req.files ? req.files["panCard"] : []);
-  const educationCertificateDetails = getFileDetails(req.files ? req.files["educationCertificate"] : []);
-  const relievingCertificateDetails = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
-  const salarySlipDetails = getFileDetails(req.files ? req.files["salarySlip"] : []);
-  const profilePhotoDetails = getFileDetails(req.files ? req.files["profilePhoto"] : []);
-
-  try {
-    if (!personalEmail) {
-      return res.status(404).json({ result: false, message: "Email not found" });
-    }
-
-    const emp = await adminModel.findOneAndUpdate(
-      { personal_email: personalEmail },
-      {
-        ...req.body,
-        email: officialEmail,
-        number: officialNo,
-        jdate: joiningDate,
-        branchOffice: branch,
-        reportingManager: manager,
-        firstMonthSalaryCondition: firstMonthSalary,
-        firstMonthSalary: salaryCalculation,
-        offerLetter: offerLetterDetails || [],
-        personal_contact_person: personName,
-        personal_contact_person_relationship: relationship,
-        personal_contact_person_number: personPhoneNo,
-        aadharCard: aadharCardDetails || [],
-        panCard: panCardDetails || [],
-        educationCertificate: educationCertificateDetails || [],
-        relievingCertificate: relievingCertificateDetails || [],
-        salarySlip: salarySlipDetails || [],
-        profilePhoto: profilePhotoDetails || [],
-      },
-      { new: true } // This option returns the updated document
-    );
-
-    if (!emp) {
-      return res.status(404).json({ result: false, message: "Employee not found" });
-    }
-
-    res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
-  } catch (error) {
-    res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
-  }
-});
-
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   const { empId } = req.params;
   try {
@@ -581,7 +301,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
-  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo, activeStep } = req.body;
+  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, designation, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo, activeStep } = req.body;
   // console.log("Reqest file is :", req.files);
 
   console.log("Active step :", activeStep);
@@ -624,6 +344,10 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(joiningDate && { jdate: joiningDate }),
       ...(branch && { branchOffice: branch }),
       ...(manager && { reportingManager: manager }),
+      ...(designation && { newDesignation: designation }),
+      ...(designation && { designation: designation === "Business Development Executive" || designation === "Business Development Manager" ? "Sales Executive" : designation}),
+      ...(designation && { bdmWork: designation === "Business Development Manager" ? true : false}),
+
 
       ...(firstMonthSalary && { firstMonthSalaryCondition: firstMonthSalary }),
       ...(salaryCalculation && { firstMonthSalary: salaryCalculation }),
