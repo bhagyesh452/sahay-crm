@@ -262,6 +262,10 @@ router.post("/einfo", upload.fields([
     }
     const result = await adminModel.create(emp); // Changed .then() to await
     res.json(result); // Ensure you respond with the result
+    // setTimeout(async()=>{
+    // const result = await adminModel.create(emp); // Changed .then() to await
+    //   res.json("Employee  Created Succesfully" , {data:result});
+    // },5000);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });

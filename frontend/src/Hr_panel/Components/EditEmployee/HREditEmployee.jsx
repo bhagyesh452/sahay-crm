@@ -982,7 +982,7 @@ export default function HREditEmployee() {
                                       id="Designation"
                                       value={employeementInfo.designation}
                                       onChange={handleInputChange}
-                                      disabled={!isDesignationEnabled || !isEmployeementInfoEditable}
+                                      disabled={!isEmployeementInfoEditable}
                                     >
                                       <option value="Select Designation">Select Designation</option>
                                       {renderDesignationOptions()}
@@ -1056,7 +1056,7 @@ export default function HREditEmployee() {
                                       id="Reporting"
                                       value={employeementInfo.manager}
                                       onChange={handleInputChange}
-                                      disabled={!isManagerEnabled || !isEmployeementInfoEditable}
+                                      disabled={!isEmployeementInfoEditable}
                                     >
                                       <option value="Select Manager">Select Manager</option>
                                       {renderManagerOptions()}

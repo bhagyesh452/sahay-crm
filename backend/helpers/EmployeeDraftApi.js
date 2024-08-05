@@ -134,6 +134,10 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
         size: file.size
     })) : [];
 
+    // console.log("Aadhar card :", req.files["aadharCard"]);
+    // console.log("Pan card :", req.files["panCard"]);
+    // console.log("Education Certificate :", req.files["educationCertificate"]);
+
     const offerLetterDetails = getFileDetails(req.files ? req.files["offerLetter"] : []);
     const aadharCardDetails = getFileDetails(req.files ? req.files["aadharCard"] : []);
     const panCardDetails = getFileDetails(req.files ? req.files["panCard"] : []);

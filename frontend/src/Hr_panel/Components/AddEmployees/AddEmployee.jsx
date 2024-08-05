@@ -22,6 +22,10 @@ export default function HorizontalNonLinearStepper() {
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
   const [empId, setEmpId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formDataReady, setFormDataReady] = useState(false);
+
+
 
   const [isPersonalInfoNext, setIsPersonalInfoNext] = useState(false);
   const [isEmployeementInfoNext, setIsEmployeementInfoNext] = useState(false);
@@ -443,6 +447,9 @@ export default function HorizontalNonLinearStepper() {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       setIsDocumentInfoNext(true);
     }
+    // else if (activeStep === 5) {
+    //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // }
   };
 
   const handleBack = () => {
@@ -459,168 +466,16 @@ export default function HorizontalNonLinearStepper() {
 
   // console.log("Active step :", activeStep);
 
-  const saveDraft = async () => {
-    let res;
-
-    if (activeStep === 0) {
-      try {
-        if (!empId) {
-          res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, personalInfo);  // store data in local storage
-          console.log("Employee created successfully", res.data);
-        } else {
-          res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, personalInfo);
-          console.log("Employee updated successfully", res.data);
-        }
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsPersonalInfoEditable(false);
-        setIsPersonalInfoNext(true);
-      } catch (error) {
-        console.log("Error creating or updating employee:", error);
-      }
-    } else if (activeStep === 1) {
-      try {
-        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, employeementInfo);
-        console.log("Employee updated successfully at step-1 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsEmployeementInfoEditable(false);
-        setIsEmployeementInfoNext(true);
-      } catch (error) {
-        console.log("Error updating employee :", error);
-      }
-    } else if (activeStep === 2) {
-      try {
-        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, payrollInfo, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        console.log("Employee updated successfully at step-2 :", res.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsPayrollInfoEditable(false);
-        setIsPayrollInfoNext(true);
-      } catch (error) {
-        console.log("Error updating employee:", error);
-      }
-    } else if (activeStep === 3) {
-      try {
-        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, emergencyInfo);
-        console.log("Emergency info updated successfully at step-3 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsEmergencyInfoEditable(false);
-        setIsEmergencyInfoNext(true);
-      } catch (error) {
-        console.log("Error updating emergency info:", error);
-      }
-    } else if (activeStep === 4) {
-      try {
-        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        console.log("Document info updated successfully at step-4 :", res.data.data);
-        setCompleted((prevCompleted) => ({
-          ...prevCompleted,
-          [activeStep]: true
-        }));
-        setIsEmployeeDocsInfoEditable(false);
-        setIsDocumentInfoNext(true);
-      } catch (error) {
-        console.log("Error updating document info:", error);
-      }
-    }
-  };
-
-
-
-
-
-
-
   // const saveDraft = async () => {
   //   let res;
-
-  //   const requestBody = {
-  //     ...(
-  //       activeStep === 0 ? personalInfo :
-  //         activeStep === 1 ? employeementInfo :
-  //           activeStep === 2 ? payrollInfo :
-  //             activeStep === 3 ? emergencyInfo :
-  //               empDocumentInfo
-  //     ),
-  //     activeStep
-  //   };
-
-  //   const url = `${secretKey}/employeeDraft/${!empId ? 'saveEmployeeDraft' : `updateEmployeeDraft/${empId}`}`;
-
-  //   try {
-  //     if (!empId) {
-  //       res = await axios.post(url, requestBody);
-  //       console.log(`Employee created successfully at step-${activeStep}:`, res.data);
-  //     } else {
-  //       res = await axios.put(url, requestBody, {
-  //         headers: activeStep === 2 || activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
-  //       });
-  //       console.log(`Employee updated successfully at step-${activeStep}:`, res.data);
-  //     }
-
-  //     console.log(`Employee ${!empId ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
-
-  //     setCompleted((prevCompleted) => ({
-  //       ...prevCompleted,
-  //       [activeStep]: true
-  //     }));
-
-  //     if (activeStep === 0) {
-  //       setIsPersonalInfoEditable(false);
-  //       setIsPersonalInfoNext(true);
-  //     } else if (activeStep === 1) {
-  //       setIsEmployeementInfoEditable(false);
-  //       setIsEmployeementInfoNext(true);
-  //     } else if (activeStep === 2) {
-  //       setIsPayrollInfoEditable(false);
-  //       setIsPayrollInfoNext(true);
-  //     } else if (activeStep === 3) {
-  //       setIsEmergencyInfoEditable(false);
-  //       setIsEmergencyInfoNext(true);
-  //     } else if (activeStep === 4) {
-  //       setIsEmployeeDocsInfoEditable(false);
-  //       setIsDocumentInfoNext(true);
-  //     }
-  //   } catch (error) {
-  //     console.log(`Error ${!empId ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
-  //   }
-  // };
-
-
-
-
-
-  // const saveDraft = async () => {
-
-  //   let res;
-  //   const formData = new FormData();
-  //   formData.append('activeStep', activeStep);
 
   //   if (activeStep === 0) {
   //     try {
   //       if (!empId) {
-  //         res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, { activeStep, personalInfo });  // store data in local storage
+  //         res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, personalInfo);  // store data in local storage
   //         console.log("Employee created successfully", res.data);
   //       } else {
-  //         res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { activeStep, personalInfo });
+  //         res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, personalInfo);
   //         console.log("Employee updated successfully", res.data);
   //       }
   //       setCompleted((prevCompleted) => ({
@@ -634,9 +489,7 @@ export default function HorizontalNonLinearStepper() {
   //     }
   //   } else if (activeStep === 1) {
   //     try {
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { activeStep, employeementInfo });
-  //       // formData.append('employeementInfo', employeementInfo);
-  //       // res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData);
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, employeementInfo);
   //       console.log("Employee updated successfully at step-1 :", res.data.data);
   //       setCompleted((prevCompleted) => ({
   //         ...prevCompleted,
@@ -654,14 +507,6 @@ export default function HorizontalNonLinearStepper() {
   //           'Content-Type': 'multipart/form-data'
   //         }
   //       });
-  //       // if (payrollInfo.offerLetter) {
-  //       formData.append('payrollInfo', payrollInfo);
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data'
-  //         }
-  //       });
-  //       // }
   //       console.log("Employee updated successfully at step-2 :", res.data);
   //       setCompleted((prevCompleted) => ({
   //         ...prevCompleted,
@@ -674,8 +519,7 @@ export default function HorizontalNonLinearStepper() {
   //     }
   //   } else if (activeStep === 3) {
   //     try {
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { activeStep, emergencyInfo });
-  //       // res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData);
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, emergencyInfo);
   //       console.log("Emergency info updated successfully at step-3 :", res.data.data);
   //       setCompleted((prevCompleted) => ({
   //         ...prevCompleted,
@@ -688,20 +532,11 @@ export default function HorizontalNonLinearStepper() {
   //     }
   //   } else if (activeStep === 4) {
   //     try {
-  //       // const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
-  //       //   headers: {
-  //       //     'Content-Type': 'multipart/form-data'
-  //       //   }
-  //       // });
-  //       Object.keys(empDocumentInfo).forEach(key => {
-  //         formData.append(key, empDocumentInfo[key]);
-  //       });
-  //       // formData.append("empDocumentInfo", empDocumentInfo);
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
   //         headers: {
   //           'Content-Type': 'multipart/form-data'
   //         }
-  //       })
+  //       });
   //       console.log("Document info updated successfully at step-4 :", res.data.data);
   //       setCompleted((prevCompleted) => ({
   //         ...prevCompleted,
@@ -719,7 +554,70 @@ export default function HorizontalNonLinearStepper() {
 
 
 
+
+
+  const saveDraft = async () => {
+    let res;
+
+    const requestBody = {
+      ...(
+        activeStep === 0 ? personalInfo :
+          activeStep === 1 ? employeementInfo :
+            activeStep === 2 ? payrollInfo :
+              activeStep === 3 ? emergencyInfo :
+                empDocumentInfo
+      ),
+      activeStep
+    };
+
+    const url = `${secretKey}/employeeDraft/${!empId ? 'saveEmployeeDraft' : `updateEmployeeDraft/${empId}`}`;
+
+    try {
+      if (!empId) {
+        res = await axios.post(url, requestBody);
+        console.log(`Employee created successfully at step-${activeStep}:`, res.data);
+      } else {
+        res = await axios.put(url, requestBody, {
+          headers: activeStep === 2 || activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
+        });
+        console.log(`Employee updated successfully at step-${activeStep}:`, res.data);
+      }
+
+      console.log(`Employee ${!empId ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
+
+      setCompleted((prevCompleted) => ({
+        ...prevCompleted,
+        [activeStep]: true
+      }));
+
+      if (activeStep === 0) {
+        setIsPersonalInfoEditable(false);
+        setIsPersonalInfoNext(true);
+      } else if (activeStep === 1) {
+        setIsEmployeementInfoEditable(false);
+        setIsEmployeementInfoNext(true);
+      } else if (activeStep === 2) {
+        setIsPayrollInfoEditable(false);
+        setIsPayrollInfoNext(true);
+      } else if (activeStep === 3) {
+        setIsEmergencyInfoEditable(false);
+        setIsEmergencyInfoNext(true);
+      } else if (activeStep === 4) {
+        setIsEmployeeDocsInfoEditable(false);
+        setIsDocumentInfoNext(true);
+      }
+    } catch (error) {
+      console.log(`Error ${!empId ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
+    }
+  };
+
+
   const handleComplete = async () => {
+    console.log("personalInfo before sending :", personalInfo);
+    console.log("employeementInfo before sending :", employeementInfo);
+    console.log("payrollInfo before sending :", payrollInfo);
+    console.log("emergencyInfo before sending :", emergencyInfo);
+    console.log("empDocumentInfo before sending :", empDocumentInfo);
     try {
       // Create the employee
       const res1 = await axios.post(`${secretKey}/employee/einfo`, {
@@ -728,10 +626,10 @@ export default function HorizontalNonLinearStepper() {
         payrollInfo,
         emergencyInfo,
         empDocumentInfo
-      // }, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
+        // }, {
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data'
+        //   }
       });
 
       console.log("Created employee is :", res1.data);
@@ -749,7 +647,6 @@ export default function HorizontalNonLinearStepper() {
       Swal.fire("error", "Error creating employee");
     }
   };
-
 
 
 
@@ -812,12 +709,12 @@ export default function HorizontalNonLinearStepper() {
       });
 
       setEmpDocumentInfo({
-        aadharCard: aadharCardDocument,
-        panCard: panCardDocument,
-        educationCertificate: educationCertificateDocument,
-        relievingCertificate: relievingCertificateDocument,
-        salarySlip: salarySlipDocument,
-        profilePhoto: profilePhotoDocument
+        aadharCard: data.aadharCard,
+        panCard: data.panCard,
+        educationCertificate: data.educationCertificate,
+        relievingCertificate: data.relievingCertificate,
+        salarySlip: data.salarySlip,
+        profilePhoto: data.profilePhoto
       });
 
       setOfferLetterDocument(data.offerLetter ? data.offerLetter : []);
@@ -836,6 +733,7 @@ export default function HorizontalNonLinearStepper() {
   useEffect(() => {
     fetchEmployee();
   }, [activeStep]);
+
 
   return (
     <div>
@@ -1257,186 +1155,186 @@ export default function HorizontalNonLinearStepper() {
                         </div>
                       )}
 
-                {activeStep === 2 && (
-                  <div className="step-3">
-                    <h2 className="text-center">
-                      Step:3 - Payroll Information
-                    </h2>
-                    <div className="steprForm-inner">
-                      <form>
-                        <div className="row">
-                          <div className="col-sm-12">
-                            <div className="form-group mt-2 mb-2">
-                              <label>Bank Account Details<span style={{ color: "red" }}> * </span></label>
+                      {activeStep === 2 && (
+                        <div className="step-3">
+                          <h2 className="text-center">
+                            Step:3 - Payroll Information
+                          </h2>
+                          <div className="steprForm-inner">
+                            <form>
                               <div className="row">
-                                <div className="col">
-                                  <input
-                                    type="text"
-                                    className="form-control mt-1"
-                                    name="accountNo"
-                                    placeholder="Account Number"
-                                    value={payrollInfo.accountNo}
-                                    onChange={handleInputChange}
-                                    disabled={!isPayrollInfoEditable}
-                                  />
-                                  {errors.accountNo && <p style={{ color: "red" }}>{errors.accountNo}</p>}
+                                <div className="col-sm-12">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label>Bank Account Details<span style={{ color: "red" }}> * </span></label>
+                                    <div className="row">
+                                      <div className="col">
+                                        <input
+                                          type="text"
+                                          className="form-control mt-1"
+                                          name="accountNo"
+                                          placeholder="Account Number"
+                                          value={payrollInfo.accountNo}
+                                          onChange={handleInputChange}
+                                          disabled={!isPayrollInfoEditable}
+                                        />
+                                        {errors.accountNo && <p style={{ color: "red" }}>{errors.accountNo}</p>}
+                                      </div>
+                                      <div className="col">
+                                        <input
+                                          type="text"
+                                          className="form-control mt-1"
+                                          name="bankName"
+                                          placeholder="Name as per Bank Record"
+                                          value={payrollInfo.bankName}
+                                          onChange={handleInputChange}
+                                          disabled={!isPayrollInfoEditable}
+                                        />
+                                        {errors.bankName && <p style={{ color: "red" }}>{errors.bankName}</p>}
+                                      </div>
+                                      <div className="col">
+                                        <input
+                                          type="text"
+                                          className="form-control mt-1"
+                                          name="ifscCode"
+                                          placeholder="IFSC Code"
+                                          value={payrollInfo.ifscCode}
+                                          onChange={handleInputChange}
+                                          disabled={!isPayrollInfoEditable}
+                                        />
+                                        {errors.ifscCode && <p style={{ color: "red" }}>{errors.ifscCode}</p>}
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="col">
-                                  <input
-                                    type="text"
-                                    className="form-control mt-1"
-                                    name="bankName"
-                                    placeholder="Name as per Bank Record"
-                                    value={payrollInfo.bankName}
-                                    onChange={handleInputChange}
-                                    disabled={!isPayrollInfoEditable}
-                                  />
-                                  {errors.bankName && <p style={{ color: "red" }}>{errors.bankName}</p>}
+                                <div className="col-sm-3">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label>Salary Details<span style={{ color: "red" }}> * </span></label>
+                                    <input
+                                      type="text"
+                                      className="form-control mt-1"
+                                      name="salary"
+                                      placeholder="Basic Salary"
+                                      value={payrollInfo.salary}
+                                      onChange={handleInputChange}
+                                      disabled={!isPayrollInfoEditable}
+                                    />
+                                    {errors.salary && <p style={{ color: "red" }}>{errors.salary}</p>}
+                                  </div>
                                 </div>
-                                <div className="col">
-                                  <input
-                                    type="text"
-                                    className="form-control mt-1"
-                                    name="ifscCode"
-                                    placeholder="IFSC Code"
-                                    value={payrollInfo.ifscCode}
-                                    onChange={handleInputChange}
-                                    disabled={!isPayrollInfoEditable}
-                                  />
-                                  {errors.ifscCode && <p style={{ color: "red" }}>{errors.ifscCode}</p>}
+                                <div className="col-sm-3">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label for="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
+                                    <div className="d-flex align-items-center">
+                                      <div className="stepper_radio_custom mr-1">
+                                        <select
+                                          className="form-select mt-1"
+                                          name="firstMonthSalaryCondition"
+                                          id="firstMonthSalaryCondition"
+                                          value={payrollInfo.firstMonthSalaryCondition}
+                                          onChange={handleInputChange}
+                                          disabled={!isPayrollInfoEditable}
+                                        >
+                                          <option value="Select First Month Salary Percentage" selected> Select First Month Salary Percentage</option>
+                                          <option value="50">50%</option>
+                                          <option value="75">75%</option>
+                                          <option value="100">100</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                    {errors.firstMonthSalary && <p style={{ color: "red" }}>{errors.firstMonthSalary}</p>}
+                                  </div>
+                                </div>
+                                <div className="col-sm-3">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label>1<sup>st</sup> Month's Salary</label>
+                                    <input
+                                      type="text"
+                                      className="form-control mt-1"
+                                      name="firstMonthSalary"
+                                      placeholder="Calculated Salary"
+                                      value={payrollInfo.firstMonthSalary}
+                                      onChange={handleInputChange}
+                                      disabled
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-sm-3">
+                                  <div class="form-group mt-2">
+                                    <label for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
+                                    <input
+                                      type="file"
+                                      className="form-control mt-1"
+                                      name="offerLetter"
+                                      id="offerLetter"
+                                      onChange={handleFileChange}
+                                      disabled={!isPayrollInfoEditable}
+                                    />
+                                    {errors.offerLetter && <p style={{ color: "red" }}>{errors.offerLetter}</p>}
+                                  </div>
+                                  {offerLetterDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
+                                    <div class="uploaded-fileItem d-flex align-items-center">
+                                      <p class="m-0">{offerLetterDocument[0]?.originalname}</p>
+                                      <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
+                                        <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                      </button>
+                                    </div>
+                                  </div>}
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label for="PANNumber">PAN Number<span style={{ color: "red" }}> * </span></label>
+                                    <input
+                                      type="text"
+                                      className="form-control mt-1"
+                                      name="panNumber"
+                                      id="PANNumber"
+                                      placeholder="PAN Number"
+                                      value={payrollInfo.panNumber}
+                                      onChange={handleInputChange}
+                                      disabled={!isPayrollInfoEditable}
+                                    />
+                                    {errors.panNumber && <p style={{ color: "red" }}>{errors.panNumber}</p>}
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label for="AdharNumber">Adhar Number<span style={{ color: "red" }}> * </span></label>
+                                    <input
+                                      type="text"
+                                      className="form-control mt-1"
+                                      name="aadharNumber"
+                                      id="AdharNumber"
+                                      placeholder="Adhar Number"
+                                      value={payrollInfo.aadharNumber}
+                                      onChange={handleInputChange}
+                                      disabled={!isPayrollInfoEditable}
+                                    />
+                                    {errors.aadharNumber && <p style={{ color: "red" }}>{errors.aadharNumber}</p>}
+                                  </div>
+                                </div>
+                                <div className="col-sm-4">
+                                  <div className="form-group mt-2 mb-2">
+                                    <label for="UANNumber">UAN  Number
+                                      {/* <span style={{ color: "red" }}> * </span> */}
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control mt-1"
+                                      name="uanNumber"
+                                      id="UANNumber"
+                                      placeholder="Universal Account Number for Provident Fund"
+                                      value={payrollInfo.uanNumber}
+                                      onChange={handleInputChange}
+                                      disabled={!isPayrollInfoEditable}
+                                    />
+                                    {/* {errors.uanNumber && <p style={{ color: "red" }}>{errors.uanNumber}</p>} */}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                          <div className="col-sm-3">
-                            <div className="form-group mt-2 mb-2">
-                              <label>Salary Details<span style={{ color: "red" }}> * </span></label>
-                              <input
-                                type="text"
-                                className="form-control mt-1"
-                                name="salary"
-                                placeholder="Basic Salary"
-                                value={payrollInfo.salary}
-                                onChange={handleInputChange}
-                                disabled={!isPayrollInfoEditable}
-                              />
-                              {errors.salary && <p style={{ color: "red" }}>{errors.salary}</p>}
-                            </div>
-                          </div>
-                          <div className="col-sm-3">
-                            <div className="form-group mt-2 mb-2">
-                              <label for="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
-                              <div className="d-flex align-items-center">
-                                <div className="stepper_radio_custom mr-1">
-                                  <select
-                                    className="form-select mt-1"
-                                    name="firstMonthSalary"
-                                    id="firstMonthSalary"
-                                    value={payrollInfo.firstMonthSalary}
-                                    onChange={handleInputChange}
-                                    disabled={!isPayrollInfoEditable}
-                                  >
-                                    <option value="Select First Month Salary Percentage" selected> Select First Month Salary Percentage</option>
-                                    <option value="50">50%</option>
-                                    <option value="75">75%</option>
-                                    <option value="100">100</option>
-                                  </select>
-                                </div>
-                              </div>
-                              {errors.firstMonthSalary && <p style={{ color: "red" }}>{errors.firstMonthSalary}</p>}
-                            </div>
-                          </div>
-                          <div className="col-sm-3">
-                            <div className="form-group mt-2 mb-2">
-                              <label>1<sup>st</sup> Month's Salary</label>
-                              <input
-                                type="text"
-                                className="form-control mt-1"
-                                name="salaryCalculation"
-                                placeholder="Calculated Salary"
-                                value={payrollInfo.salaryCalculation}
-                                onChange={handleInputChange}
-                                disabled
-                              />
-                            </div>
-                          </div>
-                          <div className="col-sm-3">
-                            <div class="form-group mt-2">
-                              <label for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
-                              <input
-                                type="file"
-                                className="form-control mt-1"
-                                name="offerLetter"
-                                id="offerLetter"
-                                onChange={handleFileChange}
-                                disabled={!isPayrollInfoEditable}
-                              />
-                              {errors.offerLetter && <p style={{ color: "red" }}>{errors.offerLetter}</p>}
-                            </div>
-                            {offerLetterDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                              <div class="uploaded-fileItem d-flex align-items-center">
-                                <p class="m-0">{offerLetterDocument[0]?.originalname}</p>
-                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                  <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
-                                </button>
-                              </div>
-                            </div>}
-                          </div>
-                          <div className="col-sm-4">
-                            <div className="form-group mt-2 mb-2">
-                              <label for="PANNumber">PAN Number<span style={{ color: "red" }}> * </span></label>
-                              <input
-                                type="text"
-                                className="form-control mt-1"
-                                name="panNumber"
-                                id="PANNumber"
-                                placeholder="PAN Number"
-                                value={payrollInfo.panNumber}
-                                onChange={handleInputChange}
-                                disabled={!isPayrollInfoEditable}
-                              />
-                              {errors.panNumber && <p style={{ color: "red" }}>{errors.panNumber}</p>}
-                            </div>
-                          </div>
-                          <div className="col-sm-4">
-                            <div className="form-group mt-2 mb-2">
-                              <label for="AdharNumber">Adhar Number<span style={{ color: "red" }}> * </span></label>
-                              <input
-                                type="text"
-                                className="form-control mt-1"
-                                name="aadharNumber"
-                                id="AdharNumber"
-                                placeholder="Adhar Number"
-                                value={payrollInfo.aadharNumber}
-                                onChange={handleInputChange}
-                                disabled={!isPayrollInfoEditable}
-                              />
-                              {errors.aadharNumber && <p style={{ color: "red" }}>{errors.aadharNumber}</p>}
-                            </div>
-                          </div>
-                          <div className="col-sm-4">
-                            <div className="form-group mt-2 mb-2">
-                              <label for="UANNumber">UAN  Number
-                                {/* <span style={{ color: "red" }}> * </span> */}
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control mt-1"
-                                name="uanNumber"
-                                id="UANNumber"
-                                placeholder="Universal Account Number for Provident Fund"
-                                value={payrollInfo.uanNumber}
-                                onChange={handleInputChange}
-                                disabled={!isPayrollInfoEditable}
-                              />
-                              {/* {errors.uanNumber && <p style={{ color: "red" }}>{errors.uanNumber}</p>} */}
-                            </div>
+                            </form>
                           </div>
                         </div>
-                      </form>
-                    </div>
-                  </div>
-                )}
+                      )}
 
                       {activeStep === 3 && (
                         <div className="step-4">
@@ -1879,141 +1777,141 @@ export default function HorizontalNonLinearStepper() {
                               </div>
                             </div>
 
-                      <div className="stepThreePreview">
-                        <div className="d-flex align-items-center mt-3">
-                          <div className="services_No">3</div>
-                          <div className="ml-1">
-                            <h3 className="m-0">
-                              Payroll Information
-                            </h3>
-                          </div>
-                        </div>
-                        <div className="servicesFormCard mt-3">
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>Account Number</b>
+                            <div className="stepThreePreview">
+                              <div className="d-flex align-items-center mt-3">
+                                <div className="services_No">3</div>
+                                <div className="ml-1">
+                                  <h3 className="m-0">
+                                    Payroll Information
+                                  </h3>
+                                </div>
+                              </div>
+                              <div className="servicesFormCard mt-3">
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>Account Number</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {payrollInfo.accountNo || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>Bank Name</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {payrollInfo.bankName || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>IFSC Code</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {payrollInfo.ifscCode || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>Basic Salary</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      ₹ {formatSalary(payrollInfo.salary) || 0}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>First Month Salary Condition</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {(payrollInfo.firstMonthSalaryCondition === "50" && "50%" ||
+                                        payrollInfo.firstMonthSalaryCondition === "75" && "75%" ||
+                                        payrollInfo.firstMonthSalaryCondition === "100" && "100%") || "-"
+                                      }
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>First Month Calculated Salary</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      ₹ {formatSalary(payrollInfo.firstMonthSalary) || 0}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>Offer Letter</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {offerLetterDocument[0]?.originalname || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>Pan Number</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {payrollInfo.panNumber || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>Adhar Number</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {payrollInfo.aadharNumber || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>UAN Number</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {payrollInfo.uanNumber || "-"}
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {payrollInfo.accountNo || "-"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>Bank Name</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {payrollInfo.bankName || "-"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>IFSC Code</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {payrollInfo.ifscCode || "-"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>Basic Salary</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                ₹ {formatSalary(payrollInfo.salary) || 0}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>First Month Salary Condition</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {(payrollInfo.firstMonthSalary === "50" && "50%" ||
-                                  payrollInfo.firstMonthSalary === "75" && "75%" ||
-                                  payrollInfo.firstMonthSalary === "100" && "100%") || "-"
-                                }
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>First Month Calculated Salary</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                ₹ {formatSalary(payrollInfo.salaryCalculation) || 0}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>Offer Letter</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {offerLetterDocument[0]?.originalname || "-"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>Pan Number</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {payrollInfo.panNumber || "-"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>Adhar Number</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {payrollInfo.aadharNumber || "-"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0">
-                            <div className="col-sm-3 p-0">
-                              <div className="form-label-name">
-                                <b>UAN Number</b>
-                              </div>
-                            </div>
-                            <div className="col-sm-9 p-0">
-                              <div className="form-label-data">
-                                {payrollInfo.uanNumber || "-"}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
 
                             <div className="stepFourPreview">
                               <div className="d-flex align-items-center mt-3">
