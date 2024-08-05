@@ -239,8 +239,8 @@ export default function HorizontalNonLinearStepper() {
     bankName: "",
     ifscCode: "",
     salary: "",
+    firstMonthSalaryCondition: "",
     firstMonthSalary: "",
-    salaryCalculation: "",
     offerLetter: "",
     panNumber: "",
     aadharNumber: "",
@@ -248,7 +248,7 @@ export default function HorizontalNonLinearStepper() {
   });
   const validatePayrollInfo = () => {
     const newErrors = {};
-    const { accountNo, bankName, ifscCode, salary, firstMonthSalary, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
+    const { accountNo, bankName, ifscCode, salary, firstMonthSalaryCondition, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
 
     if (!accountNo) newErrors.accountNo = "Account Number is required";
     if (!bankName) newErrors.bankName = "Bank Name is required";
@@ -259,7 +259,7 @@ export default function HorizontalNonLinearStepper() {
     else if (isNaN(salary) || salary <= 0) newErrors.salary = "Invalid Salary amount";
 
     // Validate First Month Salary Condition
-    if (!firstMonthSalary) newErrors.firstMonthSalary = "First Month Salary Condition is required";
+    if (!firstMonthSalaryCondition) newErrors.firstMonthSalaryCondition = "First Month Salary Condition is required";
 
     // Validate Offer Letter (File Upload)
     if (!offerLetter || !offerLetterDocument) newErrors.offerLetter = "Offer Letter is required";
@@ -279,9 +279,9 @@ export default function HorizontalNonLinearStepper() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const calculateSalary = (salary, firstMonthSalary) => {
-    if (!salary || !firstMonthSalary) return '';
-    const percentage = parseFloat(firstMonthSalary) / 100;
+  const calculateSalary = (salary, condition) => {
+    if (!salary || !condition) return "";
+    const percentage = parseFloat(condition) / 100;
     return (parseFloat(salary) * percentage);
   };
 
@@ -350,13 +350,12 @@ export default function HorizontalNonLinearStepper() {
     setPayrollInfo((prevState) => {
       const updatedState = { ...prevState, [name]: value };
 
-      if (name === "salary" || name === "firstMonthSalary") {
-        updatedState.salaryCalculation = calculateSalary(
+      if (name === "salary" || name === "firstMonthSalaryCondition") {
+        updatedState.firstMonthSalary = calculateSalary(
           name === "salary" ? value : prevState.salary,
-          name === "firstMonthSalary" ? value : prevState.firstMonthSalary
+          name === "firstMonthSalaryCondition" ? value : prevState.firstMonthSalaryCondition
         );
       }
-
       return updatedState;
     });
 
@@ -418,6 +417,7 @@ export default function HorizontalNonLinearStepper() {
   };
 
 
+
   const totalSteps = () => steps.length;
 
   const completedSteps = () => Object.keys(completed).length;
@@ -460,16 +460,16 @@ export default function HorizontalNonLinearStepper() {
   // console.log("Active step :", activeStep);
 
   const saveDraft = async () => {
+    let res;
+
     if (activeStep === 0) {
       try {
         if (!empId) {
-          const res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, personalInfo);  // store data in local storage
+          res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, personalInfo);  // store data in local storage
           console.log("Employee created successfully", res.data);
-          console.log("Active step :", activeStep);
         } else {
-          const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, personalInfo);
+          res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, personalInfo);
           console.log("Employee updated successfully", res.data);
-          console.log("Active step :", activeStep);
         }
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -482,7 +482,7 @@ export default function HorizontalNonLinearStepper() {
       }
     } else if (activeStep === 1) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, employeementInfo);
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, employeementInfo);
         console.log("Employee updated successfully at step-1 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -495,7 +495,7 @@ export default function HorizontalNonLinearStepper() {
       }
     } else if (activeStep === 2) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, payrollInfo, {
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, payrollInfo, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -512,7 +512,7 @@ export default function HorizontalNonLinearStepper() {
       }
     } else if (activeStep === 3) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, emergencyInfo);
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, emergencyInfo);
         console.log("Emergency info updated successfully at step-3 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -525,7 +525,7 @@ export default function HorizontalNonLinearStepper() {
       }
     } else if (activeStep === 4) {
       try {
-        const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
+        res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -544,68 +544,45 @@ export default function HorizontalNonLinearStepper() {
   };
 
 
+
+
+
+
+
   // const saveDraft = async () => {
-  //   const formData = new FormData();
-  //   formData.append('activeStep', activeStep);
+  //   let res;
+
+  //   const requestBody = {
+  //     ...(
+  //       activeStep === 0 ? personalInfo :
+  //         activeStep === 1 ? employeementInfo :
+  //           activeStep === 2 ? payrollInfo :
+  //             activeStep === 3 ? emergencyInfo :
+  //               empDocumentInfo
+  //     ),
+  //     activeStep
+  //   };
+
+  //   const url = `${secretKey}/employeeDraft/${!empId ? 'saveEmployeeDraft' : `updateEmployeeDraft/${empId}`}`;
 
   //   try {
-  //     let res;
-
-  //     if (activeStep === 0) {
-  //       formData.append('personalInfo', JSON.stringify(personalInfo));
-  //       if (!empId) {
-  //         res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, formData, {
-  //           headers: {
-  //             'Content-Type': 'multipart/form-data'
-  //           }
-  //         });
-  //       } else {
-  //         res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
-  //           headers: {
-  //             'Content-Type': 'multipart/form-data'
-  //           }
-  //         });
-  //       }
-  //     } else if (activeStep === 1) {
-  //       formData.append('employeementInfo', JSON.stringify(employeementInfo));
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data'
-  //         }
+  //     if (!empId) {
+  //       res = await axios.post(url, requestBody);
+  //       console.log(`Employee created successfully at step-${activeStep}:`, res.data);
+  //     } else {
+  //       res = await axios.put(url, requestBody, {
+  //         headers: activeStep === 2 || activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
   //       });
-  //     } else if (activeStep === 2) {
-  //       formData.append('payrollInfo', JSON.stringify(payrollInfo));
-  //       if (payrollInfo.offerLetter) {
-  //         formData.append('offerLetter', payrollInfo.offerLetter);
-  //       }
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data'
-  //         }
-  //       });
-  //     } else if (activeStep === 3) {
-  //       formData.append('emergencyInfo', JSON.stringify(emergencyInfo));
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data'
-  //         }
-  //       });
-  //     } else if (activeStep === 4) {
-  //       Object.keys(empDocumentInfo).forEach(key => {
-  //         formData.append(key, empDocumentInfo[key]);
-  //       });
-  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data'
-  //         }
-  //       });
+  //       console.log(`Employee updated successfully at step-${activeStep}:`, res.data);
   //     }
 
-  //     console.log(`Employee updated successfully at step-${activeStep} :`, res.data);
+  //     console.log(`Employee ${!empId ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
+
   //     setCompleted((prevCompleted) => ({
   //       ...prevCompleted,
   //       [activeStep]: true
   //     }));
+
   //     if (activeStep === 0) {
   //       setIsPersonalInfoEditable(false);
   //       setIsPersonalInfoNext(true);
@@ -623,9 +600,122 @@ export default function HorizontalNonLinearStepper() {
   //       setIsDocumentInfoNext(true);
   //     }
   //   } catch (error) {
-  //     console.log(`Error updating employee at step-${activeStep} :`, error);
+  //     console.log(`Error ${!empId ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
   //   }
   // };
+
+
+
+
+
+  // const saveDraft = async () => {
+
+  //   let res;
+  //   const formData = new FormData();
+  //   formData.append('activeStep', activeStep);
+
+  //   if (activeStep === 0) {
+  //     try {
+  //       if (!empId) {
+  //         res = await axios.post(`${secretKey}/employeeDraft/saveEmployeeDraft`, { activeStep, personalInfo });  // store data in local storage
+  //         console.log("Employee created successfully", res.data);
+  //       } else {
+  //         res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { activeStep, personalInfo });
+  //         console.log("Employee updated successfully", res.data);
+  //       }
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsPersonalInfoEditable(false);
+  //       setIsPersonalInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error creating or updating employee:", error);
+  //     }
+  //   } else if (activeStep === 1) {
+  //     try {
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { activeStep, employeementInfo });
+  //       // formData.append('employeementInfo', employeementInfo);
+  //       // res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData);
+  //       console.log("Employee updated successfully at step-1 :", res.data.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsEmployeementInfoEditable(false);
+  //       setIsEmployeementInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating employee :", error);
+  //     }
+  //   } else if (activeStep === 2) {
+  //     try {
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, payrollInfo, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data'
+  //         }
+  //       });
+  //       // if (payrollInfo.offerLetter) {
+  //       formData.append('payrollInfo', payrollInfo);
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data'
+  //         }
+  //       });
+  //       // }
+  //       console.log("Employee updated successfully at step-2 :", res.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsPayrollInfoEditable(false);
+  //       setIsPayrollInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating employee:", error);
+  //     }
+  //   } else if (activeStep === 3) {
+  //     try {
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, { activeStep, emergencyInfo });
+  //       // res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData);
+  //       console.log("Emergency info updated successfully at step-3 :", res.data.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsEmergencyInfoEditable(false);
+  //       setIsEmergencyInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating emergency info:", error);
+  //     }
+  //   } else if (activeStep === 4) {
+  //     try {
+  //       // const res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, empDocumentInfo, {
+  //       //   headers: {
+  //       //     'Content-Type': 'multipart/form-data'
+  //       //   }
+  //       // });
+  //       Object.keys(empDocumentInfo).forEach(key => {
+  //         formData.append(key, empDocumentInfo[key]);
+  //       });
+  //       // formData.append("empDocumentInfo", empDocumentInfo);
+  //       res = await axios.put(`${secretKey}/employeeDraft/updateEmployeeDraft/${empId}`, formData, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data'
+  //         }
+  //       })
+  //       console.log("Document info updated successfully at step-4 :", res.data.data);
+  //       setCompleted((prevCompleted) => ({
+  //         ...prevCompleted,
+  //         [activeStep]: true
+  //       }));
+  //       setIsEmployeeDocsInfoEditable(false);
+  //       setIsDocumentInfoNext(true);
+  //     } catch (error) {
+  //       console.log("Error updating document info:", error);
+  //     }
+  //   }
+  // };
+
+
 
 
 
@@ -638,10 +728,10 @@ export default function HorizontalNonLinearStepper() {
         payrollInfo,
         emergencyInfo,
         empDocumentInfo
-      }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      // }, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
       });
 
       console.log("Created employee is :", res1.data);
@@ -659,6 +749,11 @@ export default function HorizontalNonLinearStepper() {
       Swal.fire("error", "Error creating employee");
     }
   };
+
+
+
+
+
 
   const handleReset = () => {
     setActiveStep(0);
@@ -702,8 +797,8 @@ export default function HorizontalNonLinearStepper() {
         bankName: data.bankName || "",
         ifscCode: data.ifscCode || "",
         salary: data.salary || "",
-        firstMonthSalary: data.firstMonthSalaryCondition || "",
-        salaryCalculation: data.firstMonthSalary || "",
+        firstMonthSalaryCondition: data.firstMonthSalaryCondition || "",
+        firstMonthSalary: data.firstMonthSalary || "",
         offerLetter: offerLetterDocument,
         panNumber: data.panNumber || "",
         aadharNumber: data.aadharNumber || "",
@@ -1227,14 +1322,14 @@ export default function HorizontalNonLinearStepper() {
                           </div>
                           <div className="col-sm-3">
                             <div className="form-group mt-2 mb-2">
-                              <label for="Company">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
+                              <label for="firstMonthSalaryCondition">1st Month Salary Condition<span style={{ color: "red" }}> * </span></label>
                               <div className="d-flex align-items-center">
                                 <div className="stepper_radio_custom mr-1">
                                   <select
                                     className="form-select mt-1"
-                                    name="firstMonthSalary"
-                                    id="firstMonthSalary"
-                                    value={payrollInfo.firstMonthSalary}
+                                    name="firstMonthSalaryCondition"
+                                    id="firstMonthSalaryCondition"
+                                    value={payrollInfo.firstMonthSalaryCondition}
                                     onChange={handleInputChange}
                                     disabled={!isPayrollInfoEditable}
                                   >
@@ -1245,7 +1340,7 @@ export default function HorizontalNonLinearStepper() {
                                   </select>
                                 </div>
                               </div>
-                              {errors.firstMonthSalary && <p style={{ color: "red" }}>{errors.firstMonthSalary}</p>}
+                              {errors.firstMonthSalaryCondition && <p style={{ color: "red" }}>{errors.firstMonthSalaryCondition}</p>}
                             </div>
                           </div>
                           <div className="col-sm-3">
@@ -1254,9 +1349,9 @@ export default function HorizontalNonLinearStepper() {
                               <input
                                 type="text"
                                 className="form-control mt-1"
-                                name="salaryCalculation"
+                                name="firstMonthSalary"
                                 placeholder="Calculated Salary"
-                                value={payrollInfo.salaryCalculation}
+                                value={payrollInfo.firstMonthSalary}
                                 onChange={handleInputChange}
                                 disabled
                               />
@@ -1847,9 +1942,9 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                {(payrollInfo.firstMonthSalary === "50" && "50%" ||
-                                  payrollInfo.firstMonthSalary === "75" && "75%" ||
-                                  payrollInfo.firstMonthSalary === "100" && "100%") || "-"
+                                {(payrollInfo.firstMonthSalaryCondition === "50" && "50%" ||
+                                  payrollInfo.firstMonthSalaryCondition === "75" && "75%" ||
+                                  payrollInfo.firstMonthSalaryCondition === "100" && "100%") || "-"
                                 }
                               </div>
                             </div>
@@ -1862,7 +1957,7 @@ export default function HorizontalNonLinearStepper() {
                             </div>
                             <div className="col-sm-9 p-0">
                               <div className="form-label-data">
-                                ₹ {formatSalary(payrollInfo.salaryCalculation) || 0}
+                                ₹ {formatSalary(payrollInfo.firstMonthSalary) || 0}
                               </div>
                             </div>
                           </div>
