@@ -998,6 +998,7 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
 
 router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (req, res) => {
   const { companyName, serviceName } = req.body;
+  const socketIO = req.io;
   try {
     // Find the document by companyName
     const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
@@ -1023,7 +1024,7 @@ router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (r
       "Company Name": companyName,
       serviceName: serviceName
     });
-
+    socketIO.emit('rm-general-status-updated', { name: document.bdeName, companyName: companyName })
     res.status(200).json({ message: "Company successfully deleted and service removed from RedesignedLeadModel" });
   } catch (error) {
     console.log("Error Deleting Company From Task Manager", error.message);
