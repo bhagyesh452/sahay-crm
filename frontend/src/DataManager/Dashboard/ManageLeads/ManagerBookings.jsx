@@ -90,7 +90,7 @@ function ManagerBookings() {
   useEffect(() => {
     document.title = `Datamanager-Sahay-CRM`;
   }, []);
-  
+
   useEffect(() => {
     setLeadFormData(
       infiniteBooking.filter((obj) =>
@@ -121,11 +121,27 @@ function ManagerBookings() {
     fetchRedesignedFormData();
   }, [nowToFetch]);
 
+  const [rmServicesData, setRmServicesData] = useState([])
+
+  const fetchData = async () => {
+
+    try {
+
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+      const servicesData = servicesResponse.data;
+      setRmServicesData(servicesData)
+
+    } catch (error) {
+      console.error("Error fetching data", error.message);
+    }
+  };
+
   useEffect(() => {
     // if (data.companyName) {
     //   console.log("Company Found");
     fetchDatadebounce();
     fetchRedesignedFormData();
+    fetchData();
     // } else {
     //   console.log("No Company Found");
     // }
@@ -415,11 +431,17 @@ function ManagerBookings() {
   formData.append("withGST", remainingObject.withGST);
   formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
   formData.append("paymentDate", remainingObject["paymentDate"])
+
+
+
+
   const handleSubmitMorePayments = async () => {
     if (!remainingObject.paymentDate || !remainingObject.paymentMethod) {
       Swal.fire("Incorrect Details!", "Please Enter Details Properly", "warning");
       return true;
     }
+    const findCompany = rmServicesData.find(company=>company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
+    console.log("findCompany" , findCompany)
     if (!tempUpdateMode) {
       try {
         const response = await axios.post(
@@ -431,6 +453,15 @@ function ManagerBookings() {
             },
           }
         );
+        if(findCompany){
+          const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
+            companyName: remainingObject["Company Name"],
+            serviceName: remainingObject.serviceName,
+            pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
+            pendingRecievedPaymentDate: remainingObject.paymentDate
+          });
+          console.log("remaing payment", response2.data)
+        }
         Swal.fire(
           "Payment Updated",
           "Thank you, your payment has been updated successfully!",
@@ -455,6 +486,15 @@ function ManagerBookings() {
             },
           }
         );
+        if(findCompany){
+          const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
+            companyName: remainingObject["Company Name"],
+            serviceName: remainingObject.serviceName,
+            pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
+            pendingRecievedPaymentDate: remainingObject.paymentDate
+          });
+          console.log("remaing payment", response2.data)
+        }
         Swal.fire(
           "Payment Updated",
           "Thank you, your payment has been updated successfully!",
@@ -471,6 +511,8 @@ function ManagerBookings() {
       }
     }
   };
+
+
   function formatDateInput(inputDate) {
     const date = new Date(inputDate);
     const year = date.getUTCFullYear();
@@ -527,6 +569,8 @@ function ManagerBookings() {
       );
     }
   }
+
+
   const submitExpanse = async () => {
     try {
       const response = await axios.post(
@@ -1376,9 +1420,7 @@ function ManagerBookings() {
                                                     functionOpenRemainingPayment(
                                                       obj,
                                                       "secondPayment",
-                                                      currentLeadform[
-                                                      "Company Name"
-                                                      ],
+                                                      currentLeadform["Company Name"],
                                                       0
                                                     )
                                                   }

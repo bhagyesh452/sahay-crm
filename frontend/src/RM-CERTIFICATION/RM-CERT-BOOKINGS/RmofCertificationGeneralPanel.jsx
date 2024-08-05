@@ -65,6 +65,8 @@ function RmofCertificationGeneralPanel() {
         }
     };
 
+    console.log("generaldata" , rmServicesData)
+
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
             secure: true, // Use HTTPS
@@ -77,6 +79,10 @@ function RmofCertificationGeneralPanel() {
             fetchData()
         });
 
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -86,7 +92,7 @@ function RmofCertificationGeneralPanel() {
 
 
     const refreshData = () => {
-        console.log("Refreshing data...");
+       
         fetchData();
     };
 
@@ -438,8 +444,8 @@ function RmofCertificationGeneralPanel() {
                                             </div>
                                         </td>
                                         <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.firstPayment)) + (parseInt(obj.pendingRecievedPayment))).toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(obj.pendingRecievedPayment)).toLocaleString('en-IN')) : 0}</td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary"
                                             //onClick={() => setOpenCompanyTaskComponent(true)}

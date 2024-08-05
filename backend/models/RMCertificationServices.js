@@ -63,9 +63,6 @@ const ServiceSchema = new mongoose.Schema({
   fourthPaymentRemarks: {
     type: String,
   },
-  pendingRecievedPayment:{
-    type: Number,
-  },
   paymentRemarks: {
     type: String,
     default: "No payment remarks",
@@ -181,6 +178,12 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   fourthPaymentRemarks: {
     type: String,
   },
+  pendingRecievedPayment:{
+    type: Number,
+  },
+  pendingRecievedPaymentDate:{
+    type:Date,
+  },
   bookingPublishDate: {
     type: String,
   },
@@ -207,7 +210,7 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   contentWriter:{
     type:String,
-    default:"Drashti Thakkar"
+    default:"RonakKumar"
  },
   brochureStatus:{
     type:String,

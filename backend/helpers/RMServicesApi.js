@@ -81,6 +81,8 @@ router.post('/post-rmservicesdata', async (req, res) => {
     let successEntries = 0;
     let failedEntries = 0;
 
+    //console.log("dataToSend" , dataToSend)
+
     for (const item of dataToSend) {
       try {
         // Check if the record already exists
@@ -94,7 +96,9 @@ router.post('/post-rmservicesdata', async (req, res) => {
             ...item,
             bookingPublishDate: publishDate
           };
+          //console.log("createdData" , data)
           const newRecord = await RMCertificationModel.create(data);
+          //console.log("newRecord" , newRecord)
           createData.push(newRecord);
           successEntries++;
         } else {
@@ -428,7 +432,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
 });
 
 router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, res) => {
-  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus , dateOfChangingMainStatus } = req.body;
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus, dateOfChangingMainStatus } = req.body;
   const socketIO = req.io;
 
   try {
@@ -438,12 +442,12 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
         serviceName: serviceName
       },
       {
-          subCategoryStatus: subCategoryStatus,
-          mainCategoryStatus: mainCategoryStatus,
-          lastActionDate: new Date(),
-          dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
-          previousMainCategoryStatus: previousMainCategoryStatus,
-          previousSubCategoryStatus: previousSubCategoryStatus
+        subCategoryStatus: subCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus,
+        lastActionDate: new Date(),
+        dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
+        previousMainCategoryStatus: previousMainCategoryStatus,
+        previousSubCategoryStatus: previousSubCategoryStatus
       },
       { new: true }
     );
@@ -458,7 +462,7 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
 
     // Emit socket event if needed
     //socketIO.emit('update', { companyName, serviceName });
-    socketIO.emit('rm-general-status-updated', {companyName: companyName });
+    socketIO.emit('rm-general-status-updated', { companyName: companyName });
     res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
 
   } catch (error) {
@@ -494,7 +498,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           : company.submittedOn;  // Retain existing submittedOn otherwise
 
       // Conditionally include dateOfChangingMainStatus
-      if (["Process", "Approved", "Submitted", "Hold", "Defaulter","ReadyToSubmit"].includes(subCategoryStatus))  {
+      if (["Process", "Approved", "Submitted", "Hold", "Defaulter", "ReadyToSubmit"].includes(subCategoryStatus)) {
         updateFields.dateOfChangingMainStatus = new Date();
       }
 
@@ -535,8 +539,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         {
           subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
           mainCategoryStatus: company.previousMainCategoryStatus,
-          previousMainCategoryStatus:company.mainCategoryStatus,
-          previousSubCategoryStatus:company.subCategoryStatus,// Restore previous mainCategoryStatus
+          previousMainCategoryStatus: company.mainCategoryStatus,
+          previousSubCategoryStatus: company.subCategoryStatus,// Restore previous mainCategoryStatus
           lastActionDate: new Date(),
           submittedOn: company.submittedOn,
           dateOfChangingMainStatus: company.dateOfChangingMainStatus, // Retain existing date
@@ -605,7 +609,7 @@ router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
 
 router.post(`/update-content-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, contentStatus } = req.body;
-  console.log("contentStatus" , contentStatus , companyName , serviceName)
+  console.log("contentStatus", contentStatus, companyName, serviceName)
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -1002,7 +1006,7 @@ router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (r
   try {
     // Find the document by companyName
     const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
-    
+
     if (!document) {
       console.log("No service found")
     }
@@ -1031,6 +1035,57 @@ router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (r
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+router.post("/rmcertification-update-remainingpayments", async (req, res) => {
+  const { companyName, serviceName, pendingRecievedPayment, pendingRecievedPaymentDate } = req.body;
+  const socketIO = req.io;
+
+  try {
+    // Fetch the current record for validation
+    const company = await RMCertificationModel.findOne({
+      "Company Name": companyName,
+      serviceName: serviceName
+    });
+
+    if (!company) {
+      return res.status(400).json({ message: "Company or service not found" });
+    }
+
+    // Validate that the pendingReceivedPayment does not exceed the total amount
+    const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
+    const currentReceivedPayment = company.pendingRecievedPayment || 0;
+
+    console.log("totalAmount" , totalAmount)
+    console.log(currentReceivedPayment)
+    
+    if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
+      return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
+    }
+
+    // Update the record if validation passes
+    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+      { "Company Name": companyName, serviceName: serviceName },
+      { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
+      { new: true }
+    );
+
+   
+
+    if (!updatedCompany) {
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    socketIO.emit('rm-recievedamount-updated');
+
+    res.status(200).json({ message: "Pending Amount Added Successfully", data: updatedCompany });
+
+  } catch (error) {
+    console.log("Error submitting remaining payment", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 
 

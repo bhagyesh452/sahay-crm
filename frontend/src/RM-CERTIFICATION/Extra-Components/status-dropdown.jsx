@@ -4,13 +4,32 @@ import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
+import io from 'socket.io-client';
 
 
 
-const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData }) => {
+const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData, contentStatus, brochureStatus }) => {
   const [status, setStatus] = useState(subStatus);
   const [statusClass, setStatusClass] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+  //   useEffect(() => {
+  //     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+  //         secure: true, // Use HTTPS
+  //         path: '/socket.io',
+  //         reconnection: true,
+  //         transports: ['websocket'],
+  //     });
+
+  //     socket.on("rm-general-status-updated", (res) => {
+  //         refreshData();
+  //     });
+
+
+  //     return () => {
+  //         socket.disconnect();
+  //     };
+  // }, [contentStatus , brochureStatus]);
 
 
   const handleStatusChange = async (newStatus, statusClass) => {
@@ -84,7 +103,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             mainCategoryStatus: "Process"
           });
         }
-      } 
+      }
       else if (mainStatus === "ReadyToSubmit") {
         if (newStatus === "Submitted") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -120,14 +139,14 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             //mainCategoryStatus: "Defaulter",
           });
-        }else if (newStatus === "Approved") {
+        } else if (newStatus === "Approved") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Approved",
           });
-        }else if (newStatus === "ReadyToSubmit") {
+        } else if (newStatus === "ReadyToSubmit") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
@@ -362,6 +381,44 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
   useEffect(() => {
     setStatusClass(getStatusClass(mainStatus, subStatus));
   }, [mainStatus, subStatus]);
+
+  console.log("status" , contentStatus , brochureStatus)
+
+  useEffect(() => {
+    //console.log("useEffect triggered");
+  
+    const updateStatus = async () => {
+      if (contentStatus === "Approved" && brochureStatus === "Approved") {
+        try {
+          //console.log("Updating status...");
+          const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: "ReadyToSubmit",
+            mainCategoryStatus: "ReadyToSubmit",
+            previousMainCategoryStatus: mainStatus,
+            previousSubCategoryStatus: status
+          });
+          ///console.log("Status updated successfully:", response.data);
+          
+          if (response.status === 200) {
+            // Ensure refreshData is called correctly
+            //console.log("Calling refreshData");
+            await refreshData();
+          } else {
+            console.error("Failed to update status:", response.status);
+          }
+        } catch (error) {
+          console.error("Error updating status:", error.message);
+        }
+      }
+    };
+  
+    updateStatus();
+  }, [contentStatus, brochureStatus]);
+  
+
+
 
 
   //console.log("mainStatus" , mainStatus)

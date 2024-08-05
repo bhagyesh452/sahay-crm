@@ -82,6 +82,10 @@ function RmofCertificationProcessPanel() {
             fetchData()
         });
 
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -211,6 +215,9 @@ function RmofCertificationProcessPanel() {
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
 
+
+  
+
     return (
         <div>
             <div className="RM-my-booking-lists">
@@ -299,6 +306,8 @@ function RmofCertificationProcessPanel() {
                                                         companyName={obj["Company Name"]}
                                                         serviceName={obj.serviceName}
                                                         refreshData={refreshData}
+                                                        contentStatus={obj.contentStatus ? obj.contentStatus : "Not Started"}
+                                                        brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                     />
                                                 )}
                                             </div>
@@ -392,6 +401,7 @@ function RmofCertificationProcessPanel() {
                                                 mainStatus={obj.mainCategoryStatus}
                                                 brochureStatus={obj.brochureStatus}
                                                 designername={obj.brochureDesigner}
+                                                refreshData={refreshData}
                                             /></td>
                                         <td className='td_of_NSWSeMAIL'>
                                             <NSWSEmailInput
@@ -443,8 +453,8 @@ function RmofCertificationProcessPanel() {
                                             </div>
                                         </td>
                                         <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.firstPayment)) + (parseInt(obj.pendingRecievedPayment))).toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(obj.pendingRecievedPayment)).toLocaleString('en-IN')) : 0}</td>
                                         <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
 
                                         ><FaRegEye /></button>

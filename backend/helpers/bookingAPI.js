@@ -4975,7 +4975,6 @@ router.post(
       }
       await appendRemainingDataToSheet(sheetObject);
 
-
       if (bookingIndex == 0) {
         //.log("Hi guyz");
         const findObject = await RedesignedLeadformModel.findOne({

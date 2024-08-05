@@ -60,6 +60,8 @@ function Received_booking_box() {
         secondPaymentRemarks: "",
         thirdPaymentRemarks: "",
         fourthPaymentRemarks: "",
+        pendingRecievedPayment:0,
+        pendingRecievedPaymentDate:null,
     };
     const [openAllBooking, setOpenAllBooking] = useState(false)
 
@@ -467,6 +469,14 @@ function Received_booking_box() {
 
         const primaryServices = selectedCompanyData.services || [];
 
+        const combinedRemainingpaymentsForServices = [
+            ...(selectedCompanyData.remainingPayments || []),
+            ...moreBookings.flatMap((item) => item.remainingPayments || [])
+        ];
+
+        console.log("Remaining Payment Object" , combinedRemainingpaymentsForServices)
+
+
         // Combine services from selectedCompanyData.moreBookings
         const moreBookingServices = moreBookings.flatMap((item) => item.services || []);
 
@@ -489,7 +499,8 @@ function Received_booking_box() {
         selectedServices.forEach(serviceName => {
             // Find the detailed service object in combinedServices
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-
+            const remainingPaymentData = combinedRemainingpaymentsForServices.find(service=>service.serviceName === serviceName)
+            console.log("RemainingPaymentData" , remainingPaymentData)
             // Check if serviceData is found
             if (serviceData) {
                 // Create an object with the required fields from selectedCompanyData and serviceData
@@ -520,10 +531,13 @@ function Received_booking_box() {
                     thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
                     bookingPublishDate: serviceData.bookingPublishDate || '',
+                    pendingRecievedPayment:remainingPaymentData ? remainingPaymentData.receivedPayment : 0,
+                    pendingRecievedPaymentDate:remainingPaymentData ? remainingPaymentData.paymentDate : null,
                     addedOn:new Date() // Handle optional fields
                 };
 
                 // Push the created object to dataToSend array
+                console.log("servicesToSend" , serviceToSend)
                 dataToSend.push(serviceToSend);
             } else {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
@@ -532,6 +546,7 @@ function Received_booking_box() {
 
         if (dataToSend.length !== 0) {
             try {
+                console.log("dataToSend" , dataToSend)
                 const responses = await Promise.all([
                     axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
                         dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
