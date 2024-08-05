@@ -42,6 +42,9 @@ const yourSchema = new mongoose.Schema({
   designation: {
     type: String
   },
+  newDesignation : {
+    type: String
+  },
   jdate: {
     type: Date
   },
