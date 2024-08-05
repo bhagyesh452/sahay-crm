@@ -4,7 +4,6 @@ import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
 import ContentWriterDropdown from '../Extra-Components/ContentWriterDropdown';
 import { FaRegEye } from "react-icons/fa";
-import { CiUndo } from "react-icons/ci";
 import axios from 'axios';
 import io from 'socket.io-client';
 import { Drawer, Icon, IconButton } from "@mui/material";
@@ -15,9 +14,9 @@ import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentStatusDropdown from '../Extra-Components/ContentStatusDropdown';
+import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 import { VscSaveAs } from "react-icons/vsc";
 import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
-import NSWSEmailInput from '../Extra-Components/NSWSEmailInput';
 import WebsiteLink from '../Extra-Components/WebsiteLink';
 import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
 import SectorDropdown from '../Extra-Components/SectorDropdown';
@@ -27,7 +26,8 @@ import Nodata from '../../components/Nodata';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 
-function RmofCertificationHoldPanel() {
+
+function RmofCertificationReadyToSubmitPanel() {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
@@ -44,10 +44,12 @@ function RmofCertificationHoldPanel() {
     const [historyRemarks, setHistoryRemarks] = useState([]);
     const [email, setEmail] = useState('');
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
+    const [password, setPassword] = useState('');
+    const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [sectorOptions, setSectorOptions] = useState([]);
     const [error, setError] = useState('')
-    const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [openBacdrop, setOpenBacdrop] = useState(false);
 
 
     function formatDatePro(inputDate) {
@@ -99,7 +101,7 @@ function RmofCertificationHoldPanel() {
 
             if (Array.isArray(servicesData)) {
                 const filteredData = servicesData
-                    .filter(item => item.mainCategoryStatus === "Hold")
+                    .filter(item => item.mainCategoryStatus === "ReadyToSubmit")
                     .sort((a, b) => {
                         const dateA = new Date(a.dateOfChangingMainStatus);
                         const dateB = new Date(b.dateOfChangingMainStatus);
@@ -116,16 +118,16 @@ function RmofCertificationHoldPanel() {
         }
     };
 
-
     useEffect(() => {
         fetchData();
     }, [rmCertificationUserId, secretKey]);
 
 
+
+
     const refreshData = () => {
         fetchData();
     };
-
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
         return `${date}/${month}/${year}`
@@ -161,7 +163,6 @@ function RmofCertificationHoldPanel() {
                 //console.log("response", response.data);
 
                 if (response.status === 200) {
-
                     fetchData();
                     functionCloseRemarksPopup();
                     // Swal.fire(
@@ -195,6 +196,9 @@ function RmofCertificationHoldPanel() {
     };
 
 
+
+    //--------------------function for industry change--------------------------
+
     const handleIndustryChange = (industry, options) => {
         setSelectedIndustry(industry);
         setSectorOptions(options);
@@ -203,12 +207,6 @@ function RmofCertificationHoldPanel() {
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
-
-
-
-
-
-
 
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
@@ -252,7 +250,7 @@ function RmofCertificationHoldPanel() {
                                     <th>BDE Name</th>
                                     <th>BDM name</th>
                                     <th>Total Payment</th>
-                                    <th>received Payment</th>
+                                    <th>Received Payment</th>
                                     <th>Pending Payment</th>
                                     <th className="rm-sticky-action">Action</th>
                                 </tr>
@@ -261,9 +259,7 @@ function RmofCertificationHoldPanel() {
                                 {rmServicesData && rmServicesData.map((obj, index) => (
                                     <tr key={index}>
                                         <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-
                                         <td className="rm-sticky-left-2"><b>{obj["Company Name"]}</b></td>
-
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
                                                 <div>{obj["Company Number"]}</div>
@@ -294,7 +290,6 @@ function RmofCertificationHoldPanel() {
                                         <td>{obj.serviceName}</td>
                                         <td>
                                             <div>
-
                                                 {obj.mainCategoryStatus && obj.subCategoryStatus && (
                                                     <StatusDropdown
                                                         key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -339,7 +334,6 @@ function RmofCertificationHoldPanel() {
                                         </td>
                                         <td className='td_of_weblink'>
                                             <WebsiteLink
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
@@ -414,21 +408,21 @@ function RmofCertificationHoldPanel() {
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 refresData={refreshData}
-                                                nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                                nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Enter Password"}
                                             />
                                         </td>
-
-                                        <td>
+                                        <td className='td_of_Industry'>
                                             <IndustryDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
                                                 onIndustryChange={handleIndustryChange}
                                                 industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
-
                                             /></td>
                                         <td className='td_of_Industry'>
                                             <SectorDropdown
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
@@ -440,35 +434,33 @@ function RmofCertificationHoldPanel() {
                                         <td>{formatDatePro(obj.bookingDate)}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
-
                                                 <div>{obj.bdeName}</div>
                                             </div>
                                         </td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
-
                                                 <div>{obj.bdmName}</div>
                                             </div>
                                         </td>
                                         <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
                                         <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
                                         <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
-                                        <td className="rm-sticky-action">
-                                            <button className="action-btn action-btn-primary">
-                                                <FaRegEye />
-                                            </button>
+                                        <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
+
+                                        ><FaRegEye /></button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>)
-                        :
-                        (!openBacdrop && (
+
+                        </table>
+                    ) :
+                        (!openBacdrop &&
                             <table className='no_data_table'>
                                 <div className='no_data_table_inner'>
                                     <Nodata />
                                 </div>
-                            </table>)
+                            </table>
                         )}
                 </div>
             </div>
@@ -556,4 +548,4 @@ function RmofCertificationHoldPanel() {
     )
 }
 
-export default RmofCertificationHoldPanel
+export default RmofCertificationReadyToSubmitPanel;

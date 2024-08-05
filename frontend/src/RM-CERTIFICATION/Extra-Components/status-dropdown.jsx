@@ -28,7 +28,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
           mainCategoryStatus: "Process",
           previousMainCategoryStatus: "General",
           previousSubCategoryStatus: newStatus,
-          dateOfChangingMainStatus:new Date()
+          dateOfChangingMainStatus: new Date()
         });
       }
       else if (mainStatus === "Process") {
@@ -66,12 +66,80 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             //mainCategoryStatus: "Defaulter",
           });
+        }
+        else if (newStatus === "ReadyToSubmit") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "ReadyToSubmit",
+            previousMainCategoryStatus: "Process",
+            previousSubCategoryStatus: newStatus
+          });
         } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Process"
+          });
+        }
+      } 
+      else if (mainStatus === "ReadyToSubmit") {
+        if (newStatus === "Submitted") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Submitted",
+            previousMainCategoryStatus: "ReadyToSubmit",
+            previousSubCategoryStatus: newStatus
+          });
+        } else if (newStatus === "Defaulter") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Defaulter",
+            previousMainCategoryStatus: "ReadyToSubmit",
+            previousSubCategoryStatus: newStatus
+          });
+        } else if (newStatus === "Hold") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold",
+            previousMainCategoryStatus: "ReadyToSubmit",
+            previousSubCategoryStatus: newStatus
+          });
+        } else if (newStatus === "Undo") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            //mainCategoryStatus: "Defaulter",
+          });
+        }else if (newStatus === "Approved") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Approved",
+          });
+        }else if (newStatus === "ReadyToSubmit") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "ReadyToSubmit",
+          });
+        } else {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "ReadyToSubmit"
           });
         }
       } else if (mainStatus === "Submitted") {
@@ -90,6 +158,8 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             serviceName,
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter",
+            previousMainCategoryStatus: "Submitted",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Undo") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -120,7 +190,9 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold"
+            mainCategoryStatus: "Hold",
+            previousMainCategoryStatus: "Defaulter",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Undo") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -151,7 +223,9 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus
+            mainCategoryStatus: newStatus,
+            previousMainCategoryStatus: "Hold",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Working") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
@@ -165,14 +239,18 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus
+            mainCategoryStatus: newStatus,
+            previousMainCategoryStatus: "Hold",
+            previousSubCategoryStatus: newStatus
           });
         } else if (newStatus === "Process") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus
+            mainCategoryStatus: newStatus,
+            previousMainCategoryStatus: "Hold",
+            previousSubCategoryStatus: newStatus
           });
         }
       }
@@ -220,6 +298,21 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             return "created-status";
           case "Need To Call":
             return "need_to_call";
+          default:
+            return "";
+        }
+      case "ReadyToSubmit":
+        switch (subStatus) {
+          case "ReadyToSubmit":
+            return "ready_to_submit";
+          case "Submitted":
+            return "submited-status";
+          case "Defaulter":
+            return "dfaulter-status";
+          case "Hold":
+            return "created-status";
+          case "Approved":
+            return "approved-status";
           default:
             return "";
         }
@@ -365,7 +458,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("Ready To Submit", "ready_to_submit")}
+                onClick={() => handleStatusChange("ReadyToSubmit", "ready_to_submit")}
                 href="#"
               >
                 Ready To Submit
@@ -405,6 +498,63 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
                 href="#"
               >
                 Need To Call
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "created-status")}
+                href="#"
+              >
+                Hold
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Undo", "e_task_assign")}
+                href="#"
+              >
+                Undo
+              </a>
+            </li>
+          </ul>
+        ) : mainStatus === "ReadyToSubmit" ? (
+          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("ReadyToSubmit", "ready_to_submit")}
+                href="#"
+              >
+                Ready To Submit
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Submitted", "submited-status")}
+                href="#"
+              >
+                Submitted
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Approved", "approved-status")}
+                href="#"
+              >
+                Approved
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Defaulter", "dfaulter-status")}
+                href="#"
+              >
+                Defaulter
               </a>
             </li>
             <li>

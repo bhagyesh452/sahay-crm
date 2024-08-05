@@ -63,6 +63,9 @@ const ServiceSchema = new mongoose.Schema({
   fourthPaymentRemarks: {
     type: String,
   },
+  pendingRecievedPayment:{
+    type: Number,
+  },
   paymentRemarks: {
     type: String,
     default: "No payment remarks",
@@ -191,7 +194,7 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   addedOn:{
     type:Date,
-    default:new Date()
+    //default:new Date()
   },
   Remarks:[RemarksSchema],
   dscStatus:{
@@ -200,14 +203,15 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   contentStatus:{
      type:String,
-    //default:"Not Applicable"
+    default:"Not Started"
   },
   contentWriter:{
     type:String,
+    default:"Drashti Thakkar"
  },
   brochureStatus:{
     type:String,
-   //default:"Not Applicable"
+   default:"Not Applicable"
  },
  brochureDesigner:{
   type:String,
