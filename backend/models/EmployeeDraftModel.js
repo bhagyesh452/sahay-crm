@@ -71,7 +71,7 @@ const EmployeeDraftSchema = new mongoose.Schema({
   accountNo: {
     type: String
   },
-  bankName: {
+  nameAsPerBankRecord: {
     type: String
   },
   ifscCode: {

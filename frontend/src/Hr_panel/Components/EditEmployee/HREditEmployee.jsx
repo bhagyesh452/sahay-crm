@@ -246,7 +246,7 @@ export default function HREditEmployee() {
 
   const [payrollInfo, setPayrollInfo] = useState({
     accountNo: "",
-    bankName: "",
+    nameAsPerBankRecord: "",
     ifscCode: "",
     salary: "",
     firstMonthSalaryCondition: "",
@@ -258,10 +258,10 @@ export default function HREditEmployee() {
   });
   const validatePayrollInfo = () => {
     const newErrors = {};
-    const { accountNo, bankName, ifscCode, salary, firstMonthSalary, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
+    const { accountNo, nameAsPerBankRecord, ifscCode, salary, firstMonthSalary, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
 
     if (!accountNo) newErrors.accountNo = "Account Number is required";
-    if (!bankName) newErrors.bankName = "Bank Name is required";
+    if (!nameAsPerBankRecord) newErrors.nameAsPerBankRecord = "Name as per bank record is required";
     if (!ifscCode) newErrors.ifscCode = "IFSC Code is required";
 
     // Validate Salary Details
@@ -366,7 +366,7 @@ export default function HREditEmployee() {
 
       setPayrollInfo({
         accountNo: data.accountNo || "",
-        bankName: data.bankName || "",
+        nameAsPerBankRecord: data.nameAsPerBankRecord || "",
         ifscCode: data.ifscCode || "",
         salary: data.salary || "",
         firstMonthSalary: data.firstMonthSalaryCondition || "",
@@ -1027,7 +1027,7 @@ export default function HREditEmployee() {
                                     >
                                       <option value="Select Branch" selected>Select Branch</option>
                                       <option value="Gota">Gota</option>
-                                      <option value="Sindhu Bhavan">Sindhu Bhavan</option>
+                                      <option value="Sindhu Bhawan">Sindhu Bhawan</option>
                                     </select>
                                     {errors.branch && <p style={{ color: "red" }}>{errors.branch}</p>}
                                   </div>
@@ -1138,13 +1138,13 @@ export default function HREditEmployee() {
                                         <input
                                           type="text"
                                           className="form-control mt-1"
-                                          name="bankName"
+                                          name="nameAsPerBankRecord"
                                           placeholder="Name as per Bank Record"
-                                          value={payrollInfo.bankName}
+                                          value={payrollInfo.nameAsPerBankRecord}
                                           onChange={handleInputChange}
                                           disabled={!isPayrollInfoEditable}
                                         />
-                                        {errors.bankName && <p style={{ color: "red" }}>{errors.bankName}</p>}
+                                        {errors.nameAsPerBankRecord && <p style={{ color: "red" }}>{errors.nameAsPerBankRecord}</p>}
                                       </div>
                                       <div className="col">
                                         <input
@@ -1757,12 +1757,12 @@ export default function HREditEmployee() {
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
-                                      <b>Bank Name</b>
+                                      <b>Name as per Bank Record</b>
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {payrollInfo.bankName || "-"}
+                                      {payrollInfo.nameAsPerBankRecord || "-"}
                                     </div>
                                   </div>
                                 </div>

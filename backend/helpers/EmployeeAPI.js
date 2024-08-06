@@ -190,6 +190,8 @@ router.post("/einfo", upload.fields([
 
     const emp = {
       ...req.body,
+      AddedOn: new Date(),
+
       ...(personalInfo.firstName || personalInfo.middleName || personalInfo.lastName) && {
         ename: `${personalInfo.firstName || ""} ${personalInfo.middleName || ""} ${personalInfo.lastName || ""}`
       },
@@ -212,7 +214,7 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo.officialEmail && { email: employeementInfo.officialEmail }),
 
       ...(payrollInfo.accountNo && { accountNo: payrollInfo.accountNo }),
-      ...(payrollInfo.bankName && { bankName: payrollInfo.bankName }),
+      ...(payrollInfo.nameAsPerBankRecord && { nameAsPerBankRecord: payrollInfo.nameAsPerBankRecord }),
       ...(payrollInfo.ifscCode && { ifscCode: payrollInfo.ifscCode }),
       ...(payrollInfo.salary && { salary: payrollInfo.salary }),
       ...(payrollInfo.firstMonthSalaryCondition && { firstMonthSalaryCondition: payrollInfo.firstMonthSalaryCondition }),
@@ -236,12 +238,9 @@ router.post("/einfo", upload.fields([
     if (employeementInfo.empId) {
       emp._id = employeementInfo.empId;
     }
-    const result = await adminModel.create(emp); // Changed .then() to await
+    const result = await adminModel.create(emp);
     res.json(result); // Ensure you respond with the result
-    // setTimeout(async()=>{
-    // const result = await adminModel.create(emp); // Changed .then() to await
-    //   res.json("Employee  Created Succesfully" , {data:result});
-    // },5000);
+
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -277,6 +276,7 @@ router.post("/einfo", upload.fields([
 //   }
 // });
 
+// Fetch employees from id :
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   const { empId } = req.params;
   try {
@@ -290,6 +290,26 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   }
 });
 
+// Fetch Profile Photo :
+router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
+  const { empId, filename } = req.params;
+  const pdfPath = path.join(
+    __dirname,
+    `../EmployeeDocs/${empId}/${filename}`
+  );
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
+});
+
 router.put("/updateEmployeeFromId/:empId", upload.fields([
   { name: "offerLetter", maxCount: 1 },
   { name: "aadharCard", maxCount: 1 },
@@ -301,10 +321,9 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
-  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, designation, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo, activeStep } = req.body;
+  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, designation, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo } = req.body;
   // console.log("Reqest file is :", req.files);
 
-  console.log("Active step :", activeStep);
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
     fieldname: file.fieldname,
     originalname: file.originalname,
@@ -331,7 +350,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 
     const updateFields = {
       ...req.body,
-      ...(activeStep && { activeStep: activeStep }),
+      
       ...(firstName || middleName || lastName) && {
         ename: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
@@ -348,9 +367,8 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(designation && { designation: designation === "Business Development Executive" || designation === "Business Development Manager" ? "Sales Executive" : designation}),
       ...(designation && { bdmWork: designation === "Business Development Manager" ? true : false}),
 
-
-      ...(firstMonthSalary && { firstMonthSalaryCondition: firstMonthSalary }),
-      ...(salaryCalculation && { firstMonthSalary: salaryCalculation }),
+      ...(firstMonthSalaryCondition && { firstMonthSalaryCondition: firstMonthSalaryCondition }),
+      ...(firstMonthSalary && { firstMonthSalary: firstMonthSalary }),
 
       ...(personName && { personal_contact_person: personName }),
       ...(relationship && { personal_contact_person_relationship: relationship }),
@@ -381,33 +399,129 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
   }
 });
 
-router.put("/savedeletedemployee", async (req, res) => {
-  const { dataToDelete } = req.body;
+// router.put("/savedeletedemployee", async (req, res) => {
+//   const { dataToDelete } = req.body;
+  
+//   if (!dataToDelete || dataToDelete.length === 0) {
+//     return res.status(400).json({ error: "No employee data to save" });
+//   }
+//   try {
+//     const newLeads = await Promise.all(
+//       dataToDelete.map(async (data) => {
+//         // Retain the original _id
+//         const newData = {
+//           ...data,
+//           _id: data._id,
+//           deletedDate: new Date().toISOString(),
+//         };
 
-  if (!dataToDelete || dataToDelete.length === 0) {
-    return res.status(400).json({ error: "No employee data to save" });
-  }
+//         // Create a new document in the deletedEmployeeModel with the same _id
+//         return await deletedEmployeeModel.create(newData);
+//       })
+//     );
+
+//     res.status(200).json(newLeads);
+//   } catch (error) {
+//     console.error("Error saving deleted employee", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+
+router.put("/savedeletedemployee", upload.fields([
+  { name: "offerLetter", maxCount: 1 },
+  { name: "aadharCard", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+  { name: "educationCertificate", maxCount: 1 },
+  { name: "relievingCertificate", maxCount: 1 },
+  { name: "salarySlip", maxCount: 1 },
+  { name: "profilePhoto", maxCount: 1 },
+]), async (req, res) => {
   try {
-    const newLeads = await Promise.all(
-      dataToDelete.map(async (data) => {
-        // Retain the original _id
-        const newData = {
-          ...data,
-          _id: data._id,
-          deletedDate: new Date().toISOString(),
-        };
+    const {dataToDelete} = req.body;
 
-        // Create a new document in the deletedEmployeeModel with the same _id
-        return await deletedEmployeeModel.create(newData);
-      })
-    );
+    console.log("Deleted data is :", dataToDelete);
 
-    res.status(200).json(newLeads);
+    const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      encoding: file.encoding,
+      mimetype: file.mimetype,
+      destination: file.destination,
+      filename: file.filename,
+      path: file.path,
+      size: file.size
+    })) : [];
+
+    const emp = {
+      AddedOn: new Date(),
+
+      // Personal Info
+      ...(dataToDelete.firstName || dataToDelete.middleName || dataToDelete.lastName) && {
+        ename: `${dataToDelete.firstName || ""} ${dataToDelete.middleName || ""} ${dataToDelete.lastName || ""}`
+      },
+      ...(dataToDelete.dob && { dob: dataToDelete.dob }),
+      ...(dataToDelete.gender && { gender: dataToDelete.gender }),
+      ...(dataToDelete.personalPhoneNo && { personal_number: dataToDelete.personalPhoneNo }),
+      ...(dataToDelete.personalEmail && { personal_email: dataToDelete.personalEmail }),
+      ...(dataToDelete.currentAddress && { currentAddress: dataToDelete.currentAddress }),
+      ...(dataToDelete.permanentAddress && { permanentAddress: dataToDelete.permanentAddress }),
+
+      // Employment Info
+      ...(dataToDelete.department && { department: dataToDelete.department }),
+      ...(dataToDelete.designation && { newDesignation: dataToDelete.designation }),
+      ...(dataToDelete.designation && { designation: dataToDelete.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager" ? "Sales Executive" : employeementInfo.designation}),
+      ...(dataToDelete.designation && { bdmWork: dataToDelete.designation === "Business Development Manager" ? true : false}),
+      ...(dataToDelete.joiningDate && { jdate: dataToDelete.joiningDate }),
+      ...(dataToDelete.branch && { branchOffice: dataToDelete.branch }),
+      ...(dataToDelete.employeementType && { employeementType: dataToDelete.employeementType }),
+      ...(dataToDelete.manager && { reportingManager: dataToDelete.manager }),
+      ...(dataToDelete.officialNo && { number: dataToDelete.officialNo }),
+      ...(dataToDelete.officialEmail && { email: dataToDelete.officialEmail }),
+
+      // Payroll Info
+      ...(dataToDelete.accountNo && { accountNo: dataToDelete.accountNo }),
+      ...(dataToDelete.nameAsPerBankRecord && { nameAsPerBankRecord: dataToDelete.nameAsPerBankRecord }),
+      ...(dataToDelete.ifscCode && { ifscCode: dataToDelete.ifscCode }),
+      ...(dataToDelete.salary && { salary: dataToDelete.salary }),
+      ...(dataToDelete.firstMonthSalaryCondition && { firstMonthSalaryCondition: dataToDelete.firstMonthSalaryCondition }),
+      ...(dataToDelete.firstMonthSalary && { firstMonthSalary: dataToDelete.firstMonthSalary }),
+      ...(dataToDelete.panNumber && { panNumber: dataToDelete.panNumber }),
+      ...(dataToDelete.aadharNumber && { aadharNumber: dataToDelete.aadharNumber }),
+      ...(dataToDelete.uanNumber && { uanNumber: dataToDelete.uanNumber }),
+
+      // Emergency Info
+      ...(dataToDelete.personName && { personal_contact_person: dataToDelete.personName }),
+      ...(dataToDelete.relationship && { personal_contact_person_relationship: dataToDelete.relationship }),
+      ...(dataToDelete.personPhoneNo && { personal_contact_person_number: dataToDelete.personPhoneNo }),
+
+      // Document Info
+      ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || []}),
+      ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || []}),
+      ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || []}),
+      ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || []}),
+      ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || []}),
+      ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || []}),
+      ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || []})
+    };
+
+    if (dataToDelete.empId) {
+      emp._id = dataToDelete.empId;
+    }
+
+    const result = await deletedEmployeeModel.create(emp);
+    res.json(result);
+
   } catch (error) {
-    console.error("Error saving deleted employee", error);
+    console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+
 
 router.get("/deletedemployeeinfo", async (req, res) => {
   try {
@@ -1770,7 +1884,6 @@ router.get("/employeeImg/:employeeName/:filename", (req, res) => {
     res.sendFile(pdfPath);
   });
 });
-
 
 // Edit Employee Details by HR-Portal
 router.post(

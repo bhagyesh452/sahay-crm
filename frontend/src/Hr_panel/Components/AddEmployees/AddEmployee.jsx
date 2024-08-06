@@ -248,7 +248,7 @@ export default function HorizontalNonLinearStepper() {
 
   const [payrollInfo, setPayrollInfo] = useState({
     accountNo: "",
-    bankName: "",
+    nameAsPerBankRecord: "",
     ifscCode: "",
     salary: "",
     firstMonthSalaryCondition: "",
@@ -260,10 +260,10 @@ export default function HorizontalNonLinearStepper() {
   });
   const validatePayrollInfo = () => {
     const newErrors = {};
-    const { accountNo, bankName, ifscCode, salary, firstMonthSalaryCondition, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
+    const { accountNo, nameAsPerBankRecord, ifscCode, salary, firstMonthSalaryCondition, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
 
     if (!accountNo) newErrors.accountNo = "Account Number is required";
-    if (!bankName) newErrors.bankName = "Bank Name is required";
+    if (!nameAsPerBankRecord) newErrors.nameAsPerBankRecord = "Name as per bank record is required";
     if (!ifscCode) newErrors.ifscCode = "IFSC Code is required";
 
     // Validate Salary Details
@@ -699,7 +699,7 @@ export default function HorizontalNonLinearStepper() {
 
       setPayrollInfo({
         accountNo: data.accountNo || "",
-        bankName: data.bankName || "",
+        nameAsPerBankRecord: data.nameAsPerBankRecord || "",
         ifscCode: data.ifscCode || "",
         salary: data.salary || "",
         firstMonthSalaryCondition: data.firstMonthSalaryCondition || "",
@@ -1191,13 +1191,13 @@ export default function HorizontalNonLinearStepper() {
                                         <input
                                           type="text"
                                           className="form-control mt-1"
-                                          name="bankName"
+                                          name="nameAsPerBankRecord"
                                           placeholder="Name as per Bank Record"
-                                          value={payrollInfo.bankName}
+                                          value={payrollInfo.nameAsPerBankRecord}
                                           onChange={handleInputChange}
                                           disabled={!isPayrollInfoEditable}
                                         />
-                                        {errors.bankName && <p style={{ color: "red" }}>{errors.bankName}</p>}
+                                        {errors.nameAsPerBankRecord && <p style={{ color: "red" }}>{errors.nameAsPerBankRecord}</p>}
                                       </div>
                                       <div className="col">
                                         <input
@@ -1815,7 +1815,7 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {payrollInfo.bankName || "-"}
+                                      {payrollInfo.nameAsPerBankRecord || "-"}
                                     </div>
                                   </div>
                                 </div>

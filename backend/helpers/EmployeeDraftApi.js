@@ -115,6 +115,7 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
         const updateFields = {
             ...req.body,
             ...(activeStep && {activeStep: activeStep}),
+
             ...(firstName || middleName || lastName) && {
                 ename: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
             },
