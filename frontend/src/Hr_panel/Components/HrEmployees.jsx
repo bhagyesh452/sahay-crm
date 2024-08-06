@@ -66,7 +66,7 @@ function HrEmployees() {
   const fetchCompanyData = async () => {
     try {
       const res = await axios.get(`${secretKey}/company-data/leads`);
-      console.log("Company data is :", res.data);
+      // console.log("Company data is :", res.data);
       setCompanyData(res.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -81,7 +81,7 @@ function HrEmployees() {
         return { ...emp, profilePhoto };
       });
       setEmployee(employeeData);
-      // console.log("Fetched Employees are:", res.data);
+      console.log("Fetched Employees are:", res.data);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     }
@@ -133,7 +133,7 @@ function HrEmployees() {
         console.log("Deleted data is :", dataToDelete);
         try {
           const saveDeletedResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
-            dataToDelete,
+            dataToDelete
           });
           const deleteEmployeeResponse = await axios.delete(`${secretKey}/employee/einfo/${empId}`);
 
@@ -286,6 +286,7 @@ function HrEmployees() {
                                   />
                                 </div>
                                 <div className="">
+                                  {/* {emp.ename} */}
                                   {(() => {
                                     const names = (emp.ename || "").split(" ");
                                     return `${names[0] || ""} ${names[names.length - 1] || ""}`;

@@ -39,7 +39,8 @@ router.post("/saveEmployeeDraft/", async (req, res) => {
         const { firstName, middleName, lastName, gender, dob, personalPhoneNo, personalEmail, currentAddress, permanentAddress  } = req.body;
         const emp = {
             ...req.body,
-            ename: `${firstName} ${middleName} ${lastName}`,
+            ename: `${firstName} ${lastName}`,
+            empFullName: `${firstName} ${middleName} ${lastName}`,
             dob: dob,
             gender: gender,
             personal_number: personalPhoneNo,
@@ -84,8 +85,9 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
 ]), async (req, res) => {
 
     const { empId } = req.params;
-    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo, activeStep } = req.body;
+    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, employeeID, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo, activeStep } = req.body;
     // console.log("Reqest file is :", req.files);
+    // console.log("Emp id is :", employeeID);
     // console.log("Active step :", activeStep);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
@@ -117,19 +119,21 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
             ...(activeStep && {activeStep: activeStep}),
 
             ...(firstName || middleName || lastName) && {
-                ename: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
+                empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
             },
             ...(dob && { dob }),
             ...(gender && {gender}),
             ...(personalPhoneNo && { personal_number: personalPhoneNo }),
             ...(personalEmail && { personal_email: personalEmail }),
 
+            ...(employeeID && { employeeID: employeeID }),
             ...(officialNo && { number: officialNo }),
             ...(officialEmail && { email: officialEmail }),
             ...(joiningDate && { jdate: joiningDate }),
             ...(branch && { branchOffice: branch }),
             ...(manager && { reportingManager: manager }),
 
+            ...(nameAsPerBankRecord && { nameAsPerBankRecord: nameAsPerBankRecord }),
             ...(firstMonthSalaryCondition && { firstMonthSalaryCondition: firstMonthSalaryCondition }),
             ...(firstMonthSalary && { firstMonthSalary: firstMonthSalary }),
 

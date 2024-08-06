@@ -22,9 +22,23 @@ export default function HorizontalNonLinearStepper() {
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
   const [empId, setEmpId] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formDataReady, setFormDataReady] = useState(false);
+  const [employeeID, setEmployeeID] = useState("");
+  const [employeeData, setEmployeeData] = useState([]);
 
+  const fetchAllEmployee = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/einfo`);
+      const employeeData = res.data;
+      setEmployeeData(employeeData);
+      console.log("Fetched Employees are:", res.data)    
+    } catch (error) {
+      console.log("Error fetching employees data:")
+    }
+  };
+
+  useEffect(()=>{
+    fetchAllEmployee();
+  },[]);
 
 
   const [isPersonalInfoNext, setIsPersonalInfoNext] = useState(false);
@@ -217,9 +231,7 @@ export default function HorizontalNonLinearStepper() {
   };
 
   const [employeementInfo, setEmployeementInfo] = useState({
-    empId: "",
-    department: "",
-    designation: "",
+    employeeID : "",
     joiningDate: "",
     branch: "",
     employeementType: "",
@@ -227,6 +239,11 @@ export default function HorizontalNonLinearStepper() {
     officialNo: "",
     officialEmail: ""
   });
+
+  useEffect(() => {
+   setEmployeeID(`SSPL00${employeeData.length + 1}`)
+  }, [employeeData.length, activeStep]);
+  
   const validateEmploymentInfo = () => {
     const newErrors = {};
     const { department, designation, joiningDate, branch, employeementType, manager, officialNo, officialEmail } = employeementInfo;
@@ -357,7 +374,7 @@ export default function HorizontalNonLinearStepper() {
     } else if (name === 'department' && value === 'Select Department') {
       setIsDesignationEnabled(false);
       setIsManagerEnabled(false);
-    }
+    }  
 
     setPayrollInfo((prevState) => {
       const updatedState = { ...prevState, [name]: value };
@@ -427,8 +444,6 @@ export default function HorizontalNonLinearStepper() {
       }));
     }
   };
-
-
 
   const totalSteps = () => steps.length;
 
@@ -555,12 +570,6 @@ export default function HorizontalNonLinearStepper() {
   //   }
   // };
 
-
-
-
-
-
-
   const saveDraft = async () => {
     let res;
 
@@ -572,9 +581,10 @@ export default function HorizontalNonLinearStepper() {
               activeStep === 3 ? emergencyInfo :
                 empDocumentInfo
       ),
-      activeStep
+      activeStep, employeeID
     };
 
+    console.log("Employeement Info before saving is :", employeementInfo)
     const url = `${secretKey}/employeeDraft/${!empId ? 'saveEmployeeDraft' : `updateEmployeeDraft/${empId}`}`;
 
     try {
@@ -630,7 +640,8 @@ export default function HorizontalNonLinearStepper() {
         employeementInfo,
         payrollInfo,
         emergencyInfo,
-        empDocumentInfo
+        empDocumentInfo,
+        employeeID: employeeID
         // }, {
         //   headers: {
         //     'Content-Type': 'multipart/form-data'
@@ -667,9 +678,9 @@ export default function HorizontalNonLinearStepper() {
       // setActiveStep(data.activeStep);
 
       setPersonalInfo({
-        firstName: (data.ename || "").split(" ")[0] || "",
-        middleName: (data.ename || "").split(" ")[1] || "",
-        lastName: (data.ename || "").split(" ")[2] || "",
+        firstName: (data.empFullName || "").split(" ")[0] || "",
+        middleName: (data.empFullName || "").split(" ")[1] || "",
+        lastName: (data.empFullName || "").split(" ")[2] || "",
         dob: convertToDateInputFormat(data.dob) || "",
         gender: data.gender || "",
         personalPhoneNo: data.personal_number || "",
@@ -679,7 +690,7 @@ export default function HorizontalNonLinearStepper() {
       });
 
       setEmployeementInfo({
-        empId: data._id,
+        employeeID: data.employeeID,
         department: data.department || "",
         designation: data.designation || "",
         joiningDate: convertToDateInputFormat(data.jdate) || "",
@@ -993,17 +1004,19 @@ export default function HorizontalNonLinearStepper() {
                               <div className="row">
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Employeeid">Employee ID<span style={{ color: "red" }}> * </span></label><input
+                                    <label for="employeeID">Employee ID<span style={{ color: "red" }}> * </span></label>
+                                    <input
                                       type="text"
                                       className="form-control mt-1"
-                                      name="empId"
-                                      id="Employeeid"
+                                      name="employeeID"
+                                      id="employeeID"
                                       placeholder="Employee ID"
-                                      value={empId}
+                                      value={employeeID}
                                       onChange={handleInputChange}
                                       disabled
-                                    />
+                                      />
                                   </div>
+                                      {console.log("Employee id :", employeementInfo.employeeID)}
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
@@ -1073,7 +1086,7 @@ export default function HorizontalNonLinearStepper() {
                                     >
                                       <option value="Select Branch" selected>Select Branch</option>
                                       <option value="Gota">Gota</option>
-                                      <option value="Sindhu Bhavan">Sindhu Bhavan</option>
+                                      <option value="Sindhu Bhawan">Sindhu Bhawan</option>
                                     </select>
                                     {errors.branch && <p style={{ color: "red" }}>{errors.branch}</p>}
                                   </div>
@@ -1675,7 +1688,7 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {empId || "-"}
+                                      {employeeID || "-"}
                                     </div>
                                   </div>
                                 </div>
@@ -1803,7 +1816,7 @@ export default function HorizontalNonLinearStepper() {
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
                                     <div className="form-label-name">
-                                      <b>Bank Name</b>
+                                      <b>Name as per Bank Record</b>
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
