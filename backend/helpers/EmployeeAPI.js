@@ -355,7 +355,8 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...req.body,
       
       ...(firstName || middleName || lastName) && {
-        ename: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
+        ename: `${firstName || ""} ${lastName || ""}`,
+        empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
       ...(dob && { dob }),
       ...(personalPhoneNo && { personal_number: personalPhoneNo }),
@@ -446,7 +447,7 @@ router.put("/savedeletedemployee", upload.fields([
   try {
     const {dataToDelete} = req.body;
 
-    console.log("Deleted data is :", dataToDelete.ename);
+    console.log("Deleted data is :", dataToDelete);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,

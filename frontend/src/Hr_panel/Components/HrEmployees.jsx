@@ -133,7 +133,7 @@ function HrEmployees() {
         console.log("Deleted data is :", dataToDelete);
         try {
           const saveDeletedResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
-            dataToDelete,
+            dataToDelete
           });
           const deleteEmployeeResponse = await axios.delete(`${secretKey}/employee/einfo/${empId}`);
 
