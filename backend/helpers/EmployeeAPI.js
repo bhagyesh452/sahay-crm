@@ -147,11 +147,11 @@ router.post("/einfo", upload.fields([
 ]), async (req, res) => {
   try {
     const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo } = req.body;
-    console.log("Personal Info is :", personalInfo);
-    console.log("Employeement Info is :", employeementInfo);
-    console.log("Payroll info is :", payrollInfo);
-    console.log("Emergency info is :", emergencyInfo);
-    console.log("Employee document info is :", empDocumentInfo);
+    // console.log("Personal Info is :", personalInfo);
+    // console.log("Employeement Info is :", employeementInfo);
+    // console.log("Payroll info is :", payrollInfo);
+    // console.log("Emergency info is :", emergencyInfo);
+    // console.log("Employee document info is :", empDocumentInfo);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -441,7 +441,7 @@ router.put("/savedeletedemployee", upload.fields([
   try {
     const {dataToDelete} = req.body;
 
-    console.log("Deleted data is :", dataToDelete);
+    console.log("Deleted data is :", dataToDelete.ename);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -455,6 +455,7 @@ router.put("/savedeletedemployee", upload.fields([
     })) : [];
 
     const emp = {
+      ...req.body,
       AddedOn: new Date(),
 
       // Personal Info
