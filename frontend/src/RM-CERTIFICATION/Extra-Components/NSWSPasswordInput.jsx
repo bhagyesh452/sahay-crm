@@ -5,7 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { FaPencilAlt } from "react-icons/fa";
 
-const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData}) => {
+const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData , mainStatus}) => {
    
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [password, setPassword] = useState(nswsPassword);
@@ -44,7 +44,7 @@ const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData
 
     return (
         <div>
-            <div className='d-flex align-items-center justify-content-between'>
+            <div className={mainStatus === "Approved" ? "d-flex align-items-center justify-content-between disabled" : 'd-flex align-items-center justify-content-between'}>
                 <div
                     className="My_Text_Wrap"
                     title={nswsPassword}

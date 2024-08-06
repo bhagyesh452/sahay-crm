@@ -13,7 +13,8 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
     const [statusClass, setStatusClass] = useState("created-status");
     const [options, setOptions] = useState([])
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+    
+   
     const aeronauticsOptions = [
         "Drones",
         "Space Technology",
@@ -472,7 +473,8 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
     return (
 
         <select
-            className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={mainStatus === "Approved" ? "disabled" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+            // className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
             value={status} // Ensure this matches one of the option values

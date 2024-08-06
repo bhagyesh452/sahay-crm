@@ -5,7 +5,7 @@ import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
-const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector }) => {
+const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector , mainStatus }) => {
     const [status, setStatus] = useState(""); // Start with an empty string for default
     const [options, setOptions] = useState([]);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -365,7 +365,8 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
     };
     return (
         <select
-            className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={mainStatus === "Approved" ? "disabled" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+            //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value)}
             value={status}
