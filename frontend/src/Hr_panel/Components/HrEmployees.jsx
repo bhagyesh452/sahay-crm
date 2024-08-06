@@ -10,7 +10,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { IoLogoWhatsapp } from "react-icons/io5";
+import { FaWhatsapp } from "react-icons/fa";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
@@ -24,6 +24,7 @@ function HrEmployees() {
   const navigate = useNavigate();
 
   const [employee, setEmployee] = useState([]);
+  const [deletedEmployee, setDeletedEmployee] = useState([]);
   const [profilePhoto, setProfilePhoto] = useState("");
   const [deletedData, setDeletedData] = useState([]);
   const [companyData, setCompanyData] = useState([]);
@@ -280,12 +281,12 @@ function HrEmployees() {
                                     }
                                     alt="Profile"
                                     className="profile-photo"
-                                  /> : 
-                                  <img
-                                    src={EmpDfaullt}
-                                    alt="Profile"
-                                    className="profile-photo"
-                                  />}
+                                  /> :
+                                    <img
+                                      src={EmpDfaullt}
+                                      alt="Profile"
+                                      className="profile-photo"
+                                    />}
                                 </div>
                                 <div className="">
                                   {/* {emp.ename} */}
@@ -303,7 +304,12 @@ function HrEmployees() {
                             <td>{formatDate(emp.jdate) || ""}</td>
                             <td>₹ {formatSalary(emp.salary || 0)}</td>
                             <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                            <td>{emp.number || ""}<IoLogoWhatsapp className="text-success w-25 mb-1"/></td>
+                            <td><a
+                              target="_blank"
+                              className="text-decoration-none text-dark"
+                              href={`https://wa.me/91${emp.number}`}
+                            >{emp.number}
+                              <FaWhatsapp className="text-success w-25 mb-1" /></a></td>
                             <td>{emp.email || ""}</td>
                             <td>
                               <button className="action-btn action-btn-primary">
