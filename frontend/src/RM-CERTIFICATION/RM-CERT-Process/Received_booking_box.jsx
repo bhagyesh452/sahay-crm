@@ -60,8 +60,8 @@ function Received_booking_box() {
         secondPaymentRemarks: "",
         thirdPaymentRemarks: "",
         fourthPaymentRemarks: "",
-        pendingRecievedPayment:0,
-        pendingRecievedPaymentDate:null,
+        pendingRecievedPayment: 0,
+        pendingRecievedPaymentDate: null,
     };
     const [openAllBooking, setOpenAllBooking] = useState(false)
 
@@ -142,7 +142,7 @@ function Received_booking_box() {
                 .filter(item => {
                     const lastActionDate = new Date(item.lastActionDate);
                     lastActionDate.setHours(0, 0, 0, 0);
-                    return lastActionDate >= today; // Compare directly
+                    return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
                 })
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
@@ -226,7 +226,7 @@ function Received_booking_box() {
         }
     };
 
-console.log("leadformdata" , leadFormData)
+    console.log("leadformdata", leadFormData)
 
 
 
@@ -474,7 +474,7 @@ console.log("leadformdata" , leadFormData)
             ...moreBookings.flatMap((item) => item.remainingPayments || [])
         ];
 
-        console.log("Remaining Payment Object" , combinedRemainingpaymentsForServices)
+        console.log("Remaining Payment Object", combinedRemainingpaymentsForServices)
 
 
         // Combine services from selectedCompanyData.moreBookings
@@ -499,8 +499,8 @@ console.log("leadformdata" , leadFormData)
         selectedServices.forEach(serviceName => {
             // Find the detailed service object in combinedServices
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-            const remainingPaymentData = combinedRemainingpaymentsForServices.find(service=>service.serviceName === serviceName)
-            console.log("RemainingPaymentData" , remainingPaymentData)
+            const remainingPaymentData = combinedRemainingpaymentsForServices.find(service => service.serviceName === serviceName)
+            console.log("RemainingPaymentData", remainingPaymentData)
             // Check if serviceData is found
             if (serviceData) {
                 // Create an object with the required fields from selectedCompanyData and serviceData
@@ -531,13 +531,13 @@ console.log("leadformdata" , leadFormData)
                     thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
                     bookingPublishDate: serviceData.bookingPublishDate || '',
-                    pendingRecievedPayment:remainingPaymentData ? remainingPaymentData.receivedPayment : 0,
-                    pendingRecievedPaymentDate:remainingPaymentData ? remainingPaymentData.paymentDate : null,
-                    addedOn:new Date() // Handle optional fields
+                    pendingRecievedPayment: remainingPaymentData ? remainingPaymentData.receivedPayment : 0,
+                    pendingRecievedPaymentDate: remainingPaymentData ? remainingPaymentData.paymentDate : null,
+                    addedOn: new Date() // Handle optional fields
                 };
 
                 // Push the created object to dataToSend array
-                console.log("servicesToSend" , serviceToSend)
+                console.log("servicesToSend", serviceToSend)
                 dataToSend.push(serviceToSend);
             } else {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
@@ -546,7 +546,7 @@ console.log("leadformdata" , leadFormData)
 
         if (dataToSend.length !== 0) {
             try {
-                console.log("dataToSend" , dataToSend)
+                console.log("dataToSend", dataToSend)
                 const responses = await Promise.all([
                     axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
                         dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
@@ -623,6 +623,12 @@ console.log("leadformdata" , leadFormData)
         });
     };
 
+    //--------------function to disable click-------------------------
+    // const shouldDisableButton = ![
+    //     ...obj.services,
+    //     ...(obj.moreBookings || []).flatMap(booking => booking.services)
+    // ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
+
 
     //console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
     //console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
@@ -692,6 +698,7 @@ console.log("leadformdata" , leadFormData)
                                         </div>
                                         <div className="booking-list-body">
                                             {leadFormData.length !== 0 && leadFormData.map((obj, index) => (
+
                                                 <div className={
                                                     currentLeadform &&
                                                         currentLeadform["Company Name"] ===
@@ -721,25 +728,45 @@ console.log("leadformdata" , leadFormData)
                                                             </div>
                                                         </div>
                                                         <div className='d-flex'>
-                                                            <button className='btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center'
-                                                                onClick={() => (
-                                                                    //setOpenServicesPopup(true),
-                                                                    setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
-                                                                    handleOpenServices(obj["Company Name"])
+                                                            {(() => {
+                                                                const shouldDisableButton = ![
+                                                                    ...obj.services,
+                                                                    ...(obj.moreBookings || []).flatMap(booking => booking.services)
+                                                                ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
 
-                                                                )
-                                                                }>
-                                                                <div className='btn-swap-icon'>
-                                                                    {/* <SlActionRedo /> */}
-                                                                    <FaCheck
+                                                                return (
+                                                                    <>
+                                                                        {!shouldDisableButton && (
+                                                                            <button
+                                                                                className={
+                                                                                    shouldDisableButton
+                                                                                        ? "disabled_rmcert_check btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center cursor-pointer-none"
+                                                                                        : "btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center"
+                                                                                }
+                                                                                onClick={() => {
+                                                                                    setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"]));
+                                                                                    handleOpenServices(obj["Company Name"]);
+                                                                                }}
+                                                                            >
+                                                                                <div
+                                                                                    className={
+                                                                                        shouldDisableButton
+                                                                                            ? "disabled btn-swap-icon cursor-pointer-none"
+                                                                                            : "btn-swap-icon"
+                                                                                    }
+                                                                                >
+                                                                                    <FaCheck />
+                                                                                </div>
+                                                                            </button>
+                                                                        )}
+                                                                    </>
+                                                                );
+                                                            })()}
 
-                                                                    />
-                                                                </div>
-                                                            </button>
-                                                            <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
-                                                                onClick={() => (
-                                                                    handleDisplayOffToRm(obj["Company Name"])
-                                                                )}
+
+                                                            <button
+                                                                className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
+                                                                onClick={() => handleDisplayOffToRm(obj["Company Name"])}
                                                             >
                                                                 <div className='btn-swap-icon'>
                                                                     {/* <SlActionRedo /> */}
@@ -747,6 +774,7 @@ console.log("leadformdata" , leadFormData)
                                                                 </div>
                                                             </button>
                                                         </div>
+
                                                     </div>
                                                     <div className='d-flex justify-content-start align-items-center flex-wrap mt-1'>
                                                         {obj.services.length !== 0 || obj.moreBookings.length !== 0 ? (

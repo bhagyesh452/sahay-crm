@@ -458,7 +458,17 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
     // }
 
     // // Log the updated company document
-    console.log("Company after update:", updatedCompany);
+    //console.log("Company after update:", updatedCompany);
+
+    // const creatingNewCompany = await RMCertificationHistoryModel.create({
+    //   "Company Name": companyName,
+    //   serviceName: serviceName,
+    //   history: [{
+    //     mainCategoryStatus: mainCategoryStatus,
+    //     subCategoryStatus: subCategoryStatus,
+    //     statusChangeDate: new Date()
+    //   }]
+    // })
 
     // Emit socket event if needed
     //socketIO.emit('update', { companyName, serviceName });
@@ -474,9 +484,9 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
 
 
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
-  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus , SecondTimeSubmitDate ,ThirdTimeSubmitDate} = req.body;
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus, SecondTimeSubmitDate, ThirdTimeSubmitDate } = req.body;
   const socketIO = req.io;
-console.log(req.body)
+  console.log(req.body)
   try {
     // Step 1: Find the company document
     const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
@@ -516,8 +526,8 @@ console.log(req.body)
           ...updateFields, // Conditionally include dateOfChangingMainStatus
           previousMainCategoryStatus: previousMainCategoryStatus,
           previousSubCategoryStatus: previousSubCategoryStatus,
-          SecondTimeSubmitDate:SecondTimeSubmitDate?SecondTimeSubmitDate:null,
-          ThirdTimeSubmitDate:ThirdTimeSubmitDate?ThirdTimeSubmitDate:null
+          SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : null,
+          ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : null
         },
         { new: true }
       );
@@ -1057,9 +1067,9 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
     const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
     const currentReceivedPayment = company.pendingRecievedPayment || 0;
 
-    console.log("totalAmount" , totalAmount)
+    console.log("totalAmount", totalAmount)
     console.log(currentReceivedPayment)
-    
+
     if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
       return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
     }
@@ -1071,7 +1081,7 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
       { new: true }
     );
 
-   
+
 
     if (!updatedCompany) {
       return res.status(400).json({ message: "Failed to save the updated document" });
