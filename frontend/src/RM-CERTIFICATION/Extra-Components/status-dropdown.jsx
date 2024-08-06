@@ -103,8 +103,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             mainCategoryStatus: "Process"
           });
         }
-      }
-      else if (mainStatus === "ReadyToSubmit") {
+      }else if (mainStatus === "ReadyToSubmit") {
         if (newStatus === "Submitted") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -187,7 +186,24 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             //mainCategoryStatus: "Defaulter",
           });
-        } else {
+        } else if (newStatus === "2nd Time Submitted") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            SecondTimeSubmitDate:new Date()
+            //mainCategoryStatus: "Defaulter",
+          });
+        }else if (newStatus === "3rd Time Submitted") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            ThirdTimeSubmitDate:new Date()
+            //mainCategoryStatus: "Defaulter",
+          });
+        }
+        else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,

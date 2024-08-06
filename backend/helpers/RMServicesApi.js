@@ -474,9 +474,9 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
 
 
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
-  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus } = req.body;
+  const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus , SecondTimeSubmitDate ,ThirdTimeSubmitDate} = req.body;
   const socketIO = req.io;
-
+console.log(req.body)
   try {
     // Step 1: Find the company document
     const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
@@ -515,7 +515,9 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           submittedOn: submittedOn,
           ...updateFields, // Conditionally include dateOfChangingMainStatus
           previousMainCategoryStatus: previousMainCategoryStatus,
-          previousSubCategoryStatus: previousSubCategoryStatus
+          previousSubCategoryStatus: previousSubCategoryStatus,
+          SecondTimeSubmitDate:SecondTimeSubmitDate?SecondTimeSubmitDate:null,
+          ThirdTimeSubmitDate:ThirdTimeSubmitDate?ThirdTimeSubmitDate:null
         },
         { new: true }
       );

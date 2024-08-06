@@ -32,7 +32,8 @@ function RmofCertificationMyBookings() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const [isFilter, setIsFilter] = useState(false)
-    const [rmServicesData, setRmServicesData] = useState([])
+    const [rmServicesData, setRmServicesData] = useState([]);
+    const [showFilterIcon, setShowFilterIcon] = useState(false)
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -168,7 +169,12 @@ function RmofCertificationMyBookings() {
                         <div className="container-xl">
                             <div className="d-flex aling-items-center justify-content-between">
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn"  >
+                                    <button type="button" className="btn mybtn" 
+                                    onClick={()=>{
+                                    setShowFilterIcon(true)
+                                    
+                                    }}
+                                    >
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
                                 </div>

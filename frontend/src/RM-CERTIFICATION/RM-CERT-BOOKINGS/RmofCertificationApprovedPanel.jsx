@@ -376,7 +376,7 @@ function RmofCertificationApprovedPanel() {
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 mainStatus={obj.mainCategoryStatus}
-                                                writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
+                                                writername={obj.contentWriter ? obj.contentWriter : "RonakKumar"}
                                                 refreshData={refreshData}
                                                 
                                             /></td>
@@ -428,6 +428,8 @@ function RmofCertificationApprovedPanel() {
                                                 serviceName={obj.serviceName}
                                                 refresData={refreshData}
                                                 nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Please Enter Password"}
+                                                mainStatus={obj.mainCategoryStatus}
+
                                             />
                                         </td>
 
@@ -439,7 +441,7 @@ function RmofCertificationApprovedPanel() {
                                                 refreshData={refreshData}
                                                 onIndustryChange={handleIndustryChange}
                                                 industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
-
+                                                mainStatus={obj.mainCategoryStatus}
                                             /></td>
                                         <td className='td_of_Industry'>
                                             <SectorDropdown
@@ -450,6 +452,7 @@ function RmofCertificationApprovedPanel() {
                                                 sectorOptions={sectorOptions}
                                                 industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
                                                 sector={obj.sector || ""} // Default to "" if sector is not provided
+                                                mainStatus={obj.mainCategoryStatus}
                                             />
                                         </td>
                                         <td>{formatDatePro(obj.bookingDate)}</td>
@@ -465,9 +468,21 @@ function RmofCertificationApprovedPanel() {
                                                 <div>{obj.bdmName}</div>
                                             </div>
                                         </td>
-                                        <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.firstPayment)) + (parseInt(obj.pendingRecievedPayment))).toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(obj.pendingRecievedPayment)).toLocaleString('en-IN')) : 0}</td>
+                                        <td>₹ {parseInt(obj.totalPaymentWGST || 0 , 10).toLocaleString('en-IN')}</td>
+                                        <td>
+                                            ₹ {(
+                                                (parseInt(obj.firstPayment || 0, 10) + parseInt(obj.pendingRecievedPayment || 0, 10))
+                                                    .toLocaleString('en-IN')
+                                            )}
+                                        </td>
+                                        <td>
+                                            ₹ {(
+                                                (parseInt(obj.totalPaymentWGST || 0, 10) -
+                                                    (parseInt(obj.firstPayment || 0, 10) +
+                                                        parseInt(obj.pendingRecievedPayment || 0, 10)))
+                                            ).toLocaleString('en-IN')
+                                            }
+                                        </td>
                                         <td>
                                             {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
                                                 obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
