@@ -305,7 +305,7 @@ function RmofCertificationMyBookings() {
                                         <RmofCertificationGeneralPanel rmServicesData={rmServicesData} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
-                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData}  />
+                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} />
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
                                         <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} />
