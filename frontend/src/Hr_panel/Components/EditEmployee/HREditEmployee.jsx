@@ -138,7 +138,7 @@ export default function HREditEmployee() {
       "Content Writer",
       "Graphic Designer",
       "Company Secretary",
-      "Relationship Manager",
+      "Admin Head",
       "Admin Executive",
     ],
     HR: ["HR Manager", "HR Recruiter"],
@@ -162,7 +162,7 @@ export default function HREditEmployee() {
     Sales: [
       "Business Development Executive",
       "Business Development Manager",
-      "Sales Manager",
+      // "Sales Manager",
       "Team Leader",
       "Floor Manager",
     ],
@@ -258,7 +258,7 @@ export default function HREditEmployee() {
   });
   const validatePayrollInfo = () => {
     const newErrors = {};
-    const { accountNo, nameAsPerBankRecord, ifscCode, salary, firstMonthSalary, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
+    const { accountNo, nameAsPerBankRecord, ifscCode, salary, firstMonthSalaryCondition, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
 
     if (!accountNo) newErrors.accountNo = "Account Number is required";
     if (!nameAsPerBankRecord) newErrors.nameAsPerBankRecord = "Name as per bank record is required";
@@ -269,7 +269,7 @@ export default function HREditEmployee() {
     else if (isNaN(salary) || salary <= 0) newErrors.salary = "Invalid Salary amount";
 
     // Validate First Month Salary Condition
-    if (!firstMonthSalary) newErrors.firstMonthSalary = "First Month Salary Condition is required";
+    if (!firstMonthSalaryCondition) newErrors.firstMonthSalaryCondition = "First Month Salary Condition is required";
 
     // Validate Offer Letter (File Upload)
     if (!offerLetter) newErrors.offerLetter = "Offer Letter is required";
@@ -369,8 +369,8 @@ export default function HREditEmployee() {
         nameAsPerBankRecord: data.nameAsPerBankRecord || "",
         ifscCode: data.ifscCode || "",
         salary: data.salary || "",
-        firstMonthSalary: data.firstMonthSalaryCondition || "",
-        salaryCalculation: data.firstMonthSalary || "",
+        firstMonthSalaryCondition: data.firstMonthSalaryCondition || "",
+        firstMonthSalary: data.firstMonthSalary || "",
         offerLetter: offerLetterDocument,
         panNumber: data.panNumber || "",
         aadharNumber: data.aadharNumber || "",
@@ -438,9 +438,9 @@ export default function HREditEmployee() {
     }
   }, [activeStep])
 
-  const calculateSalary = (salary, firstMonthSalary) => {
-    if (!salary || !firstMonthSalary) return '';
-    const percentage = parseFloat(firstMonthSalary) / 100;
+  const calculateSalary = (salary, condition) => {
+    if (!salary || !condition) return "";
+    const percentage = parseFloat(condition) / 100;
     return (parseFloat(salary) * percentage);
   };
 
@@ -466,13 +466,12 @@ export default function HREditEmployee() {
     setPayrollInfo((prevState) => {
       const updatedState = { ...prevState, [name]: value };
 
-      if (name === "salary" || name === "firstMonthSalary") {
-        updatedState.salaryCalculation = calculateSalary(
+      if (name === "salary" || name === "firstMonthSalaryCondition") {
+        updatedState.firstMonthSalary = calculateSalary(
           name === "salary" ? value : prevState.salary,
-          name === "firstMonthSalary" ? value : prevState.firstMonthSalary
+          name === "firstMonthSalaryCondition" ? value : prevState.firstMonthSalaryCondition
         );
       }
-
       return updatedState;
     });
 
@@ -485,19 +484,6 @@ export default function HREditEmployee() {
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: ""
-    }));
-  };
-
-  const handleAddressChange = (e) => {
-    const { value } = e.target;
-    setPersonalInfo((prevInfo) => ({
-      ...prevInfo,
-      isAddressSame: value,
-      permanentAddress: value === "yes" ? prevInfo.currentAddress : ""
-    }));
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      isAddressSame: ""
     }));
   };
 
@@ -955,7 +941,7 @@ export default function HREditEmployee() {
                                       placeholder="Employee ID"
                                       value={employeementInfo.employeeID}
                                       onChange={handleInputChange}
-                                      disabled
+                                      disabled={!isEmployeementInfoEditable}
                                     />
                                   </div>
                                 </div>
@@ -1183,9 +1169,9 @@ export default function HREditEmployee() {
                                       <div className="stepper_radio_custom mr-1">
                                         <select
                                           className="form-select mt-1"
-                                          name="firstMonthSalary"
-                                          id="firstMonthSalary"
-                                          value={payrollInfo.firstMonthSalary}
+                                          name="firstMonthSalaryCondition"
+                                          id="firstMonthSalaryCondition"
+                                          value={payrollInfo.firstMonthSalaryCondition}
                                           onChange={handleInputChange}
                                           disabled={!isPayrollInfoEditable}
                                         >
@@ -1205,9 +1191,9 @@ export default function HREditEmployee() {
                                     <input
                                       type="text"
                                       className="form-control mt-1"
-                                      name="salaryCalculation"
+                                      name="firstMonthSalary"
                                       placeholder="Calculated Salary"
-                                      value={payrollInfo.salaryCalculation}
+                                      value={payrollInfo.firstMonthSalary}
                                       onChange={handleInputChange}
                                       disabled
                                     />
@@ -1215,7 +1201,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-3">
                                   <div class="form-group mt-2">
-                                    <label class="form-label" for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
+                                    <label for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1366,7 +1352,7 @@ export default function HREditEmployee() {
                               <div className="row">
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label class="form-label" for="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
+                                    <label for="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1388,7 +1374,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label class="form-label" for="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
+                                    <label for="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1410,7 +1396,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label class="form-label" for="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
+                                    <label for="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1432,7 +1418,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label class="form-label" for="relievingCertificate">
+                                    <label for="relievingCertificate">
                                       Relieving Certificate
                                       {/* <span style={{ color: "red" }}> * </span> */}
                                     </label>
@@ -1457,7 +1443,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label class="form-label" for="salarySlip">
+                                    <label for="salarySlip">
                                       Salary Slip
                                       {/* <span style={{ color: "red" }}> * </span> */}
                                     </label>
@@ -1482,7 +1468,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label class="form-label" for="profilePhoto">Profile Photo</label>
+                                    <label for="profilePhoto">Profile Photo</label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1798,9 +1784,9 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {(payrollInfo.firstMonthSalary === "50" && "50%" ||
-                                        payrollInfo.firstMonthSalary === "75" && "75%" ||
-                                        payrollInfo.firstMonthSalary === "100" && "100%") || "-"
+                                      {(payrollInfo.firstMonthSalaryCondition === "50" && "50%" ||
+                                        payrollInfo.firstMonthSalaryCondition === "75" && "75%" ||
+                                        payrollInfo.firstMonthSalaryCondition === "100" && "100%") || "-"
                                       }
                                     </div>
                                   </div>
@@ -1813,7 +1799,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      ₹ {formatSalary(payrollInfo.salaryCalculation) || 0}
+                                      ₹ {formatSalary(payrollInfo.firstMonthSalary) || 0}
                                     </div>
                                   </div>
                                 </div>
