@@ -248,7 +248,7 @@ export default function HorizontalNonLinearStepper() {
 
   const [payrollInfo, setPayrollInfo] = useState({
     accountNo: "",
-    bankName: "",
+    nameAsPerBankRecord: "",
     ifscCode: "",
     salary: "",
     firstMonthSalaryCondition: "",
@@ -260,10 +260,10 @@ export default function HorizontalNonLinearStepper() {
   });
   const validatePayrollInfo = () => {
     const newErrors = {};
-    const { accountNo, bankName, ifscCode, salary, firstMonthSalaryCondition, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
+    const { accountNo, nameAsPerBankRecord, ifscCode, salary, firstMonthSalaryCondition, offerLetter, panNumber, aadharNumber, uanNumber } = payrollInfo;
 
     if (!accountNo) newErrors.accountNo = "Account Number is required";
-    if (!bankName) newErrors.bankName = "Bank Name is required";
+    if (!nameAsPerBankRecord) newErrors.nameAsPerBankRecord = "Name as per bank record is required";
     if (!ifscCode) newErrors.ifscCode = "IFSC Code is required";
 
     // Validate Salary Details
@@ -455,9 +455,6 @@ export default function HorizontalNonLinearStepper() {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       setIsDocumentInfoNext(true);
     }
-    // else if (activeStep === 5) {
-    //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    // }
   };
 
   const handleBack = () => {
@@ -656,10 +653,6 @@ export default function HorizontalNonLinearStepper() {
     }
   };
 
-
-
-
-
   const handleReset = () => {
     setActiveStep(0);
     setCompleted({});
@@ -699,7 +692,7 @@ export default function HorizontalNonLinearStepper() {
 
       setPayrollInfo({
         accountNo: data.accountNo || "",
-        bankName: data.bankName || "",
+        nameAsPerBankRecord: data.nameAsPerBankRecord || "",
         ifscCode: data.ifscCode || "",
         salary: data.salary || "",
         firstMonthSalaryCondition: data.firstMonthSalaryCondition || "",
@@ -1191,13 +1184,13 @@ export default function HorizontalNonLinearStepper() {
                                         <input
                                           type="text"
                                           className="form-control mt-1"
-                                          name="bankName"
+                                          name="nameAsPerBankRecord"
                                           placeholder="Name as per Bank Record"
-                                          value={payrollInfo.bankName}
+                                          value={payrollInfo.nameAsPerBankRecord}
                                           onChange={handleInputChange}
                                           disabled={!isPayrollInfoEditable}
                                         />
-                                        {errors.bankName && <p style={{ color: "red" }}>{errors.bankName}</p>}
+                                        {errors.nameAsPerBankRecord && <p style={{ color: "red" }}>{errors.nameAsPerBankRecord}</p>}
                                       </div>
                                       <div className="col">
                                         <input
@@ -1815,7 +1808,7 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {payrollInfo.bankName || "-"}
+                                      {payrollInfo.nameAsPerBankRecord || "-"}
                                     </div>
                                   </div>
                                 </div>
@@ -2077,61 +2070,6 @@ export default function HorizontalNonLinearStepper() {
                         </Button>
 
                         <Box sx={{ flex: "1 1 auto" }} />
-                        {/* {activeStep !== steps.length &&
-                          (completed[activeStep] ? (
-                            <>
-                              <Button
-                                onClick={() => {
-                                  setIsPersonalInfoEditable(true);
-                                  setIsEmployeementInfoEditable(true);
-                                  setIsPayrollInfoEditable(true);
-                                  setIsEmergencyInfoEditable(true);
-                                  setIsEmployeeDocsInfoEditable(true);
-                                  setCompleted((prevCompleted) => ({
-                                    ...prevCompleted,
-                                    [activeStep]: false,
-                                  }));
-                                }}
-                                variant="contained"
-                                sx={{ mr: 1, background: "#ffba00 " }}
-                              >
-                                Edit
-                              </Button>
-                            </>
-                          ) : (
-                            // <Button
-                            //   onClick={handleComplete}
-                            //   variant="contained"
-                            //   sx={{ mr: 1, background: "#ffba00 " }}
-                            // >
-                            //   {completedSteps() === totalSteps() - 1
-                            //     ? "Submit"
-                            //     : "Save Draft"}
-                            // </Button>
-                            <Button
-                              onClick={() => {
-                                if (completedSteps() === totalSteps() - 1) {
-                                  handleComplete();
-                                } else {
-                                  saveDraft();
-                                }
-                              }}
-                              variant="contained"
-                              sx={{ mr: 1, background: "#ffba00 " }}
-                            >
-                              {completedSteps() === totalSteps() - 1 ? "Submit" : "Save Draft"}
-                            </Button>
-
-                          ))}
-                        <Button
-                          onClick={handleNext}
-                          variant="contained"
-                          sx={{ mr: 1 }}
-                        // disabled={!completed[activeStep]}
-                        >
-                          Next
-                        </Button>
-                      </Box> */}
                         {completed[activeStep] && activeStep !== totalSteps() - 1 && (
                           <Button
                             onClick={() => {
