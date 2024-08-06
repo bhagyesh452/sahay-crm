@@ -16,8 +16,9 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import io from 'socket.io-client';
 import { BsFilter } from "react-icons/bs";
+import FilterableTable from '../Extra-Components/FilterableTable';
 
-function RmofCertificationGeneralPanel() {
+function RmofCertificationGeneralPanel({ showFilter }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -29,6 +30,7 @@ function RmofCertificationGeneralPanel() {
     const [changeRemarks, setChangeRemarks] = useState("");
     const [openBacdrop, setOpenBacdrop] = useState(false);
     const [newStatusProcess, setNewStatusProcess] = useState("General")
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
@@ -65,7 +67,7 @@ function RmofCertificationGeneralPanel() {
         }
     };
 
-    console.log("generaldata" , rmServicesData)
+    console.log("generaldata", rmServicesData)
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -92,7 +94,7 @@ function RmofCertificationGeneralPanel() {
 
 
     const refreshData = () => {
-       
+
         fetchData();
     };
 
@@ -217,6 +219,13 @@ function RmofCertificationGeneralPanel() {
         }
     };
 
+    //-------------------filter method-------------------------------
+    const [filteredData, setFilteredData] = useState(rmServicesData);
+    const [filterField, setFilterField] = useState("")
+    const handleFilter = (newData) => {
+        setFilteredData(newData);
+    };
+
 
     return (
         <div>
@@ -239,9 +248,10 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Sr.No
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+
+                                            </div> */}
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-2">
@@ -249,9 +259,14 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Booking Date
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                            setFilterField("Booking Date")
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-3">
@@ -259,9 +274,14 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Company Name
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                            setFilterField("Company Name")
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
@@ -269,9 +289,13 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Company Number
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
@@ -279,9 +303,13 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Company Email
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
@@ -289,9 +317,13 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 CA Number
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
@@ -299,9 +331,13 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Service Name
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
@@ -309,9 +345,13 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Status
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     {/* <th>Remark</th> */}
@@ -320,29 +360,41 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 DSC Applicable
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
-                                        </div>  
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
+                                        </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
                                             <div>
                                                 BDE Name
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
-                                        </div>  
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
+                                        </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
                                             <div>
                                                 BDM Name
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
@@ -350,9 +402,13 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 Total Payment
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
@@ -360,19 +416,27 @@ function RmofCertificationGeneralPanel() {
                                             <div>
                                                 received Payment
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
                                             <div>
-                                            Pending Payment
+                                                Pending Payment
                                             </div>
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter />
-                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => {
+                                                            setShowFilterMenu(true)
+                                                        }} />
+                                                </div>}
                                         </div>
                                     </th>
                                     <th className="rm-sticky-action">
@@ -528,6 +592,15 @@ function RmofCertificationGeneralPanel() {
                     </div>
                 </DialogContent>
             </Dialog>
+            {
+                showFilterMenu && (
+                    <FilterableTable
+                        data={rmServicesData}
+                        filterMenu={setShowFilterMenu}
+                        filterField={filterField}
+                        onFilter={handleFilter} />
+                )
+            }
         </div>
     );
 }
