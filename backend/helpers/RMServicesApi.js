@@ -15,26 +15,14 @@ const FollowUpModel = require('../models/FollowUp.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
-//   router.post('/post-rmservicesdata', async (req, res) => {
-//   const { dataToSend } = req.body;
-//   const publishDate = new Date();
-//   //console.log("Received data:", dataToSend); // Log received data to inspect
+//const RMCertificationHistoryModel = require("../models/RMCertificationHistoryModel.js")
 
-//   try {
-//     const sheetData = dataToSend.map(item=>({
-//         ...item,
-//         bookingPublishDate:publishDate,
-//     }))
-//     const createData = await RMCertificationModel.insertMany(sheetData)
-//     //console.log("Created:", createData);
 
-//     // Respond with success message and created data
-//     res.status(200).json({ message: "Details added to RM services", data: createData });
-//   } catch (error) {
-//     console.error("Error creating/updating data:", error);
-//     res.status(500).send("Error creating/updating data");
-//   }
-// });
+
+
+
+
+
 
 router.get("/redesigned-final-leadData-rm", async (req, res) => {
   try {
