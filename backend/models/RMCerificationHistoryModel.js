@@ -1,27 +1,27 @@
 const mongoose = require('mongoose');
 
-const historySchema = ({
-    mainCategoryStatus:{
-        type : String
+const historySchema = new mongoose.Schema({
+    mainCategoryStatus: {
+        type: String
     },
-    subCategoryStatus:{
-        type:String
+    subCategoryStatus: {
+        type: String
     },
-    statusChangeDate:{
-        type:Date
+    statusChangeDate: {
+        type: Date
     }
 });
 
 const RMCertificationHistorySchema = new mongoose.Schema({
-    "Company Name" : {
-        type:String
+    "Company Name": {
+        type: String
     },
-    serviceName:{
-        type:String
+    serviceName: {
+        type: String
     },
-    history:[historySchema]
+    history: [historySchema]
 });
 
-const RMCertificationHistoryModel = mongoose.model("RMCertificationHistoryModel" ,RMCertificationHistorySchema );
+const RMCertificationHistoryModel = mongoose.model("RMCertificationHistory", RMCertificationHistorySchema);
 
-mongoose.exports = RMCertificationHistoryModel;
+module.exports = RMCertificationHistoryModel;

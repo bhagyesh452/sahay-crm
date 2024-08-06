@@ -15,8 +15,7 @@ const FollowUpModel = require('../models/FollowUp.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
-//const RMCertificationHistoryModel = require("../models/RMCertificationHistoryModel.js")
-
+const RMCertificationHistoryModel = require('../models/RMCerificationHistoryModel.js')
 
 
 
@@ -448,15 +447,15 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
     // // Log the updated company document
     //console.log("Company after update:", updatedCompany);
 
-    // const creatingNewCompany = await RMCertificationHistoryModel.create({
-    //   "Company Name": companyName,
-    //   serviceName: serviceName,
-    //   history: [{
-    //     mainCategoryStatus: mainCategoryStatus,
-    //     subCategoryStatus: subCategoryStatus,
-    //     statusChangeDate: new Date()
-    //   }]
-    // })
+    const creatingNewCompany = await RMCertificationHistoryModel.create({
+      "Company Name": companyName,
+      serviceName: serviceName,
+      history: [{
+        mainCategoryStatus: mainCategoryStatus,
+        subCategoryStatus: subCategoryStatus,
+        statusChangeDate: new Date()
+      }]
+    });
 
     // Emit socket event if needed
     //socketIO.emit('update', { companyName, serviceName });
@@ -471,12 +470,117 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
 
 
 
+// router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
+//   const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus, SecondTimeSubmitDate, ThirdTimeSubmitDate } = req.body;
+//   const socketIO = req.io;
+//   console.log(req.body)
+//   try {
+//     // Step 1: Find the company document
+//     const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
+
+//     if (!company) {
+//       console.error("Company not found");
+//       return res.status(400).json({ message: "Company not found" });
+//     }
+
+//     // Step 2: Determine the submittedOn date
+//     let submittedOn = company.submittedOn;
+//     let updateFields = {}; // Fields to be updated
+
+//     if (subCategoryStatus !== "Undo") {
+//       submittedOn = (mainCategoryStatus === "Submitted")
+//         ? company.submittedOn || new Date()  // Use existing submittedOn or current date
+//         : (subCategoryStatus === "Submitted")
+//           ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
+//           : company.submittedOn;  // Retain existing submittedOn otherwise
+
+//       // Conditionally include dateOfChangingMainStatus
+//       if (["Process", "Approved", "Submitted", "Hold", "Defaulter", "ReadyToSubmit"].includes(subCategoryStatus)) {
+//         updateFields.dateOfChangingMainStatus = new Date();
+//       }
+
+//       // Step 3: Update the document with the calculated dates
+//       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+//         {
+//           ["Company Name"]: companyName,
+//           serviceName: serviceName
+//         },
+//         {
+//           subCategoryStatus: subCategoryStatus,
+//           mainCategoryStatus: mainCategoryStatus,
+//           lastActionDate: new Date(),
+//           submittedOn: submittedOn,
+//           ...updateFields, // Conditionally include dateOfChangingMainStatus
+//           previousMainCategoryStatus: previousMainCategoryStatus,
+//           previousSubCategoryStatus: previousSubCategoryStatus,
+//           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : null,
+//           ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : null
+//         },
+//         { new: true }
+//       );
+
+//       if (!updatedCompany) {
+//         console.error("Failed to save the updated document");
+//         return res.status(400).json({ message: "Failed to save the updated document" });
+//       }
+
+//       // Emit socket event
+//       socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+//       res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+
+//     } else {
+//       // If subCategoryStatus is "Undo", update with previous statuses and no new date
+//       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+//         {
+//           ["Company Name"]: companyName,
+//           serviceName: serviceName
+//         },
+//         {
+//           subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
+//           mainCategoryStatus: company.previousMainCategoryStatus,
+//           previousMainCategoryStatus: company.mainCategoryStatus,
+//           previousSubCategoryStatus: company.subCategoryStatus,// Restore previous mainCategoryStatus
+//           lastActionDate: new Date(),
+//           submittedOn: company.submittedOn,
+//           dateOfChangingMainStatus: company.dateOfChangingMainStatus, // Retain existing date
+//           Remarks: [],
+//           dscStatus: "Not Started",
+//           contentStatus: "Not Started",
+//           contentWriter: "Drashti Thakkar",
+//           brochureStatus: "Not Applicable",
+//           brochureDesigner: "",
+//           nswsMailId: "",
+//           nswsPaswsord: "",
+//           websiteLink: "",
+//           industry: "",
+//           sector: ""  // Retain existing submittedOn
+//         },
+//         { new: true }
+//       );
+
+//       if (!updatedCompany) {
+//         console.error("Failed to save the updated document");
+//         return res.status(400).json({ message: "Failed to save the updated document" });
+//       }
+
+//       // Emit socket event
+//       socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+//       res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+//     }
+
+//   } catch (error) {
+//     console.error("Error updating document:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus, SecondTimeSubmitDate, ThirdTimeSubmitDate } = req.body;
   const socketIO = req.io;
-  console.log(req.body)
+  console.log(req.body);
+
   try {
-    // Step 1: Find the company document
+    // Step 1: Find the company document in RMCertificationModel
     const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
 
     if (!company) {
@@ -484,7 +588,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       return res.status(400).json({ message: "Company not found" });
     }
 
-    // Step 2: Determine the submittedOn date
+    // Determine the submittedOn date
     let submittedOn = company.submittedOn;
     let updateFields = {}; // Fields to be updated
 
@@ -500,18 +604,15 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         updateFields.dateOfChangingMainStatus = new Date();
       }
 
-      // Step 3: Update the document with the calculated dates
+      // Step 2: Update the RMCertificationModel document
       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
-        {
-          ["Company Name"]: companyName,
-          serviceName: serviceName
-        },
+        { ["Company Name"]: companyName, serviceName: serviceName },
         {
           subCategoryStatus: subCategoryStatus,
           mainCategoryStatus: mainCategoryStatus,
           lastActionDate: new Date(),
           submittedOn: submittedOn,
-          ...updateFields, // Conditionally include dateOfChangingMainStatus
+          ...updateFields,
           previousMainCategoryStatus: previousMainCategoryStatus,
           previousSubCategoryStatus: previousSubCategoryStatus,
           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : null,
@@ -525,6 +626,30 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         return res.status(400).json({ message: "Failed to save the updated document" });
       }
 
+      // Step 3: Find or create the history entry in RMCertificationHistoryModel
+      let historyEntry = await RMCertificationHistoryModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
+
+      if (historyEntry) {
+        // Push a new history record into the existing document
+        historyEntry.history.push({
+          mainCategoryStatus: mainCategoryStatus,
+          subCategoryStatus: subCategoryStatus,
+          statusChangeDate: new Date()
+        });
+        await historyEntry.save();
+      } else {
+        // Create a new document if not found
+        await RMCertificationHistoryModel.create({
+          "Company Name": companyName,
+          serviceName: serviceName,
+          history: [{
+            mainCategoryStatus: mainCategoryStatus,
+            subCategoryStatus: subCategoryStatus,
+            statusChangeDate: new Date()
+          }]
+        });
+      }
+
       // Emit socket event
       socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
       res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
@@ -532,18 +657,15 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     } else {
       // If subCategoryStatus is "Undo", update with previous statuses and no new date
       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+        { ["Company Name"]: companyName, serviceName: serviceName },
         {
-          ["Company Name"]: companyName,
-          serviceName: serviceName
-        },
-        {
-          subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
+          subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,
           mainCategoryStatus: company.previousMainCategoryStatus,
           previousMainCategoryStatus: company.mainCategoryStatus,
-          previousSubCategoryStatus: company.subCategoryStatus,// Restore previous mainCategoryStatus
+          previousSubCategoryStatus: company.subCategoryStatus,
           lastActionDate: new Date(),
           submittedOn: company.submittedOn,
-          dateOfChangingMainStatus: company.dateOfChangingMainStatus, // Retain existing date
+          dateOfChangingMainStatus: company.dateOfChangingMainStatus,
           Remarks: [],
           dscStatus: "Not Started",
           contentStatus: "Not Started",
@@ -554,7 +676,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           nswsPaswsord: "",
           websiteLink: "",
           industry: "",
-          sector: ""  // Retain existing submittedOn
+          sector: ""
         },
         { new: true }
       );
@@ -574,6 +696,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
