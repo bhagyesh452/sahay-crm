@@ -678,9 +678,9 @@ export default function HorizontalNonLinearStepper() {
       // setActiveStep(data.activeStep);
 
       setPersonalInfo({
-        firstName: (data.empFullName || "").split(" ")[0] || "",
+        firstName: (data.empFullName || "").split(" ")[0] || "" || (data.ename || "").split(" ")[0] || "",
         middleName: (data.empFullName || "").split(" ")[1] || "",
-        lastName: (data.empFullName || "").split(" ")[2] || "",
+        lastName: (data.empFullName || "").split(" ")[2] || ""  || (data.ename || "").split(" ")[1] || "",
         dob: convertToDateInputFormat(data.dob) || "",
         gender: data.gender || "",
         personalPhoneNo: data.personal_number || "",
@@ -1593,7 +1593,7 @@ export default function HorizontalNonLinearStepper() {
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
                                       {(personalInfo.firstName && personalInfo.middleName && personalInfo.lastName) ?
-                                        `${personalInfo.firstName.toUpperCase()} ${personalInfo.middleName.toUpperCase()} ${personalInfo.lastName.toUpperCase()}` :
+                                        `${personalInfo.firstName} ${personalInfo.middleName} ${personalInfo.lastName}` :
                                         "-"
                                       }
                                     </div>

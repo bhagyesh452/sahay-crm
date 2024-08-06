@@ -462,46 +462,46 @@ router.put("/savedeletedemployee", upload.fields([
 
     const emp = {
       ...req.body,
-      AddedOn: new Date(),
 
       // Personal Info
-      ...(dataToDelete.firstName || dataToDelete.middleName || dataToDelete.lastName) && {
-        ename: `${dataToDelete.firstName || ""} ${dataToDelete.middleName || ""} ${dataToDelete.lastName || ""}`
+      ...(dataToDelete[0]?.firstName || dataToDelete[0].middleName || dataToDelete[0].lastName) && {
+        ename: `${dataToDelete.firstName || ""} ${dataToDelete.lastName || ""}`,
+        empFullName: `${dataToDelete.firstName || ""} ${dataToDelete.middleName || ""} ${dataToDelete.lastName || ""}`
       },
-      ...(dataToDelete.dob && { dob: dataToDelete.dob }),
-      ...(dataToDelete.gender && { gender: dataToDelete.gender }),
-      ...(dataToDelete.personalPhoneNo && { personal_number: dataToDelete.personalPhoneNo }),
-      ...(dataToDelete.personalEmail && { personal_email: dataToDelete.personalEmail }),
-      ...(dataToDelete.currentAddress && { currentAddress: dataToDelete.currentAddress }),
-      ...(dataToDelete.permanentAddress && { permanentAddress: dataToDelete.permanentAddress }),
+      ...(dataToDelete[0].dob && { dob: dataToDelete.dob }),
+      ...(dataToDelete[0].gender && { gender: dataToDelete.gender }),
+      ...(dataToDelete[0].personalPhoneNo && { personal_number: dataToDelete.personalPhoneNo }),
+      ...(dataToDelete[0].personalEmail && { personal_email: dataToDelete.personalEmail }),
+      ...(dataToDelete[0].currentAddress && { currentAddress: dataToDelete.currentAddress }),
+      ...(dataToDelete[0].permanentAddress && { permanentAddress: dataToDelete.permanentAddress }),
 
       // Employment Info
-      ...(dataToDelete.department && { department: dataToDelete.department }),
-      ...(dataToDelete.designation && { newDesignation: dataToDelete.designation }),
-      ...(dataToDelete.designation && { designation: dataToDelete.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager" ? "Sales Executive" : employeementInfo.designation}),
-      ...(dataToDelete.designation && { bdmWork: dataToDelete.designation === "Business Development Manager" ? true : false}),
-      ...(dataToDelete.joiningDate && { jdate: dataToDelete.joiningDate }),
-      ...(dataToDelete.branch && { branchOffice: dataToDelete.branch }),
-      ...(dataToDelete.employeementType && { employeementType: dataToDelete.employeementType }),
-      ...(dataToDelete.manager && { reportingManager: dataToDelete.manager }),
-      ...(dataToDelete.officialNo && { number: dataToDelete.officialNo }),
-      ...(dataToDelete.officialEmail && { email: dataToDelete.officialEmail }),
+      ...(dataToDelete[0].department && { department: dataToDelete.department }),
+      ...(dataToDelete[0].designation && { newDesignation: dataToDelete.designation }),
+      ...(dataToDelete[0].designation && { designation: dataToDelete.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager" ? "Sales Executive" : employeementInfo.designation}),
+      ...(dataToDelete[0].designation && { bdmWork: dataToDelete.designation === "Business Development Manager" ? true : false}),
+      ...(dataToDelete[0].joiningDate && { jdate: dataToDelete.joiningDate }),
+      ...(dataToDelete[0].branch && { branchOffice: dataToDelete.branch }),
+      ...(dataToDelete[0].employeementType && { employeementType: dataToDelete.employeementType }),
+      ...(dataToDelete[0].manager && { reportingManager: dataToDelete.manager }),
+      ...(dataToDelete[0].officialNo && { number: dataToDelete.officialNo }),
+      ...(dataToDelete[0].officialEmail && { email: dataToDelete.officialEmail }),
 
       // Payroll Info
-      ...(dataToDelete.accountNo && { accountNo: dataToDelete.accountNo }),
-      ...(dataToDelete.nameAsPerBankRecord && { nameAsPerBankRecord: dataToDelete.nameAsPerBankRecord }),
-      ...(dataToDelete.ifscCode && { ifscCode: dataToDelete.ifscCode }),
-      ...(dataToDelete.salary && { salary: dataToDelete.salary }),
-      ...(dataToDelete.firstMonthSalaryCondition && { firstMonthSalaryCondition: dataToDelete.firstMonthSalaryCondition }),
-      ...(dataToDelete.firstMonthSalary && { firstMonthSalary: dataToDelete.firstMonthSalary }),
-      ...(dataToDelete.panNumber && { panNumber: dataToDelete.panNumber }),
-      ...(dataToDelete.aadharNumber && { aadharNumber: dataToDelete.aadharNumber }),
-      ...(dataToDelete.uanNumber && { uanNumber: dataToDelete.uanNumber }),
+      ...(dataToDelete[0].accountNo && { accountNo: dataToDelete.accountNo }),
+      ...(dataToDelete[0].nameAsPerBankRecord && { nameAsPerBankRecord: dataToDelete.nameAsPerBankRecord }),
+      ...(dataToDelete[0].ifscCode && { ifscCode: dataToDelete.ifscCode }),
+      ...(dataToDelete[0].salary && { salary: dataToDelete.salary }),
+      ...(dataToDelete[0].firstMonthSalaryCondition && { firstMonthSalaryCondition: dataToDelete.firstMonthSalaryCondition }),
+      ...(dataToDelete[0].firstMonthSalary && { firstMonthSalary: dataToDelete.firstMonthSalary }),
+      ...(dataToDelete[0].panNumber && { panNumber: dataToDelete.panNumber }),
+      ...(dataToDelete[0].aadharNumber && { aadharNumber: dataToDelete.aadharNumber }),
+      ...(dataToDelete[0].uanNumber && { uanNumber: dataToDelete.uanNumber }),
 
       // Emergency Info
-      ...(dataToDelete.personName && { personal_contact_person: dataToDelete.personName }),
-      ...(dataToDelete.relationship && { personal_contact_person_relationship: dataToDelete.relationship }),
-      ...(dataToDelete.personPhoneNo && { personal_contact_person_number: dataToDelete.personPhoneNo }),
+      ...(dataToDelete[0].personName && { personal_contact_person: dataToDelete.personName }),
+      ...(dataToDelete[0].relationship && { personal_contact_person_relationship: dataToDelete.relationship }),
+      ...(dataToDelete[0].personPhoneNo && { personal_contact_person_number: dataToDelete.personPhoneNo }),
 
       // Document Info
       ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || []}),
@@ -513,7 +513,7 @@ router.put("/savedeletedemployee", upload.fields([
       ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || []})
     };
 
-    if (dataToDelete.empId) {
+    if (dataToDelete[0]?.empId) {
       emp._id = dataToDelete.empId;
     }
 
