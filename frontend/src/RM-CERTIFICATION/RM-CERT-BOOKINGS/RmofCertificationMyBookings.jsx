@@ -302,10 +302,10 @@ function RmofCertificationMyBookings() {
                                 </div>
                                 <div class="tab-content card-body">
                                     <div class="tab-pane active" id="General">
-                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} showFilter={showFilterIcon} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
-                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} showFilter={showFilterIcon} />
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
                                         <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} />

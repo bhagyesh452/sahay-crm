@@ -130,7 +130,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-07-15");
+        const today = new Date("2024-08-06");
         today.setHours(0, 0, 0, 0); // Set to start of today
 
         try {
@@ -226,7 +226,7 @@ function Received_booking_box() {
         }
     };
 
-
+console.log("leadformdata" , leadFormData)
 
 
 
