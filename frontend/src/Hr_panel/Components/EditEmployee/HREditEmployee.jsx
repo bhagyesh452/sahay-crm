@@ -215,7 +215,7 @@ export default function HREditEmployee() {
   };
 
   const [employeementInfo, setEmployeementInfo] = useState({
-    empId: "",
+    employeeID: "",
     department: "",
     designation: "",
     joiningDate: "",
@@ -341,9 +341,9 @@ export default function HREditEmployee() {
 
       // Update personalInfo state with fetched data
       setPersonalInfo({
-        firstName: (data.ename || "").split(" ")[0] || "",
-        middleName: (data.ename || "").split(" ")[1] || "",
-        lastName: (data.ename || "").split(" ")[2] || "",
+        firstName: (data.empFullName || "").split(" ")[0] || "" || (data.ename || "").split(" ")[0] || "",
+        middleName: (data.empFullName || "").split(" ")[1] || "",
+        lastName: (data.empFullName || "").split(" ")[2] || "" || (data.ename || "").split(" ")[1] || "",
         dob: convertToDateInputFormat(data.dob) || "",
         gender: data.gender || "",
         personalPhoneNo: data.personal_number || "",
@@ -353,7 +353,7 @@ export default function HREditEmployee() {
       });
 
       setEmployeementInfo({
-        empId: "",
+        employeeID: data.employeeID,
         department: data.department || "",
         designation: data.newDesignation || "",
         joiningDate: convertToDateInputFormat(data.jdate) || "",
@@ -947,13 +947,13 @@ export default function HREditEmployee() {
                               <div className="row">
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
-                                    <label for="Employeeid">Employee ID<span style={{ color: "red" }}> * </span></label><input
+                                    <label for="employeeID">Employee ID<span style={{ color: "red" }}> * </span></label><input
                                       type="text"
                                       className="form-control mt-1"
-                                      name="empId"
-                                      id="Employeeid"
+                                      name="employeeID"
+                                      id="employeeID"
                                       placeholder="Employee ID"
-                                      value={empId}
+                                      value={employeementInfo.employeeID}
                                       onChange={handleInputChange}
                                       disabled
                                     />
@@ -1629,7 +1629,7 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {empId || "-"}
+                                      {employeementInfo.employeeID || "-"}
                                     </div>
                                   </div>
                                 </div>

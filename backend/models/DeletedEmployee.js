@@ -15,6 +15,12 @@ const yourSchema = new mongoose.Schema({
   ename: {
     type: String,
   },
+  empFullName: {
+    type: String,
+  },
+  employeeID: {
+    type: String
+  },
   dob: {
     type: Date
   },
