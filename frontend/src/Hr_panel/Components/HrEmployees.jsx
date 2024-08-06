@@ -10,6 +10,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { IoLogoWhatsapp } from "react-icons/io5";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
@@ -23,6 +24,7 @@ function HrEmployees() {
   const navigate = useNavigate();
 
   const [employee, setEmployee] = useState([]);
+  const [profilePhoto, setProfilePhoto] = useState("");
   const [deletedData, setDeletedData] = useState([]);
   const [companyData, setCompanyData] = useState([]);
 
@@ -76,12 +78,9 @@ function HrEmployees() {
   const fetchEmployee = async () => {
     try {
       const res = await axios.get(`${secretKey}/employee/einfo`);
-      const employeeData = res.data.map((emp) => {
-        const profilePhoto = emp.profilePhoto?.[0]?.filename || EmpDfaullt;
-        return { ...emp, profilePhoto };
-      });
+      const employeeData = res.data;
       setEmployee(employeeData);
-      // console.log("Fetched Employees are:", res.data);
+      console.log("Fetched Employees are:", res.data);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     }
@@ -275,15 +274,18 @@ function HrEmployees() {
                             <td>
                               <div className="d-flex align-items-center">
                                 <div className="tbl-pro-img">
-                                  <img
+                                  {emp.profilePhoto.length !== 0 ? <img
                                     src={
-                                      emp.profilePhoto
-                                        ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto}`
-                                        : EmpDfaullt
+                                      emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                     }
                                     alt="Profile"
                                     className="profile-photo"
-                                  />
+                                  /> : 
+                                  <img
+                                    src={EmpDfaullt}
+                                    alt="Profile"
+                                    className="profile-photo"
+                                  />}
                                 </div>
                                 <div className="">
                                   {/* {emp.ename} */}
@@ -301,7 +303,7 @@ function HrEmployees() {
                             <td>{formatDate(emp.jdate) || ""}</td>
                             <td>₹ {formatSalary(emp.salary || 0)}</td>
                             <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                            <td>{emp.number || ""}</td>
+                            <td>{emp.number || ""}<IoLogoWhatsapp className="text-success w-25 mb-1"/></td>
                             <td>{emp.email || ""}</td>
                             <td>
                               <button className="action-btn action-btn-primary">

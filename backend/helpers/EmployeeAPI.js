@@ -188,6 +188,18 @@ router.post("/einfo", upload.fields([
       }
     });
 
+    let newDesignation = employeementInfo.designation;
+
+    if (employeementInfo.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager") {
+      newDesignation = "Sales Executive";
+    } else if (employeementInfo.designation === "Floor Manager") {
+      newDesignation = "Sales Manager";
+    } else if (employeementInfo.designation === "Data Analytics") {
+      newDesignation = "Data Manager";
+    } else if (employeementInfo.designation === "Admin Head") {
+      newDesignation = "RM-Certification";
+    }
+
     const emp = {
       ...req.body,
       AddedOn: new Date(),
@@ -203,11 +215,11 @@ router.post("/einfo", upload.fields([
       ...(personalInfo?.personalEmail && { personal_email: personalInfo.personalEmail }),
       ...(personalInfo?.currentAddress && { currentAddress: personalInfo.currentAddress }),
       ...(personalInfo?.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
-
+      
       ...(employeementInfo?.empId && { empID: employeementInfo.empId }),
       ...(employeementInfo?.department && { department: employeementInfo.department }),
       ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
-      ...(employeementInfo?.designation && { designation: employeementInfo.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager" ? "Sales Executive" : employeementInfo.designation}),
+      ...(employeementInfo?.designation && { designation: newDesignation }),
       ...(employeementInfo?.designation && { bdmWork: employeementInfo.designation === "Business Development Manager" ? true : false}),
       ...(employeementInfo?.joiningDate && { jdate: employeementInfo.joiningDate }),
       ...(employeementInfo?.branch && { branchOffice: employeementInfo.branch }),
@@ -351,6 +363,18 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       return res.status(404).json({ result: false, message: "Employee not found" });
     }
 
+    let newDesignation = designation;
+
+    if (designation === "Business Development Executive" || designation === "Business Development Manager") {
+      newDesignation = "Sales Executive";
+    } else if (designation === "Floor Manager") {
+      newDesignation = "Sales Manager";
+    } else if (designation === "Data Analytics") {
+      newDesignation = "Data Manager";
+    } else if (designation === "Admin Head") {
+      newDesignation = "RM-Certification";
+    }
+
     const updateFields = {
       ...req.body,
       
@@ -368,7 +392,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(branch && { branchOffice: branch }),
       ...(manager && { reportingManager: manager }),
       ...(designation && { newDesignation: designation }),
-      ...(designation && { designation: designation === "Business Development Executive" || designation === "Business Development Manager" ? "Sales Executive" : designation}),
+      ...(designation && { designation : newDesignation}),
       ...(designation && { bdmWork: designation === "Business Development Manager" ? true : false}),
 
 
@@ -445,9 +469,13 @@ router.put("/savedeletedemployee", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const {dataToDelete} = req.body;
+    const { dataToDelete } = req.body;
 
-    console.log("Deleted data is :", dataToDelete);
+    if (!dataToDelete || !Array.isArray(dataToDelete) || dataToDelete.length === 0) {
+      return res.status(400).json({ error: "No employee data to save" });
+    }
+
+    // console.log("Deleted data is :", dataToDelete);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -460,75 +488,85 @@ router.put("/savedeletedemployee", upload.fields([
       size: file.size
     })) : [];
 
-    const emp = {
-      ...req.body,
+    const employees = await Promise.all(dataToDelete.map(async (data) => {
+      let newDesignation = data.designation;
 
-      // Personal Info
-      ...(dataToDelete[0]?.firstName || dataToDelete[0].middleName || dataToDelete[0].lastName) && {
-        ename: `${dataToDelete.firstName || ""} ${dataToDelete.lastName || ""}`,
-        empFullName: `${dataToDelete.firstName || ""} ${dataToDelete.middleName || ""} ${dataToDelete.lastName || ""}`
-      },
-      ...(dataToDelete[0].dob && { dob: dataToDelete.dob }),
-      ...(dataToDelete[0].gender && { gender: dataToDelete.gender }),
-      ...(dataToDelete[0].personalPhoneNo && { personal_number: dataToDelete.personalPhoneNo }),
-      ...(dataToDelete[0].personalEmail && { personal_email: dataToDelete.personalEmail }),
-      ...(dataToDelete[0].currentAddress && { currentAddress: dataToDelete.currentAddress }),
-      ...(dataToDelete[0].permanentAddress && { permanentAddress: dataToDelete.permanentAddress }),
+      if (data.designation === "Business Development Executive" || data.designation === "Business Development Manager") {
+        newDesignation = "Sales Executive";
+      } else if (data.designation === "Floor Manager") {
+        newDesignation = "Sales Manager";
+      } else if (data.designation === "Data Analytics") {
+        newDesignation = "Data Manager";
+      } else if (data.designation === "Admin Head") {
+        newDesignation = "RM-Certification";
+      }
 
-      // Employment Info
-      ...(dataToDelete[0].department && { department: dataToDelete.department }),
-      ...(dataToDelete[0].designation && { newDesignation: dataToDelete.designation }),
-      ...(dataToDelete[0].designation && { designation: dataToDelete.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager" ? "Sales Executive" : employeementInfo.designation}),
-      ...(dataToDelete[0].designation && { bdmWork: dataToDelete.designation === "Business Development Manager" ? true : false}),
-      ...(dataToDelete[0].joiningDate && { jdate: dataToDelete.joiningDate }),
-      ...(dataToDelete[0].branch && { branchOffice: dataToDelete.branch }),
-      ...(dataToDelete[0].employeementType && { employeementType: dataToDelete.employeementType }),
-      ...(dataToDelete[0].manager && { reportingManager: dataToDelete.manager }),
-      ...(dataToDelete[0].officialNo && { number: dataToDelete.officialNo }),
-      ...(dataToDelete[0].officialEmail && { email: dataToDelete.officialEmail }),
+      const emp = {
+        ...data,
+        AddedOn: new Date(),
 
-      // Payroll Info
-      ...(dataToDelete[0].accountNo && { accountNo: dataToDelete.accountNo }),
-      ...(dataToDelete[0].nameAsPerBankRecord && { nameAsPerBankRecord: dataToDelete.nameAsPerBankRecord }),
-      ...(dataToDelete[0].ifscCode && { ifscCode: dataToDelete.ifscCode }),
-      ...(dataToDelete[0].salary && { salary: dataToDelete.salary }),
-      ...(dataToDelete[0].firstMonthSalaryCondition && { firstMonthSalaryCondition: dataToDelete.firstMonthSalaryCondition }),
-      ...(dataToDelete[0].firstMonthSalary && { firstMonthSalary: dataToDelete.firstMonthSalary }),
-      ...(dataToDelete[0].panNumber && { panNumber: dataToDelete.panNumber }),
-      ...(dataToDelete[0].aadharNumber && { aadharNumber: dataToDelete.aadharNumber }),
-      ...(dataToDelete[0].uanNumber && { uanNumber: dataToDelete.uanNumber }),
+        // Personal Info
+        ...(data.firstName || data.middleName || data.lastName) && {
+          ename: `${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""}`
+        },
+        ...(data.dob && { dob: data.dob }),
+        ...(data.gender && { gender: data.gender }),
+        ...(data.personalPhoneNo && { personal_number: data.personalPhoneNo }),
+        ...(data.personalEmail && { personal_email: data.personalEmail }),
+        ...(data.currentAddress && { currentAddress: data.currentAddress }),
+        ...(data.permanentAddress && { permanentAddress: data.permanentAddress }),
 
-      // Emergency Info
-      ...(dataToDelete[0].personName && { personal_contact_person: dataToDelete.personName }),
-      ...(dataToDelete[0].relationship && { personal_contact_person_relationship: dataToDelete.relationship }),
-      ...(dataToDelete[0].personPhoneNo && { personal_contact_person_number: dataToDelete.personPhoneNo }),
+        // Employment Info
+        ...(data.department && { department: data.department }),
+        ...(data.designation && { newDesignation: data.designation }),
+        ...(data.designation && { designation: newDesignation }),
+        ...(data.designation && { bdmWork: data.designation === "Business Development Manager" ? true : false }),
+        ...(data.joiningDate && { jdate: data.joiningDate }),
+        ...(data.branch && { branchOffice: data.branch }),
+        ...(data.employeementType && { employeementType: data.employeementType }),
+        ...(data.manager && { reportingManager: data.manager }),
+        ...(data.officialNo && { number: data.officialNo }),
+        ...(data.officialEmail && { email: data.officialEmail }),
 
-      // Document Info
-      ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || []}),
-      ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || []}),
-      ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || []}),
-      ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || []}),
-      ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || []}),
-      ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || []}),
-      ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || []})
-    };
+        // Payroll Info
+        ...(data.accountNo && { accountNo: data.accountNo }),
+        ...(data.nameAsPerBankRecord && { nameAsPerBankRecord: data.nameAsPerBankRecord }),
+        ...(data.ifscCode && { ifscCode: data.ifscCode }),
+        ...(data.salary && { salary: data.salary }),
+        ...(data.firstMonthSalaryCondition && { firstMonthSalaryCondition: data.firstMonthSalaryCondition }),
+        ...(data.firstMonthSalary && { firstMonthSalary: data.firstMonthSalary }),
+        ...(data.panNumber && { panNumber: data.panNumber }),
+        ...(data.aadharNumber && { aadharNumber: data.aadharNumber }),
+        ...(data.uanNumber && { uanNumber: data.uanNumber }),
 
-    if (dataToDelete[0]?.empId) {
-      emp._id = dataToDelete.empId;
-    }
+        // Emergency Info
+        ...(data.personName && { personal_contact_person: data.personName }),
+        ...(data.relationship && { personal_contact_person_relationship: data.relationship }),
+        ...(data.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
 
-    const result = await deletedEmployeeModel.create(emp);
-    res.json(result);
+        // Document Info
+        ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || []}),
+        ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || []}),
+        ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || []}),
+        ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || []}),
+        ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || []}),
+        ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || []}),
+        ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || []})
+      };
 
+      if (data.empId) {
+        emp._id = data.empId;
+      }
+
+      return deletedEmployeeModel.create(emp);
+    }));
+
+    res.json(employees);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
-
-
 
 router.get("/deletedemployeeinfo", async (req, res) => {
   try {

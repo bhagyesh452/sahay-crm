@@ -138,7 +138,7 @@ export default function HREditEmployee() {
       "Content Writer",
       "Graphic Designer",
       "Company Secretary",
-      "Relationship Manager",
+      "Admin Head",
       "Admin Executive",
     ],
     HR: ["HR Manager", "HR Recruiter"],
@@ -162,7 +162,7 @@ export default function HREditEmployee() {
     Sales: [
       "Business Development Executive",
       "Business Development Manager",
-      "Sales Manager",
+      // "Sales Manager",
       "Team Leader",
       "Floor Manager",
     ],
@@ -955,7 +955,7 @@ export default function HREditEmployee() {
                                       placeholder="Employee ID"
                                       value={employeementInfo.employeeID}
                                       onChange={handleInputChange}
-                                      disabled
+                                      disabled={!isEmployeementInfoEditable}
                                     />
                                   </div>
                                 </div>
@@ -1215,7 +1215,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-3">
                                   <div class="form-group mt-2">
-                                    <label class="form-label" for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
+                                    <label for="offerLetter">Offer Letter<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1366,7 +1366,7 @@ export default function HREditEmployee() {
                               <div className="row">
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label class="form-label" for="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
+                                    <label for="aadharCard">Adhar Card<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1388,7 +1388,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label class="form-label" for="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
+                                    <label for="panCard">Pan Card<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1410,7 +1410,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group">
-                                    <label class="form-label" for="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
+                                    <label for="educationCertificate">Education Certificate<span style={{ color: "red" }}> * </span></label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
@@ -1432,7 +1432,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label class="form-label" for="relievingCertificate">
+                                    <label for="relievingCertificate">
                                       Relieving Certificate
                                       {/* <span style={{ color: "red" }}> * </span> */}
                                     </label>
@@ -1457,7 +1457,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label class="form-label" for="salarySlip">
+                                    <label for="salarySlip">
                                       Salary Slip
                                       {/* <span style={{ color: "red" }}> * </span> */}
                                     </label>
@@ -1482,7 +1482,7 @@ export default function HREditEmployee() {
                                 </div>
                                 <div className="col-sm-4">
                                   <div class="form-group mt-3">
-                                    <label class="form-label" for="profilePhoto">Profile Photo</label>
+                                    <label for="profilePhoto">Profile Photo</label>
                                     <input
                                       type="file"
                                       className="form-control mt-1"
