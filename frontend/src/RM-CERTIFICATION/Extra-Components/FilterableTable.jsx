@@ -7,8 +7,8 @@ const FilterableTable = ({ data, onFilter, filterField }) => {
     useEffect(() => {
         if (filterField) {
             console.log("filterField" , filterField)
-            if (filterField === "Booking Date"){
-                const values = Array.from(data.map(item => item.bookingDate)).values();
+            if (filterField === "Company Name"){
+                const values = data.map(item => item["Company Name"]);
                 console.log("Values" , values)
                 
                 setColumnValues(values);

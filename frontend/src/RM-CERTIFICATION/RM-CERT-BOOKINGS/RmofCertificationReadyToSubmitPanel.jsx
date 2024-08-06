@@ -464,7 +464,8 @@ function RmofCertificationReadyToSubmitPanel() {
                                             ).toLocaleString('en-IN')
                                             }
                                         </td>
-                                        <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
+                                        <td className="rm-sticky-action">
+                                            <button className="action-btn action-btn-primary"
 
                                         ><FaRegEye /></button>
                                         </td>

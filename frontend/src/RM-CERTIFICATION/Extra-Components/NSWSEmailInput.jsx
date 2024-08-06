@@ -38,7 +38,7 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData , ma
 
     return (
         <div>
-            <div className={mainStatus === "Approved" ? "d-flex align-items-center justify-content-between disabled" : 'd-flex align-items-center justify-content-between'}>
+             <div className={'d-flex align-items-center justify-content-between'}>
             <div
                 className="My_Text_Wrap"
                 title={nswsMailId}

@@ -44,7 +44,7 @@ const NSWSPasswordInput = ({ companyName, serviceName, nswsPassword , refresData
 
     return (
         <div>
-            <div className={mainStatus === "Approved" ? "d-flex align-items-center justify-content-between disabled" : 'd-flex align-items-center justify-content-between'}>
+            <div className={'d-flex align-items-center justify-content-between'}>
                 <div
                     className="My_Text_Wrap"
                     title={nswsPassword}
