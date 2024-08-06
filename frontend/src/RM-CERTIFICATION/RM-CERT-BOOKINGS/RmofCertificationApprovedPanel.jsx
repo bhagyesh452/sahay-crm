@@ -96,6 +96,10 @@ function RmofCertificationApprovedPanel() {
             fetchData()
         });
 
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -374,6 +378,7 @@ function RmofCertificationApprovedPanel() {
                                                 mainStatus={obj.mainCategoryStatus}
                                                 writername={obj.contentWriter ? obj.contentWriter : "Drashti Thakkar"}
                                                 refreshData={refreshData}
+                                                
                                             /></td>
                                         <td>
                                             <ContentStatusDropdown
@@ -404,12 +409,14 @@ function RmofCertificationApprovedPanel() {
                                                 mainStatus={obj.mainCategoryStatus}
                                                 brochureStatus={obj.brochureStatus}
                                                 designername={obj.brochureDesigner}
+                                                refreshData={refreshData}
                                             /></td>
                                         <td className='td_of_NSWSeMAIL'>
                                             <NSWSEmailInput
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
                                                 refreshData={refreshData}
                                                 nswsMailId={obj.nswsMailId ? obj.nswsMailId : obj["Company Email"]}
                                             />
@@ -459,8 +466,8 @@ function RmofCertificationApprovedPanel() {
                                             </div>
                                         </td>
                                         <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.firstPayment)) + (parseInt(obj.pendingRecievedPayment))).toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
+                                        <td>₹ {obj.firstPayment ? ((parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(obj.pendingRecievedPayment)).toLocaleString('en-IN')) : 0}</td>
                                         <td>
                                             {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
                                                 obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :

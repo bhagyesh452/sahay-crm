@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 
 import { FaPencilAlt } from "react-icons/fa";
 
-const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) => {
+const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData , mainStatus}) => {
     const [email, setEmail] = useState(nswsMailId);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
@@ -38,7 +38,7 @@ const NSWSEmailInput = ({ companyName, serviceName, nswsMailId ,refreshData}) =>
 
     return (
         <div>
-            <div className='d-flex align-items-center justify-content-between'>
+            <div className={mainStatus === "Approved" ? "d-flex align-items-center justify-content-between disabled" : 'd-flex align-items-center justify-content-between'}>
             <div
                 className="My_Text_Wrap"
                 title={nswsMailId}

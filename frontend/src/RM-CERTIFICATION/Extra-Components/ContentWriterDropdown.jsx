@@ -57,7 +57,7 @@ const ContentWriterDropdown = ({ mainStatus, writername, subStatus, setNewSubSta
       }
 
       refreshData();
-      console.log("Writer updated successfully:", response.data);
+      //console.log("Writer updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating status:", error.message);
     }
@@ -69,7 +69,7 @@ const ContentWriterDropdown = ({ mainStatus, writername, subStatus, setNewSubSta
 
   return (
     <section className="rm_status_dropdown">
-      <div className={`dropdown custom-dropdown status_dropdown ${statusClass}`}>
+      <div className={mainStatus === "Approved" ? "disabled" :`dropdown custom-dropdown status_dropdown ${statusClass}`}>
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
@@ -80,6 +80,15 @@ const ContentWriterDropdown = ({ mainStatus, writername, subStatus, setNewSubSta
           {status}
         </button>
         <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+        <li>
+            <a
+              className="dropdown-item"
+              onClick={() => handleStatusChange("RonakKumar", "e_task_assign")}
+              href="#"
+            >
+              RonakKumar
+            </a>
+          </li>
           <li>
             <a
               className="dropdown-item"

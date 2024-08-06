@@ -50,6 +50,10 @@ function RmofCertificationMyBookings() {
             fetchRMServicesData()
         });
 
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchRMServicesData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -64,7 +68,7 @@ function RmofCertificationMyBookings() {
             const tempData = response.data;
             console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
