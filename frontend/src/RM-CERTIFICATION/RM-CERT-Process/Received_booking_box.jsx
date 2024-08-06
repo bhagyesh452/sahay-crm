@@ -27,12 +27,13 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import io from 'socket.io-client';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Received_booking_box() {
-
-
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
+    const [openBacdrop, setOpenBacdrop] = useState(false)
     const [currentLeadform, setCurrentLeadform] = useState(null);
     const defaultLeadData = {
         "Company Name": "",
@@ -101,6 +102,7 @@ function Received_booking_box() {
 
     //---------------------fetching employee data---------------------------------------
     const fetchData = async () => {
+        //setOpenBacdrop(true)
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
@@ -130,9 +132,9 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-06");
+        const today = new Date("2024-07-15");
         today.setHours(0, 0, 0, 0); // Set to start of today
-
+        setOpenBacdrop(true)
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
@@ -223,6 +225,8 @@ function Received_booking_box() {
             setCompleteRedesignedData(completeData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
+        }finally{
+            setOpenBacdrop(false)
         }
     };
 
@@ -545,6 +549,7 @@ function Received_booking_box() {
         });
 
         if (dataToSend.length !== 0) {
+            setOpenBacdrop(true)
             try {
                 console.log("dataToSend", dataToSend)
                 const responses = await Promise.all([
@@ -575,11 +580,12 @@ function Received_booking_box() {
             } catch (error) {
                 console.error("Error sending data:", error.message);
                 Swal.fire("Error", "Failed to upload bookings", error.message);
+            }finally{
+                setOpenBacdrop(false)
             }
         } else {
             console.log("No data to send.");
         }
-
         // Assuming setDataToSend updates state to store dataToSend array
         setDataToSend(dataToSend);
         // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
@@ -634,6 +640,10 @@ function Received_booking_box() {
     //console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
     // console.log("leadformdata", leadFormData)
     // console.log("currentleadform", currentLeadform)
+
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
 
     return (
         <div>
@@ -2627,6 +2637,14 @@ function Received_booking_box() {
                     Submit
                 </Button>
             </Dialog>
+
+            {/* --------------------------------backedrop------------------------- */}
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
 
             {openAllBooking && (
                 <RmofCertificationAllBookings
