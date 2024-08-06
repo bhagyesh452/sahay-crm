@@ -429,6 +429,7 @@ function RmofCertificationProcessPanel() {
                                                 refreshData={refreshData}
                                                 onIndustryChange={handleIndustryChange}
                                                 industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
+                                                mainStatus={obj.mainCategoryStatus}
                                             /></td>
                                         <td className='td_of_Industry'>
                                             <SectorDropdown
@@ -439,6 +440,7 @@ function RmofCertificationProcessPanel() {
                                                 sectorOptions={sectorOptions}
                                                 industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
                                                 sector={obj.sector || ""} // Default to "" if sector is not provided
+                                                mainStatus={obj.mainCategoryStatus}
                                             />
                                         </td>
                                         <td>{formatDatePro(obj.bookingDate)}</td>

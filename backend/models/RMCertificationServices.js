@@ -255,6 +255,12 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   previousSubCategoryStatus:{
     type:String,
     default:"Not Started"
+  },
+  SecondTimeSubmitDate:{
+    type:Date,
+  },
+  ThirdTimeSubmitDate:{
+    type:Date
   }
 })
 

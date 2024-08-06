@@ -18,7 +18,6 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
 
     const handleStatusChange = async (sectorOption) => {
         setStatus(sectorOption);
-        console.log(companyName, serviceName, sectorOption);
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-sector`, {
                 companyName,
@@ -365,7 +364,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
     };
     return (
         <select
-        className={mainStatus === "Approved" ? "disabled" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={(mainStatus === "Approved" || mainStatus === "Submitted") ? "disabled" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value)}
