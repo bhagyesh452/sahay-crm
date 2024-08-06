@@ -1533,8 +1533,8 @@ export default function HREditEmployee() {
                                   </div>
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
-                                      {(personalInfo.firstName && personalInfo.lastName) ?
-                                        `${personalInfo.firstName.toUpperCase()} ${personalInfo.lastName.toUpperCase()}` :
+                                      {(personalInfo.firstName && personalInfo.middleName && personalInfo.lastName) ?
+                                        `${personalInfo.firstName} ${personalInfo.middleName} ${personalInfo.lastName}` :
                                         "-"
                                       }
                                     </div>

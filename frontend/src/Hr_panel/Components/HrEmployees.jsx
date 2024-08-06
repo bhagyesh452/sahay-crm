@@ -81,7 +81,7 @@ function HrEmployees() {
         return { ...emp, profilePhoto };
       });
       setEmployee(employeeData);
-      console.log("Fetched Employees are:", res.data);
+      // console.log("Fetched Employees are:", res.data);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     }
@@ -297,7 +297,7 @@ function HrEmployees() {
                             </td>
                             <td>{emp.branchOffice || ""}</td>
                             <td>{emp.department || ""}</td>
-                            <td>{emp.newDesignation || ""}</td>
+                            <td>{emp.newDesignation === "Business Development Executive" && "BDE" || emp.newDesignation === "Business Development Manager" && "BDM" || emp.newDesignation || ""}</td>
                             <td>{formatDate(emp.jdate) || ""}</td>
                             <td>₹ {formatSalary(emp.salary || 0)}</td>
                             <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
