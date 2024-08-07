@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 const historySchema = new mongoose.Schema({
+    movedFromMainCategoryStatus: {
+        type: String
+    },
+    movedToMainCategoryStatus: {
+        type: String
+    },
     mainCategoryStatus: {
         type: String
     },

@@ -267,6 +267,8 @@ function ManagerBookings() {
     }
   };
 
+  
+
   // ----------------------------------------- Upload documents Section -----------------------------------------------------
 
   const handleOtherDocsUpload = (updatedFiles) => {
@@ -440,8 +442,8 @@ function ManagerBookings() {
       Swal.fire("Incorrect Details!", "Please Enter Details Properly", "warning");
       return true;
     }
-    const findCompany = rmServicesData.find(company=>company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
-    console.log("findCompany" , findCompany)
+    const findCompany = rmServicesData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
+    console.log("findCompany", findCompany)
     if (!tempUpdateMode) {
       try {
         const response = await axios.post(
@@ -453,7 +455,7 @@ function ManagerBookings() {
             },
           }
         );
-        if(findCompany){
+        if (findCompany) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
@@ -486,7 +488,7 @@ function ManagerBookings() {
             },
           }
         );
-        if(findCompany){
+        if (findCompany) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
@@ -548,6 +550,10 @@ function ManagerBookings() {
     })
     setOpenAddExpanse(true)
   }
+
+
+
+
   const functionDeleteRemainingPayment = async (BookingIndex, serviceName) => {
     console.log("ye ghus raha", BookingIndex, serviceName)
     const encodedServiceName = encodeURIComponent(serviceName);
@@ -555,6 +561,16 @@ function ManagerBookings() {
       const response = await axios.delete(
         `${secretKey}/bookings/redesigned-delete-morePayments/${currentLeadform["Company Name"]}/${BookingIndex}/${encodedServiceName}`
       );
+
+      const findCompany = rmServicesData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
+      if (findCompany) {
+        const response2 = await axios.post(`${secretKey}/bookings/delete-remaining-payment/`, {
+          companyName: currentLeadform["Company Name"],
+          serviceName: serviceName
+        })
+
+      }
+
       Swal.fire(
         "Payment Updated",
         "Thank you, your payment has been updated successfully!",
@@ -1027,8 +1043,10 @@ function ManagerBookings() {
                             </div>
                             <div
                               onClick={() =>
-                                handleDeleteBooking(currentLeadform.company)
-                              }
+                                handleDeleteBooking(
+                                  currentLeadform.company,
+                                  currentLeadform
+      )}
                               className="Services_Preview_action_delete"
                             >
                               <MdDelete />
@@ -2369,7 +2387,8 @@ function ManagerBookings() {
                                     onClick={() =>
                                       handleDeleteBooking(
                                         currentLeadform.company,
-                                        objMain._id
+                                        objMain._id,
+                                        currentLeadform
                                       )
                                     }
                                     className="Services_Preview_action_delete"

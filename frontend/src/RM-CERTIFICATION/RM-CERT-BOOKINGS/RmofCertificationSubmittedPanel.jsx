@@ -450,6 +450,7 @@ function RmofCertificationSubmittedPanel() {
                                                 serviceName={obj.serviceName}
                                                 mainStatus={obj.mainCategoryStatus}
                                                 contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                                brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                 writername={obj.contentWriter}
                                                 refreshData={refreshData}
                                             /></td>
@@ -469,6 +470,7 @@ function RmofCertificationSubmittedPanel() {
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 mainStatus={obj.mainCategoryStatus}
+                                                contentStatus={obj.contentStatus ? obj.contentStatus : "Not Started"}
                                                 brochureStatus={obj.brochureStatus}
                                                 designername={obj.brochureDesigner}
                                                 refreshData={refreshData}
@@ -554,10 +556,9 @@ function RmofCertificationSubmittedPanel() {
                                                 obj.SecondTimeSubmitDate ? `${formatDateNew(obj.SecondTimeSubmitDate)} | ${formatTime(obj.SecondTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
                                             ) : obj.subCategoryStatus === "3rd Time Submitted" ? (
                                                 obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-                                            ) : null}
+                                            ) : obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : null}
                                         </td>
-
-                                        <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                                 <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary">
                                                 <FaRegEye />

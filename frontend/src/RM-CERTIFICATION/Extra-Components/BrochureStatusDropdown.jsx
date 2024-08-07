@@ -6,7 +6,7 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
 
-const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochureStatus, designername , refreshData }) => {
+const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochureStatus, designername , refreshData ,contentStatus}) => {
   const [status, setStatus] = useState(brochureStatus);
   const [statusClass, setStatusClass] = useState("created-status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -53,7 +53,7 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
           brochureStatus: newStatus
 
         });
-      } else if (mainStatus === "ReadyToSubmit") {
+      } else if (mainStatus === "Ready To Submit") {
         response = await axios.post(`${secretKey}/rm-services/update-brochure-rmofcertification`, {
           companyName,
           serviceName,
@@ -93,6 +93,41 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
   useEffect(() => {
     setStatusClass(getStatusClass(brochureStatus));
   }, [brochureStatus]);
+
+  // useEffect(() => {
+  //   //console.log("useEffect triggered");
+
+  //   const updateStatus = async () => {
+  //     if (contentStatus === "Approved" && brochureStatus === "Approved") {
+  //       try {
+  //         //console.log("Updating status...");
+  //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: "Ready To Submit",
+  //           mainCategoryStatus: "Ready To Submit",
+  //           previousMainCategoryStatus: mainStatus,
+  //           previousSubCategoryStatus: status
+  //         });
+  //         ///console.log("Status updated successfully:", response.data);
+
+  //         if (response.status === 200) {
+  //           // Ensure refreshData is called correctly
+  //           //console.log("Calling refreshData");
+  //           await refreshData();
+  //         } else {
+  //           console.error("Failed to update status:", response.status);
+  //         }
+  //       } catch (error) {
+  //         console.error("Error updating status:", error.message);
+  //       }
+  //     }
+  //   };
+
+  //   updateStatus();
+  // }, [contentStatus, brochureStatus]);
+
+  // console.log("brochurestat" , contentStatus , brochureStatus)
 
 
   return (

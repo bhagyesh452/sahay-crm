@@ -67,7 +67,7 @@ function RmofCertificationMyBookings() {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
             const tempData = response.data;
-            console.log(tempData)
+            //console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
             //console.log(userData)
             setEmployeeData(userData);
@@ -118,7 +118,7 @@ function RmofCertificationMyBookings() {
                     data: { companyName, serviceName }
                 });
 
-                console.log(response.data);
+                //console.log(response.data);
                 Swal.fire('Deleted!', 'The record has been deleted.', 'success');
                 fetchData();
                 // Handle UI updates or further actions after deletion
@@ -134,7 +134,7 @@ function RmofCertificationMyBookings() {
     };
 
 
-    console.log("servicesdata", rmServicesData)
+    //console.log("servicesdata", rmServicesData)
 
     //---------date format------------------------
 
@@ -240,7 +240,7 @@ function RmofCertificationMyBookings() {
                                                         Ready To Submit
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "ReadyToSubmit").length : 0}
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0}
                                                         
                                                     </div>
                                                 </div>

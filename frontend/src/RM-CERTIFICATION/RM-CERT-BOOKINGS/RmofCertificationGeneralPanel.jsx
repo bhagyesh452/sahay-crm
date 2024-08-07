@@ -38,7 +38,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     const fetchData = async () => {
         setOpenBacdrop(true);
         try {
-            console.log("Fetching data...");
+          
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
@@ -58,7 +58,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
             } else {
                 console.error("Expected an array for services data, but got:", servicesData);
             }
-            console.log("Fetched general services data:", servicesData);
+          
             //setRmServicesData(filteredData);
         } catch (error) {
             console.error("Error fetching data", error.message);
@@ -67,7 +67,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         }
     };
 
-    console.log("generaldata", rmServicesData)
+   
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {

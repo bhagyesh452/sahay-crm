@@ -470,7 +470,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         //setNewSubStatus(newStatus);
     };
 
-    console.log("mainStatus" , mainStatus)
+    //console.log("mainStatus" , mainStatus)
 
     return (
 
