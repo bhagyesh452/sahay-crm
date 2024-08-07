@@ -1362,13 +1362,9 @@ function Employees({ onEyeButtonClick }) {
                 <div className="row">
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Department</label>
-                    <div className="form-control">
+                    <div >
                       <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          width: "fit-content",
-                        }}
+                        className="form-select"
                         value={department}
                         required
                         onChange={(e) => {
@@ -1388,12 +1384,8 @@ function Employees({ onEyeButtonClick }) {
                   </div>
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Designation/Job Title</label>
-                    <div className="form-control">
-                      <select style={{
-                        border: "none",
-                        outline: "none",
-                        width: "fit-content",
-                      }}
+                    <div>
+                      <select className="form-select"
                         name="newDesignation"
                         id="newDesignation"
                         value={newDesignation}
@@ -1426,13 +1418,9 @@ function Employees({ onEyeButtonClick }) {
                 <div className="row">
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Branch Office</label>
-                    <div className="form-control">
+                    <div>
                       <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          width: "fit-content",
-                        }}
+                        className="form-select"
                         value={branchOffice}
                         required
                         onChange={(e) => {
@@ -1447,12 +1435,8 @@ function Employees({ onEyeButtonClick }) {
                   </div>
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Manager</label>
-                    <div className="form-control">
-                      <select style={{
-                        border: "none",
-                        outline: "none",
-                        width: "fit-content",
-                      }}
+                    <div>
+                      <select className="form-select"
                         name="reportingManager"
                         id="reportingManager"
                         value={reportingManager}
@@ -1501,13 +1485,8 @@ function Employees({ onEyeButtonClick }) {
                 <div className="row">
                   <div className="col-lg-3">
                     <div className="mb-3">
-                      <div className="form-control">
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            width: "fit-content",
-                          }}
+                      <div>
+                        <select className="form-select"
                           value={obj.year}
                           onChange={(e) => {
                             setTargetObjects(prevState => {
@@ -1529,13 +1508,8 @@ function Employees({ onEyeButtonClick }) {
                   </div>
                   <div className="col-lg-3">
                     <div className="mb-3">
-                      <div className="form-control">
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            width: "fit-content",
-                          }}
+                      <div>
+                        <select className="form-select"
                           value={obj.month}
                           onChange={(e) => {
                             setTargetObjects(prevState => {
