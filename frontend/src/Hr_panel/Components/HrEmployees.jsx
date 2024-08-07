@@ -152,6 +152,7 @@ function HrEmployees() {
           const updateBdmStatusResponse = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${ename}`);
           handledeletefromcompany(filteredCompanyData);
           fetchEmployee();
+          fetchDeletedEmployee();
           Swal.fire(
             'Deleted!',
             'Employee has been deleted.',
@@ -175,7 +176,7 @@ function HrEmployees() {
     });
   };
 
-  const handleRevertBack = (itemId, name, dataToRevertBack) => {
+  const handleRevertBack = async (itemId, name, dataToRevertBack) => {
     Swal.fire({
       title: `Are you sure you want to restore back ${name}?`,
       text: "This action will move the employee back.",
@@ -194,6 +195,7 @@ function HrEmployees() {
             dataToRevertBack
           });
           fetchDeletedEmployee();
+          fetchEmployee();
           console.log("Deleted data is :", response.data);
           console.log("Deleted data is :", response2.data);
           Swal.fire(
@@ -214,12 +216,39 @@ function HrEmployees() {
     });
   };
 
+  const handlePermanentDeleteEmployee = async (itemId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to permanently delete this employee? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`${secretKey}/employee/permanentDelete/${itemId}`);
+          Swal.fire(
+            'Deleted!',
+            'success'
+          );
+          fetchDeletedEmployee();
+        } catch (error) {
+          console.error('Error deleting employee', error);
+          Swal.fire({
+            title: "Error",
+            text: "There was an error deleting the employee. Please try again.",
+            icon: "error",
+          });
+        }
+      }
+    })
+  };
+
   useEffect(() => {
     fetchEmployee();
     fetchCompanyData();
-  }, []);
-
-  useEffect(() => {
     fetchDeletedEmployee();
   }, []);
 
@@ -477,22 +506,15 @@ function HrEmployees() {
                                 <FaRegEye />
                               </Link>
                             </button>
-                            <button className="action-btn action-btn-danger ml-1" onClick={() => {
-                              // const dataToDelete = employee.filter(obj => obj._id === emp._id);
-                              // setDeletedData(dataToDelete);
-                              // const filteredCompanyData = companyData.filter(data => data.ename?.toLowerCase() === emp.ename.toLowerCase());
-                              // setCompanyData(filteredCompanyData);
-                              // handleDeleteClick(emp._id, emp.ename, dataToDelete, filteredCompanyData)
-                            }}
+                            <button className="action-btn action-btn-danger ml-1" onClick={() => handlePermanentDeleteEmployee(emp._id)}
                             ><AiFillDelete /></button>
                           </td>
                           <td>
-                            <button className="action-btn action-btn-success ml-1">
-                            <TbRestore onClick={async () => {
-                                const dataToRevertBack = deletedData.filter(obj => obj._id === emp._id);
-                                handleRevertBack(emp._id, emp.ename, dataToRevertBack);
-                              }}
-                            />
+                            <button className="action-btn action-btn-success ml-1" onClick={() => {
+                              const dataToRevertBack = deletedData.filter(obj => obj._id === emp._id);
+                              handleRevertBack(emp._id, emp.ename, dataToRevertBack);
+                            }}>
+                              <TbRestore />
                             </button>
                           </td>
                         </tr>
