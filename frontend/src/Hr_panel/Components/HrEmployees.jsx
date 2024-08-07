@@ -81,7 +81,18 @@ function HrEmployees() {
       const res = await axios.get(`${secretKey}/employee/einfo`);
       const employeeData = res.data;
       setEmployee(employeeData);
-      console.log("Fetched Employees are:", res.data);
+      console.log("Fetched Employees are:", employeeData);
+    } catch (error) {
+      console.log("Error fetching employees data:", error);
+    }
+  };
+
+  const fetchDeletedEmployee = async () => {
+    try{
+      const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+      const deletedEmployeeData = res.data;
+      setDeletedEmployee(deletedEmployeeData);
+      console.log("Fetched Deleted Employees are:", deletedEmployeeData);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     }
@@ -168,6 +179,10 @@ function HrEmployees() {
     fetchCompanyData();
   }, []);
 
+  useEffect(() => {
+    fetchDeletedEmployee();
+  }, [employee]);
+
   return (
     <div>
       <Header />
@@ -217,7 +232,7 @@ function HrEmployees() {
                         Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        {employee.length}
+                        {employee.length || 0}
                       </div>
                     </div>
                   </a>
@@ -229,7 +244,7 @@ function HrEmployees() {
                         Deleted Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        20
+                        {deletedEmployee.length || 0}
                       </div>
                     </div>
                   </a>
@@ -270,14 +285,16 @@ function HrEmployees() {
                       </thead>
                       {employee.length !== 0 ? <tbody>
                         {employee.map((emp, index) => {
+                          const profilePhotoUrl = emp.profilePhoto ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}` : EmpDfaullt;
+
                           return <tr key={index}>
                             <td>{index + 1}</td>
                             <td>
                               <div className="d-flex align-items-center">
                                 <div className="tbl-pro-img">
                                   {emp.profilePhoto.length !== 0 ? <img
-                                    src={
-                                      emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                    src={profilePhotoUrl
+                                      // emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                     }
                                     alt="Profile"
                                     className="profile-photo"
@@ -348,7 +365,82 @@ function HrEmployees() {
                 </div>
               </div>
               <div class="tab-pane" id="DeletedEmployees">
-                <h1>Deleted Employees</h1>
+              <div className="table table-responsive table-style-3 m-0">
+                    <table className="table table-vcenter table-nowrap">
+                      <thead>
+                        <tr className="tr-sticky">
+                          <th>Sr. No</th>
+                          <th>Employee Name</th>
+                          <th>Branch</th>
+                          <th>Department</th>
+                          <th>Designation</th>
+                          <th>Date Of Joining</th>
+                          <th>Monthly Salary</th>
+                          <th>Probation Status</th>
+                          <th>Official Number</th>
+                          <th>Official Email ID</th>
+                        </tr>
+                      </thead>
+                      {deletedEmployee.length !== 0 ? <tbody>
+                        {deletedEmployee.map((emp, index) => {
+                          const profilePhotoUrl = emp.profilePhoto ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}` : EmpDfaullt;
+
+                          return <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <div className="tbl-pro-img">
+                                  {emp.profilePhoto.length !== 0 ? <img
+                                    src={profilePhotoUrl
+                                      // emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                    }
+                                    alt="Profile"
+                                    className="profile-photo"
+                                  /> :
+                                    <img
+                                      src={EmpDfaullt}
+                                      alt="Profile"
+                                      className="profile-photo"
+                                    />}
+                                </div>
+                                <div className="">
+                                  {/* {emp.ename} */}
+                                  {(() => {
+                                    const names = (emp.ename || "").split(" ");
+                                    return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                  })()}
+                                </div>
+                              </div>
+
+                            </td>
+                            <td>{emp.branchOffice || ""}</td>
+                            <td>{emp.department || ""}</td>
+                            <td>{emp.newDesignation === "Business Development Executive" && "BDE" || emp.newDesignation === "Business Development Manager" && "BDM" || emp.newDesignation || ""}</td>
+                            <td>{formatDate(emp.jdate) || ""}</td>
+                            <td>₹ {formatSalary(emp.salary || 0)}</td>
+                            <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
+                            <td><a
+                              target="_blank"
+                              className="text-decoration-none text-dark"
+                              href={`https://wa.me/91${emp.number}`}
+                            >{emp.number}
+                              <FaWhatsapp className="text-success w-25 mb-1" /></a></td>
+                            <td>{emp.email || ""}</td>
+                          </tr>
+                        })}
+                      </tbody> : <tbody>
+                        <tr>
+                          <td
+                            className="particular"
+                            colSpan="11"
+                            style={{ textAlign: "center" }}
+                          >
+                            <Nodata />
+                          </td>
+                        </tr>
+                      </tbody>}
+                    </table>
+                  </div>
               </div>
               <div class="tab-pane" id="UpcommingEmployees">
                 <h1>Upcoming Employees</h1>
