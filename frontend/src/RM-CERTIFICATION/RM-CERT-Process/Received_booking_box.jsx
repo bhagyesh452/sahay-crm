@@ -138,7 +138,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-07-15");
+        const today = new Date("2024-08-01");
         today.setHours(0, 0, 0, 0); // Set to start of today
         setOpenBacdrop(true)
         try {
@@ -148,7 +148,7 @@ function Received_booking_box() {
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
                 .filter(item => {
-                    const lastActionDate = new Date(item.lastActionDate);
+                    const lastActionDate = new Date(item.bookingPublishDate);
                     lastActionDate.setHours(0, 0, 0, 0);
                     return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
                 })

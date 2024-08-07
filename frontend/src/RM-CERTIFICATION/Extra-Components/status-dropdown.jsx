@@ -470,38 +470,38 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
 
 
 
-  // useEffect(() => {
-  //   //console.log("useEffect triggered");
+  useEffect(() => {
+    //console.log("useEffect triggered");
 
-  //   const updateStatus = async () => {
-  //     if (contentStatus === "Approved" && brochureStatus === "Approved") {
-  //       try {
-  //         //console.log("Updating status...");
-  //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: "Ready To Submit",
-  //           mainCategoryStatus: "Ready To Submit",
-  //           previousMainCategoryStatus: mainStatus,
-  //           previousSubCategoryStatus: status
-  //         });
-  //         ///console.log("Status updated successfully:", response.data);
+    const updateStatus = async () => {
+      if (contentStatus === "Approved" && brochureStatus === "Approved") {
+        try {
+          //console.log("Updating status...");
+          const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: "Ready To Submit",
+            mainCategoryStatus: "Ready To Submit",
+            previousMainCategoryStatus: mainStatus,
+            previousSubCategoryStatus: status
+          });
+          ///console.log("Status updated successfully:", response.data);
 
-  //         if (response.status === 200) {
-  //           // Ensure refreshData is called correctly
-  //           //console.log("Calling refreshData");
-  //           await refreshData();
-  //         } else {
-  //           console.error("Failed to update status:", response.status);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error updating status:", error.message);
-  //       }
-  //     }
-  //   };
+          if (response.status === 200) {
+            // Ensure refreshData is called correctly
+            //console.log("Calling refreshData");
+            await refreshData();
+          } else {
+            console.error("Failed to update status:", response.status);
+          }
+        } catch (error) {
+          console.error("Error updating status:", error.message);
+        }
+      }
+    };
 
-  //   updateStatus();
-  // }, [contentStatus, brochureStatus]);
+    updateStatus();
+  }, [contentStatus, brochureStatus]);
 
 
 
