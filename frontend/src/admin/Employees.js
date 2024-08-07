@@ -387,7 +387,7 @@ function Employees({ onEyeButtonClick }) {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-
+      // console.log("Fetched employees are :", response.data);
       // Set the retrieved data in the state
 
       setFilteredData(response.data);
@@ -573,6 +573,8 @@ function Employees({ onEyeButtonClick }) {
         designation = "Data Manager";
       } else if (newDesignation === "Admin Head") {
         designation = "RM-Certification";
+      } else {
+        designation = newDesignation;
       }
 
       try {
@@ -582,7 +584,7 @@ function Employees({ onEyeButtonClick }) {
           ename: `${firstName} ${lastName}`,
           empFullName: `${firstName} ${middleName} ${lastName}`,
           department: department,
-          designation: designation,
+          oldDesignation: designation || newDesignation,
           newDesignation: newDesignation,
           branchOffice: branchOffice,
           reportingManager: reportingManager,
@@ -618,9 +620,11 @@ function Employees({ onEyeButtonClick }) {
         // }
 
         if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager") {
-          dataToSend.bdmWork = true
+          dataToSend.bdmWork = true;
+          dataToSendUpdated.bdmWork = true;
         } else {
-          dataToSend.bdmWork = false
+          dataToSend.bdmWork = false;
+          dataToSendUpdated.bdmWork = false;
         }
         // console.log(isUpdateMode, "updateMode")
 
@@ -632,7 +636,8 @@ function Employees({ onEyeButtonClick }) {
           const response = await axios.put(
             `${secretKey}/employee/einfo/${selectedDataId}`,
             dataToSendUpdated
-          );
+          );  
+          console.log("Updated employee is :", dataToSendUpdated);
 
           Swal.fire({
             title: "Data Updated Succesfully!",
@@ -661,7 +666,7 @@ function Employees({ onEyeButtonClick }) {
         } else {
           const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
           // Adds data in performance report:
-          console.log(response.data, "datatosend");
+          console.log("Created employee is :", response.data);
 
           Swal.fire({
             title: "Data Added!",
@@ -1171,7 +1176,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.number}</td>
                         <td>{item.email}</td>
                         <td>{formatDateFinal(item.jdate)}</td>
-                        <td>{item.designation}</td>
+                        <td>{item.newDesignation}</td>
                         <td>{item.branchOffice}</td>
                         {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                           &&

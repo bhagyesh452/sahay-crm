@@ -146,7 +146,7 @@ router.post("/einfo", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo, employeeID } = req.body;
+    const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo, employeeID, oldDesignation } = req.body;
     // console.log("Personal Info is :", personalInfo);
     // console.log("Employeement Info is :", employeementInfo);
     // console.log("Payroll info is :", payrollInfo);
@@ -198,6 +198,8 @@ router.post("/einfo", upload.fields([
       newDesignation = "Data Manager";
     } else if (employeementInfo?.designation === "Admin Head") {
       newDesignation = "RM-Certification";
+    } else {
+      newDesignation = employeementInfo?.designation || oldDesignation;
     }
 
     const emp = {
@@ -220,7 +222,11 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo?.department && { department: employeementInfo.department }),
       ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
       ...(employeementInfo?.designation && { designation: newDesignation }),
-      ...(employeementInfo?.designation && { bdmWork: employeementInfo.designation === "Business Development Manager" || employeementInfo.designation === "Floor Manager" ? true : false }),
+      ...(employeementInfo?.designation && { bdmWork: 
+        employeementInfo.designation === "Business Development Manager" || 
+        employeementInfo.designation === "Floor Manager" || 
+        oldDesignation === "Business Development Manager" || 
+        oldDesignation === "Floor Manager" ? true : false }),
       ...(employeementInfo?.joiningDate && { jdate: employeementInfo.joiningDate }),
       ...(employeementInfo?.branch && { branchOffice: employeementInfo.branch }),
       ...(employeementInfo?.employeementType && { employeementType: employeementInfo.employeementType }),
@@ -336,7 +342,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
-  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, designation, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo } = req.body;
+  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, designation, oldDesignation, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo } = req.body;
   // console.log("Reqest file is :", req.files);
 
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
@@ -365,14 +371,16 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 
     let newDesignation = designation;
 
-    if (designation === "Business Development Executive" || designation === "Business Development Manager") {
+    if ((designation || oldDesignation) === "Business Development Executive" || (designation || oldDesignation) === "Business Development Manager") {
       newDesignation = "Sales Executive";
-    } else if (designation === "Floor Manager") {
+    } else if ((designation || oldDesignation) === "Floor Manager") {
       newDesignation = "Sales Manager";
-    } else if (designation === "Data Analytics") {
+    } else if ((designation || oldDesignation) === "Data Analytics") {
       newDesignation = "Data Manager";
-    } else if (designation === "Admin Head") {
+    } else if ((designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
+    } else {
+      newDesignation = designation || oldDesignation;
     }
 
     const updateFields = {
@@ -393,7 +401,11 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(manager && { reportingManager: manager }),
       ...(designation && { newDesignation: designation }),
       ...(designation && { designation: newDesignation }),
-      ...(designation && { bdmWork: designation === "Business Development Manager" || designation === "Floor Manager" ? true : false }),
+      ...(designation && { bdmWork: 
+        designation === "Business Development Manager" || 
+        designation === "Floor Manager" || 
+        oldDesignation === "Business Development Manager" || 
+        oldDesignation === "Floor Manager" ? true : false }),
 
       ...(nameAsPerBankRecord && { nameAsPerBankRecord: nameAsPerBankRecord }),
       ...(firstMonthSalaryCondition && { firstMonthSalaryCondition: firstMonthSalaryCondition }),
