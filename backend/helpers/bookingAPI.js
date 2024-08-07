@@ -18,6 +18,7 @@ const InformBDEModel = require("../models/InformBDE.js");
 const { Parser } = require('json2csv');
 const { appendDataToSheet, appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
 const NotiModel = require('../models/Notifications.js');
+const RMCertificationModel = require('../models/RMCertificationServices.js');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -4866,9 +4867,9 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
       "I-Create Application",
       "DBS Grant Application"
     ];
-    
+
     const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
-    
+
     const latestPageLength = includesRelevantService ? pagelength + 1 : pagelength;
 
     const options = {
@@ -4963,7 +4964,11 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
 router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
+    const leadForm = await RedesignedLeadformModel.findOne({ company: companyId });
+   console.log("leadform" , leadform)
 
+    // const serviceNames = leadForm.services.map(service => service.name);
+    // console.log("seervicenames", serviceNames)
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
 
@@ -4979,6 +4984,14 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       },
       { new: true }
     );
+    // console.log("seervicenames", serviceNames)
+
+
+    // const result = await RMCertificationModel.deleteOne({
+    //   "Company Name": leadForm["Company Name"],
+    //   serviceName: { $in: serviceNames }
+    // });
+    // console.log("result", result)
 
     if (deletedBooking) {
       console.log("Deleted Booking:", deletedBooking);
@@ -5137,6 +5150,14 @@ router.delete(
     try {
       const company = req.params.company;
       const companyId = req.params.companyId;
+      const leadForm = await RedesignedLeadformModel.findOne({ company: company });
+      const bookingToRemove = leadForm.moreBookings.find(
+        booking => booking._id.toString() === companyId
+      );
+      console.log("remove" , bookingToRemove)
+
+      //const serviceNames = bookingToRemove.services.map(service => service.name);
+      //console.log("seervicenames", serviceNames)
 
       const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(
         { company: company },
@@ -5144,7 +5165,12 @@ router.delete(
         { new: true }
       );
 
+      // const result = await RMCertificationModel.deleteOne({
+      //   "Company Name": leadForm["Company Name"],
+      //   serviceName: { $in: serviceNames }
+      // });
 
+      //console.log("result", result)
 
       if (!updatedLeadForm) {
         return res.status(404).send("Booking not found");
@@ -5568,9 +5594,9 @@ router.post('/redesigned-submit-expanse/:CompanyName', async (req, res) => {
 //  *************************************************  Expanse Section Delete Requests *****************************************************************
 router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:serviceName', async (req, res) => {
   const companyName = req.params.companyName;
-
   const bookingIndex = req.params.bookingIndex;
   const serviceName = req.params.serviceName;
+  const socketIO = req.io;
   //console.log("bookingIndex", bookingIndex)
 
   const findCompany = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
@@ -5580,14 +5606,15 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
       const newCompany = findCompany;
       const tempObject = newCompany.remainingPayments.filter(rmpayments => rmpayments.serviceName === serviceName);
       const remainingObject = tempObject[tempObject.length - 1];
-
+      console.log("tempObject", tempObject)
+      console.log("remainigObject", remainingObject)
       const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(remainingObject.receivedPayment);
       const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(remainingObject.receivedPayment);
       const findService = newCompany.services.find((obj) => obj.serviceName === remainingObject.serviceName);
       const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment) / 1.18 : parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
-      //console.log("this is the required object", newGeneratedReceivedAmount);
+      console.log("this is the required object", newGeneratedReceivedAmount);
       const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
-      //console.log("This will be the object ", newRemainingArray)
+      console.log("This will be the object ", newRemainingArray)
 
       // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
       // const updateResult = await findCompany.save();
@@ -5600,6 +5627,21 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
           remainingPayments: newRemainingArray,
         }
       })
+
+      const findRmCertCompany = await RMCertificationModel.findOne({ "Company Name": companyName, serviceName: serviceName });
+      if (findRmCertCompany) {
+        const updatedCompany = await RMCertificationModel.findOneAndUpdate({
+          "Company Name": companyName,
+          serviceName: serviceName
+        }, {
+          $set: {
+            pendingRecievedPayment: (parseInt(findRmCertCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
+          }
+        });
+        console.log("updatedcompany", updatedCompany)
+      }
+      socketIO.emit('rm-recievedamount-updated');
+      console.log("newupdatedarray", newUpdatedArray)
 
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
@@ -5635,6 +5677,20 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
           [`moreBookings.${bookingIndex - 1}.remainingPayments`]: newRemainingArray,
         }
       })
+
+      const findRmCertCompany = await RMCertificationModel.findOne({ "Company Name": companyName, serviceName: serviceName });
+      if (findRmCertCompany) {
+        const updatedCompany = await RMCertificationModel.findOneAndUpdate({
+          "Company Name": companyName,
+          serviceName: serviceName
+        }, {
+          $set: {
+            pendingRecievedPayment: (parseInt(findRmCertCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
+          }
+        });
+        console.log("updatedcompany", updatedCompany)
+      }
+      socketIO.emit('rm-recievedamount-updated');
 
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
