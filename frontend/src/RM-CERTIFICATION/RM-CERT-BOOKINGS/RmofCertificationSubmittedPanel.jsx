@@ -556,10 +556,9 @@ function RmofCertificationSubmittedPanel() {
                                                 obj.SecondTimeSubmitDate ? `${formatDateNew(obj.SecondTimeSubmitDate)} | ${formatTime(obj.SecondTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
                                             ) : obj.subCategoryStatus === "3rd Time Submitted" ? (
                                                 obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-                                            ) : null}
+                                            ) : obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : null}
                                         </td>
-
-                                        <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                                 <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary">
                                                 <FaRegEye />

@@ -600,7 +600,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     SecondTimeSubmitDate, 
     ThirdTimeSubmitDate ,
     movedFromMainCategoryStatus,
-    movedToMainCategoryStatus} = req.body;
+    movedToMainCategoryStatus,
+    latesUpdateDate} = req.body;
   const socketIO = req.io;
   //console.log(req.body);
 
@@ -640,8 +641,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           ...updateFields,
           previousMainCategoryStatus: previousMainCategoryStatus,
           previousSubCategoryStatus: previousSubCategoryStatus,
-          SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : null,
-          ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : null,
+          SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : company.SecondTimeSubmitDate,
+          ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : company.ThirdTimeSubmitDate,
         },
         { new: true }
       );
