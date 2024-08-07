@@ -190,13 +190,13 @@ router.post("/einfo", upload.fields([
 
     let newDesignation = employeementInfo?.designation;
 
-    if (employeementInfo?.designation === "Business Development Executive" || employeementInfo?.designation === "Business Development Manager") {
+    if ((employeementInfo?.designation || oldDesignation) === "Business Development Executive" || employeementInfo?.designation === "Business Development Manager") {
       newDesignation = "Sales Executive";
-    } else if (employeementInfo?.designation === "Floor Manager") {
+    } else if ((employeementInfo?.designation || oldDesignation) === "Floor Manager") {
       newDesignation = "Sales Manager";
-    } else if (employeementInfo?.designation === "Data Analytics") {
+    } else if ((employeementInfo?.designation || oldDesignation) === "Data Analytics") {
       newDesignation = "Data Manager";
-    } else if (employeementInfo?.designation === "Admin Head") {
+    } else if ((employeementInfo?.designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
     } else {
       newDesignation = employeementInfo?.designation || oldDesignation;
