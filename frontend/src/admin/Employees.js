@@ -57,21 +57,111 @@ function Employees({ onEyeButtonClick }) {
   const [number, setNumber] = useState(0);
   const [bdeFields, setBdeFields] = useState([]);
   const [ename, setEname] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [department, setDepartment] = useState("");
+  const [newDesignation, setNewDesignation] = useState("");
   const [jdate, setJdate] = useState(null);
-  const [designation, setDesignation] = useState("");
+  // const [designation, setDesignation] = useState("");
   const [branchOffice, setBranchOffice] = useState("");
+  const [reportingManager, setReportingManager] = useState("");
   const [nowFetched, setNowFetched] = useState(false);
   const [otherdesignation, setotherDesignation] = useState("");
   const [companyData, setCompanyData] = useState([]);
-  
- 
+  const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
+
+  const departmentDesignations = {
+    "Start-Up": [
+      "Admin Head",
+      "Accountant",
+      "Data Analyst",
+      "Content Writer",
+      "Graphic Designer",
+      "Company Secretary",
+      "Admin Head",
+      "Admin Executive",
+    ],
+    HR: ["HR Manager", "HR Recruiter"],
+    Operation: [
+      "Finance Analyst",
+      "Content Writer",
+      "Relationship Manager",
+      "Graphic Designer",
+      "Research Analyst",
+    ],
+    IT: [
+      "Web Developer",
+      "Software Developer",
+      "SEO Executive",
+      "Graphic Designer",
+      "Content Writer",
+      "App Developer",
+      "Digital Marketing Executive",
+      "Social Media Executive",
+    ],
+    Sales: [
+      "Business Development Executive",
+      "Business Development Manager",
+      // "Sales Manager",
+      "Team Leader",
+      "Floor Manager",
+    ],
+    Others: ["Receptionist"],
+  };
+
+  const departmentManagers = {
+    "Start-Up": [
+      "Mr. Ronak Kumar",
+      "Mr. Krunal Pithadia",
+      "Mr. Saurav Mevada",
+      "Miss. Dhruvi Gohel"
+    ],
+    HR: [
+      "Mr. Ronak Kumar",
+      "Mr. Krunal Pithadia",
+      "Mr. Saurav Mevada",
+      "Miss. Hiral Panchal"
+    ],
+    Operation: [
+      "Miss. Subhi Banthiya",
+      "Mr. Rahul Pancholi",
+      "Mr. Ronak Kumar",
+      "Mr. Nimesh Parekh"
+    ],
+    IT: ["Mr. Nimesh Parekh"],
+    Sales: [
+      "Mr. Vaibhav Acharya",
+      "Mr. Vishal Gohel"
+    ],
+    Others: ["Miss. Hiral Panchal"],
+  }
+
+  const renderDesignationOptions = () => {
+    const designations = departmentDesignations[department] || [];
+    return designations.map((designation, index) => (
+      <option key={index} value={designation}>
+        {designation}
+      </option>
+    ));
+  };
+
+  const renderManagerOptions = () => {
+    const managers = departmentManagers[department] || [];
+    return managers.map((manager, index) => (
+      <option key={index} value={manager}>
+        {manager}
+      </option>
+    ));
+  };
+
   const defaultObject = {
     year: "",
     month: "",
     amount: 0,
     achievedAmount: 0,
-    ratio:0,
-    result:"N/A"
+    ratio: 0,
+    result: "N/A"
   }
   const [targetObjects, setTargetObjects] = useState([defaultObject]);
   const [targetCount, setTargetCount] = useState(1);
@@ -96,7 +186,7 @@ function Employees({ onEyeButtonClick }) {
   useEffect(() => {
     document.title = `Admin-Sahay-CRM`;
   }, []);
-  
+
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
@@ -122,18 +212,18 @@ function Employees({ onEyeButtonClick }) {
 
   // app.get('/api/achieved-details/:ename', async (req, res) => {
   //   const { ename } = req.params;
-  
+
   //   try {
   //     const adminData = await adminModel.findOne({ ename });
   //     if (!adminData) {
   //       return res.status(404).json({ error: 'Admin not found' });
   //     }
-  
+
   //     const redesignedData = await RedesignedLeaformModel.find();
   //     if (!redesignedData) {
   //       return res.status(404).json({ error: 'No redesigned data found' });
   //     }
-  
+
   //     const functionCalculateAchievedRevenue = (redesignedData, ename, filterBy = 'This Month') => {
   //       let achievedAmount = 0;
   //       let remainingAmount = 0;
@@ -142,7 +232,7 @@ function Employees({ onEyeButtonClick }) {
   //       let remainingMoreExpense = 0;
   //       let add_caCommision = 0;
   //       const today = new Date();
-  
+
   //       redesignedData.map((mainBooking) => {
   //         let condition = false;
   //         switch (filterBy) {
@@ -163,15 +253,15 @@ function Employees({ onEyeButtonClick }) {
   //           // ... (omitted for brevity)
   //         }
   //       });
-  
+
   //       return achievedAmount + Math.round(remainingAmount) - expanse - remainingExpense - remainingMoreExpense - add_caCommision;
   //     };
-  
+
   //     const achievedRevenue = functionCalculateAchievedRevenue(redesignedData, ename);
-  
+
   // //  Ab yaha par jese hi achievedAmount aaye, adminModel me update kar do is month ka //data update ho jaye
-  
-  
+
+
   // //Update hone ke baad pura object get karake frontend pe bhej do
   //     res.json();
   //   } catch (error) {
@@ -292,7 +382,7 @@ function Employees({ onEyeButtonClick }) {
       setNumber(0);
       setPassword("");
       setJdate(null);
-      setDesignation("");
+      setNewDesignation("");
       setBranchOffice("");
 
 
@@ -336,21 +426,26 @@ function Employees({ onEyeButtonClick }) {
             year: "",
             month: "",
             amount: 0,
-            achievedAmount:0,
-            ratio:0,
-            result:"N/A"
+            achievedAmount: 0,
+            ratio: 0,
+            result: "N/A"
           },
         ]
     );
 
     // Update the form data with the selected data values
     setEmail(selectedData.email);
+    setFirstName((selectedData.empFullName || "").split(" ")[0] || "")
+    setMiddleName((selectedData.empFullName || "").split(" ")[1] || "")
+    setLastName((selectedData.empFullName || "").split(" ")[2] || "")
     setEname(selectedData.ename);
     setNumber(selectedData.number);
     setPassword(selectedData.password);
-    setBdmWork(selectedData.bdmWork)
-    setDesignation(selectedData.designation);
+    setBdmWork(selectedData.bdmWork);
+    setDepartment(selectedData.department);
+    setNewDesignation(selectedData.newDesignation);
     setBranchOffice(selectedData.branchOffice);
+    setReportingManager(selectedData.reportingManager);
 
     const dateObject = new Date(selectedData.jdate);
     const day = dateObject.getDate().toString().padStart(2, "0"); // Ensure two-digit day
@@ -447,15 +542,31 @@ function Employees({ onEyeButtonClick }) {
 
     // const referenceId = uuidv4();
     const AddedOn = new Date().toLocaleDateString();
+    let designation;
+    if (newDesignation === "Business Development Executive" || newDesignation === "Business Development Manager") {
+      designation = "Sales Executive";
+    } else if (newDesignation === "Floor Manager") {
+      designation = "Sales Manager";
+    } else if (newDesignation === "Data Analytics") {
+      designation = "Data Manager";
+    } else if (newDesignation === "Admin Head") {
+      designation = "RM-Certification";
+    }
+
     try {
       let dataToSend = {
         email: email,
         number: number,
-        ename: ename,
+        ename: `${firstName} ${lastName}`,
+        empFullName: `${firstName} ${middleName} ${lastName}`,
+        department: department,
+        designation: designation,
+        newDesignation: newDesignation,
+        branchOffice: branchOffice,
+        reportingManager: reportingManager,
         password: password,
         jdate: jdate,
         AddedOn: AddedOn,
-        branchOffice: branchOffice,
         targetDetails: targetObjects,
         bdmWork,
       };
@@ -463,28 +574,35 @@ function Employees({ onEyeButtonClick }) {
       let dataToSendUpdated = {
         email: email,
         number: number,
-        ename: ename,
+        ename: `${firstName} ${lastName}`,
+        empFullName: `${firstName} ${middleName} ${lastName}`,
+        department: department,
+        designation: designation,
+        newDesignation: newDesignation,
+        branchOffice: branchOffice,
+        reportingManager: reportingManager,
         password: password,
         jdate: jdate,
-        designation: designation,
-        branchOffice: branchOffice,
+        AddedOn: AddedOn,
         targetDetails: targetObjects,
         bdmWork,
       };
 
 
+
+
       // Set designation based on otherDesignation
-      if (otherdesignation !== "") {
-        dataToSend.designation = otherdesignation;
-      } else {
-        dataToSend.designation = designation;
-      }
+      // if (otherdesignation !== "") {
+      //   dataToSend.designation = otherdesignation;
+      // } else {
+      //   dataToSend.designation = designation;
+      // }
       if (designation === "Sales Manager") {
         dataToSend.bdmWork = true
       } else {
         dataToSend.bdmWork = false
       }
-      console.log(isUpdateMode, "updateMode")
+      // console.log(isUpdateMode, "updateMode")
 
       if (isUpdateMode) {
 
@@ -492,7 +610,6 @@ function Employees({ onEyeButtonClick }) {
           Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
           return true;
         }
-
         const response = await axios.put(
           `${secretKey}/employee/einfo/${selectedDataId}`,
           dataToSendUpdated
@@ -525,8 +642,8 @@ function Employees({ onEyeButtonClick }) {
       } else {
         const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
         // Adds data in performance report:
-        // console.log(response.data, "datatosend");
-        
+        console.log(response.data, "datatosend");
+
         Swal.fire({
           title: "Data Added!",
           text: "You have successfully added the data!",
@@ -535,12 +652,17 @@ function Employees({ onEyeButtonClick }) {
       }
       //console.log("datatosend", dataToSend);
 
-      setEmail("");
+      setFirstName("");
+      setMiddleName("");
+      setLastName("");
       setEname("");
+      setEmail("");
       setNumber(0);
       setPassword("");
-      setDesignation("");
+      setDepartment("");
+      setNewDesignation("");
       setBranchOffice("");
+      setReportingManager("");
       setotherDesignation("");
       setJdate(null);
       setIsUpdateMode(false);
@@ -559,6 +681,28 @@ function Employees({ onEyeButtonClick }) {
     }
   };
 
+  const resetForm = () => {
+    setEmail("");
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
+    setEname("");
+    setNumber("");
+    setPassword("");
+    setBdmWork("");
+    setDepartment("");
+    setNewDesignation("");
+    setBranchOffice("");
+    setReportingManager("");
+    setJdate("");
+    setTargetCount(1);
+    setTargetObjects([{ year: "", month: "", amount: 0, achievedAmount: 0, ratio: 0, result: "N/A" }]);
+    setShowPassword(false);
+    setNowFetched(false);
+    setIsDepartmentSelected(false);
+    setotherDesignation("");
+  };  
+  
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -674,14 +818,15 @@ function Employees({ onEyeButtonClick }) {
     totalTargets.push(defaultObject);
     setTargetCount(targetCount + 1);
     setTargetObjects(totalTargets);
+  };
 
-  }
   const handleRemoveTarget = () => {
     const totalTargets = targetObjects;
     totalTargets.pop();
     setTargetCount(targetCount - 1);
     setTargetObjects(totalTargets);
-  }
+  };
+  
   //console.log("target objects:", targetObjects)
 
   // ----------------------------------------- material ui bdm work switch---------------------------------------
@@ -851,7 +996,11 @@ function Employees({ onEyeButtonClick }) {
               <div className="btn-list">
                 <button
                   className="btn btn-primary d-none d-sm-inline-block"
-                  onClick={functionopenpopup}
+                  onClick={()=>{
+                    functionopenpopup();
+                    resetForm();
+                    setIsUpdateMode(false)
+                  }}
                 >
                   {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
                   <svg
@@ -1139,17 +1288,40 @@ function Employees({ onEyeButtonClick }) {
               <div className="modal-body">
                 <div className="mb-3">
                   <label className="form-label">Employee Name</label>
-                  <input
-                    type="text"
-                    value={ename}
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Your report name"
-                    onChange={(e) => {
-                      setEname(e.target.value);
-                    }}
-                  />
+                  <div className="d-flex">
+                    <div className="col-4 me-1">
+                      <input
+                        type="text"
+                        name="firstName"
+                        className="form-control mt-1"
+                        placeholder="First name"
+                        value={firstName?.trim()}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-4 me-1">
+                      <input
+                        type="text"
+                        name="middleName"
+                        className="form-control mt-1"
+                        placeholder="Middle name"
+                        value={middleName?.trim()}
+                        onChange={(e) => setMiddleName(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-4">
+                      <input
+                        type="text"
+                        name="lastName"
+                        className="form-control mt-1"
+                        placeholder="Last name"
+                        value={lastName?.trim()}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
+
                 <div className="mb-3">
                   <label className="form-label">Email Address</label>
                   <input
@@ -1157,7 +1329,7 @@ function Employees({ onEyeButtonClick }) {
                     type="email"
                     className="form-control"
                     name="example-text-input"
-                    placeholder="Your report name"
+                    placeholder="Email"
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
@@ -1171,7 +1343,7 @@ function Employees({ onEyeButtonClick }) {
                       value={password}
                       className="form-control"
                       name="example-text-input"
-                      placeholder="Your report name"
+                      placeholder="Password"
                       required
                       onChange={(e) => {
                         setPassword(e.target.value);
@@ -1186,9 +1358,10 @@ function Employees({ onEyeButtonClick }) {
                     </button>
                   </div>
                 </div>
+
                 <div className="row">
                   <div className="col-lg-6 mb-3">
-                    <label className="form-label">Designation</label>
+                    <label className="form-label">Department</label>
                     <div className="form-control">
                       <select
                         style={{
@@ -1196,34 +1369,61 @@ function Employees({ onEyeButtonClick }) {
                           outline: "none",
                           width: "fit-content",
                         }}
-                        value={designation}
+                        value={department}
                         required
                         onChange={(e) => {
-                          setDesignation(e.target.value);
+                          setDepartment(e.target.value);
+                          setIsDepartmentSelected(e.target.value !== "Select Department");
                         }}
                       >
-                        <option value="" disabled selected>
-                          Select Designation
-                        </option>
-                        <option value="Sales Executive">Sales Executive</option>
-                        <option value="Sales Manager">Sales Manager</option>
-                        <option value="Graphics Designer">
-                          Graphics Designer
-                        </option>
-                        <option value="Software Developer">
-                          Software Developer
-                        </option>
-                        <option value="Finance Analyst">Finance Analyst</option>
-                        <option value="Content Writer">Content Writer</option>
-                        <option value="Data Manager">Data Manager</option>
-                        <option value="Admin Team">Admin Team</option>
+                        <option value="Select Department" selected> Select Department</option>
+                        <option value="Start-Up">Start-Up</option>
                         <option value="HR">HR</option>
-                        <option value="RM-Certification">RM-Certification</option>
-                        <option value="RM-Funding">RM-Funding</option>
+                        <option value="Operation">Operation</option>
+                        <option value="IT">IT</option>
+                        <option value="Sales">Sales</option>
                         <option value="Others">Others</option>
                       </select>
                     </div>
                   </div>
+                  <div className="col-lg-6 mb-3">
+                    <label className="form-label">Designation/Job Title</label>
+                    <div className="form-control">
+                      <select style={{
+                        border: "none",
+                        outline: "none",
+                        width: "fit-content",
+                      }}
+                        name="newDesignation"
+                        id="newDesignation"
+                        value={newDesignation}
+                        onChange={(e) => setNewDesignation(e.target.value)}
+                        disabled={!isDepartmentSelected}
+                      >
+                        <option value="Select Designation">Select Designation</option>
+                        {renderDesignationOptions()}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* If the designation is others */}
+                {/* {designation === "Others" && (
+                  <div className="mb-3">
+                    <input
+                      value={otherdesignation}
+                      type="email"
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="Please enter your designation"
+                      onChange={(e) => {
+                        setotherDesignation(e.target.value);
+                      }}
+                    />
+                  </div>
+                )} */}
+
+                <div className="row">
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Branch Office</label>
                     <div className="form-control">
@@ -1239,30 +1439,32 @@ function Employees({ onEyeButtonClick }) {
                           setBranchOffice(e.target.value);
                         }}
                       >
-                        <option value="" disabled selected>
-                          Select Branch Office
-                        </option>
+                        <option value="" selected>Select Branch Office</option>
                         <option value="Gota">Gota</option>
                         <option value="Sindhu Bhawan">Sindhu Bhawan</option>
                       </select>
                     </div>
                   </div>
-                </div>
-                {/* If the designation is others */}
-                {designation === "Others" && (
-                  <div className="mb-3">
-                    <input
-                      value={otherdesignation}
-                      type="email"
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Please enter your designation"
-                      onChange={(e) => {
-                        setotherDesignation(e.target.value);
+                  <div className="col-lg-6 mb-3">
+                    <label className="form-label">Manager</label>
+                    <div className="form-control">
+                      <select style={{
+                        border: "none",
+                        outline: "none",
+                        width: "fit-content",
                       }}
-                    />
+                        name="reportingManager"
+                        id="reportingManager"
+                        value={reportingManager}
+                        onChange={(e) => setReportingManager(e.target.value)}
+                        disabled={!isDepartmentSelected}
+                      >
+                        <option value="Select Designation">Select Manager</option>
+                        {renderManagerOptions()}
+                      </select>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
 
               <div className="row">
@@ -1293,6 +1495,7 @@ function Employees({ onEyeButtonClick }) {
                   </div>
                 </div>
               </div>
+              
               <label className="form-label">ADD Target</label>
               {targetObjects.map((obj, index) => (
                 <div className="row">
@@ -1371,7 +1574,7 @@ function Employees({ onEyeButtonClick }) {
                         onChange={(e) => {
                           setTargetObjects(prevState => {
                             const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value}; // Update the specific object at the given index
+                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
                             return updatedTargets; // Set the updated array as the new state
                           });
                         }}
@@ -1388,7 +1591,7 @@ function Employees({ onEyeButtonClick }) {
                         onChange={(e) => {
                           setTargetObjects(prevState => {
                             const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value}; // Update the specific object at the given index
+                            updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value }; // Update the specific object at the given index
                             return updatedTargets; // Set the updated array as the new state
                           });
                         }}
