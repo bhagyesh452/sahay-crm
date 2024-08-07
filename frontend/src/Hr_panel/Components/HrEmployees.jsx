@@ -178,6 +178,7 @@ function HrEmployees() {
   };
 
   const handleRevertBack = async (itemId, name, dataToRevertBack) => {
+    console.log("Reverted employee is :", dataToRevertBack);
     Swal.fire({
       title: `Are you sure you want to restore back ${name}?`,
       text: "This action will move the employee back.",
@@ -512,7 +513,7 @@ function HrEmployees() {
                           </td>
                           <td>
                             <button className="action-btn action-btn-success ml-1" onClick={() => {
-                              const dataToRevertBack = deletedData.filter(obj => obj._id === emp._id);
+                              const dataToRevertBack = deletedEmployee.filter(obj => obj._id === emp._id);
                               handleRevertBack(emp._id, emp.ename, dataToRevertBack);
                             }}>
                               <TbRestore />
