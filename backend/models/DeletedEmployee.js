@@ -29,11 +29,13 @@ const yourSchema = new mongoose.Schema({
   },
   personal_number: {
     type: String,
-    unique: true
+    unique: true,
+    default: ""
   },
   personal_email: {
     type: String,
-    unique: true
+    unique: true,
+    default: ""
   },
   currentAddress: {
     type: String

@@ -78,11 +78,11 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
       case "Pending":
         return "inprogress-status";
       case "Completed":
-        return "finished-status";
+        return "approved-status";
       case "In Approval":
         return "rejected-status";
       case "Approved":
-        return "support-status";
+        return "approved-status";
       case "Not Applicable":
         return "e_task_assign";
       default:
@@ -173,7 +173,7 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
           <li>
             <a
               className="dropdown-item"
-              onClick={() => handleStatusChange("Completed", "ready_to_submit")}
+              onClick={() => handleStatusChange("Completed", "approved-status")}
               href="#"
             >
               Completed

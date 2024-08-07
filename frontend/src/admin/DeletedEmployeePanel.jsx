@@ -311,7 +311,7 @@ function DeletedEmployeePanel() {
                         Branch Office
                       </button>
                     </th>
-                    {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi") && <> <th>
+                    {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <> <th>
                       <button
                         //onClick={sortDateByAddedOn}
                         className="table-sort"
@@ -358,7 +358,7 @@ function DeletedEmployeePanel() {
                         <td>{formatDateFinal(item.jdate)}</td>
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
-                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi")
+                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                           &&
                           <>
                             <td>
