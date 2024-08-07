@@ -13,6 +13,7 @@ import Swal from "sweetalert2";
 import { FaWhatsapp } from "react-icons/fa";
 import { TbRestore } from "react-icons/tb";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 
 function HrEmployees() {
 
@@ -369,7 +370,7 @@ function HrEmployees() {
                                     className="profile-photo"
                                   /> :
                                     <img
-                                      src={EmpDfaullt}
+                                      src={emp.gender === "Male" ? EmpDfaullt : FemaleEmployee}
                                       alt="Profile"
                                       className="profile-photo"
                                     />}
