@@ -5183,12 +5183,15 @@ router.delete(
         return booking._id.toString() === companyId.toString();
       });
 
+    if(bookingToRemove){
       const serviceNames = bookingToRemove.services.map(service => service.serviceName);
+    }
+    
       
 
       console.log("leadForm" , leadForm)
       console.log("bookingToRenove" , bookingToRemove)
-      console.log("servicesName" , serviceNames)
+      //console.log("servicesName" , serviceNames)
 
       
       const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(

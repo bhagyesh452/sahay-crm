@@ -224,7 +224,7 @@ function ManagerBookings() {
 
     if (confirmation.isConfirmed) {
       if (id) {
-        console.log("id" , id)
+        console.log("id", id)
         fetch(
           `${secretKey}/bookings/redesigned-delete-particular-booking/${company}/${id}`,
           {
@@ -245,6 +245,7 @@ function ManagerBookings() {
             console.error("Error during delete request:", error);
           });
       } else {
+        console.log("company", company)
         fetch(`${secretKey}/bookings/redesigned-delete-booking/${company}`, {
           method: "DELETE",
           headers: {
@@ -267,6 +268,7 @@ function ManagerBookings() {
       console.log("Cancellation or closed without confirming");
     }
   };
+
 
   
 
@@ -1045,9 +1047,7 @@ function ManagerBookings() {
                             <div
                               onClick={() =>
                                 handleDeleteBooking(
-                                  currentLeadform.company,
-                                  currentLeadform
-      )}
+                                  currentLeadform.company)}
                               className="Services_Preview_action_delete"
                             >
                               <MdDelete />

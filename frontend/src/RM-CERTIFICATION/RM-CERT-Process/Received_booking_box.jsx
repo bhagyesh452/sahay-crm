@@ -147,11 +147,11 @@ function Received_booking_box() {
 
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
-                .filter(item => {
-                    const lastActionDate = new Date(item.lastActionDate);
-                    lastActionDate.setHours(0, 0, 0, 0);
-                    return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
-                })
+                // .filter(item => {
+                //     const lastActionDate = new Date(item.lastActionDate);
+                //     lastActionDate.setHours(0, 0, 0, 0);
+                //     return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
+                // })
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
