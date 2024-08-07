@@ -108,6 +108,8 @@ router.get("/editable-LeadData/:ename", async (req, res) => {
 });
 
 
+
+
 // Get Request for bookings Draft 
 router.get("/redesigned-leadData/:CompanyName", async (req, res) => {
   try {
@@ -2010,17 +2012,17 @@ router.post(
                     newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
                       newData.services[i].serviceName === "I-Create Application" ? "I-Create Application Support" :
                         newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
-                        newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
-                          newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                            newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                              newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                                newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                  newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                    newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                      newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                                        newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
-                                          newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
-                                            newData.services[i].serviceName;
+                          newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
+                            newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                              newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                                newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                                  newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                    newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                      newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                        newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                          newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
+                                            newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
+                                              newData.services[i].serviceName;
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                  <thead>
@@ -2145,17 +2147,17 @@ router.post(
                     newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
                       newData.services[i].serviceName === "I-Create Application" ? "I-Create Application Support" :
                         newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
-                        newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
-                          newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                            newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                              newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                                newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                  newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                    newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                      newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                                        newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
-                                          newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
-                                            newData.services[i].serviceName;
+                          newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
+                            newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                              newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                                newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                                  newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                    newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                      newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                        newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                          newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
+                                            newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
+                                              newData.services[i].serviceName;
 
               const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                             <thead>
@@ -2560,82 +2562,159 @@ router.post(
           const AuthorizedNumber =
             mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
 
-          let extraServiceName = "";
-          newData.services.forEach(service => {
-            if (service.serviceName == "Seed Fund Application") {
-              extraServiceName = extraServiceName == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
-            } else if (service.serviceName === "Income Tax Exemption Application") {
-              extraServiceName = extraServiceName == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
-            } else if (service.serviceName === "GST Registration Application Support") {
-              extraServiceName = "GST Registration Application Support"
-            } else if (service.serviceName === "I-Create Application") {
-              extraServiceName = "I-Create Application Support"
-            } else if (service.serviceName === "DBS Grant Application") {
-              extraServiceName = "DBS Grant Application Support"
-            }
-          })
-          const renamedExtraServiceName = extraServiceName === "Seed Fund Application"
-            ? "Seed Fund Application Support"
-            : extraServiceName === "Income Tax Exemption Application"
-              ? "Income Tax Exemption Application Support"
-              : extraServiceName === "I-Create Application Support"
-                ? "I-Create Application Support"
-                : extraServiceName === "DBS Grant Application Support"
-                  ? "DBS Grant Application Support"
-                  : "Seed Fund Application Support, Income Tax Exemption Application Support, I-Create Application Support ,DBS Grant Application Support ";
+          //     let extraServiceName = "";
+          //     newData.services.forEach(service => {
+          //       if (service.serviceName == "Seed Fund Application") {
+          //         extraServiceName = extraServiceName == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
+          //       } else if (service.serviceName === "Income Tax Exemption Application") {
+          //         extraServiceName = extraServiceName == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+          //       } else if (service.serviceName === "GST Registration Application Support") {
+          //         extraServiceName = "GST Registration Application Support"
+          //       } else if (service.serviceName === "I-Create Application") {
+          //         extraServiceName = "I-Create Application Support"
+          //       } else if (service.serviceName === "DBS Grant Application") {
+          //         extraServiceName = "DBS Grant Application Support"
+          //       }
+          //     })
+          //     const renamedExtraServiceName = extraServiceName === "Seed Fund Application"
+          //       ? "Seed Fund Application Support"
+          //       : extraServiceName === "Income Tax Exemption Application"
+          //         ? "Income Tax Exemption Application Support"
+          //         : extraServiceName === "I-Create Application Support"
+          //           ? "I-Create Application Support"
+          //           : extraServiceName === "DBS Grant Application Support"
+          //             ? "DBS Grant Application Support"
+          //             : "Seed Fund Application Support, Income Tax Exemption Application Support, I-Create Application Support ,DBS Grant Application Support ";
 
-          const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" ||
-            obj.serviceName === "Income Tax Exemption Application" ||
-            obj.serviceName === "I-Create Application" ||
-            obj.serviceName === "DBS Grant Application") ?
+          //     const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" ||
+          //       obj.serviceName === "Income Tax Exemption Application" ||
+          //       obj.serviceName === "I-Create Application" ||
+          //       obj.serviceName === "DBS Grant Application") ?
+          //       `<div class="PDF_main">
+          // <section>
+          //  <div class="date_div">
+          //               <p>Date : ${todaysDate}</p>
+          //             </div>
+          //             <div class="pdf_heading">
+          //               <h3>Self Declaration</h3>
+          //             </div>
+          //   <div class="Declaration_text">
+          //    <p class="Declaration_text_head mt-2">
+          //           <b>
+          //           ${renamedExtraServiceName} 
+          //           </b>
+          //         </p>
+
+          //     <p class="Declaration_text_data">
+          //       I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+          //     </p>
+          //     <p class="Declaration_text_data">
+          //       I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+          //     </p>
+          //     <p class="Declaration_text_data">
+          //       <b>Fees:</b>
+          //     </p>
+          //     <div class="Declaration_text_data">
+          //       <ul>
+          //         <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+          //         <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+          //       </ul>
+          //     </div>
+          //     <p class="Declaration_text_data">
+          //       <b>Acknowledgements:</b>
+          //     </p>
+          //     <div class="Declaration_text_data">
+          //       <ul>
+          //         <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+          //         <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+          //         <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+          //         <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+          //       </ul>
+          //     </div>
+
+          //   </div>
+
+
+          // </section>
+
+          // </div>` : '';
+
+          let extraServiceName = new Set();
+
+          newData.services.forEach(service => {
+            if (service.serviceName === "Seed Fund Application") {
+              extraServiceName.add("Seed Fund Application");
+            } else if (service.serviceName === "Income Tax Exemption Application") {
+              extraServiceName.add("Income Tax Exemption Application");
+            } else if (service.serviceName === "I-Create Application") {
+              extraServiceName.add("I-Create Application");
+            } else if (service.serviceName === "DBS Grant Application") {
+              extraServiceName.add("DBS Grant Application");
+            }
+          });
+
+          // Convert Set to Array and sort for consistency
+          const serviceNamesArray = Array.from(extraServiceName);
+
+          // Map service names to renamed values
+          const renamedExtraServiceName = serviceNamesArray.map(serviceName => {
+            switch (serviceName) {
+              case "Seed Fund Application":
+                return "Seed Fund Application Support";
+              case "Income Tax Exemption Application":
+                return "Income Tax Exemption Application Support";
+              case "I-Create Application":
+                return "I-Create Application Support";
+              case "DBS Grant Application":
+                return "DBS Grant Application Support";
+              default:
+                return "";
+            }
+          }).join(" , ");
+
+          // Generate the conditional page content
+          const seedConditionalPage = serviceNamesArray.length > 0 ?
             `<div class="PDF_main">
-      <section>
-       <div class="date_div">
-                    <p>Date : ${todaysDate}</p>
-                  </div>
-                  <div class="pdf_heading">
-                    <h3>Self Declaration</h3>
-                  </div>
-        <div class="Declaration_text">
-         <p class="Declaration_text_head mt-2">
-                <b>
-                ${renamedExtraServiceName} 
-                </b>
-              </p>
-             
-          <p class="Declaration_text_data">
-            I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
-          </p>
-          <p class="Declaration_text_data">
-            I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
-          </p>
-          <p class="Declaration_text_data">
-            <b>Fees:</b>
-          </p>
-          <div class="Declaration_text_data">
-            <ul>
-              <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
-              <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
-            </ul>
-          </div>
-          <p class="Declaration_text_data">
-            <b>Acknowledgements:</b>
-          </p>
-          <div class="Declaration_text_data">
-            <ul>
-              <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
-              <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
-              <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
-              <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
-            </ul>
-          </div>
-       
+    <section>
+      <div class="date_div">
+        <p>Date : ${todaysDate}</p>
+      </div>
+      <div class="pdf_heading">
+        <h3>Self Declaration</h3>
+      </div>
+      <div class="Declaration_text">
+        <p class="Declaration_text_head mt-2">
+          <b>${renamedExtraServiceName}</b>
+        </p>
+        <p class="Declaration_text_data">
+          I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+        </p>
+        <p class="Declaration_text_data">
+          I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+        </p>
+        <p class="Declaration_text_data">
+          <b>Fees:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+            <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+          </ul>
         </div>
-      
-        
-      </section>
-      
-      </div>` : '';
+        <p class="Declaration_text_data">
+          <b>Acknowledgements:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+            <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+            <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+            <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>` : '';
 
 
 
@@ -2665,16 +2744,34 @@ router.post(
           //   3("This is html file reading:-", filledHtml);
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
           const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
-            ? (newData.services[0].serviceName === "Start-Up India Certificate" || "GST Registration Application Support" ? 2 : 1)
+            ? (newData.services[0].serviceName === "Start-Up India Certificate" ||
+              "GST Registration Application Support" ? 2 : 1)
             : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
               ? 2
               : 3;
           const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
-            return service.serviceName !== "Start-Up India Certificate" || "GST Registration Application Support"
+            return service.serviceName !== "Start-Up India Certificate" ||
+              "GST Registration Application Support"
           })) ? 2 : tempPageLength;
 
 
-          const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application" || extraServiceName === "GST Registration Application Support") ? pagelength + 1 : pagelength
+          // const latestPageLength = (extraServiceName === "Seed Fund Application" ||
+          //   extraServiceName === "Income Tax Exemption Application" ||
+          //   extraServiceName === "GST Registration Application Support" ||
+          //   extraServiceName === "I-Create Application" ||
+          //   extraServiceName === "DBS Grant Application") ? pagelength + 1 : pagelength
+
+          const relevantServices = [
+            "Seed Fund Application",
+            "Income Tax Exemption Application",
+            "GST Registration Application Support",
+            "I-Create Application",
+            "DBS Grant Application"
+          ];
+
+          const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
+
+          const latestPageLength = includesRelevantService ? pagelength + 1 : pagelength;
 
 
           const options = {
@@ -4006,17 +4103,17 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
               newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
                 newData.services[i].serviceName === "I-Create Application" ? "I-Create Application Support" :
                   newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
-                  newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
-                    newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                      newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                        newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                          newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                            newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                              newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                                  newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
-                                    newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
-                                      newData.services[i].serviceName;
+                    newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
+                      newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                        newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                          newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                            newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                              newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                  newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                    newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
+                                      newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
+                                        newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                        <thead>
@@ -4146,17 +4243,17 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
               newData.services[i].serviceName === "I-Create" ? "Pitch Deck Creation For I-Create" :
                 newData.services[i].serviceName === "I-Create Application" ? "I-Create Application Support" :
                   newData.services[i].serviceName === "DBS Grant" ? "Pitch Deck Creation For DBS Grant" :
-                  newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
-                    newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
-                      newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
-                        newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
-                          newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                            newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                              newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
-                                newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
-                                  newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
-                                    newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
-                                      newData.services[i].serviceName;
+                    newData.services[i].serviceName === "DBS Grant Application" ? "DBS Grant Application Support" :
+                      newData.services[i].serviceName === "Income Tax Exemption Application" ? "Income Tax Exemption Application Suppport" :
+                        newData.services[i].serviceName === "Income Tax Exemption" ? "Pitch Deck Creation And Video Pitchdeck Guidance for Certificate Of Eligibility Application (80IAC)" :
+                          newData.services[i].serviceName === "Raftaar" ? "Pitchdeck Creation for Raftaar Document Support" :
+                            newData.services[i].serviceName === "Nidhi Prayash Yojna" || newData.services[i].serviceName === "Nidhi Seed Support Scheme" ? "Pitchdeck, Fund Utilization with Milestone" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                              newData.services[i].serviceName === "NAIF" ? "Detailed Project Report with Commercial and Financial Feasibility" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                newData.services[i].serviceName === "MSME Hackathon" || newData.services[i].serviceName === "Incubation Support" || newData.services[i].serviceName === "Chunauti" ? "Pitchdeck" + ` Creation for ${newData.services[i].serviceName} Document Support` :
+                                  newData.services[i].serviceName === "Stand-Up India" ? "Detailed Project Report as per Format, CMA Report" + ` Creation for ${newData.services[i].serviceName} Dpcument Support` :
+                                    newData.services[i].serviceName === "Start-Up India Certificate" && newData.services[i].withDSC ? "Start-Up India Certificate (With DSC)" :
+                                      newData.services[i].serviceName === "Start-Up India Certificate" && !newData.services[i].withDSC ? "Start-Up India Certificate (Without DSC)" :
+                                        newData.services[i].serviceName;
 
         const conditionalHtml = conditionalServices.includes(newData.services[i].serviceName) ? `
                        <thead>
@@ -4563,82 +4660,161 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : "rm@startupsahay.com";
     const AuthorizedNumber =
       mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-    let extraServiceName = "";
+
+
+    //     let extraServiceName = "";
+    //     newData.services.forEach(service => {
+    //       if (service.serviceName == "Seed Fund Application") {
+    //         extraServiceName = extraServiceName == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
+    //       } else if (service.serviceName === "Income Tax Exemption Application") {
+    //         extraServiceName = extraServiceName == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
+    //       } else if (service.serviceName === "GST Registration Application Support") {
+    //         extraServiceName = "GST Registration Application Support"
+    //       } else if (service.serviceName === "I-Create Application") {
+    //         extraServiceName = "I-Create Application Support"
+    //       } else if (service.serviceName === "DBS Grant Application") {
+    //         extraServiceName = "DBS Grant Application Support"
+    //       }
+    //     })
+    //     const renamedExtraServiceName = extraServiceName === "Seed Fund Application"
+    //       ? "Seed Fund Application Support"
+    //       : extraServiceName === "Income Tax Exemption Application"
+    //         ? "Income Tax Exemption Application Support"
+    //         : extraServiceName === "I-Create Application Support"
+    //           ? "I-Create Application Support"
+    //           : extraServiceName === "DBS Grant Application Support"
+    //             ? "DBS Grant Application Support"
+    //             : "Seed Fund Application Support, Income Tax Exemption Application Support, I-Create Application Support ,DBS Grant Application Support ";
+
+    //     const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" ||
+    //       obj.serviceName === "Income Tax Exemption Application" ||
+    //       obj.serviceName === "I-Create Application" ||
+    //       obj.serviceName === "DBS Grant Application") ?
+    //       `<div class="PDF_main">
+
+    // <section>
+    //  <div class="date_div">
+    //               <p>Date : ${todaysDate}</p>
+    //             </div>
+    //             <div class="pdf_heading">
+    //               <h3>Self Declaration</h3>
+    //             </div>
+    //   <div class="Declaration_text">
+    //    <p class="Declaration_text_head mt-2">
+    //           <b>
+    //            ${renamedExtraServiceName}   
+    //           </b>
+    //         </p>
+
+    //     <p class="Declaration_text_data">
+    //       I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+    //     </p>
+    //     <p class="Declaration_text_data">
+    //       I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+    //     </p>
+    //     <p class="Declaration_text_data">
+    //       <b>Fees:</b>
+    //     </p>
+    //     <div class="Declaration_text_data">
+    //       <ul>
+    //         <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+    //         <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+    //       </ul>
+    //     </div>
+    //     <p class="Declaration_text_data">
+    //       <b>Acknowledgements:</b>
+    //     </p>
+    //     <div class="Declaration_text_data">
+    //       <ul>
+    //         <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+    //         <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+    //         <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+    //         <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+    //       </ul>
+    //     </div>
+
+    //   </div>
+
+
+    // </section>
+
+    // </div>` : '';
+
+    let extraServiceName = new Set();
+
     newData.services.forEach(service => {
-      if (service.serviceName == "Seed Fund Application") {
-        extraServiceName = extraServiceName == "" ? "Seed Fund Application" : "Seed Fund Application , Income Tax Exemption Application"
+      if (service.serviceName === "Seed Fund Application") {
+        extraServiceName.add("Seed Fund Application");
       } else if (service.serviceName === "Income Tax Exemption Application") {
-        extraServiceName = extraServiceName == "" ? "Income Tax Exemption Application" : "Seed Fund Application , Income Tax Exemption Application"
-      } else if (service.serviceName === "GST Registration Application Support") {
-        extraServiceName = "GST Registration Application Support"
+        extraServiceName.add("Income Tax Exemption Application");
       } else if (service.serviceName === "I-Create Application") {
-        extraServiceName = "I-Create Application Support"
+        extraServiceName.add("I-Create Application");
       } else if (service.serviceName === "DBS Grant Application") {
-        extraServiceName = "DBS Grant Application Support"
+        extraServiceName.add("DBS Grant Application");
       }
-    })
-    const renamedExtraServiceName = extraServiceName === "Seed Fund Application"
-      ? "Seed Fund Application Support"
-      : extraServiceName === "Income Tax Exemption Application"
-        ? "Income Tax Exemption Application Support"
-        : extraServiceName === "I-Create Application Support"
-          ? "I-Create Application Support"
-          : extraServiceName === "DBS Grant Application Support"
-            ? "DBS Grant Application Support"
-            : "Seed Fund Application Support, Income Tax Exemption Application Support, I-Create Application Support ,DBS Grant Application Support ";
+    });
 
-    const seedConditionalPage = newData.services.some((obj) => obj.serviceName === "Seed Fund Application" ||
-      obj.serviceName === "Income Tax Exemption Application" ||
-      obj.serviceName === "I-Create Application" ||
-      obj.serviceName === "DBS Grant Application") ?
+    // Convert Set to Array and sort for consistency
+    const serviceNamesArray = Array.from(extraServiceName);
+
+    // Map service names to renamed values
+    const renamedExtraServiceName = serviceNamesArray.map(serviceName => {
+      switch (serviceName) {
+        case "Seed Fund Application":
+          return "Seed Fund Application Support";
+        case "Income Tax Exemption Application":
+          return "Income Tax Exemption Application Support";
+        case "I-Create Application":
+          return "I-Create Application Support";
+        case "DBS Grant Application":
+          return "DBS Grant Application Support";
+        default:
+          return "";
+      }
+    }).join(" , ");
+
+    // Generate the conditional page content
+    const seedConditionalPage = serviceNamesArray.length > 0 ?
       `<div class="PDF_main">
-
 <section>
- <div class="date_div">
-              <p>Date : ${todaysDate}</p>
-            </div>
-            <div class="pdf_heading">
-              <h3>Self Declaration</h3>
-            </div>
-  <div class="Declaration_text">
-   <p class="Declaration_text_head mt-2">
-          <b>
-           ${renamedExtraServiceName}   
-          </b>
-        </p>
-       
-    <p class="Declaration_text_data">
-      I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
-    </p>
-    <p class="Declaration_text_data">
-      I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
-    </p>
-    <p class="Declaration_text_data">
-      <b>Fees:</b>
-    </p>
-    <div class="Declaration_text_data">
-      <ul>
-        <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
-        <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
-      </ul>
-    </div>
-    <p class="Declaration_text_data">
-      <b>Acknowledgements:</b>
-    </p>
-    <div class="Declaration_text_data">
-      <ul>
-        <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
-        <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
-        <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
-        <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
-      </ul>
-    </div>
- 
-  </div>
-
-  
+<div class="date_div">
+<p>Date : ${todaysDate}</p>
+</div>
+<div class="pdf_heading">
+<h3>Self Declaration</h3>
+</div>
+<div class="Declaration_text">
+<p class="Declaration_text_head mt-2">
+<b>${renamedExtraServiceName}</b>
+</p>
+<p class="Declaration_text_data">
+I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+</p>
+<p class="Declaration_text_data">
+I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+</p>
+<p class="Declaration_text_data">
+<b>Fees:</b>
+</p>
+<div class="Declaration_text_data">
+<ul>
+  <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+  <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+</ul>
+</div>
+<p class="Declaration_text_data">
+<b>Acknowledgements:</b>
+</p>
+<div class="Declaration_text_data">
+<ul>
+  <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+  <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+  <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+  <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+</ul>
+</div>
+</div>
 </section>
-
 </div>` : '';
 
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
@@ -4677,9 +4853,23 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     })) ? 2 : tempPageLength;
 
 
-    const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application" || extraServiceName === "GST Registration Application Support") ? pagelength + 1 : pagelength
-    //const latestPageLength = (extraServiceName === "Seed Fund Application" || extraServiceName === "Income Tax Exemption Application") ? pagelength + 1 : pagelength
+    // const latestPageLength = (extraServiceName === "Seed Fund Application" ||
+    //   extraServiceName === "Income Tax Exemption Application" ||
+    //   extraServiceName === "GST Registration Application Support" ||
+    //   extraServiceName === "I-Create Application" ||
+    //   extraServiceName === "DBS Grant Application") ? pagelength + 1 : pagelength
 
+    const relevantServices = [
+      "Seed Fund Application",
+      "Income Tax Exemption Application",
+      "GST Registration Application Support",
+      "I-Create Application",
+      "DBS Grant Application"
+    ];
+    
+    const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
+    
+    const latestPageLength = includesRelevantService ? pagelength + 1 : pagelength;
 
     const options = {
       format: "A4", // Set the page format to A4 size
@@ -4772,17 +4962,16 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 // Request to Delete a booking
 router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
-
     const companyId = req.params.companyId;
+
     // Find and delete the booking with the given companyId
-    const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
-      company: companyId,
-    });
-    //console.log("deletetesting", deletedBooking)
+    const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
+
+    // Update main booking status and unset fields
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
-      { $set: { Status: "Interested" } },
       {
+        $set: { Status: "Interested" },
         $unset: {
           maturedBdmName: "",
           multiBdmName: []
@@ -4792,27 +4981,50 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     );
 
     if (deletedBooking) {
+      console.log("Deleted Booking:", deletedBooking);
+
+      const companyNameToDelete = deletedBooking["Company Name"];
+      console.log("Company Name to delete from Draft:", companyNameToDelete);
+
+      // Delete from RedesignedDraftModel
       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
-        "Company Name": deletedBooking["Company Name"],
+        "Company Name": companyNameToDelete
       });
-      //console.log("deleteDraft", deleteDraft)
+
+      if (deleteDraft) {
+        console.log("Draft Deleted:", deleteDraft);
+      } else {
+        console.log("No draft found for deletion");
+      }
     } else {
       return res.status(404).send("Booking not found");
     }
 
     if (updateMainBooking.bdmAcceptStatus === "Accept") {
-      const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(
-        companyId
-      )
-    } else {
-      return true;
+      const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
+      if (!deleteTeamBooking) {
+        console.log("No team booking found for deletion");
+      }
     }
+
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
     console.error("Error deleting booking:", error);
     res.status(500).send("Internal Server Error");
   }
 });
+
+
+router.get('/redesigneddraftmodelcompanies', async (req, res) => {
+  try {
+    const companies = await RedesignedDraftModel.find();
+    res.status(200).json({ Companies: companies });
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 // Request to Delete multiple bookings
 router.delete(
   "/redesigned-delete-all-booking/:companyId/:bookingIndex",
