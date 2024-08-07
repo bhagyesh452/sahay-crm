@@ -569,7 +569,7 @@ function Employees({ onEyeButtonClick }) {
         designation = "Sales Executive";
       } else if (newDesignation === "Floor Manager") {
         designation = "Sales Manager";
-      } else if (newDesignation === "Data Analytics") {
+      } else if (newDesignation === "Data Analyst") {
         designation = "Data Manager";
       } else if (newDesignation === "Admin Head") {
         designation = "RM-Certification";
