@@ -15,7 +15,7 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
-   
+
 
     try {
       let response;
@@ -49,13 +49,13 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
           serviceName,
           contentStatus: newStatus
         });
-      }else if (mainStatus === "ReadyToSubmit") {
+      } else if (mainStatus === "ReadyToSubmit") {
         response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
           companyName,
           serviceName,
           contentStatus: newStatus
         });
-        console.log("statuschange" , contentStatus , companyName , serviceName )
+        //console.log("statuschange", contentStatus, companyName, serviceName)
       }
 
       refreshData();
@@ -98,12 +98,12 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
     setStatusClass(getStatusClass(contentStatus));
   }, [contentStatus]);
 
-  console.log("writername", companyName, serviceName, writername , contentStatus)
+  console.log("writername", companyName, serviceName, writername, contentStatus)
 
 
   return (
     <section className="rm_status_dropdown">
-      <div className={`dropdown custom-dropdown status_dropdown ${statusClass}`}>
+      <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
@@ -114,12 +114,12 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
           {status}
         </button>
         <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li className={writername === "Drashti Thakkar" ? "disabled" : ""}>
+          <li className={writername === "Drashti Thakkar" || "RonakKumar" ? "disabled" : ""}>
             <a
               className="dropdown-item"
               onClick={() => handleStatusChange("Not Applicable", "e_task_assign")}
               href="#"
-              aria-disabled={writername === "Drashti Thakkar"}
+              aria-disabled={writername === "Drashti Thakkar" || "RonakKumar"}
             >
               Not Applicable
             </a>

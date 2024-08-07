@@ -3904,3 +3904,31 @@ border: 1px solid #ffefc6 !important;
   justify-content: center;
   height: 100%;
 }
+
+/* ---------------for filter--------------------- */
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.filter-container label {
+  margin-bottom: 5px;
+}
+
+.filter-container select,
+.filter-container input {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.filter-container select {
+  width: 200px;
+}
+
+.filter-container input {
+  width: 300px;
+}

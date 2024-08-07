@@ -32,7 +32,8 @@ function RmofCertificationMyBookings() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const [isFilter, setIsFilter] = useState(false)
-    const [rmServicesData, setRmServicesData] = useState([])
+    const [rmServicesData, setRmServicesData] = useState([]);
+    const [showFilterIcon, setShowFilterIcon] = useState(false)
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -50,6 +51,10 @@ function RmofCertificationMyBookings() {
             fetchRMServicesData()
         });
 
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchRMServicesData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -64,7 +69,7 @@ function RmofCertificationMyBookings() {
             const tempData = response.data;
             console.log(tempData)
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
-            console.log(userData)
+            //console.log(userData)
             setEmployeeData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -164,7 +169,12 @@ function RmofCertificationMyBookings() {
                         <div className="container-xl">
                             <div className="d-flex aling-items-center justify-content-between">
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn"  >
+                                    <button type="button" className="btn mybtn" 
+                                    onClick={()=>{
+                                    setShowFilterIcon(true)
+                                    
+                                    }}
+                                    >
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
                                 </div>
@@ -292,10 +302,10 @@ function RmofCertificationMyBookings() {
                                 </div>
                                 <div class="tab-content card-body">
                                     <div class="tab-pane active" id="General">
-                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} showFilter={showFilterIcon} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
-                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} showFilter={showFilterIcon} />
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
                                         <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} />

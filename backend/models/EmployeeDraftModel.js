@@ -19,6 +19,12 @@ const EmployeeDraftSchema = new mongoose.Schema({
   ename: {
     type: String
   },
+  empFullName: {
+    type: String
+  },
+  employeeID: {
+    type: String,
+  },
   dob: {
     type: Date
   },
@@ -71,7 +77,7 @@ const EmployeeDraftSchema = new mongoose.Schema({
   accountNo: {
     type: String
   },
-  bankName: {
+  nameAsPerBankRecord: {
     type: String
   },
   ifscCode: {

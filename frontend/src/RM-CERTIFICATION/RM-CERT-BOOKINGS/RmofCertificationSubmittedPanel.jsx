@@ -98,6 +98,10 @@ function RmofCertificationSubmittedPanel() {
             fetchData()
         });
 
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -226,6 +230,58 @@ function RmofCertificationSubmittedPanel() {
         setOpenBacdrop(false)
     }
 
+    const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
+        try {
+            // Show confirmation dialog
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to revert the company back to the received box?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, revert it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            });
+
+            // Check if the user confirmed the action
+            if (result.isConfirmed) {
+                const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
+                    companyName,
+                    serviceName
+                });
+
+                if (response.status === 200) {
+                    fetchData();
+                    Swal.fire(
+                        'Company Reverted Back!',
+                        'Company has been sent back to the received box.',
+                        'success'
+                    );
+                } else {
+                    Swal.fire(
+                        'Error',
+                        'Failed to revert the company back to the received box.',
+                        'error'
+                    );
+                }
+            } else {
+                Swal.fire(
+                    'Cancelled',
+                    'The company has not been reverted.',
+                    'info'
+                );
+            }
+
+        } catch (error) {
+            console.log("Error Deleting Company from task manager", error.message);
+            Swal.fire(
+                'Error',
+                'An error occurred while processing your request.',
+                'error'
+            );
+        }
+    };
+
 
 
     return (
@@ -319,6 +375,8 @@ function RmofCertificationSubmittedPanel() {
                                                         companyName={obj["Company Name"]}
                                                         serviceName={obj.serviceName}
                                                         refreshData={refreshData}
+                                                        contentStatus={obj.contentStatus ? obj.contentStatus : "Not Started"}
+                                                        brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                     />
                                                 )}
                                             </div>
@@ -413,6 +471,7 @@ function RmofCertificationSubmittedPanel() {
                                                 mainStatus={obj.mainCategoryStatus}
                                                 brochureStatus={obj.brochureStatus}
                                                 designername={obj.brochureDesigner}
+                                                refreshData={refreshData}
                                             /></td>
                                         <td className='td_of_NSWSeMAIL'>
                                             <NSWSEmailInput
@@ -441,7 +500,7 @@ function RmofCertificationSubmittedPanel() {
                                                 refreshData={refreshData}
                                                 onIndustryChange={handleIndustryChange}
                                                 industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
-
+                                                mainStatus={obj.mainCategoryStatus}
                                             /></td>
                                         <td className='td_of_Industry'>
                                             <SectorDropdown
@@ -452,6 +511,7 @@ function RmofCertificationSubmittedPanel() {
                                                 sectorOptions={sectorOptions}
                                                 industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
                                                 sector={obj.sector || ""} // Default to "" if sector is not provided
+                                                mainStatus={obj.mainCategoryStatus}
                                             />
                                         </td>
                                         <td>{formatDatePro(obj.bookingDate)}</td>
@@ -467,15 +527,36 @@ function RmofCertificationSubmittedPanel() {
                                                 <div>{obj.bdmName}</div>
                                             </div>
                                         </td>
-                                        <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td>₹ {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString('en-IN')}</td>
                                         <td>
+                                            ₹ {(
+                                                (parseInt(obj.firstPayment || 0, 10) + parseInt(obj.pendingRecievedPayment || 0, 10))
+                                                    .toLocaleString('en-IN')
+                                            )}
+                                        </td>
+                                        <td>
+                                            ₹ {(
+                                                (parseInt(obj.totalPaymentWGST || 0, 10) -
+                                                    (parseInt(obj.firstPayment || 0, 10) +
+                                                        parseInt(obj.pendingRecievedPayment || 0, 10)))
+                                            ).toLocaleString('en-IN')
+                                            }
+                                        </td>
+                                        <td>cd
                                             {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
                                                 obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
                                                     "1st"}
                                         </td>
-                                        <td>{obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`}</td>
+                                        <td>
+                                            {obj.subCategoryStatus === "Submitted" ? (
+                                                obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+                                            ) : obj.subCategoryStatus === "2nd Time Submitted" ? (
+                                                obj.SecondTimeSubmitDate ? `${formatDateNew(obj.SecondTimeSubmitDate)} | ${formatTime(obj.SecondTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+                                            ) : obj.subCategoryStatus === "3rd Time Submitted" ? (
+                                                obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+                                            ) : null}
+                                        </td>
+
                                         <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary">

@@ -16,6 +16,12 @@ const yourSchema = new mongoose.Schema({
   ename: {
     type: String
   },
+  empFullName: {
+    type: String
+  },
+  employeeID: {
+    type: String
+  },
   dob: {
     type: Date
   },
@@ -40,6 +46,9 @@ const yourSchema = new mongoose.Schema({
     type: String
   },
   designation: {
+    type: String
+  },
+  newDesignation : {
     type: String
   },
   jdate: {
@@ -68,7 +77,7 @@ const yourSchema = new mongoose.Schema({
   accountNo: {
     type: String
   },
-  bankName: {
+  nameAsPerBankRecord: {
     type: String
   },
   ifscCode: {

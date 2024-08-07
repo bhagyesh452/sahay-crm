@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Components/Header/Header";
 import Navbar from "../Components/Navbar/Navbar";
+import Nodata from "../../components/Nodata";
 import axios from "axios";
 import { IoFilterOutline } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
@@ -8,6 +9,8 @@ import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import { FaWhatsapp } from "react-icons/fa";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
@@ -19,6 +22,12 @@ function HrEmployees() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   const navigate = useNavigate();
+
+  const [employee, setEmployee] = useState([]);
+  const [deletedEmployee, setDeletedEmployee] = useState([]);
+  const [profilePhoto, setProfilePhoto] = useState("");
+  const [deletedData, setDeletedData] = useState([]);
+  const [companyData, setCompanyData] = useState([]);
 
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
@@ -35,7 +44,6 @@ function HrEmployees() {
     const year = date.getFullYear();
     return `${day} ${month} ${year}`;
   };
-  
 
   const calculateProbationStatus = (joiningDate) => {
     const joinDate = new Date(joiningDate);
@@ -54,24 +62,110 @@ function HrEmployees() {
     navigate(`/hr/edit/employee/${empId}`);
   };
 
-  const [employee, setEmployee] = useState([]);
-
-  const fetchEmployee = async () => {
-    try {
-      const res = await axios.get(`${secretKey}/employee/einfo`);
-      setEmployee(res.data);
-      // console.log("Fetched Employees are :", res.data);
-    } catch (error) {
-      console.log("Error fetching employees data :", error);
-    }
-  };
-
   const handleView = (id) => {
     navigate(`hr-employee-profile-details/${id}`);
   }
 
+  const fetchCompanyData = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/company-data/leads`);
+      // console.log("Company data is :", res.data);
+      setCompanyData(res.data);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+
+  const fetchEmployee = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/einfo`);
+      const employeeData = res.data;
+      setEmployee(employeeData);
+      console.log("Fetched Employees are:", res.data);
+    } catch (error) {
+      console.log("Error fetching employees data:", error);
+    }
+  };
+
+  const handledeletefromcompany = async (filteredCompanyData) => {
+    if (filteredCompanyData && filteredCompanyData.length !== 0) {
+
+      try {
+        // Update companyData in the second database
+        await Promise.all(
+          filteredCompanyData.map(async (item) => {
+            if (item.Status === 'Matured') {
+              await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
+
+            } else {
+              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
+            }
+          })
+        );
+        Swal.fire({
+          title: "Data Deleted!",
+          text: "You have successfully Deleted the data!",
+          icon: "success",
+        });
+
+        //console.log("All ename updates completed successfully");
+      } catch (error) {
+        console.error("Error updating enames:", error.message);
+        Swal.fire("Error deleting the employee");
+        // Handle the error as needed
+      }
+    }
+  };
+
+  const handleDeleteClick = (empId, ename, dataToDelete, filteredCompanyData) => {
+    console.log("Emp id is :", empId);
+    setCompanyData(filteredCompanyData);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        console.log("Deleted data is :", dataToDelete);
+        try {
+          const saveDeletedResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
+            dataToDelete
+          });
+          const deleteEmployeeResponse = await axios.delete(`${secretKey}/employee/einfo/${empId}`);
+
+          const updateBdmStatusResponse = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${ename}`);
+          handledeletefromcompany(filteredCompanyData);
+          fetchEmployee();
+          Swal.fire(
+            'Deleted!',
+            'Employee has been deleted.',
+            'success'
+          );
+        } catch (error) {
+          console.error("Error deleting employee:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please try again later!",
+          });
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire(
+          'Cancelled',
+          'Employee data is safe :)',
+          'error'
+        );
+      }
+    });
+  };
+
   useEffect(() => {
     fetchEmployee();
+    fetchCompanyData();
   }, []);
 
   return (
@@ -174,47 +268,81 @@ function HrEmployees() {
                           <th>Action</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      {employee.length !== 0 ? <tbody>
                         {employee.map((emp, index) => {
-                          return <tr key={emp._id}>
+                          return <tr key={index}>
                             <td>{index + 1}</td>
                             <td>
                               <div className="d-flex align-items-center">
                                 <div className="tbl-pro-img">
-                                  <img src={EmpDfaullt}></img>
+                                  {emp.profilePhoto.length !== 0 ? <img
+                                    src={
+                                      emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                    }
+                                    alt="Profile"
+                                    className="profile-photo"
+                                  /> :
+                                    <img
+                                      src={EmpDfaullt}
+                                      alt="Profile"
+                                      className="profile-photo"
+                                    />}
                                 </div>
                                 <div className="">
+                                  {/* {emp.ename} */}
                                   {(() => {
                                     const names = (emp.ename || "").split(" ");
                                     return `${names[0] || ""} ${names[names.length - 1] || ""}`;
                                   })()}
                                 </div>
                               </div>
-                              
+
                             </td>
                             <td>{emp.branchOffice || ""}</td>
                             <td>{emp.department || ""}</td>
-                            <td>{emp.designation || ""}</td>
+                            <td>{emp.newDesignation === "Business Development Executive" && "BDE" || emp.newDesignation === "Business Development Manager" && "BDM" || emp.newDesignation || ""}</td>
                             <td>{formatDate(emp.jdate) || ""}</td>
                             <td>₹ {formatSalary(emp.salary || 0)}</td>
                             <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                            <td>{emp.number || ""}</td>
+                            <td><a
+                              target="_blank"
+                              className="text-decoration-none text-dark"
+                              href={`https://wa.me/91${emp.number}`}
+                            >{emp.number}
+                              <FaWhatsapp className="text-success w-25 mb-1" /></a></td>
                             <td>{emp.email || ""}</td>
                             <td>
                               <button className="action-btn action-btn-primary">
-                                <Link style={{ textDecoration: "none", color:'inherit' }}
-                                        to={{
-                                            pathname: `/hr-employee-profile-details/${emp._id}`
-                                        }} >
+                                <Link style={{ textDecoration: "none", color: 'inherit' }}
+                                  to={{
+                                    pathname: `/hr-employee-profile-details/${emp._id}`
+                                  }} >
                                   <FaRegEye />
                                 </Link>
                               </button>
                               <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
-                              <button className="action-btn action-btn-danger ml-1"><AiFillDelete /></button>
+                              <button className="action-btn action-btn-danger ml-1" onClick={() => {
+                                const dataToDelete = employee.filter(obj => obj._id === emp._id);
+                                setDeletedData(dataToDelete);
+                                const filteredCompanyData = companyData.filter(data => data.ename?.toLowerCase() === emp.ename.toLowerCase());
+                                setCompanyData(filteredCompanyData);
+                                handleDeleteClick(emp._id, emp.ename, dataToDelete, filteredCompanyData)
+                              }}
+                              ><AiFillDelete /></button>
                             </td>
                           </tr>
                         })}
-                      </tbody>
+                      </tbody> : <tbody>
+                        <tr>
+                          <td
+                            className="particular"
+                            colSpan="11"
+                            style={{ textAlign: "center" }}
+                          >
+                            <Nodata />
+                          </td>
+                        </tr>
+                      </tbody>}
                     </table>
                   </div>
                 </div>

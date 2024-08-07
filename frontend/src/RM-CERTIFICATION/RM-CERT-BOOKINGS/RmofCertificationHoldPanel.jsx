@@ -80,6 +80,10 @@ function RmofCertificationHoldPanel() {
             fetchData()
         });
 
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -304,6 +308,8 @@ function RmofCertificationHoldPanel() {
                                                         companyName={obj["Company Name"]}
                                                         serviceName={obj.serviceName}
                                                         refreshData={refreshData}
+                                                        contentStatus={obj.contentStatus ? obj.contentStatus : "Not Started"}
+                                                        brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                     />
                                                 )}
                                             </div>
@@ -398,6 +404,7 @@ function RmofCertificationHoldPanel() {
                                                 mainStatus={obj.mainCategoryStatus}
                                                 brochureStatus={obj.brochureStatus}
                                                 designername={obj.brochureDesigner}
+                                                refreshData={refreshData}
                                             /></td>
                                         <td className='td_of_NSWSeMAIL'>
                                             <NSWSEmailInput
@@ -425,7 +432,7 @@ function RmofCertificationHoldPanel() {
                                                 refreshData={refreshData}
                                                 onIndustryChange={handleIndustryChange}
                                                 industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
-
+                                                mainStatus={obj.mainCategoryStatus}
                                             /></td>
                                         <td className='td_of_Industry'>
                                             <SectorDropdown
@@ -435,6 +442,7 @@ function RmofCertificationHoldPanel() {
                                                 sectorOptions={sectorOptions}
                                                 industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
                                                 sector={obj.sector || ""} // Default to "" if sector is not provided
+                                                mainStatus={obj.mainCategoryStatus}
                                             />
                                         </td>
                                         <td>{formatDatePro(obj.bookingDate)}</td>
@@ -450,9 +458,21 @@ function RmofCertificationHoldPanel() {
                                                 <div>{obj.bdmName}</div>
                                             </div>
                                         </td>
-                                        <td>₹ {obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? obj.firstPayment.toLocaleString('en-IN') : obj.totalPaymentWGST.toLocaleString('en-IN')}</td>
-                                        <td>₹ {obj.firstPayment ? (obj.totalPaymentWGST.toLocaleString('en-IN') - obj.firstPayment.toLocaleString('en-IN')) : 0}</td>
+                                        <td>₹ {parseInt(obj.totalPaymentWGST || 0 , 10).toLocaleString('en-IN')}</td>
+                                        <td>
+                                            ₹ {(
+                                                (parseInt(obj.firstPayment || 0, 10) + parseInt(obj.pendingRecievedPayment || 0, 10))
+                                                    .toLocaleString('en-IN')
+                                            )}
+                                        </td>
+                                        <td>
+                                            ₹ {(
+                                                (parseInt(obj.totalPaymentWGST || 0, 10) -
+                                                    (parseInt(obj.firstPayment || 0, 10) +
+                                                        parseInt(obj.pendingRecievedPayment || 0, 10)))
+                                            ).toLocaleString('en-IN')
+                                            }
+                                        </td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary">
                                                 <FaRegEye />

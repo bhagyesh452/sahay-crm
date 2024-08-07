@@ -39,32 +39,6 @@ const RedesignedLeadformModel = require("../models/RedesignedLeadform");
 //   },
 // });
 
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     const { personalEmail } = req.params;
-//     const empName = `${personalEmail}`;
-//     let destinationPath = "";
-
-//     if (file.fieldname && empName) {
-//       destinationPath = `EmployeeDocs/${empName}`;
-//     }
-
-//     // Create the directory if it doesn't exist
-//     if (!fs.existsSync(destinationPath)) {
-//       fs.mkdirSync(destinationPath, { recursive: true });
-//     }
-
-//     cb(null, destinationPath);
-//   },
-//   filename: function (req, file, cb) {
-//     const { personalEmail } = req.params;
-//     const empName = `${personalEmail}`;
-//     const uniqueSuffix = Date.now();
-//     cb(null, `${uniqueSuffix}-${empName}-${file.originalname}`);
-//   },
-// });
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // const { firstName, lastName } = req.body;
@@ -172,7 +146,7 @@ router.post("/einfo", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo } = req.body;
+    const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo, employeeID } = req.body;
     // console.log("Personal Info is :", personalInfo);
     // console.log("Employeement Info is :", employeementInfo);
     // console.log("Payroll info is :", payrollInfo);
@@ -192,77 +166,103 @@ router.post("/einfo", upload.fields([
 
     const payrollInfoArray = Array.isArray(payrollInfo) ? payrollInfo : [payrollInfo];
     payrollInfoArray.forEach(info => {
-      if (req.files && req.files["offerLetter"]) {
+      if (req?.files && req.files["offerLetter"]) {
         info.offerLetter = getFileDetails(req.files["offerLetter"]);
       }
     });
 
     const empDocumentInfoArray = Array.isArray(empDocumentInfo) ? empDocumentInfo : [empDocumentInfo];
     empDocumentInfoArray.forEach(info => {
-      if (info.fieldname === 'aadharCard') {
+      if (info?.fieldname === 'aadharCard') {
         info.aadharCard = getFileDetails(req.files ? req.files["aadharCard"] : []);
-      } else if (info.fieldname === 'panCard') {
+      } else if (info?.fieldname === 'panCard') {
         info.panCard = getFileDetails(req.files ? req.files["panCard"] : []);
-      } else if (info.fieldname === 'educationCertificate') {
+      } else if (info?.fieldname === 'educationCertificate') {
         info.educationCertificate = getFileDetails(req.files ? req.files["educationCertificate"] : []);
-      } else if (info.fieldname === 'relievingCertificate') {
+      } else if (info?.fieldname === 'relievingCertificate') {
         info.relievingCertificate = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
-      } else if (info.fieldname === 'salarySlip') {
+      } else if (info?.fieldname === 'salarySlip') {
         info.salarySlip = getFileDetails(req.files ? req.files["salarySlip"] : []);
-      } else if (info.fieldname === 'profilePhoto') {
+      } else if (info?.fieldname === 'profilePhoto') {
         info.profilePhoto = getFileDetails(req.files ? req.files["profilePhoto"] : []);
       }
     });
 
+    let newDesignation = employeementInfo.designation;
+
+    if (employeementInfo.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager") {
+      newDesignation = "Sales Executive";
+    } else if (employeementInfo.designation === "Floor Manager") {
+      newDesignation = "Sales Manager";
+    } else if (employeementInfo.designation === "Data Analytics") {
+      newDesignation = "Data Manager";
+    } else if (employeementInfo.designation === "Admin Head") {
+      newDesignation = "RM-Certification";
+    }
+
     const emp = {
       ...req.body,
-      ...(personalInfo.firstName || personalInfo.middleName || personalInfo.lastName) && {
-        ename: `${personalInfo.firstName || ""} ${personalInfo.middleName || ""} ${personalInfo.lastName || ""}`
+      AddedOn: new Date(),
+      employeeID: employeeID,
+
+      ...(personalInfo?.firstName || personalInfo?.middleName || personalInfo?.lastName) && {
+        ename: `${personalInfo?.firstName || ""} ${personalInfo?.lastName || ""}`,
+        empFullName: `${personalInfo.firstName || ""} ${personalInfo.middleName || ""} ${personalInfo.lastName || ""}`
       },
-      ...(personalInfo.dob && { dob: personalInfo.dob }),
-      ...(personalInfo.personalPhoneNo && { personal_number: personalInfo.personalPhoneNo }),
-      ...(personalInfo.personalEmail && { personal_email: personalInfo.personalEmail }),
-      ...(personalInfo.currentAddress && { currentAddress: personalInfo.currentAddress }),
-      ...(personalInfo.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
+      ...(personalInfo?.dob && { dob: personalInfo.dob }),
+      ...(personalInfo?.gender && { gender: personalInfo.gender }),
+      ...(personalInfo?.personalPhoneNo && { personal_number: personalInfo.personalPhoneNo }),
+      ...(personalInfo?.personalEmail && { personal_email: personalInfo.personalEmail }),
+      ...(personalInfo?.currentAddress && { currentAddress: personalInfo.currentAddress }),
+      ...(personalInfo?.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
+      
+      ...(employeementInfo?.empId && { empID: employeementInfo.empId }),
+      ...(employeementInfo?.department && { department: employeementInfo.department }),
+      ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
+      ...(employeementInfo?.designation && { designation: newDesignation }),
+      ...(employeementInfo?.designation && { bdmWork: employeementInfo.designation === "Business Development Manager" ? true : false}),
+      ...(employeementInfo?.joiningDate && { jdate: employeementInfo.joiningDate }),
+      ...(employeementInfo?.branch && { branchOffice: employeementInfo.branch }),
+      ...(employeementInfo?.employeementType && { employeementType: employeementInfo.employeementType }),
+      ...(employeementInfo?.manager && { reportingManager: employeementInfo.manager }),
+      ...(employeementInfo?.officialNo && { number: employeementInfo.officialNo }),
+      ...(employeementInfo?.officialEmail && { email: employeementInfo.officialEmail }),
 
-      ...(employeementInfo.department && { department: employeementInfo.department }),
-      ...(employeementInfo.designation && { designation: employeementInfo.designation }),
-      ...(employeementInfo.joiningDate && { jdate: employeementInfo.joiningDate }),
-      ...(employeementInfo.branch && { branchOffice: employeementInfo.branch }),
-      ...(employeementInfo.employeementType && { employeementType: employeementInfo.employeementType }),
-      ...(employeementInfo.manager && { reportingManager: employeementInfo.manager }),
-      ...(employeementInfo.officialNo && { number: employeementInfo.officialNo }),
-      ...(employeementInfo.officialEmail && { email: employeementInfo.officialEmail }),
+      ...(payrollInfo?.accountNo && { accountNo: payrollInfo.accountNo }),
+      ...(payrollInfo?.nameAsPerBankRecord && { nameAsPerBankRecord: payrollInfo.nameAsPerBankRecord }),
+      ...(payrollInfo?.ifscCode && { ifscCode: payrollInfo.ifscCode }),
+      ...(payrollInfo?.salary && { salary: payrollInfo.salary }),
+      ...(payrollInfo?.firstMonthSalaryCondition && { firstMonthSalaryCondition: payrollInfo.firstMonthSalaryCondition }),
+      ...(payrollInfo?.firstMonthSalary && { firstMonthSalary: payrollInfo.firstMonthSalary }),
+      ...(payrollInfo?.panNumber && { panNumber: payrollInfo.panNumber }),
+      ...(payrollInfo?.aadharNumber && { aadharNumber: payrollInfo.aadharNumber }),
+      ...(payrollInfo?.uanNumber && { uanNumber: payrollInfo.uanNumber }),
 
-      ...(payrollInfo.accountNo && { accountNo: payrollInfo.accountNo }),
-      ...(payrollInfo.bankName && { bankName: payrollInfo.bankName }),
-      ...(payrollInfo.ifscCode && { ifscCode: payrollInfo.ifscCode }),
-      ...(payrollInfo.salary && { salary: payrollInfo.salary }),
-      ...(payrollInfo.firstMonthSalary && { firstMonthSalaryCondition: payrollInfo.firstMonthSalary }),
-      ...(payrollInfo.salaryCalculation && { firstMonthSalary: payrollInfo.salaryCalculation }),
-      ...(payrollInfo.panNumber && { panNumber: payrollInfo.panNumber }),
-      ...(payrollInfo.aadharNumber && { aadharNumber: payrollInfo.aadharNumber }),
-      ...(payrollInfo.uanNumber && { uanNumber: payrollInfo.uanNumber }),
+      ...(emergencyInfo?.personName && { personal_contact_person: emergencyInfo.personName }),
+      ...(emergencyInfo?.relationship && { personal_contact_person_relationship: emergencyInfo.relationship }),
+      ...(emergencyInfo?.personPhoneNo && { personal_contact_person_number: emergencyInfo.personPhoneNo }),
 
-      ...(emergencyInfo.personName && { personal_contact_person: emergencyInfo.personName }),
-      ...(emergencyInfo.relationship && { personal_contact_person_relationship: emergencyInfo.relationship }),
-      ...(emergencyInfo.personPhoneNo && { personal_contact_person_number: emergencyInfo.personPhoneNo }),
-
-      ...(payrollInfo.offerLetter?.length > 0 && { offerLetter: payrollInfo.offerLetter }),
-      ...(empDocumentInfo.aadharCard?.length > 0 && { aadharCard: empDocumentInfo.aadharCard }),
-      ...(empDocumentInfo.panCard?.length > 0 && { panCard: empDocumentInfo.panCard }),
-      ...(empDocumentInfo.educationCertificate?.length > 0 && { educationCertificate: empDocumentInfo.educationCertificate }),
-      ...(empDocumentInfo.relievingCertificate?.length > 0 && { relievingCertificate: empDocumentInfo.relievingCertificate }),
-      ...(empDocumentInfo.salarySlip?.length > 0 && { salarySlip: empDocumentInfo.salarySlip }),
-      ...(empDocumentInfo.profilePhoto?.length > 0 && { profilePhoto: empDocumentInfo.profilePhoto })
+      ...(payrollInfo?.offerLetter?.length > 0 && { offerLetter: payrollInfo.offerLetter || [] }),
+      ...(empDocumentInfo?.aadharCard?.length > 0 && { aadharCard: empDocumentInfo.aadharCard || [] }),
+      ...(empDocumentInfo?.panCard?.length > 0 && { panCard: empDocumentInfo.panCard || [] }),
+      ...(empDocumentInfo?.educationCertificate?.length > 0 && { educationCertificate: empDocumentInfo.educationCertificate || [] }),
+      ...(empDocumentInfo?.relievingCertificate?.length > 0 && { relievingCertificate: empDocumentInfo.relievingCertificate || [] }),
+      ...(empDocumentInfo?.salarySlip?.length > 0 && { salarySlip: empDocumentInfo.salarySlip || [] }),
+      ...(empDocumentInfo?.profilePhoto?.length > 0 && { profilePhoto: empDocumentInfo.profilePhoto || [] })
     };
-    const result = await adminModel.create(emp); // Changed .then() to await
+    if (employeementInfo?.empId) {
+      emp._id = employeementInfo.empId;
+    }
+    const result = await adminModel.create(emp);
     res.json(result); // Ensure you respond with the result
+
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 
 
 
@@ -291,97 +291,7 @@ router.post("/einfo", upload.fields([
 //   }
 // });
 
-router.get("/fetchEmployeeFromPersonalEmail/:personalEmail", async (req, res) => {
-  const { personalEmail } = req.params;
-
-  try {
-    if (!personalEmail) {
-      return res.status(404).json({ result: false, message: "Email not found" });
-    }
-    const emp = await adminModel.findOne({ personal_email: personalEmail });
-
-    if (!emp) {
-      return res.status(404).json({ result: false, message: "Employee not found" });
-    }
-
-    res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
-  } catch (error) {
-    res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
-  }
-});
-
-router.put("/updateEmployeeFromPersonalEmail/:personalEmail", upload.fields([
-  { name: "offerLetter", maxCount: 1 },
-  { name: "aadharCard", maxCount: 1 },
-  { name: "panCard", maxCount: 1 },
-  { name: "educationCertificate", maxCount: 1 },
-  { name: "relievingCertificate", maxCount: 1 },
-  { name: "salarySlip", maxCount: 1 },
-  { name: "profilePhoto", maxCount: 1 },
-]), async (req, res) => {
-  const { personalEmail } = req.params;
-  const { officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo } = req.body;
-  // console.log("Reqest file is :", req.files);
-
-  const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
-    fieldname: file.fieldname,
-    originalname: file.originalname,
-    encoding: file.encoding,
-    mimetype: file.mimetype,
-    destination: file.destination,
-    filename: file.filename,
-    path: file.path,
-    size: file.size
-  })) : [];
-
-  const offerLetterDetails = getFileDetails(req.files ? req.files["offerLetter"] : []);
-  const aadharCardDetails = getFileDetails(req.files ? req.files["aadharCard"] : []);
-  const panCardDetails = getFileDetails(req.files ? req.files["panCard"] : []);
-  const educationCertificateDetails = getFileDetails(req.files ? req.files["educationCertificate"] : []);
-  const relievingCertificateDetails = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
-  const salarySlipDetails = getFileDetails(req.files ? req.files["salarySlip"] : []);
-  const profilePhotoDetails = getFileDetails(req.files ? req.files["profilePhoto"] : []);
-
-  try {
-    if (!personalEmail) {
-      return res.status(404).json({ result: false, message: "Email not found" });
-    }
-
-    const emp = await adminModel.findOneAndUpdate(
-      { personal_email: personalEmail },
-      {
-        ...req.body,
-        email: officialEmail,
-        number: officialNo,
-        jdate: joiningDate,
-        branchOffice: branch,
-        reportingManager: manager,
-        firstMonthSalaryCondition: firstMonthSalary,
-        firstMonthSalary: salaryCalculation,
-        offerLetter: offerLetterDetails || [],
-        personal_contact_person: personName,
-        personal_contact_person_relationship: relationship,
-        personal_contact_person_number: personPhoneNo,
-        aadharCard: aadharCardDetails || [],
-        panCard: panCardDetails || [],
-        educationCertificate: educationCertificateDetails || [],
-        relievingCertificate: relievingCertificateDetails || [],
-        salarySlip: salarySlipDetails || [],
-        profilePhoto: profilePhotoDetails || [],
-      },
-      { new: true } // This option returns the updated document
-    );
-
-    if (!emp) {
-      return res.status(404).json({ result: false, message: "Employee not found" });
-    }
-
-    res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
-  } catch (error) {
-    res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
-  }
-});
-
+// Fetch employees from id :
 router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   const { empId } = req.params;
   try {
@@ -395,6 +305,26 @@ router.get("/fetchEmployeeFromId/:empId", async (req, res) => {
   }
 });
 
+// Fetch Profile Photo :
+router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
+  const { empId, filename } = req.params;
+  const pdfPath = path.join(
+    __dirname,
+    `../EmployeeDocs/${empId}/${filename}`
+  );
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
+});
+
 router.put("/updateEmployeeFromId/:empId", upload.fields([
   { name: "offerLetter", maxCount: 1 },
   { name: "aadharCard", maxCount: 1 },
@@ -406,10 +336,9 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
-  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, officialNo, officialEmail, joiningDate, branch, manager, firstMonthSalary, salaryCalculation, personName, relationship, personPhoneNo, activeStep } = req.body;
+  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, designation, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo } = req.body;
   // console.log("Reqest file is :", req.files);
 
-  console.log("Active step :", activeStep);
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
     fieldname: file.fieldname,
     originalname: file.originalname,
@@ -434,11 +363,24 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       return res.status(404).json({ result: false, message: "Employee not found" });
     }
 
+    let newDesignation = designation;
+
+    if (designation === "Business Development Executive" || designation === "Business Development Manager") {
+      newDesignation = "Sales Executive";
+    } else if (designation === "Floor Manager") {
+      newDesignation = "Sales Manager";
+    } else if (designation === "Data Analytics") {
+      newDesignation = "Data Manager";
+    } else if (designation === "Admin Head") {
+      newDesignation = "RM-Certification";
+    }
+
     const updateFields = {
       ...req.body,
-      ...(activeStep && { activeStep: activeStep }),
+      
       ...(firstName || middleName || lastName) && {
-        ename: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
+        ename: `${firstName || ""} ${lastName || ""}`,
+        empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
       ...(dob && { dob }),
       ...(personalPhoneNo && { personal_number: personalPhoneNo }),
@@ -449,9 +391,14 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(joiningDate && { jdate: joiningDate }),
       ...(branch && { branchOffice: branch }),
       ...(manager && { reportingManager: manager }),
+      ...(designation && { newDesignation: designation }),
+      ...(designation && { designation : newDesignation}),
+      ...(designation && { bdmWork: designation === "Business Development Manager" ? true : false}),
 
-      ...(firstMonthSalary && { firstMonthSalaryCondition: firstMonthSalary }),
-      ...(salaryCalculation && { firstMonthSalary: salaryCalculation }),
+
+      ...(nameAsPerBankRecord && { nameAsPerBankRecord: nameAsPerBankRecord }),
+      ...(firstMonthSalaryCondition && { firstMonthSalaryCondition: firstMonthSalaryCondition }),
+      ...(firstMonthSalary && { firstMonthSalary: firstMonthSalary }),
 
       ...(personName && { personal_contact_person: personName }),
       ...(relationship && { personal_contact_person_relationship: relationship }),
@@ -482,30 +429,141 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
   }
 });
 
-router.put("/savedeletedemployee", async (req, res) => {
-  const { dataToDelete } = req.body;
+// router.put("/savedeletedemployee", async (req, res) => {
+//   const { dataToDelete } = req.body;
+  
+//   if (!dataToDelete || dataToDelete.length === 0) {
+//     return res.status(400).json({ error: "No employee data to save" });
+//   }
+//   try {
+//     const newLeads = await Promise.all(
+//       dataToDelete.map(async (data) => {
+//         // Retain the original _id
+//         const newData = {
+//           ...data,
+//           _id: data._id,
+//           deletedDate: new Date().toISOString(),
+//         };
 
-  if (!dataToDelete || dataToDelete.length === 0) {
-    return res.status(400).json({ error: "No employee data to save" });
-  }
+//         // Create a new document in the deletedEmployeeModel with the same _id
+//         return await deletedEmployeeModel.create(newData);
+//       })
+//     );
+
+//     res.status(200).json(newLeads);
+//   } catch (error) {
+//     console.error("Error saving deleted employee", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+
+router.put("/savedeletedemployee", upload.fields([
+  { name: "offerLetter", maxCount: 1 },
+  { name: "aadharCard", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+  { name: "educationCertificate", maxCount: 1 },
+  { name: "relievingCertificate", maxCount: 1 },
+  { name: "salarySlip", maxCount: 1 },
+  { name: "profilePhoto", maxCount: 1 },
+]), async (req, res) => {
   try {
-    const newLeads = await Promise.all(
-      dataToDelete.map(async (data) => {
-        // Retain the original _id
-        const newData = {
-          ...data,
-          _id: data._id,
-          deletedDate: new Date().toISOString(),
-        };
+    const { dataToDelete } = req.body;
 
-        // Create a new document in the deletedEmployeeModel with the same _id
-        return await deletedEmployeeModel.create(newData);
-      })
-    );
+    if (!dataToDelete || !Array.isArray(dataToDelete) || dataToDelete.length === 0) {
+      return res.status(400).json({ error: "No employee data to save" });
+    }
 
-    res.status(200).json(newLeads);
+    // console.log("Deleted data is :", dataToDelete);
+
+    const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      encoding: file.encoding,
+      mimetype: file.mimetype,
+      destination: file.destination,
+      filename: file.filename,
+      path: file.path,
+      size: file.size
+    })) : [];
+
+    const employees = await Promise.all(dataToDelete.map(async (data) => {
+      let newDesignation = data.designation;
+
+      if (data.designation === "Business Development Executive" || data.designation === "Business Development Manager") {
+        newDesignation = "Sales Executive";
+      } else if (data.designation === "Floor Manager") {
+        newDesignation = "Sales Manager";
+      } else if (data.designation === "Data Analytics") {
+        newDesignation = "Data Manager";
+      } else if (data.designation === "Admin Head") {
+        newDesignation = "RM-Certification";
+      }
+
+      const emp = {
+        ...data,
+        AddedOn: new Date(),
+
+        // Personal Info
+        ...(data.firstName || data.middleName || data.lastName) && {
+          ename: `${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""}`
+        },
+        ...(data.dob && { dob: data.dob }),
+        ...(data.gender && { gender: data.gender }),
+        ...(data.personalPhoneNo && { personal_number: data.personalPhoneNo }),
+        ...(data.personalEmail && { personal_email: data.personalEmail }),
+        ...(data.currentAddress && { currentAddress: data.currentAddress }),
+        ...(data.permanentAddress && { permanentAddress: data.permanentAddress }),
+
+        // Employment Info
+        ...(data.department && { department: data.department }),
+        ...(data.designation && { newDesignation: data.designation }),
+        ...(data.designation && { designation: newDesignation }),
+        ...(data.designation && { bdmWork: data.designation === "Business Development Manager" ? true : false }),
+        ...(data.joiningDate && { jdate: data.joiningDate }),
+        ...(data.branch && { branchOffice: data.branch }),
+        ...(data.employeementType && { employeementType: data.employeementType }),
+        ...(data.manager && { reportingManager: data.manager }),
+        ...(data.officialNo && { number: data.officialNo }),
+        ...(data.officialEmail && { email: data.officialEmail }),
+
+        // Payroll Info
+        ...(data.accountNo && { accountNo: data.accountNo }),
+        ...(data.nameAsPerBankRecord && { nameAsPerBankRecord: data.nameAsPerBankRecord }),
+        ...(data.ifscCode && { ifscCode: data.ifscCode }),
+        ...(data.salary && { salary: data.salary }),
+        ...(data.firstMonthSalaryCondition && { firstMonthSalaryCondition: data.firstMonthSalaryCondition }),
+        ...(data.firstMonthSalary && { firstMonthSalary: data.firstMonthSalary }),
+        ...(data.panNumber && { panNumber: data.panNumber }),
+        ...(data.aadharNumber && { aadharNumber: data.aadharNumber }),
+        ...(data.uanNumber && { uanNumber: data.uanNumber }),
+
+        // Emergency Info
+        ...(data.personName && { personal_contact_person: data.personName }),
+        ...(data.relationship && { personal_contact_person_relationship: data.relationship }),
+        ...(data.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
+
+        // Document Info
+        ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || []}),
+        ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || []}),
+        ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || []}),
+        ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || []}),
+        ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || []}),
+        ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || []}),
+        ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || []})
+      };
+
+      if (data.empId) {
+        emp._id = data.empId;
+      }
+
+      return deletedEmployeeModel.create(emp);
+    }));
+
+    res.json(employees);
   } catch (error) {
-    console.error("Error saving deleted employee", error);
+    console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -1871,7 +1929,6 @@ router.get("/employeeImg/:employeeName/:filename", (req, res) => {
     res.sendFile(pdfPath);
   });
 });
-
 
 // Edit Employee Details by HR-Portal
 router.post(

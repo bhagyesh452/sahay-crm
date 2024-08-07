@@ -27,12 +27,13 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import io from 'socket.io-client';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Received_booking_box() {
-
-
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
+    const [openBacdrop, setOpenBacdrop] = useState(false)
     const [currentLeadform, setCurrentLeadform] = useState(null);
     const defaultLeadData = {
         "Company Name": "",
@@ -60,6 +61,8 @@ function Received_booking_box() {
         secondPaymentRemarks: "",
         thirdPaymentRemarks: "",
         fourthPaymentRemarks: "",
+        pendingRecievedPayment: 0,
+        pendingRecievedPaymentDate: null,
     };
     const [openAllBooking, setOpenAllBooking] = useState(false)
 
@@ -99,6 +102,7 @@ function Received_booking_box() {
 
     //---------------------fetching employee data---------------------------------------
     const fetchData = async () => {
+        //setOpenBacdrop(true)
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // Set the retrieved data in the state
@@ -130,7 +134,7 @@ function Received_booking_box() {
     const fetchRedesignedFormData = async (page) => {
         const today = new Date("2024-07-15");
         today.setHours(0, 0, 0, 0); // Set to start of today
-
+        setOpenBacdrop(true)
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
@@ -140,7 +144,7 @@ function Received_booking_box() {
                 .filter(item => {
                     const lastActionDate = new Date(item.lastActionDate);
                     lastActionDate.setHours(0, 0, 0, 0);
-                    return lastActionDate >= today; // Compare directly
+                    return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
                 })
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
@@ -221,10 +225,12 @@ function Received_booking_box() {
             setCompleteRedesignedData(completeData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
+        }finally{
+            setOpenBacdrop(false)
         }
     };
 
-
+    console.log("leadformdata", leadFormData)
 
 
 
@@ -467,6 +473,14 @@ function Received_booking_box() {
 
         const primaryServices = selectedCompanyData.services || [];
 
+        const combinedRemainingpaymentsForServices = [
+            ...(selectedCompanyData.remainingPayments || []),
+            ...moreBookings.flatMap((item) => item.remainingPayments || [])
+        ];
+
+        console.log("Remaining Payment Object", combinedRemainingpaymentsForServices)
+
+
         // Combine services from selectedCompanyData.moreBookings
         const moreBookingServices = moreBookings.flatMap((item) => item.services || []);
 
@@ -489,7 +503,8 @@ function Received_booking_box() {
         selectedServices.forEach(serviceName => {
             // Find the detailed service object in combinedServices
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-
+            const remainingPaymentData = combinedRemainingpaymentsForServices.find(service => service.serviceName === serviceName)
+            console.log("RemainingPaymentData", remainingPaymentData)
             // Check if serviceData is found
             if (serviceData) {
                 // Create an object with the required fields from selectedCompanyData and serviceData
@@ -519,10 +534,14 @@ function Received_booking_box() {
                     secondPaymentRemarks: serviceData.secondPaymentRemarks || "",
                     thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
-                    bookingPublishDate: serviceData.bookingPublishDate || '', // Handle optional fields
+                    bookingPublishDate: serviceData.bookingPublishDate || '',
+                    pendingRecievedPayment: remainingPaymentData ? remainingPaymentData.receivedPayment : 0,
+                    pendingRecievedPaymentDate: remainingPaymentData ? remainingPaymentData.paymentDate : null,
+                    addedOn: new Date() // Handle optional fields
                 };
 
                 // Push the created object to dataToSend array
+                console.log("servicesToSend", serviceToSend)
                 dataToSend.push(serviceToSend);
             } else {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
@@ -530,7 +549,9 @@ function Received_booking_box() {
         });
 
         if (dataToSend.length !== 0) {
+            setOpenBacdrop(true)
             try {
+                console.log("dataToSend", dataToSend)
                 const responses = await Promise.all([
                     axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
                         dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
@@ -559,11 +580,12 @@ function Received_booking_box() {
             } catch (error) {
                 console.error("Error sending data:", error.message);
                 Swal.fire("Error", "Failed to upload bookings", error.message);
+            }finally{
+                setOpenBacdrop(false)
             }
         } else {
             console.log("No data to send.");
         }
-
         // Assuming setDataToSend updates state to store dataToSend array
         setDataToSend(dataToSend);
         // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
@@ -607,11 +629,21 @@ function Received_booking_box() {
         });
     };
 
+    //--------------function to disable click-------------------------
+    // const shouldDisableButton = ![
+    //     ...obj.services,
+    //     ...(obj.moreBookings || []).flatMap(booking => booking.services)
+    // ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
+
 
     //console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
     //console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
     // console.log("leadformdata", leadFormData)
     // console.log("currentleadform", currentLeadform)
+
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
 
     return (
         <div>
@@ -676,6 +708,7 @@ function Received_booking_box() {
                                         </div>
                                         <div className="booking-list-body">
                                             {leadFormData.length !== 0 && leadFormData.map((obj, index) => (
+
                                                 <div className={
                                                     currentLeadform &&
                                                         currentLeadform["Company Name"] ===
@@ -705,25 +738,45 @@ function Received_booking_box() {
                                                             </div>
                                                         </div>
                                                         <div className='d-flex'>
-                                                            <button className='btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center'
-                                                                onClick={() => (
-                                                                    //setOpenServicesPopup(true),
-                                                                    setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"])),
-                                                                    handleOpenServices(obj["Company Name"])
+                                                            {(() => {
+                                                                const shouldDisableButton = ![
+                                                                    ...obj.services,
+                                                                    ...(obj.moreBookings || []).flatMap(booking => booking.services)
+                                                                ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
 
-                                                                )
-                                                                }>
-                                                                <div className='btn-swap-icon'>
-                                                                    {/* <SlActionRedo /> */}
-                                                                    <FaCheck
+                                                                return (
+                                                                    <>
+                                                                        {!shouldDisableButton && (
+                                                                            <button
+                                                                                className={
+                                                                                    shouldDisableButton
+                                                                                        ? "disabled_rmcert_check btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center cursor-pointer-none"
+                                                                                        : "btn btn-sm btn-swap-round btn-swap-round-success d-flex align-items-center"
+                                                                                }
+                                                                                onClick={() => {
+                                                                                    setSelectedCompanyData(leadFormData.find(company => company["Company Name"] === obj["Company Name"]));
+                                                                                    handleOpenServices(obj["Company Name"]);
+                                                                                }}
+                                                                            >
+                                                                                <div
+                                                                                    className={
+                                                                                        shouldDisableButton
+                                                                                            ? "disabled btn-swap-icon cursor-pointer-none"
+                                                                                            : "btn-swap-icon"
+                                                                                    }
+                                                                                >
+                                                                                    <FaCheck />
+                                                                                </div>
+                                                                            </button>
+                                                                        )}
+                                                                    </>
+                                                                );
+                                                            })()}
 
-                                                                    />
-                                                                </div>
-                                                            </button>
-                                                            <button className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
-                                                                onClick={() => (
-                                                                    handleDisplayOffToRm(obj["Company Name"])
-                                                                )}
+
+                                                            <button
+                                                                className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
+                                                                onClick={() => handleDisplayOffToRm(obj["Company Name"])}
                                                             >
                                                                 <div className='btn-swap-icon'>
                                                                     {/* <SlActionRedo /> */}
@@ -731,6 +784,7 @@ function Received_booking_box() {
                                                                 </div>
                                                             </button>
                                                         </div>
+
                                                     </div>
                                                     <div className='d-flex justify-content-start align-items-center flex-wrap mt-1'>
                                                         {obj.services.length !== 0 || obj.moreBookings.length !== 0 ? (
@@ -2583,6 +2637,14 @@ function Received_booking_box() {
                     Submit
                 </Button>
             </Dialog>
+
+            {/* --------------------------------backedrop------------------------- */}
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
 
             {openAllBooking && (
                 <RmofCertificationAllBookings
