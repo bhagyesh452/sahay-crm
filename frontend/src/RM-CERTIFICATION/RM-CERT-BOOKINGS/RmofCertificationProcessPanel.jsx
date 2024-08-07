@@ -379,6 +379,7 @@ function RmofCertificationProcessPanel() {
                                                 serviceName={obj.serviceName}
                                                 mainStatus={obj.mainCategoryStatus}
                                                 contentStatus={obj.contentWriter === "Not Applicable" ? "Not Applicable" : obj.contentStatus}
+                                                brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                 writername={obj.contentWriter}
                                                 refreshData={refreshData}
                                             /></td>
@@ -399,6 +400,7 @@ function RmofCertificationProcessPanel() {
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 mainStatus={obj.mainCategoryStatus}
+                                                contentStatus={obj.contentStatus ? obj.contentStatus : "Not Started"}
                                                 brochureStatus={obj.brochureStatus}
                                                 designername={obj.brochureDesigner}
                                                 refreshData={refreshData}

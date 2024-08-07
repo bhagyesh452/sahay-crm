@@ -6,7 +6,7 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
 
-const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentStatus, writername, refreshData }) => {
+const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentStatus, writername, refreshData ,brochureStatus }) => {
   const [status, setStatus] = useState(contentStatus);
   const [statusClass, setStatusClass] = useState("untouched_status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -15,8 +15,6 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
-
-
     try {
       let response;
       if (mainStatus === "Process") {
@@ -49,7 +47,7 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
           serviceName,
           contentStatus: newStatus
         });
-      } else if (mainStatus === "ReadyToSubmit") {
+      } else if (mainStatus === "Ready To Submit") {
         response = await axios.post(`${secretKey}/rm-services/update-content-rmofcertification`, {
           companyName,
           serviceName,
@@ -59,11 +57,13 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
       }
 
       refreshData();
-      console.log("Status updated successfully:", response.data);
+      //console.log("Status updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating status:", error.message);
     }
   };
+
+  
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -98,7 +98,40 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
     setStatusClass(getStatusClass(contentStatus));
   }, [contentStatus]);
 
-  console.log("writername", companyName, serviceName, writername, contentStatus)
+  // useEffect(() => {
+  //   const updateStatus = async () => {
+  //     if (contentStatus === "Approved" && brochureStatus === "Approved") {
+  //       try {
+  //         //console.log("Updating status...");
+  //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: "Ready To Submit",
+  //           mainCategoryStatus: "Ready To Submit",
+  //           previousMainCategoryStatus: mainStatus,
+  //           previousSubCategoryStatus: status
+  //         });
+  //         ///console.log("Status updated successfully:", response.data);
+
+  //         if (response.status === 200) {
+  //           // Ensure refreshData is called correctly
+  //           //console.log("Calling refreshData");
+  //           await refreshData();
+  //         } else {
+  //           console.error("Failed to update status:", response.status);
+  //         }
+  //       } catch (error) {
+  //         console.error("Error updating status:", error.message);
+  //       }
+  //     }
+  //   };
+
+  //   updateStatus();
+  // }, [contentStatus, brochureStatus]);
+
+  // console.log("contentstat" , contentStatus , brochureStatus)
+
+  //console.log("writername", companyName, serviceName, writername, contentStatus)
 
 
   return (

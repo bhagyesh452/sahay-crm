@@ -32,187 +32,406 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
   // }, [contentStatus , brochureStatus]);
 
 
-  const handleStatusChange = async (newStatus, statusClass) => {
-    setStatus(newStatus);
-    setStatusClass(statusClass);
-    setNewSubStatus(newStatus);
+  // const handleStatusChange = async (newStatus, statusClass) => {
+  //   setStatus(newStatus);
+  //   setStatusClass(statusClass);
+  //   setNewSubStatus(newStatus);
+  //   console.log("newStatus", newStatus)
 
-    try {
-      let response;
-      if (mainStatus === "General") {
+  //   try {
+  //     let response;
+  //     let movedFromMainCategoryStatus;
+  //     let movedToMainCategoryStatus;
+  //     if (mainStatus === "General") {
+  //       movedFromMainCategoryStatus = "General";
+  //       movedToMainCategoryStatus = "Process";
+
+  //       response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification-changegeneral`, {
+  //         companyName,
+  //         serviceName,
+  //         subCategoryStatus: newStatus,
+  //         mainCategoryStatus: "Process",
+  //         previousMainCategoryStatus: "General",
+  //         previousSubCategoryStatus: newStatus,
+  //         dateOfChangingMainStatus: new Date(),
+  //         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //         movedToMainCategoryStatus: movedToMainCategoryStatus
+  //       });
+  //       //console.log("movedfromstatus" , movedFromMainCategoryStatus , movedToMainCategoryStatus)
+  //     }
+  //     else if (mainStatus === "Process") {
+  //       if (newStatus === "Submitted") {
+  //         movedFromMainCategoryStatus = "Process";
+  //         movedToMainCategoryStatus = "Submitted";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Submitted",
+  //           previousMainCategoryStatus: "Process",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Defaulter") {
+  //         movedFromMainCategoryStatus = "Process";
+  //         movedToMainCategoryStatus = "Defaulter";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Defaulter",
+  //           previousMainCategoryStatus: "Process",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Hold") {
+  //         movedFromMainCategoryStatus = "Process";
+  //         movedToMainCategoryStatus = "Hold";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Hold",
+  //           previousMainCategoryStatus: "Process",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Undo") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           //mainCategoryStatus: "Defaulter",
+  //         });
+  //       }
+  //       else if (newStatus === "Ready To Submit") {
+  //         movedFromMainCategoryStatus = "Process";
+  //         movedToMainCategoryStatus = "Ready To Submit";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Ready To Submit",
+  //           previousMainCategoryStatus: "Process",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Process"
+  //         });
+  //       }
+  //     } else if (mainStatus === "Ready To Submit") {
+  //       if (newStatus === "Submitted") {
+  //         movedFromMainCategoryStatus = "Ready To Submit";
+  //         movedToMainCategoryStatus = "Submitted";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Submitted",
+  //           previousMainCategoryStatus: "Ready To Submit",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Defaulter") {
+  //         movedFromMainCategoryStatus = "Ready To Submit";
+  //         movedToMainCategoryStatus = "Defaulter";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Defaulter",
+  //           previousMainCategoryStatus: "Ready To Submit",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Hold") {
+  //         movedFromMainCategoryStatus = "Ready To Submit";
+  //         movedToMainCategoryStatus = "Hold";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Hold",
+  //           previousMainCategoryStatus: "Ready To Submit",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Undo") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           //mainCategoryStatus: "Defaulter",
+  //         });
+  //       }
+  //       // else if (newStatus === "Approved") {
+  //       //   response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //       //     companyName,
+  //       //     serviceName,
+  //       //     subCategoryStatus: newStatus,
+  //       //     mainCategoryStatus: "Approved",
+  //       //   });
+  //       // } 
+  //       else if (newStatus === "Ready To Submit") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Ready To Submit",
+  //         });
+  //       } else {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Ready To Submit"
+  //         });
+  //       }
+  //     } else if (mainStatus === "Submitted") {
+  //       if (newStatus === "Approved") {
+  //         movedFromMainCategoryStatus = "Submitted";
+  //         movedToMainCategoryStatus = "Approved";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Approved",
+  //           previousMainCategoryStatus: "Submitted",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Defaulter") {
+  //         movedFromMainCategoryStatus = "Submitted";
+  //         movedToMainCategoryStatus = "Defaulter";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Defaulter",
+  //           previousMainCategoryStatus: "Submitted",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Undo") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           //mainCategoryStatus: "Defaulter",
+  //         });
+  //       } else if (newStatus === "2nd Time Submitted") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           SecondTimeSubmitDate: new Date()
+  //           //mainCategoryStatus: "Defaulter",
+  //         });
+  //       } else if (newStatus === "3rd Time Submitted") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           ThirdTimeSubmitDate: new Date()
+  //           //mainCategoryStatus: "Defaulter",
+  //         });
+  //       }
+  //       else {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Submitted"
+  //         });
+  //       }
+  //     }
+  //     else if (mainStatus === "Defaulter") {
+  //       if (newStatus === "Working") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Defaulter"
+  //         });
+  //       } else if (newStatus === "Hold") {
+  //         movedFromMainCategoryStatus = "Defaulter";
+  //         movedToMainCategoryStatus = "Hold";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Hold",
+  //           previousMainCategoryStatus: "Defaulter",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Undo") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           //mainCategoryStatus: "Defaulter",
+  //         });
+  //       }
+  //     }
+  //     else if (mainStatus === "Hold") {
+  //       if (newStatus === "Hold") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Hold"
+  //         });
+  //       } else if (newStatus === "Undo") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           //mainCategoryStatus: "Defaulter",
+  //         });
+  //       } else if (newStatus === "Defaulter") {
+  //         movedFromMainCategoryStatus = "Hold";
+  //         movedToMainCategoryStatus = "Defaulter";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: newStatus,
+  //           previousMainCategoryStatus: "Hold",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Working") {
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: "Hold"
+  //         });
+  //       } else if (newStatus === "Submitted") {
+  //         movedFromMainCategoryStatus = "Hold";
+  //         movedToMainCategoryStatus = "Defaulter";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: newStatus,
+  //           previousMainCategoryStatus: "Hold",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       } else if (newStatus === "Process") {
+  //         movedFromMainCategoryStatus = "Hold";
+  //         movedToMainCategoryStatus = "Defaulter";
+  //         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: newStatus,
+  //           mainCategoryStatus: newStatus,
+  //           previousMainCategoryStatus: "Hold",
+  //           previousSubCategoryStatus: newStatus,
+  //           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+  //           movedToMainCategoryStatus: movedToMainCategoryStatus,
+  //         });
+  //       }
+  //     }
+  //     refreshData();
+  //     console.log("Status updated successfully:", response.data);
+  //   } catch (error) {
+  //     console.error("Error updating status:", error.message);
+  //   }
+  // };
+
+  const handleStatusChange = async (newStatus, statusClass) => {
+  setStatus(newStatus);
+  setStatusClass(statusClass);
+  setNewSubStatus(newStatus);
+  console.log("newStatus", newStatus);
+
+  try {
+    let response;
+    let movedFromMainCategoryStatus = mainStatus;
+    let movedToMainCategoryStatus;
+
+    const postData = {
+      companyName,
+      serviceName,
+      subCategoryStatus: newStatus,
+      previousMainCategoryStatus: movedFromMainCategoryStatus,
+      previousSubCategoryStatus: newStatus,
+      movedFromMainCategoryStatus,
+    };
+
+    switch (mainStatus) {
+      case "General":
+        movedToMainCategoryStatus = "Process";
         response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification-changegeneral`, {
-          companyName,
-          serviceName,
-          subCategoryStatus: newStatus,
+          ...postData,
           mainCategoryStatus: "Process",
-          previousMainCategoryStatus: "General",
-          previousSubCategoryStatus: newStatus,
-          dateOfChangingMainStatus: new Date()
+          movedToMainCategoryStatus
         });
-      }
-      else if (mainStatus === "Process") {
-        if (newStatus === "Submitted") {
+        break;
+
+      case "Process":
+        movedToMainCategoryStatus = newStatus;
+        response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+          ...postData,
+          mainCategoryStatus: newStatus,
+          movedToMainCategoryStatus
+        });
+        break;
+
+      case "Ready To Submit":
+        if (newStatus === "Submitted" || newStatus === "Defaulter" || newStatus === "Hold") {
+          movedToMainCategoryStatus = newStatus;
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Submitted",
-            previousMainCategoryStatus: "Process",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Defaulter") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Defaulter",
-            previousMainCategoryStatus: "Process",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Hold") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold",
-            previousMainCategoryStatus: "Process",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Undo") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            //mainCategoryStatus: "Defaulter",
-          });
-        }
-        else if (newStatus === "ReadyToSubmit") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "ReadyToSubmit",
-            previousMainCategoryStatus: "Process",
-            previousSubCategoryStatus: newStatus
+            ...postData,
+            mainCategoryStatus: newStatus,
+            movedToMainCategoryStatus
           });
         } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: "Process"
+            mainCategoryStatus: "Ready To Submit"
           });
         }
-      }else if (mainStatus === "ReadyToSubmit") {
-        if (newStatus === "Submitted") {
+        break;
+
+      case "Submitted":
+        if (["Approved", "2nd Time Submitted", "3rd Time Submitted"].includes(newStatus)) {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Submitted",
-            previousMainCategoryStatus: "ReadyToSubmit",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Defaulter") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Defaulter",
-            previousMainCategoryStatus: "ReadyToSubmit",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Hold") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold",
-            previousMainCategoryStatus: "ReadyToSubmit",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Undo") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            //mainCategoryStatus: "Defaulter",
-          });
-        } else if (newStatus === "Approved") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Approved",
-          });
-        } else if (newStatus === "ReadyToSubmit") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "ReadyToSubmit",
+            ...postData,
+            mainCategoryStatus: newStatus,
+            [`${newStatus.replace(" ", "")}Date`]: new Date()
           });
         } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "ReadyToSubmit"
-          });
-        }
-      } else if (mainStatus === "Submitted") {
-        if (newStatus === "Approved") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Approved",
-            previousMainCategoryStatus: "Submitted",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Defaulter") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Defaulter",
-            previousMainCategoryStatus: "Submitted",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Undo") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            //mainCategoryStatus: "Defaulter",
-          });
-        } else if (newStatus === "2nd Time Submitted") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            SecondTimeSubmitDate:new Date()
-            //mainCategoryStatus: "Defaulter",
-          });
-        }else if (newStatus === "3rd Time Submitted") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            ThirdTimeSubmitDate:new Date()
-            //mainCategoryStatus: "Defaulter",
-          });
-        }
-        else {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
+            ...postData,
             mainCategoryStatus: "Submitted"
           });
         }
-      }
-      else if (mainStatus === "Defaulter") {
+        break;
+
+      case "Defaulter":
         if (newStatus === "Working") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -220,81 +439,48 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter"
           });
-        } else if (newStatus === "Hold") {
+        } else if (["Hold", "Undo"].includes(newStatus)) {
+          movedToMainCategoryStatus = newStatus;
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold",
-            previousMainCategoryStatus: "Defaulter",
-            previousSubCategoryStatus: newStatus
+            ...postData,
+            mainCategoryStatus: newStatus,
+            movedToMainCategoryStatus
+          });
+        }
+        break;
+
+      case "Hold":
+        if (["Defaulter", "Submitted", "Process"].includes(newStatus)) {
+          movedToMainCategoryStatus = newStatus;
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            ...postData,
+            mainCategoryStatus: newStatus,
+            movedToMainCategoryStatus
           });
         } else if (newStatus === "Undo") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
-            subCategoryStatus: newStatus,
-            //mainCategoryStatus: "Defaulter",
+            subCategoryStatus: newStatus
           });
         }
-      }
-      else if (mainStatus === "Hold") {
-        if (newStatus === "Hold") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold"
-          });
-        } else if (newStatus === "Undo") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            //mainCategoryStatus: "Defaulter",
-          });
-        } else if (newStatus === "Defaulter") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus,
-            previousMainCategoryStatus: "Hold",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Working") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold"
-          });
-        } else if (newStatus === "Submitted") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus,
-            previousMainCategoryStatus: "Hold",
-            previousSubCategoryStatus: newStatus
-          });
-        } else if (newStatus === "Process") {
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: newStatus,
-            previousMainCategoryStatus: "Hold",
-            previousSubCategoryStatus: newStatus
-          });
-        }
-      }
-      refreshData();
-      console.log("Status updated successfully:", response.data);
-    } catch (error) {
-      console.error("Error updating status:", error.message);
+        break;
+
+      default:
+        response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+          companyName,
+          serviceName,
+          subCategoryStatus: newStatus
+        });
     }
-  };
+
+    refreshData();
+    console.log("Status updated successfully:", response.data);
+  } catch (error) {
+    console.error("Error updating status:", error.message);
+  }
+};
+
 
   const getStatusClass = (mainStatus, subStatus) => {
     switch (mainStatus) {
@@ -336,9 +522,9 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
           default:
             return "";
         }
-      case "ReadyToSubmit":
+      case "Ready To Submit":
         switch (subStatus) {
-          case "ReadyToSubmit":
+          case "Ready To Submit":
             return "ready_to_submit";
           case "Submitted":
             return "submited-status";
@@ -398,41 +584,41 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
     setStatusClass(getStatusClass(mainStatus, subStatus));
   }, [mainStatus, subStatus]);
 
-  console.log("status" , contentStatus , brochureStatus)
 
-  useEffect(() => {
-    //console.log("useEffect triggered");
-  
-    const updateStatus = async () => {
-      if (contentStatus === "Approved" && brochureStatus === "Approved") {
-        try {
-          //console.log("Updating status...");
-          const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: "ReadyToSubmit",
-            mainCategoryStatus: "ReadyToSubmit",
-            previousMainCategoryStatus: mainStatus,
-            previousSubCategoryStatus: status
-          });
-          ///console.log("Status updated successfully:", response.data);
-          
-          if (response.status === 200) {
-            // Ensure refreshData is called correctly
-            //console.log("Calling refreshData");
-            await refreshData();
-          } else {
-            console.error("Failed to update status:", response.status);
-          }
-        } catch (error) {
-          console.error("Error updating status:", error.message);
-        }
-      }
-    };
-  
-    updateStatus();
-  }, [contentStatus, brochureStatus]);
-  
+
+  // useEffect(() => {
+  //   //console.log("useEffect triggered");
+
+  //   const updateStatus = async () => {
+  //     if (contentStatus === "Approved" && brochureStatus === "Approved") {
+  //       try {
+  //         //console.log("Updating status...");
+  //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+  //           companyName,
+  //           serviceName,
+  //           subCategoryStatus: "Ready To Submit",
+  //           mainCategoryStatus: "Ready To Submit",
+  //           previousMainCategoryStatus: mainStatus,
+  //           previousSubCategoryStatus: status
+  //         });
+  //         ///console.log("Status updated successfully:", response.data);
+
+  //         if (response.status === 200) {
+  //           // Ensure refreshData is called correctly
+  //           //console.log("Calling refreshData");
+  //           await refreshData();
+  //         } else {
+  //           console.error("Failed to update status:", response.status);
+  //         }
+  //       } catch (error) {
+  //         console.error("Error updating status:", error.message);
+  //       }
+  //     }
+  //   };
+
+  //   updateStatus();
+  // }, [contentStatus, brochureStatus]);
+
 
 
 
@@ -531,7 +717,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("ReadyToSubmit", "ready_to_submit")}
+                onClick={() => handleStatusChange("Ready To Submit", "ready_to_submit")}
                 href="#"
               >
                 Ready To Submit
@@ -592,12 +778,12 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
               </a>
             </li>
           </ul>
-        ) : mainStatus === "ReadyToSubmit" ? (
+        ) : mainStatus === "Ready To Submit" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             <li>
               <a
                 className="dropdown-item"
-                onClick={() => handleStatusChange("ReadyToSubmit", "ready_to_submit")}
+                onClick={() => handleStatusChange("Ready To Submit", "ready_to_submit")}
                 href="#"
               >
                 Ready To Submit
@@ -610,15 +796,6 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
                 href="#"
               >
                 Submitted
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Approved", "approved-status")}
-                href="#"
-              >
-                Approved
               </a>
             </li>
             <li>
