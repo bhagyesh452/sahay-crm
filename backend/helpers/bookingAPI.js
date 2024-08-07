@@ -19,6 +19,8 @@ const { Parser } = require('json2csv');
 const { appendDataToSheet, appendRemainingDataToSheet } = require('./Google_sheetsAPI.js');
 const NotiModel = require('../models/Notifications.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
+const mongoose = require('mongoose'); // Import mongoose
+const ObjectId = mongoose.Types.ObjectId;
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -4961,22 +4963,62 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
 
 
 // Request to Delete a booking
+// router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
+//   try {
+
+//     const companyId = req.params.companyId;
+//     // Find and delete the booking with the given companyId
+//     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
+//       company: companyId,
+//     });
+//     //console.log("deletetesting", deletedBooking)
+//     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
+//       companyId,
+//       { $set: { Status: "Interested" } },
+//       {
+//         $unset: {
+//           maturedBdmName: "",
+//           multiBdmName: []
+//         }
+//       },
+//       { new: true }
+//     );
+
+//     if (deletedBooking) {
+//       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
+//         "Company Name": deletedBooking["Company Name"],
+//       });
+//       //console.log("deleteDraft", deleteDraft)
+//     } 
+
+//     if (updateMainBooking.bdmAcceptStatus !== null && updateMainBooking.bdmAcceptStatus === "Accept") {
+//       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
+//     } 
+//     res.status(200).send("Booking deleted successfully");
+//   } catch (error) {
+//     console.error("Error deleting booking:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
+
 router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
+
     const companyId = req.params.companyId;
-    const leadForm = await RedesignedLeadformModel.findOne({ company: companyId });
-   console.log("leadform" , leadform)
+    const leadForm = await RedesignedLeadformModel.findOne({ company: companyId})
+    const serviceNames = leadForm.services.map(service => service.serviceName);
 
-    // const serviceNames = leadForm.services.map(service => service.name);
-    // console.log("seervicenames", serviceNames)
+    console.log("leadForm" , leadForm)
+    console.log("serviceName" , serviceNames)
     // Find and delete the booking with the given companyId
-    const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
-
-    // Update main booking status and unset fields
+    const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
+      company: companyId,
+    });
+    //console.log("deletetesting", deletedBooking)
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
+      { $set: { Status: "Interested" } },
       {
-        $set: { Status: "Interested" },
         $unset: {
           maturedBdmName: "",
           multiBdmName: []
@@ -4984,40 +5026,23 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       },
       { new: true }
     );
-    // console.log("seervicenames", serviceNames)
 
+    const deleteResult = await RMCertificationModel.findOneAndDelete({
+      "Company Name": leadForm["Company Name"],
+      serviceName: { $in: serviceNames }
+    });
 
-    // const result = await RMCertificationModel.deleteOne({
-    //   "Company Name": leadForm["Company Name"],
-    //   serviceName: { $in: serviceNames }
-    // });
-    // console.log("result", result)
+    console.log('Delete Result:', deleteResult); // Debug log
 
     if (deletedBooking) {
-      console.log("Deleted Booking:", deletedBooking);
-
-      const companyNameToDelete = deletedBooking["Company Name"];
-      console.log("Company Name to delete from Draft:", companyNameToDelete);
-
-      // Delete from RedesignedDraftModel
       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
-        "Company Name": companyNameToDelete
+        "Company Name": deletedBooking["Company Name"],
       });
-
-      if (deleteDraft) {
-        console.log("Draft Deleted:", deleteDraft);
-      } else {
-        console.log("No draft found for deletion");
-      }
-    } else {
-      return res.status(404).send("Booking not found");
+      //console.log("deleteDraft", deleteDraft)
     }
 
-    if (updateMainBooking.bdmAcceptStatus === "Accept") {
+    if (updateMainBooking.bdmAcceptStatus !== null && updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
-      if (!deleteTeamBooking) {
-        console.log("No team booking found for deletion");
-      }
     }
 
     res.status(200).send("Booking deleted successfully");
@@ -5026,7 +5051,6 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 router.get('/redesigneddraftmodelcompanies', async (req, res) => {
   try {
@@ -5150,27 +5174,35 @@ router.delete(
     try {
       const company = req.params.company;
       const companyId = req.params.companyId;
-      const leadForm = await RedesignedLeadformModel.findOne({ company: company });
-      const bookingToRemove = leadForm.moreBookings.find(
-        booking => booking._id.toString() === companyId
-      );
-      console.log("remove" , bookingToRemove)
+      //const companyObjectId = mongoose.Types.ObjectId(companyId);
+      const leadForm = await RedesignedLeadformModel.findOne({ company: company})
+      const bookingToRemove = leadForm.moreBookings.find(booking => {
+        console.log(`Booking ID: ${booking._id.toString()}`);  // Log the booking ID
+        console.log(`Company Object ID: ${companyId.toString()}`);  // Log the company Object ID
+      
+        return booking._id.toString() === companyId.toString();
+      });
 
-      //const serviceNames = bookingToRemove.services.map(service => service.name);
-      //console.log("seervicenames", serviceNames)
+      const serviceNames = bookingToRemove.services.map(service => service.serviceName);
+      
 
+      console.log("leadForm" , leadForm)
+      console.log("bookingToRenove" , bookingToRemove)
+      console.log("servicesName" , serviceNames)
+
+      
       const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(
         { company: company },
         { $pull: { moreBookings: { _id: companyId } } },
         { new: true }
       );
 
-      // const result = await RMCertificationModel.deleteOne({
-      //   "Company Name": leadForm["Company Name"],
-      //   serviceName: { $in: serviceNames }
-      // });
-
-      //console.log("result", result)
+      const deleteResult = await RMCertificationModel.findOneAndDelete({
+        "Company Name": leadForm["Company Name"],
+        serviceName: { $in: serviceNames }
+      });
+  
+      console.log('Delete Result:', deleteResult); // Debug log
 
       if (!updatedLeadForm) {
         return res.status(404).send("Booking not found");

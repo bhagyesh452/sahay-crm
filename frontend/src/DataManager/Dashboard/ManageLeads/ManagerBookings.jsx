@@ -224,6 +224,7 @@ function ManagerBookings() {
 
     if (confirmation.isConfirmed) {
       if (id) {
+        console.log("id" , id)
         fetch(
           `${secretKey}/bookings/redesigned-delete-particular-booking/${company}/${id}`,
           {
