@@ -188,15 +188,15 @@ router.post("/einfo", upload.fields([
       }
     });
 
-    let newDesignation = employeementInfo.designation;
+    let newDesignation = employeementInfo?.designation;
 
-    if (employeementInfo.designation === "Business Development Executive" || employeementInfo.designation === "Business Development Manager") {
+    if (employeementInfo?.designation === "Business Development Executive" || employeementInfo?.designation === "Business Development Manager") {
       newDesignation = "Sales Executive";
-    } else if (employeementInfo.designation === "Floor Manager") {
+    } else if (employeementInfo?.designation === "Floor Manager") {
       newDesignation = "Sales Manager";
-    } else if (employeementInfo.designation === "Data Analytics") {
+    } else if (employeementInfo?.designation === "Data Analytics") {
       newDesignation = "Data Manager";
-    } else if (employeementInfo.designation === "Admin Head") {
+    } else if (employeementInfo?.designation === "Admin Head") {
       newDesignation = "RM-Certification";
     }
 
@@ -206,7 +206,7 @@ router.post("/einfo", upload.fields([
       employeeID: employeeID,
 
       ...(personalInfo?.firstName || personalInfo?.middleName || personalInfo?.lastName) && {
-        ename: `${personalInfo?.firstName || ""} ${personalInfo?.lastName || ""}`,
+        ename: `${personalInfo?.firstName || ""} ${personalInfo?.middleName} ${personalInfo?.lastName || ""}`,
         empFullName: `${personalInfo.firstName || ""} ${personalInfo.middleName || ""} ${personalInfo.lastName || ""}`
       },
       ...(personalInfo?.dob && { dob: personalInfo.dob }),
@@ -215,12 +215,12 @@ router.post("/einfo", upload.fields([
       ...(personalInfo?.personalEmail && { personal_email: personalInfo.personalEmail }),
       ...(personalInfo?.currentAddress && { currentAddress: personalInfo.currentAddress }),
       ...(personalInfo?.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
-      
+
       ...(employeementInfo?.empId && { empID: employeementInfo.empId }),
       ...(employeementInfo?.department && { department: employeementInfo.department }),
       ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
       ...(employeementInfo?.designation && { designation: newDesignation }),
-      ...(employeementInfo?.designation && { bdmWork: employeementInfo.designation === "Business Development Manager" ? true : false}),
+      ...(employeementInfo?.designation && { bdmWork: employeementInfo.designation === "Business Development Manager" ? true : false }),
       ...(employeementInfo?.joiningDate && { jdate: employeementInfo.joiningDate }),
       ...(employeementInfo?.branch && { branchOffice: employeementInfo.branch }),
       ...(employeementInfo?.employeementType && { employeementType: employeementInfo.employeementType }),
@@ -377,9 +377,9 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 
     const updateFields = {
       ...req.body,
-      
+
       ...(firstName || middleName || lastName) && {
-        ename: `${firstName || ""} ${lastName || ""}`,
+        ename: `${firstName || ""} ${middleName} ${lastName || ""}`,
         empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
       ...(dob && { dob }),
@@ -392,8 +392,8 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(branch && { branchOffice: branch }),
       ...(manager && { reportingManager: manager }),
       ...(designation && { newDesignation: designation }),
-      ...(designation && { designation : newDesignation}),
-      ...(designation && { bdmWork: designation === "Business Development Manager" ? true : false}),
+      ...(designation && { designation: newDesignation }),
+      ...(designation && { bdmWork: designation === "Business Development Manager" ? true : false }),
 
 
       ...(nameAsPerBankRecord && { nameAsPerBankRecord: nameAsPerBankRecord }),
@@ -431,7 +431,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 
 // router.put("/savedeletedemployee", async (req, res) => {
 //   const { dataToDelete } = req.body;
-  
+
 //   if (!dataToDelete || dataToDelete.length === 0) {
 //     return res.status(400).json({ error: "No employee data to save" });
 //   }
@@ -503,55 +503,56 @@ router.put("/savedeletedemployee", upload.fields([
 
       const emp = {
         ...data,
-        AddedOn: new Date(),
+        deletedDate: new Date(),
 
         // Personal Info
         ...(data.firstName || data.middleName || data.lastName) && {
-          ename: `${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""}`
+          ename: `${data.firstName || ""} ${data.middleName} ${data.lastName || ""}`,
+          empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
         },
         ...(data.dob && { dob: data.dob }),
         ...(data.gender && { gender: data.gender }),
-        ...(data.personalPhoneNo && { personal_number: data.personalPhoneNo }),
-        ...(data.personalEmail && { personal_email: data.personalEmail }),
-        ...(data.currentAddress && { currentAddress: data.currentAddress }),
-        ...(data.permanentAddress && { permanentAddress: data.permanentAddress }),
+        ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo}),
+        ...(data?.personalEmail && { personal_email: data.personalEmail }),
+        ...(data?.currentAddress && { currentAddress: data.currentAddress }),
+        ...(data?.permanentAddress && { permanentAddress: data.permanentAddress }),
 
         // Employment Info
-        ...(data.department && { department: data.department }),
-        ...(data.designation && { newDesignation: data.designation }),
-        ...(data.designation && { designation: newDesignation }),
-        ...(data.designation && { bdmWork: data.designation === "Business Development Manager" ? true : false }),
-        ...(data.joiningDate && { jdate: data.joiningDate }),
-        ...(data.branch && { branchOffice: data.branch }),
-        ...(data.employeementType && { employeementType: data.employeementType }),
-        ...(data.manager && { reportingManager: data.manager }),
-        ...(data.officialNo && { number: data.officialNo }),
-        ...(data.officialEmail && { email: data.officialEmail }),
+        ...(data?.department && { department: data.department }),
+        ...(data?.designation && { newDesignation: data.designation }),
+        ...(data?.designation && { designation: newDesignation }),
+        ...(data?.designation && { bdmWork: data.designation === "Business Development Manager" ? true : false }),
+        ...(data?.joiningDate && { jdate: data.joiningDate }),
+        ...(data?.branch && { branchOffice: data.branch }),
+        ...(data?.employeementType && { employeementType: data.employeementType }),
+        ...(data?.manager && { reportingManager: data.manager }),
+        ...(data?.officialNo && { number: data.officialNo }),
+        ...(data?.officialEmail && { email: data.officialEmail }),
 
         // Payroll Info
-        ...(data.accountNo && { accountNo: data.accountNo }),
-        ...(data.nameAsPerBankRecord && { nameAsPerBankRecord: data.nameAsPerBankRecord }),
-        ...(data.ifscCode && { ifscCode: data.ifscCode }),
-        ...(data.salary && { salary: data.salary }),
-        ...(data.firstMonthSalaryCondition && { firstMonthSalaryCondition: data.firstMonthSalaryCondition }),
-        ...(data.firstMonthSalary && { firstMonthSalary: data.firstMonthSalary }),
-        ...(data.panNumber && { panNumber: data.panNumber }),
-        ...(data.aadharNumber && { aadharNumber: data.aadharNumber }),
-        ...(data.uanNumber && { uanNumber: data.uanNumber }),
+        ...(data?.accountNo && { accountNo: data.accountNo }),
+        ...(data?.nameAsPerBankRecord && { nameAsPerBankRecord: data.nameAsPerBankRecord }),
+        ...(data?.ifscCode && { ifscCode: data.ifscCode }),
+        ...(data?.salary && { salary: data.salary }),
+        ...(data?.firstMonthSalaryCondition && { firstMonthSalaryCondition: data.firstMonthSalaryCondition }),
+        ...(data?.firstMonthSalary && { firstMonthSalary: data.firstMonthSalary }),
+        ...(data?.panNumber && { panNumber: data.panNumber }),
+        ...(data?.aadharNumber && { aadharNumber: data.aadharNumber }),
+        ...(data?.uanNumber && { uanNumber: data.uanNumber }),
 
         // Emergency Info
-        ...(data.personName && { personal_contact_person: data.personName }),
-        ...(data.relationship && { personal_contact_person_relationship: data.relationship }),
-        ...(data.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
+        ...(data?.personName && { personal_contact_person: data.personName }),
+        ...(data?.relationship && { personal_contact_person_relationship: data.relationship }),
+        ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
 
         // Document Info
-        ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || []}),
-        ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || []}),
-        ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || []}),
-        ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || []}),
-        ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || []}),
-        ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || []}),
-        ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || []})
+        ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || [] }),
+        ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || [] }),
+        ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || [] }),
+        ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || [] }),
+        ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || [] }),
+        ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || [] }),
+        ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || [] })
       };
 
       if (data.empId) {

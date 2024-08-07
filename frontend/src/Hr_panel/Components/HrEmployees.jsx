@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { FaWhatsapp } from "react-icons/fa";
+import { TbRestore } from "react-icons/tb";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 
 function HrEmployees() {
@@ -88,7 +89,7 @@ function HrEmployees() {
   };
 
   const fetchDeletedEmployee = async () => {
-    try{
+    try {
       const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
       const deletedEmployeeData = res.data;
       setDeletedEmployee(deletedEmployeeData);
@@ -174,6 +175,45 @@ function HrEmployees() {
     });
   };
 
+  const handleRevertBack = (itemId, name, dataToRevertBack) => {
+    Swal.fire({
+      title: `Are you sure you want to restore back ${name}?`,
+      text: "This action will move the employee back.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, revert back!',
+      cancelButtonText: 'Cancel'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`${secretKey}/employee/deleteemployeedromdeletedemployeedetails/${itemId}`);
+
+          const response2 = await axios.put(`${secretKey}/employee/revertbackdeletedemployeeintomaindatabase`, {
+            dataToRevertBack
+          });
+          fetchDeletedEmployee();
+          console.log("Deleted data is :", response.data);
+          console.log("Deleted data is :", response2.data);
+          Swal.fire(
+            'Reverted!',
+            `Employee ${name} has been reverted back.`,
+            'success'
+          );
+        } catch (error) {
+          Swal.fire(
+            'Error!',
+            'There was an error reverting the employee back.',
+            'error'
+          );
+
+          console.error('Error reverting employee', error);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     fetchEmployee();
     fetchCompanyData();
@@ -181,7 +221,7 @@ function HrEmployees() {
 
   useEffect(() => {
     fetchDeletedEmployee();
-  }, [employee]);
+  }, []);
 
   return (
     <div>
@@ -365,82 +405,111 @@ function HrEmployees() {
                 </div>
               </div>
               <div class="tab-pane" id="DeletedEmployees">
-              <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap">
-                      <thead>
-                        <tr className="tr-sticky">
-                          <th>Sr. No</th>
-                          <th>Employee Name</th>
-                          <th>Branch</th>
-                          <th>Department</th>
-                          <th>Designation</th>
-                          <th>Date Of Joining</th>
-                          <th>Monthly Salary</th>
-                          <th>Probation Status</th>
-                          <th>Official Number</th>
-                          <th>Official Email ID</th>
-                        </tr>
-                      </thead>
-                      {deletedEmployee.length !== 0 ? <tbody>
-                        {deletedEmployee.map((emp, index) => {
-                          const profilePhotoUrl = emp.profilePhoto ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}` : EmpDfaullt;
+                <div className="table table-responsive table-style-3 m-0">
+                  <table className="table table-vcenter table-nowrap">
+                    <thead>
+                      <tr className="tr-sticky">
+                        <th>Sr. No</th>
+                        <th>Employee Name</th>
+                        <th>Branch</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Date Of Joining</th>
+                        <th>Monthly Salary</th>
+                        <th>Probation Status</th>
+                        <th>Official Number</th>
+                        <th>Official Email ID</th>
+                        <th>Action</th>
+                        <th>Revoke Employee</th>
+                      </tr>
+                    </thead>
+                    {deletedEmployee.length !== 0 ? <tbody>
+                      {deletedEmployee.map((emp, index) => {
+                        const profilePhotoUrl = emp.profilePhoto ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}` : EmpDfaullt;
 
-                          return <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <div className="tbl-pro-img">
-                                  {emp.profilePhoto.length !== 0 ? <img
-                                    src={profilePhotoUrl
-                                      // emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
-                                    }
+                        return <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <div className="tbl-pro-img">
+                                {emp.profilePhoto.length !== 0 ? <img
+                                  src={profilePhotoUrl
+                                    // emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                  }
+                                  alt="Profile"
+                                  className="profile-photo"
+                                /> :
+                                  <img
+                                    src={EmpDfaullt}
                                     alt="Profile"
                                     className="profile-photo"
-                                  /> :
-                                    <img
-                                      src={EmpDfaullt}
-                                      alt="Profile"
-                                      className="profile-photo"
-                                    />}
-                                </div>
-                                <div className="">
-                                  {/* {emp.ename} */}
-                                  {(() => {
-                                    const names = (emp.ename || "").split(" ");
-                                    return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                                  })()}
-                                </div>
+                                  />}
                               </div>
+                              <div className="">
+                                {/* {emp.ename} */}
+                                {(() => {
+                                  const names = (emp.ename || "").split(" ");
+                                  return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                })()}
+                              </div>
+                            </div>
 
-                            </td>
-                            <td>{emp.branchOffice || ""}</td>
-                            <td>{emp.department || ""}</td>
-                            <td>{emp.newDesignation === "Business Development Executive" && "BDE" || emp.newDesignation === "Business Development Manager" && "BDM" || emp.newDesignation || ""}</td>
-                            <td>{formatDate(emp.jdate) || ""}</td>
-                            <td>₹ {formatSalary(emp.salary || 0)}</td>
-                            <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                            <td><a
-                              target="_blank"
-                              className="text-decoration-none text-dark"
-                              href={`https://wa.me/91${emp.number}`}
-                            >{emp.number}
-                              <FaWhatsapp className="text-success w-25 mb-1" /></a></td>
-                            <td>{emp.email || ""}</td>
-                          </tr>
-                        })}
-                      </tbody> : <tbody>
-                        <tr>
-                          <td
-                            className="particular"
-                            colSpan="11"
-                            style={{ textAlign: "center" }}
-                          >
-                            <Nodata />
+                          </td>
+                          <td>{emp.branchOffice || ""}</td>
+                          <td>{emp.department || ""}</td>
+                          <td>{emp.newDesignation === "Business Development Executive" && "BDE" || emp.newDesignation === "Business Development Manager" && "BDM" || emp.newDesignation || ""}</td>
+                          <td>{formatDate(emp.jdate) || ""}</td>
+                          <td>₹ {formatSalary(emp.salary || 0)}</td>
+                          <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
+                          <td><a
+                            target="_blank"
+                            className="text-decoration-none text-dark"
+                            href={`https://wa.me/91${emp.number}`}
+                          >{emp.number}
+                            <FaWhatsapp className="text-success w-25 mb-1" /></a></td>
+                          <td>{emp.email || ""}</td>
+                          <td>
+                            <button className="action-btn action-btn-primary">
+                              <Link style={{ textDecoration: "none", color: 'inherit' }}
+                                to={{
+                                  pathname: `/hr-employee-profile-details/${emp._id}`
+                                }} >
+                                <FaRegEye />
+                              </Link>
+                            </button>
+                            <button className="action-btn action-btn-danger ml-1" onClick={() => {
+                              // const dataToDelete = employee.filter(obj => obj._id === emp._id);
+                              // setDeletedData(dataToDelete);
+                              // const filteredCompanyData = companyData.filter(data => data.ename?.toLowerCase() === emp.ename.toLowerCase());
+                              // setCompanyData(filteredCompanyData);
+                              // handleDeleteClick(emp._id, emp.ename, dataToDelete, filteredCompanyData)
+                            }}
+                            ><AiFillDelete /></button>
+                          </td>
+                          <td>
+                            <button className="action-btn action-btn-success ml-1">
+                            <TbRestore onClick={async () => {
+                                const dataToRevertBack = deletedData.filter(obj => obj._id === emp._id);
+                                handleRevertBack(emp._id, emp.ename, dataToRevertBack);
+                              }}
+                            />
+                            </button>
                           </td>
                         </tr>
-                      </tbody>}
-                    </table>
-                  </div>
+                      })}
+                    </tbody> : <tbody>
+                      <tr>
+                        <td
+                          className="particular"
+                          colSpan="11"
+                          style={{ textAlign: "center" }}
+                        >
+                          <Nodata />
+                        </td>
+                      </tr>
+                    </tbody>}
+                  </table>
+                </div>
               </div>
               <div class="tab-pane" id="UpcommingEmployees">
                 <h1>Upcoming Employees</h1>
