@@ -52,11 +52,11 @@ function Employees({ onEyeButtonClick }) {
   const [filteredData, setFilteredData] = useState([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [selectedDataId, setSelectedDataId] = useState("2024-01-03");
+  const [bdeFields, setBdeFields] = useState([]);
+  const [ename, setEname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [number, setNumber] = useState(0);
-  const [bdeFields, setBdeFields] = useState([]);
-  const [ename, setEname] = useState("");
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -69,7 +69,22 @@ function Employees({ onEyeButtonClick }) {
   const [nowFetched, setNowFetched] = useState(false);
   const [otherdesignation, setotherDesignation] = useState("");
   const [companyData, setCompanyData] = useState([]);
+  const [errors, setErrors] = useState([]);
   const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!firstName) newErrors.firstName = "First name is required";
+    if (!email) newErrors.email = "Email is required";
+    if (!password) newErrors.password = "Password is required";
+    if (!department || department === "Select Department") newErrors.department = "Department is required";
+    if (!newDesignation || newDesignation === "Select Designation") newErrors.newDesignation = "Designation is required";
+    if (!branchOffice) newErrors.branchOffice = "Branch office is required";
+    if (!number) newErrors.number = "Phone number is required";
+    if (!jdate) newErrors.jdate = "Joining date is required";
+    // Add more validations as needed
+    return newErrors;
+  };
 
   const departmentDesignations = {
     "Start-Up": [
@@ -372,7 +387,7 @@ function Employees({ onEyeButtonClick }) {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-
+      // console.log("Fetched employees are :", response.data);
       // Set the retrieved data in the state
 
       setFilteredData(response.data);
@@ -540,144 +555,154 @@ function Employees({ onEyeButtonClick }) {
 
   const handleSubmit = async (e) => {
 
-    // const referenceId = uuidv4();
-    const AddedOn = new Date().toLocaleDateString();
-    let designation;
-    if (newDesignation === "Business Development Executive" || newDesignation === "Business Development Manager") {
-      designation = "Sales Executive";
-    } else if (newDesignation === "Floor Manager") {
-      designation = "Sales Manager";
-    } else if (newDesignation === "Data Analytics") {
-      designation = "Data Manager";
-    } else if (newDesignation === "Admin Head") {
-      designation = "RM-Certification";
-    }
-
-    try {
-      let dataToSend = {
-        email: email,
-        number: number,
-        ename: `${firstName} ${lastName}`,
-        empFullName: `${firstName} ${middleName} ${lastName}`,
-        department: department,
-        designation: designation,
-        newDesignation: newDesignation,
-        branchOffice: branchOffice,
-        reportingManager: reportingManager,
-        password: password,
-        jdate: jdate,
-        AddedOn: AddedOn,
-        targetDetails: targetObjects,
-        bdmWork,
-      };
-
-      let dataToSendUpdated = {
-        email: email,
-        number: number,
-        ename: `${firstName} ${lastName}`,
-        empFullName: `${firstName} ${middleName} ${lastName}`,
-        department: department,
-        designation: designation,
-        newDesignation: newDesignation,
-        branchOffice: branchOffice,
-        reportingManager: reportingManager,
-        password: password,
-        jdate: jdate,
-        AddedOn: AddedOn,
-        targetDetails: targetObjects,
-        bdmWork,
-      };
-
-
-
-
-      // Set designation based on otherDesignation
-      // if (otherdesignation !== "") {
-      //   dataToSend.designation = otherdesignation;
-      // } else {
-      //   dataToSend.designation = designation;
-      // }
-      if (designation === "Sales Manager") {
-        dataToSend.bdmWork = true
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      // Submit form data
+      setErrors({});
+      // Add your form submission logic here
+      // const referenceId = uuidv4();
+      const AddedOn = new Date().toLocaleDateString();
+      let designation;
+      if (newDesignation === "Business Development Executive" || newDesignation === "Business Development Manager") {
+        designation = "Sales Executive";
+      } else if (newDesignation === "Floor Manager") {
+        designation = "Sales Manager";
+      } else if (newDesignation === "Data Analyst") {
+        designation = "Data Manager";
+      } else if (newDesignation === "Admin Head") {
+        designation = "RM-Certification";
       } else {
-        dataToSend.bdmWork = false
+        designation = newDesignation;
       }
-      // console.log(isUpdateMode, "updateMode")
 
-      if (isUpdateMode) {
+      try {
+        let dataToSend = {
+          email: email,
+          number: number,
+          ename: `${firstName} ${lastName}`,
+          empFullName: `${firstName} ${middleName} ${lastName}`,
+          department: department,
+          oldDesignation: designation || newDesignation,
+          newDesignation: newDesignation,
+          branchOffice: branchOffice,
+          reportingManager: reportingManager,
+          password: password,
+          jdate: jdate,
+          AddedOn: AddedOn,
+          targetDetails: targetObjects,
+          // bdmWork,
+        };
 
-        if (dataToSend.ename === "") {
-          Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
-          return true;
+        let dataToSendUpdated = {
+          email: email,
+          number: number,
+          ename: `${firstName} ${lastName}`,
+          empFullName: `${firstName} ${middleName} ${lastName}`,
+          department: department,
+          designation: designation,
+          newDesignation: newDesignation,
+          branchOffice: branchOffice,
+          reportingManager: reportingManager,
+          password: password,
+          jdate: jdate,
+          AddedOn: AddedOn,
+          targetDetails: targetObjects,
+          // bdmWork,
+        };
+
+        // Set designation based on otherDesignation
+        // if (otherdesignation !== "") {
+        //   dataToSend.designation = otherdesignation;
+        // } else {
+        //   dataToSend.designation = designation;
+        // }
+
+        if (newDesignation === "Floor Manager" || newDesignation === "Business Development Manager") {
+          dataToSend.bdmWork = true;
+          dataToSendUpdated.bdmWork = true;
+        } else {
+          dataToSend.bdmWork = false;
+          dataToSendUpdated.bdmWork = false;
         }
-        const response = await axios.put(
-          `${secretKey}/employee/einfo/${selectedDataId}`,
-          dataToSendUpdated
-        );
+        // console.log(isUpdateMode, "updateMode")
 
-        Swal.fire({
-          title: "Data Updated Succesfully!",
-          text: "You have successfully updated the name!",
-          icon: "success",
-        });
-
-        if (companyData && companyData.length !== 0) {
-          // Assuming ename is part of dataToSend
-          const { ename } = dataToSend;
-          try {
-            // Update companyData in the second database
-            await Promise.all(
-              companyData.map(async (item) => {
-                await axios.put(`${secretKey}/company-data/newcompanyname/${item._id}`, {
-                  ename,
-                });
-                //console.log(`Updated ename for ${item._id}`);
-              })
-            );
-          } catch (error) {
-            console.error("Error updating enames:", error.message);
-            // Handle the error as needed
+        if (isUpdateMode) {
+          if (dataToSend.ename === "") {
+            Swal.fire("Invalid Details", "Please Enter Details Properly", "warning");
+            return true;
           }
+          const response = await axios.put(
+            `${secretKey}/employee/einfo/${selectedDataId}`,
+            dataToSendUpdated
+          );  
+          console.log("Updated employee is :", dataToSendUpdated);
+
+          Swal.fire({
+            title: "Data Updated Succesfully!",
+            text: "You have successfully updated the name!",
+            icon: "success",
+          });
+
+          if (companyData && companyData.length !== 0) {
+            // Assuming ename is part of dataToSend
+            const { ename } = dataToSend;
+            try {
+              // Update companyData in the second database
+              await Promise.all(
+                companyData.map(async (item) => {
+                  await axios.put(`${secretKey}/company-data/newcompanyname/${item._id}`, {
+                    ename,
+                  });
+                  //console.log(`Updated ename for ${item._id}`);
+                })
+              );
+            } catch (error) {
+              console.error("Error updating enames:", error.message);
+              // Handle the error as needed
+            }
+          }
+        } else {
+          const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
+          // Adds data in performance report:
+          console.log("Created employee is :", response.data);
+
+          Swal.fire({
+            title: "Data Added!",
+            text: "You have successfully added the data!",
+            icon: "success",
+          });
         }
-      } else {
-        const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
-        // Adds data in performance report:
-        console.log(response.data, "datatosend");
+        //console.log("datatosend", dataToSend);
 
+        setFirstName("");
+        setMiddleName("");
+        setLastName("");
+        setEname("");
+        setEmail("");
+        setNumber(0);
+        setPassword("");
+        setDepartment("");
+        setNewDesignation("");
+        setBranchOffice("");
+        setReportingManager("");
+        setotherDesignation("");
+        setJdate(null);
+        setIsUpdateMode(false);
+        setTargetCount(1);
+        setTargetObjects([defaultObject])
+        fetchData();
+        closepopup();
+        //console.log("Data sent successfully");
+      } catch {
         Swal.fire({
-          title: "Data Added!",
-          text: "You have successfully added the data!",
-          icon: "success",
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
         });
+        console.error("Internal server error");
       }
-      //console.log("datatosend", dataToSend);
-
-      setFirstName("");
-      setMiddleName("");
-      setLastName("");
-      setEname("");
-      setEmail("");
-      setNumber(0);
-      setPassword("");
-      setDepartment("");
-      setNewDesignation("");
-      setBranchOffice("");
-      setReportingManager("");
-      setotherDesignation("");
-      setJdate(null);
-      setIsUpdateMode(false);
-      setTargetCount(1);
-      setTargetObjects([defaultObject])
-      fetchData();
-      closepopup();
-      //console.log("Data sent successfully");
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      });
-      console.error("Internal server error");
     }
   };
 
@@ -701,8 +726,8 @@ function Employees({ onEyeButtonClick }) {
     setNowFetched(false);
     setIsDepartmentSelected(false);
     setotherDesignation("");
-  };  
-  
+  };
+
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -826,7 +851,7 @@ function Employees({ onEyeButtonClick }) {
     setTargetCount(targetCount - 1);
     setTargetObjects(totalTargets);
   };
-  
+
   //console.log("target objects:", targetObjects)
 
   // ----------------------------------------- material ui bdm work switch---------------------------------------
@@ -996,7 +1021,7 @@ function Employees({ onEyeButtonClick }) {
               <div className="btn-list">
                 <button
                   className="btn btn-primary d-none d-sm-inline-block"
-                  onClick={()=>{
+                  onClick={() => {
                     functionopenpopup();
                     resetForm();
                     setIsUpdateMode(false)
@@ -1151,7 +1176,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.number}</td>
                         <td>{item.email}</td>
                         <td>{formatDateFinal(item.jdate)}</td>
-                        <td>{item.designation}</td>
+                        <td>{item.newDesignation}</td>
                         <td>{item.branchOffice}</td>
                         {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                           &&
@@ -1296,8 +1321,12 @@ function Employees({ onEyeButtonClick }) {
                         className="form-control mt-1"
                         placeholder="First name"
                         value={firstName?.trim()}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        onChange={(e) => {
+                          setFirstName(e.target.value);
+                          setErrors("");
+                        }}
                       />
+                      {errors.firstName && <p style={{ color: 'red' }}>{errors.firstName}</p>}
                     </div>
                     <div className="col-4 me-1">
                       <input
@@ -1306,8 +1335,12 @@ function Employees({ onEyeButtonClick }) {
                         className="form-control mt-1"
                         placeholder="Middle name"
                         value={middleName?.trim()}
-                        onChange={(e) => setMiddleName(e.target.value)}
+                        onChange={(e) => {
+                          setMiddleName(e.target.value);
+                          setErrors("");
+                        }}
                       />
+                      {errors.middleNameName && <p style={{ color: 'red' }}>{errors.middleName}</p>}
                     </div>
                     <div className="col-4">
                       <input
@@ -1316,8 +1349,12 @@ function Employees({ onEyeButtonClick }) {
                         className="form-control mt-1"
                         placeholder="Last name"
                         value={lastName?.trim()}
-                        onChange={(e) => setLastName(e.target.value)}
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                          setErrors("");
+                        }}
                       />
+                      {errors.lastName && <p style={{ color: 'red' }}>{errors.lastName}</p>}
                     </div>
                   </div>
                 </div>
@@ -1332,8 +1369,10 @@ function Employees({ onEyeButtonClick }) {
                     placeholder="Email"
                     onChange={(e) => {
                       setEmail(e.target.value);
+                      setErrors("");
                     }}
                   />
+                  {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Password</label>
@@ -1347,16 +1386,18 @@ function Employees({ onEyeButtonClick }) {
                       required
                       onChange={(e) => {
                         setPassword(e.target.value);
+                        setErrors("");
                       }}
                     />
                     <button
                       className="btn btn-outline-secondary"
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                    >
+                      >
                       {showPassword ? "Hide" : "Show"}
                     </button>
                   </div>
+                    {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
                 </div>
 
                 <div className="row">
@@ -1370,6 +1411,7 @@ function Employees({ onEyeButtonClick }) {
                         onChange={(e) => {
                           setDepartment(e.target.value);
                           setIsDepartmentSelected(e.target.value !== "Select Department");
+                          // setErrors("");
                         }}
                       >
                         <option value="Select Department" selected> Select Department</option>
@@ -1479,7 +1521,7 @@ function Employees({ onEyeButtonClick }) {
                   </div>
                 </div>
               </div>
-              
+
               <label className="form-label">ADD Target</label>
               {targetObjects.map((obj, index) => (
                 <div className="row">
