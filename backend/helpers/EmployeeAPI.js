@@ -194,7 +194,7 @@ router.post("/einfo", upload.fields([
       newDesignation = "Sales Executive";
     } else if ((employeementInfo?.designation || oldDesignation) === "Floor Manager") {
       newDesignation = "Sales Manager";
-    } else if ((employeementInfo?.designation || oldDesignation) === "Data Analytics") {
+    } else if ((employeementInfo?.designation || oldDesignation) === "Data Analyst") {
       newDesignation = "Data Manager";
     } else if ((employeementInfo?.designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
@@ -375,7 +375,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       newDesignation = "Sales Executive";
     } else if ((designation || oldDesignation) === "Floor Manager") {
       newDesignation = "Sales Manager";
-    } else if ((designation || oldDesignation) === "Data Analytics") {
+    } else if ((designation || oldDesignation) === "Data Analyst") {
       newDesignation = "Data Manager";
     } else if ((designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
@@ -506,7 +506,7 @@ router.put("/savedeletedemployee", upload.fields([
         newDesignation = "Sales Executive";
       } else if (data.designation === "Floor Manager") {
         newDesignation = "Sales Manager";
-      } else if (data.designation === "Data Analytics") {
+      } else if (data.designation === "Data Analyst") {
         newDesignation = "Data Manager";
       } else if (data.designation === "Admin Head") {
         newDesignation = "RM-Certification";
@@ -615,7 +615,7 @@ router.delete(
 router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
   const { dataToRevertBack } = req.body;
 
-  if (!dataToRevertBack || dataToRevert|| Back.length === 0) {
+  if (!dataToRevertBack || dataToRevertBack || Back.length === 0) {
     return res.status(400).json({ error: "No employee data to save" });
   }
 
