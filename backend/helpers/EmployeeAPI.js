@@ -198,6 +198,8 @@ router.post("/einfo", upload.fields([
       newDesignation = "Data Manager";
     } else if ((employeementInfo?.designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
+    } else if ((employeementInfo?.designation || oldDesignation) === "HR Manager") {
+      newDesignation = "HR";
     } else {
       newDesignation = employeementInfo?.designation || oldDesignation;
     }
@@ -379,6 +381,8 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       newDesignation = "Data Manager";
     } else if ((designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
+    } else if ((designation || oldDesignation) === "HR Manager") {
+      newDesignation = "HR";
     } else {
       newDesignation = designation || oldDesignation;
     }
@@ -480,7 +484,7 @@ router.put("/savedeletedemployee", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const { dataToDelete } = req.body;
+    const { dataToDelete, oldDesignation } = req.body;
 
     if (!dataToDelete || !Array.isArray(dataToDelete) || dataToDelete.length === 0) {
       return res.status(400).json({ error: "No employee data to save" });
@@ -502,14 +506,18 @@ router.put("/savedeletedemployee", upload.fields([
     const employees = await Promise.all(dataToDelete.map(async (data) => {
       let newDesignation = data.designation;
 
-      if (data.designation === "Business Development Executive" || data.designation === "Business Development Manager") {
+      if ((data.designation || oldDesignation) === "Business Development Executive" || (data.designation || oldDesignation) === "Business Development Manager") {
         newDesignation = "Sales Executive";
-      } else if (data.designation === "Floor Manager") {
+      } else if ((data.designation || oldDesignation) === "Floor Manager") {
         newDesignation = "Sales Manager";
-      } else if (data.designation === "Data Analyst") {
+      } else if ((data.designation || oldDesignation) === "Data Analyst") {
         newDesignation = "Data Manager";
-      } else if (data.designation === "Admin Head") {
+      } else if ((data.designation || oldDesignation) === "Admin Head") {
         newDesignation = "RM-Certification";
+      } else if ((data.designation || oldDesignation) === "HR Manager") {
+        newDesignation = "HR";
+      } else {
+        newDesignation = data.designation || oldDesignation;
       }
 
       const emp = {
