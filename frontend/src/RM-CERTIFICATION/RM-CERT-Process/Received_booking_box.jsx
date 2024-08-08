@@ -142,6 +142,15 @@ function Received_booking_box() {
     const fetchRedesignedFormData = async (page) => {
         const today = new Date("2024-08-07");
         today.setHours(0, 0, 0, 0); // Set to start of today
+        const parseDate = (dateString) => {
+            // If date is in "YYYY-MM-DD" format, convert it to a Date object
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                return new Date(dateString);
+            }
+
+            // Otherwise, parse the date string with a Date object
+            return new Date(dateString);
+        };
         setOpenBacdrop(true)
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
@@ -149,16 +158,45 @@ function Received_booking_box() {
 
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
-                .filter(item => {
-                    const lastActionDate = new Date(item.lastActionDate);
-                    lastActionDate.setHours(0, 0, 0, 0);
-                    return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
+                .filter(obj => {
+                    //const lastActionDate = new Date(item.lastActionDate);
+                    const mainBookingDate = parseDate(obj.bookingDate);
+                    mainBookingDate.setHours(0, 0, 0, 0); // Set to start of the day
+
+                    // Log the values for debugging
+                    console.log("Main Booking Date:", mainBookingDate, "Today:", today);
+
+                    // Check if any of the moreBookings dates are >= today
+                    const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
+                        // Parse and normalize the booking date
+                        const bookingDate = parseDate(booking.bookingDate);
+                        bookingDate.setHours(0, 0, 0, 0); // Normalize to the start of the day
+
+                        // Log the booking date for debugging
+                        console.log(obj["Company Name"] , "Booking Date:", bookingDate, "Today:", today);
+
+                        // Return true if bookingDate is greater than or equal to today
+                        return bookingDate >= today;
+                    });
+
+
+                    console.log("Company Name:", obj["Company Name"]);
+                    console.log("Main Booking Date Valid:", mainBookingDate >= today);
+                    console.log("Has Valid More Bookings Date:", hasValidMoreBookingsDate);
+
+                    // Check if the main booking date or any moreBookings date is >= today
+                    const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
+
+                    // Return true if date is valid and visible to RM
+                    return isDateValid && obj.isVisibleToRmOfCerification;
                 })
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
+
+            console.log("filteredData", filteredAndSortedData)
 
             // Process each document to combine services and filter them
             const processedData = filteredAndSortedData.map(item => {

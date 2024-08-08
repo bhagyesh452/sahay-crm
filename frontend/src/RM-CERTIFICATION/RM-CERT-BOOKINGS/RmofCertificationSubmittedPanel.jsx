@@ -564,7 +564,14 @@ function RmofCertificationSubmittedPanel() {
                                         </td>
                                  <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
-                                            <button className="action-btn action-btn-primary">
+                                            <button className="action-btn action-btn-primary" 
+                                            // onClick={()=>(
+                                            //     handleRevokeCompanyToRecievedBox(
+                                            //         obj["Company Name"],
+                                            //         obj.serviceName
+                                            //     )
+                                            // )}
+                                            >
                                                 <FaRegEye />
                                             </button>
                                         </td>
