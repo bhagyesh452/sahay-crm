@@ -30,6 +30,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import io from 'socket.io-client';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { IconX } from "@tabler/icons-react";
 
 function Received_booking_box() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -84,7 +85,7 @@ function Received_booking_box() {
         const lastDigit = number % 10;
         const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
         return `${number}${suffix}`;
-      };
+    };
 
     const formatTime = (dateString) => {
         //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
@@ -139,7 +140,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-07-15");
+        const today = new Date("2024-08-07");
         today.setHours(0, 0, 0, 0); // Set to start of today
         setOpenBacdrop(true)
         try {
@@ -149,7 +150,7 @@ function Received_booking_box() {
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
                 .filter(item => {
-                    const lastActionDate = new Date(item.lastActionDate);
+                    const lastActionDate = new Date(item.bookingPublishDate);
                     lastActionDate.setHours(0, 0, 0, 0);
                     return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
                 })
@@ -232,7 +233,7 @@ function Received_booking_box() {
             setCompleteRedesignedData(completeData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
-        }finally{
+        } finally {
             setOpenBacdrop(false)
         }
     };
@@ -336,7 +337,86 @@ function Received_booking_box() {
         return pending.toFixed(2);
     };
 
-    const handleViewPdfReceipts = (paymentreciept, companyName) => {
+    // ----------------------------------------- Upload documents Section -----------------------------------------------------
+    const [selectedDocuments, setSelectedDocuments] = useState([]);
+    const [openOtherDocs, setOpenOtherDocs] = useState(false);
+    const [sendingIndex, setSendingIndex] = useState(0);
+    const handleOtherDocsUpload = (updatedFiles) => {
+        setSelectedDocuments((prevSelectedDocuments) => {
+            return [...prevSelectedDocuments, ...updatedFiles];
+        });
+    };
+
+    const handleRemoveFile = (index) => {
+        setSelectedDocuments((prevSelectedDocuments) => {
+            // Create a copy of the array of selected documents
+            const updatedDocuments = [...prevSelectedDocuments];
+            // Remove the document at the specified index
+            updatedDocuments.splice(index, 1);
+            // Return the updated array of selected documents
+            return updatedDocuments;
+        });
+    };
+
+    const closeOtherDocsPopup = () => {
+        setOpenOtherDocs(false);
+    };
+
+    const handleotherdocsAttachment = async () => {
+        try {
+            const files = selectedDocuments;
+            //console.log(files);
+
+            if (files.length === 0) {
+                // No files selected
+                return;
+            }
+
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append("otherDocs", files[i]);
+            }
+            console.log(formData);
+            setCurrentCompanyName(currentLeadform["Company Name"])
+            const response = await fetch(
+                `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+            if (response.ok) {
+                Swal.fire({
+                    title: "Success!",
+                    html: `<small> File Uploaded successfully </small>
+            `,
+                    icon: "success",
+                });
+                setSelectedDocuments([]);
+                setOpenOtherDocs(false);
+                fetchRedesignedFormData();
+
+
+            } else {
+                Swal.fire({
+                    title: "Error uploading file",
+
+                    icon: "error",
+                });
+                console.error("Error uploading file");
+            }
+        } catch (error) {
+            Swal.fire({
+                title: "Error uploading file",
+                icon: "error",
+            });
+            console.error("Error uploading file:", error);
+        }
+    };
+
+    //   --------------------documents view function--------------------------
+
+    const handleViewPdfReciepts = (paymentreciept, companyName) => {
         const pathname = paymentreciept;
         //console.log(pathname);
         window.open(`${secretKey}/bookings/recieptpdf/${companyName}/${pathname}`, "_blank");
@@ -587,7 +667,7 @@ function Received_booking_box() {
             } catch (error) {
                 console.error("Error sending data:", error.message);
                 Swal.fire("Error", "Failed to upload bookings", error.message);
-            }finally{
+            } finally {
                 setOpenBacdrop(false)
             }
         } else {
@@ -651,7 +731,6 @@ function Received_booking_box() {
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
-
     return (
         <div>
             <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
@@ -1140,13 +1219,13 @@ function Received_booking_box() {
                                                                                 <div class="row m-0">
                                                                                     <div class="col-sm-4 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_h h-100">
-                                                                                        BDE Name
+                                                                                            BDE Name
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-8 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                                                        {currentLeadform &&
-                                                                                            currentLeadform.bdeName}
+                                                                                            {currentLeadform &&
+                                                                                                currentLeadform.bdeName}
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1177,8 +1256,8 @@ function Received_booking_box() {
                                                                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                             <span>
                                                                                                 <i>
-                                                                                                {currentLeadform &&
-                                                                                                    currentLeadform.bdmType}
+                                                                                                    {currentLeadform &&
+                                                                                                        currentLeadform.bdmType}
                                                                                                 </i>
                                                                                             </span>{" "}
                                                                                             {currentLeadform &&
@@ -1189,54 +1268,54 @@ function Received_booking_box() {
                                                                             </div>
                                                                         </div>
                                                                         <div className="row m-0 bdr-btm-eee">
-                                                                        <div className="col-lg-4 col-sm-6 p-0">
-                                                                            <div class="row m-0">
-                                                                            <div class="col-sm-4 align-self-stretch p-0">
-                                                                                <div class="booking_inner_dtl_h h-100">
-                                                                                BDM Email
+                                                                            <div className="col-lg-4 col-sm-6 p-0">
+                                                                                <div class="row m-0">
+                                                                                    <div class="col-sm-4 align-self-stretch p-0">
+                                                                                        <div class="booking_inner_dtl_h h-100">
+                                                                                            BDM Email
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 align-self-stretch p-0">
+                                                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                            {currentLeadform &&
+                                                                                                currentLeadform.bdmEmail}
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="col-sm-8 align-self-stretch p-0">
-                                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                {currentLeadform &&
-                                                                                    currentLeadform.bdmEmail}
+                                                                            <div className="col-lg-4 col-sm-6 p-0">
+                                                                                <div class="row m-0">
+                                                                                    <div class="col-sm-4 align-self-stretch p-0">
+                                                                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                                            Booking Date{" "}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 align-self-stretch p-0">
+                                                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                                                            {currentLeadform &&
+                                                                                                currentLeadform.bookingDate}
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="col-lg-4 col-sm-6 p-0">
-                                                                            <div class="row m-0">
-                                                                            <div class="col-sm-4 align-self-stretch p-0">
-                                                                                <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                Booking Date{" "}
+                                                                            <div className="col-lg-4 col-sm-6 p-0">
+                                                                                <div class="row m-0">
+                                                                                    <div class="col-sm-4 align-self-stretch p-0">
+                                                                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                                            Lead Source
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 align-self-stretch p-0">
+                                                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                            {currentLeadform &&
+                                                                                                (currentLeadform.bookingSource ===
+                                                                                                    "Other"
+                                                                                                    ? currentLeadform.otherBookingSource
+                                                                                                    : currentLeadform.bookingSource)}
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="col-sm-8 align-self-stretch p-0">
-                                                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                                                {currentLeadform &&
-                                                                                    currentLeadform.bookingDate}
-                                                                                </div>
-                                                                            </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="col-lg-4 col-sm-6 p-0">
-                                                                            <div class="row m-0">
-                                                                            <div class="col-sm-4 align-self-stretch p-0">
-                                                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                Lead Source
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-sm-8 align-self-stretch p-0">
-                                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                {currentLeadform &&
-                                                                                    (currentLeadform.bookingSource ===
-                                                                                    "Other"
-                                                                                    ? currentLeadform.otherBookingSource
-                                                                                    : currentLeadform.bookingSource)}
-                                                                                </div>
-                                                                            </div>
-                                                                            </div>
-                                                                        </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1246,12 +1325,12 @@ function Received_booking_box() {
                                                                 <div className="my-card">
                                                                     <div className="my-card-body">
                                                                         <div className="row m-0 bdr-btm-eee">
-                                                                            <div className="col-lg-6 col-sm-6 p-0">                            
+                                                                            <div className="col-lg-6 col-sm-6 p-0">
                                                                                 <div class="row m-0">
                                                                                     <div class="col-sm-4 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_h h-100">
                                                                                             No. Of Services
-                                                                                        </div>  
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div class="col-sm-8 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
@@ -1259,12 +1338,12 @@ function Received_booking_box() {
                                                                                                 currentLeadform.services.length}
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>        
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                {currentLeadform &&  currentLeadform.services.map((obj, index) => (
+                                                                {currentLeadform && currentLeadform.services.map((obj, index) => (
                                                                     <div className="my-card mt-1">
                                                                         <div className="my-card-body">
                                                                             <div className="row m-0 bdr-btm-eee">
@@ -1290,23 +1369,23 @@ function Received_booking_box() {
                                                                                     <div class="row m-0">
                                                                                         <div class="col-sm-4 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                            Total Amount
+                                                                                                Total Amount
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                                                                 <div className="d-flex align-items-center justify-content-between">
                                                                                                     <div>
-                                                                                                    ₹{" "}
-                                                                                                    {parseInt(
-                                                                                                        obj.totalPaymentWGST
-                                                                                                    ).toLocaleString()}{" "}
-                                                                                                    {"("}
-                                                                                                    {obj.totalPaymentWGST !==
-                                                                                                        obj.totalPaymentWOGST
-                                                                                                        ? "With GST"
-                                                                                                        : "Without GST"}
-                                                                                                    {")"}
+                                                                                                        ₹{" "}
+                                                                                                        {parseInt(
+                                                                                                            obj.totalPaymentWGST
+                                                                                                        ).toLocaleString()}{" "}
+                                                                                                        {"("}
+                                                                                                        {obj.totalPaymentWGST !==
+                                                                                                            obj.totalPaymentWOGST
+                                                                                                            ? "With GST"
+                                                                                                            : "Without GST"}
+                                                                                                        {")"}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -1319,14 +1398,14 @@ function Received_booking_box() {
                                                                                     <div class="row m-0">
                                                                                         <div class="col-sm-4 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_h h-100">
-                                                                                            Payment Terms
+                                                                                                Payment Terms
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                            {obj.paymentTerms === "two-part"
-                                                                                                ? "Part-Payment"
-                                                                                                : "Full Advanced"}
+                                                                                                {obj.paymentTerms === "two-part"
+                                                                                                    ? "Part-Payment"
+                                                                                                    : "Full Advanced"}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1335,34 +1414,34 @@ function Received_booking_box() {
                                                                                     <div class="row m-0">
                                                                                         <div class="col-sm-3 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                            Notes
+                                                                                                Notes
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-9 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                                                                            ? obj.paymentRemarks
-                                                                                            : "N/A"}>
-                                                                                            {obj.paymentRemarks
                                                                                                 ? obj.paymentRemarks
-                                                                                                : "N/A"}
+                                                                                                : "N/A"}>
+                                                                                                {obj.paymentRemarks
+                                                                                                    ? obj.paymentRemarks
+                                                                                                    : "N/A"}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                             {/* expanse */}
-                                                                            {(obj.expanse !== 0 && obj.expanse) && 
+                                                                            {(obj.expanse !== 0 && obj.expanse) &&
                                                                                 <div className="row m-0 bdr-btm-eee">
                                                                                     <div className="col-lg-6 col-sm-2 p-0">
                                                                                         <div class="row m-0">
                                                                                             <div class="col-sm-4 align-self-stretch p-0">
                                                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                Expense
+                                                                                                    Expense
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-8 align-self-stretch p-0">
                                                                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                                                                                    - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -1371,12 +1450,12 @@ function Received_booking_box() {
                                                                                         <div class="row m-0">
                                                                                             <div class="col-sm-4 align-self-stretch p-0">
                                                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                Expanses Date
+                                                                                                    Expanses Date
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-8 align-self-stretch p-0">
                                                                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
+                                                                                                    {formatDatePro(obj.expanseDate ? obj.expanseDate : currentLeadform.bookingDate)}
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -1396,7 +1475,7 @@ function Received_booking_box() {
                                                                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                     ₹{" "}
                                                                                                     {parseInt(
-                                                                                                    obj.firstPayment
+                                                                                                        obj.firstPayment
                                                                                                     ).toLocaleString()}
                                                                                                 </div>
                                                                                             </div>
@@ -1417,18 +1496,18 @@ function Received_booking_box() {
                                                                                                         <div>
                                                                                                             ₹
                                                                                                             {parseInt(
-                                                                                                            obj.secondPayment
+                                                                                                                obj.secondPayment
                                                                                                             ).toLocaleString()}
                                                                                                             {"("}
                                                                                                             {isNaN(
-                                                                                                            new Date(
-                                                                                                                obj.secondPaymentRemarks
+                                                                                                                new Date(
+                                                                                                                    obj.secondPaymentRemarks
+                                                                                                                )
                                                                                                             )
-                                                                                                            )
-                                                                                                            ? obj.secondPaymentRemarks
-                                                                                                            : "On " +
-                                                                                                            obj.secondPaymentRemarks +
-                                                                                                            ")"}
+                                                                                                                ? obj.secondPaymentRemarks
+                                                                                                                : "On " +
+                                                                                                                obj.secondPaymentRemarks +
+                                                                                                                ")"}
                                                                                                             {")"}
                                                                                                         </div>
                                                                                                     </div>
@@ -1453,18 +1532,18 @@ function Received_booking_box() {
                                                                                                         <div>
                                                                                                             ₹{" "}
                                                                                                             {parseInt(
-                                                                                                            obj.thirdPayment
+                                                                                                                obj.thirdPayment
                                                                                                             ).toLocaleString()}
                                                                                                             {"("}
                                                                                                             {isNaN(
-                                                                                                            new Date(
-                                                                                                                obj.thirdPaymentRemarks
+                                                                                                                new Date(
+                                                                                                                    obj.thirdPaymentRemarks
+                                                                                                                )
                                                                                                             )
-                                                                                                            )
-                                                                                                            ? obj.thirdPaymentRemarks
-                                                                                                            : "On " +
-                                                                                                            obj.thirdPaymentRemarks +
-                                                                                                            ")"}
+                                                                                                                ? obj.thirdPaymentRemarks
+                                                                                                                : "On " +
+                                                                                                                obj.thirdPaymentRemarks +
+                                                                                                                ")"}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -1486,18 +1565,18 @@ function Received_booking_box() {
                                                                                                         <div>
                                                                                                             ₹{" "}
                                                                                                             {parseInt(
-                                                                                                            obj.fourthPayment
+                                                                                                                obj.fourthPayment
                                                                                                             ).toLocaleString()}{" "}
                                                                                                             {"("}
                                                                                                             {isNaN(
-                                                                                                            new Date(
-                                                                                                                obj.fourthPaymentRemarks
+                                                                                                                new Date(
+                                                                                                                    obj.fourthPaymentRemarks
+                                                                                                                )
                                                                                                             )
-                                                                                                            )
-                                                                                                            ? obj.fourthPaymentRemarks
-                                                                                                            : "On " +
-                                                                                                            obj.fourthPaymentRemarks +
-                                                                                                            ")"}
+                                                                                                                ? obj.fourthPaymentRemarks
+                                                                                                                : "On " +
+                                                                                                                obj.fourthPaymentRemarks +
+                                                                                                                ")"}
                                                                                                         </div>
 
                                                                                                     </div>
@@ -1510,11 +1589,11 @@ function Received_booking_box() {
                                                                         </div>
                                                                         {/* Remaining Payment View Sections */}
                                                                         {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
-                                                                            <div className="my-card-body accordion"  id={`accordionExample${index}`} >
+                                                                            <div className="my-card-body accordion" id={`accordionExample${index}`} >
                                                                                 <div class="accordion-item bdr-none">
-                                                                                    <div  id={`headingOne${index}`} className="pr-10 accordion-header">
+                                                                                    <div id={`headingOne${index}`} className="pr-10 accordion-header">
                                                                                         <div className="row m-0 bdr-btm-eee accordion-button p-0"
-                                                                                            data-bs-toggle="collapse"   data-bs-target={`#collapseOne${index}`}
+                                                                                            data-bs-toggle="collapse" data-bs-target={`#collapseOne${index}`}
                                                                                             aria-expanded="true" aria-controls={`collapseOne${index}`}  >
                                                                                             <div className="w-95 p-0">
                                                                                                 <div className="booking_inner_dtl_h h-100">
@@ -1527,133 +1606,133 @@ function Received_booking_box() {
                                                                                         data-bs-parent="#accordionExample" >
                                                                                         {currentLeadform.remainingPayments
                                                                                             .length !== 0 && currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName).map(
-                                                                                            (paymentObj, index) => paymentObj.serviceName === obj.serviceName ? (
-                                                                                                <div class="accordion-body bdr-none p-0">
-                                                                                                    <div>
-                                                                                                        <div className="row m-0 bdr-btm-eee bdr-top-eee">
-                                                                                                            <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
-                                                                                                                <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
-                                                                                                                    <div>
-                                                                                                                        {currentLeadform.remainingPayments.length !== 0 &&
-                                                                                                                            (() => {
-
-                                                                                                                            if (index === 0) return "Second ";
-                                                                                                                            else if (index === 1) return "Third ";
-                                                                                                                            else if (index === 2) return "Fourth ";
-                                                                                                                            // Add more conditions as needed
-                                                                                                                            return ""; // Return default value if none of the conditions match
-                                                                                                                            })()}
-                                                                                                                        Remaining Payment
-                                                                                                                    </div>
-                                                                                                                    <div>
-                                                                                                                        {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div className="row m-0 bdr-btm-eee">
-                                                                                                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100">
-                                                                                                                            Amount
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                                            ₹{" "}
-                                                                                                                            {paymentObj.receivedPayment.toLocaleString()}
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                                            Pending
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                                            ₹{" "}
+                                                                                                (paymentObj, index) => paymentObj.serviceName === obj.serviceName ? (
+                                                                                                    <div class="accordion-body bdr-none p-0">
+                                                                                                        <div>
+                                                                                                            <div className="row m-0 bdr-btm-eee bdr-top-eee">
+                                                                                                                <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                                                                                                    <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                                                                                                        <div>
                                                                                                                             {currentLeadform.remainingPayments.length !== 0 &&
-                                                                                                                            (() => {
-                                                                                                                                const filteredPayments = currentLeadform.remainingPayments.filter(
-                                                                                                                                (pay) => pay.serviceName === obj.serviceName
-                                                                                                                                );
+                                                                                                                                (() => {
 
-                                                                                                                                const filteredLength = filteredPayments.length;
-                                                                                                                                if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
-                                                                                                                                else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
-                                                                                                                                else if (index === 2) return parseInt(currentLeadform.pendingAmount);
-                                                                                                                                // Add more conditions as needed
-                                                                                                                                return ""; // Return default value if none of the conditions match
-                                                                                                                            })()}
-                                                                                                                            {/* {index === 0
+                                                                                                                                    if (index === 0) return "Second ";
+                                                                                                                                    else if (index === 1) return "Third ";
+                                                                                                                                    else if (index === 2) return "Fourth ";
+                                                                                                                                    // Add more conditions as needed
+                                                                                                                                    return ""; // Return default value if none of the conditions match
+                                                                                                                                })()}
+                                                                                                                            Remaining Payment
+                                                                                                                        </div>
+                                                                                                                        <div>
+                                                                                                                            {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div className="row m-0 bdr-btm-eee">
+                                                                                                                <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
+                                                                                                                    <div class="row m-0 h-100">
+                                                                                                                        <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_h h-100">
+                                                                                                                                Amount
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                        <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                                                ₹{" "}
+                                                                                                                                {paymentObj.receivedPayment.toLocaleString()}
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
+                                                                                                                    <div class="row m-0 h-100">
+                                                                                                                        <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                                                                                Pending
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                        <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                                                ₹{" "}
+                                                                                                                                {currentLeadform.remainingPayments.length !== 0 &&
+                                                                                                                                    (() => {
+                                                                                                                                        const filteredPayments = currentLeadform.remainingPayments.filter(
+                                                                                                                                            (pay) => pay.serviceName === obj.serviceName
+                                                                                                                                        );
+
+                                                                                                                                        const filteredLength = filteredPayments.length;
+                                                                                                                                        if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
+                                                                                                                                        else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
+                                                                                                                                        else if (index === 2) return parseInt(currentLeadform.pendingAmount);
+                                                                                                                                        // Add more conditions as needed
+                                                                                                                                        return ""; // Return default value if none of the conditions match
+                                                                                                                                    })()}
+                                                                                                                                {/* {index === 0
                                                                                                                             ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
                                                                                                                             : index === 1
                                                                                                                             ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(currentLeadform.remainingPayments[0].receivedPayment)
                                                                                                                             : parseInt(currentLeadform.pendingAmount)} */}
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                                                                                    <div class="row m-0 h-100">
+                                                                                                                        <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                                                                                Payment Date
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                        <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" >
+                                                                                                                                {formatDatePro(
+                                                                                                                                    paymentObj.paymentDate
+                                                                                                                                )}
+                                                                                                                            </div>
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
-                                                                                                            <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                                                            Payment Date
+                                                                                                            <div className="row m-0 bdr-btm-eee">
+                                                                                                                <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                                                                                    <div class="row m-0 h-100">
+                                                                                                                        <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_h h-100">
+                                                                                                                                Payment Method
+                                                                                                                            </div>
                                                                                                                         </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" >
-                                                                                                                            {formatDatePro(
-                                                                                                                            paymentObj.paymentDate
-                                                                                                                            )}
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div className="row m-0 bdr-btm-eee">
-                                                                                                            <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100">
-                                                                                                                            Payment Method
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={  paymentObj.paymentMethod }>
-                                                                                                                            {
-                                                                                                                            paymentObj.paymentMethod
-                                                                                                                            }
+                                                                                                                        <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={paymentObj.paymentMethod}>
+                                                                                                                                {
+                                                                                                                                    paymentObj.paymentMethod
+                                                                                                                                }
+                                                                                                                            </div>
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                 </div>
-                                                                                                            </div>
-                                                                                                            <div className="col-lg-6 col-sm-4 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-4 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                                                            Extra Remarks
+                                                                                                                <div className="col-lg-6 col-sm-4 p-0 align-self-stretc">
+                                                                                                                    <div class="row m-0 h-100">
+                                                                                                                        <div class="col-sm-4 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                                                                                Extra Remarks
+                                                                                                                            </div>
                                                                                                                         </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-8 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                                                                                        <div class="col-sm-8 align-self-stretc p-0">
+                                                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
                                                                                                                                 paymentObj.extraRemarks
                                                                                                                             }>
-                                                                                                                            {
-                                                                                                                                paymentObj.extraRemarks
-                                                                                                                            }
+                                                                                                                                {
+                                                                                                                                    paymentObj.extraRemarks
+                                                                                                                                }
+                                                                                                                            </div>
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                </div>
                                                                                                 ) : null // Render null for elements that don't match the condition
                                                                                             )}
                                                                                     </div>
@@ -1688,13 +1767,13 @@ function Received_booking_box() {
                                                                                     <div class="row m-0">
                                                                                         <div class="col-sm-6 align-self-stretc p-0">
                                                                                             <div class="booking_inner_dtl_h h-100">
-                                                                                            CA's Number
+                                                                                                CA's Number
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-6 align-self-stretc p-0">
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                            {currentLeadform &&
-                                                                                                currentLeadform.caNumber}
+                                                                                                {currentLeadform &&
+                                                                                                    currentLeadform.caNumber}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1718,14 +1797,14 @@ function Received_booking_box() {
                                                                                     <div class="row m-0">
                                                                                         <div class="col-sm-5 align-self-stretc p-0">
                                                                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                            CA's Commission
+                                                                                                CA's Commission
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-7 align-self-stretc p-0">
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                            ₹{" "}
-                                                                                            {currentLeadform &&
-                                                                                                currentLeadform.caCommission}
+                                                                                                ₹{" "}
+                                                                                                {currentLeadform &&
+                                                                                                    currentLeadform.caCommission}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1745,16 +1824,16 @@ function Received_booking_box() {
                                                                                 <div class="row m-0 h-100">
                                                                                     <div class="col-sm-5 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                        Total Amount
+                                                                                            Total Amount
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-7 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                                                        ₹{" "}
-                                                                                        {currentLeadform &&
-                                                                                            parseInt(
-                                                                                            currentLeadform.totalAmount
-                                                                                            ).toLocaleString()}
+                                                                                            ₹{" "}
+                                                                                            {currentLeadform &&
+                                                                                                parseInt(
+                                                                                                    currentLeadform.totalAmount
+                                                                                                ).toLocaleString()}
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1763,16 +1842,16 @@ function Received_booking_box() {
                                                                                 <div class="row m-0 h-100">
                                                                                     <div class="col-sm-5 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                        Received Amount
+                                                                                            Received Amount
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-sm-7 align-self-stretch p-0">
                                                                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                        ₹{" "}
-                                                                                        {currentLeadform &&
-                                                                                            parseInt(
-                                                                                            currentLeadform.receivedAmount
-                                                                                            ).toLocaleString()}
+                                                                                            ₹{" "}
+                                                                                            {currentLeadform &&
+                                                                                                parseInt(
+                                                                                                    currentLeadform.receivedAmount
+                                                                                                ).toLocaleString()}
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1789,7 +1868,7 @@ function Received_booking_box() {
                                                                                             ₹{" "}
                                                                                             {currentLeadform &&
                                                                                                 parseInt(
-                                                                                                currentLeadform.pendingAmount
+                                                                                                    currentLeadform.pendingAmount
                                                                                                 ).toLocaleString()}
                                                                                         </div>
                                                                                     </div>
@@ -1832,30 +1911,264 @@ function Received_booking_box() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                                                    <b>Payment Receipt and Additional Documents:</b>
-                                                                </div>
-                                                                <div className="row">
-                                                                    <div className="col-sm-2 mb-1">
-                                                                        <div className="booking-docs-preview">
-                                                                            <div  className="booking-docs-preview-img">
-                                                                                <img    src={wordimg}  alt="Default Image"  />
+                                                                {currentLeadform &&
+                                                                    (currentLeadform.paymentReceipt.length !== 0 ||
+                                                                        currentLeadform.otherDocs !== 0) && (
+                                                                        <>
+                                                                            <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                                                                <b>Payment Receipt and Additional Documents:</b>
                                                                             </div>
-                                                                            <div className="booking-docs-preview-text">
-                                                                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                                                                    Receipt
-                                                                                </p>
+                                                                            <div className="row">
+                                                                                {currentLeadform.paymentReceipt.length !==
+                                                                                    0 && (
+                                                                                        <div className="col-sm-2 mb-1">
+                                                                                            <div className="booking-docs-preview">
+                                                                                                <div
+                                                                                                    className="booking-docs-preview-img"
+                                                                                                    onClick={() =>
+                                                                                                        handleViewPdfReciepts(
+                                                                                                            currentLeadform.paymentReceipt[0]
+                                                                                                                .filename,
+                                                                                                            currentLeadform["Company Name"]
+                                                                                                        )
+                                                                                                    }
+                                                                                                >
+                                                                                                    {currentLeadform &&
+                                                                                                        currentLeadform.paymentReceipt[0] &&
+                                                                                                        (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
+                                                                                                            ".pdf"
+                                                                                                        ) ? (
+                                                                                                            <PdfImageViewerAdmin
+                                                                                                                type="paymentrecieptpdf"
+                                                                                                                path={
+                                                                                                                    currentLeadform
+                                                                                                                        .paymentReceipt[0].filename
+                                                                                                                }
+                                                                                                                companyName={
+                                                                                                                    currentLeadform["Company Name"]
+                                                                                                                }
+                                                                                                            />
+                                                                                                        ) : currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                                                                            ".png"
+                                                                                                        ) ||
+                                                                                                            currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                                                                                ".jpg"
+                                                                                                            ) ||
+                                                                                                            currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                                                                                ".jpeg"
+                                                                                                            ) ? (
+                                                                                                            <img
+                                                                                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                                                                                alt="Receipt Image"
+                                                                                                            />
+                                                                                                        ) : (
+                                                                                                            <img
+                                                                                                                src={wordimg}
+                                                                                                                alt="Default Image"
+                                                                                                            />
+                                                                                                        ))}
+                                                                                                </div>
+                                                                                                <div className="booking-docs-preview-text">
+                                                                                                    <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                                                                        Receipt
+                                                                                                    </p>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    )}
+                                                                                {currentLeadform.remainingPayments.length !==
+                                                                                    0 &&
+                                                                                    currentLeadform.remainingPayments.some(
+                                                                                        (obj) => obj.paymentReceipt.length !== 0
+                                                                                    ) &&
+                                                                                    currentLeadform.remainingPayments.map((remainingObject, index) => (
+                                                                                        remainingObject.paymentReceipt.length !== 0 && (
+                                                                                            <div className="col-sm-2 mb-1" key={index}>
+                                                                                                <div className="booking-docs-preview">
+                                                                                                    <div
+                                                                                                        className="booking-docs-preview-img"
+                                                                                                        onClick={() =>
+                                                                                                            handleViewPdfReciepts(
+                                                                                                                remainingObject.paymentReceipt[0].filename,
+                                                                                                                currentLeadform["Company Name"]
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        {((remainingObject.paymentReceipt[0].filename).toLowerCase()).endsWith(".pdf") ? (
+                                                                                                            <PdfImageViewerAdmin
+                                                                                                                type="paymentrecieptpdf"
+                                                                                                                path={remainingObject.paymentReceipt[0].filename}
+                                                                                                                companyName={currentLeadform["Company Name"]}
+                                                                                                            />
+                                                                                                        ) : remainingObject.paymentReceipt[0].filename.endsWith(".png") ||
+                                                                                                            remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
+                                                                                                            remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
+                                                                                                            <img
+                                                                                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
+                                                                                                                alt="Receipt Image"
+                                                                                                            />
+                                                                                                        ) : (
+                                                                                                            <img src={wordimg} alt="Default Image" />
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                    <div className="booking-docs-preview-text">
+                                                                                                        <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                                                                            Remaining Payment
+                                                                                                        </p>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )
+                                                                                    ))}
+
+                                                                                {currentLeadform &&
+                                                                                    currentLeadform.otherDocs.map((obj) => (
+                                                                                        <div className="col-sm-2 mb-1">
+                                                                                            <div className="booking-docs-preview">
+                                                                                                <div
+                                                                                                    className="booking-docs-preview-img"
+                                                                                                    onClick={() =>
+                                                                                                        handleViewPdOtherDocs(
+                                                                                                            obj.filename,
+                                                                                                            currentLeadform["Company Name"]
+                                                                                                        )
+                                                                                                    }
+                                                                                                >
+                                                                                                    {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
+                                                                                                        <PdfImageViewerAdmin
+                                                                                                            type="pdf"
+                                                                                                            path={obj.filename}
+                                                                                                            companyName={
+                                                                                                                currentLeadform["Company Name"]
+                                                                                                            }
+                                                                                                        />
+                                                                                                    ) : (
+                                                                                                        <img
+                                                                                                            src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                                                                                            alt={pdfimg}
+                                                                                                        ></img>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                                <div className="booking-docs-preview-text">
+                                                                                                    <p
+                                                                                                        className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0"
+                                                                                                        title={obj.originalname}
+                                                                                                    >
+                                                                                                        {obj.originalname}
+                                                                                                    </p>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                {/* ---------- Upload Documents From Preview -----------*/}
+                                                                                <div className="col-sm-2 mb-1">
+                                                                                    <div
+                                                                                        className="booking-docs-preview"
+                                                                                        title="Upload More Documents"
+                                                                                    >
+                                                                                        <div
+                                                                                            className="upload-Docs-BTN"
+                                                                                            onClick={() => {
+                                                                                                setOpenOtherDocs(true);
+                                                                                                setSendingIndex(0);
+                                                                                            }}
+                                                                                        >
+                                                                                            <IoAdd />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <Dialog
+                                                                                    open={openOtherDocs}
+                                                                                    onClose={closeOtherDocsPopup}
+                                                                                    fullWidth
+                                                                                    maxWidth="sm"
+                                                                                >
+                                                                                    <DialogTitle>
+                                                                                        Upload Your Attachments
+                                                                                        <IconButton
+                                                                                            onClick={closeOtherDocsPopup}
+                                                                                            style={{ float: "right" }}
+                                                                                        >
+                                                                                            <CloseIcon color="primary"></CloseIcon>
+                                                                                        </IconButton>{" "}
+                                                                                    </DialogTitle>
+                                                                                    <DialogContent>
+                                                                                        <div className="maincon">
+                                                                                            {/* Single file input for multiple documents */}
+                                                                                            <div
+                                                                                                style={{
+                                                                                                    justifyContent: "space-between",
+                                                                                                }}
+                                                                                                className="con1 d-flex"
+                                                                                            >
+                                                                                                <div
+                                                                                                    style={{ paddingTop: "9px" }}
+                                                                                                    className="uploadcsv"
+                                                                                                >
+                                                                                                    <label
+                                                                                                        style={{
+                                                                                                            margin: "0px 0px 6px 0px",
+                                                                                                        }}
+                                                                                                        htmlFor="attachmentfile"
+                                                                                                    >
+                                                                                                        Upload Files
+                                                                                                    </label>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div
+                                                                                                style={{ margin: "5px 0px 0px 0px" }}
+                                                                                                className="form-control"
+                                                                                            >
+                                                                                                <input
+                                                                                                    type="file"
+                                                                                                    name="attachmentfile"
+                                                                                                    id="attachmentfile"
+                                                                                                    onChange={(e) => {
+                                                                                                        handleOtherDocsUpload(
+                                                                                                            e.target.files
+                                                                                                        );
+                                                                                                    }}
+                                                                                                    multiple // Allow multiple files selection
+                                                                                                />
+                                                                                                {selectedDocuments &&
+                                                                                                    selectedDocuments.length > 0 && (
+                                                                                                        <div className="uploaded-filename-main d-flex flex-wrap">
+                                                                                                            {selectedDocuments.map(
+                                                                                                                (file, index) => (
+                                                                                                                    <div
+                                                                                                                        className="uploaded-fileItem d-flex align-items-center"
+                                                                                                                        key={index}
+                                                                                                                    >
+                                                                                                                        <p className="m-0">
+                                                                                                                            {file.name}
+                                                                                                                        </p>
+                                                                                                                        <button
+                                                                                                                            className="fileItem-dlt-btn"
+                                                                                                                            onClick={() =>
+                                                                                                                                handleRemoveFile(index)
+                                                                                                                            }
+                                                                                                                        >
+                                                                                                                            <IconX className="close-icon" />
+                                                                                                                        </button>
+                                                                                                                    </div>
+                                                                                                                )
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </DialogContent>
+                                                                                    <button
+                                                                                        className="btn btn-primary"
+                                                                                        onClick={handleotherdocsAttachment}
+                                                                                    >
+                                                                                        Submit
+                                                                                    </button>
+                                                                                </Dialog>
                                                                             </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-sm-2 mb-1">
-                                                                        <div className="booking-docs-preview" title="Upload More Documents"  >
-                                                                            <div className="upload-Docs-BTN"  >
-                                                                                <IoAdd />
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                                        </>
+                                                                    )}
                                                             </div>
                                                         </div>}
                                                     {/* ----- More Bookings section --------- */}
@@ -1880,7 +2193,7 @@ function Received_booking_box() {
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                                                                 {currentLeadform.moreBookings &&
-                                                                                                obj.bdeName}
+                                                                                                    obj.bdeName}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1895,7 +2208,7 @@ function Received_booking_box() {
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                 {currentLeadform.moreBookings &&
-                                                                                                obj.bdeEmail}
+                                                                                                    obj.bdeEmail}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1910,7 +2223,7 @@ function Received_booking_box() {
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                 {currentLeadform.moreBookings &&
-                                                                                                obj.bdmName} <i>({currentLeadform.moreBookings && obj.bdmType})</i>
+                                                                                                    obj.bdmName} <i>({currentLeadform.moreBookings && obj.bdmType})</i>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1927,7 +2240,7 @@ function Received_booking_box() {
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                 {currentLeadform.moreBookings &&
-                                                                                                obj.bdmEmail}
+                                                                                                    obj.bdmEmail}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1941,7 +2254,7 @@ function Received_booking_box() {
                                                                                         </div>
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                                                            {formatDatePro(obj.bookingDate)}
+                                                                                                {formatDatePro(obj.bookingDate)}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1956,10 +2269,10 @@ function Received_booking_box() {
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                 {currentLeadform.mainBookings &&
-                                                                                                (obj.bookingSource ===
-                                                                                                    "Other"
-                                                                                                    ? obj.otherBookingSource
-                                                                                                    : obj.bookingSource)}
+                                                                                                    (obj.bookingSource ===
+                                                                                                        "Other"
+                                                                                                        ? obj.otherBookingSource
+                                                                                                        : obj.bookingSource)}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1984,7 +2297,7 @@ function Received_booking_box() {
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
                                                                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                                                                 {currentLeadform.moreBookings &&
-                                                                                                obj.services.length}
+                                                                                                    obj.services.length}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1992,7 +2305,7 @@ function Received_booking_box() {
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    {objMain.services.map((obj, index) => (
+                                                                    {obj.services.map((obj, index) => (
                                                                         <div className="my-card mt-1">
                                                                             <div className="my-card-body">
                                                                                 <div className="row m-0 bdr-btm-eee">
@@ -2077,37 +2390,37 @@ function Received_booking_box() {
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                {(obj.expanse !== 0 && obj.expanse) && 
-                                                                                <div className="row m-0 bdr-btm-eee">
-                                                                                    <div className="col-lg-6 col-sm-2 p-0">
-                                                                                        <div class="row m-0">
-                                                                                            <div class="col-sm-4 align-self-stretch p-0">
-                                                                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                    Expense
+                                                                                {(obj.expanse !== 0 && obj.expanse) &&
+                                                                                    <div className="row m-0 bdr-btm-eee">
+                                                                                        <div className="col-lg-6 col-sm-2 p-0">
+                                                                                            <div class="row m-0">
+                                                                                                <div class="col-sm-4 align-self-stretch p-0">
+                                                                                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                                                        Expense
+                                                                                                    </div>
                                                                                                 </div>
-                                                                                            </div>
-                                                                                            <div class="col-sm-8 align-self-stretch p-0">
-                                                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                     - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="col-lg-6 col-sm-2 p-0">
-                                                                                        <div class="row m-0">
-                                                                                            <div class="col-sm-4 align-self-stretch p-0">
-                                                                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                    Expanses Date
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="col-sm-8 align-self-stretch p-0">
-                                                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                    {formatDatePro(obj.expanseDate ? obj.expanseDate : objMain.bookingDate)}
+                                                                                                <div class="col-sm-8 align-self-stretch p-0">
+                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                        - ₹ {obj.expanse ? (obj.expanse).toLocaleString() : "N/A"}
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                </div>}
+                                                                                        <div className="col-lg-6 col-sm-2 p-0">
+                                                                                            <div class="row m-0">
+                                                                                                <div class="col-sm-4 align-self-stretch p-0">
+                                                                                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                                                        Expanses Date
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="col-sm-8 align-self-stretch p-0">
+                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                        {formatDatePro(obj.expanseDate ? obj.expanseDate : obj.bookingDate)}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>}
                                                                                 <div className="row m-0 bdr-btm-eee">
                                                                                     {obj.paymentTerms === "two-part" && (
                                                                                         <div className="col-lg-6 col-sm-6 p-0">
@@ -2121,7 +2434,7 @@ function Received_booking_box() {
                                                                                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                         ₹{" "}
                                                                                                         {parseInt(
-                                                                                                        obj.firstPayment
+                                                                                                            obj.firstPayment
                                                                                                         ).toLocaleString()}
                                                                                                         /-
                                                                                                     </div>
@@ -2130,37 +2443,37 @@ function Received_booking_box() {
                                                                                         </div>
                                                                                     )}
                                                                                     {obj.secondPayment !== 0 && (
-                                                                                    <div className="col-lg-6 col-sm-6 p-0">
-                                                                                        <div class="row m-0">
-                                                                                            <div class="col-sm-4 align-self-stretch p-0">
-                                                                                                <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                                    Second Payment
+                                                                                        <div className="col-lg-6 col-sm-6 p-0">
+                                                                                            <div class="row m-0">
+                                                                                                <div class="col-sm-4 align-self-stretch p-0">
+                                                                                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                                                        Second Payment
+                                                                                                    </div>
                                                                                                 </div>
-                                                                                            </div>
-                                                                                            <div class="col-sm-8 align-self-stretch p-0">
-                                                                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                                                                    <div className="d-flex align-items-center justify-content-between">
-                                                                                                        <div>
-                                                                                                            ₹
-                                                                                                            {parseInt(
-                                                                                                            obj.secondPayment
-                                                                                                            ).toLocaleString()}
-                                                                                                            /- {"("}
-                                                                                                            {isNaN(
-                                                                                                            new Date(
-                                                                                                                obj.secondPaymentRemarks
-                                                                                                            )
-                                                                                                            )
-                                                                                                            ? obj.secondPaymentRemarks
-                                                                                                            : "On " +
-                                                                                                            obj.secondPaymentRemarks +
-                                                                                                            ")"}
+                                                                                                <div class="col-sm-8 align-self-stretch p-0">
+                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                                                                        <div className="d-flex align-items-center justify-content-between">
+                                                                                                            <div>
+                                                                                                                ₹
+                                                                                                                {parseInt(
+                                                                                                                    obj.secondPayment
+                                                                                                                ).toLocaleString()}
+                                                                                                                /- {"("}
+                                                                                                                {isNaN(
+                                                                                                                    new Date(
+                                                                                                                        obj.secondPaymentRemarks
+                                                                                                                    )
+                                                                                                                )
+                                                                                                                    ? obj.secondPaymentRemarks
+                                                                                                                    : "On " +
+                                                                                                                    obj.secondPaymentRemarks +
+                                                                                                                    ")"}
+                                                                                                            </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    </div>
                                                                                     )}
                                                                                 </div>
                                                                                 <div className="row m-0 bdr-btm-eee">
@@ -2178,18 +2491,18 @@ function Received_booking_box() {
                                                                                                             <div>
                                                                                                                 ₹{" "}
                                                                                                                 {parseInt(
-                                                                                                                obj.thirdPayment
+                                                                                                                    obj.thirdPayment
                                                                                                                 ).toLocaleString()}
                                                                                                                 /- {"("}
                                                                                                                 {isNaN(
-                                                                                                                new Date(
-                                                                                                                    obj.thirdPaymentRemarks
+                                                                                                                    new Date(
+                                                                                                                        obj.thirdPaymentRemarks
+                                                                                                                    )
                                                                                                                 )
-                                                                                                                )
-                                                                                                                ? obj.thirdPaymentRemarks
-                                                                                                                : "On " +
-                                                                                                                obj.thirdPaymentRemarks +
-                                                                                                                ")"}
+                                                                                                                    ? obj.thirdPaymentRemarks
+                                                                                                                    : "On " +
+                                                                                                                    obj.thirdPaymentRemarks +
+                                                                                                                    ")"}
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
@@ -2211,18 +2524,18 @@ function Received_booking_box() {
                                                                                                             <div>
                                                                                                                 ₹{" "}
                                                                                                                 {parseInt(
-                                                                                                                obj.fourthPayment
+                                                                                                                    obj.fourthPayment
                                                                                                                 ).toLocaleString()}{" "}
                                                                                                                 /- {"("}
                                                                                                                 {isNaN(
-                                                                                                                new Date(
-                                                                                                                    obj.fourthPaymentRemarks
+                                                                                                                    new Date(
+                                                                                                                        obj.fourthPaymentRemarks
+                                                                                                                    )
                                                                                                                 )
-                                                                                                                )
-                                                                                                                ? obj.fourthPaymentRemarks
-                                                                                                                : "On " +
-                                                                                                                obj.fourthPaymentRemarks +
-                                                                                                                ")"}
+                                                                                                                    ? obj.fourthPaymentRemarks
+                                                                                                                    : "On " +
+                                                                                                                    obj.fourthPaymentRemarks +
+                                                                                                                    ")"}
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
@@ -2232,11 +2545,11 @@ function Received_booking_box() {
                                                                                     )}
                                                                                 </div>
                                                                             </div>
-                                                                            {objMain.remainingPayments.length !== 0 && objMain.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
-                                                                                <div className="my-card-body accordion"  id={`accordionExample${index}`}   >
+                                                                            {obj.remainingPayments && obj.remainingPayments.length !== 0 && obj.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
+                                                                                <div className="my-card-body accordion" id={`accordionExample${index}`}   >
                                                                                     <div class="accordion-item bdr-none">
-                                                                                        <div id={`headingOne${index}`}  className="pr-10 accordion-header"  >
-                                                                                            <div  className="row m-0 bdr-btm-eee accordion-button p-0"
+                                                                                        <div id={`headingOne${index}`} className="pr-10 accordion-header"  >
+                                                                                            <div className="row m-0 bdr-btm-eee accordion-button p-0"
                                                                                                 data-bs-toggle="collapse"
                                                                                                 data-bs-target={`#collapseOne${index}`}
                                                                                                 aria-expanded="true"
@@ -2250,158 +2563,158 @@ function Received_booking_box() {
                                                                                             </div>
                                                                                         </div>
                                                                                         <div
-                                                                                        id={`collapseOne${index}`}
-                                                                                        class="accordion-collapse collapse show"
-                                                                                        aria-labelledby={`headingOne${index}`}
-                                                                                        data-bs-parent="#accordionExample"
+                                                                                            id={`collapseOne${index}`}
+                                                                                            class="accordion-collapse collapse show"
+                                                                                            aria-labelledby={`headingOne${index}`}
+                                                                                            data-bs-parent="#accordionExample"
                                                                                         // Add a unique key prop for each rendered element
                                                                                         >
-                                                                                        {objMain.remainingPayments
-                                                                                            .length !== 0 && objMain.remainingPayments.filter(boom => boom.serviceName === obj.serviceName).map(
-                                                                                            (paymentObj, index) =>
-                                                                                                paymentObj.serviceName ===
-                                                                                                obj.serviceName ? (
-                                                                                                <div class="accordion-body bdr-none p-0">
-                                                                                                    <div>
-                                                                                                        <div className="row m-0 bdr-btm-eee bdr-top-eee">
-                                                                                                            <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
-                                                                                                                <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
-                                                                                                                    <div>
-                                                                                                                    {objMain.remainingPayments.length !== 0 &&
-                                                                                                                        (() => {
+                                                                                            {obj.remainingPayments
+                                                                                                .length !== 0 && obj.remainingPayments.filter(boom => boom.serviceName === obj.serviceName).map(
+                                                                                                    (paymentObj, index) =>
+                                                                                                        paymentObj.serviceName ===
+                                                                                                            obj.serviceName ? (
+                                                                                                            <div class="accordion-body bdr-none p-0">
+                                                                                                                <div>
+                                                                                                                    <div className="row m-0 bdr-btm-eee bdr-top-eee">
+                                                                                                                        <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                                                                                                            <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                                                                                                                <div>
+                                                                                                                                    {obj.remainingPayments.length !== 0 &&
+                                                                                                                                        (() => {
 
-                                                                                                                        if (index === 0) return "Second ";
-                                                                                                                        else if (index === 1) return "Third ";
-                                                                                                                        else if (index === 2) return "Fourth ";
-                                                                                                                        else if (index > 2) return "Other ";
-                                                                                                                        // Add more conditions as needed
-                                                                                                                        return ""; // Return default value if none of the conditions match
-                                                                                                                        })()}
-                                                                                                                    Remaining Payment
-                                                                                                                    </div>
-                                                                                                                    <div className="d-flex align-items-center">
-                                                                                                                        <div>
-                                                                                                                            {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
+                                                                                                                                            if (index === 0) return "Second ";
+                                                                                                                                            else if (index === 1) return "Third ";
+                                                                                                                                            else if (index === 2) return "Fourth ";
+                                                                                                                                            else if (index > 2) return "Other ";
+                                                                                                                                            // Add more conditions as needed
+                                                                                                                                            return ""; // Return default value if none of the conditions match
+                                                                                                                                        })()}
+                                                                                                                                    Remaining Payment
+                                                                                                                                </div>
+                                                                                                                                <div className="d-flex align-items-center">
+                                                                                                                                    <div>
+                                                                                                                                        {"(" + formatDatePro(paymentObj.publishDate ? paymentObj.publishDate : paymentObj.paymentDate) + ")"}
 
-                                                                                                                        </div>
+                                                                                                                                    </div>
 
-                                                                                                                            {/* {
-                                                                                                                        objMain.remainingPayments.length - 1 === index && <IconButton onClick={ ()=>functionDeleteRemainingPayment(BookingIndex + 1)} >
+                                                                                                                                    {/* {
+                                                                                                                        obj.remainingPayments.length - 1 === index && <IconButton onClick={ ()=>functionDeleteRemainingPayment(BookingIndex + 1)} >
                                                                                                                             <MdDelete style={{ height: '14px', width: '14px' , color:'#be1e1e' }} />
                                                                                                                         </IconButton>
                                                                                                                         } */}
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div className="row m-0 bdr-btm-eee">
-                                                                                                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100">
-                                                                                                                            Amount
+                                                                                                                                </div>
+                                                                                                                            </div>
                                                                                                                         </div>
                                                                                                                     </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                                            ₹{" "}
-                                                                                                                            {paymentObj.receivedPayment.toLocaleString()}
+                                                                                                                    <div className="row m-0 bdr-btm-eee">
+                                                                                                                        <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
+                                                                                                                            <div class="row m-0 h-100">
+                                                                                                                                <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_h h-100">
+                                                                                                                                        Amount
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                                                        ₹{" "}
+                                                                                                                                        {paymentObj.receivedPayment.toLocaleString()}
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
                                                                                                                         </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                                            Pending
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                                            ₹{" "}
-                                                                                                                            {objMain.remainingPayments.length !== 0 &&
-                                                                                                                            (() => {
-                                                                                                                                const filteredPayments = objMain.remainingPayments.filter(
-                                                                                                                                (pay) => pay.serviceName === obj.serviceName
-                                                                                                                                );
+                                                                                                                        <div className="col-lg-3 col-sm-6 p-0 align-self-stretc">
+                                                                                                                            <div class="row m-0 h-100">
+                                                                                                                                <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                                                                                        Pending
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                                                        ₹{" "}
+                                                                                                                                        {obj.remainingPayments.length !== 0 &&
+                                                                                                                                            (() => {
+                                                                                                                                                const filteredPayments = obj.remainingPayments.filter(
+                                                                                                                                                    (pay) => pay.serviceName === obj.serviceName
+                                                                                                                                                );
 
-                                                                                                                                const filteredLength = filteredPayments.length;
-                                                                                                                                if (index === 0) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment);
-                                                                                                                                else if (index === 1) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment);
-                                                                                                                                else if (index === 2) return Math.round(objMain.pendingAmount);
-                                                                                                                                // Add more conditions as needed
-                                                                                                                                return ""; // Return default value if none of the conditions match
-                                                                                                                            })()}
-                                                                                                                                {/* {index === 0
+                                                                                                                                                const filteredLength = filteredPayments.length;
+                                                                                                                                                if (index === 0) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment);
+                                                                                                                                                else if (index === 1) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment);
+                                                                                                                                                else if (index === 2) return Math.round(obj.pendingAmount);
+                                                                                                                                                // Add more conditions as needed
+                                                                                                                                                return ""; // Return default value if none of the conditions match
+                                                                                                                                            })()}
+                                                                                                                                        {/* {index === 0
                                                                                                                             ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment)
                                                                                                                             : index === 1
                                                                                                                             ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(currentLeadform.remainingPayments[0].receivedPayment)
                                                                                                                             : Math.round(currentLeadform.pendingAmount)} */}
-                                                                                                                        </div>
+                                                                                                                                    </div>
 
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                                                                                            <div class="row m-0 h-100">
+                                                                                                                                <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                                                                                        Payment Date
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">
+                                                                                                                                        {formatDatePro(
+                                                                                                                                            paymentObj.paymentDate
+                                                                                                                                        )}
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                    <div className="row m-0 bdr-btm-eee">
+                                                                                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                                                                                            <div class="row m-0 h-100">
+                                                                                                                                <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_h h-100">
+                                                                                                                                        Payment Method
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                                                                                                        paymentObj.paymentMethod
+                                                                                                                                    }>
+                                                                                                                                        {
+                                                                                                                                            paymentObj.paymentMethod
+                                                                                                                                        }
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                        <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
+                                                                                                                            <div class="row m-0 h-100">
+                                                                                                                                <div class="col-sm-4 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                                                                                                        Extra Remarks
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div class="col-sm-8 align-self-stretc p-0">
+                                                                                                                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
+                                                                                                                                        paymentObj.extraRemarks
+                                                                                                                                    }>
+                                                                                                                                        {
+                                                                                                                                            paymentObj.extraRemarks
+                                                                                                                                        }
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
-                                                                                                            <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                                                            Payment Date
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap">
-                                                                                                                            {formatDatePro(
-                                                                                                                            paymentObj.paymentDate
-                                                                                                                            )}
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div className="row m-0 bdr-btm-eee">
-                                                                                                            <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-5 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100">
-                                                                                                                            Payment Method
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-7 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                                                                                            paymentObj.paymentMethod
-                                                                                                                        }>
-                                                                                                                            {
-                                                                                                                            paymentObj.paymentMethod
-                                                                                                                            }
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div className="col-lg-6 col-sm-6 p-0 align-self-stretc">
-                                                                                                                <div class="row m-0 h-100">
-                                                                                                                    <div class="col-sm-4 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                                                                                            Extra Remarks
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-sm-8 align-self-stretc p-0">
-                                                                                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                                                                                            paymentObj.extraRemarks
-                                                                                                                        }>
-                                                                                                                            {
-                                                                                                                            paymentObj.extraRemarks
-                                                                                                                            }
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                ) : null // Render null for elements that don't match the condition
-                                                                                            )}
+                                                                                                        ) : null // Render null for elements that don't match the condition
+                                                                                                )}
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -2422,58 +2735,58 @@ function Received_booking_box() {
                                                                                         </div>
                                                                                         <div class="col-sm-10 align-self-stretc p-0">
                                                                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                                                                {objMain.caCase}
+                                                                                                {obj.caCase}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            {objMain.caCase !== "No" && (
-                                                                            <div className="row m-0 bdr-btm-eee">
-                                                                                <div className="col-lg-4 col-sm-6 p-0">
-                                                                                    <div class="row m-0">
-                                                                                        <div class="col-sm-5 align-self-stretc p-0">
-                                                                                            <div class="booking_inner_dtl_h h-100">
-                                                                                                CA's Number
+                                                                            {obj.caCase !== "No" && (
+                                                                                <div className="row m-0 bdr-btm-eee">
+                                                                                    <div className="col-lg-4 col-sm-6 p-0">
+                                                                                        <div class="row m-0">
+                                                                                            <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                <div class="booking_inner_dtl_h h-100">
+                                                                                                    CA's Number
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                    {obj.caNumber}
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                        <div class="col-sm-7 align-self-stretc p-0">
-                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                {objMain.caNumber}
+                                                                                    </div>
+                                                                                    <div className="col-lg-4 col-sm-6 p-0">
+                                                                                        <div class="row m-0">
+                                                                                            <div class="col-sm-4 align-self-stretc p-0">
+                                                                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                                                    CA's Email
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="col-sm-8 align-self-stretc p-0">
+                                                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                    {obj.caEmail}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="col-lg-4 col-sm-6 p-0">
+                                                                                        <div class="row m-0">
+                                                                                            <div class="col-sm-5 align-self-stretc p-0">
+                                                                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                                                                    CA's Commission
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="col-sm-7 align-self-stretc p-0">
+                                                                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                                                                    ₹ {obj.caCommission}
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div className="col-lg-4 col-sm-6 p-0">
-                                                                                    <div class="row m-0">
-                                                                                        <div class="col-sm-4 align-self-stretc p-0">
-                                                                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                CA's Email
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-sm-8 align-self-stretc p-0">
-                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                {objMain.caEmail}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="col-lg-4 col-sm-6 p-0">
-                                                                                    <div class="row m-0">
-                                                                                        <div class="col-sm-5 align-self-stretc p-0">
-                                                                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                CA's Commission
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="col-sm-7 align-self-stretc p-0">
-                                                                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                                                                ₹ {objMain.caCommission}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        )}
+                                                                            )}
                                                                         </div>
                                                                     </div>
 
@@ -2495,7 +2808,7 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                                                                 ₹{" "}
                                                                                                 {parseInt(
-                                                                                                objMain.totalAmount
+                                                                                                    obj.totalAmount
                                                                                                 ).toLocaleString()}
                                                                                             </div>
                                                                                         </div>
@@ -2512,7 +2825,7 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                 ₹{" "}
                                                                                                 {parseInt(
-                                                                                                objMain.receivedAmount
+                                                                                                    obj.receivedAmount
                                                                                                 ).toLocaleString()}
                                                                                             </div>
                                                                                         </div>
@@ -2529,7 +2842,7 @@ function Received_booking_box() {
                                                                                             <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                                                                 ₹{" "}
                                                                                                 {parseInt(
-                                                                                                objMain.pendingAmount
+                                                                                                    obj.pendingAmount
                                                                                                 ).toLocaleString()}
                                                                                             </div>
                                                                                         </div>
@@ -2545,8 +2858,8 @@ function Received_booking_box() {
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
-                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={objMain.paymentMethod}>
-                                                                                                {objMain.paymentMethod}
+                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentMethod}>
+                                                                                                {obj.paymentMethod}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -2559,8 +2872,8 @@ function Received_booking_box() {
                                                                                             </div>
                                                                                         </div>
                                                                                         <div class="col-sm-8 align-self-stretch p-0">
-                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={objMain.extraNotes}>
-                                                                                                {objMain.extraNotes}
+                                                                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.extraNotes}>
+                                                                                                {obj.extraNotes}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -2572,27 +2885,194 @@ function Received_booking_box() {
                                                                     <div className="mb-2 mt-3 mul-booking-card-inner-head">
                                                                         <b>Payment Receipt and Additional Documents:</b>
                                                                     </div>
-                                                                    
+
                                                                     <div className="row">
-                                                                        <div className="col-sm-2 mb-1">
-                                                                            <div className="booking-docs-preview">
-                                                                                <div  className="booking-docs-preview-img">
-                                                                                    <img    src={wordimg}  alt="Default Image"  />
+                                                                        {obj.paymentReceipt &&
+                                                                            obj.paymentReceipt.length !== 0 && (
+                                                                                <div className="col-sm-2 mb-1">
+                                                                                    <div className="booking-docs-preview">
+                                                                                        <div
+                                                                                            className="booking-docs-preview-img"
+                                                                                            onClick={() =>
+                                                                                                handleViewPdfReciepts(
+                                                                                                    obj.paymentReceipt[0]
+                                                                                                        .filename,
+                                                                                                    currentLeadform["Company Name"]
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            {((obj.paymentReceipt[0].filename).toLowerCase()).endsWith(
+                                                                                                ".pdf"
+                                                                                            ) ? (
+                                                                                                <PdfImageViewerAdmin
+                                                                                                    type="paymentrecieptpdf"
+                                                                                                    path={
+                                                                                                        obj.paymentReceipt[0]
+                                                                                                            .filename
+                                                                                                    }
+                                                                                                    companyName={
+                                                                                                        currentLeadform["Company Name"]
+                                                                                                    }
+                                                                                                />
+                                                                                            ) : (
+                                                                                                <img
+                                                                                                    src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${obj.paymentReceipt[0].filename}`}
+                                                                                                    alt={"MyImg"}
+                                                                                                ></img>
+                                                                                            )}
+                                                                                        </div>
+                                                                                        <div className="booking-docs-preview-text">
+                                                                                            <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                                                                Receipt.pdf
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div className="booking-docs-preview-text">
-                                                                                    <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                                                                        Receipt
-                                                                                    </p>
+                                                                            )}
+                                                                        {obj.otherDocs.map((obj) => (
+                                                                            <div className="col-sm-2 mb-1">
+                                                                                <div className="booking-docs-preview">
+                                                                                    <div
+                                                                                        className="booking-docs-preview-img"
+                                                                                        onClick={() =>
+                                                                                            handleViewPdOtherDocs(
+                                                                                                obj.filename,
+                                                                                                currentLeadform["Company Name"]
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        {((obj.filename).toLowerCase()).endsWith(".pdf") ? (
+                                                                                            <PdfImageViewerAdmin
+                                                                                                type="pdf"
+                                                                                                path={obj.filename}
+                                                                                                companyName={
+                                                                                                    currentLeadform["Company Name"]
+                                                                                                }
+                                                                                            />
+                                                                                        ) : (
+                                                                                            <img
+                                                                                                src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                                                                                alt={pdfimg}
+                                                                                            ></img>
+                                                                                        )}
+                                                                                    </div>
+                                                                                    <div className="booking-docs-preview-text">
+                                                                                        <p
+                                                                                            className="booking-img-name-txtwrap text-wrap m-auto m-0"
+                                                                                            title={obj.originalname}
+                                                                                        >
+                                                                                            {obj.originalname}
+                                                                                        </p>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
+                                                                        ))}
+
                                                                         <div className="col-sm-2 mb-1">
-                                                                            <div className="booking-docs-preview" title="Upload More Documents"  >
-                                                                                <div className="upload-Docs-BTN"  >
+                                                                            <div
+                                                                                className="booking-docs-preview"
+                                                                                title="Upload More Documents"
+                                                                            >
+                                                                                <div
+                                                                                    className="upload-Docs-BTN"
+                                                                                    onClick={() => {
+                                                                                        setOpenOtherDocs(true);
+                                                                                        setSendingIndex(index + 1);
+                                                                                    }}
+                                                                                >
                                                                                     <IoAdd />
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+
+                                                                        <Dialog
+                                                                            open={openOtherDocs}
+                                                                            onClose={closeOtherDocsPopup}
+                                                                            fullWidth
+                                                                            maxWidth="sm"
+                                                                        >
+                                                                            <DialogTitle>
+                                                                                Upload Your Attachments
+                                                                                <IconButton
+                                                                                    onClick={closeOtherDocsPopup}
+                                                                                    style={{ float: "right" }}
+                                                                                >
+                                                                                    <CloseIcon color="primary"></CloseIcon>
+                                                                                </IconButton>{" "}
+                                                                            </DialogTitle>
+                                                                            <DialogContent>
+                                                                                <div className="maincon">
+                                                                                    {/* Single file input for multiple documents */}
+                                                                                    <div
+                                                                                        style={{
+                                                                                            justifyContent: "space-between",
+                                                                                        }}
+                                                                                        className="con1 d-flex"
+                                                                                    >
+                                                                                        <div
+                                                                                            style={{ paddingTop: "9px" }}
+                                                                                            className="uploadcsv"
+                                                                                        >
+                                                                                            <label
+                                                                                                style={{
+                                                                                                    margin: "0px 0px 6px 0px",
+                                                                                                }}
+                                                                                                htmlFor="attachmentfile"
+                                                                                            >
+                                                                                                Upload Files
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div
+                                                                                        style={{ margin: "5px 0px 0px 0px" }}
+                                                                                        className="form-control"
+                                                                                    >
+                                                                                        <input
+                                                                                            type="file"
+                                                                                            name="attachmentfile"
+                                                                                            id="attachmentfile"
+                                                                                            onChange={(e) => {
+                                                                                                handleOtherDocsUpload(
+                                                                                                    e.target.files
+                                                                                                );
+                                                                                            }}
+                                                                                            multiple // Allow multiple files selection
+                                                                                        />
+                                                                                        {selectedDocuments &&
+                                                                                            selectedDocuments.length > 0 && (
+                                                                                                <div className="uploaded-filename-main d-flex flex-wrap">
+                                                                                                    {selectedDocuments.map(
+                                                                                                        (file, index) => (
+                                                                                                            <div
+                                                                                                                className="uploaded-fileItem d-flex align-items-center"
+                                                                                                                key={index}
+                                                                                                            >
+                                                                                                                <p className="m-0">
+                                                                                                                    {file.name}
+                                                                                                                </p>
+                                                                                                                <button
+                                                                                                                    className="fileItem-dlt-btn"
+                                                                                                                    onClick={() =>
+                                                                                                                        handleRemoveFile(index)
+                                                                                                                    }
+                                                                                                                >
+                                                                                                                    <IconX className="close-icon" />
+                                                                                                                </button>
+                                                                                                            </div>
+                                                                                                        )
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </DialogContent>
+                                                                            <button
+                                                                                className="btn btn-primary"
+                                                                                onClick={handleotherdocsAttachment}
+                                                                            >
+                                                                                Submit
+                                                                            </button>
+                                                                        </Dialog>
                                                                     </div>
                                                                 </div>
                                                             </div>
