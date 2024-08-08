@@ -75,8 +75,8 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
         return "inprogress-status";
       case "Completed":
         return "approved-status";
-      case "InApproved":
-        return "rejected-status";
+      case "In Approval":
+        return "created-status";
       case "Approved":
         return "approved-status";
       case "Not Applicable":
@@ -196,7 +196,7 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
           <li>
             <a
               className="dropdown-item"
-              onClick={() => handleStatusChange("In Approval", "rejected-status")}
+              onClick={() => handleStatusChange("In Approval", "created-status")}
               href="#"
             >
               In Approval
