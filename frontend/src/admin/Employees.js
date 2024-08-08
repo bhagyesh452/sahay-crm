@@ -638,8 +638,8 @@ function Employees({ onEyeButtonClick }) {
           const response = await axios.put(
             `${secretKey}/employee/einfo/${selectedDataId}`,
             dataToSendUpdated
-          );  
-          console.log("Updated employee is :", dataToSendUpdated);
+          );
+          // console.log("Updated employee is :", dataToSendUpdated);
 
           Swal.fire({
             title: "Data Updated Succesfully!",
@@ -707,7 +707,6 @@ function Employees({ onEyeButtonClick }) {
       }
     }
   };
-
   const resetForm = () => {
     setEmail("");
     setFirstName("");
@@ -900,22 +899,40 @@ function Employees({ onEyeButtonClick }) {
     },
   }));
 
+  const handleChecked = async (employeeId, bdmWork, item) => {
+    // console.log("BDM Condition is :", bdmWork);
+    // console.log("Data to be updated :", item);
+    const updatedDesignation = bdmWork ? "Business Development Executive" : "Business Development Manager";
 
+    const dataToUpdate = {
+      ...item,
+      bdmWork: !bdmWork,
+      newDesignation: updatedDesignation
+    };
 
-  const handlChecked = async (employeeId, bdmWork) => {
+    if (bdmWork === true || bdmWork === false) {
+      try {
+        const response = await axios.put(`${secretKey}/employee/einfo/${employeeId}`, dataToUpdate);
+        // console.log("Updated bdm status is :", response.data);
+        fetchData();
+      } catch (error) {
+        console.log("Errro updating bdm status :", error);
+      }
+    }
+
     if (!bdmWork) {
       try {
         const response = await axios.post(`${secretKey}/employee/post-bdmwork-request/${employeeId}`, {
           bdmWork: true
         });
 
-        fetchData()
+        fetchData();
 
         //console.log(response.data)
         setTimeout(() => {
           Swal.fire('BDM Work Assigned!', '', 'success');
 
-        }, 500)
+        }, 500);
 
       } catch (error) {
         console.log("error message", error.message);
@@ -930,7 +947,7 @@ function Employees({ onEyeButtonClick }) {
         fetchData(); // Assuming this function fetches updated employee details
         setTimeout(() => {
           Swal.fire('BDM Work Revoked!', '', 'success');
-        }, 500)
+        }, 500);
 
       } catch (error) {
         console.error("Error revoking BDM work:", error);
@@ -938,11 +955,7 @@ function Employees({ onEyeButtonClick }) {
         Swal.fire('Error', 'An error occurred while revoking BDM work.', 'error');
       }
     }
-
-  }
-
-
-
+  };
 
   return (
     <div>
@@ -1230,10 +1243,11 @@ function Employees({ onEyeButtonClick }) {
                                 <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
                                   disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
                                   onClick={(event) => {
-                                    handlChecked(item._id, item.bdmWork)
+                                    handleChecked(item._id, item.bdmWork, item)
                                   }} />
                               </Stack>
                             </td>
+
                             <td>
                               <div className="d-flex justify-content-center align-items-center">
                                 {<div className="icons-btn">
@@ -1395,11 +1409,11 @@ function Employees({ onEyeButtonClick }) {
                       className="btn btn-outline-secondary"
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      >
+                    >
                       {showPassword ? "Hide" : "Show"}
                     </button>
                   </div>
-                    {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
+                  {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
                 </div>
 
                 <div className="row">
