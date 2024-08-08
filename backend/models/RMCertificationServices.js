@@ -262,9 +262,9 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   ThirdTimeSubmitDate:{
     type:Date
   },
-  activeTab:{
-    type:String
-  }
+ lastAttemptSubmitted:{
+  type:String,
+ }
 })
 
 const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)

@@ -190,7 +190,7 @@ router.get("/redesigned-final-leadData", async (req, res) => {
               onNull: new Date(0)    // Default to epoch if null
             }
           },
-          isVisibleToRmOfCerification: true  // Static field with value true
+          //isVisibleToRmOfCerification: true  // Static field with value true
         }
       },
       {

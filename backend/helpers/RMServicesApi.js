@@ -601,7 +601,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     ThirdTimeSubmitDate,
     movedFromMainCategoryStatus,
     movedToMainCategoryStatus,
-    activeTab } = req.body;
+    lastAttemptSubmitted } = req.body;
   const socketIO = req.io;
   //console.log(req.body);
 
@@ -643,7 +643,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           previousSubCategoryStatus: previousSubCategoryStatus,
           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : company.SecondTimeSubmitDate,
           ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : company.ThirdTimeSubmitDate,
-          activeTab: activeTab ? activeTab : ""
+          lastAttemptSubmitted:lastAttemptSubmitted
         },
         { new: true }
       );
@@ -712,7 +712,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           nswsPaswsord: "",
           websiteLink: "",
           industry: "",
-          sector: ""
+          sector: "",
+          lastAttemptSubmitted:""
         },
         { new: true }
       );

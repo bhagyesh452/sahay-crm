@@ -475,7 +475,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
     return (
 
         <select
-        className={(mainStatus === "Approved" || mainStatus === "Submitted") ? "disabled" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         aria-labelledby="dropdownMenuButton1"
         onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
         value={status} // Ensure this matches one of the option values

@@ -5,14 +5,15 @@ import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 import io from 'socket.io-client';
+import Swal from "sweetalert2";
 
 
 
-const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData, contentStatus, brochureStatus, activeTabCurrent , tabStopCondition }) => {
+const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, serviceName, refreshData, industry, sector ,forLatSubmitAttempt}) => {
   const [status, setStatus] = useState(subStatus);
   const [statusClass, setStatusClass] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [activeTab, setActiveTab] = useState(activeTabCurrent)
+
 
 
   const handleStatusChange = async (newStatus, statusClass) => {
@@ -114,19 +115,31 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
         }
       } else if (mainStatus === "Ready To Submit") {
         if (newStatus === "Submitted") {
-          movedFromMainCategoryStatus = "Ready To Submit";
-          movedToMainCategoryStatus = "Submitted";
-          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-            companyName,
-            serviceName,
-            subCategoryStatus: newStatus,
-            mainCategoryStatus: "Submitted",
-            previousMainCategoryStatus: "Ready To Submit",
-            previousSubCategoryStatus: newStatus,
-            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-            movedToMainCategoryStatus: movedToMainCategoryStatus,
-            activeTab: "Submitted"
-          });
+          if (!industry && !sector) {
+            Swal.fire({
+              title: "Error",
+              text: "Please select industry and sector first",
+              icon: "warning",
+              button: "OK",
+            });
+            setStatus("Ready To Submit");
+            setStatusClass(statusClass);
+            setNewSubStatus("Ready To Submit");
+          } else {
+            movedFromMainCategoryStatus = "Ready To Submit";
+            movedToMainCategoryStatus = "Submitted";
+            response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+              companyName,
+              serviceName,
+              subCategoryStatus: newStatus,
+              mainCategoryStatus: "Submitted",
+              previousMainCategoryStatus: "Ready To Submit",
+              previousSubCategoryStatus: newStatus,
+              movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+              movedToMainCategoryStatus: movedToMainCategoryStatus,
+              lastAttemptSubmitted:"1st"
+            });
+          }
         } else if (newStatus === "Defaulter") {
           movedFromMainCategoryStatus = "Ready To Submit";
           movedToMainCategoryStatus = "Defaulter";
@@ -216,16 +229,18 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             serviceName,
             subCategoryStatus: newStatus,
             ThirdTimeSubmitDate: new Date(),
-            SecondTimeSubmitDate: new Date()
+            SecondTimeSubmitDate: new Date(),
+            lastAttemptSubmitted:"2nd",
             //mainCategoryStatus: "Defaulter",
-          });
+          });    
         } else if (newStatus === "3rd Time Submitted") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
             ThirdTimeSubmitDate: new Date(),
-            SecondTimeSubmitDate: new Date()
+            SecondTimeSubmitDate: new Date(),
+            lastAttemptSubmitted:"3rd"
             //mainCategoryStatus: "Defaulter",
           });
         }
@@ -316,6 +331,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
             previousSubCategoryStatus: newStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
+            lastAttemptSubmitted:"1st"
           });
         } else if (newStatus === "Process") {
           movedFromMainCategoryStatus = "Hold";
@@ -444,9 +460,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
     setStatusClass(getStatusClass(mainStatus, subStatus));
   }, [mainStatus, subStatus]);
 
-  console.log("activeTab", activeTab)
-  console.log("activeTabCurrent", activeTabCurrent)
-  console.log("tabStopCondition" , tabStopCondition)
+
 
   // useEffect(() => {
   //   //console.log("useEffect triggered");
@@ -488,7 +502,7 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
   //       try {
   //         // Log to verify that the function is called
   //         console.log("Updating status...");
-  
+
   //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
   //           companyName,
   //           serviceName,
@@ -498,12 +512,12 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
   //           previousSubCategoryStatus: status,
   //           activeTab: nextTab
   //         });
-  
+
   //         setActiveTab(nextTab);
-  
+
   //         // Log to verify the response
   //         console.log("Status updated successfully:", response.data);
-  
+
   //         if (response.status === 200) {
   //           // Ensure refreshData is called correctly
   //           console.log("Calling refreshData");
@@ -516,20 +530,20 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
   //       }
   //     }
   //   };
-  
+
   //   if (activeTabCurrent === "Submitted" || activeTabCurrent === "Process") {
   //     updateStatus("Ready To Submit", "Ready To Submit");
   //   } else if (activeTabCurrent === "ReadyToSubmit") {
   //     updateStatus(status, "Submitted");
   //   }
   // }, [contentStatus, brochureStatus, activeTabCurrent,mainStatus]);
-  
 
 
 
 
 
-  console.log("mainStatus" , mainStatus)
+
+ 
 
   return (
     <section className="rm_status_dropdown">
@@ -627,15 +641,6 @@ const StatusDropdown = ({ mainStatus, subStatus, setNewSubStatus, companyName, s
                 href="#"
               >
                 Ready To Submit
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => handleStatusChange("Submitted", "submited-status")}
-                href="#"
-              >
-                Submitted
               </a>
             </li>
             <li>

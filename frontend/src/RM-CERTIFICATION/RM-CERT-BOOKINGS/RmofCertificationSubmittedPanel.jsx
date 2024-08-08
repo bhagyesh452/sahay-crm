@@ -50,6 +50,7 @@ function RmofCertificationSubmittedPanel() {
     const [sectorOptions, setSectorOptions] = useState([]);
     const [error, setError] = useState('')
     const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [lastSubmitAttempt, setLastSubmitAttempt] = useState("")
 
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -381,6 +382,7 @@ function RmofCertificationSubmittedPanel() {
                                                         brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                         activeTabCurrent={obj.activeTab ? obj.activeTab : ""}
                                                         tabStopCondition={false}
+
                                                     />
                                                 )}
                                             </div>
@@ -549,40 +551,40 @@ function RmofCertificationSubmittedPanel() {
                                             }
                                         </td>
                                         <td>
-                                            {obj.subCategoryStatus === "2nd Time Submitted" ? "Second" :
-                                                obj.subCategoryStatus === "3rd Time Submitted" ? "Third" :
-                                                    "First"}
+                                            {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
+                                                obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
+                                                    obj.lastAttemptSubmitted ? obj.lastAttemptSubmitted : "1st"}
                                         </td>
                                         <td>
-    {obj.subCategoryStatus === "Submitted" ? (
-        obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-    ) : obj.subCategoryStatus === "2nd Time Submitted" ? (
-        obj.SecondTimeSubmitDate ? `${formatDateNew(obj.SecondTimeSubmitDate)} | ${formatTime(obj.SecondTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-    ) : obj.subCategoryStatus === "3rd Time Submitted" ? (
-        obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-    ) : (
-        // Find the latest date among the three
-        (() => {
-            const dates = [
-                obj.submittedOn,
-                obj.SecondTimeSubmitDate,
-                obj.ThirdTimeSubmitDate
-            ].filter(date => date); // Filter out null or undefined dates
+                                            {obj.subCategoryStatus === "Submitted" ? (
+                                                obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+                                            ) : obj.subCategoryStatus === "2nd Time Submitted" ? (
+                                                obj.SecondTimeSubmitDate ? `${formatDateNew(obj.SecondTimeSubmitDate)} | ${formatTime(obj.SecondTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+                                            ) : obj.subCategoryStatus === "3rd Time Submitted" ? (
+                                                obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+                                            ) : (
+                                                // Find the latest date among the three
+                                                (() => {
+                                                    const dates = [
+                                                        obj.submittedOn,
+                                                        obj.SecondTimeSubmitDate,
+                                                        obj.ThirdTimeSubmitDate
+                                                    ].filter(date => date); // Filter out null or undefined dates
 
-            if (dates.length === 0) {
-                return null;
-            }
+                                                    if (dates.length === 0) {
+                                                        return null;
+                                                    }
 
-            const latestDate = new Date(Math.max(...dates.map(date => new Date(date).getTime())));
+                                                    const latestDate = new Date(Math.max(...dates.map(date => new Date(date).getTime())));
 
-            return `${formatDateNew(latestDate)} | ${formatTime(latestDate)}`;
-        })()
-    )}
-</td>
+                                                    return `${formatDateNew(latestDate)} | ${formatTime(latestDate)}`;
+                                                })()
+                                            )}
+                                        </td>
 
-                                 <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                                        <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
-                                            <button className="action-btn action-btn-primary" 
+                                            <button className="action-btn action-btn-primary"
                                             // onClick={()=>(
                                             //     handleRevokeCompanyToRecievedBox(
                                             //         obj["Company Name"],
