@@ -102,7 +102,9 @@ function RmofCertificationSubmittedPanel() {
             fetchData()
         });
 
-
+        socket.on("booking-deleted", (res) => {
+            fetchData()
+        });
         return () => {
             socket.disconnect();
         };
@@ -377,6 +379,8 @@ function RmofCertificationSubmittedPanel() {
                                                         refreshData={refreshData}
                                                         contentStatus={obj.contentStatus ? obj.contentStatus : "Not Started"}
                                                         brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
+                                                        activeTabCurrent={obj.activeTab ? obj.activeTab : ""}
+                                                        tabStopCondition={false}
                                                     />
                                                 )}
                                             </div>
@@ -560,7 +564,14 @@ function RmofCertificationSubmittedPanel() {
                                         </td>
                                  <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
-                                            <button className="action-btn action-btn-primary">
+                                            <button className="action-btn action-btn-primary" 
+                                            // onClick={()=>(
+                                            //     handleRevokeCompanyToRecievedBox(
+                                            //         obj["Company Name"],
+                                            //         obj.serviceName
+                                            //     )
+                                            // )}
+                                            >
                                                 <FaRegEye />
                                             </button>
                                         </td>

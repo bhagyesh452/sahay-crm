@@ -198,6 +198,8 @@ router.post("/einfo", upload.fields([
       newDesignation = "Data Manager";
     } else if ((employeementInfo?.designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
+    } else if ((employeementInfo?.designation || oldDesignation) === "HR Manager") {
+      newDesignation = "HR";
     } else {
       newDesignation = employeementInfo?.designation || oldDesignation;
     }
@@ -222,11 +224,13 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo?.department && { department: employeementInfo.department }),
       ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
       ...(employeementInfo?.designation && { designation: newDesignation }),
-      ...(employeementInfo?.designation && { bdmWork: 
-        employeementInfo.designation === "Business Development Manager" || 
-        employeementInfo.designation === "Floor Manager" || 
-        oldDesignation === "Business Development Manager" || 
-        oldDesignation === "Floor Manager" ? true : false }),
+      ...(employeementInfo?.designation && {
+        bdmWork:
+          employeementInfo.designation === "Business Development Manager" ||
+            employeementInfo.designation === "Floor Manager" ||
+            oldDesignation === "Business Development Manager" ||
+            oldDesignation === "Floor Manager" ? true : false
+      }),
       ...(employeementInfo?.joiningDate && { jdate: employeementInfo.joiningDate }),
       ...(employeementInfo?.branch && { branchOffice: employeementInfo.branch }),
       ...(employeementInfo?.employeementType && { employeementType: employeementInfo.employeementType }),
@@ -379,6 +383,8 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       newDesignation = "Data Manager";
     } else if ((designation || oldDesignation) === "Admin Head") {
       newDesignation = "RM-Certification";
+    } else if ((designation || oldDesignation) === "HR Manager") {
+      newDesignation = "HR";
     } else {
       newDesignation = designation || oldDesignation;
     }
@@ -401,11 +407,13 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(manager && { reportingManager: manager }),
       ...(designation && { newDesignation: designation }),
       ...(designation && { designation: newDesignation }),
-      ...(designation && { bdmWork: 
-        designation === "Business Development Manager" || 
-        designation === "Floor Manager" || 
-        oldDesignation === "Business Development Manager" || 
-        oldDesignation === "Floor Manager" ? true : false }),
+      ...(designation && {
+        bdmWork:
+          designation === "Business Development Manager" ||
+            designation === "Floor Manager" ||
+            oldDesignation === "Business Development Manager" ||
+            oldDesignation === "Floor Manager" ? true : false
+      }),
 
       ...(nameAsPerBankRecord && { nameAsPerBankRecord: nameAsPerBankRecord }),
       ...(firstMonthSalaryCondition && { firstMonthSalaryCondition: firstMonthSalaryCondition }),
@@ -480,7 +488,7 @@ router.put("/savedeletedemployee", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const { dataToDelete } = req.body;
+    const { dataToDelete, oldDesignation } = req.body;
 
     if (!dataToDelete || !Array.isArray(dataToDelete) || dataToDelete.length === 0) {
       return res.status(400).json({ error: "No employee data to save" });
@@ -502,14 +510,18 @@ router.put("/savedeletedemployee", upload.fields([
     const employees = await Promise.all(dataToDelete.map(async (data) => {
       let newDesignation = data.designation;
 
-      if (data.designation === "Business Development Executive" || data.designation === "Business Development Manager") {
+      if ((data.designation || oldDesignation) === "Business Development Executive" || (data.designation || oldDesignation) === "Business Development Manager") {
         newDesignation = "Sales Executive";
-      } else if (data.designation === "Floor Manager") {
+      } else if ((data.designation || oldDesignation) === "Floor Manager") {
         newDesignation = "Sales Manager";
-      } else if (data.designation === "Data Analyst") {
+      } else if ((data.designation || oldDesignation) === "Data Analyst") {
         newDesignation = "Data Manager";
-      } else if (data.designation === "Admin Head") {
+      } else if ((data.designation || oldDesignation) === "Admin Head") {
         newDesignation = "RM-Certification";
+      } else if ((data.designation || oldDesignation) === "HR Manager") {
+        newDesignation = "HR";
+      } else {
+        newDesignation = data.designation || oldDesignation;
       }
 
       const emp = {
@@ -523,7 +535,7 @@ router.put("/savedeletedemployee", upload.fields([
         },
         ...(data.dob && { dob: data.dob }),
         ...(data.gender && { gender: data.gender }),
-        ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo}),
+        ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
         ...(data?.personalEmail && { personal_email: data.personalEmail }),
         ...(data?.currentAddress && { currentAddress: data.currentAddress }),
         ...(data?.permanentAddress && { permanentAddress: data.permanentAddress }),
@@ -612,35 +624,150 @@ router.delete(
   }
 );
 
-router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
-  const { dataToRevertBack } = req.body;
+// router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
+//   const { dataToRevertBack } = req.body;
 
-  if (!dataToRevertBack || dataToRevertBack || Back.length === 0) {
-    return res.status(400).json({ error: "No employee data to save" });
-  }
+//   if (!dataToRevertBack || dataToRevertBack || Back.length === 0) {
+//     return res.status(400).json({ error: "No employee data to save" });
+//   }
 
+//   try {
+//     const newLeads = await Promise.all(
+//       dataToRevertBack.map(async (data) => {
+//         const newData = {
+//           ...data,
+//           _id: data._id,
+//         };
+//         return await adminModel.create(newData);
+//       })
+//     );
+
+//     res.status(200).json(newLeads);
+//   } catch (error) {
+//     if (error.code === 11000) {
+//       // Duplicate key error
+//       console.error("Duplicate key error:", error.message);
+//       return res.status(409).json({
+//         error: "Duplicate key error. Document with this ID already exists.",
+//       });
+//     }
+//     console.error("Error reverting back employee:", error.message);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+
+router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
+  { name: "offerLetter", maxCount: 1 },
+  { name: "aadharCard", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+  { name: "educationCertificate", maxCount: 1 },
+  { name: "relievingCertificate", maxCount: 1 },
+  { name: "salarySlip", maxCount: 1 },
+  { name: "profilePhoto", maxCount: 1 },
+]), async (req, res) => {
   try {
-    const newLeads = await Promise.all(
-      dataToRevertBack.map(async (data) => {
-        const newData = {
-          ...data,
-          _id: data._id,
-        };
-        return await adminModel.create(newData);
-      })
-    );
+    const { dataToRevertBack, oldDesignation } = req.body;
 
-    res.status(200).json(newLeads);
-  } catch (error) {
-    if (error.code === 11000) {
-      // Duplicate key error
-      console.error("Duplicate key error:", error.message);
-      return res.status(409).json({
-        error: "Duplicate key error. Document with this ID already exists.",
-      });
+    if (!dataToRevertBack || !Array.isArray(dataToRevertBack) || dataToRevertBack.length === 0) {
+      return res.status(400).json({ error: "No employee data to save" });
     }
-    console.error("Error reverting back employee:", error.message);
-    return res.status(500).json({ error: "Internal Server Error" });
+
+    // console.log("Deleted data is :", dataToDelete);
+
+    const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      encoding: file.encoding,
+      mimetype: file.mimetype,
+      destination: file.destination,
+      filename: file.filename,
+      path: file.path,
+      size: file.size
+    })) : [];
+
+    const employees = await Promise.all(dataToRevertBack.map(async (data) => {
+      let newDesignation = data.designation;
+
+      if ((data.designation || oldDesignation) === "Business Development Executive" || (data.designation || oldDesignation) === "Business Development Manager") {
+        newDesignation = "Sales Executive";
+      } else if ((data.designation || oldDesignation) === "Floor Manager") {
+        newDesignation = "Sales Manager";
+      } else if ((data.designation || oldDesignation) === "Data Analyst") {
+        newDesignation = "Data Manager";
+      } else if ((data.designation || oldDesignation) === "Admin Head") {
+        newDesignation = "RM-Certification";
+      } else if ((data.designation || oldDesignation) === "HR Manager") {
+        newDesignation = "HR";
+      } else {
+        newDesignation = data.designation || oldDesignation;
+      }
+
+      const emp = {
+        ...data,
+
+        // Personal Info
+        ...(data.firstName || data.middleName || data.lastName) && {
+          ename: `${data.firstName || ""} ${data.lastName || ""}`,
+          empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
+        },
+        ...(data.dob && { dob: data.dob }),
+        ...(data.gender && { gender: data.gender }),
+        ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
+        ...(data?.personalEmail && { personal_email: data.personalEmail }),
+        ...(data?.currentAddress && { currentAddress: data.currentAddress }),
+        ...(data?.permanentAddress && { permanentAddress: data.permanentAddress }),
+
+        // Employment Info
+        ...(data?.department && { department: data.department }),
+        ...(data?.designation && { newDesignation: data.designation }),
+        ...(data?.designation && { designation: newDesignation }),
+        ...(data?.designation && { bdmWork: data.designation === "Business Development Manager" || data.designation === "Floor Manager" ? true : false }),
+        ...(data?.joiningDate && { jdate: data.joiningDate }),
+        ...(data?.branch && { branchOffice: data.branch }),
+        ...(data?.employeementType && { employeementType: data.employeementType }),
+        ...(data?.manager && { reportingManager: data.manager }),
+        ...(data?.officialNo && { number: data.officialNo }),
+        ...(data?.officialEmail && { email: data.officialEmail }),
+
+        // Payroll Info
+        ...(data?.accountNo && { accountNo: data.accountNo }),
+        ...(data?.nameAsPerBankRecord && { nameAsPerBankRecord: data.nameAsPerBankRecord }),
+        ...(data?.ifscCode && { ifscCode: data.ifscCode }),
+        ...(data?.salary && { salary: data.salary }),
+        ...(data?.firstMonthSalaryCondition && { firstMonthSalaryCondition: data.firstMonthSalaryCondition }),
+        ...(data?.firstMonthSalary && { firstMonthSalary: data.firstMonthSalary }),
+        ...(data?.panNumber && { panNumber: data.panNumber }),
+        ...(data?.aadharNumber && { aadharNumber: data.aadharNumber }),
+        ...(data?.uanNumber && { uanNumber: data.uanNumber }),
+
+        // Emergency Info
+        ...(data?.personName && { personal_contact_person: data.personName }),
+        ...(data?.relationship && { personal_contact_person_relationship: data.relationship }),
+        ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
+
+        // Document Info
+        ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || [] }),
+        ...(req.files?.aadharCard && { aadharCard: getFileDetails(req.files.aadharCard) || [] }),
+        ...(req.files?.panCard && { panCard: getFileDetails(req.files.panCard) || [] }),
+        ...(req.files?.educationCertificate && { educationCertificate: getFileDetails(req.files.educationCertificate) || [] }),
+        ...(req.files?.relievingCertificate && { relievingCertificate: getFileDetails(req.files.relievingCertificate) || [] }),
+        ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || [] }),
+        ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || [] })
+      };
+
+      if (data.empId) {
+        emp._id = data.empId;
+      }
+
+      return adminModel.create(emp);
+    }));
+
+    res.json(employees);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

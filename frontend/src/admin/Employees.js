@@ -75,14 +75,26 @@ function Employees({ onEyeButtonClick }) {
   const validate = () => {
     const newErrors = {};
     if (!firstName) newErrors.firstName = "First name is required";
+    if (!middleName) newErrors.middleName = "Middle name is required";
+    if (!lastName) newErrors.lastName = "Last name is required";
     if (!email) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
     if (!department || department === "Select Department") newErrors.department = "Department is required";
     if (!newDesignation || newDesignation === "Select Designation") newErrors.newDesignation = "Designation is required";
     if (!branchOffice) newErrors.branchOffice = "Branch office is required";
+    if (!reportingManager) newErrors.reportingManager = "Reporting manager is required";
     if (!number) newErrors.number = "Phone number is required";
     if (!jdate) newErrors.jdate = "Joining date is required";
-    // Add more validations as needed
+    
+
+    // Email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailPattern.test(email)) newErrors.email = "Invalid email";
+
+    // Phone number validation (Indian phone number)
+    const phonePattern = /^(?:\+91|91)?[789]\d{9}$/;
+    if (number && !phonePattern.test(number)) newErrors.number = "Invalid phone number";
+
     return newErrors;
   };
 
@@ -551,7 +563,49 @@ function Employees({ onEyeButtonClick }) {
     }
   };
 
-
+  const handleInputChange = (field, value) => {
+    switch (field) {
+      case "firstName":
+        setFirstName(value);
+        break;
+      case "middleName":
+        setMiddleName(value);
+        break;
+      case "lastName":
+        setLastName(value);
+        break;
+      case "email":
+        setEmail(value);
+        break;
+      case "password":
+        setPassword(value);
+        break;
+      case "department":
+        setDepartment(value);
+        break;
+      case "newDesignation":
+        setNewDesignation(value);
+        break;
+      case "branchOffice":
+        setBranchOffice(value);
+        break;
+      case "reportingManager":
+        setReportingManager(value);
+        break;
+      case "number":
+        setNumber(value);
+        break;
+      case "jdate":
+        setJdate(value);
+        break;
+      default:
+        break;
+    }
+    setErrors((prevErrors) => {
+      const { [field]: removedError, ...restErrors } = prevErrors;
+      return restErrors;
+    });
+  };
 
   const handleSubmit = async (e) => {
 
@@ -573,6 +627,8 @@ function Employees({ onEyeButtonClick }) {
         designation = "Data Manager";
       } else if (newDesignation === "Admin Head") {
         designation = "RM-Certification";
+      } else if (newDesignation === "HR Manager") {
+        designation = "HR";
       } else {
         designation = newDesignation;
       }
@@ -636,8 +692,8 @@ function Employees({ onEyeButtonClick }) {
           const response = await axios.put(
             `${secretKey}/employee/einfo/${selectedDataId}`,
             dataToSendUpdated
-          );  
-          console.log("Updated employee is :", dataToSendUpdated);
+          );
+          // console.log("Updated employee is :", dataToSendUpdated);
 
           Swal.fire({
             title: "Data Updated Succesfully!",
@@ -898,22 +954,40 @@ function Employees({ onEyeButtonClick }) {
     },
   }));
 
+  const handleChecked = async (employeeId, bdmWork, item) => {
+    // console.log("BDM Condition is :", bdmWork);
+    // console.log("Data to be updated :", item);
+    const updatedDesignation = bdmWork ? "Business Development Executive" : "Business Development Manager";
 
+    const dataToUpdate = {
+      ...item,
+      bdmWork: !bdmWork,
+      newDesignation: updatedDesignation
+    };
 
-  const handlChecked = async (employeeId, bdmWork) => {
+    if (bdmWork === true || bdmWork === false) {
+      try {
+        const response = await axios.put(`${secretKey}/employee/einfo/${employeeId}`, dataToUpdate);
+        // console.log("Updated bdm status is :", response.data);
+        fetchData();
+      } catch (error) {
+        console.log("Errro updating bdm status :", error);
+      }
+    }
+
     if (!bdmWork) {
       try {
         const response = await axios.post(`${secretKey}/employee/post-bdmwork-request/${employeeId}`, {
           bdmWork: true
         });
 
-        fetchData()
+        fetchData();
 
         //console.log(response.data)
         setTimeout(() => {
           Swal.fire('BDM Work Assigned!', '', 'success');
 
-        }, 500)
+        }, 500);
 
       } catch (error) {
         console.log("error message", error.message);
@@ -928,7 +1002,7 @@ function Employees({ onEyeButtonClick }) {
         fetchData(); // Assuming this function fetches updated employee details
         setTimeout(() => {
           Swal.fire('BDM Work Revoked!', '', 'success');
-        }, 500)
+        }, 500);
 
       } catch (error) {
         console.error("Error revoking BDM work:", error);
@@ -936,11 +1010,7 @@ function Employees({ onEyeButtonClick }) {
         Swal.fire('Error', 'An error occurred while revoking BDM work.', 'error');
       }
     }
-
-  }
-
-
-
+  };
 
   return (
     <div>
@@ -1024,7 +1094,8 @@ function Employees({ onEyeButtonClick }) {
                   onClick={() => {
                     functionopenpopup();
                     resetForm();
-                    setIsUpdateMode(false)
+                    setIsUpdateMode(false);
+                    setErrors("");
                   }}
                 >
                   {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
@@ -1176,7 +1247,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.number}</td>
                         <td>{item.email}</td>
                         <td>{formatDateFinal(item.jdate)}</td>
-                        <td>{item.newDesignation}</td>
+                        <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
                         <td>{item.branchOffice}</td>
                         {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                           &&
@@ -1226,12 +1297,13 @@ function Employees({ onEyeButtonClick }) {
                             <td>
                               <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                                 <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                                  disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
                                   onClick={(event) => {
-                                    handlChecked(item._id, item.bdmWork)
+                                    handleChecked(item._id, item.bdmWork, item)
                                   }} />
-
                               </Stack>
                             </td>
+
                             <td>
                               <div className="d-flex justify-content-center align-items-center">
                                 {<div className="icons-btn">
@@ -1314,6 +1386,7 @@ function Employees({ onEyeButtonClick }) {
                 <div className="mb-3">
                   <label className="form-label">Employee Name</label>
                   <div className="d-flex">
+                    
                     <div className="col-4 me-1">
                       <input
                         type="text"
@@ -1321,13 +1394,11 @@ function Employees({ onEyeButtonClick }) {
                         className="form-control mt-1"
                         placeholder="First name"
                         value={firstName?.trim()}
-                        onChange={(e) => {
-                          setFirstName(e.target.value);
-                          setErrors("");
-                        }}
+                        onChange={(e) => handleInputChange("firstName", e.target.value)}
                       />
                       {errors.firstName && <p style={{ color: 'red' }}>{errors.firstName}</p>}
                     </div>
+                    
                     <div className="col-4 me-1">
                       <input
                         type="text"
@@ -1335,13 +1406,11 @@ function Employees({ onEyeButtonClick }) {
                         className="form-control mt-1"
                         placeholder="Middle name"
                         value={middleName?.trim()}
-                        onChange={(e) => {
-                          setMiddleName(e.target.value);
-                          setErrors("");
-                        }}
+                        onChange={(e) => handleInputChange("middleName", e.target.value)}
                       />
-                      {errors.middleNameName && <p style={{ color: 'red' }}>{errors.middleName}</p>}
+                      {errors.middleName && <p style={{ color: 'red' }}>{errors.middleName}</p>}
                     </div>
+                    
                     <div className="col-4">
                       <input
                         type="text"
@@ -1349,10 +1418,7 @@ function Employees({ onEyeButtonClick }) {
                         className="form-control mt-1"
                         placeholder="Last name"
                         value={lastName?.trim()}
-                        onChange={(e) => {
-                          setLastName(e.target.value);
-                          setErrors("");
-                        }}
+                        onChange={(e) => handleInputChange("lastName", e.target.value)}
                       />
                       {errors.lastName && <p style={{ color: 'red' }}>{errors.lastName}</p>}
                     </div>
@@ -1367,13 +1433,11 @@ function Employees({ onEyeButtonClick }) {
                     className="form-control"
                     name="example-text-input"
                     placeholder="Email"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setErrors("");
-                    }}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                   />
                   {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
                 </div>
+
                 <div className="mb-3">
                   <label className="form-label">Password</label>
                   <div className="input-group">
@@ -1384,23 +1448,21 @@ function Employees({ onEyeButtonClick }) {
                       name="example-text-input"
                       placeholder="Password"
                       required
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                        setErrors("");
-                      }}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
                     />
                     <button
                       className="btn btn-outline-secondary"
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      >
+                    >
                       {showPassword ? "Hide" : "Show"}
                     </button>
                   </div>
-                    {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
+                  {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
                 </div>
 
                 <div className="row">
+                  
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Department</label>
                     <div >
@@ -1409,9 +1471,8 @@ function Employees({ onEyeButtonClick }) {
                         value={department}
                         required
                         onChange={(e) => {
-                          setDepartment(e.target.value);
+                          handleInputChange("department", e.target.value);
                           setIsDepartmentSelected(e.target.value !== "Select Department");
-                          // setErrors("");
                         }}
                       >
                         <option value="Select Department" selected> Select Department</option>
@@ -1423,7 +1484,9 @@ function Employees({ onEyeButtonClick }) {
                         <option value="Others">Others</option>
                       </select>
                     </div>
+                    {errors.department && <p style={{ color: 'red' }}>{errors.department}</p>}
                   </div>
+
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Designation/Job Title</label>
                     <div>
@@ -1431,13 +1494,14 @@ function Employees({ onEyeButtonClick }) {
                         name="newDesignation"
                         id="newDesignation"
                         value={newDesignation}
-                        onChange={(e) => setNewDesignation(e.target.value)}
+                        onChange={(e) => handleInputChange("newDesignation", e.target.value)}
                         disabled={!isDepartmentSelected}
                       >
                         <option value="Select Designation">Select Designation</option>
                         {renderDesignationOptions()}
                       </select>
                     </div>
+                    {errors.newDesignation && <p style={{ color: 'red' }}>{errors.newDesignation}</p>}
                   </div>
                 </div>
 
@@ -1465,16 +1529,16 @@ function Employees({ onEyeButtonClick }) {
                         className="form-select"
                         value={branchOffice}
                         required
-                        onChange={(e) => {
-                          setBranchOffice(e.target.value);
-                        }}
+                        onChange={(e) => handleInputChange("branchOffice", e.target.value)}
                       >
                         <option value="" selected>Select Branch Office</option>
                         <option value="Gota">Gota</option>
                         <option value="Sindhu Bhawan">Sindhu Bhawan</option>
                       </select>
                     </div>
+                    {errors.branchOffice && <p style={{ color: 'red' }}>{errors.branchOffice}</p>}
                   </div>
+                  
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Manager</label>
                     <div>
@@ -1482,13 +1546,14 @@ function Employees({ onEyeButtonClick }) {
                         name="reportingManager"
                         id="reportingManager"
                         value={reportingManager}
-                        onChange={(e) => setReportingManager(e.target.value)}
+                        onChange={(e) => handleInputChange("reportingManager", e.target.value)}
                         disabled={!isDepartmentSelected}
                       >
                         <option value="Select Designation">Select Manager</option>
                         {renderManagerOptions()}
                       </select>
                     </div>
+                    {errors.reportingManager && <p style={{ color: 'red' }}>{errors.reportingManager}</p>}
                   </div>
                 </div>
               </div>
@@ -1501,10 +1566,9 @@ function Employees({ onEyeButtonClick }) {
                       value={number}
                       type="number"
                       className="form-control"
-                      onChange={(e) => {
-                        setNumber(e.target.value);
-                      }}
+                      onChange={(e) => handleInputChange("number", e.target.value)}
                     />
+                    {errors.number && <p style={{ color: 'red' }}>{errors.number}</p>}
                   </div>
                 </div>
                 <div className="col-lg-6">
@@ -1513,11 +1577,10 @@ function Employees({ onEyeButtonClick }) {
                     <input
                       value={jdate}
                       type="date"
-                      onChange={(e) => {
-                        setJdate(e.target.value);
-                      }}
+                      onChange={(e) => handleInputChange("jdate", e.target.value)}
                       className="form-control"
                     />
+                    {errors.jdate && <p style={{ color: 'red' }}>{errors.jdate}</p>}
                   </div>
                 </div>
               </div>

@@ -55,6 +55,10 @@ function RmofCertificationMyBookings() {
             fetchRMServicesData()
         });
 
+        socket.on("booking-deleted", (res) => {
+            fetchRMServicesData()
+        });
+
 
         return () => {
             socket.disconnect();
