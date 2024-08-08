@@ -7,10 +7,12 @@ import "../../../dist/css/demo.min.css?1684106062";
 import myImage from "../../../static/mainLogo.png";
 import Avatar from "@mui/material/Avatar";
 import HrNotification from "../../Components/Notification/HrNotification";
+import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
-function Header({ hrName }) {
-  const hname = localStorage.getItem("hrName");
-
+function Header({ name, id, designation, empProfile, gender }) {
+  
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   return (
     <div>
@@ -43,7 +45,12 @@ function Header({ hrName }) {
             className="navbar-nav flex-row order-md-last"
           >
             {/* <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/> */}
-            <Avatar sx={{ width: 32, height: 32 }} />
+            {empProfile ? <Avatar src={`${secretKey}/employee/fetchProfilePhoto/${id}/${encodeURIComponent(empProfile)}`}
+              className="My-Avtar" sx={{ width: 36, height: 36 }} />
+              : <Avatar
+                src={gender === "Male" ? MaleEmployee : FemaleEmployee}
+                className="My-Avtar" sx={{ width: 36, height: 36 }} />
+            }
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
@@ -52,13 +59,13 @@ function Header({ hrName }) {
               >
                 <div className="d-xl-block ps-2">
                   <div style={{ textTransform: "capitalize" , textAlign:"left"}}>
-                    {hname ? hname : hrName}
+                    {name ? name : name}
                   </div>
                   <div
                     style={{ textAlign: "left" }}
                     className="mt-1 small text-muted"
                   >
-                    HR - Manager
+                    {designation}
                   </div>
                 </div>
                 {/* <AiOutlineLogout style={{ width: "25px", height: "25px", marginLeft: "5px" }} onClick={() => handleLogout()} /> */}

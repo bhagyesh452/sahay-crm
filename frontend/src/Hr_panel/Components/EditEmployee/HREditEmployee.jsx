@@ -17,6 +17,8 @@ const steps = ['Personal Information', 'Employment Information',
 
 export default function HREditEmployee() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const userId = localStorage.getItem("hrUserId");
+  const [myInfo, setMyInfo] = useState([]);
 
   const { empId } = useParams();
 
@@ -693,9 +695,23 @@ export default function HREditEmployee() {
     setCompleted({});
   };
 
+  const fetchPersonalInfo = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+      // console.log("Fetched details is :", res.data.data);
+      setMyInfo(res.data.data);
+    } catch (error) {
+      console.log("Error fetching employee details :", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPersonalInfo();
+  }, []);
+
   return (
     <div>
-      <Header />
+      <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
       <Navbar />
       <div className="container mt-2">
         <div className="card">

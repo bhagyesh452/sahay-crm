@@ -17,6 +17,8 @@ const steps = ['Personal Information', 'Employment Information',
 
 export default function HorizontalNonLinearStepper() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const userId = localStorage.getItem("hrUserId");
+  const [myInfo, setMyInfo] = useState([]);
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -30,15 +32,15 @@ export default function HorizontalNonLinearStepper() {
       const res = await axios.get(`${secretKey}/employee/einfo`);
       const employeeData = res.data;
       setEmployeeData(employeeData);
-      console.log("Fetched Employees are:", res.data)    
+      console.log("Fetched Employees are:", res.data)
     } catch (error) {
       console.log("Error fetching employees data:")
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchAllEmployee();
-  },[]);
+  }, []);
 
 
   const [isPersonalInfoNext, setIsPersonalInfoNext] = useState(false);
@@ -231,7 +233,7 @@ export default function HorizontalNonLinearStepper() {
   };
 
   const [employeementInfo, setEmployeementInfo] = useState({
-    employeeID : "",
+    employeeID: "",
     department: "",
     designation: "",
     joiningDate: "",
@@ -243,9 +245,9 @@ export default function HorizontalNonLinearStepper() {
   });
 
   useEffect(() => {
-   setEmployeeID(`SSPL00${employeeData.length + 1}`)
+    setEmployeeID(`SSPL00${employeeData.length + 1}`)
   }, [employeeData.length, activeStep]);
-  
+
   const validateEmploymentInfo = () => {
     const newErrors = {};
     const { department, designation, joiningDate, branch, employeementType, manager, officialNo, officialEmail } = employeementInfo;
@@ -376,7 +378,7 @@ export default function HorizontalNonLinearStepper() {
     } else if (name === 'department' && value === 'Select Department') {
       setIsDesignationEnabled(false);
       setIsManagerEnabled(false);
-    }  
+    }
 
     setPayrollInfo((prevState) => {
       const updatedState = { ...prevState, [name]: value };
@@ -582,56 +584,56 @@ export default function HorizontalNonLinearStepper() {
   const handleReset = async () => {
     setActiveStep(0);
     setPersonalInfo({
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        dob: "",
-        gender: "",
-        personalPhoneNo: "",
-        personalEmail: "",
-        currentAddress: "",
-        permanentAddress: ""
-      });
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      dob: "",
+      gender: "",
+      personalPhoneNo: "",
+      personalEmail: "",
+      currentAddress: "",
+      permanentAddress: ""
+    });
 
-      setEmployeementInfo({
-        employeeID: "",
-        department: "",
-        designation: "",
-        joiningDate: "",
-        branch: "",
-        employeementType: "",
-        manager: "",
-        officialNo: "",
-        officialEmail: ""
-      });
+    setEmployeementInfo({
+      employeeID: "",
+      department: "",
+      designation: "",
+      joiningDate: "",
+      branch: "",
+      employeementType: "",
+      manager: "",
+      officialNo: "",
+      officialEmail: ""
+    });
 
-      setPayrollInfo({
-        accountNo: "",
-        nameAsPerBankRecord: "",
-        ifscCode: "",
-        salary: "",
-        firstMonthSalaryCondition: "",
-        firstMonthSalary: "",
-        offerLetter: "",
-        panNumber: "",
-        aadharNumber: "",
-        uanNumber: ""
-      });
+    setPayrollInfo({
+      accountNo: "",
+      nameAsPerBankRecord: "",
+      ifscCode: "",
+      salary: "",
+      firstMonthSalaryCondition: "",
+      firstMonthSalary: "",
+      offerLetter: "",
+      panNumber: "",
+      aadharNumber: "",
+      uanNumber: ""
+    });
 
-      setEmergencyInfo({
-        personName: "",
-        relationship: "",
-        personPhoneNo: ""
-      });
+    setEmergencyInfo({
+      personName: "",
+      relationship: "",
+      personPhoneNo: ""
+    });
 
-      setEmpDocumentInfo({
-        aadharCard: "",
-        panCard: "",
-        educationCertificate: "",
-        relievingCertificate: "",
-        salarySlip: "",
-        profilePhoto: ""
-      });
+    setEmpDocumentInfo({
+      aadharCard: "",
+      panCard: "",
+      educationCertificate: "",
+      relievingCertificate: "",
+      salarySlip: "",
+      profilePhoto: ""
+    });
     setCompleted({});
     const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
     console.log("Employee successfully deleted from draft model :", res2.data);
@@ -648,7 +650,7 @@ export default function HorizontalNonLinearStepper() {
       setPersonalInfo({
         firstName: (data.empFullName || "").split(" ")[0] || "" || (data.ename || "").split(" ")[0] || "",
         middleName: (data.empFullName || "").split(" ")[1] || "",
-        lastName: (data.empFullName || "").split(" ")[2] || ""  || (data.ename || "").split(" ")[1] || "",
+        lastName: (data.empFullName || "").split(" ")[2] || "" || (data.ename || "").split(" ")[1] || "",
         dob: convertToDateInputFormat(data.dob) || "",
         gender: data.gender || "",
         personalPhoneNo: data.personal_number || "",
@@ -714,10 +716,23 @@ export default function HorizontalNonLinearStepper() {
     fetchEmployee();
   }, [activeStep]);
 
+  const fetchPersonalInfo = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+      // console.log("Fetched details is :", res.data.data);
+      setMyInfo(res.data.data);
+    } catch (error) {
+      console.log("Error fetching employee details :", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPersonalInfo();
+  }, []);
 
   return (
     <div>
-      <Header />
+      <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
       <Navbar />
       <div className="container mt-2">
         <div className="card">
@@ -982,9 +997,9 @@ export default function HorizontalNonLinearStepper() {
                                       value={employeeID}
                                       onChange={handleInputChange}
                                       disabled
-                                      />
+                                    />
                                   </div>
-                                      {console.log("Employee id :", employeementInfo.employeeID)}
+                                  {console.log("Employee id :", employeementInfo.employeeID)}
                                 </div>
                                 <div className="col-sm-4">
                                   <div className="form-group mt-2 mb-2">
