@@ -908,7 +908,7 @@ function Received_booking_box() {
                                 </div>
                                 <div className="col-6 d-flex justify-content-end">
                                     <button className='btn btn-primary mr-1'
-                                        onClick={() => setOpenTrashBoxPanel(true)}
+                                        //onClick={() => setOpenTrashBoxPanel(true)}
                                     >
                                         <TiTrash 
                                         style={{
