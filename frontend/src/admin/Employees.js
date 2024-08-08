@@ -573,6 +573,8 @@ function Employees({ onEyeButtonClick }) {
         designation = "Data Manager";
       } else if (newDesignation === "Admin Head") {
         designation = "RM-Certification";
+      } else if (newDesignation === "HR Manager") {
+        designation = "HR";
       } else {
         designation = newDesignation;
       }
@@ -1176,7 +1178,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.number}</td>
                         <td>{item.email}</td>
                         <td>{formatDateFinal(item.jdate)}</td>
-                        <td>{item.newDesignation}</td>
+                        <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
                         <td>{item.branchOffice}</td>
                         {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                           &&
@@ -1226,10 +1228,10 @@ function Employees({ onEyeButtonClick }) {
                             <td>
                               <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                                 <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                                  disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
                                   onClick={(event) => {
                                     handlChecked(item._id, item.bdmWork)
                                   }} />
-
                               </Stack>
                             </td>
                             <td>
