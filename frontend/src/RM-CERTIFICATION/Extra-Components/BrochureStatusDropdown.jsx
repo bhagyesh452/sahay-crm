@@ -80,13 +80,13 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
       case "Completed":
         return "approved-status";
       case "In Approval":
-        return "rejected-status";
+        return "created-status";
       case "Approved":
         return "approved-status";
       case "Not Applicable":
         return "e_task_assign";
       default:
-        return "created-status";
+        return "";
     }
   };
 
@@ -146,7 +146,7 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
           <li>
             <a
               className="dropdown-item"
-              onClick={() => handleStatusChange("Not Started", "e_task_assign")}
+              onClick={() => handleStatusChange("Not Started", "untouched_status")}
               href="#"
             >
               Not Started
@@ -182,7 +182,7 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
           <li>
             <a
               className="dropdown-item"
-              onClick={() => handleStatusChange("InApproved", "rejected-status")}
+              onClick={() => handleStatusChange("In Approval", "created-status")}
               href="#"
             >
               In Approval

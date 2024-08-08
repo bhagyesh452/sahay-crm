@@ -364,7 +364,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
     };
     return (
         <select
-        className={(mainStatus === "Approved" || mainStatus === "Submitted") ? "disabled" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value)}

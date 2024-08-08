@@ -359,6 +359,8 @@ function RmofCertificationReadyToSubmitPanel() {
                                                         refreshData={refreshData}
                                                         activeTabCurrent={obj.activeTab ? obj.activeTab : ""}
                                                         tabStopCondition={true}
+                                                        industry={obj.industry}
+                                                        sector={obj.sector}
                                                     />
                                                 )}
                                             </div>

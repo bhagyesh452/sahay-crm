@@ -31,6 +31,7 @@ import io from 'socket.io-client';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IconX } from "@tabler/icons-react";
+import { TiTrash } from "react-icons/ti";
 
 function Received_booking_box() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -102,6 +103,24 @@ function Received_booking_box() {
         return strTime;
     }
 
+    useEffect(() => {
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+        });
+
+        socket.on("booking-submitted", (res) => {
+            fetchRedesignedFormData()
+        });
+
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [employeeData]);
+
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -140,8 +159,17 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-07");
+        const today = new Date("2024-06-07");
         today.setHours(0, 0, 0, 0); // Set to start of today
+        const parseDate = (dateString) => {
+            // If date is in "YYYY-MM-DD" format, convert it to a Date object
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                return new Date(dateString);
+            }
+
+            // Otherwise, parse the date string with a Date object
+            return new Date(dateString);
+        };
         setOpenBacdrop(true)
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
@@ -149,16 +177,43 @@ function Received_booking_box() {
 
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
-                .filter(item => {
-                    const lastActionDate = new Date(item.lastActionDate);
-                    lastActionDate.setHours(0, 0, 0, 0);
-                    return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
+                .filter(obj => {
+                    //const lastActionDate = new Date(item.lastActionDate);
+                    const mainBookingDate = parseDate(obj.bookingDate);
+                    mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                    // Log the values for debugging
+                    console.log("Main Booking Date:", mainBookingDate, "Today:", today);
+
+                    // Check if any of the moreBookings dates are >= today
+                    const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
+                        const bookingDate = parseDate(booking.bookingDate);
+                        bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                        // Log the booking date for debugging
+                        console.log("Company Name:", obj["Company Name"], "Booking Date:", bookingDate, "Today:", today);
+
+                        return bookingDate >= today;
+                    });
+
+                    // Log the condition results
+                    console.log("Company Name:", obj["Company Name"]);
+                    console.log("Main Booking Date Valid:", mainBookingDate >= today);
+                    console.log("Has Valid More Bookings Date:", hasValidMoreBookingsDate);
+
+                    // Check if the main booking date or any moreBookings date is >= today
+                    const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
+
+                    // Return true if date is valid and visible to RM
+                    return isDateValid && (obj.isVisibleToRmOfCerification !== false);
                 })
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
+
+            console.log("filteredData", filteredAndSortedData)
 
             // Process each document to combine services and filter them
             const processedData = filteredAndSortedData.map(item => {
@@ -683,38 +738,114 @@ function Received_booking_box() {
 
 
 
-    const handleDisplayOffToRm = async (companyName) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: `Do you want to remove ${companyName} from RM panel?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, remove it!',
-            cancelButtonText: 'No, keep it'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
-                    //console.log(response.data);
-                    if (response.status === 200) {
-                        fetchRedesignedFormData();
-                        Swal.fire(
-                            'Removed!',
-                            'The company has been removed from RM panel.',
-                            'success'
-                        );
-                    }
-                } catch (error) {
-                    console.log("Internal Server Error", error.message);
+    // const handleDisplayOffToRm = async (companyName, company) => {
+    //     console.log("company", company)
+
+    //     const shouldDisableButton = ![
+    //         ...company.services,
+    //         ...(company.moreBookings || []).flatMap(booking => booking.services)
+    //     ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
+
+    //     console.log("shoulddisablebutton" , shouldDisableButton)
+
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: `Do you want to remove ${companyName} from RM panel?`,
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonText: 'Yes, remove it!',
+    //         cancelButtonText: 'No, keep it'
+    //     }).then(async (result) => {
+    //         if (result.isConfirmed) {
+    //             try {
+    //                 const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+    //                 //console.log(response.data);
+    //                 if (response.status === 200) {
+    //                     fetchRedesignedFormData();
+    //                     Swal.fire(
+    //                         'Removed!',
+    //                         'The company has been removed from RM panel.',
+    //                         'success'
+    //                     );
+    //                 }
+    //             } catch (error) {
+    //                 console.log("Internal Server Error", error.message);
+    //                 Swal.fire(
+    //                     'Error!',
+    //                     'There was an error removing the company from RM panel.',
+    //                     'error'
+    //                 );
+    //             }
+    //         }
+    //     });
+    // };
+
+    const handleDisplayOffToRm = async (companyName, company) => {
+        console.log("company", company);
+
+        const shouldDisableButton = ![
+            ...company.services,
+            ...(company.moreBookings || []).flatMap(booking => booking.services)
+        ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
+
+        console.log("shoulddisablebutton", shouldDisableButton);
+
+        if (shouldDisableButton) {
+            // Directly run the response if shouldDisableButton is true
+            try {
+                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+                // Handle the response
+                if (response.status === 200) {
+                    fetchRedesignedFormData();
                     Swal.fire(
-                        'Error!',
-                        'There was an error removing the company from RM panel.',
-                        'error'
+                        'Removed!',
+                        'The company has been removed from RM panel.',
+                        'success'
                     );
                 }
+            } catch (error) {
+                console.log("Internal Server Error", error.message);
+                Swal.fire(
+                    'Error!',
+                    'There was an error removing the company from RM panel.',
+                    'error'
+                );
             }
-        });
+        } else {
+            // Show the Swal confirmation dialog if shouldDisableButton is false
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to remove ${companyName} from RM panel?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'No, keep it'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+                        // Handle the response
+                        if (response.status === 200) {
+                            fetchRedesignedFormData();
+                            Swal.fire(
+                                'Removed!',
+                                'The company has been removed from RM panel.',
+                                'success'
+                            );
+                        }
+                    } catch (error) {
+                        console.log("Internal Server Error", error.message);
+                        Swal.fire(
+                            'Error!',
+                            'There was an error removing the company from RM panel.',
+                            'error'
+                        );
+                    }
+                }
+            });
+        }
     };
+
 
     //--------------function to disable click-------------------------
     // const shouldDisableButton = ![
@@ -776,7 +907,23 @@ function Received_booking_box() {
                                     </div>
                                 </div>
                                 <div className="col-6 d-flex justify-content-end">
-                                    <button className='btn btn-primary' onClick={() => setOpenAllBooking(true)}>All Booking</button>
+                                    <button className='btn btn-primary mr-1'
+                                        //onClick={() => setOpenTrashBoxPanel(true)}
+                                    >
+                                        <TiTrash 
+                                        style={{
+                                            height: "20px",
+                                            width: "20px",
+                                            marginRight: "5px",
+                                            marginLeft: "-4px"
+                                        }} />
+                                        Trash
+                                    </button>
+                                    <button className='btn btn-primary'
+                                        onClick={() => setOpenAllBooking(true)}
+                                    >
+                                        All Booking
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -862,7 +1009,12 @@ function Received_booking_box() {
 
                                                             <button
                                                                 className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
-                                                                onClick={() => handleDisplayOffToRm(obj["Company Name"])}
+                                                                onClick={() => {
+                                                                    handleDisplayOffToRm(
+                                                                        obj["Company Name"],
+                                                                        obj
+                                                                    )
+                                                                }}
                                                             >
                                                                 <div className='btn-swap-icon'>
                                                                     {/* <SlActionRedo /> */}
