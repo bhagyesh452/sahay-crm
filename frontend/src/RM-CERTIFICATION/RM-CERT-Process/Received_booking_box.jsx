@@ -150,7 +150,7 @@ function Received_booking_box() {
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
                 .filter(item => {
-                    const lastActionDate = new Date(item.bookingPublishDate);
+                    const lastActionDate = new Date(item.lastActionDate);
                     lastActionDate.setHours(0, 0, 0, 0);
                     return lastActionDate >= today && item.isVisibleToRmOfCerification; // Compare directly
                 })

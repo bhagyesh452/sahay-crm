@@ -5003,13 +5003,13 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
 
 router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
-
+    const socketIO = req.io;
     const companyId = req.params.companyId;
-    const leadForm = await RedesignedLeadformModel.findOne({ company: companyId})
+    const leadForm = await RedesignedLeadformModel.findOne({ company: companyId })
     const serviceNames = leadForm.services.map(service => service.serviceName);
 
-    console.log("leadForm" , leadForm)
-    console.log("serviceName" , serviceNames)
+    console.log("leadForm", leadForm)
+    console.log("serviceName", serviceNames)
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
       company: companyId,
@@ -5044,7 +5044,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     if (updateMainBooking.bdmAcceptStatus !== null && updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
     }
-
+    socketIO.emit('booking-deleted');
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
     console.error("Error deleting booking:", error);
@@ -5170,47 +5170,51 @@ router.delete(
 router.delete(
   "/redesigned-delete-particular-booking/:company/:companyId",
   async (req, res) => {
+    const socketIO = req.io;
     //.log("yahan chala delete wali api")
     try {
       const company = req.params.company;
       const companyId = req.params.companyId;
       //const companyObjectId = mongoose.Types.ObjectId(companyId);
-      const leadForm = await RedesignedLeadformModel.findOne({ company: company})
+      const leadForm = await RedesignedLeadformModel.findOne({ company: company })
       const bookingToRemove = leadForm.moreBookings.find(booking => {
         console.log(`Booking ID: ${booking._id.toString()}`);  // Log the booking ID
         console.log(`Company Object ID: ${companyId.toString()}`);  // Log the company Object ID
-      
+
         return booking._id.toString() === companyId.toString();
       });
 
-    if(bookingToRemove){
-      const serviceNames = bookingToRemove.services.map(service => service.serviceName);
-    }
-    
-      
+      if (bookingToRemove) {
+        const serviceNames = bookingToRemove.services.map(service => service.serviceName);
+        const deleteResult = await RMCertificationModel.findOneAndDelete({
+          "Company Name": leadForm["Company Name"],
+          serviceName: { $in: serviceNames }
+        });
+        console.log('Delete Result:', deleteResult); // Debug log
+      }
 
-      console.log("leadForm" , leadForm)
-      console.log("bookingToRenove" , bookingToRemove)
+
+
+      console.log("leadForm", leadForm)
+      console.log("bookingToRenove", bookingToRemove)
       //console.log("servicesName" , serviceNames)
 
-      
+
       const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(
         { company: company },
         { $pull: { moreBookings: { _id: companyId } } },
         { new: true }
       );
 
-      const deleteResult = await RMCertificationModel.findOneAndDelete({
-        "Company Name": leadForm["Company Name"],
-        serviceName: { $in: serviceNames }
-      });
-  
-      console.log('Delete Result:', deleteResult); // Debug log
+
+
+
 
       if (!updatedLeadForm) {
         return res.status(404).send("Booking not found");
       }
 
+      socketIO.emit('booking-deleted');
       res.status(200).send("Booking deleted successfully");
     } catch (error) {
       console.error("Error deleting booking:", error);
@@ -5222,6 +5226,7 @@ router.delete(
 router.delete("/redesigned-delete-model/:companyName", async (req, res) => {
   try {
     const companyName = req.params.companyName;
+    const socketIO = req.io;
     // Assuming RedesignedDraftModel is your Mongoose model for drafts
     const deletedDraft = await RedesignedDraftModel.findOneAndDelete({
       "Company Name": companyName,
