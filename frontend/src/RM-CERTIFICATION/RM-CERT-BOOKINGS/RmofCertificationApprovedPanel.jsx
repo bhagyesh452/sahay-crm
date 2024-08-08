@@ -99,7 +99,9 @@ function RmofCertificationApprovedPanel() {
         socket.on("rm-recievedamount-updated", (res) => {
             fetchData()
         });
-
+        socket.on("booking-deleted", (res) => {
+            fetchData()
+        });
 
         return () => {
             socket.disconnect();

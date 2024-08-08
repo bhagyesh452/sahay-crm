@@ -828,16 +828,16 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { contentStatus: contentStatus };
 
-    if (contentStatus === "Approved") {
-      if (company.brochureStatus === "Approved") {
-        updateFields = {
-          ...updateFields,
-          mainCategoryStatus: "Ready To Submit",
-          subCategoryStatus: "Ready To Submit"
-        };
-      }
+    // if (contentStatus === "Approved") {
+    //   if (company.brochureStatus === "Approved") {
+    //     updateFields = {
+    //       ...updateFields,
+    //       mainCategoryStatus: "Ready To Submit",
+    //       subCategoryStatus: "Ready To Submit"
+    //     };
+    //   }
 
-    }
+    // }
 
     console.log("updateFields", updateFields)
 
@@ -951,16 +951,16 @@ router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
     // Determine the update values based on brochureStatus
     let updateFields = { brochureStatus: brochureStatus };
 
-    if (brochureStatus === "Approved") {
-      if (company.contentStatus === "Approved") {
-        updateFields = {
-          ...updateFields,
-          mainCategoryStatus: "Ready To Submit",
-          subCategoryStatus: "Ready To Submit"
-        };
-      }
+    // if (brochureStatus === "Approved") {
+    //   if (company.contentStatus === "Approved") {
+    //     updateFields = {
+    //       ...updateFields,
+    //       mainCategoryStatus: "Ready To Submit",
+    //       subCategoryStatus: "Ready To Submit"
+    //     };
+    //   }
 
-    }
+    // }
     console.log("updateFields", updateFields)
     // Perform the update
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(

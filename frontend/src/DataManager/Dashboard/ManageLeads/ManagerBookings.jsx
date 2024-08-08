@@ -1046,8 +1046,7 @@ function ManagerBookings() {
                             </div>
                             <div
                               onClick={() =>
-                                handleDeleteBooking(
-                                  currentLeadform.company)}
+                                handleDeleteBooking(currentLeadform.company)}
                               className="Services_Preview_action_delete"
                             >
                               <MdDelete />
@@ -2389,7 +2388,6 @@ function ManagerBookings() {
                                       handleDeleteBooking(
                                         currentLeadform.company,
                                         objMain._id,
-                                        currentLeadform
                                       )
                                     }
                                     className="Services_Preview_action_delete"

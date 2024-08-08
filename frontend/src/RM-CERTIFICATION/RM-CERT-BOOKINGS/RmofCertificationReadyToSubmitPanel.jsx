@@ -86,7 +86,9 @@ function RmofCertificationReadyToSubmitPanel() {
             fetchData()
         });
 
-
+        socket.on("booking-deleted", (res) => {
+            fetchData()
+        });
         return () => {
             socket.disconnect();
         };
