@@ -50,6 +50,8 @@ function ManageLeads() {
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+    const userId = localStorage.getItem("dataManagerUserId");
+    const [myInfo, setMyInfo] = useState([]);
     const [currentDataLoading, setCurrentDataLoading] = useState(false);
     const [data, setData] = useState([]);
     const [mainData, setmainData] = useState([]);
@@ -84,8 +86,8 @@ function ManageLeads() {
 
     useEffect(() => {
         document.title = `Datamanager-Sahay-CRM`;
-      }, []);
-      
+    }, []);
+
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
@@ -1402,9 +1404,25 @@ function ManageLeads() {
     const dataManagerName = localStorage.getItem("dataManagerName");
     console.log("Leads :", data);
 
+    // console.log("User id is :", userId);
+
+    const fetchPersonalInfo = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            // console.log("Personal Info :", res.data.data);
+            setMyInfo(res.data.data);
+        } catch (error) {
+            console.log("Error fetching employee data :", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchPersonalInfo();
+    }, []);
+
     return (
         <div>
-            <Header name={dataManagerName} />
+            <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar name={dataManagerName} />
             <div className='page-wrapper'>
                 <div className="page-header d-print-none">

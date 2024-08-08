@@ -2480,7 +2480,7 @@ function BdmLeads() {
 
   return (
     <div>
-      <Header bdmName={data.ename} designation={data.designation} />
+      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
       <Navbar userId={userId} />
       {/* Dialog box for Request Data */}
 

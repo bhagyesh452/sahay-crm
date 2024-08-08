@@ -38,9 +38,6 @@ import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-
-
-
 function Employees({ onEyeButtonClick }) {
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,6 +69,14 @@ function Employees({ onEyeButtonClick }) {
   const [errors, setErrors] = useState([]);
   const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
 
+  const formattedDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!firstName) newErrors.firstName = "First name is required";
@@ -82,10 +87,10 @@ function Employees({ onEyeButtonClick }) {
     if (!department || department === "Select Department") newErrors.department = "Department is required";
     if (!newDesignation || newDesignation === "Select Designation") newErrors.newDesignation = "Designation is required";
     if (!branchOffice) newErrors.branchOffice = "Branch office is required";
-    if (!reportingManager) newErrors.reportingManager = "Reporting manager is required";
+    if (!reportingManager || reportingManager === "Select Manager") newErrors.reportingManager = "Reporting manager is required";
     if (!number) newErrors.number = "Phone number is required";
     if (!jdate) newErrors.jdate = "Joining date is required";
-    
+
 
     // Email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -411,8 +416,6 @@ function Employees({ onEyeButtonClick }) {
       setJdate(null);
       setNewDesignation("");
       setBranchOffice("");
-
-
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1246,7 +1249,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.ename}</td>
                         <td>{item.number}</td>
                         <td>{item.email}</td>
-                        <td>{formatDateFinal(item.jdate)}</td>
+                        <td>{formattedDate(item.jdate)}</td>
                         <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
                         <td>{item.branchOffice}</td>
                         {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
@@ -1254,9 +1257,9 @@ function Employees({ onEyeButtonClick }) {
 
                           <>
                             <td>
-                              {formatDate(item.AddedOn) === "Invalid Date"
+                              {formattedDate(item.AddedOn) === "Invalid Date"
                                 ? "06/02/2024"
-                                : formatDateFinal(item.AddedOn)}
+                                : formattedDate(item.AddedOn)}
                             </td>
                             {item.designation === "Sales Executive" && <td>
                               {(item.Active && item.Active.includes("GMT")) ? (
@@ -1386,7 +1389,7 @@ function Employees({ onEyeButtonClick }) {
                 <div className="mb-3">
                   <label className="form-label">Employee Name</label>
                   <div className="d-flex">
-                    
+
                     <div className="col-4 me-1">
                       <input
                         type="text"
@@ -1398,7 +1401,7 @@ function Employees({ onEyeButtonClick }) {
                       />
                       {errors.firstName && <p style={{ color: 'red' }}>{errors.firstName}</p>}
                     </div>
-                    
+
                     <div className="col-4 me-1">
                       <input
                         type="text"
@@ -1410,7 +1413,7 @@ function Employees({ onEyeButtonClick }) {
                       />
                       {errors.middleName && <p style={{ color: 'red' }}>{errors.middleName}</p>}
                     </div>
-                    
+
                     <div className="col-4">
                       <input
                         type="text"
@@ -1462,7 +1465,7 @@ function Employees({ onEyeButtonClick }) {
                 </div>
 
                 <div className="row">
-                  
+
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Department</label>
                     <div >
@@ -1538,7 +1541,7 @@ function Employees({ onEyeButtonClick }) {
                     </div>
                     {errors.branchOffice && <p style={{ color: 'red' }}>{errors.branchOffice}</p>}
                   </div>
-                  
+
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Manager</label>
                     <div>
@@ -1550,7 +1553,9 @@ function Employees({ onEyeButtonClick }) {
                         disabled={!isDepartmentSelected}
                       >
                         <option value="Select Designation">Select Manager</option>
-                        {renderManagerOptions()}
+                        {department === "Sales" && newDesignation === "Floor Manager"
+                          ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option> : <>{renderManagerOptions()}</>
+                        }
                       </select>
                     </div>
                     {errors.reportingManager && <p style={{ color: 'red' }}>{errors.reportingManager}</p>}

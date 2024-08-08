@@ -32,6 +32,8 @@ import {
 } from "@mui/material";
 
 function ManagerBookings() {
+  const userId = localStorage.getItem("dataManagerUserId");
+  const [myInfo, setMyInfo] = useState([]);
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [tempUpdateMode, setTempUpdateMode] = useState(false);
@@ -270,7 +272,7 @@ function ManagerBookings() {
   };
 
 
-  
+
 
   // ----------------------------------------- Upload documents Section -----------------------------------------------------
 
@@ -614,9 +616,25 @@ function ManagerBookings() {
 
   //console.log("currentleadform" , currentLeadform.moreBookings[0].services[0].expanseDate)
 
+  // console.log("User id is :", userId);
+
+  const fetchPersonalInfo = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+      // console.log("Personal Info :", res.data.data);
+      setMyInfo(res.data.data);
+    } catch (error) {
+      console.log("Error fetching employee data :", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPersonalInfo();
+  }, []);
+
   return (
     <div>
-      <Header name={dataManagerName} />
+      <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
       <Navbar name={dataManagerName} />
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">

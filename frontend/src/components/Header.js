@@ -16,17 +16,15 @@ import notification_audio from "../assets/media/notification_tone.mp3"
 import ReportComplete from "./ReportComplete";
 import Bella_Lagin from "./Bella_Lagin";
 import Notification_box_employee from "./Notification_box_employee";
+import MaleEmployee from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png";
 // import "./styles/header.css"
 
 
-function Header({ name, designation, empProfile }) {
+function Header({ name, id, designation, empProfile, gender }) {
   const { userId } = useParams();
   const [socketID, setSocketID] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-
-
-
-
 
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -155,9 +153,9 @@ function Header({ name, designation, empProfile }) {
         audioplayer.play();
       }
     });
-   
-    socket.on("bookingbooking-edit-request-delete" ,async(res)=>{
-      if(name === res.name){
+
+    socket.on("bookingbooking-edit-request-delete", async (res) => {
+      if (name === res.name) {
         enqueueSnackbar(`Booking Edit Request for ${res.companyName} has been Rejected!`, {
           variant: 'reportComplete',
           persist: true
@@ -205,7 +203,7 @@ function Header({ name, designation, empProfile }) {
 
     });
 
-    
+
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
@@ -299,9 +297,13 @@ function Header({ name, designation, empProfile }) {
 
 
             {/* --------------------------------display image code---------------------------- */}
-            <Avatar src={`${secretKey}/employee/employeeImg/${name}/${encodeURIComponent(
-              empProfile
-            )}`} className="My-Avtar" sx={{ width: 36, height: 36 }} />
+            {empProfile ? <Avatar src={`${secretKey}/employee/fetchProfilePhoto/${id}/${encodeURIComponent(empProfile)}`}
+              className="My-Avtar" sx={{ width: 36, height: 36 }} />
+              : <Avatar
+                src={gender === "Male" ? MaleEmployee : FemaleEmployee}
+                className="My-Avtar" sx={{ width: 36, height: 36 }} />
+            }
+            
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
@@ -311,8 +313,14 @@ function Header({ name, designation, empProfile }) {
                 <div className="d-xl-block ps-2">
                   <div style={{ textAlign: "left" }}>{name ? name : "Username"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
-                    {designation ? designation : "Admin"}
+                    {designation ? designation : "Sales Executive"}
                   </div>
+                  {/* <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
+                    {designation === "Business Development Executive" ? "BDE" :
+                      designation === "Business Development Manager" ? "BDM" :
+                        designation}
+                  </div> */}
+
                 </div>
               </button>
             </div>

@@ -1,26 +1,32 @@
-import React from "react"
+import React from "react";
 import '../../../dist/css/tabler.min.css?1684106062';
 import "../../../dist/css/tabler-flags.min.css?1684106062";
 import "../../../dist/css/tabler-payments.min.css?1684106062";
 import "../../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../../dist/css/demo.min.css?1684106062";
-import myImage from '../../../static/mainLogo.png'
+import myImage from '../../../static/mainLogo.png';
 import Avatar from '@mui/material/Avatar';
 import Notification from "../../Components/Notification/Notification.jsx";
-import {useParams} from 'react-router-dom'
+import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
 
-function Header({bdmName}){
+function Header({name, id, designation, empProfile, gender}){
     // const name = localStorage.getItem("bdmName")
      const secretKey = process.env.React_APP_SECRET_KEY;
      //console.log(bdmName)
-
+    
+    console.log("Employee name is :", name);
+    console.log("Employee id is :", id);
+    console.log("Employee gender is :", gender);
+    console.log("Designation is :", designation);
+    console.log("Employee profile :", empProfile);
 
     return(
     <div>
       <header className="navbar navbar-expand-md d-print-none">
         <div className="container-xl">
-          <button
+          {/* <button
             className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -30,7 +36,7 @@ function Header({bdmName}){
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
-          </button>
+          </button> */}
           <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <a href=".">
               <img
@@ -42,18 +48,25 @@ function Header({bdmName}){
               />
             </a>
           </h1>
+
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
             {/* <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/> */}
-            <Avatar sx={{ width: 32, height: 32 }} />
+            {empProfile ? <Avatar src={`${secretKey}/employee/fetchProfilePhoto/${id}/${encodeURIComponent(empProfile)}`}
+              className="My-Avtar" sx={{ width: 36, height: 36 }} />
+              : <Avatar
+                src={gender === "Male" ? MaleEmployee : FemaleEmployee}
+                className="My-Avtar" sx={{ width: 36, height: 36 }} />
+            }
+
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu">
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" }}>{bdmName ? bdmName : "Name"}</div>
+                  <div style={{ textTransform: "capitalize" }}>{name ? name : "Name"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
-                    Sales Manager
+                    {designation}
                   </div>
                 </div>
                 {/* <AiOutlineLogout style={{ width: "25px", height: "25px", marginLeft: "5px" }} onClick={() => handleLogout()} /> */}

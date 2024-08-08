@@ -74,7 +74,7 @@ function HrEmployees() {
       // console.log("Company data is :", res.data);
       setCompanyData(res.data);
     } catch (error) {
-      console.error("Error fetching data:", error.message);
+      console.log("Error fetching data:", error.message);
     }
   };
 
@@ -83,7 +83,7 @@ function HrEmployees() {
       const res = await axios.get(`${secretKey}/employee/einfo`);
       const employeeData = res.data;
       setEmployee(employeeData);
-      console.log("Fetched Employees are:", employeeData);
+      // console.log("Fetched Employees are:", employeeData);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     }
@@ -94,7 +94,7 @@ function HrEmployees() {
       const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
       const deletedEmployeeData = res.data;
       setDeletedEmployee(deletedEmployeeData);
-      console.log("Fetched Deleted Employees are:", deletedEmployeeData);
+      // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     }
@@ -123,7 +123,7 @@ function HrEmployees() {
 
         //console.log("All ename updates completed successfully");
       } catch (error) {
-        console.error("Error updating enames:", error.message);
+        console.log("Error updating enames:", error.message);
         Swal.fire("Error deleting the employee");
         // Handle the error as needed
       }
@@ -131,7 +131,7 @@ function HrEmployees() {
   };
 
   const handleDeleteClick = (empId, ename, dataToDelete, filteredCompanyData) => {
-    console.log("Emp id is :", empId);
+    // console.log("Emp id is :", empId);
     setCompanyData(filteredCompanyData);
     Swal.fire({
       title: 'Are you sure?',
@@ -143,7 +143,7 @@ function HrEmployees() {
       confirmButtonText: 'Yes, delete it!'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        console.log("Deleted data is :", dataToDelete);
+        // console.log("Deleted data is :", dataToDelete);
         try {
           const saveDeletedResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
             dataToDelete
@@ -160,7 +160,7 @@ function HrEmployees() {
             'success'
           );
         } catch (error) {
-          console.error("Error deleting employee:", error);
+          console.log("Error deleting employee:", error);
           Swal.fire({
             icon: "error",
             title: "Oops...",
@@ -178,7 +178,7 @@ function HrEmployees() {
   };
 
   const handleRevertBack = async (itemId, name, dataToRevertBack) => {
-    console.log("Reverted employee is :", dataToRevertBack);
+    // console.log("Reverted employee is :", dataToRevertBack);
     Swal.fire({
       title: `Are you sure you want to restore back ${name}?`,
       text: "This action will move the employee back.",
@@ -198,8 +198,8 @@ function HrEmployees() {
           });
           fetchDeletedEmployee();
           fetchEmployee();
-          console.log("Deleted data is :", response.data);
-          console.log("Deleted data is :", response2.data);
+          // console.log("Deleted data is :", response.data);
+          // console.log("Deleted data is :", response2.data);
           Swal.fire(
             'Reverted!',
             `Employee ${name} has been reverted back.`,
@@ -212,7 +212,7 @@ function HrEmployees() {
             'error'
           );
 
-          console.error('Error reverting employee', error);
+          console.log('Error reverting employee', error);
         }
       }
     });
@@ -237,7 +237,7 @@ function HrEmployees() {
           );
           fetchDeletedEmployee();
         } catch (error) {
-          console.error('Error deleting employee', error);
+          console.log('Error deleting employee', error);
           Swal.fire({
             title: "Error",
             text: "There was an error deleting the employee. Please try again.",

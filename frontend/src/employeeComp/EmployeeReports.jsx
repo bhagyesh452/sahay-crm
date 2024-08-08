@@ -2658,7 +2658,7 @@ function EmployeeReports() {
   return (
     <div className="admin-dashboard">
       {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
-      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
+      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       <div className="page-wrapper">
 

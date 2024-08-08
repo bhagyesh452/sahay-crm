@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../Components/Header/Header.jsx";
-
+import { useParams } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
 import axios from "axios";
 import Nodata from "../../Components/Nodata/Nodata.jsx";
@@ -37,11 +37,13 @@ import { RiDatabaseLine } from "react-icons/ri";
 function DatamanagerDashboard() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+    const { userId } = useParams();
+    const [myInfo, setMyInfo] = useState([]);
 
     useEffect(() => {
         document.title = `Datamanager-Sahay-CRM`;
-      }, []);
-    
+    }, []);
+
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -82,9 +84,25 @@ function DatamanagerDashboard() {
     };
     const dataManagerName = localStorage.getItem("dataManagerName")
 
+    // console.log("User id is :", userId);
+
+    const fetchPersonalInfo = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            // console.log("Personal Info :", res.data.data);
+            setMyInfo(res.data.data);
+        } catch (error) {
+            console.log("Error fetching employee data :", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchPersonalInfo();
+    }, []);
+
     return (
         <div>
-            <Header name={dataManagerName} />
+            <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar name={dataManagerName} />
             <div className="page-wrapper">
                 <div className="container-xl">

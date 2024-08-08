@@ -7,6 +7,9 @@ import { FaRegEye } from "react-icons/fa";
 import { CiUndo } from "react-icons/ci";
 
 function Dashboard(){
+
+    const userId = localStorage.getItem("hrUserId");
+    // const [myInfo, setMy]
     useEffect(() => {
         document.title = `HR-Sahay-CRM`;
       }, []);

@@ -241,10 +241,10 @@ function App() {
 
           {/**********************************************  HR-Login-Portal   *******************************************************/}
           <Route path="/hr/login" element={<HrLogin setHrToken={setHrToken} />} />
-          <Route path="/hr/dashboard/" element={<HrDashboard />}></Route>
+          <Route path="/hr/dashboard" element={<HrDashboard />}></Route>
           {/* <Route path="/hr/employees/" element={<NewEmployees />} /> */}
-          <Route path="/hr/employees/" element={<HrEmployees />} />
-          <Route path="/hr/add/employee/" element={<HorizontalNonLinearStepper />} />
+          <Route path="/hr/employees" element={<HrEmployees />} />
+          <Route path="/hr/add/employee" element={<HorizontalNonLinearStepper />} />
           <Route path="/hr/edit/employee/:empId" element={<HREditEmployee />} />
           <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
         </Routes>

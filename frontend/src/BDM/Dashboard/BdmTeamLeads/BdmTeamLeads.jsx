@@ -1343,7 +1343,7 @@ function BdmTeamLeads() {
   return (
     <div>
 
-      <Header bdmName={data.ename} />
+      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
       <Navbar userId={userId} />
       {!formOpen && <div className="page-wrapper">
         {BDMrequests && (
