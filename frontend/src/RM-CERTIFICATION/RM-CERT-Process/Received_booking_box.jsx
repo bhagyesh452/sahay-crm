@@ -32,6 +32,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IconX } from "@tabler/icons-react";
 import { TiTrash } from "react-icons/ti";
+import RmofCertificationTrashBoxPanel from '../RM-CERT-BOOKINGS/RmofCertificationTrashBoxPanel.jsx';
 
 function Received_booking_box() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -67,7 +68,8 @@ function Received_booking_box() {
         pendingRecievedPayment: 0,
         pendingRecievedPaymentDate: null,
     };
-    const [openAllBooking, setOpenAllBooking] = useState(false)
+    const [openAllBooking, setOpenAllBooking] = useState(false);
+    const [openTrashBoxPanel, setOpenTrashBoxPanel] = useState(false)
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
 
@@ -159,7 +161,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-06-07");
+        const today = new Date("2024-08-08");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
@@ -862,11 +864,13 @@ function Received_booking_box() {
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
+
+   
     return (
         <div>
             <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
-            {!openAllBooking && (
+            {(!openAllBooking && !openTrashBoxPanel) && (
                 <div className="booking-list-main">
                     <div className="booking_list_Filter">
                         <div className="container-xl">
@@ -908,7 +912,7 @@ function Received_booking_box() {
                                 </div>
                                 <div className="col-6 d-flex justify-content-end">
                                     <button className='btn btn-primary mr-1'
-                                        //onClick={() => setOpenTrashBoxPanel(true)}
+                                        onClick={() => setOpenTrashBoxPanel(true)}
                                     >
                                         <TiTrash 
                                         style={{
@@ -3297,6 +3301,11 @@ function Received_booking_box() {
                     setOpenAllBookingPanel={setOpenAllBooking}
                     completeData={completeRedesignedData}
                 />
+            )}
+            {openTrashBoxPanel && (
+                <RmofCertificationTrashBoxPanel 
+                setOpenTrashBox={setOpenTrashBoxPanel}
+                completeData={completeRedesignedData}/>
             )}
         </div>
     )
