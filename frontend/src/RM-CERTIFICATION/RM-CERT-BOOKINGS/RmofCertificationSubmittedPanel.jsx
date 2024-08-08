@@ -548,20 +548,38 @@ function RmofCertificationSubmittedPanel() {
                                             ).toLocaleString('en-IN')
                                             }
                                         </td>
-                                        <td>cd
-                                            {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
-                                                obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
-                                                    "1st"}
+                                        <td>
+                                            {obj.subCategoryStatus === "2nd Time Submitted" ? "Second" :
+                                                obj.subCategoryStatus === "3rd Time Submitted" ? "Third" :
+                                                    "First"}
                                         </td>
                                         <td>
-                                            {obj.subCategoryStatus === "Submitted" ? (
-                                                obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-                                            ) : obj.subCategoryStatus === "2nd Time Submitted" ? (
-                                                obj.SecondTimeSubmitDate ? `${formatDateNew(obj.SecondTimeSubmitDate)} | ${formatTime(obj.SecondTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-                                            ) : obj.subCategoryStatus === "3rd Time Submitted" ? (
-                                                obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
-                                            ) : obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : null}
-                                        </td>
+    {obj.subCategoryStatus === "Submitted" ? (
+        obj.submittedOn ? `${formatDateNew(obj.submittedOn)} | ${formatTime(obj.submittedOn)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+    ) : obj.subCategoryStatus === "2nd Time Submitted" ? (
+        obj.SecondTimeSubmitDate ? `${formatDateNew(obj.SecondTimeSubmitDate)} | ${formatTime(obj.SecondTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+    ) : obj.subCategoryStatus === "3rd Time Submitted" ? (
+        obj.ThirdTimeSubmitDate ? `${formatDateNew(obj.ThirdTimeSubmitDate)} | ${formatTime(obj.ThirdTimeSubmitDate)}` : `${formatDateNew(new Date())} | ${formatTime(new Date())}`
+    ) : (
+        // Find the latest date among the three
+        (() => {
+            const dates = [
+                obj.submittedOn,
+                obj.SecondTimeSubmitDate,
+                obj.ThirdTimeSubmitDate
+            ].filter(date => date); // Filter out null or undefined dates
+
+            if (dates.length === 0) {
+                return null;
+            }
+
+            const latestDate = new Date(Math.max(...dates.map(date => new Date(date).getTime())));
+
+            return `${formatDateNew(latestDate)} | ${formatTime(latestDate)}`;
+        })()
+    )}
+</td>
+
                                  <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary" 

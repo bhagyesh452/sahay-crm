@@ -102,6 +102,24 @@ function Received_booking_box() {
         return strTime;
     }
 
+    useEffect(() => {
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+        });
+
+        socket.on("booking-submitted", (res) => {
+            fetchRedesignedFormData()
+        });
+
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [employeeData]);
+
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -140,7 +158,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-07");
+        const today = new Date("2024-06-07");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
@@ -161,32 +179,30 @@ function Received_booking_box() {
                 .filter(obj => {
                     //const lastActionDate = new Date(item.lastActionDate);
                     const mainBookingDate = parseDate(obj.bookingDate);
-                    mainBookingDate.setHours(0, 0, 0, 0); // Set to start of the day
-
+                    mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+                
                     // Log the values for debugging
                     console.log("Main Booking Date:", mainBookingDate, "Today:", today);
-
+                
                     // Check if any of the moreBookings dates are >= today
                     const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
-                        // Parse and normalize the booking date
                         const bookingDate = parseDate(booking.bookingDate);
-                        bookingDate.setHours(0, 0, 0, 0); // Normalize to the start of the day
-
+                        bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+                
                         // Log the booking date for debugging
-                        console.log(obj["Company Name"] , "Booking Date:", bookingDate, "Today:", today);
-
-                        // Return true if bookingDate is greater than or equal to today
+                        console.log("Company Name:", obj["Company Name"], "Booking Date:", bookingDate, "Today:", today);
+                
                         return bookingDate >= today;
                     });
-
-
+                
+                    // Log the condition results
                     console.log("Company Name:", obj["Company Name"]);
                     console.log("Main Booking Date Valid:", mainBookingDate >= today);
                     console.log("Has Valid More Bookings Date:", hasValidMoreBookingsDate);
-
+                
                     // Check if the main booking date or any moreBookings date is >= today
                     const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
-
+                
                     // Return true if date is valid and visible to RM
                     return isDateValid && obj.isVisibleToRmOfCerification;
                 })

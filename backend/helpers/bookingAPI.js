@@ -189,15 +189,16 @@ router.get("/redesigned-final-leadData", async (req, res) => {
               onError: new Date(0),  // Default to epoch if conversion fails
               onNull: new Date(0)    // Default to epoch if null
             }
-          }
+          },
+          isVisibleToRmOfCerification: true  // Static field with value true
         }
       },
       {
         $sort: {
-          lastActionDateAsDate: -1
+          lastActionDateAsDate: -1  // Sort by latest date first
         }
       }
-    ])
+    ]);
 
     res.status(200).json(allData);
   } catch (error) {
