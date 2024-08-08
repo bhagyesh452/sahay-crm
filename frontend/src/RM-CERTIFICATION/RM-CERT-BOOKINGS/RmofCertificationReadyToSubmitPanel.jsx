@@ -357,8 +357,6 @@ function RmofCertificationReadyToSubmitPanel() {
                                                         companyName={obj["Company Name"]}
                                                         serviceName={obj.serviceName}
                                                         refreshData={refreshData}
-                                                        activeTabCurrent={obj.activeTab ? obj.activeTab : ""}
-                                                        tabStopCondition={true}
                                                         industry={obj.industry}
                                                         sector={obj.sector}
                                                     />
@@ -524,12 +522,12 @@ function RmofCertificationReadyToSubmitPanel() {
                                         </td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary"
-                                            onClick={() => (
-                                                handleRevokeCompanyToRecievedBox(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            )}
+                                            // onClick={() => (
+                                            //     handleRevokeCompanyToRecievedBox(
+                                            //         obj["Company Name"],
+                                            //         obj.serviceName
+                                            //     )
+                                            // )}
 
                                         ><FaRegEye /></button>
                                         </td>

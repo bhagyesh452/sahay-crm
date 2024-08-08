@@ -381,8 +381,6 @@ function RmofCertificationSubmittedPanel() {
                                                         contentStatus={obj.contentStatus ? obj.contentStatus : "Not Started"}
                                                         brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                         activeTabCurrent={obj.activeTab ? obj.activeTab : ""}
-                                                        tabStopCondition={false}
-
                                                     />
                                                 )}
                                             </div>

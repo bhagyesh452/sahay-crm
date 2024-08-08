@@ -1259,6 +1259,42 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
   }
 });
 
+// router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (req, res) => {
+//   const { companyName, serviceName } = req.body;
+//   const socketIO = req.io;
+//   try {
+//     // Find the document by companyName
+//     const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+
+//     if (!document) {
+//       console.log("No service found")
+//     }
+
+//     // Remove serviceName from servicesTakenByRmOfCertification
+//     const updatedServices = document.servicesTakenByRmOfCertification.filter(service => service !== serviceName);
+//     document.servicesTakenByRmOfCertification = updatedServices;
+
+//     // Remove serviceName from morebookings array of objects
+//     document.moreBookings.forEach(booking => {
+//       booking.servicesTakenByRmOfCertification = booking.servicesTakenByRmOfCertification.filter(service => service !== serviceName);
+//     });
+
+//     // Save the updated document
+//     await document.save();
+
+//     // Delete from RMCertificationModel
+//     await RMCertificationModel.findOneAndDelete({
+//       "Company Name": companyName,
+//       serviceName: serviceName
+//     });
+//     socketIO.emit('rm-general-status-updated', { name: document.bdeName, companyName: companyName })
+//     res.status(200).json({ message: "Company successfully deleted and service removed from RedesignedLeadModel" });
+//   } catch (error) {
+//     console.log("Error Deleting Company From Task Manager", error.message);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+
 router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (req, res) => {
   const { companyName, serviceName } = req.body;
   const socketIO = req.io;
@@ -1267,14 +1303,14 @@ router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (r
     const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
 
     if (!document) {
-      console.log("No service found")
+      return res.status(404).json({ message: "Company not found" });
     }
 
     // Remove serviceName from servicesTakenByRmOfCertification
     const updatedServices = document.servicesTakenByRmOfCertification.filter(service => service !== serviceName);
     document.servicesTakenByRmOfCertification = updatedServices;
 
-    // Remove serviceName from morebookings array of objects
+    // Remove serviceName from moreBookings array of objects
     document.moreBookings.forEach(booking => {
       booking.servicesTakenByRmOfCertification = booking.servicesTakenByRmOfCertification.filter(service => service !== serviceName);
     });
@@ -1283,17 +1319,27 @@ router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (r
     await document.save();
 
     // Delete from RMCertificationModel
-    await RMCertificationModel.findOneAndDelete({
+    const response2 = await RMCertificationModel.findOneAndDelete({
       "Company Name": companyName,
       serviceName: serviceName
     });
-    socketIO.emit('rm-general-status-updated', { name: document.bdeName, companyName: companyName })
+
+    // If response2 is null, it means nothing was deleted from RMCertificationModel
+    if (!response2) {
+      console.log("No matching document found in RMCertificationModel for deletion");
+    }
+
+    // Emit the socket event
+    socketIO.emit('rm-general-status-updated', { name: document.bdeName, companyName: companyName });
+
+    // Respond to the client
     res.status(200).json({ message: "Company successfully deleted and service removed from RedesignedLeadModel" });
   } catch (error) {
     console.log("Error Deleting Company From Task Manager", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 router.post("/rmcertification-update-remainingpayments", async (req, res) => {
   const { companyName, serviceName, pendingRecievedPayment, pendingRecievedPaymentDate } = req.body;
