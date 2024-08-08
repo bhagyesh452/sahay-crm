@@ -355,6 +355,8 @@ function RmofCertificationReadyToSubmitPanel() {
                                                         companyName={obj["Company Name"]}
                                                         serviceName={obj.serviceName}
                                                         refreshData={refreshData}
+                                                        activeTabCurrent={obj.activeTab ? obj.activeTab : ""}
+                                                        tabStopCondition={true}
                                                     />
                                                 )}
                                             </div>

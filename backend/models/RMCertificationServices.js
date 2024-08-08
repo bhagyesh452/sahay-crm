@@ -262,9 +262,8 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   ThirdTimeSubmitDate:{
     type:Date
   },
-  hasUpdatedReadyToSubmitStatus:{
-    type:Boolean,
-    default:false
+  activeTab:{
+    type:String
   }
 })
 

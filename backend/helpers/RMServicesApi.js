@@ -461,8 +461,8 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
       "Company Name": companyName,
       serviceName: serviceName,
       history: [{
-        movedFromMainCategoryStatus:movedFromMainCategoryStatus,
-        movedToMainCategoryStatus:movedToMainCategoryStatus,
+        movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+        movedToMainCategoryStatus: movedToMainCategoryStatus,
         mainCategoryStatus: mainCategoryStatus,
         subCategoryStatus: subCategoryStatus,
         statusChangeDate: new Date()
@@ -591,17 +591,17 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
 // });
 
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
-  const { companyName, 
-    serviceName, 
-    subCategoryStatus, 
-    mainCategoryStatus, 
-    previousMainCategoryStatus, 
-    previousSubCategoryStatus, 
-    SecondTimeSubmitDate, 
-    ThirdTimeSubmitDate ,
+  const { companyName,
+    serviceName,
+    subCategoryStatus,
+    mainCategoryStatus,
+    previousMainCategoryStatus,
+    previousSubCategoryStatus,
+    SecondTimeSubmitDate,
+    ThirdTimeSubmitDate,
     movedFromMainCategoryStatus,
     movedToMainCategoryStatus,
-    latesUpdateDate} = req.body;
+    activeTab } = req.body;
   const socketIO = req.io;
   //console.log(req.body);
 
@@ -643,11 +643,12 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           previousSubCategoryStatus: previousSubCategoryStatus,
           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : company.SecondTimeSubmitDate,
           ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : company.ThirdTimeSubmitDate,
+          activeTab: activeTab ? activeTab : ""
         },
         { new: true }
       );
 
-      console.log("updatedcompany" , updatedCompany)
+      console.log("updatedcompany", updatedCompany)
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");
@@ -660,8 +661,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       if (historyEntry) {
         // Push a new history record into the existing document
         historyEntry.history.push({
-          movedFromMainCategoryStatus:movedFromMainCategoryStatus,
-          movedToMainCategoryStatus:movedToMainCategoryStatus,
+          movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+          movedToMainCategoryStatus: movedToMainCategoryStatus,
           mainCategoryStatus: mainCategoryStatus,
           subCategoryStatus: subCategoryStatus,
           statusChangeDate: new Date()
@@ -674,8 +675,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           "Company Name": companyName,
           serviceName: serviceName,
           history: [{
-            movedFromMainCategoryStatus:movedFromMainCategoryStatus,
-            movedToMainCategoryStatus:movedToMainCategoryStatus,
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus,
             mainCategoryStatus: mainCategoryStatus,
             subCategoryStatus: subCategoryStatus,
             statusChangeDate: new Date()
@@ -736,12 +737,14 @@ router.get('/get-status', async (req, res) => {
   const { companyName, serviceName } = req.query;
 
   try {
-    const record = await RMCertificationModel.findOne({"Company Name":companyName, 
-      serviceName : serviceName });
+    const record = await RMCertificationModel.findOne({
+      "Company Name": companyName,
+      serviceName: serviceName
+    });
     if (!record) {
       return res.status(404).json({ message: 'Record not found' });
     }
-    
+
     res.status(200).json({ hasUpdatedReadyToSubmitStatus: record.hasUpdatedReadyToSubmitStatus });
   } catch (error) {
     console.error('Error fetching status:', error);
@@ -754,12 +757,13 @@ router.post('/set-status', async (req, res) => {
 
   try {
     const updateResult = await RMCertificationModel.findOneAndUpdate(
-      { "Company Name" : companyName ,
-        serviceName : serviceName
+      {
+        "Company Name": companyName,
+        serviceName: serviceName
       },
       { $set: { hasUpdatedReadyToSubmitStatus } }
     );
-    console.log("updateresult" , updateResult)
+    console.log("updateresult", updateResult)
 
     if (updateResult.modifiedCount === 0) {
       return res.status(404).json({ message: 'Record not found or no change made' });
@@ -807,32 +811,60 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, contentStatus } = req.body;
   //console.log("contentStatus", contentStatus, companyName, serviceName)
   const socketIO = req.io;
+
   try {
-    const company = await RMCertificationModel.findOneAndUpdate(
+    // Find the company document
+    const company = await RMCertificationModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName
+    });
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { contentStatus: contentStatus };
+
+    if (contentStatus === "Approved") {
+      if (company.brochureStatus === "Approved") {
+        updateFields = {
+          ...updateFields,
+          mainCategoryStatus: "Ready To Submit",
+          subCategoryStatus: "Ready To Submit"
+        };
+      }
+
+    }
+
+    console.log("updateFields", updateFields)
+
+    // Perform the update
+    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       {
         ["Company Name"]: companyName,
         serviceName: serviceName
       },
-      {
-        contentStatus: contentStatus
-      },
+      updateFields,
       { new: true }
-    )
-    if (!company) {
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
       console.error("Failed to save the updated document");
       return res.status(400).json({ message: "Failed to save the updated document" });
     }
 
-    // Emit socket event
-    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
-    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
-    res.status(200).json({ message: "Document updated successfully", data: company });
-
+    // Send the response
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
   } catch (error) {
-    console.error("Error updating document:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 router.post(`/update-contentwriter-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, contentWriter } = req.body;
@@ -900,34 +932,64 @@ router.post(`/update-brochuredesigner-rmofcertification/`, async (req, res) => {
 
 router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, brochureStatus } = req.body;
-  //console.log("dscStatus" , contentStatus)
+  //console.log("brochureStatus", brochureStatus);
   const socketIO = req.io;
+
   try {
-    const company = await RMCertificationModel.findOneAndUpdate(
+    // Find the company document
+    const company = await RMCertificationModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName
+    });
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on brochureStatus
+    let updateFields = { brochureStatus: brochureStatus };
+
+    if (brochureStatus === "Approved") {
+      if (company.contentStatus === "Approved") {
+        updateFields = {
+          ...updateFields,
+          mainCategoryStatus: "Ready To Submit",
+          subCategoryStatus: "Ready To Submit"
+        };
+      }
+
+    }
+    console.log("updateFields", updateFields)
+    // Perform the update
+    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       {
         ["Company Name"]: companyName,
         serviceName: serviceName
       },
-      {
-        brochureStatus: brochureStatus
-      },
+      updateFields,
       { new: true }
-    )
-    if (!company) {
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
       console.error("Failed to save the updated document");
       return res.status(400).json({ message: "Failed to save the updated document" });
     }
 
     // Emit socket event
-    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
-    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
-    res.status(200).json({ message: "Document updated successfully", data: company });
+    //console.log("Emitting event: rm-general-status-updated", { name: updatedCompany.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
 
   } catch (error) {
-    console.error("Error updating document:", error);
+    console.error("Error updating document:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 router.post(`/post-save-nswsemail/`, async (req, res) => {
