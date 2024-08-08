@@ -80,7 +80,7 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
       case "Completed":
         return "approved-status";
       case "In Approval":
-        return "rejected-status";
+        return "created-status";
       case "Approved":
         return "approved-status";
       case "Not Applicable":
@@ -182,7 +182,7 @@ const BrochureStatusDropdown = ({ companyName, serviceName, mainStatus, brochure
           <li>
             <a
               className="dropdown-item"
-              onClick={() => handleStatusChange("InApproved", "rejected-status")}
+              onClick={() => handleStatusChange("In Approval", "created-status")}
               href="#"
             >
               In Approval
