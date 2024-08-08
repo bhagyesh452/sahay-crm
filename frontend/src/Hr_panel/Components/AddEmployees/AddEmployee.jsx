@@ -232,6 +232,8 @@ export default function HorizontalNonLinearStepper() {
 
   const [employeementInfo, setEmployeementInfo] = useState({
     employeeID : "",
+    department: "",
+    designation: "",
     joiningDate: "",
     branch: "",
     employeementType: "",
@@ -721,8 +723,8 @@ export default function HorizontalNonLinearStepper() {
         <div className="card">
           <div className="card-body p-3">
             <Box sx={{ width: '100%' }}>
-              {/* <Stepper nonLinear activeStep={activeStep}> */}
-              {/* <Stepper sx={{ width: '80%', margin: "30px 130px", padding: '0px' }} nonLinear activeStep={activeStep}>
+              {/* <Stepper sx={{ width: '80%', margin: "30px 130px", padding: '0px' }} nonLinear activeStep={activeStep}> */}
+              {/* <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
                     <StepButton color="inherit" onClick={handleStep(index)} className={
@@ -1092,7 +1094,9 @@ export default function HorizontalNonLinearStepper() {
                                       disabled={!isManagerEnabled || !isEmployeementInfoEditable}
                                     >
                                       <option value="Select Manager">Select Manager</option>
-                                      {renderManagerOptions()}
+                                      {employeementInfo.department === "Sales" && employeementInfo.designation === "Floor Manager"
+                                        ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option> : <>{renderManagerOptions()}</>
+                                      }
                                     </select>
                                     {errors.manager && <p style={{ color: "red" }}>{errors.manager}</p>}
                                   </div>

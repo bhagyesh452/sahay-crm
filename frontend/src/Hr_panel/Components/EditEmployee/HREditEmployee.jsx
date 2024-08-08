@@ -1053,7 +1053,9 @@ export default function HREditEmployee() {
                                       disabled={!isEmployeementInfoEditable}
                                     >
                                       <option value="Select Manager">Select Manager</option>
-                                      {renderManagerOptions()}
+                                      {employeementInfo.department === "Sales" && employeementInfo.designation === "Floor Manager"
+                                        ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option> : <>{renderManagerOptions()}</>
+                                      }
                                     </select>
                                     {errors.manager && <p style={{ color: "red" }}>{errors.manager}</p>}
                                   </div>

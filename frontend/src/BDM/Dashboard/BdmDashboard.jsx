@@ -29,6 +29,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 function BdmDashboard() {
   const { userId } = useParams();
+
   const [data, setData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -2377,12 +2378,9 @@ useEffect(() => {
   setFinalThisMonthBookingData([...employeeData]); // Store original state of employeeData
 }, [employeeData]);
 
-
-  
-
   return (
     <div>
-      <Header bdmName={data.ename} />
+      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
       <Navbar userId={userId} />
 
 

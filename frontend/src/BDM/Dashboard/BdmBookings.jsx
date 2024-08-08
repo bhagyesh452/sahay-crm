@@ -78,7 +78,7 @@ function BdmBookings() {
 
   const [formData, setFormData] = useState([])
   const [openBooking, setOpenBooking] = useState(false);
-  const [infiniteBooking , setInfiniteBooking] = useState([]);
+  const [infiniteBooking, setInfiniteBooking] = useState([]);
 
 
 
@@ -88,7 +88,7 @@ function BdmBookings() {
 
   const fetchRedesignedFormData1 = async () => {
     try {
-      
+
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
@@ -98,7 +98,7 @@ function BdmBookings() {
         return dateB - dateA; // Sort in descending order
       });
       const redesignedData = sortedData.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
-     
+
       setFormData(redesignedData);
       setInfiniteBooking(redesignedData)
     } catch (error) {
@@ -109,7 +109,7 @@ function BdmBookings() {
   useEffect(() => {
 
     fetchRedesignedFormData1();
-   
+
   }, [data.ename]);
   useEffect(() => {
     setFormData(
@@ -195,7 +195,7 @@ function BdmBookings() {
 
   console.log("currentLeadForm", currentLeadform)
 
-  const handleRequestDelete = async (Id, companyID, companyName , index) => {
+  const handleRequestDelete = async (Id, companyID, companyName, index) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You are about to send a delete request. Are you sure you want to proceed?",
@@ -217,9 +217,9 @@ function BdmBookings() {
           date: new Date().toLocaleDateString(),
           ename: data.ename,
 
-          bookingIndex : index // Replace 'Your Ename Value' with the actual value
+          bookingIndex: index // Replace 'Your Ename Value' with the actual value
         };
-          
+
         // const response = await fetch(`${secretKey}/deleterequestbybde`, {
         //   method: "POST",
         //   headers: {
@@ -227,13 +227,13 @@ function BdmBookings() {
         //   },
         //   body: JSON.stringify(sendingData),
         // });
-        const response = await axios.post(`${secretKey}/requests/deleterequestbybde` , sendingData);
-       
-       
+        const response = await axios.post(`${secretKey}/requests/deleterequestbybde`, sendingData);
+
+
         Swal.fire({ title: "Delete Request Sent", icon: "success" });
         // Log the response message
       } catch (error) {
-      
+
         Swal.fire({ title: "Request Already Exists!", icon: "error" });
         console.error("Error creating delete request:", error);
         // Handle the error as per your application's requirements
@@ -247,7 +247,7 @@ function BdmBookings() {
   const [bookingIndex, setBookingIndex] = useState(0);
   const [editMoreOpen, setEditMoreOpen] = useState(false);
 
-  const handleEditClick = async (company , index) => {
+  const handleEditClick = async (company, index) => {
     try {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
@@ -315,25 +315,25 @@ function BdmBookings() {
       for (let i = 0; i < files.length; i++) {
         formData.append("otherDocs", files[i]);
       }
-      console.log(currentLeadform["Company Name"] , sendingIndex);
+      console.log(currentLeadform["Company Name"], sendingIndex);
       setCurrentCompanyName(currentLeadform["Company Name"])
       const response = await axios.post(
         `${secretKey}/bookings/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
-       formData
+        formData
       );
-      
-        Swal.fire({
-          title: "Success!",
-          html: `<small> File Uploaded successfully </small>
+
+      Swal.fire({
+        title: "Success!",
+        html: `<small> File Uploaded successfully </small>
         `,
-          icon: "success",
-        });
-        setSelectedDocuments([]);
-        setOpenOtherDocs(false);
-        fetchRedesignedFormData1();
+        icon: "success",
+      });
+      setSelectedDocuments([]);
+      setOpenOtherDocs(false);
+      fetchRedesignedFormData1();
 
 
-      
+
     } catch (error) {
       Swal.fire({
         title: "Error uploading file",
@@ -346,7 +346,7 @@ function BdmBookings() {
 
   return (
     <div>
-    <Header bdmName={data.ename} />
+      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
       <Navbar userId={userId} />
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
@@ -390,7 +390,7 @@ function BdmBookings() {
                   </div>
                 </div>
                 <div className="col-6">
-                 
+
                 </div>
               </div>
             </div>
@@ -487,10 +487,10 @@ function BdmBookings() {
                                     ))}
                               </div>
                               <div className="d-flex align-items-center justify-content-between">
-                                {(obj.remainingPayments.length!==0 || obj.moreBookings.some((moreObj)=>moreObj.remainingPayments.length!==0)) && 
-                                <div className="b_Service_remaining_receive" title="remaining Payment Received">
-                                  <img src={RemainingAmnt}></img>
-                                </div>}
+                                {(obj.remainingPayments.length !== 0 || obj.moreBookings.some((moreObj) => moreObj.remainingPayments.length !== 0)) &&
+                                  <div className="b_Service_remaining_receive" title="remaining Payment Received">
+                                    <img src={RemainingAmnt}></img>
+                                  </div>}
                                 {obj.moreBookings.length !== 0 && (
                                   <div
                                     className="b_Services_multipal_services"
@@ -554,9 +554,9 @@ function BdmBookings() {
                       {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                       <div className="my-card mt-2">
                         <div className="my-card-head">  <div className="d-flex align-items-center justify-content-between">
-                            <div>Basic Informations</div>
-                            <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
-                          </div></div>
+                          <div>Basic Informations</div>
+                          <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
+                        </div></div>
                         <div className="my-card-body">
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
@@ -754,14 +754,14 @@ function BdmBookings() {
                             <div
                               className="Services_Preview_action_edit mr-1"
                               onClick={() => {
-                                handleEditClick(currentLeadform._id , 0  )
+                                handleEditClick(currentLeadform._id, 0)
                               }}
                             >
                               <MdModeEdit />
                             </div>
                             <div
                               onClick={() =>
-                                handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , 0)
+                                handleRequestDelete(currentLeadform._id, currentLeadform.company, currentLeadform["Company Name"], 0)
                               }
                               className="Services_Preview_action_delete"
                             >
@@ -970,8 +970,8 @@ function BdmBookings() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                            ? obj.paymentRemarks
-                                            : "N/A"}>
+                                          ? obj.paymentRemarks
+                                          : "N/A"}>
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
@@ -1086,8 +1086,8 @@ function BdmBookings() {
                                   )}
                                 </div>
                               </div>
-                                 {/* Remaining Payment Viwe Sections */}
-                                 {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
+                              {/* Remaining Payment Viwe Sections */}
+                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
                                 <div
                                   className="my-card-body accordion"
                                   id={`accordionExample${index}`}
@@ -1131,7 +1131,7 @@ function BdmBookings() {
                                                         <div>
                                                           {currentLeadform.remainingPayments.length !== 0 &&
                                                             (() => {
-                                                            
+
                                                               if (index === 0) return "Second ";
                                                               else if (index === 1) return "Third ";
                                                               else if (index === 2) return "Fourth ";
@@ -1179,14 +1179,14 @@ function BdmBookings() {
                                                                 const filteredPayments = currentLeadform.remainingPayments.filter(
                                                                   (pay) => pay.serviceName === obj.serviceName
                                                                 );
-                                                               
+
                                                                 const filteredLength = filteredPayments.length;
                                                                 if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
                                                                 else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
                                                                 else if (index === 2) return parseInt(currentLeadform.pendingAmount);
                                                                 // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
-                                                              })()} 
+                                                              })()}
                                                             {/* {index === 0
                                                               ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
                                                               : index === 1
@@ -1206,8 +1206,8 @@ function BdmBookings() {
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                              paymentObj.paymentMethod
-                                                            }>
+                                                            paymentObj.paymentMethod
+                                                          }>
                                                             {
                                                               paymentObj.paymentMethod
                                                             }
@@ -1224,8 +1224,8 @@ function BdmBookings() {
                                                         </div>
                                                         <div class="col-sm-6 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={
-                                                              paymentObj.extraRemarks
-                                                            }>
+                                                            paymentObj.extraRemarks
+                                                          }>
                                                             {
                                                               paymentObj.extraRemarks
                                                             }
@@ -1466,8 +1466,8 @@ function BdmBookings() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title= {currentLeadform &&
-                                        currentLeadform.paymentMethod}>
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                      currentLeadform.paymentMethod}>
                                       {currentLeadform &&
                                         currentLeadform.paymentMethod}
                                     </div>
@@ -1482,8 +1482,8 @@ function BdmBookings() {
                                     </div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title= {currentLeadform &&
-                                        currentLeadform.extraNotes}>
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                      currentLeadform.extraNotes}>
                                       {currentLeadform &&
                                         currentLeadform.extraNotes}
                                     </div>
@@ -1722,14 +1722,14 @@ function BdmBookings() {
                                   <div
                                     className="Services_Preview_action_edit mr-2"
                                     onClick={() => {
-                                      handleEditClick(currentLeadform._id , index+1)
+                                      handleEditClick(currentLeadform._id, index + 1)
                                     }}
                                   >
                                     <MdModeEdit />
                                   </div>
                                   <div
                                     onClick={() =>
-                                      handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , index+1)
+                                      handleRequestDelete(currentLeadform._id, currentLeadform.company, currentLeadform["Company Name"], index + 1)
                                     }
                                     className="Services_Preview_action_delete"
                                   >
@@ -1929,8 +1929,8 @@ function BdmBookings() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={obj.paymentRemarks
-                                                ? obj.paymentRemarks
-                                                : "N/A"}>
+                                              ? obj.paymentRemarks
+                                              : "N/A"}>
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
@@ -2124,439 +2124,439 @@ function BdmBookings() {
 
                               {/* -------- Step 4 ---------*/}
                               <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                          <b>Payment Summary:</b>
-                        </div>
+                                <b>Payment Summary:</b>
+                              </div>
 
-                        <div className="my-card">
-                          <div className="my-card-body">
-                            {currentLeadform && currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.map((payObj , index)=>(
-                              <div className="row m-0 bdr-btm-eee">
-                                <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h h-100 text-center">
-                                        {index+1}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-5 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                        Total Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-7 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                        ₹{" "}
-                                        {currentLeadform &&
-                                          parseInt(
-                                            currentLeadform.totalAmount
-                                          ).toLocaleString()}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-5 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Received Amount
-                                      </div>
-                                    </div>
-                                  {<div class="col-sm-7 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹{" "}
-                                        {(parseInt(currentLeadform.receivedAmount) -
-          currentLeadform.remainingPayments
-            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                      </div>
-                                    </div>}
-                                 
-                                 
-                                  </div>
-                                </div>
-                                <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
-                                  <div class="row m-0 h-100">
-                                    <div class="col-sm-6 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Pending Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-6 align-self-stretch p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹{" "}
-                                        {(parseInt(currentLeadform.pendingAmount) +
-          currentLeadform.remainingPayments
-            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )) }
-                            <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h h-100 text-center">
-                                      {currentLeadform && (currentLeadform.remainingPayments.length + 1) }
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col-sm-5 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                      Total Amount
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-7 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                      ₹{" "}
-                                      {currentLeadform &&
-                                        parseInt(
-                                          currentLeadform.totalAmount
-                                        ).toLocaleString()}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col-sm-5 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                      Received Amount
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-7 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                      ₹{" "}
-                                      {currentLeadform &&
-                                        parseInt(
-                                          currentLeadform.receivedAmount
-                                        ).toLocaleString()}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col-sm-6 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                      Pending Amount
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-6 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                      ₹{" "}
-                                      {currentLeadform &&
-                                        parseInt(
-                                          currentLeadform.pendingAmount
-                                        ).toLocaleString()}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col-sm-4 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h h-100">
-                                      Payment Method
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee  My_Text_Wrap" title={currentLeadform &&
-                                        currentLeadform.paymentMethod}>
-                                      {currentLeadform &&
-                                        currentLeadform.paymentMethod}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
-                                <div class="row m-0 h-100">
-                                  <div class="col-sm-4 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                      Extra Remarks
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-8 align-self-stretch p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
-                                        currentLeadform.extraNotes}>
-                                      {currentLeadform &&
-                                        currentLeadform.extraNotes}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {currentLeadform &&
-                          (currentLeadform.paymentReceipt.length !== 0 ||
-                            currentLeadform.otherDocs !== 0) && (
-                            <>
-                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                <b>Payment Receipt and Additional Documents:</b>
-                              </div>
-                              <div className="row">
-                                {currentLeadform.paymentReceipt.length !==
-                                  0 && (
-                                    <div className="col-sm-2 mb-1">
-                                      <div className="booking-docs-preview">
-                                        <div
-                                          className="booking-docs-preview-img"
-                                          onClick={() =>
-                                            handleViewPdfReciepts(
-                                              currentLeadform.paymentReceipt[0]
-                                                .filename,
-                                              currentLeadform["Company Name"]
-                                            )
-                                          }
-                                        >
-                                          {currentLeadform &&
-                                            currentLeadform.paymentReceipt[0] &&
-                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
-                                              ".pdf"
-                                            ) ? (
-                                              <PdfImageViewerAdmin
-                                                type="paymentrecieptpdf"
-                                                path={
-                                                  currentLeadform
-                                                    .paymentReceipt[0].filename
-                                                }
-                                                companyName={
-                                                  currentLeadform["Company Name"]
-                                                }
-                                              />
-                                            ) : currentLeadform.paymentReceipt[0].filename.endsWith(
-                                              ".png"
-                                            ) ||
-                                              currentLeadform.paymentReceipt[0].filename.endsWith(
-                                                ".jpg"
-                                              ) ||
-                                              currentLeadform.paymentReceipt[0].filename.endsWith(
-                                                ".jpeg"
-                                              ) ? (
-                                              <img
-                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
-                                                alt="Receipt Image"
-                                              />
-                                            ) : (
-                                              <img
-                                                src={wordimg}
-                                                alt="Default Image"
-                                              />
-                                            ))}
-                                        </div>
-                                        <div className="booking-docs-preview-text">
-                                          <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                            Receipt
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                {currentLeadform.remainingPayments.length !==
-                                  0 &&
-                                  currentLeadform.remainingPayments.some(
-                                    (obj) => obj.paymentReceipt.length !== 0
-                                  ) &&
-                                  currentLeadform.remainingPayments.map((remainingObject, index) => (
-                                    remainingObject.paymentReceipt.length !== 0 && (
-                                      <div className="col-sm-2 mb-1" key={index}>
-                                        <div className="booking-docs-preview">
-                                          <div
-                                            className="booking-docs-preview-img"
-                                            onClick={() =>
-                                              handleViewPdfReciepts(
-                                                remainingObject.paymentReceipt[0].filename,
-                                                currentLeadform["Company Name"]
-                                              )
-                                            }
-                                          >
-                                            {remainingObject.paymentReceipt[0].filename.endsWith(".pdf") ? (
-                                              <PdfImageViewerAdmin
-                                                type="paymentrecieptpdf"
-                                                path={remainingObject.paymentReceipt[0].filename}
-                                                companyName={currentLeadform["Company Name"]}
-                                              />
-                                            ) : remainingObject.paymentReceipt[0].filename.endsWith(".png") ||
-                                              remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
-                                              remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
-                                              <img
-                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
-                                                alt="Receipt Image"
-                                              />
-                                            ) : (
-                                              <img src={wordimg} alt="Default Image" />
-                                            )}
-                                          </div>
-                                          <div className="booking-docs-preview-text">
-                                            <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                              Remaining Payment
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )
-                                  ))}
-                                  
-                                {currentLeadform &&
-                                  currentLeadform.otherDocs.map((obj) => (
-                                    <div className="col-sm-2 mb-1">
-                                      <div className="booking-docs-preview">
-                                        <div
-                                          className="booking-docs-preview-img"
-                                          onClick={() =>
-                                            handleViewPdOtherDocs(
-                                              obj.filename,
-                                              currentLeadform["Company Name"]
-                                            )
-                                          }
-                                        >
-                                          {obj.filename.endsWith(".pdf") ? (
-                                            <PdfImageViewerAdmin
-                                              type="pdf"
-                                              path={obj.filename}
-                                              companyName={
-                                                currentLeadform["Company Name"]
-                                              }
-                                            />
-                                          ) : (
-                                            <img
-                                              src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
-                                              alt={pdfimg}
-                                            ></img>
-                                          )}
-                                        </div>
-                                        <div className="booking-docs-preview-text">
-                                          <p
-                                            className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0"
-                                            title={obj.originalname}
-                                          >
-                                            {obj.originalname}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ))}
-                                {/* ---------- Upload Documents From Preview -----------*/}
-                                <div className="col-sm-2 mb-1">
-                                  <div
-                                    className="booking-docs-preview"
-                                    title="Upload More Documents"
-                                  >
-                                    <div
-                                      className="upload-Docs-BTN"
-                                      onClick={() => {
-                                        setOpenOtherDocs(true);
-                                        setSendingIndex(0);
-                                      }}
-                                    >
-                                      <IoAdd />
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <Dialog
-                                  open={openOtherDocs}
-                                  onClose={closeOtherDocsPopup}
-                                  fullWidth
-                                  maxWidth="sm"
-                                >
-                                  <DialogTitle>
-                                    Upload Your Attachments
-                                    <IconButton
-                                      onClick={closeOtherDocsPopup}
-                                      style={{ float: "right" }}
-                                    >
-                                      <CloseIcon color="primary"></CloseIcon>
-                                    </IconButton>{" "}
-                                  </DialogTitle>
-                                  <DialogContent>
-                                    <div className="maincon">
-                                      {/* Single file input for multiple documents */}
-                                      <div
-                                        style={{
-                                          justifyContent: "space-between",
-                                        }}
-                                        className="con1 d-flex"
-                                      >
-                                        <div
-                                          style={{ paddingTop: "9px" }}
-                                          className="uploadcsv"
-                                        >
-                                          <label
-                                            style={{
-                                              margin: "0px 0px 6px 0px",
-                                            }}
-                                            htmlFor="attachmentfile"
-                                          >
-                                            Upload Files
-                                          </label>
-                                        </div>
-                                      </div>
-                                      <div
-                                        style={{ margin: "5px 0px 0px 0px" }}
-                                        className="form-control"
-                                      >
-                                        <input
-                                          type="file"
-                                          name="attachmentfile"
-                                          id="attachmentfile"
-                                          onChange={(e) => {
-                                            handleOtherDocsUpload(
-                                              e.target.files
-                                            );
-                                          }}
-                                          multiple // Allow multiple files selection
-                                        />
-                                        {selectedDocuments &&
-                                          selectedDocuments.length > 0 && (
-                                            <div className="uploaded-filename-main d-flex flex-wrap">
-                                              {selectedDocuments.map(
-                                                (file, index) => (
-                                                  <div
-                                                    className="uploaded-fileItem d-flex align-items-center"
-                                                    key={index}
-                                                  >
-                                                    <p className="m-0">
-                                                      {file.name}
-                                                    </p>
-                                                    <button
-                                                      className="fileItem-dlt-btn"
-                                                      onClick={() =>
-                                                        handleRemoveFile(index)
-                                                      }
-                                                    >
-                                                      <IconX className="close-icon" />
-                                                    </button>
-                                                  </div>
-                                                )
-                                              )}
+                              <div className="my-card">
+                                <div className="my-card-body">
+                                  {currentLeadform && currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.map((payObj, index) => (
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
+                                        <div class="row m-0 h-100">
+                                          <div class="col align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100 text-center">
+                                              {index + 1}
                                             </div>
-                                          )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                        <div class="row m-0 h-100">
+                                          <div class="col-sm-5 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                              Total Amount
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-7 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                              ₹{" "}
+                                              {currentLeadform &&
+                                                parseInt(
+                                                  currentLeadform.totalAmount
+                                                ).toLocaleString()}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                        <div class="row m-0 h-100">
+                                          <div class="col-sm-5 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              Received Amount
+                                            </div>
+                                          </div>
+                                          {<div class="col-sm-7 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              ₹{" "}
+                                              {(parseInt(currentLeadform.receivedAmount) -
+                                                currentLeadform.remainingPayments
+                                                  .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
+                                                  .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
+                                            </div>
+                                          </div>}
+
+
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
+                                        <div class="row m-0 h-100">
+                                          <div class="col-sm-6 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              Pending Amount
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-6 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              ₹{" "}
+                                              {(parseInt(currentLeadform.pendingAmount) +
+                                                currentLeadform.remainingPayments
+                                                  .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
+                                                  .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
+                                            </div>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
-                                  </DialogContent>
-                                  <button
-                                    className="btn btn-primary"
-                                    onClick={handleotherdocsAttachment}
-                                  >
-                                    Submit
-                                  </button>
-                                </Dialog>
+                                  ))}
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
+                                      <div class="row m-0 h-100">
+                                        <div class="col align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100 text-center">
+                                            {currentLeadform && (currentLeadform.remainingPayments.length + 1)}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                      <div class="row m-0 h-100">
+                                        <div class="col-sm-5 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            Total Amount
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            ₹{" "}
+                                            {currentLeadform &&
+                                              parseInt(
+                                                currentLeadform.totalAmount
+                                              ).toLocaleString()}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                      <div class="row m-0 h-100">
+                                        <div class="col-sm-5 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            Received Amount
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            ₹{" "}
+                                            {currentLeadform &&
+                                              parseInt(
+                                                currentLeadform.receivedAmount
+                                              ).toLocaleString()}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
+                                      <div class="row m-0 h-100">
+                                        <div class="col-sm-6 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            Pending Amount
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-6 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            ₹{" "}
+                                            {currentLeadform &&
+                                              parseInt(
+                                                currentLeadform.pendingAmount
+                                              ).toLocaleString()}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                                      <div class="row m-0 h-100">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            Payment Method
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee  My_Text_Wrap" title={currentLeadform &&
+                                            currentLeadform.paymentMethod}>
+                                            {currentLeadform &&
+                                              currentLeadform.paymentMethod}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                                      <div class="row m-0 h-100">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                            Extra Remarks
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" title={currentLeadform &&
+                                            currentLeadform.extraNotes}>
+                                            {currentLeadform &&
+                                              currentLeadform.extraNotes}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                            </>
-                          )}
+                              {currentLeadform &&
+                                (currentLeadform.paymentReceipt.length !== 0 ||
+                                  currentLeadform.otherDocs !== 0) && (
+                                  <>
+                                    <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                      <b>Payment Receipt and Additional Documents:</b>
+                                    </div>
+                                    <div className="row">
+                                      {currentLeadform.paymentReceipt.length !==
+                                        0 && (
+                                          <div className="col-sm-2 mb-1">
+                                            <div className="booking-docs-preview">
+                                              <div
+                                                className="booking-docs-preview-img"
+                                                onClick={() =>
+                                                  handleViewPdfReciepts(
+                                                    currentLeadform.paymentReceipt[0]
+                                                      .filename,
+                                                    currentLeadform["Company Name"]
+                                                  )
+                                                }
+                                              >
+                                                {currentLeadform &&
+                                                  currentLeadform.paymentReceipt[0] &&
+                                                  (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                    ".pdf"
+                                                  ) ? (
+                                                    <PdfImageViewerAdmin
+                                                      type="paymentrecieptpdf"
+                                                      path={
+                                                        currentLeadform
+                                                          .paymentReceipt[0].filename
+                                                      }
+                                                      companyName={
+                                                        currentLeadform["Company Name"]
+                                                      }
+                                                    />
+                                                  ) : currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                    ".png"
+                                                  ) ||
+                                                    currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                      ".jpg"
+                                                    ) ||
+                                                    currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                      ".jpeg"
+                                                    ) ? (
+                                                    <img
+                                                      src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                      alt="Receipt Image"
+                                                    />
+                                                  ) : (
+                                                    <img
+                                                      src={wordimg}
+                                                      alt="Default Image"
+                                                    />
+                                                  ))}
+                                              </div>
+                                              <div className="booking-docs-preview-text">
+                                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                  Receipt
+                                                </p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
+                                      {currentLeadform.remainingPayments.length !==
+                                        0 &&
+                                        currentLeadform.remainingPayments.some(
+                                          (obj) => obj.paymentReceipt.length !== 0
+                                        ) &&
+                                        currentLeadform.remainingPayments.map((remainingObject, index) => (
+                                          remainingObject.paymentReceipt.length !== 0 && (
+                                            <div className="col-sm-2 mb-1" key={index}>
+                                              <div className="booking-docs-preview">
+                                                <div
+                                                  className="booking-docs-preview-img"
+                                                  onClick={() =>
+                                                    handleViewPdfReciepts(
+                                                      remainingObject.paymentReceipt[0].filename,
+                                                      currentLeadform["Company Name"]
+                                                    )
+                                                  }
+                                                >
+                                                  {remainingObject.paymentReceipt[0].filename.endsWith(".pdf") ? (
+                                                    <PdfImageViewerAdmin
+                                                      type="paymentrecieptpdf"
+                                                      path={remainingObject.paymentReceipt[0].filename}
+                                                      companyName={currentLeadform["Company Name"]}
+                                                    />
+                                                  ) : remainingObject.paymentReceipt[0].filename.endsWith(".png") ||
+                                                    remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
+                                                    remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
+                                                    <img
+                                                      src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
+                                                      alt="Receipt Image"
+                                                    />
+                                                  ) : (
+                                                    <img src={wordimg} alt="Default Image" />
+                                                  )}
+                                                </div>
+                                                <div className="booking-docs-preview-text">
+                                                  <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                    Remaining Payment
+                                                  </p>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )
+                                        ))}
+
+                                      {currentLeadform &&
+                                        currentLeadform.otherDocs.map((obj) => (
+                                          <div className="col-sm-2 mb-1">
+                                            <div className="booking-docs-preview">
+                                              <div
+                                                className="booking-docs-preview-img"
+                                                onClick={() =>
+                                                  handleViewPdOtherDocs(
+                                                    obj.filename,
+                                                    currentLeadform["Company Name"]
+                                                  )
+                                                }
+                                              >
+                                                {obj.filename.endsWith(".pdf") ? (
+                                                  <PdfImageViewerAdmin
+                                                    type="pdf"
+                                                    path={obj.filename}
+                                                    companyName={
+                                                      currentLeadform["Company Name"]
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <img
+                                                    src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                                    alt={pdfimg}
+                                                  ></img>
+                                                )}
+                                              </div>
+                                              <div className="booking-docs-preview-text">
+                                                <p
+                                                  className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0"
+                                                  title={obj.originalname}
+                                                >
+                                                  {obj.originalname}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      {/* ---------- Upload Documents From Preview -----------*/}
+                                      <div className="col-sm-2 mb-1">
+                                        <div
+                                          className="booking-docs-preview"
+                                          title="Upload More Documents"
+                                        >
+                                          <div
+                                            className="upload-Docs-BTN"
+                                            onClick={() => {
+                                              setOpenOtherDocs(true);
+                                              setSendingIndex(0);
+                                            }}
+                                          >
+                                            <IoAdd />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <Dialog
+                                        open={openOtherDocs}
+                                        onClose={closeOtherDocsPopup}
+                                        fullWidth
+                                        maxWidth="sm"
+                                      >
+                                        <DialogTitle>
+                                          Upload Your Attachments
+                                          <IconButton
+                                            onClick={closeOtherDocsPopup}
+                                            style={{ float: "right" }}
+                                          >
+                                            <CloseIcon color="primary"></CloseIcon>
+                                          </IconButton>{" "}
+                                        </DialogTitle>
+                                        <DialogContent>
+                                          <div className="maincon">
+                                            {/* Single file input for multiple documents */}
+                                            <div
+                                              style={{
+                                                justifyContent: "space-between",
+                                              }}
+                                              className="con1 d-flex"
+                                            >
+                                              <div
+                                                style={{ paddingTop: "9px" }}
+                                                className="uploadcsv"
+                                              >
+                                                <label
+                                                  style={{
+                                                    margin: "0px 0px 6px 0px",
+                                                  }}
+                                                  htmlFor="attachmentfile"
+                                                >
+                                                  Upload Files
+                                                </label>
+                                              </div>
+                                            </div>
+                                            <div
+                                              style={{ margin: "5px 0px 0px 0px" }}
+                                              className="form-control"
+                                            >
+                                              <input
+                                                type="file"
+                                                name="attachmentfile"
+                                                id="attachmentfile"
+                                                onChange={(e) => {
+                                                  handleOtherDocsUpload(
+                                                    e.target.files
+                                                  );
+                                                }}
+                                                multiple // Allow multiple files selection
+                                              />
+                                              {selectedDocuments &&
+                                                selectedDocuments.length > 0 && (
+                                                  <div className="uploaded-filename-main d-flex flex-wrap">
+                                                    {selectedDocuments.map(
+                                                      (file, index) => (
+                                                        <div
+                                                          className="uploaded-fileItem d-flex align-items-center"
+                                                          key={index}
+                                                        >
+                                                          <p className="m-0">
+                                                            {file.name}
+                                                          </p>
+                                                          <button
+                                                            className="fileItem-dlt-btn"
+                                                            onClick={() =>
+                                                              handleRemoveFile(index)
+                                                            }
+                                                          >
+                                                            <IconX className="close-icon" />
+                                                          </button>
+                                                        </div>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                )}
+                                            </div>
+                                          </div>
+                                        </DialogContent>
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={handleotherdocsAttachment}
+                                        >
+                                          Submit
+                                        </button>
+                                      </Dialog>
+                                    </div>
+                                  </>
+                                )}
 
                               <div className="mb-2 mt-3 mul-booking-card-inner-head">
                                 <b>
@@ -2759,7 +2759,7 @@ function BdmBookings() {
         </div>
       )}
 
-     
+
       {editMoreOpen && bookingIndex !== -1 && (
         <>
           <EditableMoreBooking

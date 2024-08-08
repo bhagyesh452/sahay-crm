@@ -22,6 +22,7 @@ import { Calendar } from "@fullcalendar/core";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid'
+import Swal from "sweetalert2";
 import {
   Dialog,
   DialogTitle,
@@ -32,6 +33,8 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { GrNext } from "react-icons/gr";
 import { GrPrevious } from "react-icons/gr";
+import MaleEmployee from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png"
 
 function EmployeeProfile() {
 
@@ -42,7 +45,7 @@ function EmployeeProfile() {
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  
+
   useEffect(() => {
     document.title = `Employee-Sahay-CRM`;
   }, [data.ename]);
@@ -79,16 +82,17 @@ function EmployeeProfile() {
   const handleSubmit = async () => {
     if (selectedFile) {
       const formData = new FormData();
-      formData.append("file", selectedFile);
+      formData.append("profilePhoto", selectedFile);
 
       try {
-        const response = await axios.post(`${secretKey}/employee/employeeimages/${data.ename}`, formData, {
+        const response = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${data._id}`, formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${newtoken}`,
           },
         });
         console.log("File upload success:", response.data);
+        Swal.fire("Success", "Profile photo successfully uploaded","success");
         const imageUrl = response.data.imageUrl;
         setEmpImg1(imageUrl);
         localStorage.setItem("empImg1", imageUrl);
@@ -96,6 +100,7 @@ function EmployeeProfile() {
         handleClose();
       } catch (error) {
         console.error("Error uploading file:", error);
+        Swal.fire("Error", "Error uploading profile photo", "error");
       }
     } else {
       alert("No file selected.");
@@ -262,7 +267,7 @@ function EmployeeProfile() {
 
   return (
     <div>
-      <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
+      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {data && <div className="page-wrapper">
         <div className="employee-profile-main mt-3 mb-3">
@@ -273,8 +278,19 @@ function EmployeeProfile() {
                   <div className="d-flex align-items-start m-0">
                     <div className="employee_profile_picture d-flex align-items-center justify-content-center">
                       <div className="employee_picture">
-                        <img src={`${secretKey}/employee/employeeImg/${encodeURIComponent(data.ename)}/${data.employee_profile && data.employee_profile.length !== 0 && encodeURIComponent(data.employee_profile[0].filename)}`} alt="Employee"></img>
+                        {data.profilePhoto && data.profilePhoto.length > 0 ? (
+                          <img
+                            src={`${secretKey}/employee/fetchProfilePhoto/${data._id}/${encodeURIComponent(data.profilePhoto[0].filename)}`}
+                            alt="Employee"
+                          />
+                        ) : (
+                          <img
+                            src={data.gender === "Male" ? MaleEmployee : FemaleEmployee}
+                            alt="Default Employee"
+                          />
+                        )}
                       </div>
+
                       <div
                         className="profile-pic-upload"
                         onClick={handleCameraClick}
@@ -321,6 +337,7 @@ function EmployeeProfile() {
                               <input
                                 type="file"
                                 id="fileInput"
+                                name="profilePhoto"
                                 accept=".jpg, .jpeg, .png"
                                 onChange={handleImageChange}
                               />

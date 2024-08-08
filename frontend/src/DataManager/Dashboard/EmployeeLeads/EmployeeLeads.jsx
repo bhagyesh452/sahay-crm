@@ -62,6 +62,7 @@ const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
 function EmployeeLeads() {
 
     const { id } = useParams();
+    const [myInfo, setMyInfo] = useState([]);
     const [openAssign, openchangeAssign] = useState(false);
     const [openAnchor, setOpenAnchor] = useState(false);
     const [openRemarks, openchangeRemarks] = useState(false);
@@ -168,7 +169,7 @@ function EmployeeLeads() {
 
     useEffect(() => {
         document.title = `Datamanager-Sahay-CRM`;
-      }, []);
+    }, []);
 
     useEffect(() => {
         let monthIndex;
@@ -887,7 +888,7 @@ function EmployeeLeads() {
     const handleMouseDown = (id) => {
         // Initiate drag selection
         setStartRowIndex(employeeData.findIndex((row) => row._id === id));
-      }
+    }
 
     // const handleMouseEnter = (id) => {
     //     // Update selected rows during drag selection
@@ -920,30 +921,30 @@ function EmployeeLeads() {
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
         if (startRowIndex !== null) {
-          const endRowIndex = employeeData.findIndex((row) => row._id === id);
-          const selectedRange = [];
-          const startIndex = Math.min(startRowIndex, endRowIndex);
-          const endIndex = Math.max(startRowIndex, endRowIndex);
-    
-          for (let i = startIndex; i <= endIndex; i++) {
-            selectedRange.push(employeeData[i]._id);
-          }
-    
-          setSelectedRows(selectedRange);
-    
-          // Scroll the window vertically when dragging beyond the visible viewport
-          const windowHeight = document.documentElement.clientHeight;
-          const mouseY = window.event.clientY;
-          const tableHeight = document.querySelector("table").clientHeight;
-          const maxVisibleRows = Math.floor(
-            windowHeight / (tableHeight / employeeData.length)
-          );
-    
-          if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
-            window.scrollTo(0, window.scrollY + 20);
-          }
+            const endRowIndex = employeeData.findIndex((row) => row._id === id);
+            const selectedRange = [];
+            const startIndex = Math.min(startRowIndex, endRowIndex);
+            const endIndex = Math.max(startRowIndex, endRowIndex);
+
+            for (let i = startIndex; i <= endIndex; i++) {
+                selectedRange.push(employeeData[i]._id);
+            }
+
+            setSelectedRows(selectedRange);
+
+            // Scroll the window vertically when dragging beyond the visible viewport
+            const windowHeight = document.documentElement.clientHeight;
+            const mouseY = window.event.clientY;
+            const tableHeight = document.querySelector("table").clientHeight;
+            const maxVisibleRows = Math.floor(
+                windowHeight / (tableHeight / employeeData.length)
+            );
+
+            if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+                window.scrollTo(0, window.scrollY + 20);
+            }
         }
-      };
+    };
 
     const handleMouseUp = () => {
         // End drag selection
@@ -1148,7 +1149,7 @@ function EmployeeLeads() {
         }
     };
 
-// ----------------------------------filter functions----------------------------
+    // ----------------------------------filter functions----------------------------
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
     }
@@ -1247,12 +1248,25 @@ function EmployeeLeads() {
         }
     };
 
+    // console.log("User id is :", id);
 
+    const fetchPersonalInfo = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${id}`);
+            // console.log("Personal Info :", res.data.data);
+            setMyInfo(res.data.data);
+        } catch (error) {
+            console.log("Error fetching employee data :", error);
+        }
+    };
 
+    useEffect(() => {
+        fetchPersonalInfo();
+    }, []);
 
     return (
         <div>
-            <Header />
+            <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar name={dataManagerName} />
             <div className="page-wrapper">
                 <div

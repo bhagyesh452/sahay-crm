@@ -119,7 +119,7 @@ function EmployeeTeamLeads() {
     const [employeeName, setEmployeeName] = useState("");
 
 
-    
+
 
     // States for filtered and searching data :
     const stateList = State.getStatesOfCountry("IN");
@@ -144,7 +144,7 @@ function EmployeeTeamLeads() {
 
     // State for selecting status.
     const [selectedStatus, setSelectedStatus] = useState("");
-    
+
     // States for selecting states and cities.
     const [selectedStateCode, setSelectedStateCode] = useState("");
     const [selectedState, setSelectedState] = useState("");
@@ -165,8 +165,8 @@ function EmployeeTeamLeads() {
 
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
-      }, [data.ename]);
-      
+    }, [data.ename]);
+
     useEffect(() => {
         let monthIndex;
         if (selectedYear && selectedMonth) {
@@ -1488,7 +1488,7 @@ function EmployeeTeamLeads() {
 
     return (
         <div>
-            <Header name={data.ename} designation={data.designation} />
+            <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
             <EmpNav userId={userId} bdmWork={data.bdmWork} />
             {!formOpen && <div className="page-wrapper">
                 {BDMrequests && (

@@ -35,12 +35,29 @@ import Datamanager_DeletedEmployeePanel from "./Datamanager_DeletedEmployeePanel
 
 
 function DatamanagerNewEmployee() {
+    const userId = localStorage.getItem("dataManagerUserId");
+    const [myInfo, setMyInfo] = useState([]);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
 
     useEffect(() => {
         document.title = `Datamanager-Sahay-CRM`;
-      }, []);
+    }, []);
+
+    // console.log("User id is :", userId);
+
+    const fetchPersonalInfo = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            // console.log("Personal Info :", res.data.data);
+            setMyInfo(res.data.data);
+        } catch (error) {
+            console.log("Error fetching employee data :", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchPersonalInfo();
+    }, []);
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -83,7 +100,7 @@ function DatamanagerNewEmployee() {
 
     return (
         <div>
-            <Header />
+            <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar number={1} />
             <div className="page-wrapper">
                 <div className="container-xl">
@@ -93,14 +110,14 @@ function DatamanagerNewEmployee() {
                                 <Tab label={
                                     <div style={{ display: "flex", alignItems: "center" }}>
                                         <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                        <span style={{fontSize:"12px"}}>Employee List</span>
+                                        <span style={{ fontSize: "12px" }}>Employee List</span>
                                     </div>
                                 } {...a11yProps(0)} />
-                                 <Tab
+                                <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <AiOutlineUserDelete style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Deleted Employees List</span>
+                                            <span style={{ fontSize: "12px" }}>Deleted Employees List</span>
                                         </div>
                                     }
                                     {...a11yProps(1)}
@@ -119,13 +136,13 @@ function DatamanagerNewEmployee() {
                         <CustomTabPanel value={value} index={0}>
                             <DataManager_Employees />
                         </CustomTabPanel>
-                         <CustomTabPanel value={value} index={1}>
-                            <Datamanager_DeletedEmployeePanel/>
+                        <CustomTabPanel value={value} index={1}>
+                            <Datamanager_DeletedEmployeePanel />
                         </CustomTabPanel>
                     </div>
                 </div>
             </div>
-         
+
 
         </div>
     );
