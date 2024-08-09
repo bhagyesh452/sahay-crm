@@ -10,15 +10,11 @@ import Avatar from '@mui/material/Avatar';
 import RmCertificationBell from "./RmCertificationBell";
 import RMCertificationNotification from "./RMCertificationNotification";
 import io from 'socket.io-client';
+import MaleEmployee from "../../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 
-function RmofCertificationHeader({ name, designation }) {
-
-
-
-
-
-
-
+function RmofCertificationHeader({ name, id, designation, empProfile, gender }) {
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   return (
     <div>
@@ -48,7 +44,12 @@ function RmofCertificationHeader({ name, designation }) {
           </h1>
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
             <RmCertificationBell name={name} />
-            <Avatar sx={{ width: 32, height: 32 }} />
+            {empProfile ? <Avatar src={`${secretKey}/employee/fetchProfilePhoto/${id}/${encodeURIComponent(empProfile)}`}
+              className="My-Avtar" sx={{ width: 36, height: 36 }} />
+              : <Avatar
+                src={gender === "Male" ? MaleEmployee : FemaleEmployee}
+                className="My-Avtar" sx={{ width: 36, height: 36 }} />
+            }
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"

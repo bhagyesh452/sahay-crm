@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from "react-router-dom";
 import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHeader";
 import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
 import { SlActionRedo } from "react-icons/sl";
@@ -865,10 +866,9 @@ function Received_booking_box() {
         setOpenBacdrop(false)
     }
 
-   
     return (
         <div>
-            <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
+            <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
             {(!openAllBooking && !openTrashBoxPanel) && (
                 <div className="booking-list-main">
@@ -914,13 +914,13 @@ function Received_booking_box() {
                                     <button className='btn btn-primary mr-1'
                                         onClick={() => setOpenTrashBoxPanel(true)}
                                     >
-                                        <TiTrash 
-                                        style={{
-                                            height: "20px",
-                                            width: "20px",
-                                            marginRight: "5px",
-                                            marginLeft: "-4px"
-                                        }} />
+                                        <TiTrash
+                                            style={{
+                                                height: "20px",
+                                                width: "20px",
+                                                marginRight: "5px",
+                                                marginLeft: "-4px"
+                                            }} />
                                         Trash
                                     </button>
                                     <button className='btn btn-primary'
@@ -3303,9 +3303,9 @@ function Received_booking_box() {
                 />
             )}
             {openTrashBoxPanel && (
-                <RmofCertificationTrashBoxPanel 
-                setOpenTrashBox={setOpenTrashBoxPanel}
-                completeData={completeRedesignedData}/>
+                <RmofCertificationTrashBoxPanel
+                    setOpenTrashBox={setOpenTrashBoxPanel}
+                    completeData={completeRedesignedData} />
             )}
         </div>
     )
