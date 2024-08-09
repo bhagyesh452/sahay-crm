@@ -147,7 +147,7 @@ function BdmLeads() {
   const [daysInMonth, setDaysInMonth] = useState([]);
 
   useEffect(() => {
-    document.title = `BDM-Sahay-CRM`;
+    document.title = `Floor-Manager-Sahay-CRM`;
   }, []);
 
   useEffect(() => {
