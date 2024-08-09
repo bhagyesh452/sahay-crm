@@ -104,32 +104,32 @@ const StatusDropdown = ({ mainStatus,
             });
           }
         } else if (newStatus === "Defaulter") {
-            movedFromMainCategoryStatus = "Process";
-            movedToMainCategoryStatus = "Defaulter";
-            response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-              companyName,
-              serviceName,
-              subCategoryStatus: newStatus,
-              mainCategoryStatus: "Defaulter",
-              previousMainCategoryStatus: "Process",
-              previousSubCategoryStatus: newStatus,
-              movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-              movedToMainCategoryStatus: movedToMainCategoryStatus,
-            });
+          movedFromMainCategoryStatus = "Process";
+          movedToMainCategoryStatus = "Defaulter";
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Defaulter",
+            previousMainCategoryStatus: "Process",
+            previousSubCategoryStatus: newStatus,
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus,
+          });
 
         } else if (newStatus === "Hold") {
-            movedFromMainCategoryStatus = "Process";
-            movedToMainCategoryStatus = "Hold";
-            response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-              companyName,
-              serviceName,
-              subCategoryStatus: newStatus,
-              mainCategoryStatus: "Hold",
-              previousMainCategoryStatus: "Process",
-              previousSubCategoryStatus: newStatus,
-              movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-              movedToMainCategoryStatus: movedToMainCategoryStatus,
-            });
+          movedFromMainCategoryStatus = "Process";
+          movedToMainCategoryStatus = "Hold";
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold",
+            previousMainCategoryStatus: "Process",
+            previousSubCategoryStatus: newStatus,
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus,
+          });
         } else if (newStatus === "Undo") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
@@ -139,38 +139,39 @@ const StatusDropdown = ({ mainStatus,
             //mainCategoryStatus: "Defaulter",
           });
         } else if (newStatus === "Ready To Submit") {
-          if (serviceName === "Start-Up India Certificate" && !industry && !sector) {
+          const conditions = {
+            industryAndSector: serviceName === "Start-Up India Certificate" && !industry && !sector,
+            contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
+            brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved")
+          };
+          const messages = [];
+
+          // Check each condition and add appropriate messages
+          if (conditions.industryAndSector) {
+            messages.push("Please select industry and sector!");
+          }
+
+          if (conditions.contentStatus) {
+            messages.push("Content status must be Completed or Approved");
+          }
+
+          if (conditions.brochureStatus) {
+            messages.push("Brochure status must be Completed or Approved");
+          }
+          if (messages.length > 0) {
+            const title = "Error";
+            const text = messages.join(" <br> ");
             Swal.fire({
-              title: "Error",
-              text: "Please select industry and sector first",
+              title: title,
+              html: text,
               icon: "warning",
               button: "OK",
+            }).then(() => {
+              // Reset status and class only if conditions are met
+              setStatus(subStatus);
+              setStatusClass(statusClass);
+              setNewSubStatus(subStatus);
             });
-            setStatus("Process");
-            setStatusClass(statusClass);
-            setNewSubStatus("Process");
-          } else if (writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved")) {
-            Swal.fire({
-              title: "Error",
-              text: "Content status must be Completed or Approved",
-              icon: "warning",
-              button: "OK",
-            });
-            setStatus("Process");
-            setStatusClass(statusClass);
-            setNewSubStatus("Process");
-            return;
-          } else if (designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved")) {
-            Swal.fire({
-              title: "Error",
-              text: "Brochure status must be Completed or Approved",
-              icon: "warning",
-              button: "OK",
-            });
-            setStatus("Process");
-            setStatusClass(statusClass);
-            setNewSubStatus("Process");
-            return;
           } else {
             movedFromMainCategoryStatus = "Process";
             movedToMainCategoryStatus = "Ready To Submit";
@@ -193,7 +194,7 @@ const StatusDropdown = ({ mainStatus,
             mainCategoryStatus: "Process"
           });
         }
-      } 
+      }
       else if (mainStatus === "Ready To Submit") {
         if (newStatus === "Submitted") {
           movedFromMainCategoryStatus = "Ready To Submit";
@@ -258,7 +259,7 @@ const StatusDropdown = ({ mainStatus,
             mainCategoryStatus: "Ready To Submit"
           });
         }
-      } 
+      }
       else if (mainStatus === "Submitted") {
         if (newStatus === "Approved") {
           movedFromMainCategoryStatus = "Submitted";

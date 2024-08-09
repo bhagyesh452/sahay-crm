@@ -217,8 +217,8 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
                     return (isDateValid && obj.isVisibleToRmOfCerification === false && obj.permanentlDeleteFromRmCert !== true);
                 })
                 .sort((a, b) => {
-                    const dateA = new Date(a.lastActionDate);
-                    const dateB = new Date(b.lastActionDate);
+                    const dateA = new Date(a.displayOfDateForRmCert);
+                    const dateB = new Date(b.displayOfDateForRmCert);
                     return dateB - dateA; // Sort in descending order
                 });
 

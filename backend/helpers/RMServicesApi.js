@@ -1262,7 +1262,7 @@ router.post("/postmethodtoremovelcompaniesfromtrashboxpemanently", async (req, r
   const{ permanentlDeleteDateFromRmCert } = req.body;
  const socketIO = req.io;
 
- console.log("deletedata" , permanentlDeleteDateFromRmCert)
+ //console.log("deletedata" , permanentlDeleteDateFromRmCert)
 
 
   try {
