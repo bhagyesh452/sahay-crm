@@ -13,7 +13,7 @@ function RmCertificationDashboard() {
   useEffect(() => {
     document.title = `RMOFCERT-Sahay-CRM`;
   }, []);
-  
+
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   console.log(rmCertificationUserId)
 
@@ -36,15 +36,12 @@ function RmCertificationDashboard() {
     fetchData();
   }, []);
 
-
-  console.log('employeeData', employeeData)
-
-
+  // console.log('employeeData', employeeData);
 
   return (
     <div>
-      <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
-      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId}/>
+      <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
+      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
     </div>
   )
 }

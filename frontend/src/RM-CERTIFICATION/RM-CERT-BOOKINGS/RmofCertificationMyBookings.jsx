@@ -164,7 +164,7 @@ function RmofCertificationMyBookings() {
 
     return (
         <div>
-            <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
+            <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
            
             {!openCompanyTaskComponent &&
