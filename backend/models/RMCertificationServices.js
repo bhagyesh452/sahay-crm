@@ -157,6 +157,10 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   withDSC: {
     type: Boolean
   },
+  paymentTerms: {
+    type: String,
+    required: true,
+  },
   firstPayment: {
     type: Number,
   },

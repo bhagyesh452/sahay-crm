@@ -66,7 +66,6 @@ export default function AddLeadForm({
   isBDM,
 }) {
   const [totalServices, setTotalServices] = useState(1);
-
   const [fetchedService, setfetchedService] = useState(false);
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -193,7 +192,7 @@ export default function AddLeadForm({
           console.log("bookings", booking)
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
-            console.log("isotypeobject" , service.isoTypeObject)
+            console.log("isotypeobject", service.isoTypeObject)
             setIsoType(service.isoTypeObject);
             console.log(service.secondPaymentRemarks, "TEST")
             if (!isNaN(new Date(service.secondPaymentRemarks))) {
@@ -619,16 +618,41 @@ export default function AddLeadForm({
       console.log("Fetch After changing Services", leadData);
     }
   }, [totalServices, defaultService]);
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const newServices = Array.from({ length: totalServices }, () => ({
-  //       ...defaultService,
-  //     }));
-  //     setLeadData((prevState) => ({ ...prevState, services: newServices }));
-  //     fetchData();
-  //     console.log("Fetch After 1 second" , leadData)
-  //   }, 1000);
-  // }, []);
+
+  const servicesForFunding = [
+    "Pitch Deck Development ",
+    "Financial Modeling",
+    "DPR Development",
+    "CMA Report Development",
+    "Company Profile Write-Up",
+    "Business Profile",
+    "Seed Funding Support",
+    "Seed Fund Application",
+    "Angel Funding Support",
+    "VC Funding Support",
+    "Crowd Funding Support",
+    "I-Create",
+    "I-Create Application",
+    "Chunauti",
+    "Nidhi Seed Support Scheme",
+    "Nidhi Prayash Yojna",
+    "NAIF",
+    "Raftaar",
+    "CSR Funding",
+    "Stand-Up India",
+    "PMEGP",
+    "USAID",
+    "UP Grant",
+    "DBS Grant",
+    "DBS Grant Application",
+    "MSME Innovation",
+    "MSME Hackathon",
+    "Gujarat Grant",
+    "CGTMSC",
+    "Mudra Loan",
+    "SIDBI Loan",
+    "Incubation Support"
+  ];
 
   const totalSteps = () => {
     return steps.length;
@@ -848,56 +872,56 @@ export default function AddLeadForm({
               : acc + curr.firstPayment;
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
-          
-          
+
+
           const servicestoSend = leadData.services.map((service, index) => {
             // Find the corresponding isoType object for the current index
             const iso = isoType.find(obj => obj.serviceID === index);
-        
+
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
-                if (
-                    iso.type === "" ||
-                    (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
-                    (iso.type === "Non IAF" && iso.Nontype === "")
-                ) {
-                    updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
-                } else {
-                    updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
-                }
+              if (
+                iso.type === "" ||
+                (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
+                (iso.type === "Non IAF" && iso.Nontype === "")
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+              }
             }
-        
+
             // Update the payment remarks based on specific conditions
             const secondRemark = service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
-                : service.secondPaymentRemarks;
-        
+              ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
+              : service.secondPaymentRemarks;
+
             const thirdRemark = service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
-                : service.thirdPaymentRemarks;
-        
+              ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
+              : service.thirdPaymentRemarks;
+
             const fourthRemark = service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
-                : service.fourthPaymentRemarks;
-        
+              ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
+              : service.fourthPaymentRemarks;
+
             // Return the updated service object
             return {
-                ...service,
-                serviceName: updatedServiceName,
-                secondPaymentRemarks: secondRemark,
-                thirdPaymentRemarks: thirdRemark,
-                fourthPaymentRemarks: fourthRemark,
-                isoTypeObject: isoType
+              ...service,
+              serviceName: updatedServiceName,
+              secondPaymentRemarks: secondRemark,
+              thirdPaymentRemarks: thirdRemark,
+              fourthPaymentRemarks: fourthRemark,
+              isoTypeObject: isoType
             };
-        });
-        
-        // Check if any service has an "Invalid" serviceName
-        if (servicestoSend.some(obj => obj.serviceName === "Invalid")) {
+          });
+
+          // Check if any service has an "Invalid" serviceName
+          if (servicestoSend.some(obj => obj.serviceName === "Invalid")) {
             Swal.fire("Select Complete ISO Service Fields!");
             return true; // Assuming this is inside a function and you want to exit early
-        }
-        
+          }
+
 
           const generatedTotalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
@@ -1274,21 +1298,21 @@ export default function AddLeadForm({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select 
-                className="form-select mt-1 ml-1" style={{ width: '120px' }} 
-                value={isoType.find(obj => obj.serviceID === i)?.type || ''}
-                onChange={(e) => {
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
-                  if (currentObject) {
-                    const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                    const newCurrentObject = {
-                      ...currentObject,
-                      type: e.target.value
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select
+                  className="form-select mt-1 ml-1" style={{ width: '120px' }}
+                  value={isoType.find(obj => obj.serviceID === i)?.type || ''}
+                  onChange={(e) => {
+                    const currentObject = isoType.find(obj => obj.serviceID === i);
+                    if (currentObject) {
+                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                      const newCurrentObject = {
+                        ...currentObject,
+                        type: e.target.value
+                      }
+                      remainingObject.push(newCurrentObject);
+                      setIsoType(remainingObject);
                     }
-                    remainingObject.push(newCurrentObject);
-                    setIsoType(remainingObject);
-                  }
-                }}
+                  }}
                 >
                   <option value="">Select ISO Body </option>
                   <option value="IAF">IAF</option>
@@ -1296,67 +1320,67 @@ export default function AddLeadForm({
                 </select>
                   {/* IAF ISO LIST */}
                   {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <>
-                  <select 
-                  value={isoType.find(obj => obj.serviceID === i)?.IAFtype1 || ''} 
-                  className="form-select mt-1 ml-1" 
-                  onChange={(e) => {
-                    const currentObject = isoType.find(obj => obj.serviceID === i);
+                    <select
+                      value={isoType.find(obj => obj.serviceID === i)?.IAFtype1 || ''}
+                      className="form-select mt-1 ml-1"
+                      onChange={(e) => {
+                        const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                    if (currentObject) {
-                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                      const newCurrentObject = {
-                        ...currentObject,
-                        IAFtype1: e.target.value
-                      }
-                      remainingObject.push(newCurrentObject);
-                      setIsoType(remainingObject);
-                    }
-                  }}>
-                    <option value="" selected disabled>Select ISO Type</option>
-                    <option value="9001">9001</option>
-                    <option value="14001">14001</option>
-                    <option value="45001">45001</option>
-                    <option value="22000">22000</option>
-                    <option value="27001">27001</option>
-                    <option value="13485">13485</option>
-                    <option value="20000-1">20000-1</option>
-                    <option value="50001">50001</option>
-                  </select>
-                    {/* IAF ISO TYPES */}
-                    <select className="form-select mt-1 ml-1" 
-                    value={isoType.find(obj => obj.serviceID === i)?.IAFtype2 || ''} 
-                    onChange={(e) => {
-                      const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                      if (currentObject) {
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject = {
-                          ...currentObject,
-                          IAFtype2: e.target.value
+                        if (currentObject) {
+                          const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                          const newCurrentObject = {
+                            ...currentObject,
+                            IAFtype1: e.target.value
+                          }
+                          remainingObject.push(newCurrentObject);
+                          setIsoType(remainingObject);
                         }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                      }
-                    }}>
+                      }}>
+                      <option value="" selected disabled>Select ISO Type</option>
+                      <option value="9001">9001</option>
+                      <option value="14001">14001</option>
+                      <option value="45001">45001</option>
+                      <option value="22000">22000</option>
+                      <option value="27001">27001</option>
+                      <option value="13485">13485</option>
+                      <option value="20000-1">20000-1</option>
+                      <option value="50001">50001</option>
+                    </select>
+                    {/* IAF ISO TYPES */}
+                    <select className="form-select mt-1 ml-1"
+                      value={isoType.find(obj => obj.serviceID === i)?.IAFtype2 || ''}
+                      onChange={(e) => {
+                        const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                        if (currentObject) {
+                          const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                          const newCurrentObject = {
+                            ...currentObject,
+                            IAFtype2: e.target.value
+                          }
+                          remainingObject.push(newCurrentObject);
+                          setIsoType(remainingObject);
+                        }
+                      }}>
                       <option value="" selected disabled>Select ISO VALIDITY</option>
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
                       <option value="3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  <select className="form-select mt-1 ml-1" 
-                    value={isoType.find(obj => obj.serviceID === i)?.Nontype || " "} 
-                    onChange={(e) => {
-                      const currentObject = isoType.find(obj => obj.serviceID === i);
+                    </select></> : <>  <select className="form-select mt-1 ml-1"
+                      value={isoType.find(obj => obj.serviceID === i)?.Nontype || " "}
+                      onChange={(e) => {
+                        const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                      if (currentObject) {
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject = {
-                          ...currentObject,
-                          Nontype: e.target.value
+                        if (currentObject) {
+                          const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                          const newCurrentObject = {
+                            ...currentObject,
+                            Nontype: e.target.value
+                          }
+                          remainingObject.push(newCurrentObject);
+                          setIsoType(remainingObject);
                         }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                      }
-                    }}>
+                      }}>
                       <option value="" selected disabled>Select ISO Type</option>
                       <option value="9001">9001</option>
                       <option value="14001">14001</option>
@@ -1751,9 +1775,30 @@ export default function AddLeadForm({
                               <option value="AFTER CERTIFICATE">
                                 AFTER CERTIFICATE
                               </option>
-                              <option value="AFTER APPROVAL">
+                              {/* <option 
+                              value="AFTER APPROVAL"
+                              disabled={servicesForFunding.some(
+                                (s) => s === leadData.services[i].serviceName
+                              )}
+                              >
                                 AFTER APPROVAL
-                              </option>
+                              </option> */}
+                              {["Income Tax Exemption", "Income Tax Exemption Application"].includes(
+                                leadData.services[i].serviceName
+                              ) ? (
+                                <option value="SUCCESSFULLY SUBMIT">
+                                  SUCCESSFULLY SUBMIT
+                                </option>
+                              ) : (
+                                <option
+                                  value="AFTER APPROVAL"
+                                  disabled={servicesForFunding.some(
+                                    (s) => s === leadData.services[i].serviceName
+                                  )}
+                                >
+                                  AFTER APPROVAL
+                                </option>
+                              )}
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
@@ -1868,9 +1913,22 @@ export default function AddLeadForm({
                               <option value="AFTER CERTIFICATE">
                                 AFTER CERTIFICATE
                               </option>
-                              <option value="AFTER APPROVAL">
-                                AFTER APPROVAL
-                              </option>
+                              {["Income Tax Exemption", "Income Tax Exemption Application"].includes(
+                                leadData.services[i].serviceName
+                              ) ? (
+                                <option value="SUCCESSFULLY SUBMIT">
+                                  SUCCESSFULLY SUBMIT
+                                </option>
+                              ) : (
+                                <option
+                                  value="AFTER APPROVAL"
+                                  disabled={servicesForFunding.some(
+                                    (s) => s === leadData.services[i].serviceName
+                                  )}
+                                >
+                                  AFTER APPROVAL
+                                </option>
+                              )}
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
@@ -1977,9 +2035,22 @@ export default function AddLeadForm({
                               <option value="AFTER CERTIFICATE">
                                 AFTER CERTIFICATE
                               </option>
-                              <option value="AFTER APPROVAL">
-                                AFTER APPROVAL
-                              </option>
+                              {["Income Tax Exemption", "Income Tax Exemption Application"].includes(
+                                leadData.services[i].serviceName
+                              ) ? (
+                                <option value="SUCCESSFULLY SUBMIT">
+                                  SUCCESSFULLY SUBMIT
+                                </option>
+                              ) : (
+                                <option
+                                  value="AFTER APPROVAL"
+                                  disabled={servicesForFunding.some(
+                                    (s) => s === leadData.services[i].serviceName
+                                  )}
+                                >
+                                  AFTER APPROVAL
+                                </option>
+                              )}
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>
