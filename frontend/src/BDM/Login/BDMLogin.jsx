@@ -88,7 +88,7 @@ export default function BDMLogin({ setBdmToken }) {
             localStorage.setItem("bdmName" , ename)
             localStorage.setItem("bdmToken" , bdmToken)
             localStorage.setItem("bdmUserId" , userId)
-            window.location.replace(`/bdmdashboard/${userId}`)  
+            window.location.replace(`/floormanager/dashboard/${userId}`)  
         }catch(error){
             console.error("Login Failed" , error);
             if(error.response.status === 401){
@@ -126,7 +126,7 @@ export default function BDMLogin({ setBdmToken }) {
                             <div className="col-sm-6 p-0">
                                 <div className="card card-md login-box">
                                     <div className="card-body">
-                                        <h2 className="h2 text-center mb-4">Sales Manager Login</h2>
+                                        <h2 className="h2 text-center mb-4">Floor Manager Login</h2>
                                         <form action="#" method="get" autocomplete="off" novalidate>
                                             <div className="mb-3">
                                                 <label className="form-label">Username</label>

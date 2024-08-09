@@ -132,11 +132,11 @@ function App() {
           {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
 
 
-          <Route path="/bdmlogin" element={<BDMLogin setBdmToken={setBdmToken} />} />
-          <Route path="/bdmdashboard/:userId/" element={<BdmDashboard />}></Route>
-          <Route path="/bdm/bdmleads/:userId/" element={<BdmLeads />}></Route>
-          <Route path="/bdm/bdmteamleads/:userId/" element={<BdmTeamLeads />}></Route>
-          <Route path="/bdm/bdmBookings/:userId/" element={<BdmBookings />}></Route>
+          <Route path="/floormanager/login" element={<BDMLogin setBdmToken={setBdmToken} />} />
+          <Route path="/floormanager/dashboard/:userId/" element={<BdmDashboard />}></Route>
+          <Route path="/floormanager/leads/:userId/" element={<BdmLeads />}></Route>
+          <Route path="/floormanager/teamleads/:userId/" element={<BdmTeamLeads />}></Route>
+          <Route path="/floormanager/bookings/:userId/" element={<BdmBookings />}></Route>
 
 
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}

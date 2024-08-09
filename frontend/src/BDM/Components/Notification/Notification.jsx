@@ -33,7 +33,7 @@ export default function Notification() {
     const handleLogout = () => {
         const currentPage = window.location.pathname;
         localStorage.removeItem("bdmToken");
-        window.location.href = '/bdmlogin';
+        window.location.href = '/floormanager/login';
     }
 
 
