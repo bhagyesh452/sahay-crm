@@ -83,7 +83,7 @@ function BdmTeamLeads() {
   const [employeeName, setEmployeeName] = useState("");
 
   useEffect(() => {
-    document.title = `BDM-Sahay-CRM`;
+    document.title = `Floor-Manager-Sahay-CRM`;
   }, []);
 
   // States for filtered and searching data :

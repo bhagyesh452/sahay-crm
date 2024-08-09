@@ -30,7 +30,7 @@ export default function BDMLogin({ setBdmToken }) {
 
 
     useEffect(() => {
-        document.title = `BDM-Sahay-CRM`;
+        document.title = `Floor-Manager-Sahay-CRM`;
       }, []);
     
 
