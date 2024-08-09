@@ -303,7 +303,7 @@ function Header({ name, id, designation, empProfile, gender }) {
                 src={gender === "Male" ? MaleEmployee : FemaleEmployee}
                 className="My-Avtar" sx={{ width: 36, height: 36 }} />
             }
-            
+
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
@@ -320,7 +320,6 @@ function Header({ name, id, designation, empProfile, gender }) {
                       designation === "Business Development Manager" ? "BDM" :
                         designation}
                   </div>
-
                 </div>
               </button>
             </div>

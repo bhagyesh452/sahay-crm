@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import '../../../dist/css/tabler.min.css?1684106062';
 import "../../../dist/css/tabler-flags.min.css?1684106062";
 import "../../../dist/css/tabler-payments.min.css?1684106062";
@@ -10,19 +10,16 @@ import Notification from "../../Components/Notification/Notification.jsx";
 import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
+function Header({ name, id, designation, empProfile, gender }) {
+  const secretKey = process.env.React_APP_SECRET_KEY;
+ 
+  console.log("Employee name is :", name);
+  console.log("Employee id is :", id);
+  console.log("Employee gender is :", gender);
+  console.log("Designation is :", designation);
+  console.log("Employee profile :", empProfile);
 
-function Header({name, id, designation, empProfile, gender}){
-    // const name = localStorage.getItem("bdmName")
-     const secretKey = process.env.React_APP_SECRET_KEY;
-     //console.log(bdmName)
-    
-    console.log("Employee name is :", name);
-    console.log("Employee id is :", id);
-    console.log("Employee gender is :", gender);
-    console.log("Designation is :", designation);
-    console.log("Employee profile :", empProfile);
-
-    return(
+  return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
         <div className="container-xl">
@@ -64,7 +61,7 @@ function Header({name, id, designation, empProfile, gender}){
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu">
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" }}>{name ? name : "Name"}</div>
+                  <div style={{ textTransform: "capitalize", textAlign: "left" }}>{name ? name : "Name"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     {designation}
                   </div>
@@ -90,7 +87,7 @@ function Header({name, id, designation, empProfile, gender}){
                 </a>
               </div>
             </div>
-            <Notification/>
+            <Notification />
             <div
               style={{ display: "flex", alignItems: "center" }}
               className="item">
@@ -99,10 +96,10 @@ function Header({name, id, designation, empProfile, gender}){
         </div>
       </header>
     </div>
-    )
+  )
 
 
-    
+
 
 }
 

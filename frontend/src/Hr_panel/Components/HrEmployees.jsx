@@ -282,6 +282,7 @@ function HrEmployees() {
       <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
       <Navbar />
       <div className="page-wrapper">
+        
         <div className="page-header rm_Filter m-0">
           <div className="container-xl">
             <div className="d-flex  justify-content-between">
@@ -315,6 +316,7 @@ function HrEmployees() {
             </div>
           </div>
         </div>
+        
         <div className="page-body rm_Dtl_box m-0">
           <div className="container-xl mt-2">
             <div className="my-tab card-header">
@@ -357,6 +359,7 @@ function HrEmployees() {
                 </li>
               </ul>
             </div>
+            
             <div class="tab-content card-body">
               <div class="tab-pane active" id="Employees">
                 <div className="RM-my-booking-lists">
