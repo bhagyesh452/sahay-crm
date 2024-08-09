@@ -117,6 +117,10 @@ function Received_booking_box() {
             fetchRedesignedFormData()
         });
 
+        socket.on("rm-cert-company-taken-back-from-trashbox", (res) => {
+            fetchRedesignedFormData()
+        });
+
 
         return () => {
             socket.disconnect();
@@ -161,7 +165,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-08");
+        const today = new Date("2024-05-08");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
@@ -795,7 +799,9 @@ function Received_booking_box() {
         if (shouldDisableButton) {
             // Directly run the response if shouldDisableButton is true
             try {
-                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}` ,{
+                    displayOfDateForRmCert:new Date()
+                });
                 // Handle the response
                 if (response.status === 200) {
                     fetchRedesignedFormData();
@@ -825,7 +831,11 @@ function Received_booking_box() {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}` ,{
+                            
+                                displayOfDateForRmCert:new Date()
+                            
+                        });
                         // Handle the response
                         if (response.status === 200) {
                             fetchRedesignedFormData();

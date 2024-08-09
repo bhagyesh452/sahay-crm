@@ -13,6 +13,7 @@ import PdfImageViewerAdmin from "../../admin/PdfViewerAdmin.jsx";
 import pdfimg from "../../static/my-images/pdf.png";
 import Swal from "sweetalert2";
 import { IoAdd } from "react-icons/io5";
+import { CiUndo } from "react-icons/ci";
 //import RmofCertificationAllBookings from '../RM-CERT-BOOKINGS/RmofCertificationAllBookings.jsx';
 import {
     Button,
@@ -162,7 +163,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-08");
+        const today = new Date("2024-06-01");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
@@ -783,42 +784,12 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
     //     });
     // };
 
-    const handleDisplayOffToRm = async (companyName, company) => {
+    const handleDisplayOnToRm = async (companyName, company) => {
         console.log("company", company);
-
-        const shouldDisableButton = ![
-            ...company.services,
-            ...(company.moreBookings || []).flatMap(booking => booking.services)
-        ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-
-        console.log("shoulddisablebutton", shouldDisableButton);
-
-        if (shouldDisableButton) {
-            // Directly run the response if shouldDisableButton is true
-            try {
-                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
-                // Handle the response
-                if (response.status === 200) {
-                    fetchRedesignedFormData();
-                    Swal.fire(
-                        'Removed!',
-                        'The company has been removed from RM panel.',
-                        'success'
-                    );
-                }
-            } catch (error) {
-                console.log("Internal Server Error", error.message);
-                Swal.fire(
-                    'Error!',
-                    'There was an error removing the company from RM panel.',
-                    'error'
-                );
-            }
-        } else {
             // Show the Swal confirmation dialog if shouldDisableButton is false
             Swal.fire({
                 title: 'Are you sure?',
-                text: `Do you want to remove ${companyName} from RM panel?`,
+                text: `Do you want to revoke ${companyName} from RM panel?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, remove it!',
@@ -826,7 +797,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
+                        const response = await axios.post(`${secretKey}/rm-services/postmethodtogetbackfromtrashbox/${companyName}`);
                         // Handle the response
                         if (response.status === 200) {
                             fetchRedesignedFormData();
@@ -846,7 +817,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
                     }
                 }
             });
-        }
+        
     };
 
 
@@ -956,7 +927,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
                                                         </div>
                                                     </div>
                                                     <div className='d-flex'>
-                                                        {(() => {
+                                                        {/* {(() => {
                                                             const shouldDisableButton = ![
                                                                 ...obj.services,
                                                                 ...(obj.moreBookings || []).flatMap(booking => booking.services)
@@ -989,21 +960,19 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
                                                                     )}
                                                                 </>
                                                             );
-                                                        })()}
-
-
+                                                        })()} */}
                                                         <button
                                                             className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
                                                             onClick={() => {
-                                                                handleDisplayOffToRm(
+                                                                handleDisplayOnToRm(
                                                                     obj["Company Name"],
-                                                                    obj
+                                                                    obj.serviceName
                                                                 )
                                                             }}
                                                         >
                                                             <div className='btn-swap-icon'>
-                                                                {/* <SlActionRedo /> */}
-                                                                <GrClose />
+                                                              
+                                                                <CiUndo />
                                                             </div>
                                                         </button>
                                                     </div>
