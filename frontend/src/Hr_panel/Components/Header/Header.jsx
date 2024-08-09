@@ -61,11 +61,10 @@ function Header({ name, id, designation, empProfile, gender }) {
                   <div style={{ textTransform: "capitalize" , textAlign:"left"}}>
                     {name ? name : name}
                   </div>
-                  <div
-                    style={{ textAlign: "left" }}
-                    className="mt-1 small text-muted"
-                  >
-                    {designation}
+                  <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
+                    {designation === "Business Development Executive" ? "BDE" :
+                      designation === "Business Development Manager" ? "BDM" :
+                        designation}
                   </div>
                 </div>
                 {/* <AiOutlineLogout style={{ width: "25px", height: "25px", marginLeft: "5px" }} onClick={() => handleLogout()} /> */}

@@ -187,7 +187,7 @@ th {
   transform-origin: center center;
   text-indent: 10000px;
   background: #ccc;
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .rupees-sym {
@@ -2444,8 +2444,8 @@ td input {
   border-style: solid;
   border-color: rgb(218, 223, 229);
   border-image: initial;
-  border-radius: 0 0 10px 10px;
-  overflow-y: scroll;
+  border-radius: 10px;
+  overflow-y: auto;
 }
 .table-style-2 table thead tr 
 {
@@ -2454,10 +2454,10 @@ td input {
 }
 .table-style-2 table thead tr th
 {
-  background: #dadfe5 !important;
-  color: #000;
+  background: #43474c !important;
+  color: #e4e4e4;
   border: none !important;
-  padding: 10px 0px !important;
+  padding: 6px 8px 6px 8px !important;
 }
 .table-style-2 table thead tr td
 {
@@ -2478,7 +2478,10 @@ td input {
 .table-style-2 table tbody tr td
 {
   border: none !important;
-  padding: 10px 2px 10px 2px !important;
+  padding: 6px 8px 6px 8px !important;
+  transition: .5s;
+  border-top: 1px solid #eee !important;
+  border-bottom: 1px solid #eee !important;
 }
 .table-style-2 table tfoot tr td
 {
@@ -3884,7 +3887,7 @@ border: 1px solid #ffefc6 !important;
 }
 
 .badge-under-probation {
-  background-color: #ff0707;
+  background-color: #ffc507;
 }
 
 .badge-completed {
