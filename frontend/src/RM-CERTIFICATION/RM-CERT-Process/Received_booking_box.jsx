@@ -171,7 +171,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-09");
+        const today = new Date("2024-05-09");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
