@@ -119,6 +119,11 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
             fetchRedesignedFormData()
         });
 
+        socket.on("rm-cert-completely-emtpy", (res) => {
+            fetchRedesignedFormData()
+        });
+
+
 
         return () => {
             socket.disconnect();
@@ -209,7 +214,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
 
                     // Check if the display date is within the last two months of the current year
                     const isDateValid = isWithinCurrentYear && displayDate >= twoMonthsAgo && displayDate <= today;
-                    return isDateValid && (obj.isVisibleToRmOfCerification === false);
+                    return (isDateValid && obj.isVisibleToRmOfCerification === false && obj.permanentlDeleteFromRmCert !== true);
                 })
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
@@ -297,7 +302,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
         }
     };
 
-    console.log("leadformdata", leadFormData)
+    // console.log("leadformdata", leadFormData)
 
 
 
@@ -738,52 +743,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
     }
 
 
-    //----------function to remove company from rm panel-----------------------
-
-
-
-    // const handleDisplayOffToRm = async (companyName, company) => {
-    //     console.log("company", company)
-
-    //     const shouldDisableButton = ![
-    //         ...company.services,
-    //         ...(company.moreBookings || []).flatMap(booking => booking.services)
-    //     ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-
-    //     console.log("shoulddisablebutton" , shouldDisableButton)
-
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: `Do you want to remove ${companyName} from RM panel?`,
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonText: 'Yes, remove it!',
-    //         cancelButtonText: 'No, keep it'
-    //     }).then(async (result) => {
-    //         if (result.isConfirmed) {
-    //             try {
-    //                 const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
-    //                 //console.log(response.data);
-    //                 if (response.status === 200) {
-    //                     fetchRedesignedFormData();
-    //                     Swal.fire(
-    //                         'Removed!',
-    //                         'The company has been removed from RM panel.',
-    //                         'success'
-    //                     );
-    //                 }
-    //             } catch (error) {
-    //                 console.log("Internal Server Error", error.message);
-    //                 Swal.fire(
-    //                     'Error!',
-    //                     'There was an error removing the company from RM panel.',
-    //                     'error'
-    //                 );
-    //             }
-    //         }
-    //     });
-    // };
-
+    // --------------------fucntion to revoke compay form trashbox-------------------
     const handleDisplayOnToRm = async (companyName, company) => {
         console.log("company", company);
         // Show the Swal confirmation dialog if shouldDisableButton is false
@@ -820,22 +780,47 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
 
     };
 
-
-    //--------------function to disable click-------------------------
-    // const shouldDisableButton = ![
-    //     ...obj.services,
-    //     ...(obj.moreBookings || []).flatMap(booking => booking.services)
-    // ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-
-
-    //console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
-    //console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
-    // console.log("leadformdata", leadFormData)
-    // console.log("currentleadform", currentLeadform)
-
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
+
+    //------------------function to clear all from rm trashbox ------------------------
+
+    const handleClearAllFromRmCertTrashbox = () => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to remove all companies trashbox permanently?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'No, keep it'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovelcompaniesfromtrashboxpemanently/` ,{
+                        permanentlDeleteDateFromRmCert:new Date()
+                    });
+                    // Handle the response
+                    if (response.status === 200) {
+                        fetchRedesignedFormData();
+                        Swal.fire(
+                            'Removed!',
+                            'All companies permanently removed!',
+                            'success'
+                        );
+                    }
+                } catch (error) {
+                    console.log("Internal Server Error", error.message);
+                    Swal.fire(
+                        'Error!',
+                        'There was an error removing the company from RM panel.',
+                        'error'
+                    );
+                }
+            }
+        });
+    }
+
 
     return (
         <div>
@@ -880,7 +865,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
                             </div>
                             <div className="col-6 d-flex justify-content-end">
                                 <button className='btn btn-primary mr-1'
-                                //onClick={() => setOpenTrashBoxPanel(true)}
+                                    onClick={() => handleClearAllFromRmCertTrashbox()}
                                 >
                                     <TiTrash
                                         style={{

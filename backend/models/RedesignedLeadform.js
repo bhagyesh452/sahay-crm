@@ -348,7 +348,7 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type:Boolean
   },
   permanentlDeleteDateFromRmCert:{
-    type:Boolean
+    type:Date
   },
 
 
