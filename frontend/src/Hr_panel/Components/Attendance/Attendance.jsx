@@ -2,12 +2,22 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import Header from '../Header/Header';
 import Navbar from '../Navbar/Navbar';
+import Nodata from '../../../components/Nodata';
+import ClipLoader from "react-spinners/ClipLoader";
 import { IoFilterOutline } from "react-icons/io5";
+import { format } from 'date-fns';
+import EmpDfaullt from "../../../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
 function Attendance() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const userId = localStorage.getItem("hrUserId");
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [employee, setEmployee] = useState([]);
     const [myInfo, setMyInfo] = useState([]);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [monthDates, setMonthDates] = useState([]);
 
     const fetchPersonalInfo = async () => {
         try {
@@ -19,9 +29,45 @@ function Attendance() {
         }
     };
 
+    const fetchEmployee = async () => {
+        try {
+            setIsLoading(true);
+            const res = await axios.get(`${secretKey}/employee/einfo`);
+            setEmployee(res.data);
+            // console.log("Fetched Employees are:", employeeData);
+        } catch (error) {
+            console.log("Error fetching employees data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const generateDatesForMonth = (monthIndex) => {
+        const currentYear = new Date().getFullYear();
+        const date = new Date(currentYear, monthIndex, 0); // Last day of the selected month
+        const totalDays = date.getDate();
+        const dates = [];
+
+        for (let i = 1; i <= totalDays; i++) {
+            const currentDate = new Date(currentYear, monthIndex - 1, i);
+            const formattedDate = format(currentDate, "do MMM - EEEE");
+            dates.push(formattedDate);
+        }
+
+        setMonthDates(dates);
+    };
+
+    const handleMonthChange = (event) => {
+        const monthIndex = parseInt(event.target.value);
+        setSelectedMonth(monthIndex);
+        generateDatesForMonth(monthIndex);
+    };
+
     useEffect(() => {
+        fetchEmployee();
         fetchPersonalInfo();
-    }, []);
+        generateDatesForMonth(selectedMonth); // Generate dates for the current month by default
+    }, [selectedMonth]);
 
     return (
         <div>
@@ -33,8 +79,13 @@ function Attendance() {
                         <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center justify-content-between">
                                 <div className='form-group'>
-                                    <select className="form-select">
-                                        <option>Select Month</option>
+                                    <select className="form-select" value={selectedMonth} onChange={handleMonthChange}>
+                                        <option value="">Select Month</option>
+                                        {Array.from({ length: 12 }, (_, i) => (
+                                            <option key={i} value={i + 1}>
+                                                {format(new Date(2024, i), "MMMM")}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="btn-group ml-1" role="group" aria-label="Basic example">
@@ -52,11 +103,11 @@ function Attendance() {
                                     </svg>
                                 </span>
                                 <input
-                                className="form-control search-cantrol mybtn"
-                                placeholder="Search…"
-                                type="text"
-                                name="bdeName-search"
-                                id="bdeName-search" />
+                                    className="form-control search-cantrol mybtn"
+                                    placeholder="Search…"
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
                             </div>
                         </div>
                     </div>
@@ -71,28 +122,76 @@ function Attendance() {
                                         <th>Employee Name</th>
                                         <th>Branch</th>
                                         <th>Designation</th>
-                                        <th>1st Aug - Thursday</th>
-                                        <th>2nd Aug - Friday</th>
+                                        {monthDates.map((date, index) => (
+                                            <th key={index}>{date}</th>
+                                        ))}
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Nimesh Parekh</td>
-                                        <td>Gota</td>
-                                        <td>Head</td>
-                                        <td>p</td>
-                                        <td>p</td>
-                                    </tr>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Nimesh Parekh</td>
-                                        <td>Gota</td>
-                                        <td>Head</td>
-                                        <td>p</td>
-                                        <td>p</td>
-                                    </tr>
-                                </tbody>
+                                {isLoading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="11">
+                                                <div className="LoaderTDSatyle w-100">
+                                                    <ClipLoader
+                                                        color="lightgrey"
+                                                        loading={true}
+                                                        size={30}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                ) : (
+                                    <>
+                                        {employee.length !== 0 ? (
+                                            <tbody>
+                                                {employee.map((emp, index) => {
+                                                    const profilePhotoUrl = emp.profilePhoto?.length !== 0
+                                                        ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                                        : emp.gender === "Male" ? EmpDfaullt : FemaleEmployee;
+
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td>{index + 1}</td>
+                                                            <td>
+                                                                {(() => {
+                                                                    const names = (emp.ename || "").split(" ");
+                                                                    return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                                                })()}
+                                                            </td>
+                                                            <td>{emp.branchOffice || ""}</td>
+                                                            <td>
+                                                                {emp.newDesignation === "Business Development Executive" ? "BDE"
+                                                                    : emp.newDesignation === "Business Development Manager" ? "BDM"
+                                                                        : emp.newDesignation || ""}
+                                                            </td>
+                                                            {monthDates.map((_, index) => (
+                                                                <td key={index}>
+                                                                    <div>In : <input type="time" /></div>
+                                                                    <div>Out : <input type="time" /></div>
+                                                                </td>
+                                                            ))}
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        ) : (
+                                            <tbody>
+                                                <tr>
+                                                    <td
+                                                        className="particular"
+                                                        colSpan="11"
+                                                        style={{ textAlign: "center" }}
+                                                    >
+                                                        <Nodata />
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        )}
+                                    </>
+                                )}
                             </table>
                         </div>
                     </div>

@@ -320,7 +320,6 @@ function Header({ name, id, designation, empProfile, gender }) {
                       designation === "Business Development Manager" ? "BDM" :
                         designation}
                   </div>
-
                 </div>
               </button>
             </div>
