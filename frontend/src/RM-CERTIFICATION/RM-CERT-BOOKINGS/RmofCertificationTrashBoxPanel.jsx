@@ -1,4 +1,4 @@
-import React , {useState , useEffect , useCallback , useRef} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHeader";
 import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
@@ -163,8 +163,24 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-06-01");
-        today.setHours(0, 0, 0, 0); // Set to start of today
+        const today = new Date();
+        const currentYear = today.getFullYear();
+
+        // Calculate the start and end dates for the last two months within the current year
+        const twoMonthsAgo = new Date(today);
+        twoMonthsAgo.setMonth(today.getMonth() - 2);
+        twoMonthsAgo.setFullYear(currentYear); // Ensure it's the current year
+
+        // Set start and end of today
+        today.setHours(0, 0, 0, 0);
+        twoMonthsAgo.setHours(0, 0, 0, 0);
+
+        // Ensure the twoMonthsAgo date does not fall into the previous year
+        if (twoMonthsAgo.getFullYear() < currentYear) {
+            twoMonthsAgo.setFullYear(currentYear);
+            twoMonthsAgo.setMonth(0, 1); // Set to January 1st if it falls into the previous year
+        }
+
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -182,33 +198,17 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
                 .filter(obj => {
-                    //const lastActionDate = new Date(item.lastActionDate);
-                    const mainBookingDate = parseDate(obj.bookingDate);
-                    mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+                    const displayDate = parseDate(obj.displayOfDateForRmCert);
+                    displayDate.setHours(0, 0, 0, 0); // Normalize to start of the day
 
                     // Log the values for debugging
-                    console.log("Main Booking Date:", mainBookingDate, "Today:", today);
+                    console.log("Display Date:", displayDate, "Two Months Ago:", twoMonthsAgo, "Today:", today);
 
-                    // Check if any of the moreBookings dates are >= today
-                    const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
-                        const bookingDate = parseDate(booking.bookingDate);
-                        bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+                    // Ensure the display date is within the current year
+                    const isWithinCurrentYear = displayDate.getFullYear() === currentYear;
 
-                        // Log the booking date for debugging
-                        console.log("Company Name:", obj["Company Name"], "Booking Date:", bookingDate, "Today:", today);
-
-                        return bookingDate >= today;
-                    });
-
-                    // Log the condition results
-                    console.log("Company Name:", obj["Company Name"]);
-                    console.log("Main Booking Date Valid:", mainBookingDate >= today);
-                    console.log("Has Valid More Bookings Date:", hasValidMoreBookingsDate);
-
-                    // Check if the main booking date or any moreBookings date is >= today
-                    const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
-
-                    // Return true if date is valid and visible to RM
+                    // Check if the display date is within the last two months of the current year
+                    const isDateValid = isWithinCurrentYear && displayDate >= twoMonthsAgo && displayDate <= today;
                     return isDateValid && (obj.isVisibleToRmOfCerification === false);
                 })
                 .sort((a, b) => {
@@ -786,38 +786,38 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
 
     const handleDisplayOnToRm = async (companyName, company) => {
         console.log("company", company);
-            // Show the Swal confirmation dialog if shouldDisableButton is false
-            Swal.fire({
-                title: 'Are you sure?',
-                text: `Do you want to revoke ${companyName} from RM panel?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'No, keep it'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await axios.post(`${secretKey}/rm-services/postmethodtogetbackfromtrashbox/${companyName}`);
-                        // Handle the response
-                        if (response.status === 200) {
-                            fetchRedesignedFormData();
-                            Swal.fire(
-                                'Removed!',
-                                'The company has been removed from RM panel.',
-                                'success'
-                            );
-                        }
-                    } catch (error) {
-                        console.log("Internal Server Error", error.message);
+        // Show the Swal confirmation dialog if shouldDisableButton is false
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to revoke ${companyName} from RM panel?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'No, keep it'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.post(`${secretKey}/rm-services/postmethodtogetbackfromtrashbox/${companyName}`);
+                    // Handle the response
+                    if (response.status === 200) {
+                        fetchRedesignedFormData();
                         Swal.fire(
-                            'Error!',
-                            'There was an error removing the company from RM panel.',
-                            'error'
+                            'Removed!',
+                            'The company has been removed from RM panel.',
+                            'success'
                         );
                     }
+                } catch (error) {
+                    console.log("Internal Server Error", error.message);
+                    Swal.fire(
+                        'Error!',
+                        'There was an error removing the company from RM panel.',
+                        'error'
+                    );
                 }
-            });
-        
+            }
+        });
+
     };
 
 
@@ -879,6 +879,18 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
                                 </div>
                             </div>
                             <div className="col-6 d-flex justify-content-end">
+                                <button className='btn btn-primary mr-1'
+                                //onClick={() => setOpenTrashBoxPanel(true)}
+                                >
+                                    <TiTrash
+                                        style={{
+                                            height: "20px",
+                                            width: "20px",
+                                            marginRight: "5px",
+                                            marginLeft: "-4px"
+                                        }} />
+                                    Clear All
+                                </button>
                                 <button className='btn btn-primary' onClick={() => setOpenTrashBox(false)}>Recieved Box</button>
                             </div>
                         </div>
@@ -971,7 +983,7 @@ function RmofCertificationTrashBoxPanel({ setOpenTrashBox }) {
                                                             }}
                                                         >
                                                             <div className='btn-swap-icon'>
-                                                              
+
                                                                 <CiUndo />
                                                             </div>
                                                         </button>
