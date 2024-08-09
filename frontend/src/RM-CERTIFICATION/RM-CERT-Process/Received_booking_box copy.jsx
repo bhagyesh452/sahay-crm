@@ -132,7 +132,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-07-15");
+        const today = new Date("2024-08-09");
         today.setHours(0, 0, 0, 0); // Set to start of today
         setOpenBacdrop(true)
         try {
