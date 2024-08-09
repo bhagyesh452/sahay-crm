@@ -66,12 +66,14 @@ import RmCertificationDashboard from "./RM-CERTIFICATION/RM-CERT-DASHBOARD/RmCer
 import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx";
 import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingDashboard.jsx";
 import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
+// HR-Panel Imports
 import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
 import HorizontalNonLinearStepper from "./Hr_panel/Components/AddEmployees/AddEmployee.jsx";
 import HREditEmployee from "./Hr_panel/Components/EditEmployee/HREditEmployee.jsx";
+import Attendance from "./Hr_panel/Components/Attendance/Attendance.jsx";
 //import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
 import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
@@ -246,6 +248,7 @@ function App() {
           <Route path="/hr/employees" element={<HrEmployees />} />
           <Route path="/hr/add/employee" element={<HorizontalNonLinearStepper />} />
           <Route path="/hr/edit/employee/:empId" element={<HREditEmployee />} />
+          <Route path="/hr/employees/attendance" element={<Attendance />} />
           <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
         </Routes>
 

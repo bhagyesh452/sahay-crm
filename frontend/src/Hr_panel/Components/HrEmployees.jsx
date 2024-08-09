@@ -29,7 +29,6 @@ function HrEmployees() {
 
   const [employee, setEmployee] = useState([]);
   const [deletedEmployee, setDeletedEmployee] = useState([]);
-  const [profilePhoto, setProfilePhoto] = useState("");
   const [deletedData, setDeletedData] = useState([]);
   const [companyData, setCompanyData] = useState([]);
 
@@ -451,6 +450,7 @@ function HrEmployees() {
                   </div>
                 </div>
               </div>
+
               <div class="tab-pane" id="DeletedEmployees">
                 <div className="table table-responsive table-style-3 m-0">
                   <table className="table table-vcenter table-nowrap">
@@ -551,6 +551,7 @@ function HrEmployees() {
                   </table>
                 </div>
               </div>
+
               <div class="tab-pane" id="UpcommingEmployees">
                 <h1>Upcoming Employees</h1>
               </div>

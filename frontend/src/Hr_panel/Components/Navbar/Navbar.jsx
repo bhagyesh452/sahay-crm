@@ -7,6 +7,7 @@ import "../../../dist/css/demo.min.css?1684106062";
 import { Link, useLocation } from "react-router-dom";
 import { GrDocumentStore } from "react-icons/gr";
 import { BsFillPersonVcardFill } from "react-icons/bs";
+import { MdCoPresent } from "react-icons/md";
 import dashboardicon from '../../../dist/img/dashboardicon/dashboardico0n.jpg'
 import { BiBookContent } from "react-icons/bi";
 import { AiOutlineTeam } from "react-icons/ai";
@@ -92,6 +93,24 @@ function Navbar({userId}) {
                                             <BsFillPersonVcardFill style={{ width: "19px", height: "23px" }} />
                                             </span>
                                             <span className="nav-link-title">Employees</span>
+                                        </a>
+                                    </Link>
+                                </li>
+                                <li className="nav-item"
+                                    class={
+                                        location.pathname === `/hr/employees/attendance` ? "nav-item active" : "nav-item"
+                                    }>
+                                    <Link
+                                        style={{ textDecoration: "none", color: "black" }}
+                                        to={{
+                                            pathname: `/hr/employees/attendance`,
+                                        }}
+                                    >
+                                        <a className="nav-link" href="./">
+                                            <span className="nav-link-icon d-md-none d-lg-inline-block">
+                                            <MdCoPresent style={{ width: "19px", height: "23px" }} />
+                                            </span>
+                                            <span className="nav-link-title">Attendance</span>
                                         </a>
                                     </Link>
                                 </li>
