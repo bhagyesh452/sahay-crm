@@ -419,6 +419,35 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           { new: true } // Return the updated document
         );
       const serviceNames = newData.services.map(service => service.serviceName);
+
+      console.log("serviceNames" , serviceNames)
+
+      for (const serviceName of serviceNames) {
+        const existingRmCertData = await RMCertificationModel.findOne({ 
+          "Company Name": CompanyName, 
+          serviceName 
+        });
+
+        if (existingRmCertData) {
+          // Create an updatedFields object to merge existing data with newData
+          const updatedFields = {
+            ...existingRmCertData.toObject(), // Copy existing fields
+            ...newData, // Override with newData fields
+          };
+
+          console.log("updatedFields" , updatedFields)
+
+          await RMCertificationModel.findOneAndUpdate(
+            { 
+              "Company Name": CompanyName, 
+              serviceName 
+            },
+            updatedFields,
+            { new: true }
+          );
+        }
+      }
+
      
     //   const updateRmCertData = await RMCertificationModel.findOneAndUpdate({
     //     "Company Name" : newData["Company Name"],
