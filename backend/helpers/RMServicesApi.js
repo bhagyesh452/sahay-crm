@@ -1257,6 +1257,37 @@ router.post("/postmethodtogetbackfromtrashbox/:companyName", async (req, res) =>
   }
 });
 
+router.post("/postmethodtoremovelcompaniesfromtrashboxpemanently", async (req, res) => {
+  
+  const{ permanentlDeleteDateFromRmCert } = req.body;
+ const socketIO = req.io;
+
+ //console.log("deletedata" , permanentlDeleteDateFromRmCert)
+
+
+  try {
+    const updatedDocument = await RedesignedLeadformModel.updateMany(
+      { 
+        isVisibleToRmOfCerification:false
+       },
+      { permanentlDeleteFromRmCert: true,
+        permanentlDeleteDateFromRmCert:permanentlDeleteDateFromRmCert
+
+       },
+      { new: true }
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+    socketIO.emit('rm-cert-completely-emtpy');
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating data", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 router.post("/post-remarks-for-rmofcertification", async (req, res) => {
   const { currentCompanyName, currentServiceName, changeRemarks, updatedOn } = req.body;
 
