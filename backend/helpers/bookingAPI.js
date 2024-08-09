@@ -345,6 +345,8 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       const { CompanyName, bookingIndex } = req.params;
       const { otherDocs, paymentReceipt, step4changed, remainingPayments, ...newData } = req.body;
 
+      console.log("newData" , newData)
+
       const newOtherDocs = req.files["otherDocs"] || [];
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const latestData = {
@@ -416,6 +418,73 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           // Set all properties except "moreBookings"
           { new: true } // Return the updated document
         );
+      const serviceNames = newData.services.map(service => service.serviceName);
+
+      console.log("serviceNames" , serviceNames)
+
+      for (const serviceName of serviceNames) {
+        const existingRmCertData = await RMCertificationModel.findOne({ 
+          "Company Name": CompanyName, 
+          serviceName 
+        });
+
+        if (existingRmCertData) {
+          // Create an updatedFields object to merge existing data with newData
+          const updatedFields = {
+            ...existingRmCertData.toObject(), // Copy existing fields
+            ...newData, // Override with newData fields
+          };
+
+          console.log("updatedFields" , updatedFields)
+
+          await RMCertificationModel.findOneAndUpdate(
+            { 
+              "Company Name": CompanyName, 
+              serviceName 
+            },
+            updatedFields,
+            { new: true }
+          );
+        }
+      }
+
+     
+    //   const updateRmCertData = await RMCertificationModel.findOneAndUpdate({
+    //     "Company Name" : newData["Company Name"],
+    //     serviceName: { $in: serviceNames }
+    //   },
+    //   {
+    //     "Company Name": newData["Company Name"],
+    //     "Company Number": newData["Company Number"],
+    //     "Company Email": newData["Company Email"],
+    //     //panNumber: newData.panNumber,
+    //     bdeName: newData.bdeName,
+    //     bdeEmail: newData.bdeEmail, // Handle optional fields
+    //     bdmName: newData.bdmName,
+    //     bdmType: newData.bdmType, // Default value if not provided
+    //     bookingDate: newData.bookingDate,
+    //     paymentMethod: newData.paymentMethod, // Handle optional fields
+    //     caCase: newData.caCase, // Default to false if not provided
+    //     caNumber: newData.caNumber, // Default to 0 if not provided
+    //     caEmail: selectedCompanyData.caEmail , // Handle optional fields
+    //     serviceName: serviceData.serviceName,
+    //     totalPaymentWOGST: serviceData.totalPaymentWOGST, // Default to 0 if not provided
+    //     totalPaymentWGST: serviceData.totalPaymentWGST,
+    //     withGST: serviceData.withGST,
+    //     withDSC: serviceData.withDSC, // Default to 0 if not provided
+    //     firstPayment: serviceData.firstPayment, // Default to 0 if not provided
+    //     secondPayment: serviceData.secondPayment, // Default to 0 if not provided
+    //     thirdPayment: serviceData.thirdPayment, // Default to 0 if not provided
+    //     fourthPayment: serviceData.fourthPayment,
+    //     secondPaymentRemarks: serviceData.secondPaymentRemarks,
+    //     thirdPaymentRemarks: serviceData.thirdPaymentRemarks,
+    //     fourthPaymentRemarks: serviceData.fourthPaymentRemarks,
+    //     bookingPublishDate: serviceData.bookingPublishDate,
+        
+    //   },
+    //   {new : true}
+    // )
+    
       const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": CompanyName },
         { assigned: "Accept" },

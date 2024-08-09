@@ -1330,7 +1330,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
           const isLastMonthPayment = paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
 
           if (isLastMonthPayment) {
-            const findService = mainBooking.services.find((services) => services.serviceName === remainingObj.serviceName);
+            const findService = mainBooking.services.find((services) => cleanString(services.serviceName) === cleanString(remainingObj.serviceName));
             const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
 
             if (cleanString(mainBooking.bdeName) === cleanString(mainBooking.bdmName)) {
@@ -1427,7 +1427,7 @@ function EmployeeSalesReport({ data, redesignedData, moreEmpData, followData }) 
             const isLastMonthPayment = paymentDate.getMonth() === (today.getMonth() === 0 ? 11 : today.getMonth() - 2) && paymentDate.getFullYear() === today.getFullYear();
 
             if (isLastMonthPayment) {
-              const findService = moreObject.services.find((services) => services.serviceName === remainingObj.serviceName);
+              const findService = moreObject.services.find((services) => cleanString(services.serviceName) === cleanString(remainingObj.serviceName));
               const tempAmount = findService.withGST ? Math.round(remainingObj.receivedPayment) / 1.18 : Math.round(remainingObj.receivedPayment);
 
               if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
