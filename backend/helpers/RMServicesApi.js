@@ -1280,7 +1280,7 @@ router.post("/postmethodtoremovelcompaniesfromtrashboxpemanently", async (req, r
     if (!updatedDocument) {
       return res.status(404).json({ message: "Document not found" });
     }
-    socketIO.emit('rm-cert-company-taken-back-from-trashbox');
+    socketIO.emit('rm-cert-completely-emtpy');
     res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
   } catch (error) {
     console.error("Error updating data", error);
