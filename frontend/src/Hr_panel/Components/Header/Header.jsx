@@ -11,7 +11,7 @@ import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
 function Header({ name, id, designation, empProfile, gender }) {
-  
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   return (
@@ -58,7 +58,7 @@ function Header({ name, id, designation, empProfile, gender }) {
                 aria-label="Open user menu"
               >
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" , textAlign:"left"}}>
+                  <div style={{ textTransform: "capitalize", textAlign: "left" }}>
                     {name ? name : name}
                   </div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
