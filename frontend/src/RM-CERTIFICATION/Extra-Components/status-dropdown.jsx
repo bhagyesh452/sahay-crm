@@ -330,7 +330,7 @@ const StatusDropdown = ({ mainStatus,
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: "Defaulter"
+            mainCategoryStatus: "Process"
           });
         } else if (newStatus === "Hold") {
           movedFromMainCategoryStatus = "Defaulter";
@@ -387,7 +387,7 @@ const StatusDropdown = ({ mainStatus,
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: "Hold"
+            mainCategoryStatus: "Process"
           });
         } else if (newStatus === "Submitted") {
           movedFromMainCategoryStatus = "Hold";

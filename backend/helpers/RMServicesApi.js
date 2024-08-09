@@ -1209,11 +1209,16 @@ router.delete('/delete-remark-rmcert', async (req, res) => {
 
 router.post("/postmethodtoremovecompanyfromrmpanel/:companyName", async (req, res) => {
   const { companyName } = req.params;
+  const { displayOfDateForRmCert } = req.body;
+  const socketIO = req.io;
+  console.log("date" ,displayOfDateForRmCert )
 
   try {
     const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
       { "Company Name": companyName },
-      { isVisibleToRmOfCerification: false },
+      { isVisibleToRmOfCerification: false ,
+        displayOfDateForRmCert:displayOfDateForRmCert ? displayOfDateForRmCert : new Date()
+       },
       { new: true }
     );
 
@@ -1221,6 +1226,30 @@ router.post("/postmethodtoremovecompanyfromrmpanel/:companyName", async (req, re
       return res.status(404).json({ message: "Document not found" });
     }
 
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating data", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/postmethodtogetbackfromtrashbox/:companyName", async (req, res) => {
+  const { companyName } = req.params;
+ const socketIO = req.io;
+
+
+  try {
+    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { isVisibleToRmOfCerification: true,
+       },
+      { new: true }
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+    socketIO.emit('rm-cert-company-taken-back-from-trashbox');
     res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
   } catch (error) {
     console.error("Error updating data", error);
@@ -1251,7 +1280,7 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
     if (!updateDocument) {
       return res.status(404).json({ message: "Document not found" });
     }
-
+   
     res.status(200).json({ message: "Remarks added successfully", data: updateDocument });
   } catch (error) {
     console.error("Error updating data:", error);

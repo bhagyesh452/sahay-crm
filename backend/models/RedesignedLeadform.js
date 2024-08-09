@@ -341,6 +341,9 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type:Boolean,
     default:true
   },
+  displayOfDateForRmCert:{
+    type:Date,
+  },
 
 });
 
