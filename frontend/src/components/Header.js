@@ -312,14 +312,14 @@ function Header({ name, id, designation, empProfile, gender }) {
               >
                 <div className="d-xl-block ps-2">
                   <div style={{ textAlign: "left" }}>{name ? name : "Username"}</div>
-                  <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
-                    {designation ? designation : "Sales Executive"}
-                  </div>
                   {/* <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
+                    {designation ? designation : "Sales Executive"}
+                  </div> */}
+                  <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     {designation === "Business Development Executive" ? "BDE" :
                       designation === "Business Development Manager" ? "BDM" :
                         designation}
-                  </div> */}
+                  </div>
 
                 </div>
               </button>

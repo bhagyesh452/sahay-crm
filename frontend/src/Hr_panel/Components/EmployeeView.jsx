@@ -7,7 +7,8 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 //import { DateRangePicker } from "react-date-range";
 import EmpImg1 from "../../static/EmployeeImg/Emp1.jpeg"
 import EmpImg2 from "../../static/EmployeeImg/Emp2.jpeg"
-import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
+import MaleEmployee from "../../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import { MdOutlineCameraAlt } from "react-icons/md";
 import logo from "../../static/mainLogo.png"
 import { FaCamera } from "react-icons/fa";
@@ -60,10 +61,10 @@ function EmployeeView() {
   useEffect(() => {
     document.title = `HR-Sahay-CRM`;
   }, []);
-  
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [open, setOpen] = useState(false);
-  const [editempinfo , setEditEmpInfo] = useState(false);
+  const [editempinfo, setEditEmpInfo] = useState(false);
 
 
   const [personal_email, setPersonalEmail] = useState('');
@@ -95,24 +96,24 @@ function EmployeeView() {
 
 
   const handleSubmit = async () => {
-    console.log("personalEmail",personal_email);
-    console.log("personalPhone",personal_number);
-    console.log("contactPerson",personal_contact_person);
-    console.log("personalAddress",personal_address);
-    try{
-        const response = await axios.post(`${secretKey}/employee/post-employee-detail-byhr/${userId}` , {
-        personal_email , personal_number , personal_contact_person , personal_address
+    console.log("personalEmail", personal_email);
+    console.log("personalPhone", personal_number);
+    console.log("contactPerson", personal_contact_person);
+    console.log("personalAddress", personal_address);
+    try {
+      const response = await axios.post(`${secretKey}/employee/post-employee-detail-byhr/${userId}`, {
+        personal_email, personal_number, personal_contact_person, personal_address
       },
-      {
-        headers: {
-          Authorization: `Bearer ${newtoken}`,
+        {
+          headers: {
+            Authorization: `Bearer ${newtoken}`,
+          }
         }
-      }
-    );
-    console.log("Response", response.data);
-    fetchEmployeeData();
+      );
+      console.log("Response", response.data);
+      fetchEmployeeData();
 
-    }catch(error){
+    } catch (error) {
       console.error("Error Updating Employee Details", error);
     }
     closePopUp();
@@ -126,8 +127,8 @@ function EmployeeView() {
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
-}
-  
+  }
+
 
   const handleCameraClick = () => {
     setOpen(true);
@@ -144,7 +145,7 @@ function EmployeeView() {
   const fetchEmployeeData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      console.log(response.data , userId);  
+      console.log(response.data, userId);
       const tempData = response.data;
       const data = tempData.find((item) => item._id === userId);
       console.log(data);
@@ -175,7 +176,7 @@ function EmployeeView() {
   // const today = new Date().toISOString().split('T')[0];
 
   const events = [
-    
+
     {
       title: 'Present',
       start: '2024-07-02', // Static start date
@@ -198,7 +199,7 @@ function EmployeeView() {
       editable: false,     // Disable editing for this event
     }
   ]
-  
+
 
   // Edit Employee Information from Hr
 
@@ -252,8 +253,8 @@ function EmployeeView() {
 
   return (
     <div>
-      <Header name={data.ename} empProfile = {data.employee_profile && data.employee_profile.length!==0 && data.employee_profile[0].filename} designation={data.designation}  />
-      <Navbar/>
+      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <Navbar />
       <div className="page-wrapper">
         <div className="page-header rm_Filter m-0">
           <div className="container-xl">
@@ -352,7 +353,10 @@ function EmployeeView() {
                   <div className="emply_e_card_profile">
                     <label className="emply_e_card_profile_inner_lbl">
                       <div className="emply_e_card_profile_div">
-                        <img src={EmpDfaullt}></img>
+                        {data.profilePhoto?.length !== 0 ? <img src={`${secretKey}/employee/fetchProfilePhoto/${data._id}/${encodeURIComponent(data.profilePhoto?.[0]?.filename)}`} />
+                          : <img src={data.gender === "Male" ? MaleEmployee : FemaleEmployee} />
+                        }
+                        {/* <img src={MaleEmployee}></img> */}
                       </div>
                       <div className="emply_e_card_profile_update">
                         <div className="emply_e_card_profile_update_inner">
@@ -362,8 +366,8 @@ function EmployeeView() {
                       </div>
                     </label>
                     <div className="emply_e_card_profile_name">
-                      <p className="m-0">Vishnu Suthar</p>
-                      <label className="m-0">Sales Executive</label>
+                      <p className="m-0">{data.ename}</p>
+                      <label className="m-0">{data.newDesignation}</label>
                     </div>
                   </div>
                 </div>
@@ -374,13 +378,13 @@ function EmployeeView() {
                   <div className="my-card-body-style-2">
                     <div className="emply_e_card_dtl">
                       <div className="emply_e_info_head">
-                        Full Name 
+                        Full Name
                       </div>
                       <div className="emply_e_info_data d-flex align-items-center justify-content-between">
                         <div className="d-flex align-item-center">
                           <div className="ee_info_i"><FcManager /></div>
                           <div className="emply_e_info_data_name">
-                             Vishunu Maheshbhai Suthar
+                            Vishunu Maheshbhai Suthar
                           </div>
                         </div>
                         <div class="employee_active">Active</div>
@@ -462,9 +466,9 @@ function EmployeeView() {
                           </div>
                           <div className="emply_e_info_data">
                             <div className="d-flex aling-items-center">
-                              <div className="ee_info_i" style={{color:"#fbba1c"}}><FaLocationDot  /></div>
+                              <div className="ee_info_i" style={{ color: "#fbba1c" }}><FaLocationDot /></div>
                               <div className="emply_e_info_data_name">
-                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad 
+                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
                               </div>
                             </div>
                           </div>
@@ -476,7 +480,7 @@ function EmployeeView() {
               </div>
               <div className="hr_employee_information">
                 <div className="my-card hr_emply_info_inner">
-                  
+
                 </div>
               </div>
             </div>

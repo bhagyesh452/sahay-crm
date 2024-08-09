@@ -3,6 +3,7 @@ import Header from "../Components/Header/Header";
 import Navbar from "../Components/Navbar/Navbar";
 import Nodata from "../../components/Nodata";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 import { IoFilterOutline } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
@@ -27,6 +28,7 @@ function HrEmployees() {
 
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [employee, setEmployee] = useState([]);
   const [deletedEmployee, setDeletedEmployee] = useState([]);
   const [deletedData, setDeletedData] = useState([]);
@@ -81,23 +83,29 @@ function HrEmployees() {
 
   const fetchEmployee = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/einfo`);
       const employeeData = res.data;
       setEmployee(employeeData);
       // console.log("Fetched Employees are:", employeeData);
     } catch (error) {
       console.log("Error fetching employees data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchDeletedEmployee = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
       const deletedEmployeeData = res.data;
       setDeletedEmployee(deletedEmployeeData);
       // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
     } catch (error) {
       console.log("Error fetching employees data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -369,83 +377,123 @@ function HrEmployees() {
                           <th>Action</th>
                         </tr>
                       </thead>
-                      {employee.length !== 0 ? <tbody>
-                        {employee.map((emp, index) => {
-                          const profilePhotoUrl = emp.profilePhoto ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}` : EmpDfaullt;
-
-                          return <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <div className="tbl-pro-img">
-                                  {emp.profilePhoto.length !== 0 ? <img
-                                    src={profilePhotoUrl
-                                      // emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
-                                    }
-                                    alt="Profile"
-                                    className="profile-photo"
-                                  /> :
-                                    <img
-                                      src={emp.gender === "Male" ? EmpDfaullt : FemaleEmployee}
-                                      alt="Profile"
-                                      className="profile-photo"
-                                    />}
-                                </div>
-                                <div className="">
-                                  {/* {emp.ename} */}
-                                  {(() => {
-                                    const names = (emp.ename || "").split(" ");
-                                    return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                                  })()}
-                                </div>
+                      {isLoading ? (
+                        <tbody>
+                          <tr>
+                            <td colSpan="11">
+                              <div className="LoaderTDSatyle w-100">
+                                <ClipLoader
+                                  color="lightgrey"
+                                  loading={true}
+                                  size={30}
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
                               </div>
-
-                            </td>
-                            <td>{emp.branchOffice || ""}</td>
-                            <td>{emp.department || ""}</td>
-                            <td>{emp.newDesignation === "Business Development Executive" && "BDE" || emp.newDesignation === "Business Development Manager" && "BDM" || emp.newDesignation || ""}</td>
-                            <td>{formatDate(emp.jdate) || ""}</td>
-                            <td>₹ {formatSalary(emp.salary || 0)}</td>
-                            <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                            <td><a
-                              target="_blank"
-                              className="text-decoration-none text-dark"
-                              href={`https://wa.me/91${emp.number}`}
-                            >{emp.number}
-                              <FaWhatsapp className="text-success w-25 mb-1" /></a></td>
-                            <td>{emp.email || ""}</td>
-                            <td>
-                              <button className="action-btn action-btn-primary">
-                                <Link style={{ textDecoration: "none", color: 'inherit' }}
-                                  to={{
-                                    pathname: `/hr-employee-profile-details/${emp._id}`
-                                  }} >
-                                  <FaRegEye />
-                                </Link>
-                              </button>
-                              <button className="action-btn action-btn-alert ml-1" onClick={() => handleEditClick(emp._id)}><MdModeEdit /></button>
-                              <button className="action-btn action-btn-danger ml-1" onClick={() => {
-                                const dataToDelete = employee.filter(obj => obj._id === emp._id);
-                                setDeletedData(dataToDelete);
-                                const filteredCompanyData = companyData.filter(data => data.ename?.toLowerCase() === emp.ename.toLowerCase());
-                                setCompanyData(filteredCompanyData);
-                                handleDeleteClick(emp._id, emp.ename, dataToDelete, filteredCompanyData)
-                              }}
-                              ><AiFillDelete /></button>
                             </td>
                           </tr>
-                        })}
-                      </tbody> : <tbody>
-                        <tr>
-                          <td
-                            className="particular"
-                            colSpan="11"
-                            style={{ textAlign: "center" }}
-                          >
-                            <Nodata />
-                          </td>
-                        </tr>
-                      </tbody>}
+                        </tbody>
+                      ) : (
+                        <>
+                          {employee.length !== 0 ? (
+                            <tbody>
+                              {employee.map((emp, index) => {
+                                const profilePhotoUrl = emp.profilePhoto?.length !== 0
+                                  ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                  : emp.gender === "Male" ? EmpDfaullt : FemaleEmployee;
+
+                                return (
+                                  <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                      <div className="d-flex align-items-center">
+                                        <div className="tbl-pro-img">
+                                          <img
+                                            src={profilePhotoUrl}
+                                            alt="Profile"
+                                            className="profile-photo"
+                                          />
+                                        </div>
+                                        <div className="">
+                                          {(() => {
+                                            const names = (emp.ename || "").split(" ");
+                                            return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                          })()}
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td>{emp.branchOffice || ""}</td>
+                                    <td>{emp.department || ""}</td>
+                                    <td>
+                                      {emp.newDesignation === "Business Development Executive" ? "BDE"
+                                        : emp.newDesignation === "Business Development Manager" ? "BDM"
+                                          : emp.newDesignation || ""}
+                                    </td>
+                                    <td>{formatDate(emp.jdate) || ""}</td>
+                                    <td>₹ {formatSalary(emp.salary || 0)}</td>
+                                    <td>
+                                      <span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>
+                                        {calculateProbationStatus(emp.jdate)}
+                                      </span>
+                                    </td>
+                                    <td>
+                                      <a
+                                        target="_blank"
+                                        className="text-decoration-none text-dark"
+                                        href={`https://wa.me/91${emp.number}`}
+                                      >
+                                        {emp.number}
+                                        <FaWhatsapp className="text-success w-25 mb-1" />
+                                      </a>
+                                    </td>
+                                    <td>{emp.email || ""}</td>
+                                    <td>
+                                      <button className="action-btn action-btn-primary">
+                                        <Link
+                                          style={{ textDecoration: "none", color: 'inherit' }}
+                                          to={`/hr-employee-profile-details/${emp._id}`}
+                                        >
+                                          <FaRegEye />
+                                        </Link>
+                                      </button>
+                                      <button
+                                        className="action-btn action-btn-alert ml-1"
+                                        onClick={() => handleEditClick(emp._id)}
+                                      >
+                                        <MdModeEdit />
+                                      </button>
+                                      <button
+                                        className="action-btn action-btn-danger ml-1"
+                                        onClick={() => {
+                                          const dataToDelete = employee.filter(obj => obj._id === emp._id);
+                                          setDeletedData(dataToDelete);
+                                          const filteredCompanyData = companyData.filter(data => data.ename?.toLowerCase() === emp.ename.toLowerCase());
+                                          setCompanyData(filteredCompanyData);
+                                          handleDeleteClick(emp._id, emp.ename, dataToDelete, filteredCompanyData);
+                                        }}
+                                      >
+                                        <AiFillDelete />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          ) : (
+                            <tbody>
+                              <tr>
+                                <td
+                                  className="particular"
+                                  colSpan="11"
+                                  style={{ textAlign: "center" }}
+                                >
+                                  <Nodata />
+                                </td>
+                              </tr>
+                            </tbody>
+                          )}
+                        </>
+                      )}
                     </table>
                   </div>
                 </div>
@@ -470,84 +518,122 @@ function HrEmployees() {
                         <th>Revoke Employee</th>
                       </tr>
                     </thead>
-                    {deletedEmployee.length !== 0 ? <tbody>
-                      {deletedEmployee.map((emp, index) => {
-                        const profilePhotoUrl = emp.profilePhoto ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}` : EmpDfaullt;
-
-                        return <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <div className="tbl-pro-img">
-                                {emp.profilePhoto.length !== 0 ? <img
-                                  src={profilePhotoUrl
-                                    // emp.profilePhoto && `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
-                                  }
-                                  alt="Profile"
-                                  className="profile-photo"
-                                /> :
-                                  <img
-                                    src={EmpDfaullt}
-                                    alt="Profile"
-                                    className="profile-photo"
-                                  />}
-                              </div>
-                              <div className="">
-                                {/* {emp.ename} */}
-                                {(() => {
-                                  const names = (emp.ename || "").split(" ");
-                                  return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                                })()}
-                              </div>
+                    {isLoading ? (
+                      <tbody>
+                        <tr>
+                          <td colSpan="11">
+                            <div className="LoaderTDSatyle w-100">
+                              <ClipLoader
+                                color="lightgrey"
+                                loading={true}
+                                size={30}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                              />
                             </div>
-
-                          </td>
-                          <td>{emp.branchOffice || ""}</td>
-                          <td>{emp.department || ""}</td>
-                          <td>{emp.newDesignation === "Business Development Executive" && "BDE" || emp.newDesignation === "Business Development Manager" && "BDM" || emp.newDesignation || ""}</td>
-                          <td>{formatDate(emp.jdate) || ""}</td>
-                          <td>₹ {formatSalary(emp.salary || 0)}</td>
-                          <td><span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>{calculateProbationStatus(emp.jdate)}</span></td>
-                          <td><a
-                            target="_blank"
-                            className="text-decoration-none text-dark"
-                            href={`https://wa.me/91${emp.number}`}
-                          >{emp.number}
-                            <FaWhatsapp className="text-success w-25 mb-1" /></a></td>
-                          <td>{emp.email || ""}</td>
-                          <td>
-                            <button className="action-btn action-btn-primary">
-                              <Link style={{ textDecoration: "none", color: 'inherit' }}
-                                to={{
-                                  pathname: `/hr-employee-profile-details/${emp._id}`
-                                }} >
-                                <FaRegEye />
-                              </Link>
-                            </button>
-                            <button className="action-btn action-btn-danger ml-1" onClick={() => handlePermanentDeleteEmployee(emp._id)}
-                            ><AiFillDelete /></button>
-                          </td>
-                          <td>
-                            <button className="action-btn action-btn-success ml-1" onClick={() => {
-                              const dataToRevertBack = deletedEmployee.filter(obj => obj._id === emp._id);
-                              handleRevertBack(emp._id, emp.ename, dataToRevertBack);
-                            }}>
-                              <TbRestore />
-                            </button>
                           </td>
                         </tr>
-                      })}
-                    </tbody> : <tbody>
-                      <tr>
-                        <td
-                          className="particular"
-                          colSpan="11"
-                          style={{ textAlign: "center" }}
-                        >
-                          <Nodata />
-                        </td>
-                      </tr>
-                    </tbody>}
+                      </tbody>
+                    ) : (
+                      <>
+                        {deletedEmployee.length !== 0 ? (
+                          <tbody>
+                            {deletedEmployee.map((emp, index) => {
+                              const profilePhotoUrl = emp.profilePhoto?.length !== 0
+                                ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                : EmpDfaullt;
+
+                              return (
+                                <tr key={index}>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    <div className="d-flex align-items-center">
+                                      <div className="tbl-pro-img">
+                                        <img
+                                          src={profilePhotoUrl}
+                                          alt="Profile"
+                                          className="profile-photo"
+                                        />
+                                      </div>
+                                      <div className="">
+                                        {(() => {
+                                          const names = (emp.ename || "").split(" ");
+                                          return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                        })()}
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td>{emp.branchOffice || ""}</td>
+                                  <td>{emp.department || ""}</td>
+                                  <td>
+                                    {emp.newDesignation === "Business Development Executive" ? "BDE"
+                                      : emp.newDesignation === "Business Development Manager" ? "BDM"
+                                        : emp.newDesignation || ""}
+                                  </td>
+                                  <td>{formatDate(emp.jdate) || ""}</td>
+                                  <td>₹ {formatSalary(emp.salary || 0)}</td>
+                                  <td>
+                                    <span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>
+                                      {calculateProbationStatus(emp.jdate)}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <a
+                                      target="_blank"
+                                      className="text-decoration-none text-dark"
+                                      href={`https://wa.me/91${emp.number}`}
+                                    >
+                                      {emp.number}
+                                      <FaWhatsapp className="text-success w-25 mb-1" />
+                                    </a>
+                                  </td>
+                                  <td>{emp.email || ""}</td>
+                                  <td>
+                                    <button className="action-btn action-btn-primary">
+                                      <Link
+                                        style={{ textDecoration: "none", color: 'inherit' }}
+                                        to={`/hr-employee-profile-details/${emp._id}`}
+                                      >
+                                        <FaRegEye />
+                                      </Link>
+                                    </button>
+                                    <button
+                                      className="action-btn action-btn-danger ml-1"
+                                      onClick={() => handlePermanentDeleteEmployee(emp._id)}
+                                    >
+                                      <AiFillDelete />
+                                    </button>
+                                  </td>
+                                  <td>
+                                    <button
+                                      className="action-btn action-btn-success ml-1"
+                                      onClick={() => {
+                                        const dataToRevertBack = deletedEmployee.filter(obj => obj._id === emp._id);
+                                        handleRevertBack(emp._id, emp.ename, dataToRevertBack);
+                                      }}
+                                    >
+                                      <TbRestore />
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        ) : (
+                          <tbody>
+                            <tr>
+                              <td
+                                className="particular"
+                                colSpan="11"
+                                style={{ textAlign: "center" }}
+                              >
+                                <Nodata />
+                              </td>
+                            </tr>
+                          </tbody>
+                        )}
+                      </>
+                    )}
                   </table>
                 </div>
               </div>
