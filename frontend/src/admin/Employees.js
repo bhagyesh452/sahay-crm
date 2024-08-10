@@ -643,7 +643,7 @@ function Employees({ onEyeButtonClick }) {
           ename: `${firstName} ${lastName}`,
           empFullName: `${firstName} ${middleName} ${lastName}`,
           department: department,
-          oldDesignation: designation || newDesignation,
+          oldDesignation: designation,
           newDesignation: newDesignation,
           branchOffice: branchOffice,
           reportingManager: reportingManager,
@@ -725,7 +725,7 @@ function Employees({ onEyeButtonClick }) {
         } else {
           const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
           // Adds data in performance report:
-          console.log("Created employee is :", response.data);
+          // console.log("Created employee is :", response.data);
 
           Swal.fire({
             title: "Data Added!",
