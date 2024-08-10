@@ -205,237 +205,381 @@ function DeletedEmployeePanel() {
 
   return (
     <div>
-      <div className="">
-        <div className="page-header d-print-none m-0">
-          <div className="row g-2 align-items-center">
-            <div className="col m-0">
-              {/* <!-- Page pre-title --> */}
-              <h2 className="page-title">Employees</h2>
-            </div>
-            <div style={{ width: "20vw" }} className="input-icon">
-              <span className="input-icon-addon">
+      <div className="table table-responsive table-style-3 m-0">
+        <table className="table table-vcenter table-nowrap">
+          <thead>
+            <tr className="tr-sticky">
+              <th>Sr. No</th>
+              <th>Name</th>
+              <th>Phone No</th>
+              <th>Email</th>
+              <th>Designation</th>
+              <th>Branch</th>
+              <th>Joining Date</th>
+              <th>Probation Status</th>
+              <th>Added Date</th>
+              <th>Status</th>
+              <th>BDM Work</th>
+              <th>Action</th>
+            </tr>
+          </thead>
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon"
-                  width="20"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                  <path d="M21 21l-6 -6" />
-                </svg>
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                className="form-control"
-                placeholder="Search…"
-                aria-label="Search in website"
-                onChange={handleSearch}
-              />
+          {/* {isLoading ? (
+            <tbody>
+              <tr>
+                <td colSpan="11">
+                  <div className="LoaderTDSatyle w-100">
+                    <ClipLoader
+                      color="lightgrey"
+                      loading={true}
+                      size={30}
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          ) : (
+            <>
+              {deletedEmployee.length !== 0 ? (
+                <tbody>
+                  {deletedEmployee.map((emp, index) => {
+                    const profilePhotoUrl = emp.profilePhoto?.length !== 0
+                      ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                      : EmpDfaullt;
+
+                    return (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <div className="tbl-pro-img">
+                              <img
+                                src={profilePhotoUrl}
+                                alt="Profile"
+                                className="profile-photo"
+                              />
+                            </div>
+                            <div className="">
+                              {(() => {
+                                const names = (emp.ename || "").split(" ");
+                                return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                              })()}
+                            </div>
+                          </div>
+                        </td>
+                        <td>{emp.branchOffice || ""}</td>
+                        <td>{emp.department || ""}</td>
+                        <td>
+                          {emp.newDesignation === "Business Development Executive" ? "BDE"
+                            : emp.newDesignation === "Business Development Manager" ? "BDM"
+                              : emp.newDesignation || ""}
+                        </td>
+                        <td>{formatDate(emp.jdate) || ""}</td>
+                        <td>₹ {formatSalary(emp.salary || 0)}</td>
+                        <td>
+                          <span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>
+                            {calculateProbationStatus(emp.jdate)}
+                          </span>
+                        </td>
+                        <td>
+                          <a
+                            target="_blank"
+                            className="text-decoration-none text-dark"
+                            href={`https://wa.me/91${emp.number}`}
+                          >
+                            {emp.number}
+                            <FaWhatsapp className="text-success w-25 mb-1" />
+                          </a>
+                        </td>
+                        <td>{emp.email || ""}</td>
+                        <td>
+                          <button className="action-btn action-btn-primary">
+                            <Link
+                              style={{ textDecoration: "none", color: 'inherit' }}
+                              to={`/hr-employee-profile-details/${emp._id}`}
+                            >
+                              <FaRegEye />
+                            </Link>
+                          </button>
+
+                          <button
+                            className="action-btn action-btn-danger ml-1"
+                            onClick={() => handlePermanentDeleteEmployee(emp._id)}
+                          >
+                            <AiFillDelete />
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            className="action-btn action-btn-success ml-1"
+                            onClick={() => {
+                              const dataToRevertBack = deletedEmployee.filter(obj => obj._id === emp._id);
+                              handleRevertBack(emp._id, emp.ename, dataToRevertBack);
+                            }}
+                          >
+                            <TbRestore />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td
+                      className="particular"
+                      colSpan="11"
+                      style={{ textAlign: "center" }}
+                    >
+                      <Nodata />
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </>
+          )} */}
+        </table>
+      </div>
+
+
+      {/* Deleted employees old code */}
+      <div className="d-none">
+        <div className="">
+          <div className="page-header d-print-none m-0">
+            <div className="row g-2 align-items-center">
+              <div className="col m-0">
+                {/* <!-- Page pre-title --> */}
+                <h2 className="page-title">Employees</h2>
+              </div>
+              <div style={{ width: "20vw" }} className="input-icon">
+                <span className="input-icon-addon">
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon"
+                    width="20"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                    <path d="M21 21l-6 -6" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  className="form-control"
+                  placeholder="Search…"
+                  aria-label="Search in website"
+                  onChange={handleSearch}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Employee table */}
-      <div
-        onCopy={(e) => {
-          e.preventDefault();
-        }}
-        className="mt-2"
-      >
-        <div className="card">
-          <div style={{ padding: "0px" }} className="card-body">
-            <div
-              id="table-default"
-              style={{ overflow: "auto", maxHeight: "70vh" }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  border: "1px solid #ddd",
-                }}
-                className="table-vcenter table-nowrap"
+        {/* Employee table */}
+        <div
+          onCopy={(e) => {
+            e.preventDefault();
+          }}
+          className="mt-2"
+        >
+          <div className="card">
+            <div style={{ padding: "0px" }} className="card-body">
+              <div
+                id="table-default"
+                style={{ overflow: "auto", maxHeight: "70vh" }}
               >
-                <thead>
-                  <tr className="tr-sticky">
-                    <th>
-                      <button className="table-sort" data-sort="sort-name">
-                        Sr.No
-                      </button>
-                    </th>
-                    <th>
-                      <button
-                        //onClick={sortDataByName}
-                        className="table-sort"
-                        data-sort="sort-city"
-                      >
-                        Name
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-type">
-                        Phone No
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-score">
-                        Email
-                      </button>
-                    </th>
-                    <th>
-                      <button
-                        //onClick={sortDataByJoiningDate}
-                        className="table-sort"
-                        data-sort="sort-date"
-                      >
-                        Joining date
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-date">
-                        Designation
-                      </button>
-                    </th>
-                    <th>
-                      <button className="table-sort" data-sort="sort-date">
-                        Branch Office
-                      </button>
-                    </th>
-                    {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <> <th>
-                      <button
-                        //onClick={sortDateByAddedOn}
-                        className="table-sort"
-                        data-sort="sort-date"
-                      >
-                        Added on
-                      </button>
-                    </th>
-                      <th>Deleted Date</th>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead>
+                    <tr className="tr-sticky">
                       <th>
-                        BDM Work
+                        <button className="table-sort" data-sort="sort-name">
+                          Sr.No
+                        </button>
                       </th>
                       <th>
                         <button
+                          //onClick={sortDataByName}
                           className="table-sort"
-                          data-sort="sort-quantity"
+                          data-sort="sort-city"
                         >
-                          Action
+                          Name
                         </button>
                       </th>
-                      <th>Revoke Employee</th></>}
-                  </tr>
-                </thead>
-                {filteredData.length == 0 ? (
-                  <tbody>
-                    <tr>
-                      <td
-                        className="particular"
-                        colSpan="10"
-                        style={{ textAlign: "center" }}
-                      >
-                        <Nodata />
-                      </td>
+                      <th>
+                        <button className="table-sort" data-sort="sort-type">
+                          Phone No
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-score">
+                          Email
+                        </button>
+                      </th>
+                      <th>
+                        <button
+                          //onClick={sortDataByJoiningDate}
+                          className="table-sort"
+                          data-sort="sort-date"
+                        >
+                          Joining date
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Designation
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Branch Office
+                        </button>
+                      </th>
+                      {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <> <th>
+                        <button
+                          //onClick={sortDateByAddedOn}
+                          className="table-sort"
+                          data-sort="sort-date"
+                        >
+                          Added on
+                        </button>
+                      </th>
+                        <th>Deleted Date</th>
+                        <th>
+                          BDM Work
+                        </th>
+                        <th>
+                          <button
+                            className="table-sort"
+                            data-sort="sort-quantity"
+                          >
+                            Action
+                          </button>
+                        </th>
+                        <th>Revoke Employee</th></>}
                     </tr>
-                  </tbody>
-                ) : (
-                  <tbody className="table-tbody">
-                    {filteredData.map((item, index) => (
-                      <tr key={index} style={{ border: "1px solid #ddd" }}>
-                        <td className="td-sticky">{index + 1}</td>
-                        <td>{item.ename}</td>
-                        <td>{item.number}</td>
-                        <td>{item.email}</td>
-                        <td>{formatDateFinal(item.jdate)}</td>
-                        <td>{item.designation}</td>
-                        <td>{item.branchOffice}</td>
-                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
-                          &&
-                          <>
-                            <td>
-                              {formatDate(item.AddedOn) === "Invalid Date"
-                                ? "06/02/2024"
-                                : formatDateFinal(item.AddedOn)}
-                            </td>
-                            <td>{formatDateFinal(item.deletedDate)}</td>
-                            <td>
-                              <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
-                                <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
-                                // onClick={(event) => {
-                                //   handlChecked(item._id, item.bdmWork)
-                                // }} 
-                                />
-                              </Stack>
-                            </td>
-                            <td>
-                              <div className="d-flex justify-content-center align-items-center">
-                                <div className="icons-btn">
-                                  <Link
-                                    style={{ color: "black" }}
-                                    to={`/admin/employees/${item._id}`}
-                                  >
+                  </thead>
+                  {filteredData.length == 0 ? (
+                    <tbody>
+                      <tr>
+                        <td
+                          className="particular"
+                          colSpan="10"
+                          style={{ textAlign: "center" }}
+                        >
+                          <Nodata />
+                        </td>
+                      </tr>
+                    </tbody>
+                  ) : (
+                    <tbody className="table-tbody">
+                      {filteredData.map((item, index) => (
+                        <tr key={index} style={{ border: "1px solid #ddd" }}>
+                          <td className="td-sticky">{index + 1}</td>
+                          <td>{item.ename}</td>
+                          <td>{item.number}</td>
+                          <td>{item.email}</td>
+                          <td>{formatDateFinal(item.jdate)}</td>
+                          <td>{item.designation}</td>
+                          <td>{item.branchOffice}</td>
+                          {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
+                            &&
+                            <>
+                              <td>
+                                {formatDate(item.AddedOn) === "Invalid Date"
+                                  ? "06/02/2024"
+                                  : formatDateFinal(item.AddedOn)}
+                              </td>
+                              <td>{formatDateFinal(item.deletedDate)}</td>
+                              <td>
+                                <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                                  <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                                  // onClick={(event) => {
+                                  //   handlChecked(item._id, item.bdmWork)
+                                  // }} 
+                                  />
+                                </Stack>
+                              </td>
+                              <td>
+                                <div className="d-flex justify-content-center align-items-center">
+                                  <div className="icons-btn">
+                                    <Link
+                                      style={{ color: "black" }}
+                                      to={`/admin/employees/${item._id}`}
+                                    >
+                                      <IconButton>
+                                        {" "}
+                                        <IconEye
+                                          style={{
+                                            width: "14px",
+                                            height: "14px",
+                                            color: "#d6a10c",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </Link>
                                     <IconButton>
                                       {" "}
-                                      <IconEye
+                                      <DeleteIcon
                                         style={{
                                           width: "14px",
                                           height: "14px",
-                                          color: "#d6a10c",
+                                          color: "red",
                                         }}
+                                        onClick={async () => {
+                                          handlePermanentDeleteEmployee(item._id)
+                                        }
+                                        }
                                       />
                                     </IconButton>
-                                  </Link>
-                                  <IconButton>
-                                    {" "}
-                                    <DeleteIcon
-                                      style={{
-                                        width: "14px",
-                                        height: "14px",
-                                        color: "red",
-                                      }}
-                                      onClick={async() =>{
-                                        handlePermanentDeleteEmployee(item._id)
-                                      }
-                                      }
-                                    />
-                                  </IconButton>
+                                  </div>
                                 </div>
-                              </div>
-                            </td>
-                            <td>
-                              <IconButton>
-                                {" "}
-                                <TbRestore
-                                  style={{
-                                    width: "14px",
-                                    height: "14px",
-                                    color: "#fbb900",
-                                  }}
-                                  onClick={async () => {
-                                    const dataToRevertBack = filteredData.filter(obj => obj._id === item._id);
-                                    handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
-                                  }}
-                                />
-                              </IconButton>
-                            </td></>}
-                      </tr>
-                    ))}
-                  </tbody>
-                )}
-              </table>
+                              </td>
+                              <td>
+                                <IconButton>
+                                  {" "}
+                                  <TbRestore
+                                    style={{
+                                      width: "14px",
+                                      height: "14px",
+                                      color: "#fbb900",
+                                    }}
+                                    onClick={async () => {
+                                      const dataToRevertBack = filteredData.filter(obj => obj._id === item._id);
+                                      handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
+                                    }}
+                                  />
+                                </IconButton>
+                              </td></>}
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   )
 }

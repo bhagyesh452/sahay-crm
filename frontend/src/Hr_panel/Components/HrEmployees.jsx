@@ -459,12 +459,14 @@ function HrEmployees() {
                                           <FaRegEye />
                                         </Link>
                                       </button>
+                                      
                                       <button
                                         className="action-btn action-btn-alert ml-1"
                                         onClick={() => handleEditClick(emp._id)}
                                       >
                                         <MdModeEdit />
                                       </button>
+                                      
                                       <button
                                         className="action-btn action-btn-danger ml-1"
                                         onClick={() => {
@@ -600,6 +602,7 @@ function HrEmployees() {
                                         <FaRegEye />
                                       </Link>
                                     </button>
+                                    
                                     <button
                                       className="action-btn action-btn-danger ml-1"
                                       onClick={() => handlePermanentDeleteEmployee(emp._id)}

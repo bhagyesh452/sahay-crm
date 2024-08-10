@@ -406,7 +406,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(branch && { branchOffice: branch }),
       ...(manager && { reportingManager: manager }),
       ...(designation && { newDesignation: designation }),
-      ...(oldDesignation && { designation: newDesignation }),
+      ...(designation && { designation: newDesignation }),
       ...(designation && {
         bdmWork:
           designation === "Business Development Manager" ||

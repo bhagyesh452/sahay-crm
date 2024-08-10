@@ -36,11 +36,39 @@ import Employees from "./Employees.js";
 
 function NewEmployee() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [employee, setEmployee] = useState([]);
+    const [deletedEmployee, setDeletedEmployee] = useState([]);
+    const [addEmployeePopup, setAddEmployeePopup] = useState(false);
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
-      }, []);
+    }, []);
 
+    const fetchEmployee = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/employee/einfo`);
+            setEmployee(res.data);
+            // console.log("Fetched Employees are:", employeeData);
+        } catch (error) {
+            console.log("Error fetching employees data:", error);
+        }
+    };
+
+    const fetchDeletedEmployee = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+            const deletedEmployeeData = res.data;
+            setDeletedEmployee(deletedEmployeeData);
+            // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
+        } catch (error) {
+            console.log("Error fetching employees data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchEmployee();
+        fetchDeletedEmployee();
+    }, []);
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -80,7 +108,8 @@ function NewEmployee() {
         setValue(newValue);
     };
 
-
+    const closeAddEmployeePopup = () => setAddEmployeePopup(false);
+    
     return (
         <div>
             <Header />
@@ -102,8 +131,8 @@ function NewEmployee() {
                                             </svg>
                                         </span>
                                         <input className="form-control search-cantrol mybtn"
-                                        placeholder="Search…"  type="text"  name="bdeName-search"
-                                        id="bdeName-search" />
+                                            placeholder="Search…" type="text" name="bdeName-search"
+                                            id="bdeName-search" />
                                     </div>
                                 </div>
                                 <div className="btn-group ml-1" role="group" aria-label="Basic example">
@@ -113,11 +142,12 @@ function NewEmployee() {
                                 </div>
                             </div>
                             <div>
-                                <button className="btn btn-primary">+ Add Employee</button>
+                                <button className="btn btn-primary" onClick={() => setAddEmployeePopup(true)}>+ Add Employee</button>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div className="page-body rm_Dtl_box m-0">
                     <div className="container-xl mt-2">
                         {/* tab list */}
@@ -130,7 +160,7 @@ function NewEmployee() {
                                                 Employees
                                             </div>
                                             <div className="rm_tsn_bdge">
-                                                20
+                                                {employee.length || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -142,7 +172,7 @@ function NewEmployee() {
                                                 Deleted Employees
                                             </div>
                                             <div className="rm_tsn_bdge">
-                                                20  
+                                                {deletedEmployee.length || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -164,10 +194,12 @@ function NewEmployee() {
                         {/* tab data */}
                         <div class="tab-content card-body">
                             <div class="tab-pane active" id="Employees">
-                                <Employees/>
+                                <Employees
+                                openAddEmployeePopup={addEmployeePopup} 
+                                closeAddEmployeePopup={closeAddEmployeePopup} />
                             </div>
                             <div class="tab-pane" id="DeletedEmployees">
-                                <DeletedEmployeePanel/>
+                                <DeletedEmployeePanel />
                             </div>
                             <div class="tab-pane" id="UpcommingEmployees">
                                 <h1>Upcoming Employees</h1>
@@ -188,14 +220,14 @@ function NewEmployee() {
                                 <Tab label={
                                     <div style={{ display: "flex", alignItems: "center" }}>
                                         <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                        <span style={{fontSize:"12px"}}>Employee List</span>
+                                        <span style={{ fontSize: "12px" }}>Employee List</span>
                                     </div>
                                 } {...a11yProps(0)} />
-                                 <Tab
+                                <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <AiOutlineUserDelete style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Deleted Employees List</span>
+                                            <span style={{ fontSize: "12px" }}>Deleted Employees List</span>
                                         </div>
                                     }
                                     {...a11yProps(1)}
@@ -214,8 +246,8 @@ function NewEmployee() {
                         <CustomTabPanel value={value} index={0}>
                             <Employee />
                         </CustomTabPanel>
-                         <CustomTabPanel value={value} index={1}>
-                            <DeletedEmployeePanel/>
+                        <CustomTabPanel value={value} index={1}>
+                            <DeletedEmployeePanel />
                         </CustomTabPanel>
                         {/* <CustomTabPanel value={value} index={1}>
                             <Team/>
@@ -223,7 +255,7 @@ function NewEmployee() {
                     </div>
                 </div>
             </div>
-        
+
         </div>
     );
 }
