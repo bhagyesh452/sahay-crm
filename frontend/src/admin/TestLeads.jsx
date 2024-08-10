@@ -1032,7 +1032,7 @@ function TestLeads() {
     };
 
     //console.log(data)
-    console.log(selectedRows.length)
+    
 
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection

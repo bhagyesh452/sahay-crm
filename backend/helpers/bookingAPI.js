@@ -563,18 +563,18 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               "Company Name": CompanyName,
               serviceName
             });
+            // Pull serviceName from servicesTakenByRmOfCertification array
             await RedesignedLeadformModel.findOneAndUpdate(
               {
                 "Company Name": CompanyName
               },
               {
                 $pull: {
-                  [`moreBookings.${bookingIndex - 1}.servicesTakenByRmOfCertification`]: serviceName // Remove serviceName from the array
+                  [`moreBookings.${bookingIndex - 1}.servicesTakenByRmOfCertification`]: serviceName
                 }
               },
-              { new: true } // Optionally return the updated document
+              { new: true }
             );
-            
           }
         }
       }

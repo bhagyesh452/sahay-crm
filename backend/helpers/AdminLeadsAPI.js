@@ -848,6 +848,7 @@ router.post("/fetch-by-ids", async (req, res) => {
 
 const mongoose = require('mongoose');
 const RemarksHistory = require('../models/RemarksHistory.js');
+const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
 
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
@@ -952,7 +953,7 @@ router.post("/postAssignData", async (req, res) => {
     //     companyName: "Approved Bulk Leads",
     //     employeeRequestType: "Leads Are Assigned",
     //   };
-      
+
     //   console.log("requestcreate", requestCreate)
     //   const addRequest = new NotiModel(requestCreate);
     //   await addRequest.save();
@@ -1063,45 +1064,85 @@ router.post("/postExtractedData", async (req, res) => {
 })
 
 
+// router.delete("/deleteAdminSelectedLeads", async (req, res) => {
+//   const { selectedRows } = req.body;
+//   console.log("selectedrows", selectedRows)
+//   try {
+//     // Use Mongoose to delete rows by their IDs
+//     const response = await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
+//     const response2 = await TeamLeadsModel.deleteMany({ _id: { $in: selectedRows } })
+//     const followModelResponse = await Promise.all(selectedRows.map(async (companyId) => {
+//       const company = await CompanyModel.findById(companyId);
+//       if (company) {
+//         // Find and delete documents from followmodel collection based on company name
+//         return FollowUpModel.deleteOne({ companyName: company['Company Name'] });
+//       }
+//       return null;
+//     }));
+//     //console.log(response)
+//     res.status(200).json({
+//       message:
+//         "Rows deleted successfully and backup created successfully.",
+//     });
+
+//     // Trigger backup on the server
+//     // exec(
+//     //   `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
+//     //   (error, stdout, stderr) => {
+//     //     if (error) {
+//     //       console.error("Error creating backup:", error);
+//     //       // Respond with an error if backup fails
+//     //       res.status(500).json({ error: "Error creating backup." });
+//     //     } else {
+//     //       // console.log("Backup created successfully:", stdout);
+//     //       // Respond with success message if backup is successful
+//     //       res.status(200).json({
+//     //         message:
+//     //           "Rows deleted successfully and backup created successfully.",
+//     //       });
+//     //     }
+//     //   }
+//     // );
+//   } catch (error) {
+//     console.error("Error deleting rows:", error.message);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 router.delete("/deleteAdminSelectedLeads", async (req, res) => {
   const { selectedRows } = req.body;
+  console.log("selectedrows", selectedRows);
 
   try {
-    // Use Mongoose to delete rows by their IDs
-    const response = await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
-    const response2 = await TeamLeadsModel.deleteMany({ _id: { $in: selectedRows } })
+    // Step 1: Find the documents to be deleted
+    const companiesToDelete = await CompanyModel.find({ _id: { $in: selectedRows } });
+
+    // Step 2: Create entries in DeletedLeadsModel with the same data
+    const deletedLeads = companiesToDelete.map(company => ({
+      ...company.toObject(), // Copy the company data
+      deletedAt: new Date(), // Add a timestamp of deletion
+    }));
+    
+    if (deletedLeads.length > 0) {
+      await DeletedLeadsModel.insertMany(deletedLeads); // Insert multiple documents
+    }
+
+    // Step 3: Perform deletion from CompanyModel
+    await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
+    
+    // Optional: Perform other deletions or updates as needed
+    await TeamLeadsModel.deleteMany({ _id: { $in: selectedRows } });
+    
     const followModelResponse = await Promise.all(selectedRows.map(async (companyId) => {
       const company = await CompanyModel.findById(companyId);
       if (company) {
-        // Find and delete documents from followmodel collection based on company name
         return FollowUpModel.deleteOne({ companyName: company['Company Name'] });
       }
       return null;
     }));
-    //console.log(response)
+    
     res.status(200).json({
-      message:
-        "Rows deleted successfully and backup created successfully.",
+      message: "Rows deleted successfully and backup created successfully.",
     });
-
-    // Trigger backup on the server
-    // exec(
-    //   `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
-    //   (error, stdout, stderr) => {
-    //     if (error) {
-    //       console.error("Error creating backup:", error);
-    //       // Respond with an error if backup fails
-    //       res.status(500).json({ error: "Error creating backup." });
-    //     } else {
-    //       // console.log("Backup created successfully:", stdout);
-    //       // Respond with success message if backup is successful
-    //       res.status(200).json({
-    //         message:
-    //           "Rows deleted successfully and backup created successfully.",
-    //       });
-    //     }
-    //   }
-    // );
   } catch (error) {
     console.error("Error deleting rows:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
