@@ -179,8 +179,7 @@ function RmofCertificationMyBookings() {
                                 <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn mybtn" 
                                     onClick={()=>{
-                                    setShowFilterIcon(true)
-                                    
+                                        setShowFilterIcon(prevState => !prevState);
                                     }}
                                     >
                                         <IoFilterOutline className='mr-1' /> Filter

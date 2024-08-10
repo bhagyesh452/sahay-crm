@@ -854,18 +854,38 @@ th.th-sticky1::after {
   word-wrap: break-word;
   white-space: pre-wrap;
 }
+.filter-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  /* background-color: #f9f9f9; */
+  border-radius: 8px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  /* position: absolute; */
+  width: 10em;
+  text-align: left;
+  margin-left: 190px;
+  /* border: 1px solid #ddd; */
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  /* Add additional styling as needed */
+}
 
 .inco-filter {
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: absolute;
-  width: 10em;
+  width: 15em;
   text-align: left;
-  margin-left: 100px;
+  margin-left: 190px;
   border: 1px solid #ddd;
   font-size: 14px;
   transition: all 0.3s ease;
+  margin-top: 15px;
 }
 
 .inco-filter:hover {
