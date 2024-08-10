@@ -16,6 +16,7 @@ import { MdOutlineAddCircle } from "react-icons/md";
 import "../assets/styles.css";
 import "../assets/table.css";
 import Swal from "sweetalert2";
+import ClipLoader from "react-spinners/ClipLoader";
 import io from "socket.io-client";
 // import EmployeeTable from "./EmployeeTable";
 import {
@@ -37,8 +38,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import EmpDfaullt from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png";
+import { FaWhatsapp } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
+import { MdModeEdit } from "react-icons/md";
+import { AiFillDelete } from "react-icons/ai";
 
-function Employees({ onEyeButtonClick }) {
+function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup }) {
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyDdata, setCompanyDdata] = useState([]);
@@ -68,6 +75,7 @@ function Employees({ onEyeButtonClick }) {
   const [companyData, setCompanyData] = useState([]);
   const [errors, setErrors] = useState([]);
   const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -101,6 +109,19 @@ function Employees({ onEyeButtonClick }) {
     if (number && !phonePattern.test(number)) newErrors.number = "Invalid phone number";
 
     return newErrors;
+  };
+
+  const calculateProbationStatus = (joiningDate) => {
+    const joinDate = new Date(joiningDate);
+    const probationEndDate = new Date(joinDate);
+    probationEndDate.setMonth(joinDate.getMonth() + 3);
+
+    const currentDate = new Date();
+    return currentDate <= probationEndDate ? 'Under Probation' : 'Completed';
+  };
+
+  const getBadgeClass = (status) => {
+    return status === 'Under Probation' ? 'badge badge-under-probation' : 'badge badge-completed';
   };
 
   const departmentDesignations = {
@@ -215,6 +236,7 @@ function Employees({ onEyeButtonClick }) {
       console.error('Error fetching employee info:', error);
     }
   };
+
   useEffect(() => {
     document.title = `Admin-Sahay-CRM`;
   }, []);
@@ -403,6 +425,7 @@ function Employees({ onEyeButtonClick }) {
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.get(`${secretKey}/employee/einfo`);
       // console.log("Fetched employees are :", response.data);
       // Set the retrieved data in the state
@@ -418,6 +441,8 @@ function Employees({ onEyeButtonClick }) {
       setBranchOffice("");
     } catch (error) {
       console.error("Error fetching data:", error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -725,8 +750,8 @@ function Employees({ onEyeButtonClick }) {
         } else {
           const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
           // Adds data in performance report:
-          // console.log("Created employee is :", response.data);
-
+          console.log("Created employee is :", response.data);
+          closeAddEmployeePopup();
           Swal.fire({
             title: "Data Added!",
             text: "You have successfully added the data!",
@@ -1016,43 +1041,174 @@ function Employees({ onEyeButtonClick }) {
   };
 
   return (
-    <div>
-      {/* <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          },
-          content: {
-            width: "fit-content",
-            height: "fit-content",
-            margin: "auto",
-            textAlign: "center",
-          },
-        }}>
-        <div className="modal-header">
-          <h3 style={{ fontSize: "20px" }} className="modal-title">
-            Confirm Delete?
-          </h3>
-        </div>
 
-        <button
-          className="btn btn-primary ms-auto"
-          onClick={handleConfirmDelete}
-        >
-          Yes, Delete
-        </button>
-        <button
-          className="btn btn-link link-secondary"
-          onClick={handleCancelDelete}
-        >
-          Cancel
-        </button>
-      </Modal> */}
-      {/* <Header />
-      <Navbar number={1} /> */}
-      <div className="">
+    <div>
+      <div className="table table-responsive table-style-3 m-0">
+        <table className="table table-vcenter table-nowrap">
+          <thead>
+            <tr className="tr-sticky">
+              <th>Sr. No</th>
+              <th>Name</th>
+              <th>Phone No</th>
+              <th>Email</th>
+              <th>Designation</th>
+              <th>Branch</th>
+              <th>Joining Date</th>
+              <th>Probation Status</th>
+              <th>Added Date</th>
+              <th>Status</th>
+              <th>BDM Work</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          {isLoading ? (
+            <tbody>
+              <tr>
+                <td colSpan="12">
+                  <div className="LoaderTDSatyle w-100">
+                    <ClipLoader
+                      color="lightgrey"
+                      loading={true}
+                      size={30}
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          ) : filteredData.length !== 0 ? (
+            <tbody className="table-tbody">
+              {filteredData.map((item, index) => {
+                const profilePhotoUrl = item.profilePhoto?.length !== 0
+                  ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
+                  : item.gender === "Male" ? EmpDfaullt : FemaleEmployee;
+
+                return (
+                  <tr key={index} style={{ border: "1px solid #ddd" }}>
+                    <td>{index + 1}</td>
+                    <td>
+                      <div className="d-flex align-items-center">
+                        <div className="tbl-pro-img">
+                          <img
+                            src={profilePhotoUrl}
+                            alt="Profile"
+                            className="profile-photo"
+                          />
+                        </div>
+                        <div className="">
+                          {(() => {
+                            const names = (item.ename || "").split(" ");
+                            return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                          })()}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <a
+                        target="_blank"
+                        className="text-decoration-none text-dark"
+                        href={`https://wa.me/91${item.number}`}
+                      >
+                        {item.number}
+                        <FaWhatsapp className="text-success ml-1" style={{ fontSize: '15px' }} />
+                      </a>
+                    </td>
+                    <td>{item.email}</td>
+                    <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
+                    <td>{item.branchOffice}</td>
+                    <td>{formattedDate(item.jdate)}</td>
+                    <td>
+                      <span className={getBadgeClass(calculateProbationStatus(item.jdate))}>
+                        {calculateProbationStatus(item.jdate)}
+                      </span>
+                    </td>
+                    {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && (
+                      <>
+                        <td>
+                          {formattedDate(item.AddedOn) === "Invalid Date"
+                            ? "06/02/2024"
+                            : formattedDate(item.AddedOn)}
+                        </td>
+                        {item.designation === "Sales Executive" ? (
+                          <td>
+                            {(item.Active && item.Active.includes("GMT")) ? (
+                              <div>
+                                <span style={{ color: "red", marginRight: "5px" }}>●</span>
+                                <span style={{ fontWeight: "bold", color: "rgb(170 144 144)" }}>
+                                  {formatDateWP(item.Active)}
+                                </span>
+                              </div>
+                            ) : (
+                              <div>
+                                <span style={{ color: "green", marginRight: "5px" }}>●</span>
+                                <span style={{ fontWeight: "bold", color: "green" }}>Online</span>
+                              </div>
+                            )}
+                          </td>
+                        ) : (
+                          <td>N/A</td>
+                        )}
+                        <td>
+                          <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                            <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                              disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
+                              onClick={(event) => {
+                                handleChecked(item._id, item.bdmWork, item)
+                              }} />
+                          </Stack>
+                        </td>
+                        <td>
+                          <button className="action-btn action-btn-primary">
+                            <Link
+                              style={{ textDecoration: "none", color: 'inherit' }}
+                              to={`/admin/employees/${item._id}`}
+                            >
+                              <FaRegEye />
+                            </Link>
+                          </button>
+                          <button className="action-btn action-btn-alert ml-1"
+                            onClick={() => {
+                              functionopenpopup();
+                              handleUpdateClick(item._id, item.ename);
+                            }}
+                          >
+                            <MdModeEdit />
+                          </button>
+                          <button className="action-btn action-btn-danger ml-1"
+                            onClick={async () => {
+                              const dataToDelete = data.filter(obj => obj._id === item._id);
+                              setDataToDelete(dataToDelete);
+                              const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
+                              setCompanyDdata(filteredCompanyData);
+                              handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
+                            }}
+                          >
+                            <AiFillDelete />
+                          </button>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          ) : (
+            <tbody>
+              <tr>
+                <td colSpan="12" style={{ textAlign: "center" }}>
+                  <Nodata />
+                </td>
+              </tr>
+            </tbody>
+          )}
+
+        </table>
+      </div>
+
+
+      {/* old code */}
+      <div className="d-none">
         <div className="page-header d-print-none m-0">
           <div className="row g-2 align-items-center">
             <div className="col m-0">
@@ -1096,7 +1252,7 @@ function Employees({ onEyeButtonClick }) {
                   className="btn btn-primary d-none d-sm-inline-block"
                   onClick={() => {
                     functionopenpopup();
-                    resetForm();
+                    // resetForm(); 
                     setIsUpdateMode(false);
                     setErrors("");
                   }}
@@ -1140,7 +1296,7 @@ function Employees({ onEyeButtonClick }) {
         onCopy={(e) => {
           e.preventDefault();
         }}
-        className="mt-2"
+        className="mt-2 d-none"
       >
         <div className="card">
           <div style={{ padding: "0px" }} className="card-body">
@@ -1375,10 +1531,20 @@ function Employees({ onEyeButtonClick }) {
           </div>
         </div>
       </div>
-      <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
+
+      {/* add Employee Popup */}
+      <Dialog className='My_Mat_Dialog' open={open || openAddEmployeePopup} fullWidth maxWidth="sm" onClose={() => {
+        closepopup();
+        closeAddEmployeePopup()
+      }}
+      >
         <DialogTitle>
           Employee Info{" "}
-          <IconButton onClick={closepopup} style={{ float: "right" }}>
+          <IconButton style={{ float: "right" }} onClick={() => {
+            closepopup();
+            closeAddEmployeePopup();
+          }}
+          >
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
         </DialogTitle>
