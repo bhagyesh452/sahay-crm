@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import { FaRegEye } from "react-icons/fa";
@@ -32,13 +32,13 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     const [newStatusProcess, setNewStatusProcess] = useState("General")
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
-
+    const [completeRmData, setcompleteRmData] = useState([])
+    const [dataToFilter, setdataToFilter] = useState([])
     // Fetch Data Function
     const fetchData = async () => {
         setOpenBacdrop(true);
         try {
-          
+
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
@@ -55,10 +55,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                         return dateB - dateA; // Sort in descending order
                     });
                 setRmServicesData(filteredData);
+                setcompleteRmData(filteredData)
+                setdataToFilter(filteredData)
             } else {
                 console.error("Expected an array for services data, but got:", servicesData);
             }
-          
+
             //setRmServicesData(filteredData);
         } catch (error) {
             console.error("Error fetching data", error.message);
@@ -67,7 +69,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         }
     };
 
-   
+
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -230,9 +232,81 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     //-------------------filter method-------------------------------
     const [filteredData, setFilteredData] = useState(rmServicesData);
     const [filterField, setFilterField] = useState("")
+
     const handleFilter = (newData) => {
-        setFilteredData(newData);
+        setRmServicesData(newData);
     };
+    const [filterPosition, setFilterPosition] = useState({ top: 0, left: 0 });
+    const fieldRefs = useRef({});
+
+    const handleFilterClick = (field) => {
+        const ref = fieldRefs.current[field];
+        if (ref) {
+            if (filterField === field) {
+                setShowFilterMenu(prev => !prev);
+            } else {
+                setFilterField(field);
+                const rect = ref.getBoundingClientRect();
+                if (field === "bookingDate") {
+                    setFilterPosition({
+                        top: -6.837,
+                        left: -216.95
+                    });
+                } else if (field === "Company Name") {
+                    setFilterPosition({
+                        top: -6.837,
+                        left: -4.95
+                    });
+                }else if (field === "Company Number") {
+                    setFilterPosition({
+                        top: -6.837,
+                        left: 230.05
+                    });
+                }else if (field === "Company Email") {
+                    setFilterPosition({
+                        top: -6.837,
+                        left: 410.05
+                    });
+                }else if (field === "caNumber") {
+                    setFilterPosition({
+                        top: -6.837,
+                        left: 332.05
+                    });
+                }else if (field === "receivedPayment") {
+                    setFilterPosition({
+                        top: -6.837,
+                        left: 400
+                    });
+                }else if (field === "pendingPayment") {
+                    setFilterPosition({
+                        top: -6.837,
+                        left: 430
+                    });
+                }
+
+                setShowFilterMenu(true);
+            }
+        }
+    };
+
+    // const handleFilterClick = (field) => {
+    //     const ref = fieldRefs.current[field];
+    //     if (ref) {
+    //         if (filterField === field) {
+    //             setShowFilterMenu(prev => !prev);
+    //         } else {
+    //             setFilterField(field);
+    //             const rect = ref.getBoundingClientRect();
+    //             setFilterPosition({
+    //                 top: rect.bottom + window.scrollY,
+    //                 left: rect.left + window.scrollX
+    //             });
+    //             setShowFilterMenu(true);
+    //         }
+    //     }
+    // };
+
+    console.log("filterPositin", filterPosition)
 
 
     return (
@@ -263,187 +337,175 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-2">
-                                        <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                        <div
+                                            className='d-flex align-items-center justify-content-center'
+                                        >
+                                            <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                                 Booking Date
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                            setFilterField("Booking Date")
-                                                        }} />
+                                                        onClick={() => handleFilterClick("bookingDate")}
+                                                    />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-3">
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['Company Name'] = el}>
                                                 Company Name
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                            setFilterField("Company Name")
-                                                        }} />
+                                                        onClick={() => handleFilterClick("Company Name")}
+                                                    />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['Company Number'] = el}>
                                                 Company Number
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                        onClick={() => handleFilterClick("Company Number")}
+                                                    />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['Company Email'] = el}>
                                                 Company Email
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                        onClick={() => handleFilterClick("Company Email")}
+                                                    />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['caNumber'] = el}>
                                                 CA Number
-                                            </div>
+                                            </div >
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                       onClick={() => handleFilterClick("caNumber")}
+                                                         />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['serviceName'] = el}>
                                                 Service Name
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                      onClick={() => handleFilterClick("serviceName")}
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Status
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                         onClick={() => handleFilterClick("subCategoryStatus")} 
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
                                     {/* <th>Remark</th> */}
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div  ref={el => fieldRefs.current['withDSC'] = el}>
                                                 DSC Applicable
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                         onClick={() => handleFilterClick("withDSC")} 
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['bdeName'] = el}>
                                                 BDE Name
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                        onClick={() => handleFilterClick("bdeName")} 
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['bdmName'] = el}>
                                                 BDM Name
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                       onClick={() => handleFilterClick("bdmName")}
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
                                                 Total Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                      onClick={() => handleFilterClick("totalPaymentWGST")}
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div ref={el => fieldRefs.current['receivedPayment'] = el}>
                                                 received Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                         onClick={() => handleFilterClick("receivedPayment")}
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div>
+                                            <div  ref={el => fieldRefs.current['pendingPayment'] = el}>
                                                 Pending Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => {
-                                                            setShowFilterMenu(true)
-                                                        }} />
+                                                     onClick={() => handleFilterClick("pendingPayment")}
+
+                                                        />
                                                 </div>}
                                         </div>
                                     </th>
@@ -515,7 +577,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                 <div>{obj.bdmName}</div>
                                             </div>
                                         </td>
-                                        <td>₹ {parseInt(obj.totalPaymentWGST || 0 , 10).toLocaleString('en-IN')}</td>
+                                        <td>₹ {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString('en-IN')}</td>
                                         <td>
                                             ₹ {(
                                                 (parseInt(
@@ -534,7 +596,6 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                     ) + parseInt(obj.pendingRecievedPayment || 0, 10)))
                                             ).toLocaleString('en-IN')}
                                         </td>
-
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary"
                                             //onClick={() => setOpenCompanyTaskComponent(true)}
@@ -617,15 +678,20 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                     </div>
                 </DialogContent>
             </Dialog>
-            {
-                showFilterMenu && (
+            {showFilterMenu && (
+                <div
+                    className="filter-menu"
+                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                >
                     <FilterableTable
                         data={rmServicesData}
-                        filterMenu={setShowFilterMenu}
                         filterField={filterField}
-                        onFilter={handleFilter} />
-                )
-            }
+                        onFilter={handleFilter}
+                        completeData={completeRmData}
+                        dataForFilter={dataToFilter}
+                    />
+                </div>
+            )}
         </div>
     );
 }
