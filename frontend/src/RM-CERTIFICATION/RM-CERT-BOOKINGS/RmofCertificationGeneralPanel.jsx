@@ -307,6 +307,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     // };
 
     console.log("filterPositin", filterPosition)
+    console.log("emservices" , rmServicesData)
 
 
     return (
