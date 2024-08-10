@@ -13,6 +13,7 @@ const adminModel = require("../models/Admin");
 const jwt = require('jsonwebtoken');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
+const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
 
 
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
@@ -154,6 +155,15 @@ router.delete("/leads/:id", async (req, res) => {
     if (!deletedData) {
       return res.status(404).json({ error: "Data not found" });
     }
+   
+      // Create a new entry in DeletedLeadsModel with the deleted data
+      const deletedLead = {
+        ...deletedData.toObject(), // Convert Mongoose document to a plain JavaScript object
+        deletedAt: new Date(), // Add timestamp of deletion
+      };
+  
+      // Insert the deleted lead into DeletedLeadsModel
+      await DeletedLeadsModel.create(deletedLead);
 
     res.json({ message: "Data deleted successfully", deletedData });
   } catch (error) {
