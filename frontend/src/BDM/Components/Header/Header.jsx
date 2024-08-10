@@ -11,7 +11,7 @@ import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
 function Header({ name, id, designation, empProfile, gender }) {
-  const secretKey = process.env.React_APP_SECRET_KEY;
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
  
   console.log("Employee name is :", name);
   console.log("Employee id is :", id);
@@ -49,7 +49,7 @@ function Header({ name, id, designation, empProfile, gender }) {
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
             {/* <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/> */}
             {empProfile ? <Avatar src={`${secretKey}/employee/fetchProfilePhoto/${id}/${encodeURIComponent(empProfile)}`}
-              className="My-Avtar" sx={{ width: 36, height: 36 }} />
+              className="My-Avtar" style={{ width: 36, height: 36 }} />
               : <Avatar
                 src={gender === "Male" ? MaleEmployee : FemaleEmployee}
                 className="My-Avtar" sx={{ width: 36, height: 36 }} />
