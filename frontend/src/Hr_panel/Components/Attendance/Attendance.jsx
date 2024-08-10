@@ -22,6 +22,8 @@ function Attendance() {
     const [myInfo, setMyInfo] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [monthDates, setMonthDates] = useState([]);
+    const [showAddAttendance, setShowAddAttendance] = useState(false);
+    const [showViewAttendance, setShowViewAttendance] = useState(false);
 
     const fetchPersonalInfo = async () => {
         try {
@@ -82,10 +84,18 @@ function Attendance() {
                     <div className="container-xl">
                         <div className="d-flex align-items-center justify-content-between">
                             <div className='btn-group'>
-                                <button type="button" class="btn mybtn">
+                                <button type="button" class="btn mybtn" onClick={() => {
+                                    setShowAddAttendance(true);
+                                    setShowViewAttendance(false);
+                                }}
+                                >
                                     <TiUserAddOutline className='mr-1' /> Add Attendance
                                 </button>
-                                <button type="button" class="btn mybtn">
+                                <button type="button" class="btn mybtn" onClick={() => {
+                                    setShowViewAttendance(true);
+                                    setShowAddAttendance(false);
+                                }}
+                                >
                                     <FaEye className='mr-1' /> View Attendance
                                 </button>
                             </div>
@@ -94,12 +104,12 @@ function Attendance() {
                 </div>
                 <div className="page-body m-0">
                     <div className="container-xl">
-                        <AddAttendance/>
-                        <ViewAttendance/>
+                        {showAddAttendance && <AddAttendance />}
+                        {showViewAttendance && <ViewAttendance />}
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 
