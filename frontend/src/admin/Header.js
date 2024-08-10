@@ -163,9 +163,9 @@ function Header({ name, designation }) {
               >
 
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" }}>{adminName ? adminName : "Admin"}</div>
+                  <div style={{ textTransform: "capitalize", textAlign: "left"}}>{adminName ? adminName : "Admin"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
-                    {designation ? designation : "Admin"}
+                    {designation ? designation : "Managing Director"}
                   </div>
                 </div>
               </button>

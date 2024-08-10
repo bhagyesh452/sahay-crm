@@ -26,7 +26,7 @@ function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [myInfo, setMyInfo] = useState([]);
     const [employee, setEmployee] = useState([]);
-    const [processedData, setProcessedData] = useState([]);
+    const [groupedEmployeeData, setGroupedEmployeeData] = useState([]);
 
     useEffect(() => {
         document.title = `HR-Sahay-CRM`;
@@ -36,9 +36,10 @@ function Dashboard() {
         try {
             setLoading(true);
             const res = await axios.get(`${secretKey}/employee/einfo`);
-            const data = res.data
-            console.log("Fetched employees are :", data);
-            setProcessedData(res.data);
+            const groupedData = processData(res.data);
+            setEmployee(res.data);
+            setGroupedEmployeeData(groupedData);
+            console.log("Fetched employees are :", groupedData);
         } catch (error) {
             console.log("Error fetching employees data :", error);
         } finally {
@@ -58,11 +59,10 @@ function Dashboard() {
 
     const processData = (employees) => {
         const groupedData = employees.reduce((acc, curr) => {
-            console.log("Current data :", curr);
-            const key = `${curr.branch}-${curr.department}`;
+            const key = `${curr.branchOffice}-${curr.department}`;
             if (!acc[key]) {
                 acc[key] = {
-                    branch: curr.branch,
+                    branch: curr.branchOffice,
                     department: curr.department,
                     maleCount: 0,
                     femaleCount: 0,
@@ -79,7 +79,6 @@ function Dashboard() {
             acc[key].totalSalary += curr.salary;
             return acc;
         }, {});
-
         return Object.values(groupedData);
     };
 
@@ -254,24 +253,24 @@ function Dashboard() {
                                             </td>
                                         </tr>
                                     </tbody>
-                                ) : processedData.length > 0 ? (
+                                ) : groupedEmployeeData.length > 0 ? (
                                     <tbody>
-                                        {processedData.map((item, index) => (
+                                        {groupedEmployeeData.map((data, index) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
-                                                <td>{item.branch}</td>
-                                                <td>{item.department}</td>
-                                                <td>{item.maleCount}</td>
-                                                <td>{item.femaleCount}</td>
-                                                <td>{item.totalEmployees}</td>
-                                                <td>₹ {item.totalSalary}</td>
+                                                <td>{data.branch}</td>
+                                                <td>{data.department}</td>
+                                                <td>{data.maleCount}</td>
+                                                <td>{data.femaleCount}</td>
+                                                <td>{data.totalEmployees}</td>
+                                                <td>₹ {data.totalSalary.toLocaleString()}</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 ) : (
                                     <tbody>
                                         <tr>
-                                            <td colSpan="7">
+                                            <td className="particular" colSpan="7">
                                                 <Nodata />
                                             </td>
                                         </tr>
