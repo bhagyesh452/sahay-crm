@@ -559,7 +559,8 @@ function RmofCertificationSubmittedPanel() {
                                         <td>
                                             {obj.subCategoryStatus === "2nd Time Submitted" ? "2nd" :
                                                 obj.subCategoryStatus === "3rd Time Submitted" ? "3rd" :
-                                                    obj.lastAttemptSubmitted ? obj.lastAttemptSubmitted : "1st"}
+                                                    obj.subCategoryStatus === "Submitted" ? "1st" :
+                                                        obj.lastAttemptSubmitted ? obj.lastAttemptSubmitted : "1st"}
                                         </td>
                                         <td>
                                             {obj.subCategoryStatus === "Submitted" ? (

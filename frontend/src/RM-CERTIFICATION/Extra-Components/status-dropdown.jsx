@@ -208,7 +208,8 @@ const StatusDropdown = ({ mainStatus,
             previousSubCategoryStatus: newStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
-            lastAttemptSubmitted: "1st"
+            lastAttemptSubmitted: "1st",
+            submittedOn : new Date()
           });
         } else if (newStatus === "Defaulter") {
           movedFromMainCategoryStatus = "Ready To Submit";
@@ -314,7 +315,18 @@ const StatusDropdown = ({ mainStatus,
             lastAttemptSubmitted: "3rd"
             //mainCategoryStatus: "Defaulter",
           });
-        }
+        }else if (newStatus === "Submitted") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            ThirdTimeSubmitDate: new Date(),
+            SecondTimeSubmitDate: new Date(),
+            lastAttemptSubmitted: "1st",
+            submittedOn:new Date()
+            //mainCategoryStatus: "Defaulter",
+          });
+        } 
         else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
