@@ -1079,6 +1079,36 @@ table.table.top_5_table tbody tr.myself td {
     margin-right: 3px;
     line-height: 13px;
 }
+.attendance-date-tbl .date-f
+{
+    padding: 4px 14px 4px 14px;
+    border-radius: 100px;
+    background: #edf3ff;
+    font-size: 12px;
+    background-position: right 6px center;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+.attendance-date-tbl .in-time
+{
+    padding: 3px 14px 3px 14px;
+    border-radius: 100px;
+    background: #d1ffc1;
+    font-size: 12px;
+    background-position: right 6px center;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+.attendance-date-tbl .out-time
+{
+    padding:3px 14px 3px 14px;
+    border-radius: 100px;
+    background: #ffd2d2;
+    font-size: 12px;
+    background-position: right 6px center;
+    cursor: pointer;
+    text-transform: uppercase;
+}
 @media (max-width: 1528px)
 {
     .hr_emply_list_navtabs
