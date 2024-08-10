@@ -37,6 +37,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import EmpDfaullt from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png";
+import { FaWhatsapp } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
+import { MdModeEdit } from "react-icons/md";
+import { AiFillDelete } from "react-icons/ai";
 
 function Employees({ onEyeButtonClick }) {
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
@@ -1016,43 +1022,107 @@ function Employees({ onEyeButtonClick }) {
   };
 
   return (
+    
     <div>
-      {/* <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          },
-          content: {
-            width: "fit-content",
-            height: "fit-content",
-            margin: "auto",
-            textAlign: "center",
-          },
-        }}>
-        <div className="modal-header">
-          <h3 style={{ fontSize: "20px" }} className="modal-title">
-            Confirm Delete?
-          </h3>
+        <div className="table table-responsive table-style-3 m-0">
+            <table className="table table-vcenter table-nowrap">
+                <thead>
+                    <tr className="tr-sticky">
+                        <th>Sr. No</th>
+                        <th>Name</th>
+                        <th>Phone No</th>
+                        <th>Email</th>
+                        <th>Designation</th>
+                        <th>Branch</th>
+                        <th>Joining Date</th>
+                        <th>Probation Status</th>
+                        <th>Added Date</th>
+                        <th>Status</th>
+                        <th>BDM Work</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            1
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                              <div className="tbl-pro-img">
+                                <img src={EmpDfaullt} alt="Profile"  className="profile-photo"/>
+                              </div>
+                              <div className="tbl-ep-txt">
+                                  Vushnu Suthar 
+                              </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-center justify-content-center wApp">
+                            <div>
+                              9924283530
+                            </div>
+                            <div>
+                                <a><FaWhatsapp className="text-success ml-1" style={{fontSize:'15px'}}/></a>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                            nirmeshparekh1@gmail.com
+                        </td>
+                        <td>
+                           BDE
+                        </td>
+                        <td>
+                           Gota
+                        </td>
+                        <td>
+                           20 Jun 2022
+                        </td>
+                        <td>
+                           <span className="badge badge-completed">Completed</span>
+                        </td>
+                        <td>
+                           20 Jun 2022
+                        </td>
+                        <td>
+                          <div>
+                            <span style={{ color: "green", marginRight: "5px" }}>
+                              ●
+                            </span>
+                            <span style={{ fontWeight: "bold", color: "green" }}  >
+                              Online
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          {/* <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                            <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                              disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
+                              onClick={(event) => {
+                                handleChecked(item._id, item.bdmWork, item)
+                              }} />
+                          </Stack> */}
+                        </td>
+                        <td>
+                          <button className="action-btn action-btn-primary">
+                            <FaRegEye />
+                          </button>
+                          <button className="action-btn action-btn-alert ml-1">
+                            <MdModeEdit />
+                          </button>
+                          <button className="action-btn action-btn-danger ml-1">
+                            <AiFillDelete />
+                          </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <button
-          className="btn btn-primary ms-auto"
-          onClick={handleConfirmDelete}
-        >
-          Yes, Delete
-        </button>
-        <button
-          className="btn btn-link link-secondary"
-          onClick={handleCancelDelete}
-        >
-          Cancel
-        </button>
-      </Modal> */}
-      {/* <Header />
-      <Navbar number={1} /> */}
-      <div className="">
+
+      {/* old code */}
+      <div className="d-none">
         <div className="page-header d-print-none m-0">
           <div className="row g-2 align-items-center">
             <div className="col m-0">
@@ -1140,7 +1210,7 @@ function Employees({ onEyeButtonClick }) {
         onCopy={(e) => {
           e.preventDefault();
         }}
-        className="mt-2"
+        className="mt-2 d-none"
       >
         <div className="card">
           <div style={{ padding: "0px" }} className="card-body">
@@ -1375,6 +1445,7 @@ function Employees({ onEyeButtonClick }) {
           </div>
         </div>
       </div>
+      {/* add Employee Popup */}
       <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Employee Info{" "}
