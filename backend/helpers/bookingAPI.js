@@ -293,6 +293,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
     const newGoingToUpdate = { ...goingToUpdate, lastActionDate: tempDateToday }
 
     try {
+      const companyData = await RedesignedLeadformModel.findOne({ "Company Name": companyName })
       // Find the document by _id and update it with the updatedBooking data
       const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
         {
@@ -306,15 +307,11 @@ router.post("/update-redesigned-final-form/:CompanyName",
       if (!updatedDocument) {
         return res.status(404).json({ error: "Document not found" });
       }
-      const serviceNames = newGoingToUpdate.services.map(service => service.serviceName);
-      // const serviceDataFromMoreDocument = moreDocument.services.map(service => {
-      //   return newData.find(obj => obj._id === service._id);
-      // }).filter(serviceData => serviceData !== undefined); // Filter out any undefined results
+      const serviceNames = companyData.services.map(service => service.serviceName);
+      console.log("companydata", companyData)
+      console.log("newGoingToUpdate", newGoingToUpdate);
+      console.log("serviceNames", serviceNames);
 
-      // If you want to log or use the results
-
-      console.log("newGoingToUpdate", newGoingToUpdate)
-      console.log("serviceNames", serviceNames)
       // Update RMCertificationModel
       for (const serviceName of serviceNames) {
         const existingRmCertData = await RMCertificationModel.findOne({
@@ -323,52 +320,70 @@ router.post("/update-redesigned-final-form/:CompanyName",
         });
 
         if (existingRmCertData) {
-          const serviceDataMoreDucmonet = newGoingToUpdate.services.find(service => service.serviceName === existingRmCertData.serviceName);
-          console.log("servicesdatamoredocument", serviceDataMoreDucmonet)
-          // Find the relevant service data from newData
-          const serviceData = newGoingToUpdate.services.find(service => service.serviceName === serviceName);
+          // Find the relevant service data from newGoingToUpdate
+          const serviceData = newGoingToUpdate.services.find(service => 
+            service.serviceName === serviceName);
 
-          console.log("serviceData", serviceData)
-          // Create updatedFields object to merge existing data with newData
-          const updatedFields = {
-            ...existingRmCertData.toObject(), // Copy existing fields
-            bdeName: newGoingToUpdate.bdeName,
-            bdeEmail: newGoingToUpdate.bdeEmail,
-            bdmName: newGoingToUpdate.bdmName,
-            bdmType: newGoingToUpdate.bdmType,
-            bookingDate: newGoingToUpdate.bookingDate,
-            paymentMethod: newGoingToUpdate.paymentMethod,
-            caCase: newGoingToUpdate.caCase,
-            caNumber: newGoingToUpdate.caNumber,
-            caEmail: newGoingToUpdate.caEmail,
-            serviceName: serviceData.serviceName, // Update service name
-            totalPaymentWOGST: serviceData.totalPaymentWOGST, // Update totalPaymentWOGST
-            totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
-            withGST: serviceData.withGST, // Update withGST
-            withDSC: serviceData.withDSC, // Update withDSC
-            firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
-            secondPayment: serviceData.secondPayment, // Update secondPayment
-            thirdPayment: serviceData.thirdPayment, // Update thirdPayment
-            fourthPayment: serviceData.fourthPayment, // Update fourthPayment
-            secondPaymentRemarks: serviceData.secondPaymentRemarks, // Update secondPaymentRemarks
-            thirdPaymentRemarks: serviceData.thirdPaymentRemarks, // Update thirdPaymentRemarks
-            fourthPaymentRemarks: serviceData.fourthPaymentRemarks, // Update fourthPaymentRemark
-            bookingPublishDate: serviceData.bookingPublishDate, // Update bookingPublishDate
-            lastActionDate: tempDateToday, // Update lastActionDate
-          };
+          if (serviceData) {
+            console.log("serviceData", serviceData);
+            // Create updatedFields object to merge existing data with newGoingToUpdate
+            const updatedFields = {
+              ...existingRmCertData.toObject(), // Copy existing fields
+              bdeName: newGoingToUpdate.bdeName,
+              bdeEmail: newGoingToUpdate.bdeEmail,
+              bdmName: newGoingToUpdate.bdmName,
+              bdmType: newGoingToUpdate.bdmType,
+              bookingDate: newGoingToUpdate.bookingDate,
+              paymentMethod: newGoingToUpdate.paymentMethod,
+              caCase: newGoingToUpdate.caCase,
+              caNumber: newGoingToUpdate.caNumber,
+              caEmail: newGoingToUpdate.caEmail,
+              serviceName: serviceData.serviceName, // Update service name
+              totalPaymentWOGST: serviceData.totalPaymentWOGST, // Update totalPaymentWOGST
+              totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
+              withGST: serviceData.withGST, // Update withGST
+              withDSC: serviceData.withDSC, // Update withDSC
+              firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
+              secondPayment: serviceData.secondPayment, // Update secondPayment
+              thirdPayment: serviceData.thirdPayment, // Update thirdPayment
+              fourthPayment: serviceData.fourthPayment, // Update fourthPayment
+              secondPaymentRemarks: serviceData.secondPaymentRemarks, // Update secondPaymentRemarks
+              thirdPaymentRemarks: serviceData.thirdPaymentRemarks, // Update thirdPaymentRemarks
+              fourthPaymentRemarks: serviceData.fourthPaymentRemarks, // Update fourthPaymentRemark
+              bookingPublishDate: serviceData.bookingPublishDate, // Update bookingPublishDate
+              lastActionDate: tempDateToday, // Update lastActionDate
+            };
 
-          console.log("updatedFields", updatedFields)
+            console.log("updatedFields", updatedFields);
 
-          await RMCertificationModel.findOneAndUpdate(
-            {
+            await RMCertificationModel.findOneAndUpdate(
+              {
+                "Company Name": companyName,
+                serviceName
+              },
+              updatedFields,
+              { new: true }
+            );
+          } else {
+            // If serviceData is not found, delete the existingRmCertData
+            console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
+
+            await RMCertificationModel.deleteOne({
               "Company Name": companyName,
               serviceName
-            },
-            updatedFields,
-            { new: true }
-          );
+            });
+            await RedesignedLeadformModel.findOneAndUpdate(
+              {
+                "Company Name": companyName
+              },
+              {
+                $pull: { servicesTakenByRmOfCertification: serviceName } // Remove serviceName from rmtakenservices array
+              }
+            );
+          }
         }
       }
+
       const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": companyName },
         { assigned: "Accept" },
@@ -388,7 +403,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
       socketIO.emit('booking-updated', { name: boom.bdeName, companyName: companyName })
       res
         .status(200)
-        .json({ message: "Document updated successfully", updatedDocument });
+        .json({ message: "Document updated successfully"});
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -466,7 +481,8 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
             Step5Status: newData.Step5Status,
             remainingPayments: [],
             otherDocs: newOtherDocs,
-            paymentReceipt: newPaymentReceipt
+            paymentReceipt: newPaymentReceipt,
+            servicesTakenByRmOfCertification: moreDocument.servicesTakenByRmOfCertification,
           }
         }) : await RedesignedLeadformModel.findOneAndUpdate(
           {
@@ -477,21 +493,17 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
             [`moreBookings.${bookingIndex - 1}`]: {
               bdeName: newData.bdeName, bdmType: newData.bdmType, bdeEmail: newData.bdeEmail, bdmName: newData.bdmName, otherBdmName: newData.otherBdmName, bdmEmail: newData.bdmEmail, bookingDate: newData.bookingDate, bookingSource: newData.bookingSource, otherBookingSource: newData.otherBookingSource, numberOfServices: newData.numberOfServices, services: newData.services, caCase: newData.caCase, caNumber: newData.caNumber, caEmail: newData.caEmail, caCommission: newData.caCommission,
               paymentMethod: newData.paymentMethod, totalAmount: newData.totalAmount, receivedAmount: newData.receivedAmount, pendingAmount: newData.pendingAmount,
-              generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: moreDocument.otherDocs, paymentReceipt: moreDocument.paymentReceipt
+              generatedTotalAmount: newData.generatedTotalAmount, generatedReceivedAmount: newData.generatedReceivedAmount, Step1Status: newData.Step1Status, Step2Status: newData.Step2Status, Step3Status: newData.Step3Status, Step4Status: newData.Step4Status, Step5Status: newData.Step5Status, remainingPayments: [], otherDocs: moreDocument.otherDocs, paymentReceipt: moreDocument.paymentReceipt,
+              servicesTakenByRmOfCertification: moreDocument.servicesTakenByRmOfCertification,
             }
           },
           // Set all properties except "moreBookings"
           { new: true } // Return the updated document
         );
       const serviceNames = moreDocument.services.map(service => service.serviceName);
-      // const serviceDataFromMoreDocument = moreDocument.services.map(service => {
-      //   return newData.find(obj => obj._id === service._id);
-      // }).filter(serviceData => serviceData !== undefined); // Filter out any undefined results
 
-      // If you want to log or use the results
+      console.log("serviceNames", serviceNames);
 
-
-      console.log("serviceNames", serviceNames)
       // Update RMCertificationModel
       for (const serviceName of serviceNames) {
         const existingRmCertData = await RMCertificationModel.findOne({
@@ -500,52 +512,73 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
         });
 
         if (existingRmCertData) {
-          const serviceDataMoreDucmonet = moreDocument.services.find(service => service.serviceName === existingRmCertData.serviceName);
-          console.log("servicesdatamoredocument", serviceDataMoreDucmonet)
           // Find the relevant service data from newData
           const serviceData = newData.services.find(service => service.serviceName === serviceName);
 
-          console.log("serviceData", serviceData)
-          // Create updatedFields object to merge existing data with newData
-          const updatedFields = {
-            ...existingRmCertData.toObject(), // Copy existing fields
-            bdeName: newData.bdeName,
-            bdeEmail: newData.bdeEmail,
-            bdmName: newData.bdmName,
-            bdmType: newData.bdmType,
-            bookingDate: newData.bookingDate,
-            paymentMethod: newData.paymentMethod,
-            caCase: newData.caCase,
-            caNumber: newData.caNumber,
-            caEmail: newData.caEmail,
-            serviceName: serviceData.serviceName, // Update service name
-            totalPaymentWOGST: serviceData.totalPaymentWOGST, // Update totalPaymentWOGST
-            totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
-            withGST: serviceData.withGST, // Update withGST
-            withDSC: serviceData.withDSC, // Update withDSC
-            firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
-            secondPayment: serviceData.secondPayment, // Update secondPayment
-            thirdPayment: serviceData.thirdPayment, // Update thirdPayment
-            fourthPayment: serviceData.fourthPayment, // Update fourthPayment
-            secondPaymentRemarks: serviceData.secondPaymentRemarks, // Update secondPaymentRemarks
-            thirdPaymentRemarks: serviceData.thirdPaymentRemarks, // Update thirdPaymentRemarks
-            fourthPaymentRemarks: serviceData.fourthPaymentRemarks, // Update fourthPaymentRemark
-            bookingPublishDate: serviceData.bookingPublishDate, // Update bookingPublishDate
-            lastActionDate: newTempDate, // Update lastActionDate
-          };
+          if (serviceData) {
+            console.log("serviceData", serviceData);
+            // Create updatedFields object to merge existing data with newData
+            const updatedFields = {
+              ...existingRmCertData.toObject(), // Copy existing fields
+              bdeName: newData.bdeName,
+              bdeEmail: newData.bdeEmail,
+              bdmName: newData.bdmName,
+              bdmType: newData.bdmType,
+              bookingDate: newData.bookingDate,
+              paymentMethod: newData.paymentMethod,
+              caCase: newData.caCase,
+              caNumber: newData.caNumber,
+              caEmail: newData.caEmail,
+              serviceName: serviceData.serviceName, // Update service name
+              totalPaymentWOGST: serviceData.totalPaymentWOGST, // Update totalPaymentWOGST
+              totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
+              withGST: serviceData.withGST, // Update withGST
+              withDSC: serviceData.withDSC, // Update withDSC
+              firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
+              secondPayment: serviceData.secondPayment, // Update secondPayment
+              thirdPayment: serviceData.thirdPayment, // Update thirdPayment
+              fourthPayment: serviceData.fourthPayment, // Update fourthPayment
+              secondPaymentRemarks: serviceData.secondPaymentRemarks, // Update secondPaymentRemarks
+              thirdPaymentRemarks: serviceData.thirdPaymentRemarks, // Update thirdPaymentRemarks
+              fourthPaymentRemarks: serviceData.fourthPaymentRemarks, // Update fourthPaymentRemark
+              bookingPublishDate: serviceData.bookingPublishDate, // Update bookingPublishDate
+              lastActionDate: newTempDate, // Update lastActionDate
+            };
 
-          console.log("updatedFields", updatedFields)
+            console.log("updatedFields", updatedFields);
 
-          await RMCertificationModel.findOneAndUpdate(
-            {
+            await RMCertificationModel.findOneAndUpdate(
+              {
+                "Company Name": CompanyName,
+                serviceName
+              },
+              updatedFields,
+              { new: true }
+            );
+          } else {
+            // If serviceData is not found, delete the existingRmCertData
+            console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
+
+            await RMCertificationModel.deleteOne({
               "Company Name": CompanyName,
               serviceName
-            },
-            updatedFields,
-            { new: true }
-          );
+            });
+            await RedesignedLeadformModel.findOneAndUpdate(
+              {
+                "Company Name": CompanyName
+              },
+              {
+                $pull: {
+                  [`moreBookings.${bookingIndex - 1}.servicesTakenByRmOfCertification`]: serviceName // Remove serviceName from the array
+                }
+              },
+              { new: true } // Optionally return the updated document
+            );
+            
+          }
         }
       }
+
       const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": CompanyName },
         { assigned: "Accept" },
