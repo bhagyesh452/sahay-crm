@@ -55,7 +55,7 @@ function BdmDashboard() {
   });
 
   useEffect(() => {
-    document.title = `BDM-Sahay-CRM`;
+    document.title = `Floor-Manager-Sahay-CRM`;
   }, []);
 
   const fetchData = async () => {

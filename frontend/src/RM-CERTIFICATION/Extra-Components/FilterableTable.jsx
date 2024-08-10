@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+
 
 const FilterableTable = ({ data, onFilter, filterField }) => {
     const [selectedFilters, setSelectedFilters] = useState([]);
@@ -6,14 +8,14 @@ const FilterableTable = ({ data, onFilter, filterField }) => {
 
     useEffect(() => {
         if (filterField) {
-            console.log("filterField" , filterField)
-            if (filterField === "Company Name"){
+            console.log("filterField", filterField)
+            if (filterField === "Company Name") {
                 const values = data.map(item => item["Company Name"]);
-                console.log("Values" , values)
-                
+                console.log("Values", values)
+
                 setColumnValues(values);
             }
-            
+
         } else {
             setColumnValues([]);
         }

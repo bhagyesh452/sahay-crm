@@ -601,7 +601,9 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     ThirdTimeSubmitDate,
     movedFromMainCategoryStatus,
     movedToMainCategoryStatus,
-    lastAttemptSubmitted } = req.body;
+    lastAttemptSubmitted,
+    submittedOn
+   } = req.body;
   const socketIO = req.io;
   //console.log(req.body);
 
@@ -615,15 +617,15 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     }
 
     // Determine the submittedOn date
-    let submittedOn = company.submittedOn;
+    // let submittedOn = company.submittedOn;
     let updateFields = {}; // Fields to be updated
 
-    if (subCategoryStatus !== "Undo") {
-      submittedOn = (mainCategoryStatus === "Submitted")
-        ? company.submittedOn || new Date()  // Use existing submittedOn or current date
-        : (subCategoryStatus === "Submitted")
-          ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
-          : company.submittedOn;  // Retain existing submittedOn otherwise
+     if (subCategoryStatus !== "Undo") {
+    //   submittedOn = (mainCategoryStatus === "Submitted")
+    //     ? company.submittedOn || new Date()  // Use existing submittedOn or current date
+    //     : (subCategoryStatus === "Submitted")
+    //       ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
+    //       : company.submittedOn;  // Retain existing submittedOn otherwise
 
       // Conditionally include dateOfChangingMainStatus
       if (["Process", "Approved", "Submitted", "Hold", "Defaulter", "Ready To Submit"].includes(subCategoryStatus)) {
@@ -643,12 +645,14 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           previousSubCategoryStatus: previousSubCategoryStatus,
           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : company.SecondTimeSubmitDate,
           ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : company.ThirdTimeSubmitDate,
-          lastAttemptSubmitted:lastAttemptSubmitted
+          lastAttemptSubmitted:lastAttemptSubmitted,
+          submittedOn : submittedOn ? submittedOn : new Date()
         },
         { new: true }
       );
 
       console.log("updatedcompany", updatedCompany)
+      console.log("submittedOn" , submittedOn)
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");

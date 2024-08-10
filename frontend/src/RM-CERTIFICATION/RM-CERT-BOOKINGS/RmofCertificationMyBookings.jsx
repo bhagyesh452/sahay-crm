@@ -59,6 +59,10 @@ function RmofCertificationMyBookings() {
             fetchRMServicesData()
         });
 
+        socket.on("booking-updated", (res) => {
+            fetchRMServicesData()
+        });
+
 
         return () => {
             socket.disconnect();

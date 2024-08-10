@@ -43,12 +43,12 @@ function Navbar({userId}) {
                             <ul className="navbar-nav">
                                 <li className="nav-item" 
                                     class={
-                                        location.pathname === `/bdmdashboard/${userId}` ? "nav-item active" : "nav-item"
+                                        location.pathname === `/floormanager/dashboard/${userId}` ? "nav-item active" : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
                                         to={{
-                                            pathname: `/bdmdashboard/${userId}`
+                                            pathname: `/floormanager/dashboard/${userId}`
                                         }}
 
                                     >
@@ -79,12 +79,12 @@ function Navbar({userId}) {
                                 </li>
                                 <li className="nav-item"
                                     class={
-                                        location.pathname === `/bdm/bdmleads/${userId}` ? "nav-item active" : "nav-item"
+                                        location.pathname === `/floormanager/leads/${userId}` ? "nav-item active" : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
                                         to={{
-                                            pathname: `/bdm/bdmleads/${userId}`,
+                                            pathname: `/floormanager/leads/${userId}`,
                                         }}
                                     >
                                         <a className="nav-link" href="./">
@@ -97,14 +97,14 @@ function Navbar({userId}) {
                                 </li>
                                 <li
                                     className={
-                                        location.pathname === `/bdm/bdmteamleads/${userId}`
+                                        location.pathname === `/floormanager/teamleads/${userId}`
                                             ? "nav-item active"
                                             : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
                                         to={{
-                                            pathname:`/bdm/bdmteamleads/${userId}`
+                                            pathname:`/floormanager/teamleads/${userId}`
                                         }}
                                     >
                                         <a className="nav-link" href="./">
@@ -118,14 +118,14 @@ function Navbar({userId}) {
                                 </li>
                                 <li
                                     className={
-                                        location.pathname === `/bdm/bdmBookings/${userId}`
+                                        location.pathname === `/floormanager/bookings/${userId}`
                                             ? "nav-item active"
                                             : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
                                         to={{
-                                            pathname:`/bdm/bdmBookings/${userId}`
+                                            pathname:`/floormanager/bookings/${userId}`
                                         }}
                                     >
                                         <a className="nav-link" href="./">

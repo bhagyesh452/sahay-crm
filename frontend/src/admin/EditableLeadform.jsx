@@ -965,6 +965,41 @@ export default function EditableLeadform({
     }
   };
 
+  const servicesForFunding = [
+    "Pitch Deck Development ",
+    "Financial Modeling",
+    "DPR Development",
+    "CMA Report Development",
+    "Company Profile Write-Up",
+    "Business Profile",
+    "Seed Funding Support",
+    "Seed Fund Application",
+    "Angel Funding Support",
+    "VC Funding Support",
+    "Crowd Funding Support",
+    "I-Create",
+    "I-Create Application",
+    "Chunauti",
+    "Nidhi Seed Support Scheme",
+    "Nidhi Prayash Yojna",
+    "NAIF",
+    "Raftaar",
+    "CSR Funding",
+    "Stand-Up India",
+    "PMEGP",
+    "USAID",
+    "UP Grant",
+    "DBS Grant",
+    "DBS Grant Application",
+    "MSME Innovation",
+    "MSME Hackathon",
+    "Gujarat Grant",
+    "CGTMSC",
+    "Mudra Loan",
+    "SIDBI Loan",
+    "Incubation Support"
+  ];
+
   const renderServices = () => {
     const services = [];
     console.log(leadData.services.length, Number(totalServices));
@@ -1351,9 +1386,22 @@ export default function EditableLeadform({
                               <option value="AFTER CERTIFICATE">
                                 AFTER CERTIFICATE
                               </option>
-                              <option value="AFTER APPROVAL">
-                                AFTER APPROVAL
-                              </option>
+                              {["Income Tax Exemption", "Income Tax Exemption Application"].includes(
+                                leadData.services[i].serviceName
+                              ) ? (
+                                <option value="SUCCESSFULLY SUBMIT">
+                                  SUCCESSFULLY SUBMIT
+                                </option>
+                              ) : (
+                                <option
+                                  value="AFTER APPROVAL"
+                                  disabled={servicesForFunding.some(
+                                    (s) => s === leadData.services[i].serviceName
+                                  )}
+                                >
+                                  AFTER APPROVAL
+                                </option>
+                              )}
                               <option value="AFTER SERVICE COMPLETION">
                                 AFTER SERVICE COMPLETION
                               </option>

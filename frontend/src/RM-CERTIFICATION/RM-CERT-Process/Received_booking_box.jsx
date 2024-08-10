@@ -59,6 +59,7 @@ function Received_booking_box() {
         totalPaymentWGST: 0,
         withGST: "",
         withDSC: false,
+        paymentTerms:"",
         firstPayment: 0,
         secondPayment: 0,
         thirdPayment: 0,
@@ -114,6 +115,10 @@ function Received_booking_box() {
             transports: ['websocket'],
         });
 
+        socket.on("booking-updated", (res) => {
+            fetchRedesignedFormData()
+        });
+
         socket.on("booking-submitted", (res) => {
             fetchRedesignedFormData()
         });
@@ -166,7 +171,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-09");
+        const today = new Date("2024-05-09");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
@@ -675,7 +680,8 @@ function Received_booking_box() {
                     totalPaymentWOGST: serviceData.totalPaymentWOGST || 0, // Default to 0 if not provided
                     totalPaymentWGST: serviceData.totalPaymentWGST || 0,
                     withGST: serviceData.withGST,
-                    withDSC: serviceData.withDSC || 0, // Default to 0 if not provided
+                    withDSC: serviceData.withDSC || 0,
+                    paymentTerms:serviceData.paymentTerms || "", // Default to 0 if not provided
                     firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
                     secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
                     thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
@@ -696,6 +702,7 @@ function Received_booking_box() {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
             }
         });
+        console.log("dataToSend" , dataToSend)
 
         if (dataToSend.length !== 0) {
             setOpenBacdrop(true)

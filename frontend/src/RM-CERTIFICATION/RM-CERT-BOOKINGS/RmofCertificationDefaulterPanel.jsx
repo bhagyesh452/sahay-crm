@@ -80,6 +80,10 @@ function RmofCertificationDefaulterPanel() {
             fetchData()
         });
 
+        socket.on("booking-updated", (res) => {
+            fetchData()
+        });
+
         return () => {
             socket.disconnect();
         };
@@ -544,19 +548,23 @@ function RmofCertificationDefaulterPanel() {
                                         </div>
                                     </td>
                                     <td>₹ {parseInt(obj.totalPaymentWGST || 0 , 10).toLocaleString('en-IN')}</td>
-                                        <td>
+                                    <td>
                                             ₹ {(
-                                                (parseInt(obj.firstPayment || 0, 10) + parseInt(obj.pendingRecievedPayment || 0, 10))
+                                                (parseInt(
+                                                    (obj.paymentTerms === 'Full Advanced' ? obj.totalPaymentWGST : obj.firstPayment) || 0,
+                                                    10
+                                                ) + parseInt(obj.pendingRecievedPayment || 0, 10))
                                                     .toLocaleString('en-IN')
                                             )}
                                         </td>
                                         <td>
                                             ₹ {(
                                                 (parseInt(obj.totalPaymentWGST || 0, 10) -
-                                                    (parseInt(obj.firstPayment || 0, 10) +
-                                                        parseInt(obj.pendingRecievedPayment || 0, 10)))
-                                            ).toLocaleString('en-IN')
-                                            }
+                                                    (parseInt(
+                                                        (obj.paymentTerms === 'Full Advanced' ? obj.totalPaymentWGST : obj.firstPayment) || 0,
+                                                        10
+                                                    ) + parseInt(obj.pendingRecievedPayment || 0, 10)))
+                                            ).toLocaleString('en-IN')}
                                         </td>
                                     <td className="rm-sticky-action">
                                         <button className="action-btn action-btn-primary" 

@@ -223,7 +223,7 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo?.empId && { empID: employeementInfo.empId }),
       ...(employeementInfo?.department && { department: employeementInfo.department }),
       ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
-      ...(employeementInfo?.designation && { designation: newDesignation }),
+      ...(oldDesignation && { designation: newDesignation }),
       ...(employeementInfo?.designation && {
         bdmWork:
           employeementInfo.designation === "Business Development Manager" ||
@@ -406,7 +406,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
       ...(branch && { branchOffice: branch }),
       ...(manager && { reportingManager: manager }),
       ...(designation && { newDesignation: designation }),
-      ...(designation && { designation: newDesignation }),
+      ...(oldDesignation && { designation: newDesignation }),
       ...(designation && {
         bdmWork:
           designation === "Business Development Manager" ||
