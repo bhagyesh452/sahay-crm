@@ -218,13 +218,13 @@ function RmofCertificationMyBookings() {
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
                             <div className="d-flex aling-items-center justify-content-between">
-                                <div className="btn-group" role="group" aria-label="Basic example">
+                                {/* <div className="btn-group" role="group" aria-label="Basic example">
                                     <button type="button" className="btn mybtn"
                                         onClick={() => handleTabClick(activeTab)}
                                     >
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
-                                </div>
+                                </div> */}
                                 <div className="d-flex align-items-center">
                                     {/* {selectedRows.length !== 0 && (
                                     <div className="selection-data" >
