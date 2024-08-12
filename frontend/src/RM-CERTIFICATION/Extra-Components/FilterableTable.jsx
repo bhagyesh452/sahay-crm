@@ -179,23 +179,21 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                         </div>
                     </div>
                 </div>
-                <div className='inco_inner'>
-                    {columnValues.map(value => (
-                        <div key={value} className="inco-subFilter d-flex">
-                            <div style={{ marginRight: "5px" }}>
-                                <input
-                                    type="checkbox"
-                                    value={value}
-                                    onChange={handleCheckboxChange}
-                                    checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
-                                />
-                            </div>
-                            <div className="filter-val">
-                                {value}
-                            </div>
+                {columnValues.map(value => (
+                    <div key={value} className="inco-subFilter d-flex">
+                        <div style={{ marginRight: "5px" }}>
+                            <input
+                                type="checkbox"
+                                value={value}
+                                onChange={handleCheckboxChange}
+                                checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
+                            />
                         </div>
-                    ))}
-                </div>
+                        <div className="filter-val">
+                            {value}
+                        </div>
+                    </div>
+                ))}
                 <div className="inco-subFilter">
                     <SwapVertIcon style={{ height: "16px" }} />
                     None
