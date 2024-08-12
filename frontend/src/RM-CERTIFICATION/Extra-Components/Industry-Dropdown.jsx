@@ -475,7 +475,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
 
     //console.log("mainStatus" , mainStatus)
 
-    console.log("industry" , industry)
+    //console.log("industry" , industry)
     const [isDisabled, setIsDisabled] = useState(!industry)
 
     // useEffect(()=>{

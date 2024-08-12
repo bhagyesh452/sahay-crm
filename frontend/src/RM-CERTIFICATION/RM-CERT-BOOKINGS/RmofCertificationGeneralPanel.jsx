@@ -255,25 +255,8 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         }
     };
 
-    // const handleFilterClick = (field) => {
-    //     const ref = fieldRefs.current[field];
-    //     if (ref) {
-    //         if (filterField === field) {
-    //             setShowFilterMenu(prev => !prev);
-    //         } else {
-    //             setFilterField(field);
-    //             const rect = ref.getBoundingClientRect();
-    //             setFilterPosition({
-    //                 top: rect.bottom + window.scrollY,
-    //                 left: rect.left + window.scrollX
-    //             });
-    //             setShowFilterMenu(true);
-    //         }
-    //     }
-    // };
-
-    // console.log("filterPositin", filterPosition)
-    // console.log("emservices" , rmServicesData)
+    console.log("rmservicesdata" , rmServicesData)
+  
 
 
     return (
@@ -459,7 +442,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -544,7 +527,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}

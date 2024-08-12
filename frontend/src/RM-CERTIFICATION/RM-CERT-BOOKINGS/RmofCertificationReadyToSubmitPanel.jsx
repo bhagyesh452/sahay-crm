@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback,useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
@@ -54,7 +54,7 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
     const [openBacdrop, setOpenBacdrop] = useState(false);
     const [completeRmData, setcompleteRmData] = useState([])
     const [dataToFilter, setdataToFilter] = useState([]);
-    
+
 
 
     function formatDatePro(inputDate) {
@@ -122,10 +122,10 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                         const dateB = new Date(b.dateOfChangingMainStatus);
                         return dateB - dateA; // Sort in descending order
                     });
-                    setRmServicesData(filteredData);
-                    setRmServicesData(filteredData);
-                    setcompleteRmData(filteredData)
-                    setdataToFilter(filteredData)
+                setRmServicesData(filteredData);
+                setRmServicesData(filteredData);
+                setcompleteRmData(filteredData)
+                setdataToFilter(filteredData)
             } else {
                 console.error("Expected an array for services data, but got:", servicesData);
             }
@@ -278,66 +278,36 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
         }
     };
 
-     // ------------filter functions----------------------------
-     const [showFilterMenu, setShowFilterMenu] = useState(false);
-     const [filteredData, setFilteredData] = useState(rmServicesData);
-     const [filterField, setFilterField] = useState("")
- 
-     const handleFilter = (newData) => {
-         setRmServicesData(newData);
-     };
-     const [filterPosition, setFilterPosition] = useState({ top: 0, left: 0 });
-     const fieldRefs = useRef({});
- 
-     const handleFilterClick = (field) => {
-         const ref = fieldRefs.current[field];
-         if (ref) {
-             if (filterField === field) {
-                 setShowFilterMenu(prev => !prev);
-             } else {
-                 setFilterField(field);
-                 const rect = ref.getBoundingClientRect();
-                 if (field === "bookingDate") {
-                     setFilterPosition({
-                         top: -6.837,
-                         left: -216.95
-                     });
-                 } else if (field === "Company Name") {
-                     setFilterPosition({
-                         top: -6.837,
-                         left: -4.95
-                     });
-                 } else if (field === "Company Number") {
-                     setFilterPosition({
-                         top: -6.837,
-                         left: 230.05
-                     });
-                 } else if (field === "Company Email") {
-                     setFilterPosition({
-                         top: -6.837,
-                         left: 410.05
-                     });
-                 } else if (field === "caNumber") {
-                     setFilterPosition({
-                         top: -6.837,
-                         left: 332.05
-                     });
-                 } else if (field === "receivedPayment") {
-                     setFilterPosition({
-                         top: -6.837,
-                         left: 400
-                     });
-                 } else if (field === "pendingPayment") {
-                     setFilterPosition({
-                         top: -6.837,
-                         left: 430
-                     });
-                 }
- 
-                 setShowFilterMenu(true);
-             }
-         }
-     };
+    // ------------filter functions----------------------------
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filteredData, setFilteredData] = useState(rmServicesData);
+    const [filterField, setFilterField] = useState("")
+
+    // useEffect(() => {
+    //     setShowFilterMenu(showFilter);
+    // }, [showFilter]);
+
+    const handleFilter = (newData) => {
+        setRmServicesData(newData);
+    };
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            // Toggle off if the same field is clicked again
+            setShowFilterMenu(!showFilterMenu);
+        } else {
+            // Set the active field and show filter menu
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+
+            // Get the position of the clicked filter icon
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
 
 
 
@@ -360,7 +330,7 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                 <tr className="tr-sticky">
                                     <th className="rm-sticky-left-1">Sr.No</th>
                                     <th className="rm-sticky-left-2">
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['Company Name'] = el}>
                                                 Company Name
                                             </div>
@@ -370,10 +340,25 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("Company Name")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === "Company Name" && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative '>
                                             <div ref={el => fieldRefs.current['Company Number'] = el}>
                                                 Company Number
                                             </div>
@@ -383,10 +368,25 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("Company Number")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === "Company Number" && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['Company Email'] = el}>
                                                 Company Email
                                             </div>
@@ -396,10 +396,25 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("Company Email")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Email' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['caNumber'] = el}>
                                                 CA Number
                                             </div >
@@ -409,10 +424,26 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("caNumber")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'caNumber' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
+
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['serviceName'] = el}>
                                                 Service Name
                                             </div>
@@ -422,10 +453,25 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("serviceName")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'serviceName' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={rmServicesData}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Status
                                             </div>
@@ -435,11 +481,26 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("subCategoryStatus")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>Remark</th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['websiteLink'] = el}>
                                                 Website Link/Brief
                                             </div>
@@ -449,10 +510,25 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("websiteLink")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'websiteLink' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['withDSC'] = el}>
                                                 DSC Applicable
                                             </div>
@@ -462,10 +538,25 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("withDSC")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'withDSC' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['dscStatus'] = el}>
                                                 DSC Status
                                             </div>
@@ -475,10 +566,26 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("dscStatus")}
                                                     />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'dscStatus' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
+
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['contentWriter'] = el}>
                                                 Content Writer
                                             </div>
@@ -488,10 +595,24 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("contentWriter")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'contentWriter' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['contentStatus'] = el}>
                                                 Content Status
                                             </div>
@@ -501,10 +622,24 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("contentStatus")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'contentStatus' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
                                                 Brochure Designer
                                             </div>
@@ -514,10 +649,24 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("brochureDesigner")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'brochureDesigner' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['brochureStatus'] = el}>
                                                 Brochure Status
                                             </div>
@@ -527,10 +676,24 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("brochureStatus")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'brochureStatus' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['nswsMailId'] = el}>
                                                 NSWS Email Id
                                             </div>
@@ -540,10 +703,24 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("nswsMailId")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'nswsMailId' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['nswsPaswsord'] = el}>
                                                 NSWS Password
                                             </div>
@@ -553,10 +730,24 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("nswsPaswsord")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['industry'] = el}>
                                                 Industry
                                             </div>
@@ -566,10 +757,24 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("industry")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'industry' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['sector'] = el}>
                                                 Sector
                                             </div>
@@ -579,86 +784,174 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("sector")}
                                                     />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'sector' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
                                         <div
-                                        className='d-flex align-items-center justify-content-center'
-                                    >
-                                        <div ref={el => fieldRefs.current['bookingDate'] = el}>
-                                            Booking Date
-                                        </div>
-                                        {showFilter &&
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter
-                                                    onClick={() => handleFilterClick("bookingDate")}
-                                                />
-                                            </div>}
-                                    </div></th>
+                                            className='d-flex align-items-center justify-content-center position-relative'
+                                        >
+                                            <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                                                Booking Date
+                                            </div>
+                                            {showFilter &&
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => handleFilterClick("bookingDate")}
+                                                    />
+                                                </div>}
+                                        </div></th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bdeName'] = el}>
                                                 BDE Name
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => handleFilterClick("bdeName")} 
-                                                        />
+                                                        onClick={() => handleFilterClick("bdeName")}
+                                                    />
                                                 </div>}
+                                            {showFilterMenu && activeFilterField === 'bookingDate' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bdmName'] = el}>
                                                 BDM Name
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                       onClick={() => handleFilterClick("bdmName")}
-                                                        />
+                                                        onClick={() => handleFilterClick("bdmName")}
+                                                    />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={rmServicesData}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
                                                 Total Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                      onClick={() => handleFilterClick("totalPaymentWGST")}
-                                                        />
+                                                        onClick={() => handleFilterClick("totalPaymentWGST")}
+                                                    />
                                                 </div>}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['receivedPayment'] = el}>
                                                 Recieved Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                         onClick={() => handleFilterClick("receivedPayment")}
-                                                        />
+                                                        onClick={() => handleFilterClick("receivedPayment")}
+                                                    />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'receivedPayment' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
-                                            <div  ref={el => fieldRefs.current['pendingPayment'] = el}>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['pendingPayment'] = el}>
                                                 Pending Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                     onClick={() => handleFilterClick("pendingPayment")}
+                                                        onClick={() => handleFilterClick("pendingPayment")}
 
-                                                        />
+                                                    />
                                                 </div>}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th className="rm-sticky-action">Action</th>
@@ -856,7 +1149,7 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                                 <div>{obj.bdmName}</div>
                                             </div>
                                         </td>
-                                        <td>₹ {parseInt(obj.totalPaymentWGST || 0 , 10).toLocaleString('en-IN')}</td>
+                                        <td>₹ {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString('en-IN')}</td>
                                         <td>
                                             ₹ {(
                                                 (parseInt(
@@ -884,7 +1177,7 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                             //     )
                                             // )}
 
-                                        ><FaRegEye /></button>
+                                            ><FaRegEye /></button>
                                         </td>
                                     </tr>
                                 ))}
@@ -982,7 +1275,7 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                 </button>
             </Dialog>
 
-              {/* ---------------------filter component--------------------------- */}
+            {/* ---------------------filter component---------------------------
               {showFilterMenu && (
                 <div
                     className="filter-menu"
@@ -996,7 +1289,7 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                         dataForFilter={dataToFilter}
                     />
                 </div>
-            )}
+            )} */}
         </div>
     )
 }
