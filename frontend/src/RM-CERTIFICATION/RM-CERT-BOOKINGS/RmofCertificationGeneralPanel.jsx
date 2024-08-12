@@ -232,13 +232,15 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     //-------------------filter method-------------------------------
     const [filteredData, setFilteredData] = useState(rmServicesData);
     const [filterField, setFilterField] = useState("")
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
 
     const handleFilter = (newData) => {
         setRmServicesData(newData);
     };
-    const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const fieldRefs = useRef({});
+   
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -256,6 +258,23 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     };
 
     console.log("rmservicesdata" , rmServicesData)
+
+    // Effect to handle clicks outside the filter menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                setShowFilterMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    
   
 
 
@@ -295,6 +314,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -322,6 +342,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -350,6 +371,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -378,6 +400,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -406,6 +429,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -434,6 +458,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -462,6 +487,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -491,6 +517,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -519,6 +546,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -547,6 +575,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bdmName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -575,6 +604,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -603,6 +633,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                           {/* ---------------------filter component--------------------------- */}
                                           {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -632,6 +663,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                           {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
