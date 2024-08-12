@@ -541,7 +541,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
 
                                                         />
                                                 </div>}
-                                            <div className='filter-menu'>
+                                            <div className='filter-menu' >
                                             
                                             </div>
                                         </div>

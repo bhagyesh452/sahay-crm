@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import EmpDfaullt from "../../../static/EmployeeImg/office-man.png";
-
+import { FaChevronLeft } from "react-icons/fa";
+import { FaChevronRight } from "react-icons/fa";
 
 
 function ViewAttendance() {
 
     return (
         <div>
+            <div className='hr_a_slct_month mb-3 mt-2'>
+                <div className='d-flex align-items-center justify-content-center'>
+                    <div className='LarrowMpnth'>
+                        <FaChevronLeft />
+                    </div>
+                    <div className='hasmonth'>
+                        January
+                    </div>
+                    <div className='RarrowMpnth'>
+                        <FaChevronRight />
+                    </div>
+                </div>
+            </div>
             <div className="table table-responsive table-style-4 m-0">
                 <table className="table table-vcenter table-nowrap attendance-table">
                     <thead className="tr-sticky">
