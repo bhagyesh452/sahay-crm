@@ -1060,10 +1060,10 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
               <th>Designation</th>
               <th>Branch</th>
               <th>Joining Date</th>
-              <th>Probation Status</th>
+              {/* <th>Probation Status</th> */}
               <th>Added Date</th>
               <th>Status</th>
-              <th>BDM Work</th>
+              {/* <th>BDM Work</th> */}
               <th>Action</th>
             </tr>
           </thead>
@@ -1124,11 +1124,11 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                     <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
                     <td>{item.branchOffice}</td>
                     <td>{formattedDate(item.jdate)}</td>
-                    <td>
+                    {/* <td>
                       <span className={getBadgeClass(calculateProbationStatus(item.jdate))}>
                         {calculateProbationStatus(item.jdate)}
                       </span>
-                    </td>
+                    </td> */}
                     {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && (
                       <>
                         <td>
@@ -1141,8 +1141,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                             {(item.Active && item.Active.includes("GMT")) ? (
                               <div>
                                 <span style={{ color: "red", marginRight: "5px" }}>●</span>
-                                <span style={{ fontWeight: "bold", color: "rgb(170 144 144)" }}>
-                                  {formatDateWP(item.Active)}
+                                <span style={{ fontWeight: "bold", color: "rgb(170 144 144)" }} title={formatDateWP(item.Active)}>
+                                  Offline
                                 </span>
                               </div>
                             ) : (
@@ -1155,7 +1155,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         ) : (
                           <td>N/A</td>
                         )}
-                        <td>
+                        {/* <td>
                           <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                             <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
                               disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
@@ -1163,7 +1163,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                 handleChecked(item._id, item.bdmWork, item)
                               }} />
                           </Stack>
-                        </td>
+                        </td> */}
                         <td>
                           <button className="action-btn action-btn-primary">
                             <Link
