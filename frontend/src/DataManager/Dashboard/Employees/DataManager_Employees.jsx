@@ -30,9 +30,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import Modal from "react-modal";
 import { IconEye } from "@tabler/icons-react";
+import { FaWhatsapp } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
+import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
+import ClipLoader from "react-spinners/ClipLoader.js";
 import Nodata from "../../Components/Nodata/Nodata.jsx";
 
-function Employees({ onEyeButtonClick }) {
+function Employees({ onEyeButtonClick, searchValue }) {
   // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedin')==='true');
   // const handleLogin = ()=>{
   //   setIsLoggedIn(true)
@@ -41,22 +46,34 @@ function Employees({ onEyeButtonClick }) {
     onEyeButtonClick(id);
     console.log(id);
   };
+
+  const updateActiveStatus = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employee/einfo`);
+      const filterresponse = response.data.filter((employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager");
+      setData(filterresponse);
+      setFilteredData(filterresponse);
+    } catch (error) {
+      console.error('Error fetching employee info:', error);
+    }
+  };
+
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
-      path:'/socket.io',
-      reconnection: true, 
+      path: '/socket.io',
+      reconnection: true,
       transports: ['websocket'],
     });
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
-        fetchData();
+        updateActiveStatus();
       }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
     });
 
     socket.on("user-disconnected", () => {
-      fetchData();
+      updateActiveStatus();
     });
 
     return () => {
@@ -73,6 +90,17 @@ function Employees({ onEyeButtonClick }) {
   const [companyDdata, setCompanyDdata] = useState([]);
   const [nametodelete, setnametodelete] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const formattedDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
+
 
   const handleDeleteClick = (itemId, nametochange) => {
     // Open the confirm delete modal
@@ -145,27 +173,7 @@ function Employees({ onEyeButtonClick }) {
 
   const [open, openchange] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/employee/einfo`);
-      const filterresponse = response.data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager");
-      //console.log(filterresponse)
-      //console.log(response.data)
-      // Set the retrieved data in the state
-
-      setFilteredData(filterresponse);
-      setData(response.data);
-      setEmail("");
-      setEname("");
-      setNumber(0);
-      setPassword("");
-      setJdate(null);
-      setDesignation("");
-      setBranchOffice("")
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
-  };
+  
 
 
   const handleSearch = (e) => {
@@ -234,13 +242,51 @@ function Employees({ onEyeButtonClick }) {
       });
     }
   };
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(`${secretKey}/employee/einfo`);
+      const filterresponse = response.data.filter((employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager");
+      //console.log(filterresponse)
+      //console.log(response.data)
+      // Set the retrieved data in the state
+
+      setFilteredData(filterresponse);
+      setData(response.data);
+      setEmail("");
+      setEname("");
+      setNumber(0);
+      setPassword("");
+      setJdate(null);
+      setDesignation("");
+      setBranchOffice("")
+      const result = filterresponse.filter((emp) => {
+        return (
+          emp.ename?.toLowerCase().includes(searchValue) ||
+          emp.number?.toString().includes(searchValue) ||
+          emp.email?.toLowerCase().includes(searchValue) ||
+          emp.newDesignation?.toLowerCase().includes(searchValue) ||
+          emp.branchOffice?.toLowerCase().includes(searchValue)
+        );
+      });
+      console.log("Search result from employee list is :", result);
+      setSearchResult(result);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     // Fetch data from the Node.js server
     setFilteredData(data);
     // Call the fetchData function
     fetchData();
     fetchCData();
-  }, []);
+  }, [searchValue]);
+
   function formatDateWP(dateString) {
     const date = new Date(dateString);
     const today = new Date();
@@ -311,7 +357,7 @@ function Employees({ onEyeButtonClick }) {
         password: password,
         jdate: jdate,
         designation: designation,
-        branchOffice:branchOffice
+        branchOffice: branchOffice
 
       };
 
@@ -358,7 +404,7 @@ function Employees({ onEyeButtonClick }) {
           icon: "success",
         });
       }
-      console.log("datatosend" , dataToSend)
+      console.log("datatosend", dataToSend)
 
       setEmail("");
       setEname("");
@@ -499,7 +545,7 @@ function Employees({ onEyeButtonClick }) {
 
   return (
     <div>
-      <Modal
+      {/* <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         style={{
@@ -532,7 +578,8 @@ function Employees({ onEyeButtonClick }) {
         >
           Cancel
         </button>
-      </Modal>
+      </Modal> */}
+
       <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Employee Info{" "}
@@ -708,45 +755,205 @@ function Employees({ onEyeButtonClick }) {
 
       {/* <Header name={dataManagerName} />
       <Navbar number={1} name={data} /> */}
-      <div className="">
-        <div className="page-header d-print-none m-0">
-            <div className="row g-2 align-items-center">
-              <div className="col m-0">
-                {/* <!-- Page pre-title --> */}
-                <h2 className="page-title">Employees</h2>
-              </div>
-              <div style={{ width: "20vw" }} className="input-icon">
-                <span className="input-icon-addon">
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon"
-                    width="20"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                    <path d="M21 21l-6 -6" />
-                  </svg>
-                </span>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  className="form-control"
-                  placeholder="Search…"
-                  aria-label="Search in website"
-                  onChange={handleSearch}
-                />
-              </div>
 
-              {/* <!-- Page title actions --> */}
-              {/* <div className="col-auto ms-auto d-print-none">
+      <div>
+        <div className="table table-responsive table-style-3 m-0">
+          <table className="table table-vcenter table-nowrap">
+            <thead>
+              <tr className="tr-sticky">
+                <th>Sr. No</th>
+                <th>Name</th>
+                <th>Phone No</th>
+                <th>Email</th>
+                <th>Designation</th>
+                <th>Branch</th>
+                <th>Joining Date</th>
+                <th>Added Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            {isLoading ? (
+              <tbody>
+                <tr>
+                  <td colSpan="12">
+                    <div className="LoaderTDSatyle w-100">
+                      <ClipLoader
+                        color="lightgrey"
+                        loading={true}
+                        size={30}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            ) : (searchValue ? searchResult : filteredData).length !== 0 ? (
+              <tbody className="table-tbody">
+                {(searchValue ? searchResult : filteredData).map((item, index) => {
+                  const profilePhotoUrl = item.profilePhoto?.length !== 0
+                    ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
+                    : item.gender === "Male" ? MaleEmployee : FemaleEmployee;
+
+                  return (
+                    <tr key={index} style={{ border: "1px solid #ddd" }}>
+                      <td>{index + 1}</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <div className="tbl-pro-img">
+                            <img
+                              src={profilePhotoUrl}
+                              alt="Profile"
+                              className="profile-photo"
+                            />
+                          </div>
+                          <div className="">
+                            {(() => {
+                              const names = (item.ename || "").split(" ");
+                              return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                            })()}
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <a
+                          target="_blank"
+                          className="text-decoration-none text-dark"
+                          href={`https://wa.me/91${item.number}`}
+                        >
+                          {item.number}
+                          <FaWhatsapp className="text-success ml-1" style={{ fontSize: '15px' }} />
+                        </a>
+                      </td>
+                      <td>{item.email}</td>
+                      <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
+                      <td>{item.branchOffice}</td>
+                      <td>{formattedDate(item.jdate)}</td>
+                      <td>
+                        {formattedDate(item.AddedOn) === "Invalid Date"
+                          ? "06/02/2024"
+                          : formattedDate(item.AddedOn)}
+                      </td>
+                      {item.designation !== "Admin Team" ? <td>
+                        {(item.Active && item.Active.includes("GMT")) ? (
+                          <div>
+                            <span
+                              style={{ color: "red", marginRight: "5px" }}
+                            >
+                              ●
+                            </span>
+                            <span
+                              title={formattedDate(item.Active)}
+                              style={{
+                                fontWeight: "bold",
+                                color: "rgb(170 144 144)",
+                              }}
+                            >
+                              offline
+                            </span>
+                          </div>
+                        ) : (
+                          <div>
+                            <span
+                              style={{ color: "green", marginRight: "5px" }}
+                            >
+                              ●
+                            </span>
+                            <span
+                              style={{ fontWeight: "bold", color: "green" }}
+                            >
+                              Online
+                            </span>
+                          </div>
+                        )}
+                      </td> : <td>
+                        <div>
+                          <span
+                            style={{ color: "red", marginRight: "5px" }}
+                          >
+                            ●
+                          </span>
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                              color: "rgb(170 144 144)",
+                            }}
+                          >
+                            {formattedDate("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
+                          </span>
+                        </div>
+                      </td>}
+                      <td>
+                        <button className="action-btn action-btn-primary">
+                          <Link
+                            style={{ color: "black", color: 'inherit' }}
+                            to={`/datamanager/employeeLeads/${item._id}`}
+                          ><FaRegEye />
+                          </Link>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            ) : (
+              <tbody>
+                <tr>
+                  <td colSpan="12" style={{ textAlign: "center" }}>
+                    <Nodata />
+                  </td>
+                </tr>
+              </tbody>
+            )}
+
+          </table>
+        </div>
+      </div>
+
+
+
+      {/* Old Code for employee view */}
+      <div className="d-none">
+        <div className="page-header d-print-none m-0">
+          <div className="row g-2 align-items-center">
+            <div className="col m-0">
+              {/* <!-- Page pre-title --> */}
+              <h2 className="page-title">Employees</h2>
+            </div>
+            <div style={{ width: "20vw" }} className="input-icon">
+              <span className="input-icon-addon">
+                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon"
+                  width="20"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                  <path d="M21 21l-6 -6" />
+                </svg>
+              </span>
+              <input
+                type="text"
+                value={searchQuery}
+                className="form-control"
+                placeholder="Search…"
+                aria-label="Search in website"
+                onChange={handleSearch}
+              />
+            </div>
+
+            {/* <!-- Page title actions --> */}
+            {/* <div className="col-auto ms-auto d-print-none">
                 <div className="btn-list">
                   <button
                     className="btn btn-primary d-none d-sm-inline-block"
@@ -781,8 +988,8 @@ function Employees({ onEyeButtonClick }) {
                   </a>
                 </div>
               </div> */}
-            </div>
-          
+          </div>
+
         </div>
         {/* Employee table */}
         <div
@@ -791,133 +998,103 @@ function Employees({ onEyeButtonClick }) {
           }}
           className="mt-2"
         >
-            <div className="card">
-              <div style={{ padding: "0px" }} className="card-body">
-                <div
-                  id="table-default"
-                  style={{ overflow: "auto", maxHeight: "70vh" }}
+          <div className="card">
+            <div style={{ padding: "0px" }} className="card-body">
+              <div
+                id="table-default"
+                style={{ overflow: "auto", maxHeight: "70vh" }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                  }}
+                  className="table-vcenter table-nowrap"
                 >
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      border: "1px solid #ddd",
-                    }}
-                    className="table-vcenter table-nowrap"
-                  >
-                    <thead>
-                      <tr className="tr-sticky">
-                        <th>
-                          <button className="table-sort" data-sort="sort-name">
-                            Sr.No
-                          </button>
-                        </th>
-                        <th>
-                          <button onClick={sortDataByName} className="table-sort" data-sort="sort-city">
-                            Name
-                          </button>
-                        </th>
-                        <th>
-                          <button className="table-sort" data-sort="sort-type">
-                            Phone No
-                          </button>
-                        </th>
-                        <th>
-                          <button className="table-sort" data-sort="sort-score">
-                            Email
-                          </button>
-                        </th>
-                        <th>
-                          <button onClick={sortDataByJoiningDate} className="table-sort" data-sort="sort-date">
-                            Joining date
-                          </button>
-                        </th>
-                        <th>
-                          <button className="table-sort" data-sort="sort-date">
-                            Designation
-                          </button>
-                        </th>
-                        <th>
-                          <button className="table-sort" data-sort="sort-date">
-                            Branch Office
-                          </button>
-                        </th>
-                        <th>
-                          <button onClick={sortDateByAddedOn} className="table-sort" data-sort="sort-date">
-                            Added on
-                          </button>
-                        </th>
-                        <th>
-                          <button className="table-sort" data-sort="sort-date">
-                            Status
-                          </button>
-                        </th>
-                        <th>
-                          <button
-                            className="table-sort"
-                            data-sort="sort-quantity"
-                          >
-                            Action
-                          </button>
-                        </th>
+                  <thead>
+                    <tr className="tr-sticky">
+                      <th>
+                        <button className="table-sort" data-sort="sort-name">
+                          Sr.No
+                        </button>
+                      </th>
+                      <th>
+                        <button onClick={sortDataByName} className="table-sort" data-sort="sort-city">
+                          Name
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-type">
+                          Phone No
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-score">
+                          Email
+                        </button>
+                      </th>
+                      <th>
+                        <button onClick={sortDataByJoiningDate} className="table-sort" data-sort="sort-date">
+                          Joining date
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Designation
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Branch Office
+                        </button>
+                      </th>
+                      <th>
+                        <button onClick={sortDateByAddedOn} className="table-sort" data-sort="sort-date">
+                          Added on
+                        </button>
+                      </th>
+                      <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Status
+                        </button>
+                      </th>
+                      <th>
+                        <button
+                          className="table-sort"
+                          data-sort="sort-quantity"
+                        >
+                          Action
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  {filteredData.length == 0 ? (
+                    <tbody >
+                      <tr>
+                        <td
+                          className="particular"
+                          colSpan="10"
+                          style={{ textAlign: "center" }}
+                        >
+                          <Nodata />
+                        </td>
                       </tr>
-                    </thead>
-                    {filteredData.length == 0 ? (
-                      <tbody >
-                        <tr>
-                          <td
-                            className="particular"
-                            colSpan="10"
-                            style={{ textAlign: "center" }}
-                          >
-                            <Nodata />
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : (
-                      <tbody className="table-tbody" style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
-                        {filteredData.map((item, index) => (
-                          <tr key={index} style={{ border: "1px solid #ddd" }}>
-                            <td className="td-sticky">{index + 1}</td>
-                            <td>{item.ename}</td>
-                            <td>{item.number}</td>
-                            <td>{item.email}</td>
-                            <td>{formatDate(item.jdate)}</td>
-                            <td>{item.designation}</td>
-                            <td>{item.branchOffice}</td>
-                            <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
-                            {item.designation !== "Admin Team" ? <td>
-                              {(item.Active && item.Active.includes("GMT")) ? (
-                                <div>
-                                  <span
-                                    style={{ color: "red", marginRight: "5px" }}
-                                  >
-                                    ●
-                                  </span>
-                                  <span
-                                    style={{
-                                      fontWeight: "bold",
-                                      color: "rgb(170 144 144)",
-                                    }}
-                                  >
-                                    {formatDateWP(item.Active)}
-                                  </span>
-                                </div>
-                              ) : (
-                                <div>
-                                  <span
-                                    style={{ color: "green", marginRight: "5px" }}
-                                  >
-                                    ●
-                                  </span>
-                                  <span
-                                    style={{ fontWeight: "bold", color: "green" }}
-                                  >
-                                    Online
-                                  </span>
-                                </div>
-                              )}
-                            </td> : <td>
+                    </tbody>
+                  ) : (
+                    <tbody className="table-tbody" style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
+                      {filteredData.map((item, index) => (
+                        <tr key={index} style={{ border: "1px solid #ddd" }}>
+                          <td className="td-sticky">{index + 1}</td>
+                          <td>{item.ename}</td>
+                          <td>{item.number}</td>
+                          <td>{item.email}</td>
+                          <td>{formatDate(item.jdate)}</td>
+                          <td>{item.designation}</td>
+                          <td>{item.branchOffice}</td>
+                          <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
+                          {item.designation !== "Admin Team" ? <td>
+                            {(item.Active && item.Active.includes("GMT")) ? (
                               <div>
                                 <span
                                   style={{ color: "red", marginRight: "5px" }}
@@ -930,14 +1107,44 @@ function Employees({ onEyeButtonClick }) {
                                     color: "rgb(170 144 144)",
                                   }}
                                 >
-                                  {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
+                                  {formatDateWP(item.Active)}
                                 </span>
                               </div>
-                            </td>}
+                            ) : (
+                              <div>
+                                <span
+                                  style={{ color: "green", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{ fontWeight: "bold", color: "green" }}
+                                >
+                                  Online
+                                </span>
+                              </div>
+                            )}
+                          </td> : <td>
+                            <div>
+                              <span
+                                style={{ color: "red", marginRight: "5px" }}
+                              >
+                                ●
+                              </span>
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: "rgb(170 144 144)",
+                                }}
+                              >
+                                {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
+                              </span>
+                            </div>
+                          </td>}
 
-                            <td >
-                              <div className="d-flex justify-content-center align-items-center">
-                                {/* <div className="icons-btn">
+                          <td >
+                            <div className="d-flex justify-content-center align-items-center">
+                              {/* <div className="icons-btn">
                                   <IconButton onClick={() =>
                                     handleDeleteClick(item._id, item.ename)}>
                                     <IconTrash
@@ -967,33 +1174,33 @@ function Employees({ onEyeButtonClick }) {
                                     />
                                   </IconButton>
                                 </div> */}
-                                <div className="icons-btn">
-                                  <Link
-                                    style={{ color: "black" }}
-                                    to={`/datamanager/employeeLeads/${item._id}`}
-                                  ><IconButton >  
+                              <div className="icons-btn">
+                                <Link
+                                  style={{ color: "black" }}
+                                  to={`/datamanager/employeeLeads/${item._id}`}
+                                ><IconButton >
                                     <IconEye
-                                    style={{
-                                      width: "14px",
-                                      height: "14px",
-                                      color: "#d6a10c",
-                                    }}
-                                  /></IconButton>
-                                  </Link>
-                                </div>
+                                      style={{
+                                        width: "14px",
+                                        height: "14px",
+                                        color: "#d6a10c",
+                                      }}
+                                    /></IconButton>
+                                </Link>
                               </div>
+                            </div>
 
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    )}
-                    <tbody className="table-tbody"></tbody>
-                  </table>
-                </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
+                  <tbody className="table-tbody"></tbody>
+                </table>
               </div>
             </div>
-          
+          </div>
+
         </div>
       </div>
 

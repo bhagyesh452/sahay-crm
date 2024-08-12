@@ -71,8 +71,7 @@ function NewEmployee() {
     const fetchDeletedEmployee = async () => {
         try {
             const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-            const deletedEmployeeData = res.data;
-            setDeletedEmployee(deletedEmployeeData);
+            setDeletedEmployee(res.data);
             // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
             const result = res.data.filter((emp) => {
                 return (
@@ -139,8 +138,8 @@ function NewEmployee() {
         <div>
             <Header />
             <Navbar number={1} />
+            
             {/* New Code Of Employee */}
-
             <div className="page-wrapper">
                 <div className="page-header rm_Filter m-0">
                     <div className="container-xl">
