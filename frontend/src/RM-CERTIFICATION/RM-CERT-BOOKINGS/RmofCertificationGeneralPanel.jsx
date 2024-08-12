@@ -236,56 +236,22 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     const handleFilter = (newData) => {
         setRmServicesData(newData);
     };
+    const [activeFilterField, setActiveFilterField] = useState(null);
     const [filterPosition, setFilterPosition] = useState({ top: 0, left: 0 });
     const fieldRefs = useRef({});
 
     const handleFilterClick = (field) => {
-        const ref = fieldRefs.current[field];
-        if (ref) {
-            if (filterField === field) {
-                setShowFilterMenu(prev => !prev);
-            } else {
-                setFilterField(field);
-                const rect = ref.getBoundingClientRect();
-                if (field === "bookingDate") {
-                    setFilterPosition({
-                        top: 10,
-                        left: -60
-                    });
-                } else if (field === "Company Name") {
-                    setFilterPosition({
-                        top: -6.837,
-                        left: -4.95
-                    });
-                }else if (field === "Company Number") {
-                    setFilterPosition({
-                        top: -6.837,
-                        left: 230.05
-                    });
-                }else if (field === "Company Email") {
-                    setFilterPosition({
-                        top: -6.837,
-                        left: 410.05
-                    });
-                }else if (field === "caNumber") {
-                    setFilterPosition({
-                        top: -6.837,
-                        left: 332.05
-                    });
-                }else if (field === "receivedPayment") {
-                    setFilterPosition({
-                        top: -6.837,
-                        left: 400
-                    });
-                }else if (field === "pendingPayment") {
-                    setFilterPosition({
-                        top: -6.837,
-                        left: 430
-                    });
-                }
+        if (activeFilterField === field) {
+            // Toggle off if the same field is clicked again
+            setShowFilterMenu(!showFilterMenu);
+        } else {
+            // Set the active field and show filter menu
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
 
-                setShowFilterMenu(true);
-            }
+            // Get the position of the clicked filter icon
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
         }
     };
 
@@ -334,22 +300,28 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-2">
-                                        <div
-                                            className='d-flex align-items-center justify-content-center'
-                                        >
+                                        <div className='d-flex align-items-center justify-content-center'>
                                             <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                                 Booking Date
                                             </div>
-                                            {showFilter &&
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bookingDate")}
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bookingDate' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            }
-                                            <div className='filter-menu'>
-                                               
-                                            </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-3">
@@ -357,15 +329,24 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Name'] = el}>
                                                 Company Name
                                             </div>
-                                                {showFilter &&
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Name")}
-                                                    />
-                                                </div>}
-                                            <div className='filter-menu'>
-                                               
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter onClick={() => handleFilterClick("Company Name")} />
                                             </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Name' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -379,9 +360,21 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("Company Number")}
                                                     />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === "Company Number" && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -395,9 +388,21 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("Company Email")}
                                                     />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Email' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -408,12 +413,24 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                       onClick={() => handleFilterClick("caNumber")}
-                                                         />
+                                                        onClick={() => handleFilterClick("caNumber")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'caNumber' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -424,12 +441,24 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                      onClick={() => handleFilterClick("serviceName")}
-                                                        />
+                                                        onClick={() => handleFilterClick("serviceName")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'serviceName' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -440,29 +469,53 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                         onClick={() => handleFilterClick("subCategoryStatus")} 
-                                                        />
+                                                        onClick={() => handleFilterClick("subCategoryStatus")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     {/* <th>Remark</th> */}
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div  ref={el => fieldRefs.current['withDSC'] = el}>
+                                            <div ref={el => fieldRefs.current['withDSC'] = el}>
                                                 DSC Applicable
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                         onClick={() => handleFilterClick("withDSC")} 
-                                                        />
+                                                        onClick={() => handleFilterClick("withDSC")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'withDSC' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -473,12 +526,24 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                        onClick={() => handleFilterClick("bdeName")} 
-                                                        />
+                                                        onClick={() => handleFilterClick("bdeName")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -489,12 +554,24 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                       onClick={() => handleFilterClick("bdmName")}
-                                                        />
+                                                        onClick={() => handleFilterClick("bdmName")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'bdmName' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -505,45 +582,81 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                      onClick={() => handleFilterClick("totalPaymentWGST")}
-                                                        />
+                                                        onClick={() => handleFilterClick("totalPaymentWGST")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
                                             <div ref={el => fieldRefs.current['receivedPayment'] = el}>
-                                                received Payment
+                                                Received Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                         onClick={() => handleFilterClick("receivedPayment")}
-                                                        />
+                                                        onClick={() => handleFilterClick("receivedPayment")}
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                          {/* ---------------------filter component--------------------------- */}
+                                          {showFilterMenu && activeFilterField === 'receivedPayment' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center'>
-                                            <div  ref={el => fieldRefs.current['pendingPayment'] = el}>
+                                            <div ref={el => fieldRefs.current['pendingPayment'] = el}>
                                                 Pending Payment
                                             </div>
                                             {showFilter &&
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
-                                                     onClick={() => handleFilterClick("pendingPayment")}
+                                                        onClick={() => handleFilterClick("pendingPayment")}
 
-                                                        />
+                                                    />
                                                 </div>}
-                                            <div className='filter-menu'>
-                                            
-                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                          {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                                <div
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th className="rm-sticky-action">
@@ -716,7 +829,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                 </DialogContent>
             </Dialog>
 
-            {/* ---------------------filter component--------------------------- */}
+            {/* ---------------------filter component---------------------------
             {showFilterMenu && (
                 <div
                     className="filter-menu"
@@ -730,7 +843,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                         dataForFilter={dataToFilter}
                     />
                 </div>
-            )}
+            )} */}
         </div>
     );
 }

@@ -452,6 +452,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         setStatus(industryOption);
         setStatusClass(statusClass);
         onIndustryChange(industryOption, options)
+      
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-industry`, {
                 companyName,
@@ -460,6 +461,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
             });
             if (response.status === 200) {
                 refreshData();
+                setIsDisabled(false)
                 //setOpenEmailPopup(false); // Close the popup on success
             }
 
@@ -476,10 +478,10 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
     console.log("industry" , industry)
     const [isDisabled, setIsDisabled] = useState(!industry)
 
-    useEffect(()=>{
-        setIsDisabled(false)
+    // useEffect(()=>{
+    //     setIsDisabled(false)
 
-    },[isDisabled , industry])
+    // },[isDisabled , industry])
 
     return (
         <div className="d-flex align-items-center justify-content-between">

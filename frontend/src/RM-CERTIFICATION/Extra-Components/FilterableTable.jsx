@@ -137,7 +137,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
 
     return (
         <div>
-            <div className="inco-filter">
+            <div>
                 <div
                     className="inco-subFilter"
                     onClick={(e) => handleSort("oldest")}
