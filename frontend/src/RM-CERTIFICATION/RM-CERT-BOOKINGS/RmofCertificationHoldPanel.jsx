@@ -238,6 +238,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
     const [activeFilterField, setActiveFilterField] = useState(null);
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -253,6 +254,22 @@ function RmofCertificationHoldPanel({ showFilter }) {
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
     };
+
+    // Effect to handle clicks outside the filter menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                setShowFilterMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
 
 
 
@@ -294,6 +311,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -322,6 +340,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -350,6 +369,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -378,6 +398,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -406,6 +427,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -435,6 +457,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -464,6 +487,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'websiteLink' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -492,6 +516,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -520,6 +545,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -547,6 +573,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'contentWriter' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -574,6 +601,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'contentStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -601,6 +629,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'brochureDesigner' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -628,6 +657,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'brochureStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -655,6 +685,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'nswsMailId' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -682,6 +713,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -709,6 +741,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'industry' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -736,6 +769,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'sector' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -765,6 +799,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 </div>
                                                 {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -792,6 +827,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -820,6 +856,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bdmName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -848,6 +885,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 {/* ---------------------filter component--------------------------- */}
                                                 {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -876,6 +914,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -905,6 +944,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                                                 {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -1238,7 +1278,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                 </button>
             </Dialog>
 
-            {/* ---------------------filter component--------------------------- */}
+            {/* ---------------------filter component---------------------------
             {showFilterMenu && (
                 <div
                     className="filter-menu"
@@ -1252,7 +1292,7 @@ function RmofCertificationHoldPanel({ showFilter }) {
                         dataForFilter={dataToFilter}
                     />
                 </div>
-            )}
+            )} */}
         </div>
     )
 }
