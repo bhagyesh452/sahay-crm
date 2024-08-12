@@ -870,6 +870,7 @@ th.th-sticky1::after {
   margin-top: 15px;
   top: 10px !important;
   left: 5px !important;
+  width: 200px;
 }
 
 .inco-filter {
@@ -879,6 +880,7 @@ th.th-sticky1::after {
   text-align: left;
   font-size: 12px;
   transition: all 0.3s ease;
+  width: 200px;
 }
 .inco-filter::before
 {
