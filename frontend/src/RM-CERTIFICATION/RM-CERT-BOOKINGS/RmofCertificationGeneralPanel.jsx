@@ -237,7 +237,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         setRmServicesData(newData);
     };
     const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 0, left: 0 });
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
 
     const handleFilterClick = (field) => {
@@ -282,13 +282,15 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-2">
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                                 Booking Date
                                             </div>
+                                            {showFilter &&
                                             <div className='RM_filter_icon'>
                                                 <BsFilter onClick={() => handleFilterClick("bookingDate")} />
                                             </div>
+                                            }
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
@@ -307,13 +309,15 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-3">
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative '>
                                             <div ref={el => fieldRefs.current['Company Name'] = el}>
                                                 Company Name
                                             </div>
+                                            {showFilter &&
                                             <div className='RM_filter_icon'>
                                                 <BsFilter onClick={() => handleFilterClick("Company Name")} />
                                             </div>
+                                            }
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
@@ -332,7 +336,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['Company Number'] = el}>
                                                 Company Number
                                             </div>
@@ -360,7 +364,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['Company Email'] = el}>
                                                 Company Email
                                             </div>
@@ -388,7 +392,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['caNumber'] = el}>
                                                 CA Number
                                             </div >
@@ -416,7 +420,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['serviceName'] = el}>
                                                 Service Name
                                             </div>
@@ -444,7 +448,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Status
                                             </div>
@@ -473,7 +477,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                     </th>
                                     {/* <th>Remark</th> */}
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['withDSC'] = el}>
                                                 DSC Applicable
                                             </div>
@@ -501,7 +505,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bdeName'] = el}>
                                                 BDE Name
                                             </div>
@@ -529,7 +533,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bdmName'] = el}>
                                                 BDM Name
                                             </div>
@@ -557,7 +561,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
                                                 Total Payment
                                             </div>
@@ -585,7 +589,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['receivedPayment'] = el}>
                                                 Received Payment
                                             </div>
@@ -613,7 +617,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                         </div>
                                     </th>
                                     <th>
-                                        <div className='d-flex align-items-center justify-content-center'>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['pendingPayment'] = el}>
                                                 Pending Payment
                                             </div>

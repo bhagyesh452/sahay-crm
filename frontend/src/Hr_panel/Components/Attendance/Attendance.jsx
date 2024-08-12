@@ -80,23 +80,38 @@ function Attendance() {
             <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar />
             <div className="page-wrapper">
-                <div className="page-header  d-print-none">
+                <div className="page-header rm_Filter d-print-none m-0">
                     <div className="container-xl">
                         <div className="d-flex align-items-center justify-content-between">
-                            <div className='btn-group'>
+                            <div className='d-flex align-items-center justify-content-between'>
+                                <div className="btn-group ml-1" role="group" aria-label="Basic example">
+                                    <button type="button" className="btn mybtn"  >
+                                        <IoFilterOutline className='mr-1' /> Filter
+                                    </button>
+                                </div>
+                                <div class="input-icon ml-1">
+                                    <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                    </span>
+                                    <input
+                                    className="form-control search-cantrol mybtn"
+                                    placeholder="Search…"
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                                </div>
+                            </div>  
+                            <div className='btn-group ml-auto'>
                                 <button type="button" class="btn mybtn" onClick={() => {
                                     setShowAddAttendance(true);
                                     setShowViewAttendance(false);
                                 }}
                                 >
                                     <TiUserAddOutline className='mr-1' /> Add Attendance
-                                </button>
-                                <button type="button" class="btn mybtn" onClick={() => {
-                                    setShowViewAttendance(true);
-                                    setShowAddAttendance(false);
-                                }}
-                                >
-                                    <FaEye className='mr-1' /> View Attendance
                                 </button>
                             </div>
                         </div>
@@ -105,7 +120,7 @@ function Attendance() {
                 <div className="page-body m-0">
                     <div className="container-xl">
                         {showAddAttendance && <AddAttendance />}
-                        {showViewAttendance && <ViewAttendance />}
+                        <ViewAttendance />
                     </div>
                 </div>
             </div>

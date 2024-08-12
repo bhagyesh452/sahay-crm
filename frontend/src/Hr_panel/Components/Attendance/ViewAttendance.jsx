@@ -1,15 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import EmpDfaullt from "../../../static/EmployeeImg/office-man.png";
-
+import { FaChevronLeft } from "react-icons/fa";
+import { FaChevronRight } from "react-icons/fa";
 
 
 function ViewAttendance() {
 
     return (
         <div>
+            <div className='hr_a_slct_month mb-3 mt-2'>
+                <div className='d-flex align-items-center'>
+                    <div className='form-group'>
+                        <select className='form-select'>
+                            <option>--Select Year--</option>
+                            <option>2024</option>
+                        </select>
+                    </div>
+                    <div className='form-group ml-1'>
+                        <select className='form-select'>
+                            <option>--Select Month--</option>
+                            <option>January</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div className="table table-responsive table-style-4 m-0">
-                <table className="table table-vcenter table-nowrap attendance-table">
+                <table className="table table-vcenter table-nowrap attendance-table tbl-collps">
                     <thead className="tr-sticky">
                         <tr>
                             <th className='hr-sticky-left-1' rowSpan={2}>Sr. No</th>
