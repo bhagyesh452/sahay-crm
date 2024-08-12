@@ -4,6 +4,7 @@ import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
+import { FaPencilAlt } from "react-icons/fa";
 
 const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector , mainStatus }) => {
     const [status, setStatus] = useState(""); // Start with an empty string for default
@@ -363,8 +364,9 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
         return industrySectors[industry] || [];
     };
     return (
+        <div className="d-flex align-items-center justify-content-between">
         <select
-        className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate" || sector) ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
             aria-labelledby="dropdownMenuButton1"
             onChange={(e) => handleStatusChange(e.target.value)}
@@ -377,6 +379,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 </option>
             ))}
         </select>
+        </div>
     );
 };
 

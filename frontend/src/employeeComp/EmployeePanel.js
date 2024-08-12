@@ -4045,7 +4045,6 @@ function EmployeePanel() {
                                     </div>
                                     <div className="year-val">Select All</div>
                                   </div>
-
                                   {resultArray.length !== 0 &&
                                     resultArray.map((obj) => (
                                       <div key={obj.year}>

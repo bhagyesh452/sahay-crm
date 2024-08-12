@@ -306,8 +306,8 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     //     }
     // };
 
-    console.log("filterPositin", filterPosition)
-    console.log("emservices" , rmServicesData)
+    // console.log("filterPositin", filterPosition)
+    // console.log("emservices" , rmServicesData)
 
 
     return (
@@ -679,6 +679,8 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* ---------------------filter component--------------------------- */}
             {showFilterMenu && (
                 <div
                     className="filter-menu"

@@ -42,15 +42,20 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
             setColumnValues([...new Set(values)]); // Ensure unique values
         }
 
+
     }, [filterField, data]);
 
     const handleCheckboxChange = (e) => {
-        const value = e.target.value;
-        setSelectedFilters(prevFilters =>
-            prevFilters.includes(value)
-                ? prevFilters.filter(filter => filter !== value)
-                : [...prevFilters, value]
-        );
+        const value = e.target.value; // Checkbox value
+        const valueAsString = String(value); // Convert to string for consistent comparison
+    
+        setSelectedFilters(prevFilters => {
+            const filtersAsString = prevFilters.map(val => String(val)); // Convert existing filters to string
+    
+            return filtersAsString.includes(valueAsString)
+                ? prevFilters.filter(filter => String(filter) !== valueAsString)
+                : [...prevFilters, value];
+        });
     };
 
     console.log("selectedFilters", selectedFilters)
@@ -181,7 +186,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                                 type="checkbox"
                                 value={value}
                                 onChange={handleCheckboxChange}
-                                checked={selectedFilters.includes(value)}
+                                checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
                             />
                         </div>
                         <div className="filter-val">
