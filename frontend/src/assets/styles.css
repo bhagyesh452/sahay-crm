@@ -917,6 +917,11 @@ th.th-sticky1::after {
   background-color: #f0f0f0;
   color: #333;
 }
+.inco_inner
+{
+  max-height: 300px;
+  overflow-y: auto;
+}
 
 .inco-filter .searchforbde input::placeholder {
   color: lightgrey;
