@@ -39,6 +39,7 @@ function NewEmployee() {
     const [employee, setEmployee] = useState([]);
     const [deletedEmployee, setDeletedEmployee] = useState([]);
     const [addEmployeePopup, setAddEmployeePopup] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
@@ -109,7 +110,7 @@ function NewEmployee() {
     };
 
     const closeAddEmployeePopup = () => setAddEmployeePopup(false);
-    
+
     return (
         <div>
             <Header />
@@ -132,7 +133,9 @@ function NewEmployee() {
                                         </span>
                                         <input className="form-control search-cantrol mybtn"
                                             placeholder="Search…" type="text" name="bdeName-search"
-                                            id="bdeName-search" />
+                                            id="bdeName-search"
+                                            onChange={(e) => setSearchValue(e.target.value)}
+                                        />
                                     </div>
                                 </div>
                                 <div className="btn-group ml-1" role="group" aria-label="Basic example">
@@ -195,11 +198,13 @@ function NewEmployee() {
                         <div class="tab-content card-body">
                             <div class="tab-pane active" id="Employees">
                                 <Employees
-                                openAddEmployeePopup={addEmployeePopup} 
-                                closeAddEmployeePopup={closeAddEmployeePopup} />
+                                    openAddEmployeePopup={addEmployeePopup}
+                                    closeAddEmployeePopup={closeAddEmployeePopup}
+                                    searchValue={searchValue}
+                                />
                             </div>
                             <div class="tab-pane" id="DeletedEmployees">
-                                <DeletedEmployeePanel />
+                                <DeletedEmployeePanel searchValue={searchValue} />
                             </div>
                             <div class="tab-pane" id="UpcommingEmployees">
                                 <h1>Upcoming Employees</h1>

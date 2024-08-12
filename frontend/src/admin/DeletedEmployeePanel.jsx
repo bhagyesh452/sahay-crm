@@ -27,7 +27,10 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 
-function DeletedEmployeePanel() {
+function DeletedEmployeePanel({searchValue}) {
+
+  console.log("Search value from deleted employee is :", searchValue);
+
   const [filteredData, setFilteredData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [searchQuery, setSearchQuery] = useState("");
@@ -371,7 +374,7 @@ function DeletedEmployeePanel() {
                   <tr>
                     <td
                       className="particular"
-                      colSpan="11"
+                      colSpan="13"
                       style={{ textAlign: "center" }}
                     >
                       <Nodata />
@@ -522,7 +525,7 @@ function DeletedEmployeePanel() {
                       <tr>
                         <td
                           className="particular"
-                          colSpan="10"
+                          colSpan="13"
                           style={{ textAlign: "center" }}
                         >
                           <Nodata />

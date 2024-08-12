@@ -46,7 +46,9 @@ import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import AddEmployeeDialog from "./ExtraComponent/AddEmployeeDialog";
 
-function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup }) {
+function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup, searchValue }) {
+
+  console.log("Search value from employee list is :", searchValue);
 
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -329,7 +331,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const [dataToDelete, setDataToDelete] = useState([])
 
 
-  const handleDeleteClick = async (itemId, nametochange, finalDataToDelete, filteredCompanyData) => {
+  const handleDeleteClick = async (itemId, nametochange, dataToDelete, filteredCompanyData) => {
     // Open the confirm delete modal
     // console.log(nametochange)
     // console.log("filtered" , filteredCompanyData)
@@ -346,11 +348,11 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, cancel!',
     }).then(async (result) => {
-      console.log("Deleted data is :", finalDataToDelete);
+      console.log("Deleted data is :", dataToDelete);
       if (result.isConfirmed) {
         try {
           const saveResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
-            finalDataToDelete,
+            dataToDelete,
           });
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
 
@@ -359,6 +361,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
           // Refresh the data after successful deletion
           handledeletefromcompany(filteredCompanyData);
           fetchData();
+          setDataToDelete([]);
 
           Swal.fire({
             title: "Employee Removed!",
@@ -1185,11 +1188,11 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                           </button>
                           <button className="action-btn action-btn-danger ml-1"
                             onClick={async () => {
-                              const newDataToDelete = data.filter(obj => obj._id === item._id);
-                              setDataToDelete(newDataToDelete);
+                              const dataToDelete = data.filter(obj => obj._id === item._id);
+                              setDataToDelete(dataToDelete);
                               const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
                               setCompanyDdata(filteredCompanyData);
-                              handleDeleteClick(item._id, item.ename, newDataToDelete, filteredCompanyData);
+                              handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
                             }}
                           >
                             <AiFillDelete />

@@ -27,14 +27,12 @@ const yourSchema = new mongoose.Schema({
   gender: {
     type: String
   },
-  // personal_number: {
-  //   type: String,
-  //   default: "0"
-  // },
-  // personal_email: {
-  //   type: String,
-  //   default: ""
-  // },
+  personal_number: {
+    type: String,
+  },
+  personal_email: {
+    type: String,
+  },
   currentAddress: {
     type: String
   },
