@@ -476,8 +476,6 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 //   }
 // });
 
-
-
 router.put("/savedeletedemployee", upload.fields([
   { name: "offerLetter", maxCount: 1 },
   { name: "aadharCard", maxCount: 1 },
@@ -488,9 +486,9 @@ router.put("/savedeletedemployee", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const { finalDataToDelete, oldDesignation } = req.body;
+    const { dataToDelete, oldDesignation } = req.body;
 
-    if (!finalDataToDelete || !Array.isArray(finalDataToDelete) || finalDataToDelete.length === 0) {
+    if (!dataToDelete || !Array.isArray(dataToDelete) || dataToDelete.length === 0) {
       return res.status(400).json({ error: "No employee data to save" });
     }
 
@@ -506,10 +504,10 @@ router.put("/savedeletedemployee", upload.fields([
       path: file.path,
       size: file.size
     })) : [];
-console.log("finalData" , finalDataToDelete)
-    const employees = await Promise.all(finalDataToDelete.map(async (data) => {
+
+    const employees = await Promise.all(dataToDelete.map(async (data) => {
       let newDesignation = data.newDesignation;
-      
+
       if (data.newDesignation === "Business Development Executive" || data.newDesignation === "Business Development Manager") {
         newDesignation = "Sales Executive";
       } else if (data.newDesignation === "Floor Manager") {
@@ -535,8 +533,8 @@ console.log("finalData" , finalDataToDelete)
         },
         ...(data.dob && { dob: data.dob }),
         ...(data.gender && { gender: data.gender }),
-        // ...(data?.personalPhoneNo && { personal_number: data?.personalPhoneNo || "" }),
-        // ...(data?.personalEmail && { personal_email: data?.personalEmail || ""}),
+        ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
+        ...(data?.personalEmail && { personal_email: data.personalEmail }),
         ...(data?.currentAddress && { currentAddress: data.currentAddress }),
         ...(data?.permanentAddress && { permanentAddress: data.permanentAddress }),
 
@@ -571,7 +569,7 @@ console.log("finalData" , finalDataToDelete)
         // Emergency Info
         ...(data?.personName && { personal_contact_person: data.personName }),
         ...(data?.relationship && { personal_contact_person_relationship: data.relationship }),
-        ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo}),
+        ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
 
         // Document Info
         ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || [] }),
@@ -582,13 +580,6 @@ console.log("finalData" , finalDataToDelete)
         ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || [] }),
         ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || [] })
       };
-      console.log("emp" , emp)
-      if (emp.personal_number && emp.personal_number !== "0") {
-        const existingEmployee = await deletedEmployeeModel.findOne({ personal_number: emp.personal_number });
-        if (existingEmployee) {
-          throw new Error(`Employee with personal number ${emp.personal_number} already exists.`);
-        }
-      }
       if (data.empId) {
         emp._id = data.empId;
       }
@@ -615,9 +606,7 @@ router.get("/deletedemployeeinfo", async (req, res) => {
   }
 });
 
-router.delete(
-  "/deleteemployeedromdeletedemployeedetails/:id",
-  async (req, res) => {
+router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
     const { id: itemId } = req.params; // Correct destructuring
     console.log(itemId);
     try {
@@ -668,8 +657,6 @@ router.delete(
 //     return res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
-
-
 
 router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
   { name: "offerLetter", maxCount: 1 },

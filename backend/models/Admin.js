@@ -20,7 +20,8 @@ const yourSchema = new mongoose.Schema({
     type: String
   },
   employeeID: {
-    type: String
+    type: String,
+    unique: true
   },
   dob: {
     type: Date
@@ -30,11 +31,11 @@ const yourSchema = new mongoose.Schema({
   },
   personal_number: {
     type: String,
-    unique: true
+    // unique: true
   },
   personal_email: {
     type: String,
-    unique: true
+    // unique: true
   },
   currentAddress: {
     type: String
@@ -65,7 +66,7 @@ const yourSchema = new mongoose.Schema({
   },
   number: {
     type: String,
-    unique: true
+    // unique: true
   },
   email: {
     type: String,

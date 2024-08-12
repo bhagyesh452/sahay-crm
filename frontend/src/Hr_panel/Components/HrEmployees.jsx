@@ -152,7 +152,7 @@ function HrEmployees() {
       confirmButtonText: 'Yes, delete it!'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        // console.log("Deleted data is :", dataToDelete);
+        console.log("Deleted data is :", dataToDelete);
         try {
           const saveDeletedResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
             dataToDelete
