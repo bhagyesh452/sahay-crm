@@ -10,6 +10,7 @@ import { IconEye } from "@tabler/icons-react";
 import Switch from '@mui/material/Switch';
 import Swal from "sweetalert2";
 import { TbRestore } from "react-icons/tb";
+import ClipLoader from "react-spinners/ClipLoader";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Button,
@@ -19,13 +20,40 @@ import {
   IconButton,
 } from "@mui/material";
 import { TiArrowBack } from "react-icons/ti";
+import EmpDfaullt from "../static/EmployeeImg/office-man.png";
+import FemaleEmployee from "../static/EmployeeImg/woman.png";
+import { FaWhatsapp } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
+import { MdModeEdit } from "react-icons/md";
+import { AiFillDelete } from "react-icons/ai";
 
 function DeletedEmployeePanel() {
   const [filteredData, setFilteredData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const formattedDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
+
+  const calculateProbationStatus = (joiningDate) => {
+    const joinDate = new Date(joiningDate);
+    const probationEndDate = new Date(joinDate);
+    probationEndDate.setMonth(joinDate.getMonth() + 3);
+
+    const currentDate = new Date();
+    return currentDate <= probationEndDate ? 'Under Probation' : 'Completed';
+  };
+
+  const getBadgeClass = (status) => {
+    return status === 'Under Probation' ? 'badge badge-under-probation' : 'badge badge-completed';
+  };
 
   //-----------date formats-----------------------
   function formatDateFinal(timestamp) {
@@ -218,13 +246,14 @@ function DeletedEmployeePanel() {
               <th>Joining Date</th>
               <th>Probation Status</th>
               <th>Added Date</th>
-              <th>Status</th>
+              <th>Delete Date</th>
               <th>BDM Work</th>
               <th>Action</th>
+              <th>Revoke Employee</th>
             </tr>
           </thead>
 
-          {/* {isLoading ? (
+          {isLoading ? (
             <tbody>
               <tr>
                 <td colSpan="11">
@@ -242,11 +271,11 @@ function DeletedEmployeePanel() {
             </tbody>
           ) : (
             <>
-              {deletedEmployee.length !== 0 ? (
+              {filteredData.length !== 0 ? (
                 <tbody>
-                  {deletedEmployee.map((emp, index) => {
-                    const profilePhotoUrl = emp.profilePhoto?.length !== 0
-                      ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                  {filteredData.map((item, index) => {
+                    const profilePhotoUrl = item.profilePhoto?.length !== 0
+                      ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
                       : EmpDfaullt;
 
                     return (
@@ -263,42 +292,53 @@ function DeletedEmployeePanel() {
                             </div>
                             <div className="">
                               {(() => {
-                                const names = (emp.ename || "").split(" ");
+                                const names = (item.ename || "").split(" ");
                                 return `${names[0] || ""} ${names[names.length - 1] || ""}`;
                               })()}
                             </div>
                           </div>
                         </td>
-                        <td>{emp.branchOffice || ""}</td>
-                        <td>{emp.department || ""}</td>
+                        <td>{item.number || ""}</td>
+                        <td>{item.email || ""}</td>
                         <td>
-                          {emp.newDesignation === "Business Development Executive" ? "BDE"
-                            : emp.newDesignation === "Business Development Manager" ? "BDM"
-                              : emp.newDesignation || ""}
+                          {item.newDesignation === "Business Development Executive" ? "BDE"
+                            : item.newDesignation === "Business Development Manager" ? "BDM"
+                              : item.newDesignation || ""}
                         </td>
-                        <td>{formatDate(emp.jdate) || ""}</td>
-                        <td>₹ {formatSalary(emp.salary || 0)}</td>
+                        <td>{item.branchOffice || ""}</td>
+                        <td>{formattedDate(item.jdate) || ""}</td>
                         <td>
-                          <span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>
-                            {calculateProbationStatus(emp.jdate)}
+                          <span className={getBadgeClass(calculateProbationStatus(item.jdate))}>
+                            {calculateProbationStatus(item.jdate)}
                           </span>
                         </td>
-                        <td>
-                          <a
-                            target="_blank"
-                            className="text-decoration-none text-dark"
-                            href={`https://wa.me/91${emp.number}`}
-                          >
-                            {emp.number}
-                            <FaWhatsapp className="text-success w-25 mb-1" />
-                          </a>
-                        </td>
-                        <td>{emp.email || ""}</td>
+                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
+                          &&
+                          <>
+                            <td>
+                              {formattedDate(item.AddedOn) === "Invalid Date"
+                                ? "06/02/2024"
+                                : formattedDate(item.AddedOn)}
+                            </td>
+                            <td>{formattedDate(item.deletedDate)}</td>
+                            <td>
+                              <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                                <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                                // onClick={(event) => {
+                                //   handlChecked(item._id, item.bdmWork)
+                                // }} 
+                                />
+                              </Stack>
+                            </td>
+                          </>
+                        }
+
+                        {/* <td>₹ {formatSalary(item.salary || 0)}</td> */}
                         <td>
                           <button className="action-btn action-btn-primary">
                             <Link
                               style={{ textDecoration: "none", color: 'inherit' }}
-                              to={`/hr-employee-profile-details/${emp._id}`}
+                              to={`/admin/employees/${item._id}`}
                             >
                               <FaRegEye />
                             </Link>
@@ -306,7 +346,7 @@ function DeletedEmployeePanel() {
 
                           <button
                             className="action-btn action-btn-danger ml-1"
-                            onClick={() => handlePermanentDeleteEmployee(emp._id)}
+                            onClick={() => handlePermanentDeleteEmployee(item._id)}
                           >
                             <AiFillDelete />
                           </button>
@@ -315,8 +355,8 @@ function DeletedEmployeePanel() {
                           <button
                             className="action-btn action-btn-success ml-1"
                             onClick={() => {
-                              const dataToRevertBack = deletedEmployee.filter(obj => obj._id === emp._id);
-                              handleRevertBack(emp._id, emp.ename, dataToRevertBack);
+                              const dataToRevertBack = filteredData.filter(obj => obj._id === item._id);
+                              handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
                             }}
                           >
                             <TbRestore />
@@ -340,7 +380,7 @@ function DeletedEmployeePanel() {
                 </tbody>
               )}
             </>
-          )} */}
+          )}
         </table>
       </div>
 

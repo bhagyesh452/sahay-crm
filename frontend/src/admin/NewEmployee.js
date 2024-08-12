@@ -255,7 +255,6 @@ function NewEmployee() {
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }
