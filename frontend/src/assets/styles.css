@@ -72,6 +72,11 @@ body {
 .btn-primary:hover {
   background-color: #f6df9f !important;
 }
+.tbl-collps
+{
+  border-collapse: separate  !important;
+  border-spacing: 0 0 !important;
+}
 
 .rupees-sym {
   background-color: #ffb900;
