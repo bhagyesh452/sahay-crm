@@ -4,6 +4,7 @@ import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
+import { FaPencilAlt } from "react-icons/fa";
 
 
 
@@ -13,8 +14,8 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
     const [statusClass, setStatusClass] = useState("created-status");
     const [options, setOptions] = useState([])
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    
-   
+
+
     const aeronauticsOptions = [
         "Drones",
         "Space Technology",
@@ -443,7 +444,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         { name: "Indic Language Startup", options: indicLanguageStartup }
     ];
 
-    
+
 
 
 
@@ -451,6 +452,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         setStatus(industryOption);
         setStatusClass(statusClass);
         onIndustryChange(industryOption, options)
+      
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-industry`, {
                 companyName,
@@ -459,6 +461,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
             });
             if (response.status === 200) {
                 refreshData();
+                setIsDisabled(false)
                 //setOpenEmailPopup(false); // Close the popup on success
             }
 
@@ -472,23 +475,40 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
 
     //console.log("mainStatus" , mainStatus)
 
+    console.log("industry" , industry)
+    const [isDisabled, setIsDisabled] = useState(!industry)
+
+    // useEffect(()=>{
+    //     setIsDisabled(false)
+
+    // },[isDisabled , industry])
+
     return (
+        <div className="d-flex align-items-center justify-content-between">
+            <select
+                className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate" || !isDisabled) ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                aria-labelledby="dropdownMenuButton1"
+                onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
+                value={status} // Ensure this matches one of the option values
+            >
+                <option disabled selected value="">Select Industry</option>
+                {dropdownItems.map((item, index) => (
+                    <option key={index} value={item.name}>
+                        {item.name}
+                    </option>
+                ))}
 
-        <select
-        className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
-        aria-labelledby="dropdownMenuButton1"
-        onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
-        value={status} // Ensure this matches one of the option values
-    >
-        <option disabled selected value="">Select Industry</option>
-        {dropdownItems.map((item, index) => (
-            <option key={index} value={item.name}>
-                {item.name}
-            </option>
-        ))}
-    </select>
-    
+            </select>
+            <button className='td_add_remarks_btn'
+            onClick={()=>{
+                setIsDisabled(true)
+               
+            }}
+            >
+                <FaPencilAlt />
+            </button>
 
+        </div>
     );
 };
 

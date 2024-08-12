@@ -4,11 +4,13 @@ import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
+import { FaPencilAlt } from "react-icons/fa";
 
-const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector , mainStatus }) => {
+const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector, mainStatus }) => {
     const [status, setStatus] = useState(""); // Start with an empty string for default
     const [options, setOptions] = useState([]);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [isDisabled, setIsDisabled] = useState(!sector)
 
     useEffect(() => {
         const sectorOptionsForIndustry = getSectorOptionsForIndustry(industry);
@@ -26,6 +28,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
             });
             if (response.status === 200) {
                 refreshData();
+                setIsDisabled(false);
             }
         } catch (error) {
             console.log("Error Sending Sector", error.message);
@@ -362,21 +365,35 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
         };
         return industrySectors[industry] || [];
     };
+
+
+
+
     return (
-        <select
-        className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
-            //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
-            aria-labelledby="dropdownMenuButton1"
-            onChange={(e) => handleStatusChange(e.target.value)}
-            value={status}
-        >
-            <option value="" disabled>Select Sector</option>
-            {options.map((option, index) => (
-                <option key={index} value={option}>
-                    {option}
-                </option>
-            ))}
-        </select>
+        <div className="d-flex align-items-center justify-content-between">
+            <select
+                className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate" || !isDisabled) ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                aria-labelledby="dropdownMenuButton1"
+                onChange={(e) => handleStatusChange(e.target.value)}
+                value={status}
+            >
+                <option value="" disabled>Select Sector</option>
+                {options.map((option, index) => (
+                    <option key={index} value={option}>
+                        {option}
+                    </option>
+                ))}
+            </select>
+            <button className='td_add_remarks_btn'
+                onClick={() => {
+                    setIsDisabled(true)
+
+                }}
+            >
+                <FaPencilAlt />
+            </button>
+        </div>
     );
 };
 

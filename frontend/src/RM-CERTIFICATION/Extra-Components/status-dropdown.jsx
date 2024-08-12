@@ -439,7 +439,7 @@ const StatusDropdown = ({ mainStatus,
   };
 
 
-  console.log("status all content and brochure", writername, designername, contentStatus, brochureStatus)
+  //console.log("status all content and brochure", writername, designername, contentStatus, brochureStatus)
 
 
 
