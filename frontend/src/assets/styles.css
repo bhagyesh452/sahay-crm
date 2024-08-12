@@ -919,8 +919,10 @@ th.th-sticky1::after {
 }
 .inco_inner
 {
-  max-height: 300px;
+  max-height: 209px;
   overflow-y: auto;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eeee;
 }
 
 .inco-filter .searchforbde input::placeholder {
