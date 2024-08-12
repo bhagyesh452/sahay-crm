@@ -69,7 +69,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
     const applyFilters = (filters, column) => {
         // Start with the data to be filtered
         let dataToSort = dataForFilter;
-
+        console.log("data" , data)
         // Apply filters if there are selected filters
         if (filters.length > 0 && column) {
             dataToSort = dataToSort.filter(item => {
@@ -120,11 +120,9 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
 
     const handleSelectAll = () => {
         if (selectedFilters.length === columnValues.length) {
-            // If all checkboxes are selected, clear all
             setSelectedFilters([]);
         } else {
-            // Select all checkboxes
-            setSelectedFilters(columnValues);
+            setSelectedFilters(columnValues.map(val => String(val)));
         }
     };
 
@@ -170,7 +168,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                         <div style={{ marginRight: "5px" }}>
                             <input
                                 type="checkbox"
-                                checked={!(selectedFilters.length > 0 )}
+                                checked={selectedFilters.length === 0}
                                 onChange={handleClearAll}
                             />
                         </div>
@@ -179,21 +177,23 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                         </div>
                     </div>
                 </div>
-                {columnValues.map(value => (
-                    <div key={value} className="inco-subFilter d-flex">
-                        <div style={{ marginRight: "5px" }}>
-                            <input
-                                type="checkbox"
-                                value={value}
-                                onChange={handleCheckboxChange}
-                                checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
-                            />
+                <div className="inco_inner">
+                    {columnValues.map(value => (
+                        <div key={value} className="inco-subFilter d-flex">
+                            <div style={{ marginRight: "5px" }}>
+                                <input
+                                    type="checkbox"
+                                    value={value}
+                                    onChange={handleCheckboxChange}
+                                    checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
+                                />
+                            </div>
+                            <div className="filter-val">
+                                {value}
+                            </div>
                         </div>
-                        <div className="filter-val">
-                            {value}
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
                 <div className="inco-subFilter">
                     <SwapVertIcon style={{ height: "16px" }} />
                     None

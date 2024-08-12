@@ -299,7 +299,8 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
     // ------------filter functions----------------------------
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [filteredData, setFilteredData] = useState(rmServicesData);
-    const [filterField, setFilterField] = useState("")
+    const [filterField, setFilterField] = useState("");
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
 
     // useEffect(() => {
     //     setShowFilterMenu(showFilter);
@@ -327,6 +328,22 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
         }
     };
 
+    // Effect to handle clicks outside the filter menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                setShowFilterMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+
 
     return (
         <div>
@@ -350,15 +367,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Name'] = el}>
                                                 Company Name
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("Company Name")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -378,15 +396,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Number'] = el}>
                                                 Company Number
                                             </div>
-                                            {showFilter &&
+                                          
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("Company Number")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -406,15 +425,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Email'] = el}>
                                                 Company Email
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("Company Email")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -434,15 +454,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['caNumber'] = el}>
                                                 CA Number
                                             </div >
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("caNumber")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -462,15 +483,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['serviceName'] = el}>
                                                 Service Name
                                             </div>
-                                            {showFilter &&
+                                          
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("serviceName")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -490,15 +512,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Status
                                             </div>
-                                            {showFilter &&
+                                            
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("subCategoryStatus")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -519,15 +542,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['websiteLink'] = el}>
                                                 Website Link/Brief
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("websiteLink")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'websiteLink' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -547,15 +571,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['withDSC'] = el}>
                                                 DSC Applicable
                                             </div>
-                                            {showFilter &&
+                                          
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("withDSC")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -575,15 +600,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['dscStatus'] = el}>
                                                 DSC Status
                                             </div>
-                                            {showFilter &&
+                                         
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("dscStatus")}
                                                     />
-                                                </div>}
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -603,14 +629,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['contentWriter'] = el}>
                                                 Content Writer
                                             </div>
-                                            {showFilter &&
+                                        
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("contentWriter")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'contentWriter' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -630,14 +657,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['contentStatus'] = el}>
                                                 Content Status
                                             </div>
-                                            {showFilter &&
+                                         
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("contentStatus")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'contentStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -657,14 +685,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
                                                 Brochure Designer
                                             </div>
-                                            {showFilter &&
+                                          
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("brochureDesigner")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'brochureDesigner' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -684,14 +713,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['brochureStatus'] = el}>
                                                 Brochure Status
                                             </div>
-                                            {showFilter &&
+                                         
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("brochureStatus")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'brochureStatus' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -711,14 +741,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['nswsMailId'] = el}>
                                                 NSWS Email Id
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("nswsMailId")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'nswsMailId' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -738,14 +769,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['nswsPaswsord'] = el}>
                                                 NSWS Password
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("nswsPaswsord")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -765,14 +797,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['industry'] = el}>
                                                 Industry
                                             </div>
-                                            {showFilter &&
+                                          
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("industry")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'industry' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -792,14 +825,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['sector'] = el}>
                                                 Sector
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("sector")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'sector' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -821,14 +855,15 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                                 Booking Date
                                             </div>
-                                            {showFilter &&
+                                            
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("bookingDate")}
                                                     />
-                                                </div>}
+                                                </div>
                                                 {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -847,15 +882,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['bdeName'] = el}>
                                                 BDE Name
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("bdeName")}
                                                     />
-                                                </div>}
+                                                </div>
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -875,15 +911,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['bdmName'] = el}>
                                                 BDM Name
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("bdmName")}
                                                     />
-                                                </div>}
+                                                </div>
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bdmName' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -903,15 +940,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
                                                 Total Payment
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("totalPaymentWGST")}
                                                     />
-                                                </div>}
+                                                </div>
                                                   {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -931,15 +969,16 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['receivedPayment'] = el}>
                                                 Recieved Payment
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("receivedPayment")}
                                                     />
-                                                </div>}
+                                                </div>
                                                   {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -959,16 +998,17 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['pendingPayment'] = el}>
                                                 Pending Payment
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("pendingPayment")}
 
                                                     />
-                                                </div>}
+                                                </div>
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -988,16 +1028,17 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['lastAttemptSubmitted'] = el}>
                                                 No of Attempt
                                             </div>
-                                            {showFilter &&
+                                          
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("lastAttemptSubmitted")}
 
                                                     />
-                                                </div>}
+                                                </div>
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'lastAttemptSubmitted' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -1017,16 +1058,17 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['submittedOn'] = el}>
                                                 Submitted On
                                             </div>
-                                            {showFilter &&
+                                           
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("submittedOn")}
 
                                                     />
-                                                </div>}
+                                                </div>
                                                  {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'submittedOn' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
@@ -1047,16 +1089,17 @@ function RmofCertificationSubmittedPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['submittedBy'] = el}>
                                                 Submitted By
                                             </div>
-                                            {showFilter &&
+                                          
                                                 <div className='RM_filter_icon'>
                                                     <BsFilter
                                                         onClick={() => handleFilterClick("submittedBy")}
 
                                                     />
-                                                </div>}
+                                                </div>
                                                    {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'submittedBy' && (
                                                 <div
+                                                ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
