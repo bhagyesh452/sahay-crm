@@ -48,7 +48,7 @@ import AddEmployeeDialog from "./ExtraComponent/AddEmployeeDialog";
 
 function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup, searchValue }) {
 
-  console.log("Search value from employee list is :", searchValue);
+  // console.log("Search value from employee list is :", searchValue);
 
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,6 +82,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const [isLoading, setIsLoading] = useState(false);
   const [empId, setEmpId] = useState("");
   const [openEditPopup, setOpenEditPopup] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -447,6 +448,17 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       setJdate(null);
       setNewDesignation("");
       setBranchOffice("");
+      const result = response.data.filter((emp) => {
+        return (
+          emp.ename?.toLowerCase().includes(searchValue) ||
+          emp.number?.toString().includes(searchValue) ||
+          emp.email?.toLowerCase().includes(searchValue) ||
+          emp.newDesignation?.toLowerCase().includes(searchValue) ||
+          emp.branchOffice?.toLowerCase().includes(searchValue)
+        );
+      });
+      // console.log("Search result from employee list is :", result);
+      setSearchResult(result);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     } finally {
@@ -547,7 +559,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     // Call the fetchData function
     fetchData();
     fetchCData();
-  }, []);
+  }, [searchValue]);
 
   function formatDateWP(dateString) {
     const date = new Date(dateString);
@@ -1086,9 +1098,9 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                 </td>
               </tr>
             </tbody>
-          ) : filteredData.length !== 0 ? (
+          ) : (searchValue ? searchResult : filteredData).length !== 0 ? (
             <tbody className="table-tbody">
-              {filteredData.map((item, index) => {
+              {(searchValue ? searchResult : filteredData).map((item, index) => {
                 const profilePhotoUrl = item.profilePhoto?.length !== 0
                   ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
                   : item.gender === "Male" ? EmpDfaullt : FemaleEmployee;

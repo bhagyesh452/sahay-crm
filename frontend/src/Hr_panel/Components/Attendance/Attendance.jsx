@@ -12,6 +12,7 @@ import EmpDfaullt from "../../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 import AddAttendance from "../Attendance/AddAttendance"
 import ViewAttendance from "../Attendance/ViewAttendance"
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Attendance() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -22,8 +23,6 @@ function Attendance() {
     const [myInfo, setMyInfo] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [monthDates, setMonthDates] = useState([]);
-    const [showAddAttendance, setShowAddAttendance] = useState(false);
-    const [showViewAttendance, setShowViewAttendance] = useState(false);
 
     const fetchPersonalInfo = async () => {
         try {
@@ -84,11 +83,20 @@ function Attendance() {
                     <div className="container-xl">
                         <div className="d-flex align-items-center justify-content-between">
                             <div className='d-flex align-items-center justify-content-between'>
-                                <div className="btn-group ml-1" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn"  >
-                                        <IoFilterOutline className='mr-1' /> Filter
-                                    </button>
+                                <div className='form-group ml-1'>
+                                    <select className='form-select'>
+                                        <option>--Select Year--</option>
+                                        <option>2024</option>
+                                    </select>
                                 </div>
+                                <div className='form-group ml-1'>
+                                    <select className='form-select'>
+                                        <option>--Select Month--</option>
+                                        <option>January</option>
+                                    </select>
+                                </div>
+                            </div>  
+                            <div className='d-flex align-items-center justify-content-between'>
                                 <div class="input-icon ml-1">
                                     <span class="input-icon-addon">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -104,23 +112,22 @@ function Attendance() {
                                     name="bdeName-search"
                                     id="bdeName-search" />
                                 </div>
-                            </div>  
-                            <div className='btn-group ml-auto'>
-                                <button type="button" class="btn mybtn" onClick={() => {
-                                    setShowAddAttendance(true);
-                                    setShowViewAttendance(false);
-                                }}
-                                >
-                                    <TiUserAddOutline className='mr-1' /> Add Attendance
-                                </button>
+                                <div className='btn-group ml-1'>
+                                    <button type="button" class="btn mybtn" >
+                                        <IoMdArrowRoundBack className='mr-1' /> Back
+                                    </button>
+                                    <button type="button" class="btn mybtn" >
+                                        <TiUserAddOutline className='mr-1' /> Add Attendance
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="page-body m-0">
-                    <div className="container-xl">
-                        {showAddAttendance && <AddAttendance />}
-                        <ViewAttendance />
+                    <div className="container-xl mt-2">
+                        <ViewAttendance/>
+                        <AddAttendance />
                     </div>
                 </div>
             </div>
