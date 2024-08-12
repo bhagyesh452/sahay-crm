@@ -350,6 +350,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                         dataToSendUpdated
                     );
                     closeForEdit();
+                    console.log("Close edit popup", openForEdit);
                     // console.log("Updated employee is :", dataToSendUpdated);
 
                     Swal.fire({
@@ -381,6 +382,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     // Adds data in performance report:
                     closeForAdd();
                     console.log("Created employee is :", response.data);
+                    console.log("Close add popup", openForAdd);
                     setFirstName("");
                     setMiddleName("");
                     setLastName("");
@@ -417,6 +419,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
     };
 
     const resetForm = () => {
+        setIsUpdateMode(false);
         setFirstName("");
         setMiddleName("");
         setLastName("");
@@ -455,6 +458,8 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
         setTargetCount(targetCount - 1);
         setTargetObjects(totalTargets);
     };
+
+    //console.log("ename" , ename)
 
     return (
         <div>
