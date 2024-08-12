@@ -72,6 +72,11 @@ body {
 .btn-primary:hover {
   background-color: #f6df9f !important;
 }
+.tbl-collps
+{
+  border-collapse: separate  !important;
+  border-spacing: 0 0 !important;
+}
 
 .rupees-sym {
   background-color: #ffb900;
@@ -855,49 +860,57 @@ th.th-sticky1::after {
   white-space: pre-wrap;
 }
 .filter-menu {
-  position: absolute;
-  background-color: white;
   border: 1px solid #ddd;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  /* background-color: #f9f9f9; */
   border-radius: 8px;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-  /* position: absolute; */
-  width: 10em;
-  text-align: left;
-  margin-left: 190px;
-  /* border: 1px solid #ddd; */
-  font-size: 14px;
+  position: absolute;
+  font-size: 12px;
   transition: all 0.3s ease;
   margin-top: 15px;
-  /* Add additional styling as needed */
+  top: 10px !important;
+  left: 5px !important;
 }
 
 .inco-filter {
   background-color: #f9f9f9;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: absolute;
-  width: 15em;
+  width: fit-content;
   text-align: left;
-  margin-left: 190px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+  font-size: 12px;
   transition: all 0.3s ease;
-  margin-top: 15px;
 }
-
-.inco-filter:hover {
+.inco-filter::before
+{
+  background: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-color: #ddd #0000 #0000 #ddd;
+  border-style: solid;
+  border-width: 1px 5px 5px 1px;
+  content: "";
+  height: 13px;
+  position: absolute;
+  left: 30%;
+  rotate: 45deg;
+  top: -6.5px;
+  transition: .5s;
+  width: 13px;
+  z-index: -1;
+}
+.inco-filter:hover .filter-menu{
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .inco-subFilter {
   padding: 10px;
   color: #555;
+  border-radius: 8px;
   font-family: Arial, sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 1;
 }
 
 .inco-subFilter:hover {
@@ -2493,7 +2506,7 @@ td input {
 }
 .table-style-2 table tbody tr:nth-child(odd)
 {
-  background:#efefef !important ;
+  background:#ffffff !important ;
 }
 .table-style-2 table tbody tr td
 {
@@ -2937,19 +2950,21 @@ td input {
   position: sticky;
   left: 0;
   width: 60px;
+  z-index: 1;
 }
 .G_rm-sticky-left-2
 {
   position: sticky;
   left: 60px;
   width: 104px;
-  
+  z-index: 1;
 }
 .G_rm-sticky-left-3
 {
   position: sticky;
   left: 167px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
+  z-index: 1;
 }
 .rm-sticky-action
 {

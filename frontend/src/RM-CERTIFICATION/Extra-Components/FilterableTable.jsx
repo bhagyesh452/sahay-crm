@@ -42,15 +42,20 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
             setColumnValues([...new Set(values)]); // Ensure unique values
         }
 
+
     }, [filterField, data]);
 
     const handleCheckboxChange = (e) => {
-        const value = e.target.value;
-        setSelectedFilters(prevFilters =>
-            prevFilters.includes(value)
-                ? prevFilters.filter(filter => filter !== value)
-                : [...prevFilters, value]
-        );
+        const value = e.target.value; // Checkbox value
+        const valueAsString = String(value); // Convert to string for consistent comparison
+    
+        setSelectedFilters(prevFilters => {
+            const filtersAsString = prevFilters.map(val => String(val)); // Convert existing filters to string
+    
+            return filtersAsString.includes(valueAsString)
+                ? prevFilters.filter(filter => String(filter) !== valueAsString)
+                : [...prevFilters, value];
+        });
     };
 
     console.log("selectedFilters", selectedFilters)
@@ -59,14 +64,15 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
         if (filterField) {
             applyFilters(selectedFilters, filterField);
         }
-    }, [selectedFilters, filterField ,sortOrder]);
+    }, [selectedFilters, filterField, sortOrder]);
 
     const applyFilters = (filters, column) => {
-        let filteredData = dataForFilter;
-    
+        // Start with the data to be filtered
+        let dataToSort = dataForFilter;
+
         // Apply filters if there are selected filters
         if (filters.length > 0 && column) {
-            filteredData = filteredData.filter(item => {
+            dataToSort = dataToSort.filter(item => {
                 if (column === 'receivedPayment') {
                     const payment = (
                         parseInt(
@@ -91,13 +97,12 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
             });
         } else {
             // If no filters are selected, use completeData
-            filteredData = completeData;
+            dataToSort = completeData;
         }
-    
+
         // Apply sorting based on sortOrder
         if (sortOrder && column === 'Company Name') {
-            console.log("filte" , filteredData)
-            filteredData = filteredData.sort((a, b) => {
+            dataToSort = dataToSort.sort((a, b) => {
                 const nameA = a["Company Name"].toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove accents
                 const nameB = b["Company Name"].toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove accents
                 if (sortOrder === 'oldest') {
@@ -108,15 +113,31 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                 return 0;
             });
         }
-    
-        console.log("filteredData", filteredData);
-        onFilter(filteredData);
+
+        console.log("filteredData", dataToSort);
+        onFilter(dataToSort);
     };
-    
+
+    const handleSelectAll = () => {
+        if (selectedFilters.length === columnValues.length) {
+            // If all checkboxes are selected, clear all
+            setSelectedFilters([]);
+        } else {
+            // Select all checkboxes
+            setSelectedFilters(columnValues);
+        }
+    };
+
+    const handleClearAll = () => {
+        setSelectedFilters([]);
+        onFilter(completeData)
+    };
+
+
 
     return (
         <div>
-            <div className="inco-filter">
+            <div className='inco-filter'>
                 <div
                     className="inco-subFilter"
                     onClick={(e) => handleSort("oldest")}
@@ -132,6 +153,32 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                     <SwapVertIcon style={{ height: "16px" }} />
                     Sort Z TO A
                 </div>
+                <div className='d-flex'>
+                    <div className="inco-subFilter d-flex">
+                        <div style={{ marginRight: "5px" }} onClick={handleSelectAll}>
+                            <input
+                                type="checkbox"
+                                checked={selectedFilters.length === columnValues.length}
+                                readOnly
+                            />
+                        </div>
+                        <div className="filter-val">
+                            Select All
+                        </div>
+                    </div>
+                    <div className="inco-subFilter d-flex">
+                        <div style={{ marginRight: "5px" }}>
+                            <input
+                                type="checkbox"
+                                checked={!(selectedFilters.length > 0 )}
+                                onChange={handleClearAll}
+                            />
+                        </div>
+                        <div className="filter-val">
+                            Clear All
+                        </div>
+                    </div>
+                </div>
                 {columnValues.map(value => (
                     <div key={value} className="inco-subFilter d-flex">
                         <div style={{ marginRight: "5px" }}>
@@ -139,6 +186,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                                 type="checkbox"
                                 value={value}
                                 onChange={handleCheckboxChange}
+                                checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
                             />
                         </div>
                         <div className="filter-val">
@@ -151,7 +199,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                     None
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

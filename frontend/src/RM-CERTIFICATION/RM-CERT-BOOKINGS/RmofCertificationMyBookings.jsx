@@ -33,7 +33,25 @@ function RmofCertificationMyBookings() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const [isFilter, setIsFilter] = useState(false)
     const [rmServicesData, setRmServicesData] = useState([]);
-    const [showFilterIcon, setShowFilterIcon] = useState(false)
+    const [showFilterIconGeneral, setShowFilterIconGeneral] = useState(false)
+    const [showFilterIconProcess, setShowFilterIconProcess] = useState(false)
+    const [showFilterIconReadyToSubmit, setShowFilterIconReadyToSubmit] = useState(false)
+    const [showFilterIconSubmitted, setShowFilterIconSubmitted] = useState(false)
+    const [showFilterIconDefaulter, setShowFilterIconDefaulter] = useState(false)
+    const [showFilterIconHold, setShowFilterIconHold] = useState(false)
+    const [showFilterIconApproved, setShowFilterIconApproved] = useState(false)
+    //const [showFilterIcon, setShowFilterIcon] = useState(false)
+    const [activeTab, setActiveTab] = useState("General");
+    const [showFilterIcon, setShowFilterIcon] = useState({
+        General: false,
+        InProcess: false,
+        ReadyToSubmit: false,
+        Submited: false,
+        Approved: false,
+        Hold: false,
+        Defaulter: false
+    });
+
 
     useEffect(() => {
         document.title = `RMOFCERT-Sahay-CRM`;
@@ -161,6 +179,30 @@ function RmofCertificationMyBookings() {
         return `${date}/${month}/${year}`
     }
 
+    const handleTabClick = (tab) => {
+        if (activeTab === tab) {
+            // Double-click detected
+            setShowFilterIcon((prevState) => ({
+                ...prevState,
+                [tab]: !prevState[tab] // Toggle the filter icon state
+            }));
+        } else {
+            // Single-click detected
+            setActiveTab(tab);
+            setShowFilterIcon({
+                General: tab === "General",
+                InProcess: tab === "InProcess",
+                ReadyToSubmit: tab === "ReadyToSubmit",
+                Submitted: tab === "Submited",
+                Approved: tab === "Approved",
+                Hold: tab === "Hold",
+                Defaulter: tab === "Defaulter"
+            });
+        }
+    };
+
+    console.log("showFilter", showFilterIcon)
+
 
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
@@ -170,17 +212,15 @@ function RmofCertificationMyBookings() {
         <div>
             <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
             <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
-           
+
             {!openCompanyTaskComponent &&
                 <div className="page-wrapper rm-mybookingmain">
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
                             <div className="d-flex aling-items-center justify-content-between">
                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn" 
-                                    onClick={()=>{
-                                        setShowFilterIcon(prevState => !prevState);
-                                    }}
+                                    <button type="button" className="btn mybtn"
+                                        onClick={() => handleTabClick(activeTab)}
                                     >
                                         <IoFilterOutline className='mr-1' /> Filter
                                     </button>
@@ -213,10 +253,12 @@ function RmofCertificationMyBookings() {
                     <div className="page-body rm_Dtl_box m-0">
                         <div className="container-xl mt-2">
                             <div className="rm_main_card">
-                                <div className="my-tab card-header" style={{marginBottom:"-2px"}}>
+                                <div className="my-tab card-header" style={{ marginBottom: "-2px" }}>
                                     <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link active" data-bs-toggle="tab" href="#General">
+                                            <a class="nav-link active" data-bs-toggle="tab" href="#General"
+                                                onClick={() => setActiveTab("General")}
+                                            >
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         General
@@ -229,78 +271,83 @@ function RmofCertificationMyBookings() {
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link" data-bs-toggle="tab" href="#InProcess">
-                                                <div className="d-flex align-items-center justify-content-between w-100">
+                                                <div className="d-flex align-items-center justify-content-between w-100"
+                                                    onClick={() => setActiveTab("InProcess")}
+                                                >
                                                     <div className="rm_txt_tsn">
                                                         In Process
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
-                                                        
+                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
+
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#ReadyToSubmit">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#ReadyToSubmit"
+                                                onClick={() => setActiveTab("ReadyToSubmit")}>
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Ready To Submit
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0}
-                                                        
+                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0}
+
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Submited">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Submited"
+                                                onClick={() => setActiveTab("Submited")}>
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Submited
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0}
-                                                        
+                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0}
+
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Approved">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Approved"
+                                                onClick={() => setActiveTab("Approved")}>
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Approved
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
-                                                        
+                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
+
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold" onClick={() => setActiveTab("Hold")}>
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Hold
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
-                                                        
+                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
+
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Defaulter">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Defaulter" onClick={() => setActiveTab("Defaulter")}>
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Defaulter
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
-                                                        
+                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
+
                                                     </div>
                                                 </div>
                                             </a>
@@ -309,25 +356,33 @@ function RmofCertificationMyBookings() {
                                 </div>
                                 <div class="tab-content card-body">
                                     <div class="tab-pane active" id="General">
-                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} showFilter={showFilterIcon} />
+                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.General} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
-                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} showFilter={showFilterIcon} />
+                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.InProcess} 
+                                        onFilterToggle={() => {
+                                            // Callback to handle filter menu visibility
+                                            setShowFilterIcon(prev => ({
+                                                ...prev,
+                                                InProcess: !prev.InProcess
+                                            }));
+                                        }} 
+                                        />
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
-                                        <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit} />
                                     </div>
                                     <div class="tab-pane" id="Submited">
-                                        <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Submited} />
                                     </div>
                                     <div class="tab-pane" id="Approved">
-                                        <RmofCertificationApprovedPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationApprovedPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Approved} />
                                     </div>
                                     <div class="tab-pane" id="Hold">
-                                        <RmofCertificationHoldPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationHoldPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Hold} />
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
-                                        <RmofCertificationDefaulterPanel rmServicesData={rmServicesData} />
+                                        <RmofCertificationDefaulterPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Defaulter} />
                                     </div>
                                 </div>
                             </div>

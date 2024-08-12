@@ -1142,7 +1142,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
     }
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
-    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    socketIO.emit('rm-general-status-updated')
     res.status(200).json({ message: "Document updated successfully", data: company });
 
   } catch (error) {
