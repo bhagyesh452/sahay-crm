@@ -29,13 +29,14 @@ import { AiFillDelete } from "react-icons/ai";
 
 function DeletedEmployeePanel({searchValue}) {
 
-  console.log("Search value from deleted employee is :", searchValue);
+  // console.log("Search value from deleted employee is :", searchValue);
 
   const [filteredData, setFilteredData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -85,6 +86,17 @@ function DeletedEmployeePanel({searchValue}) {
 
       setFilteredData(response.data);
       setData(response.data)
+      const result = response.data.filter((emp) => {
+        return (
+          emp.ename?.toLowerCase().includes(searchValue) ||
+          emp.number?.toString().includes(searchValue) ||
+          emp.email?.toLowerCase().includes(searchValue) ||
+          emp.newDesignation?.toLowerCase().includes(searchValue) ||
+          emp.branchOffice?.toLowerCase().includes(searchValue)
+        );
+      });
+      // console.log("Search result from deleted employee list is :", result);
+      setSearchResult(result);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -92,7 +104,7 @@ function DeletedEmployeePanel({searchValue}) {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [searchValue]);
 
 
   const handleSearch = (e) => {
@@ -274,9 +286,9 @@ function DeletedEmployeePanel({searchValue}) {
             </tbody>
           ) : (
             <>
-              {filteredData.length !== 0 ? (
+              {(searchValue ? searchResult : filteredData).length !== 0 ? (
                 <tbody>
-                  {filteredData.map((item, index) => {
+                  {(searchValue ? searchResult : filteredData).map((item, index) => {
                     const profilePhotoUrl = item.profilePhoto?.length !== 0
                       ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
                       : EmpDfaullt;
