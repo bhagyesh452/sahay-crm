@@ -44,8 +44,10 @@ import { FaWhatsapp } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
+import AddEmployeeDialog from "./ExtraComponent/AddEmployeeDialog";
 
 function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup }) {
+
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyDdata, setCompanyDdata] = useState([]);
@@ -76,6 +78,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const [errors, setErrors] = useState([]);
   const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [empId, setEmpId] = useState("");
+  const [openEditPopup, setOpenEditPopup] = useState(false);
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -215,10 +219,10 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     achievedAmount: 0,
     ratio: 0,
     result: "N/A"
-  }
+  };
+
   const [targetObjects, setTargetObjects] = useState([defaultObject]);
   const [targetCount, setTargetCount] = useState(1);
-
 
   const [open, openchange] = useState(false);
 
@@ -325,7 +329,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const [dataToDelete, setDataToDelete] = useState([])
 
 
-  const handleDeleteClick = async (itemId, nametochange, dataToDelete, filteredCompanyData) => {
+  const handleDeleteClick = async (itemId, nametochange, finalDataToDelete, filteredCompanyData) => {
     // Open the confirm delete modal
     // console.log(nametochange)
     // console.log("filtered" , filteredCompanyData)
@@ -342,14 +346,15 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, cancel!',
     }).then(async (result) => {
+      console.log("Deleted data is :", finalDataToDelete);
       if (result.isConfirmed) {
         try {
           const saveResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
-            dataToDelete,
+            finalDataToDelete,
           });
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
 
-          const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
+          //const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
 
           // Refresh the data after successful deletion
           handledeletefromcompany(filteredCompanyData);
@@ -817,6 +822,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   };
   const closepopup = () => {
     openchange(false);
+    setOpenEditPopup(false);
   };
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -1054,10 +1060,10 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
               <th>Designation</th>
               <th>Branch</th>
               <th>Joining Date</th>
-              <th>Probation Status</th>
+              {/* <th>Probation Status</th> */}
               <th>Added Date</th>
               <th>Status</th>
-              <th>BDM Work</th>
+              {/* <th>BDM Work</th> */}
               <th>Action</th>
             </tr>
           </thead>
@@ -1118,11 +1124,11 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                     <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
                     <td>{item.branchOffice}</td>
                     <td>{formattedDate(item.jdate)}</td>
-                    <td>
+                    {/* <td>
                       <span className={getBadgeClass(calculateProbationStatus(item.jdate))}>
                         {calculateProbationStatus(item.jdate)}
                       </span>
-                    </td>
+                    </td> */}
                     {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && (
                       <>
                         <td>
@@ -1135,8 +1141,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                             {(item.Active && item.Active.includes("GMT")) ? (
                               <div>
                                 <span style={{ color: "red", marginRight: "5px" }}>●</span>
-                                <span style={{ fontWeight: "bold", color: "rgb(170 144 144)" }}>
-                                  {formatDateWP(item.Active)}
+                                <span style={{ fontWeight: "bold", color: "rgb(170 144 144)" }} title={formatDateWP(item.Active)}>
+                                  Offline
                                 </span>
                               </div>
                             ) : (
@@ -1149,7 +1155,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         ) : (
                           <td>N/A</td>
                         )}
-                        <td>
+                        {/* <td>
                           <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                             <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
                               disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
@@ -1157,7 +1163,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                 handleChecked(item._id, item.bdmWork, item)
                               }} />
                           </Stack>
-                        </td>
+                        </td> */}
                         <td>
                           <button className="action-btn action-btn-primary">
                             <Link
@@ -1169,7 +1175,9 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                           </button>
                           <button className="action-btn action-btn-alert ml-1"
                             onClick={() => {
-                              functionopenpopup();
+                              // functionopenpopup();
+                              setEmpId(item._id);
+                              setOpenEditPopup(true);
                               handleUpdateClick(item._id, item.ename);
                             }}
                           >
@@ -1177,11 +1185,11 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                           </button>
                           <button className="action-btn action-btn-danger ml-1"
                             onClick={async () => {
-                              const dataToDelete = data.filter(obj => obj._id === item._id);
-                              setDataToDelete(dataToDelete);
+                              const newDataToDelete = data.filter(obj => obj._id === item._id);
+                              setDataToDelete(newDataToDelete);
                               const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
                               setCompanyDdata(filteredCompanyData);
-                              handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
+                              handleDeleteClick(item._id, item.ename, newDataToDelete, filteredCompanyData);
                             }}
                           >
                             <AiFillDelete />
@@ -1469,7 +1477,11 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                   <IconButton
                                     onClick={async () => {
                                       const dataToDelete = data.filter(obj => obj._id === item._id);
-                                      setDataToDelete(dataToDelete);
+                                      setDataToDelete({
+                                        ...dataToDelete,
+                                        personal_number: "0",
+                                        personal_email: "example@gmail.com"
+                                      });
                                       const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
                                       setCompanyDdata(filteredCompanyData);
                                       handleDeleteClick(item._id, item.ename, dataToDelete, filteredCompanyData);
@@ -1533,16 +1545,16 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       </div>
 
       {/* add Employee Popup */}
-      <Dialog className='My_Mat_Dialog' open={open || openAddEmployeePopup} fullWidth maxWidth="sm" onClose={() => {
+      {/* <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="sm" onClose={() => {
         closepopup();
-        closeAddEmployeePopup()
+        // closeAddEmployeePopup()
       }}
       >
         <DialogTitle>
           Employee Info{" "}
           <IconButton style={{ float: "right" }} onClick={() => {
             closepopup();
-            closeAddEmployeePopup();
+            // closeAddEmployeePopup();
           }}
           >
             <CloseIcon color="primary"></CloseIcon>
@@ -1673,22 +1685,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                     {errors.newDesignation && <p style={{ color: 'red' }}>{errors.newDesignation}</p>}
                   </div>
                 </div>
-
-                {/* If the designation is others */}
-                {/* {designation === "Others" && (
-                  <div className="mb-3">
-                    <input
-                      value={otherdesignation}
-                      type="email"
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Please enter your designation"
-                      onChange={(e) => {
-                        setotherDesignation(e.target.value);
-                      }}
-                    />
-                  </div>
-                )} */}
 
                 <div className="row">
                   <div className="col-lg-6 mb-3">
@@ -1875,13 +1871,21 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                   </div>
                 </div>
               ))}
+
             </div>
           </div>
         </DialogContent>
         <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
           Submit
         </Button>
-      </Dialog>
+      </Dialog> */}
+      <AddEmployeeDialog
+        empId={empId}
+        openForAdd={openAddEmployeePopup}
+        closeForAdd={closeAddEmployeePopup}
+        openForEdit={openEditPopup}
+        closeForEdit={closepopup}
+      />
     </div>
   );
 }

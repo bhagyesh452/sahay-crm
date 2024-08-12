@@ -488,9 +488,9 @@ router.put("/savedeletedemployee", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const { dataToDelete, oldDesignation } = req.body;
+    const { finalDataToDelete, oldDesignation } = req.body;
 
-    if (!dataToDelete || !Array.isArray(dataToDelete) || dataToDelete.length === 0) {
+    if (!finalDataToDelete || !Array.isArray(finalDataToDelete) || finalDataToDelete.length === 0) {
       return res.status(400).json({ error: "No employee data to save" });
     }
 
@@ -506,22 +506,22 @@ router.put("/savedeletedemployee", upload.fields([
       path: file.path,
       size: file.size
     })) : [];
-
-    const employees = await Promise.all(dataToDelete.map(async (data) => {
-      let newDesignation = data.designation;
-
-      if ((data.designation || oldDesignation) === "Business Development Executive" || (data.designation || oldDesignation) === "Business Development Manager") {
+console.log("finalData" , finalDataToDelete)
+    const employees = await Promise.all(finalDataToDelete.map(async (data) => {
+      let newDesignation = data.newDesignation;
+      
+      if (data.newDesignation === "Business Development Executive" || data.newDesignation === "Business Development Manager") {
         newDesignation = "Sales Executive";
-      } else if ((data.designation || oldDesignation) === "Floor Manager") {
+      } else if (data.newDesignation === "Floor Manager") {
         newDesignation = "Sales Manager";
-      } else if ((data.designation || oldDesignation) === "Data Analyst") {
+      } else if (data.newDesignation === "Data Analyst") {
         newDesignation = "Data Manager";
-      } else if ((data.designation || oldDesignation) === "Admin Head") {
+      } else if (data.newDesignation === "Admin Head") {
         newDesignation = "RM-Certification";
-      } else if ((data.designation || oldDesignation) === "HR Manager") {
+      } else if (data.newDesignation === "HR Manager") {
         newDesignation = "HR";
       } else {
-        newDesignation = data.designation || oldDesignation;
+        newDesignation = data.newDesignation;
       }
 
       const emp = {
@@ -535,16 +535,21 @@ router.put("/savedeletedemployee", upload.fields([
         },
         ...(data.dob && { dob: data.dob }),
         ...(data.gender && { gender: data.gender }),
-        ...(data?.personalPhoneNo && { personal_number: data.personalPhoneNo }),
-        ...(data?.personalEmail && { personal_email: data.personalEmail }),
+        // ...(data?.personalPhoneNo && { personal_number: data?.personalPhoneNo || "" }),
+        // ...(data?.personalEmail && { personal_email: data?.personalEmail || ""}),
         ...(data?.currentAddress && { currentAddress: data.currentAddress }),
         ...(data?.permanentAddress && { permanentAddress: data.permanentAddress }),
 
         // Employment Info
         ...(data?.department && { department: data.department }),
-        ...(data?.designation && { newDesignation: data.designation }),
-        ...(data?.designation && { designation: newDesignation }),
-        ...(data?.designation && { bdmWork: data.designation === "Business Development Manager" || data.designation === "Floor Manager" ? true : false }),
+        ...(data?.newDesignation && { newDesignation: data.newDesignation }),
+        ...({ designation: newDesignation }),
+        ...(data?.newDesignation && {
+          bdmWork: data.newDesignation === "Business Development Manager" ||
+            data.newDesignation === "Floor Manager" ||
+            oldDesignation === "Business Development Manager" ||
+            oldDesignation === "Floor Manager" ? true : false
+        }),
         ...(data?.joiningDate && { jdate: data.joiningDate }),
         ...(data?.branch && { branchOffice: data.branch }),
         ...(data?.employeementType && { employeementType: data.employeementType }),
@@ -566,7 +571,7 @@ router.put("/savedeletedemployee", upload.fields([
         // Emergency Info
         ...(data?.personName && { personal_contact_person: data.personName }),
         ...(data?.relationship && { personal_contact_person_relationship: data.relationship }),
-        ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo }),
+        ...(data?.personPhoneNo && { personal_contact_person_number: data.personPhoneNo}),
 
         // Document Info
         ...(req.files?.offerLetter && { offerLetter: getFileDetails(req.files.offerLetter) || [] }),
@@ -577,12 +582,20 @@ router.put("/savedeletedemployee", upload.fields([
         ...(req.files?.salarySlip && { salarySlip: getFileDetails(req.files.salarySlip) || [] }),
         ...(req.files?.profilePhoto && { profilePhoto: getFileDetails(req.files.profilePhoto) || [] })
       };
-
+      console.log("emp" , emp)
+      if (emp.personal_number && emp.personal_number !== "0") {
+        const existingEmployee = await deletedEmployeeModel.findOne({ personal_number: emp.personal_number });
+        if (existingEmployee) {
+          throw new Error(`Employee with personal number ${emp.personal_number} already exists.`);
+        }
+      }
       if (data.empId) {
         emp._id = data.empId;
       }
+      // Save employee to the deletedEmployeeModel (assuming it's defined elsewhere)
+      await deletedEmployeeModel.create(emp);
 
-      return deletedEmployeeModel.create(emp);
+      return emp;
     }));
 
     res.json(employees);
@@ -688,20 +701,20 @@ router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
     })) : [];
 
     const employees = await Promise.all(dataToRevertBack.map(async (data) => {
-      let newDesignation = data.designation;
+      let newDesignation = data.newDesignation;
 
-      if ((data.designation || oldDesignation) === "Business Development Executive" || (data.designation || oldDesignation) === "Business Development Manager") {
+      if (data.newDesignation === "Business Development Executive" || data.newDesignation === "Business Development Manager") {
         newDesignation = "Sales Executive";
-      } else if ((data.designation || oldDesignation) === "Floor Manager") {
+      } else if (data.newDesignation === "Floor Manager") {
         newDesignation = "Sales Manager";
-      } else if ((data.designation || oldDesignation) === "Data Analyst") {
+      } else if (data.newDesignation === "Data Analyst") {
         newDesignation = "Data Manager";
-      } else if ((data.designation || oldDesignation) === "Admin Head") {
+      } else if (data.newDesignation === "Admin Head") {
         newDesignation = "RM-Certification";
-      } else if ((data.designation || oldDesignation) === "HR Manager") {
+      } else if (data.newDesignation === "HR Manager") {
         newDesignation = "HR";
       } else {
-        newDesignation = data.designation || oldDesignation;
+        newDesignation = data.newDesignation;
       }
 
       const emp = {
@@ -721,9 +734,14 @@ router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
 
         // Employment Info
         ...(data?.department && { department: data.department }),
-        ...(data?.designation && { newDesignation: data.designation }),
-        ...(data?.designation && { designation: newDesignation }),
-        ...(data?.designation && { bdmWork: data.designation === "Business Development Manager" || data.designation === "Floor Manager" ? true : false }),
+        ...(data?.newDesignation && { newDesignation: data.newDesignation }),
+        ...({ designation: newDesignation }),
+        ...(data?.newDesignation && {
+          bdmWork: data.newDesignation === "Business Development Manager" ||
+            data.newDesignation === "Floor Manager" ||
+            oldDesignation === "Business Development Manager" ||
+            oldDesignation === "Floor Manager" ? true : false
+        }),
         ...(data?.joiningDate && { jdate: data.joiningDate }),
         ...(data?.branch && { branchOffice: data.branch }),
         ...(data?.employeementType && { employeementType: data.employeementType }),
