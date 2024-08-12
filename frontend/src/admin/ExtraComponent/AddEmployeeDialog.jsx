@@ -215,7 +215,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
 
     useEffect(() => {
         fetchData();
-    }, [empId]);
+    }, [empId, openForEdit === true]);
 
 
 
