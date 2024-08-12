@@ -38,7 +38,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import EmpDfaullt from "../static/EmployeeImg/office-man.png";
+import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import { FaWhatsapp } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
@@ -1103,7 +1103,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
               {(searchValue ? searchResult : filteredData).map((item, index) => {
                 const profilePhotoUrl = item.profilePhoto?.length !== 0
                   ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
-                  : item.gender === "Male" ? EmpDfaullt : FemaleEmployee;
+                  : item.gender === "Male" ? MaleEmployee : FemaleEmployee;
 
                 return (
                   <tr key={index} style={{ border: "1px solid #ddd" }}>

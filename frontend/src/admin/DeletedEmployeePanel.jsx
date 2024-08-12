@@ -20,14 +20,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { TiArrowBack } from "react-icons/ti";
-import EmpDfaullt from "../static/EmployeeImg/office-man.png";
+import MaleEmployee from "../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../static/EmployeeImg/woman.png";
 import { FaWhatsapp } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 
-function DeletedEmployeePanel({searchValue}) {
+function DeletedEmployeePanel({ searchValue }) {
 
   // console.log("Search value from deleted employee is :", searchValue);
 
@@ -103,7 +103,7 @@ function DeletedEmployeePanel({searchValue}) {
   };
 
   useEffect(() => {
-    fetchData()
+    fetchData();
   }, [searchValue]);
 
 
@@ -259,10 +259,10 @@ function DeletedEmployeePanel({searchValue}) {
               <th>Designation</th>
               <th>Branch</th>
               <th>Joining Date</th>
-              <th>Probation Status</th>
+              {/* <th>Probation Status</th> */}
               <th>Added Date</th>
               <th>Delete Date</th>
-              <th>BDM Work</th>
+              {/* <th>BDM Work</th> */}
               <th>Action</th>
               <th>Revoke Employee</th>
             </tr>
@@ -291,7 +291,7 @@ function DeletedEmployeePanel({searchValue}) {
                   {(searchValue ? searchResult : filteredData).map((item, index) => {
                     const profilePhotoUrl = item.profilePhoto?.length !== 0
                       ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
-                      : EmpDfaullt;
+                      : item.gender === "Male" ? MaleEmployee : FemaleEmployee;
 
                     return (
                       <tr key={index}>
@@ -313,7 +313,16 @@ function DeletedEmployeePanel({searchValue}) {
                             </div>
                           </div>
                         </td>
-                        <td>{item.number || ""}</td>
+                        <td>
+                          <a
+                            target="_blank"
+                            className="text-decoration-none text-dark"
+                            href={`https://wa.me/91${item.number}`}
+                          >
+                            {item.number}
+                            <FaWhatsapp className="text-success ml-1" style={{ fontSize: '15px' }} />
+                          </a>
+                        </td>
                         <td>{item.email || ""}</td>
                         <td>
                           {item.newDesignation === "Business Development Executive" ? "BDE"
@@ -322,11 +331,11 @@ function DeletedEmployeePanel({searchValue}) {
                         </td>
                         <td>{item.branchOffice || ""}</td>
                         <td>{formattedDate(item.jdate) || ""}</td>
-                        <td>
+                        {/* <td>
                           <span className={getBadgeClass(calculateProbationStatus(item.jdate))}>
                             {calculateProbationStatus(item.jdate)}
                           </span>
-                        </td>
+                        </td> */}
                         {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
                           &&
                           <>
@@ -336,7 +345,7 @@ function DeletedEmployeePanel({searchValue}) {
                                 : formattedDate(item.AddedOn)}
                             </td>
                             <td>{formattedDate(item.deletedDate)}</td>
-                            <td>
+                            {/* <td>
                               <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                                 <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
                                 // onClick={(event) => {
@@ -344,7 +353,7 @@ function DeletedEmployeePanel({searchValue}) {
                                 // }} 
                                 />
                               </Stack>
-                            </td>
+                            </td> */}
                           </>
                         }
 
