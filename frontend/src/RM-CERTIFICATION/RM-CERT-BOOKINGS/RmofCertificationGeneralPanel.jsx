@@ -255,6 +255,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         }
     };
 
+    console.log("rmservicesdata" , rmServicesData)
   
 
 
@@ -302,7 +303,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -329,7 +330,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -357,7 +358,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -385,7 +386,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -413,7 +414,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -469,7 +470,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -498,7 +499,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}
@@ -554,7 +555,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        dataForFilter={rmServicesData}
                                                     />
                                                 </div>
                                             )}

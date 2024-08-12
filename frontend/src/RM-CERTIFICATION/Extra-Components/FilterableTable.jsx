@@ -7,7 +7,6 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState([]);
     const [sortOrder, setSortOrder] = useState(null);
-    const [filteredData, setFilteredData] = useState(data);
 
     const handleSort = (order) => {
         setSortOrder(order);
@@ -69,7 +68,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
 
     const applyFilters = (filters, column) => {
         // Start with the data to be filtered
-        let dataToSort = filteredData;
+        let dataToSort = dataForFilter;
 
         // Apply filters if there are selected filters
         if (filters.length > 0 && column) {
@@ -116,7 +115,6 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
         }
 
         console.log("filteredData", dataToSort);
-        setFilteredData(dataToSort); // Update filteredData with the result
         onFilter(dataToSort);
     };
 
@@ -132,7 +130,6 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
 
     const handleClearAll = () => {
         setSelectedFilters([]);
-        setFilteredData(completeData); // Reset filtered data to completeData
         onFilter(completeData)
     };
 
@@ -140,7 +137,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
 
     return (
         <div>
-            <div className='inco-filter'>
+            <div className="inco-filter">
                 <div
                     className="inco-subFilter"
                     onClick={(e) => handleSort("oldest")}
