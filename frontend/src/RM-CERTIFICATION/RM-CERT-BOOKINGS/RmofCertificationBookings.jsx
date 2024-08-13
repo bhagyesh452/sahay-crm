@@ -90,7 +90,7 @@ function RmofCertificationBookings() {
   const isAdmin = true;
 
   useEffect(() => {
-    document.title = `RMOFCERT-Sahay-CRM`;
+    document.title = `AdminHead-Sahay-CRM`;
   }, []);
 
   const defaultLeadData = {

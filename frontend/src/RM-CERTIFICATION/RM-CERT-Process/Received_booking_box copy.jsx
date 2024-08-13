@@ -96,7 +96,7 @@ function Received_booking_box() {
 
 
     useEffect(() => {
-        document.title = `RMOFCERT-Sahay-CRM`;
+        document.title = `AdminHead-Sahay-CRM`;
     }, []);
 
 

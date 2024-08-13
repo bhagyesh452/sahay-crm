@@ -79,7 +79,7 @@ function RmofCertificationAllBookings({ setOpenAllBookingPanel, completeData }) 
 
 
     useEffect(() => {
-        document.title = `RMOFCERT-Sahay-CRM`;
+        document.title = `AdminHead-Sahay-CRM`;
     }, []);
 
 
