@@ -4,6 +4,7 @@ import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/mat
 import CloseIcon from "@mui/icons-material/Close";
 import { MdOutlineAddCircle } from "react-icons/md";
 import Swal from 'sweetalert2';
+import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
 
 
@@ -39,6 +40,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
     const [companyData, setCompanyData] = useState([]);
     const [errors, setErrors] = useState([]);
     const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const defaultObject = {
         year: "",
@@ -176,6 +178,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
 
     const fetchData = async () => {
         try {
+            setIsLoading(true);
             const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
             const data = res.data.data;
             console.log("Fetched employee is :", data);
@@ -210,14 +213,14 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
             // setNumber(d);
         } catch (error) {
             console.error("Error fetching data:", error.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchData();
     }, [empId, openForEdit === true]);
-
-
 
     const handleInputChange = (field, value) => {
         switch (field) {
@@ -481,7 +484,17 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     </IconButton>{" "}
                 </DialogTitle>
                 <DialogContent>
-                    <div className="modal-dialog modal-lg" role="document">
+                    {isLoading ? <div>
+                        <div className="LoaderTDSatyle w-100">
+                            <ClipLoader
+                                color="lightgrey"
+                                loading={true}
+                                size={30}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                            />
+                        </div>
+                    </div> : <div className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
                             <div className="modal-body">
                                 <div className="mb-3">
@@ -808,7 +821,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </div>}
                 </DialogContent>
                 <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
                     Submit
