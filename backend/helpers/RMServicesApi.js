@@ -1133,8 +1133,8 @@ router.post(`/post-save-industry/`, async (req, res) => {
       },
       {
         industry: industryOption,
-        isIndustryEnabled:isIndustryEnabled,
-        sector:""
+        //isIndustryEnabled:isIndustryEnabled,
+        sector:sector
       },
       { new: true }
     )

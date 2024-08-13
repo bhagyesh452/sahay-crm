@@ -458,7 +458,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
                 companyName,
                 serviceName,
                 industryOption,
-                isIndustryEnabled: false,
+                //isIndustryEnabled: false,
                 sector:""
             });
             if (response.status === 200) {
