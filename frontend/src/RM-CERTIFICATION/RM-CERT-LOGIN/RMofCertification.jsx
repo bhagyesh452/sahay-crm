@@ -56,7 +56,7 @@ try{
     localStorage.setItem("RMOfCertificationName" , data.ename)
     localStorage.setItem("rmofcertificationToken" , rmofcertificationToken)
     localStorage.setItem("rmCertificationUserId" , rmCertificationUserId)
-    window.location.replace(`/rmofcertification/dashboard-rmofcertification/${rmCertificationUserId}`)
+    window.location.replace(`/adminhead/dashboard/${rmCertificationUserId}`)
 
 }catch(error){
     console.error("Login Failed" , error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback ,useRef} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import StatusDropdown from "../Extra-Components/status-dropdown";
 import DscStatusDropdown from "../Extra-Components/dsc-status-dropdown";
@@ -29,7 +29,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import FilterableTable from '../Extra-Components/FilterableTable';
 import { BsFilter } from "react-icons/bs";
 
-function RmofCertificationDefaulterPanel({showFilter}) {
+function RmofCertificationDefaulterPanel({ showFilter }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -112,10 +112,10 @@ function RmofCertificationDefaulterPanel({showFilter}) {
                         const dateB = new Date(b.dateOfChangingMainStatus);
                         return dateB - dateA; // Sort in descending order
                     });
-                    setRmServicesData(filteredData);
-                    setRmServicesData(filteredData);
-                    setcompleteRmData(filteredData)
-                    setdataToFilter(filteredData)
+                setRmServicesData(filteredData);
+                setRmServicesData(filteredData);
+                setcompleteRmData(filteredData)
+                setdataToFilter(filteredData)
             } else {
                 console.error("Expected an array for services data, but got:", servicesData);
             }
@@ -311,7 +311,7 @@ function RmofCertificationDefaulterPanel({showFilter}) {
         }
     };
 
-     // ------------filter functions----------------------------
+    // ------------filter functions----------------------------
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [filteredData, setFilteredData] = useState(rmServicesData);
     const [filterField, setFilterField] = useState("");
@@ -377,652 +377,652 @@ function RmofCertificationDefaulterPanel({showFilter}) {
                             <tr className="tr-sticky">
                                 <th className="rm-sticky-left-1">Sr.No</th>
                                 <th className="rm-sticky-left-2">
-                                        <div className='d-flex align-items-center justify-content-center '>
-                                            <div ref={el => fieldRefs.current['Company Name'] = el}>
-                                                Company Name
+                                    <div className='d-flex align-items-center justify-content-center '>
+                                        <div ref={el => fieldRefs.current['Company Name'] = el}>
+                                            Company Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("Company Name")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'Company Name' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Name")}
-                                                    />
-                                                </div>
-                                                 {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'Company Name' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Number'] = el}>
+                                            Company Number
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['Company Number'] = el}>
-                                                Company Number
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("Company Number")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === "Company Number" && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Number")}
-                                                    />
-                                                </div>
-                                                {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === "Company Number" && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['Company Email'] = el}>
+                                            Company Email
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['Company Email'] = el}>
-                                                Company Email
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("Company Email")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'Company Email' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Email")}
-                                                    />
-                                                </div>
-                                                 {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'Company Email' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['caNumber'] = el}>
+                                            CA Number
+                                        </div >
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("caNumber")}
+                                            />
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['caNumber'] = el}>
-                                                CA Number
-                                            </div >
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("caNumber")}
-                                                    />
-                                                </div>
-                                                  {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'caNumber' && (
-                                                <div
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'caNumber' && (
+                                            <div
                                                 ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['serviceName'] = el}>
-                                                Service Name
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("serviceName")}
-                                                    />
-                                                </div>
-                                                 {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'serviceName' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['serviceName'] = el}>
+                                            Service Name
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
-                                                Status
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("serviceName")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'serviceName' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={rmServicesData}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("subCategoryStatus")}
-                                                    />
-                                                </div>
-                                                 {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
-                                                
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
+                                            Status
                                         </div>
-                                    </th>
-                                    <th>Remark</th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['websiteLink'] = el}>
-                                                Website Link/Brief
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("subCategoryStatus")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("websiteLink")}
-                                                    />
-                                                </div>
-                                                {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'websiteLink' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+
+                                    </div>
+                                </th>
+                                <th>Remark</th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['websiteLink'] = el}>
+                                            Website Link/Brief
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['withDSC'] = el}>
-                                                DSC Applicable
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("websiteLink")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'websiteLink' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("withDSC")}
-                                                    />
-                                                </div>
-                                                 {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'withDSC' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['withDSC'] = el}>
+                                            DSC Applicable
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['dscStatus'] = el}>
-                                                DSC Status
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("withDSC")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'withDSC' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("dscStatus")}
-                                                    />
-                                                </div>
-                                                {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'dscStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['dscStatus'] = el}>
+                                            DSC Status
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['contentWriter'] = el}>
-                                                Content Writer
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("dscStatus")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'dscStatus' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("contentWriter")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'contentWriter' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['contentWriter'] = el}>
+                                            Content Writer
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['contentStatus'] = el}>
-                                                Content Status
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("contentWriter")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'contentWriter' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("contentStatus")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'contentStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['contentStatus'] = el}>
+                                            Content Status
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
-                                                Brochure Designer
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("contentStatus")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'contentStatus' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("brochureDesigner")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'brochureDesigner' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
+                                            Brochure Designer
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['brochureStatus'] = el}>
-                                                Brochure Status
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("brochureDesigner")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'brochureDesigner' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("brochureStatus")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'brochureStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['brochureStatus'] = el}>
+                                            Brochure Status
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['nswsMailId'] = el}>
-                                                NSWS Email Id
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("brochureStatus")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'brochureStatus' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("nswsMailId")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'nswsMailId' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['nswsMailId'] = el}>
+                                            NSWS Email Id
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['nswsPaswsord'] = el}>
-                                                NSWS Password
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("nswsMailId")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'nswsMailId' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                         
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("nswsPaswsord")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['nswsPaswsord'] = el}>
+                                            NSWS Password
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['industry'] = el}>
-                                                Industry
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("nswsPaswsord")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("industry")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'industry' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['industry'] = el}>
+                                            Industry
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['sector'] = el}>
-                                                Sector
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("industry")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'industry' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("sector")}
-                                                    />
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'sector' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['sector'] = el}>
+                                            Sector
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("sector")}
+                                            />
+                                        </div>
+                                        {showFilterMenu && activeFilterField === 'sector' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div
                                         className='d-flex align-items-center justify-content-center'
                                     >
                                         <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                             Booking Date
                                         </div>
-                                       
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter
-                                                    onClick={() => handleFilterClick("bookingDate")}
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("bookingDate")}
+                                            />
+                                        </div>
+                                    </div></th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['bdeName'] = el}>
+                                            BDE Name
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("bdeName")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'bdeName' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={rmServicesData}
                                                 />
                                             </div>
-                                    </div></th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['bdeName'] = el}>
-                                                BDE Name
-                                            </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bdeName")} 
-                                                        />
-                                                </div>
-                                                   {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'bdeName' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['bdmName'] = el}>
+                                            BDM Name
                                         </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['bdmName'] = el}>
-                                                BDM Name
-                                            </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                       onClick={() => handleFilterClick("bdmName")}
-                                                        />
-                                                </div>
-                                                 {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'bdmName' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
-                                                Total Payment
-                                            </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                      onClick={() => handleFilterClick("totalPaymentWGST")}
-                                                        />
-                                                </div>
-                                                  {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div ref={el => fieldRefs.current['receivedPayment'] = el}>
-                                                Recieved Payment
-                                            </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                         onClick={() => handleFilterClick("receivedPayment")}
-                                                        />
-                                                </div>
-                                                  {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'receivedPayment' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center  position-relative'>
-                                            <div  ref={el => fieldRefs.current['pendingPayment'] = el}>
-                                                Pending Payment
-                                            </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                     onClick={() => handleFilterClick("pendingPayment")}
 
-                                                        />
-                                                </div>
-                                                  {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'pendingPayment' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )}
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("bdmName")}
+                                            />
                                         </div>
-                                    </th>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'bdmName' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
+                                            Total Payment
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("totalPaymentWGST")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['receivedPayment'] = el}>
+                                            Recieved Payment
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("receivedPayment")}
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'receivedPayment' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['pendingPayment'] = el}>
+                                            Pending Payment
+                                        </div>
+
+                                        <div className='RM_filter_icon'>
+                                            <BsFilter
+                                                onClick={() => handleFilterClick("pendingPayment")}
+
+                                            />
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                            <div
+                                                ref={filterMenuRef}
+                                                className="filter-menu"
+                                                style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                            >
+                                                <FilterableTable
+                                                    data={rmServicesData}
+                                                    filterField={activeFilterField}
+                                                    onFilter={handleFilter}
+                                                    completeData={completeRmData}
+                                                    dataForFilter={dataToFilter}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </th>
                                 <th className="rm-sticky-action">Action</th>
                             </tr>
                         </thead>
@@ -1224,34 +1224,34 @@ function RmofCertificationDefaulterPanel({showFilter}) {
                                             <div>{obj.bdmName}</div>
                                         </div>
                                     </td>
-                                    <td>₹ {parseInt(obj.totalPaymentWGST || 0 , 10).toLocaleString('en-IN')}</td>
+                                    <td>₹ {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString('en-IN')}</td>
                                     <td>
-                                            ₹ {(
+                                        ₹ {(
+                                            (parseInt(
+                                                (obj.paymentTerms === 'Full Advanced' ? obj.totalPaymentWGST : obj.firstPayment) || 0,
+                                                10
+                                            ) + parseInt(obj.pendingRecievedPayment || 0, 10))
+                                                .toLocaleString('en-IN')
+                                        )}
+                                    </td>
+                                    <td>
+                                        ₹ {(
+                                            (parseInt(obj.totalPaymentWGST || 0, 10) -
                                                 (parseInt(
                                                     (obj.paymentTerms === 'Full Advanced' ? obj.totalPaymentWGST : obj.firstPayment) || 0,
                                                     10
-                                                ) + parseInt(obj.pendingRecievedPayment || 0, 10))
-                                                    .toLocaleString('en-IN')
-                                            )}
-                                        </td>
-                                        <td>
-                                            ₹ {(
-                                                (parseInt(obj.totalPaymentWGST || 0, 10) -
-                                                    (parseInt(
-                                                        (obj.paymentTerms === 'Full Advanced' ? obj.totalPaymentWGST : obj.firstPayment) || 0,
-                                                        10
-                                                    ) + parseInt(obj.pendingRecievedPayment || 0, 10)))
-                                            ).toLocaleString('en-IN')}
-                                        </td>
+                                                ) + parseInt(obj.pendingRecievedPayment || 0, 10)))
+                                        ).toLocaleString('en-IN')}
+                                    </td>
                                     <td className="rm-sticky-action">
-                                        <button className="action-btn action-btn-primary" 
-                                            // onClick={() => (
-                                            //     handleRevokeCompanyToRecievedBox(
-                                            //         obj["Company Name"],
-                                            //         obj.serviceName
-                                            //     )
-                                            // )}
-                                            >
+                                        <button className="action-btn action-btn-primary"
+                                        // onClick={() => (
+                                        //     handleRevokeCompanyToRecievedBox(
+                                        //         obj["Company Name"],
+                                        //         obj.serviceName
+                                        //     )
+                                        // )}
+                                        >
                                             <FaRegEye />
                                         </button>
                                     </td>

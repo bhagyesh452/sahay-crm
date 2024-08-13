@@ -23,7 +23,7 @@ function RMofCertificationListViewBookings({ bookingsData }) {
     const handleViewTable = () => {
         setOpenTableView(true)
         setOpenListView(false)
-        window.location.replace(`/rmofcertification/rmofcertification-bookings/${rmCertificationUserId}`);
+        window.location.replace(`/adminhead/bookings/${rmCertificationUserId}`);
     }
 
     const handleViewList = () => {
