@@ -24,14 +24,15 @@ function Navbar() {
           <div className="navbar">
             <div className="container-xl p-0">
               <ul className="navbar-nav">
+                
                 <li className="nav-item"
                 class = {
-                  location.pathname === `/datamanager-dashboard/${datamanagerUserId}` ? "nav-item active" : "nav-item"
+                  location.pathname === `/dataanalyst/dashboard/${datamanagerUserId}` ? "nav-item active" : "nav-item"
                 }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
                      to={{
-                      pathname : `/datamanager-dashboard/${datamanagerUserId}`
+                      pathname : `/dataanalyst/dashboard/${datamanagerUserId}`
                      }}
                    
                   >
@@ -43,14 +44,15 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
+
                 <li className="nav-item"
                   class={
-                    location.pathname === "/datamanager/manageleads/" ? "nav-item active" : "nav-item"
+                    location.pathname === "/dataanalyst/manageleads/" ? "nav-item active" : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
                     to={{
-                      pathname: `/datamanager/manageleads/`,
+                      pathname: `/dataanalyst/manageleads/`,
                     }}
                   >
                     <a className="nav-link" href="./">
@@ -61,15 +63,16 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
+
                 <li
                   className={
-                    location.pathname.startsWith("/datamanager/newEmployees/")
+                    location.pathname.startsWith("/dataanalyst/newEmployees/")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/datamanager/newEmployees/"
+                    to="/dataanalyst/newEmployees/"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -79,15 +82,16 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
+
                 <li
                   className={
-                    location.pathname.startsWith("/datamanager/bookings/")
+                    location.pathname.startsWith("/dataanalyst/bookings/")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/datamanager/bookings/"
+                    to="/dataanalyst/bookings/"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -97,6 +101,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
+                
               </ul>
             </div>
           </div>
