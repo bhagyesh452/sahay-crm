@@ -268,6 +268,9 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
  lastAttemptSubmitted:{
   type:String,
+ },
+ isIndustryEnabled:{
+  type:Boolean,
  }
 })
 

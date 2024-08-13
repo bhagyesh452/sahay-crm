@@ -102,6 +102,7 @@ try{
                                         <input
                                             onChange={(e)=>{
                                                 setEmail(e.target.value)
+                                                
                                             }}
                                             type="email"
                                             className="form-control"
