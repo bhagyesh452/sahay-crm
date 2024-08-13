@@ -889,7 +889,7 @@ function Employees({ onEyeButtonClick, searchValue }) {
                         <button className="action-btn action-btn-primary">
                           <Link
                             style={{ color: "black", color: 'inherit' }}
-                            to={`/datamanager/employeeLeads/${item._id}`}
+                            to={`/dataanalyst/employeeLeads/${item._id}`}
                           ><FaRegEye />
                           </Link>
                         </button>

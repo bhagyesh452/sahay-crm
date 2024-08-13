@@ -47,12 +47,12 @@ function Navbar() {
 
                 <li className="nav-item"
                   class={
-                    location.pathname === "/dataanalyst/manageleads/" ? "nav-item active" : "nav-item"
+                    location.pathname === "/dataanalyst/manageleads" ? "nav-item active" : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
                     to={{
-                      pathname: `/dataanalyst/manageleads/`,
+                      pathname: `/dataanalyst/manageleads`,
                     }}
                   >
                     <a className="nav-link" href="./">
@@ -66,13 +66,13 @@ function Navbar() {
 
                 <li
                   className={
-                    location.pathname.startsWith("/dataanalyst/newEmployees/")
+                    location.pathname.startsWith("/dataanalyst/newEmployees")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/dataanalyst/newEmployees/"
+                    to="/dataanalyst/newEmployees"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -85,13 +85,13 @@ function Navbar() {
 
                 <li
                   className={
-                    location.pathname.startsWith("/dataanalyst/bookings/")
+                    location.pathname.startsWith("/dataanalyst/bookings")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/dataanalyst/bookings/"
+                    to="/dataanalyst/bookings"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -101,7 +101,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                
+
               </ul>
             </div>
           </div>

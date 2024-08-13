@@ -165,7 +165,7 @@ useEffect(() => {
       localStorage.setItem("dataManagerName" , ename )
       localStorage.setItem("managerToken", newtoken);
       localStorage.setItem("dataManagerUserId", userId);
-      window.location.replace(`/datamanager-dashboard/${userId}`);
+      window.location.replace(`/dataanalyst/dashboard/${userId}`);
     } catch (error) {
       console.error("Login failed:", error);
       if (error.response.status === 401) {
@@ -204,7 +204,7 @@ useEffect(() => {
               <div className="col-sm-6 p-0">
                 <div className="card card-md login-box">
                   <div className="card-body">
-                    <h2 className="h2 text-center mb-4">Data Manager Login</h2>
+                    <h2 className="h2 text-center mb-4">Data Analyst Login</h2>
                     <form action="#" method="get" autocomplete="off" novalidate>
                       <div className="mb-3">
                         <label className="form-label">Username</label>
