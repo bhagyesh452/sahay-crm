@@ -140,11 +140,11 @@ function App() {
 
 
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
-          <Route path='/rmofcertification/login' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
-          <Route path='/rmofcertification/dashboard-rmofcertification/:userId/' element={<RmCertificationDashboard />} />
-          <Route path='/rmofcertification/rmofcertification-bookings/:userId/' element={<RmofCertificationBookings />} />
-          <Route path='/rmofcertification/rmofcertification-mybookings/:userId' element={<RmofCertificationMyBookings />} />
-          <Route path='/rmofcertification/received-booking-box/:userId' element={<Received_booking_box />} />
+          <Route path='/adminhead/login' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
+          <Route path='/adminhead/dashboard/:userId/' element={<RmCertificationDashboard />} />
+          <Route path='/adminhead/bookings/:userId/' element={<RmofCertificationBookings />} />
+          <Route path='/adminhead/mybookings/:userId' element={<RmofCertificationMyBookings />} />
+          <Route path='/adminhead/received-booking-box/:userId' element={<Received_booking_box />} />
 
           {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
           <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken} />} />

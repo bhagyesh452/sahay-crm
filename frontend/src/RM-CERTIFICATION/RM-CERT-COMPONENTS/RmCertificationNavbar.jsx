@@ -25,7 +25,7 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
   //   window.location.replace(`/employee-team-leads/${userId}`);
   // };
   const handleDashboardClick = () => {
-    window.location.replace(`/rmofcertification/dashboard-rmofcertification/${rmCertificationUserId}`)
+    window.location.replace(`/adminhead/dashboard/${rmCertificationUserId}`)
   }
   // const handleConvertedLeadsClicksame = () => {
   //   // Navigate to the /employee-data/:userId/converted-leads route
@@ -33,11 +33,11 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
   // };
 
   const handleClickBookings = () => {
-    window.location.replace(`/rmofcertification/rmofcertification-bookings/${rmCertificationUserId}`)
+    window.location.replace(`/adminhead/bookings/${rmCertificationUserId}`)
   }
 
   const handleClickMyBookings = () => {
-    window.location.replace(`/rmofcertification/rmofcertification-mybookings/${rmCertificationUserId}`)
+    window.location.replace(`/adminhead/mybookings/${rmCertificationUserId}`)
   }
 
   return (
@@ -48,7 +48,7 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
             <div className="container-xl">
               <ul className="navbar-nav">
                 <li className={
-                  location.pathname === `/rmofcertification/dashboard-rmofcertification/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
+                  location.pathname === `/adminhead/dashboard/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
                 }
                   onClick={handleDashboardClick}>
 
@@ -77,8 +77,8 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                   </a>
                 </li>
                 
-                  <Link style={{ textDecoration: "none", color: "black" }} className={location.pathname === `/rmofcertification/received-booking-box/${rmCertificationUserId}` ? "nav-item active" : 'nav-item' }
-                      to= {`/rmofcertification/received-booking-box/${rmCertificationUserId}`}>
+                  <Link style={{ textDecoration: "none", color: "black" }} className={location.pathname === `/adminhead/received-booking-box/${rmCertificationUserId}` ? "nav-item active" : 'nav-item' }
+                      to= {`/adminhead/received-booking-box/${rmCertificationUserId}`}>
                       <a className="nav-link" href="./">
                         <span className="nav-link-icon d-md-none d-lg-inline-block">
                           {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}
@@ -106,7 +106,7 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                 
                 {/* <li
                   className={
-                    location.pathname === `/rmofcertification/rmofcertification-bookings/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
+                    location.pathname === `/adminhead/bookings/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
                   }
                   onClick={handleClickBookings}
                 >
@@ -121,10 +121,10 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                 </li> */}
                 <Link style={{ textDecoration: "none", color: "black" }}
                   className={
-                    location.pathname === `/rmofcertification/rmofcertification-mybookings/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
+                    location.pathname === `/adminhead/mybookings/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
                   }
                   //onClick={handleClickMyBookings}
-                  to={`/rmofcertification/rmofcertification-mybookings/${rmCertificationUserId}`}
+                  to={`/adminhead/mybookings/${rmCertificationUserId}`}
                 >
 
                   <a className="nav-link" href="#">
