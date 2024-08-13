@@ -1334,12 +1334,12 @@ function RmofCertificationApprovedPanel({ showFilter }) {
                                         <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary"
-                                            // onClick={()=>(
-                                            //         handleRevokeCompanyToRecievedBox(
-                                            //             obj["Company Name"],
-                                            //             obj.serviceName
-                                            //         )
-                                            //     )}
+                                            onClick={()=>(
+                                                    handleRevokeCompanyToRecievedBox(
+                                                        obj["Company Name"],
+                                                        obj.serviceName
+                                                    )
+                                                )}
                                             >
                                                 <FaRegEye />
                                             </button>

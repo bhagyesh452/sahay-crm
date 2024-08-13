@@ -499,14 +499,14 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
                 ))}
 
             </select>
-            <button className='td_add_remarks_btn'
+            {mainStatus === "Process" && <button className='td_add_remarks_btn'
             onClick={()=>{
                 setIsDisabled(true)
                
             }}
             >
                 <FaPencilAlt />
-            </button>
+            </button>}
 
         </div>
     );

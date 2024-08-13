@@ -7,6 +7,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState([]);
     const [sortOrder, setSortOrder] = useState(null);
+    
 
     const handleSort = (order) => {
         if (order === "none") {
