@@ -36,7 +36,7 @@ const navigate = useNavigate();
     
       localStorage.removeItem("managerToken");
       
-      window.location.href = '/datamanagerlogin';
+      window.location.href = '/dataanalyst/login';
     
   };
   return (

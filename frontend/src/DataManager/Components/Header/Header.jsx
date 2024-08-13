@@ -144,7 +144,9 @@ function Header({ name, id, designation, empProfile, gender }) {
                 <div className="d-xl-block ps-2">
                   <div style={{ textTransform: "capitalize", textAlign: "left" }}>{name ? name : "Name"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
-                    {designation}
+                    {/* {designation} */}
+                    {designation === "Business Development Executive" && "BDE" || 
+                    designation === "Business Development Manager" && "BDM" || designation}
                   </div>
                 </div>
                 {/* <AiOutlineLogout style={{ width: "25px", height: "25px", marginLeft: "5px" }} onClick={() => handleLogout()} /> */}

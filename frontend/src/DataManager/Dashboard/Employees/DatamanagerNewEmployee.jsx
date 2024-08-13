@@ -46,7 +46,7 @@ function DatamanagerNewEmployee() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     useEffect(() => {
-        document.title = `Datamanager-Sahay-CRM`;
+        document.title = `Dataanalyst-Sahay-CRM`;
     }, []);
 
     // console.log("User id is :", userId);

@@ -168,7 +168,7 @@ function EmployeeLeads() {
     const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
 
     useEffect(() => {
-        document.title = `Datamanager-Sahay-CRM`;
+        document.title = `Dataanalyst-Sahay-CRM`;
     }, []);
 
     useEffect(() => {

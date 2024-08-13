@@ -153,17 +153,17 @@ function App() {
 
           {/* -----------------------------------------datamanager components--------------------------------------- */}
 
-          <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken} />} />
-          <Route path='/datamanager-dashboard/:userId/' element={<DatamanagerDashboard />} />
+          <Route path="/dataanalyst/login" element={<DataManagerLogin setManagerToken={setManagerToken} />} />
+          <Route path='/dataanalyst/dashboard/:userId/' element={<DatamanagerDashboard />} />
           <Route
-            path="/datamanager/manageleads/"
+            path="/dataanalyst/manageleads"
             element={<ManageLeads />}
           ></Route>
           <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager />} />
-          <Route path="/datamanager/employees" element={<DataManager_Employees />}></Route>
-          <Route path="/datamanager/newEmployees" element={<DatamanagerNewEmployee />}></Route>
-          <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads />}></Route>
-          <Route path="/datamanager/bookings" element={<ManagerBookings />}></Route>
+          <Route path="/dataanalyst/employees" element={<DataManager_Employees />}></Route>
+          <Route path="/dataanalyst/newEmployees" element={<DatamanagerNewEmployee />}></Route>
+          <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />}></Route>
+          <Route path="/dataanalyst/bookings" element={<ManagerBookings />}></Route>
           <Route
             path="/datamanager/notification"
             element={<NotificationDM />}
