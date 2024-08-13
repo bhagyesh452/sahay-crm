@@ -11,7 +11,7 @@ function RmCertificationDashboard() {
 
 
   useEffect(() => {
-    document.title = `RMOFCERT-Sahay-CRM`;
+    document.title = `AdminHead-Sahay-CRM`;
   }, []);
 
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")

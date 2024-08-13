@@ -2,7 +2,7 @@ import React ,{useState , useEffect} from 'react'
 
 function RmofCertificationCompanyTaskManage() {
   useEffect(() => {
-    document.title = `RMOFCERT-Sahay-CRM`;
+    document.title = `AdminHead-Sahay-CRM`;
   }, []);
   return (
     <div>RmofCertificationCompanyTaskManage</div>

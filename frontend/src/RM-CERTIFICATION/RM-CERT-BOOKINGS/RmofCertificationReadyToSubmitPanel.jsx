@@ -72,7 +72,7 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
     }
 
     useEffect(() => {
-        document.title = `RMOFCERT-Sahay-CRM`;
+        document.title = `AdminHead-Sahay-CRM`;
     }, []);
 
     useEffect(() => {

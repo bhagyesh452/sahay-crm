@@ -19,7 +19,7 @@ const [designation, setDesignation] = useState("")
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 useEffect(() => {
-    document.title = `RMOFCERT-Sahay-CRM`;
+    document.title = `AdminHead-Sahay-CRM`;
   }, []);
 
 const fetchData = async () => {

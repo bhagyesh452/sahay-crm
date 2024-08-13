@@ -17,7 +17,7 @@ function RMofCertificationListViewBookings({ bookingsData }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     useEffect(() => {
-        document.title = `RMOFCERT-Sahay-CRM`;
+        document.title = `AdminHead-Sahay-CRM`;
       }, []);
       
     const handleViewTable = () => {

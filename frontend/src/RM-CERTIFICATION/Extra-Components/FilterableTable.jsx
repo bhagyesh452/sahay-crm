@@ -149,6 +149,18 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                 let valueA = a[column];
                 let valueB = b[column];
     
+                // Handle date sorting
+                if (column === 'bookingDate') {
+                    const dateA = new Date(valueA);
+                    const dateB = new Date(valueB);
+                    if (sortOrder === 'oldest') {
+                        return dateA - dateB; // Sort from oldest to newest
+                    } else if (sortOrder === 'newest') {
+                        return dateB - dateA; // Sort from newest to oldest
+                    }
+                }
+    
+                // Handle numeric fields
                 if (column === 'receivedPayment' || column === 'pendingPayment') {
                     valueA = valueA !== undefined ? valueA : 0;
                     valueB = valueB !== undefined ? valueB : 0;
@@ -161,6 +173,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                         : valueB;
                 }
     
+                // Handle other types
                 if (typeof valueA === 'string' && typeof valueB === 'string') {
                     return sortOrder === 'oldest' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
                 } else if (typeof valueA === 'number' && typeof valueB === 'number') {
@@ -174,6 +187,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
         console.log("Filtered Data:", dataToSort);
         onFilter(dataToSort);
     };
+    
     
     
 
