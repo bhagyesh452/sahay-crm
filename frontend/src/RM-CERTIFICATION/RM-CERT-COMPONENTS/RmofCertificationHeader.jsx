@@ -59,7 +59,7 @@ function RmofCertificationHeader({ name, id, designation, empProfile, gender }) 
                 <div className="d-xl-block ps-2">
                   <div style={{ textAlign: "left" }}>{name ? name : "Username"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
-                    {designation ? designation : "RM-Certification"}
+                    {designation ? designation : "Admin Head"}
                   </div>
                 </div>
               </button>

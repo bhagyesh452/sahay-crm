@@ -6,11 +6,11 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 import { FaPencilAlt } from "react-icons/fa";
 
-const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector, mainStatus }) => {
+const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, industry, sector, mainStatus ,enableStatus}) => {
     const [status, setStatus] = useState(""); // Start with an empty string for default
     const [options, setOptions] = useState([]);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [isDisabled, setIsDisabled] = useState(!sector)
+    //const [isDisabled, setIsDisabled] = useState(!sector)
 
     useEffect(() => {
         const sectorOptionsForIndustry = getSectorOptionsForIndustry(industry);
@@ -24,11 +24,12 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
             const response = await axios.post(`${secretKey}/rm-services/post-save-sector`, {
                 companyName,
                 serviceName,
-                sectorOption
+                sectorOption,
+                isIndustryEnabled: false
             });
             if (response.status === 200) {
                 refreshData();
-                setIsDisabled(false);
+                //setIsDisabled(false);
             }
         } catch (error) {
             console.log("Error Sending Sector", error.message);
@@ -372,7 +373,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
     return (
         <div className="d-flex align-items-center justify-content-between">
             <select
-                className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate" || !isDisabled) ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate" || enableStatus === false) ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
                 //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
                 aria-labelledby="dropdownMenuButton1"
                 onChange={(e) => handleStatusChange(e.target.value)}
@@ -385,14 +386,14 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                     </option>
                 ))}
             </select>
-            <button className='td_add_remarks_btn'
+            {/* <button className='td_add_remarks_btn'
                 onClick={() => {
                     setIsDisabled(true)
 
                 }}
             >
                 <FaPencilAlt />
-            </button>
+            </button> */}
         </div>
     );
 };

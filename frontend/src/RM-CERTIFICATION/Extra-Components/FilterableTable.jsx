@@ -7,6 +7,7 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState([]);
     const [sortOrder, setSortOrder] = useState(null);
+    
 
     const handleSort = (order) => {
         if (order === "none") {
@@ -262,21 +263,23 @@ const FilterableTable = ({ data, filterField, onFilter, completeData, dataForFil
                         </div>
                     </div>
                 </div>
-                {columnValues.map(value => (
-                    <div key={value} className="inco-subFilter d-flex">
-                        <div style={{ marginRight: "5px" }}>
-                            <input
-                                type="checkbox"
-                                value={value}
-                                onChange={handleCheckboxChange}
-                                checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
-                            />
+                <div className="inco_inner">
+                    {columnValues.map(value => (
+                        <div key={value} className="inco-subFilter d-flex">
+                            <div style={{ marginRight: "5px" }}>
+                                <input
+                                    type="checkbox"
+                                    value={value}
+                                    onChange={handleCheckboxChange}
+                                    checked={selectedFilters.map(val => String(val)).includes(String(value))} // Convert for comparison
+                                />
+                            </div>
+                            <div className="filter-val">
+                                {value}
+                            </div>
                         </div>
-                        <div className="filter-val">
-                            {value}
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
                 <div className="inco-subFilter"
                     onClick={(e) => handleSort("none")}>
                     <SwapVertIcon style={{ height: "16px" }} />

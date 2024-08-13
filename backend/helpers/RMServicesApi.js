@@ -1122,7 +1122,7 @@ router.post(`/post-save-websitelink/`, async (req, res) => {
 });
 
 router.post(`/post-save-industry/`, async (req, res) => {
-  const { companyName, serviceName, industryOption } = req.body;
+  const { companyName, serviceName, industryOption ,isIndustryEnabled ,sector} = req.body;
   //console.log("dscStatus", serviceName, companyName, industryOption)
   const socketIO = req.io;
   try {
@@ -1132,7 +1132,39 @@ router.post(`/post-save-industry/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        industry: industryOption
+        industry: industryOption,
+        //isIndustryEnabled:isIndustryEnabled,
+        sector:sector
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    socketIO.emit('rm-general-status-updated')
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-enable-industry/`, async (req, res) => {
+  const { companyName, serviceName,isIndustryEnabled } = req.body;
+  //console.log("dscStatus", serviceName, companyName, industryOption)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        isIndustryEnabled:isIndustryEnabled
       },
       { new: true }
     )
@@ -1152,7 +1184,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
 });
 
 router.post(`/post-save-sector/`, async (req, res) => {
-  const { companyName, serviceName, sectorOption } = req.body;
+  const { companyName, serviceName, sectorOption , isIndustryEnabled } = req.body;
   //.log("dscStatus", serviceName, companyName, sectorOption)
   const socketIO = req.io;
   try {
@@ -1162,7 +1194,8 @@ router.post(`/post-save-sector/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        sector: sectorOption
+        sector: sectorOption,
+        isIndustryEnabled:isIndustryEnabled
       },
       { new: true }
     )
@@ -1450,6 +1483,25 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
   }
 });
 
+router.get('/sectors', async (req, res) => {
+  try {
+      const { industry } = req.query;
+
+      // Validate industry query parameter
+      if (!industry) {
+          return res.status(400).json({ error: 'Industry parameter is required' });
+      }
+
+      // Fetch sectors from the database based on the industry
+      const sectors = await RMCertificationModel.find({ industry });
+
+      // Send response with sectors
+      res.json(sectors);
+  } catch (error) {
+      console.error('Error fetching sectors:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 

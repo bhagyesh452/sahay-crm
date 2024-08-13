@@ -71,7 +71,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
     }
 
     useEffect(() => {
-        document.title = `AdminHead-Sahay-CRM`;
+        document.title = `RMOFCERT-Sahay-CRM`;
     }, []);
 
     useEffect(() => {
@@ -1184,6 +1184,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
                                                 onIndustryChange={handleIndustryChange}
+                                                enableStatus={obj.isIndustryEnabled}
                                                 industry={obj.industry === "Select Industry" ? "" : obj.industry} // Set to "" if obj.industry is "Select Industry"
                                                 mainStatus={obj.mainCategoryStatus}
                                             /></td>
@@ -1194,6 +1195,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
                                                 sectorOptions={sectorOptions}
+                                                enableStatus={obj.isIndustryEnabled}
                                                 industry={obj.industry || "Select Industry"} // Default to "Select Industry" if industry is not provided
                                                 sector={obj.sector || ""} // Default to "" if sector is not provided
                                                 mainStatus={obj.mainCategoryStatus}
@@ -1231,12 +1233,12 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                         </td>
 
                                         <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
-                                        // onClick={()=>{
-                                        //     handleRevokeCompanyToRecievedBox(
-                                        //         obj["Company Name"],
-                                        //         obj.serviceName
-                                        //     )
-                                        // }}
+                                        onClick={()=>{
+                                            handleRevokeCompanyToRecievedBox(
+                                                obj["Company Name"],
+                                                obj.serviceName
+                                            )
+                                        }}
 
                                         ><FaRegEye /></button>
                                         </td>

@@ -9,7 +9,7 @@ import { FaPencilAlt } from "react-icons/fa";
 
 
 
-const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, serviceName, refreshData, onIndustryChange }) => {
+const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, serviceName, refreshData, onIndustryChange , enableStatus }) => {
     const [status, setStatus] = useState(industry || "");
     const [statusClass, setStatusClass] = useState("created-status");
     const [options, setOptions] = useState([])
@@ -452,16 +452,18 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         setStatus(industryOption);
         setStatusClass(statusClass);
         onIndustryChange(industryOption, options)
-      
+
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-industry`, {
                 companyName,
                 serviceName,
-                industryOption
+                industryOption,
+                //isIndustryEnabled: false,
+                sector:""
             });
             if (response.status === 200) {
                 refreshData();
-                setIsDisabled(false)
+                //setIsDisabled(false)
                 //setOpenEmailPopup(false); // Close the popup on success
             }
 
@@ -473,20 +475,30 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         //setNewSubStatus(newStatus);
     };
 
-    //console.log("mainStatus" , mainStatus)
 
-    //console.log("industry" , industry)
-    const [isDisabled, setIsDisabled] = useState(!industry)
+    //const [isDisabled, setIsDisabled] = useState(!industry)
 
-    // useEffect(()=>{
-    //     setIsDisabled(false)
+    const handleDisableIndustry = async(companyName, serviceName) => {
+        try {
+            const response = await axios.post(`${secretKey}/rm-services/post-enable-industry`, {
+                companyName: companyName,
+                serviceName: serviceName,
+                isIndustryEnabled: true
 
-    // },[isDisabled , industry])
+            })
+        } catch (error) {
+            console.log("Enable Update Status Industry")
+        }
+    }
+
+    console.log("enableStatus" , enableStatus)
+
+
 
     return (
         <div className="d-flex align-items-center justify-content-between">
             <select
-                className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate" || !isDisabled) ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                className={(mainStatus === "Approved" || mainStatus === "Submitted" || serviceName !== "Start-Up India Certificate" || enableStatus === false) ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
                 aria-labelledby="dropdownMenuButton1"
                 onChange={(e) => handleStatusChange(e.target.value, dropdownItems.find(item => item.name === e.target.value)?.options)}
                 value={status} // Ensure this matches one of the option values
@@ -499,14 +511,14 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
                 ))}
 
             </select>
-            <button className='td_add_remarks_btn'
-            onClick={()=>{
-                setIsDisabled(true)
-               
-            }}
+            {mainStatus === "Process" && <button className='td_add_remarks_btn'
+                onClick={() => {
+                    handleDisableIndustry(companyName, serviceName)
+
+                }}
             >
                 <FaPencilAlt />
-            </button>
+            </button>}
 
         </div>
     );
