@@ -41,7 +41,7 @@ function DatamanagerDashboard() {
     const [myInfo, setMyInfo] = useState([]);
 
     useEffect(() => {
-        document.title = `Datamanager-Sahay-CRM`;
+        document.title = `Dataanalyst-Sahay-CRM`;
     }, []);
 
 

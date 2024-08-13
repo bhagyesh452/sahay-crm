@@ -90,7 +90,7 @@ function ManagerBookings() {
   }, [leadFormData]);
 
   useEffect(() => {
-    document.title = `Datamanager-Sahay-CRM`;
+    document.title = `Dataanalyst-Sahay-CRM`;
   }, []);
 
   useEffect(() => {

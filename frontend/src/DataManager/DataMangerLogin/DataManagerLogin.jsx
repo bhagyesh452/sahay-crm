@@ -23,7 +23,7 @@ function DataManagerLogin({ setManagerToken}) {
 
 
   useEffect(() => {
-    document.title = `Datamanager-Sahay-CRM`;
+    document.title = `Dataanalyst-Sahay-CRM`;
   }, []);
   
   const fetchData = async () => {

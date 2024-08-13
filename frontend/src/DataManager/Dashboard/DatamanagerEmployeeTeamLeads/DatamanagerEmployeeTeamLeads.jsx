@@ -180,7 +180,7 @@ function DatamanagerEmployeeTeamLeads() {
         }, [selectedYear, selectedMonth]);
 
         useEffect(() => {
-            document.title = `Datamanager-Sahay-CRM`;
+            document.title = `Dataanalyst-Sahay-CRM`;
           }, []);
         
     

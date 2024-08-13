@@ -82,7 +82,7 @@ function Employees({ onEyeButtonClick, searchValue }) {
   }, []);
 
   useEffect(() => {
-    document.title = `Datamanager-Sahay-CRM`;
+    document.title = `Dataanalyst-Sahay-CRM`;
   }, []);
 
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
