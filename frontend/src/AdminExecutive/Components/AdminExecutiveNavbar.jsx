@@ -38,7 +38,8 @@ function AdminExecutiveNavbar({ adminExecutiveUserId }) {
                             <ul className="navbar-nav">
                                 <Link style={{ textDecoration: "none", color: "black" }} 
                                 className={location.pathname === `/adminexecutive/dashboard/${adminExecutiveUserId}` ? "nav-item active" : 'nav-item'}
-                                    to={`/adminexecutive/dashboard/${adminExecutiveUserId}`}>
+                                    //</ul>to={`/adminexecutive/dashboard/${adminExecutiveUserId}`}
+                                    >
                                     <a className="nav-link" href="./">
                                         <span className="nav-link-icon d-md-none d-lg-inline-block">
                                             {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}
@@ -64,8 +65,11 @@ function AdminExecutiveNavbar({ adminExecutiveUserId }) {
                                     </a>
                                 </Link>
 
-                                <Link style={{ textDecoration: "none", color: "black" }} className={location.pathname === `/adminexecutive/received-booking-box/${adminExecutiveUserId}` ? "nav-item active" : 'nav-item'}
-                                    to={`/adminexecutive/received-booking-box/${adminExecutiveUserId}`}>
+                                <Link 
+                                style={{ textDecoration: "none", color: "black" }} 
+                                className={location.pathname === `/adminexecutive/received-booking-box/${adminExecutiveUserId}` ? "nav-item active" : 'nav-item'}
+                                    to={`/adminexecutive/received-booking-box/${adminExecutiveUserId}`}
+                                    >
                                     <a className="nav-link" href="./">
                                         <span className="nav-link-icon d-md-none d-lg-inline-block">
                                             {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}
@@ -94,8 +98,8 @@ function AdminExecutiveNavbar({ adminExecutiveUserId }) {
                                     className={
                                         location.pathname === `/adminexecutive/mybookings/${adminExecutiveUserId}` ? "nav-item active" : "nav-item"
                                     }
-                                    //onClick={handleClickMyBookings}
-                                    //to={`/adminexecutive/mybookings/${adminExecutiveUserId}`}
+                                    
+                                    to={`/adminexecutive/mybookings/${adminExecutiveUserId}`}
                                 >
 
                                     <a className="nav-link" href="#">

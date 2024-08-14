@@ -216,7 +216,11 @@ const TempSchema = new mongoose.Schema({
   servicesTakenByRmOfCertification:{
     type:Array,
     default:[]
-  }
+  },
+  servicesTakenByAdminExecutive:{
+    type:Array,
+    default:[]
+  },
 });
 
 const RedesignedLeadformSchema = new mongoose.Schema({
@@ -354,6 +358,23 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type:Boolean
   },
   permanentlDeleteDateFromRmCert:{
+    type:Date
+  },
+  servicesTakenByAdminExecutive:{
+    type:Array,
+    default:[]
+  },
+  isVisibleToAdminExecutive:{
+    type:Boolean,
+    default:true
+  },
+  displayOfDateForAdminExecutive:{
+    type:Date,
+  },
+  permanentlDeleteFromAdminExecutive:{
+    type:Boolean
+  },
+  permanentlDeleteDateFromAdminExecutive:{
     type:Date
   },
 

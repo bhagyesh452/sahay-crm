@@ -83,6 +83,7 @@ import EmployeeView from "./Hr_panel/Components/EmployeeView.jsx";
 import AdminExecutiveLogin from "./AdminExecutive/Login/AdminExecutiveLogin.jsx";
 import AdminExecutiveDashboard from "./AdminExecutive/Dashboard/AdminExecutiveDashboard.jsx";
 import AdminExecutiveRecievedBox from "./AdminExecutive/RecievedBookingBox/AdminExecutiveRecievedBox.jsx";
+import AdminExecutiveMyBookings from "./AdminExecutive/AdminExecutiveBookings/AdminExecutiveMyBookings.jsx";
 
 
 function App() {
@@ -159,6 +160,8 @@ function App() {
           <Route path='/adminexecutive/login' element={<AdminExecutiveLogin setAdminExecutiveToken={setAdminExecutiveToken} />} />
           <Route path='/adminexecutive/dashboard/:userId/' element={<AdminExecutiveDashboard />} />
           <Route path='/adminexecutive/received-booking-box/:userId' element={<AdminExecutiveRecievedBox />} />
+          <Route path='/adminexecutive/mybookings/:userId' element={<AdminExecutiveMyBookings />} />
+
           {/* -----------------------------------------datamanager components--------------------------------------- */}
 
           <Route path="/dataanalyst/login" element={<DataManagerLogin setManagerToken={setManagerToken} />} />
