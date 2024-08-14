@@ -64,6 +64,7 @@ const RequestAPI = require("./helpers/RequestAPI.js");
 const companyAPI = require("./helpers/Company_dataAPI.js");
 const ClientAPI = require("./helpers/ClientAPI.js");
 const EmployeeDraftAPI = require("./helpers/EmployeeDraftApi.js");
+const AttendanceAPI = require("./helpers/AttendanceApi.js");
 const TeamsAPI = require("./helpers/TeamsAPI.js");
 const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
@@ -119,6 +120,7 @@ app.use('/api/rm-services', (req , res , next)=>{
 app.use('/api/clientform', ClientAPI)
 app.use('/api/customer', CustomerAPI)
 app.use('/api/employeeDraft', EmployeeDraftAPI);
+app.use('/api/attendance', AttendanceAPI);
 
 
 

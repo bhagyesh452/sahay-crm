@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Header from "../Header/Header";
 import Navbar from "../Navbar/Navbar";
 import Swal from "sweetalert2";
+import ClipLoader from 'react-spinners/ClipLoader';
 import { FaCopy } from "react-icons/fa";
 
 const steps = ['Personal Information', 'Employment Information',
@@ -23,6 +24,7 @@ export default function HREditEmployee() {
   const { empId } = useParams();
 
   const [activeStep, setActiveStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
 
@@ -336,6 +338,7 @@ export default function HREditEmployee() {
 
   const fetchEmployee = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
       const data = res.data.data;
       console.log("Fetched employee is :", res.data.data);
@@ -373,7 +376,7 @@ export default function HREditEmployee() {
         salary: data.salary || "",
         firstMonthSalaryCondition: data.firstMonthSalaryCondition || "",
         firstMonthSalary: data.firstMonthSalary || "",
-        offerLetter: offerLetterDocument,
+        offerLetter: offerLetterDocument.length > 0 && offerLetterDocument,
         panNumber: data.panNumber || "",
         aadharNumber: data.aadharNumber || "",
         uanNumber: data.uanNumber || ""
@@ -386,12 +389,12 @@ export default function HREditEmployee() {
       });
 
       setEmpDocumentInfo({
-        aadharCard: aadharCardDocument,
-        panCard: panCardDocument,
-        educationCertificate: educationCertificateDocument,
-        relievingCertificate: relievingCertificateDocument,
-        salarySlip: salarySlipDocument,
-        profilePhoto: profilePhotoDocument
+        aadharCard: aadharCardDocument.length > 0 && aadharCardDocument,
+        panCard: panCardDocument.length > 0 && panCardDocument,
+        educationCertificate: educationCertificateDocument.length > 0 && educationCertificateDocument,
+        relievingCertificate: relievingCertificateDocument.length > 0 && relievingCertificateDocument,
+        salarySlip: salarySlipDocument.length > 0 && salarySlipDocument,
+        profilePhoto: profilePhotoDocument.length > 0 && profilePhotoDocument
       });
 
       setOfferLetterDocument(data.offerLetter ? data.offerLetter : []);
@@ -404,6 +407,8 @@ export default function HREditEmployee() {
       setProfilePhotoDocument(data.profilePhoto ? data.profilePhoto : []);
     } catch (error) {
       console.log("Error fetching employee", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -747,7 +752,17 @@ export default function HREditEmployee() {
 
                       {activeStep === 0 && (
                         <>
-                          <div className="step-1">
+                          {isLoading ? <div className="step-1">
+                            <div className="LoaderTDSatyle w-100">
+                              <ClipLoader
+                                color="lightgrey"
+                                loading={true}
+                                size={30}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                              />
+                            </div>
+                          </div> : <div className="step-1">
                             <h2 className="text-center">
                               Step:1 - Employee's Personal Information
                             </h2>
@@ -936,6 +951,7 @@ export default function HREditEmployee() {
                               </form>
                             </div>
                           </div>
+                          }
                         </>
                       )}
 

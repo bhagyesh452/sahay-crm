@@ -1119,7 +1119,17 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         </div>
                         <div className="">
                           {(() => {
-                            const names = (item.ename || "").split(" ");
+                            // Split the item.ename string into an array of words based on spaces
+                            const names = (item.ename || "").trim().split(/\s+/);
+
+                            console.log("names", names);
+
+                            // Check if there's only one name or multiple names
+                            if (names.length === 1) {
+                              return names[0]; // If there's only one name, return it as-is
+                            }
+
+                            // Return the first and last name, or an empty string if not available
                             return `${names[0] || ""} ${names[names.length - 1] || ""}`;
                           })()}
                         </div>
@@ -1425,7 +1435,20 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                     {filteredData.map((item, index) => (
                       <tr key={index} style={{ border: "1px solid #ddd" }}>
                         <td className="td-sticky">{index + 1}</td>
-                        <td>{item.ename}</td>
+                        <td>{(() => {
+                          // Split the item.ename string into an array of words based on spaces
+                          const names = (item.ename || "").trim().split(/\s+/);
+
+                          console.log("names", names);
+
+                          // Check if there's only one name or multiple names
+                          if (names.length === 1) {
+                            return names[0]; // If there's only one name, return it as-is
+                          }
+
+                          // Return the first and last name, or an empty string if not available
+                          return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                        })()}</td>
                         <td>{item.number}</td>
                         <td>{item.email}</td>
                         <td>{formattedDate(item.jdate)}</td>

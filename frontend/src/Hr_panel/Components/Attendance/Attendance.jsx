@@ -2,14 +2,8 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import Header from '../Header/Header';
 import Navbar from '../Navbar/Navbar';
-import Nodata from '../../../components/Nodata';
-import ClipLoader from "react-spinners/ClipLoader";
-import { IoFilterOutline } from "react-icons/io5";
 import { format } from 'date-fns';
 import { TiUserAddOutline } from "react-icons/ti";
-import { FaEye } from "react-icons/fa";
-import EmpDfaullt from "../../../static/EmployeeImg/office-man.png";
-import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 import AddAttendance from "../Attendance/AddAttendance"
 import ViewAttendance from "../Attendance/ViewAttendance"
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -18,11 +12,15 @@ function Attendance() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const userId = localStorage.getItem("hrUserId");
 
+    const currentYear = new Date().getFullYear();
+    const currentMonth = format(new Date(), 'MMMM'); // e.g., 'August'
+
     const [isLoading, setIsLoading] = useState(false);
     const [employee, setEmployee] = useState([]);
     const [myInfo, setMyInfo] = useState([]);
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-    const [monthDates, setMonthDates] = useState([]);
+    const [selectedYear, setSelectedYear] = useState(currentYear);
+    const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [showAddAttendance, setShowAddAttendance] = useState(false);
 
     const fetchPersonalInfo = async () => {
         try {
@@ -47,32 +45,24 @@ function Attendance() {
         }
     };
 
-    const generateDatesForMonth = (monthIndex) => {
-        const currentYear = new Date().getFullYear();
-        const date = new Date(currentYear, monthIndex, 0); // Last day of the selected month
-        const totalDays = date.getDate();
-        const dates = [];
-
-        for (let i = 1; i <= totalDays; i++) {
-            const currentDate = new Date(currentYear, monthIndex - 1, i);
-            const formattedDate = format(currentDate, "do MMM - EEEE");
-            dates.push(formattedDate);
-        }
-
-        setMonthDates(dates);
+    const handleYearChange = (e) => {
+        setSelectedYear(Number(e.target.value));
     };
 
-    const handleMonthChange = (event) => {
-        const monthIndex = parseInt(event.target.value);
-        setSelectedMonth(monthIndex);
-        generateDatesForMonth(monthIndex);
+    const handleMonthChange = (e) => {
+        setSelectedMonth(e.target.value);
     };
+
+    // Generate the years array starting from 2020 to the current year
+    const years = [];
+    for (let year = 2020; year <= currentYear; year++) {
+        years.push(year);
+    }
 
     useEffect(() => {
         fetchEmployee();
         fetchPersonalInfo();
-        generateDatesForMonth(selectedMonth); // Generate dates for the current month by default
-    }, [selectedMonth]);
+    }, []);
 
     return (
         <div>
@@ -84,41 +74,50 @@ function Attendance() {
                         <div className="d-flex align-items-center justify-content-between">
                             <div className='d-flex align-items-center justify-content-between'>
                                 <div className='form-group ml-1'>
-                                    <select className='form-select'>
-                                        <option>--Select Year--</option>
-                                        <option>2024</option>
+                                    <select className='form-select' value={selectedYear} onChange={handleYearChange}>
+                                        <option disabled>--Select Year--</option>
+                                        {years.map(year => (
+                                            <option key={year} value={year}>{year}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className='form-group ml-1'>
-                                    <select className='form-select'>
-                                        <option>--Select Month--</option>
-                                        <option>January</option>
+                                    <select className='form-select' value={selectedMonth} onChange={handleMonthChange}>
+                                        <option disabled>--Select Month--</option>
+                                        {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(month => (
+                                            <option key={month} value={month}>{month}</option>
+                                        ))}
                                     </select>
                                 </div>
-                            </div>  
+                            </div>
                             <div className='d-flex align-items-center justify-content-between'>
                                 <div class="input-icon ml-1">
                                     <span class="input-icon-addon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                        <path d="M21 21l-6 -6"></path>
-                                    </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                            <path d="M21 21l-6 -6"></path>
+                                        </svg>
                                     </span>
                                     <input
-                                    className="form-control search-cantrol mybtn"
-                                    placeholder="Search…"
-                                    type="text"
-                                    name="bdeName-search"
-                                    id="bdeName-search" />
+                                        className="form-control search-cantrol mybtn"
+                                        placeholder="Search…"
+                                        type="text"
+                                        name="bdeName-search"
+                                        id="bdeName-search" />
                                 </div>
-                                <div className='btn-group ml-1'>
-                                    <button type="button" class="btn mybtn" >
-                                        <IoMdArrowRoundBack className='mr-1' /> Back
-                                    </button>
-                                    <button type="button" class="btn mybtn" >
+                                <div className="btn-group ml-1">
+                                    {showAddAttendance && (
+                                        <button
+                                            type="button"
+                                            className="btn mybtn"
+                                            onClick={() => setShowAddAttendance(false)}>
+                                            <IoMdArrowRoundBack className='mr-1' /> Back
+                                        </button>
+                                    )}
+                                    {!showAddAttendance && <button type="button" className="btn mybtn" onClick={() => setShowAddAttendance(true)}>
                                         <TiUserAddOutline className='mr-1' /> Add Attendance
-                                    </button>
+                                    </button>}
                                 </div>
                             </div>
                         </div>
@@ -126,8 +125,8 @@ function Attendance() {
                 </div>
                 <div className="page-body m-0">
                     <div className="container-xl mt-2">
-                        <ViewAttendance/>
-                        <AddAttendance />
+                        {!showAddAttendance && <ViewAttendance year={selectedYear} month={selectedMonth} />}
+                        {showAddAttendance && <AddAttendance year={selectedYear} month={selectedMonth} />}
                     </div>
                 </div>
             </div>
