@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
-  "start": "npx nodemon index.js"
-},
+  "scripts": {
+    "start": "npx nodemon index.js"
+  },
   "author": "bhagyesh",
   "license": "ISC",
   "dependencies": {
@@ -48,6 +48,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.46.0",
+    "@types/node": "^22.2.0",
     "nodemon": "^3.1.4"
   }
 }

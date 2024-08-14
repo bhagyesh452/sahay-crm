@@ -27,7 +27,6 @@ const StatusDropdown = ({ mainStatus,
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
-
   const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(statusClass);
@@ -275,6 +274,7 @@ const StatusDropdown = ({ mainStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
+         
         } else if (newStatus === "Defaulter") {
           movedFromMainCategoryStatus = "Submitted";
           movedToMainCategoryStatus = "Defaulter";

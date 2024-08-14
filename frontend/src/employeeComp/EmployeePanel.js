@@ -583,15 +583,21 @@ function EmployeePanel() {
   const [revertedData, setRevertedData] = useState([])
 
   const fetchNewData = async (status) => {
+    const cleanString = (str) => {
+      return str.replace(/\u00A0/g, ' ').trim();
+  };
+
+  const cleanedEname = cleanString(data.ename);
+
     try {
       if (!status) {
         setLoading(true);
       }
-      const response = await axios.get(`${secretKey}/company-data/employees/${data.ename}`);
+      const response = await axios.get(`${secretKey}/company-data/employees/${cleanedEname}`);
       const tempData = response.data;
       const revertedData = response.data.filter((item) => item.RevertBackAcceptedCompanyRequest === 'Reject')
       setRevertedData(revertedData)
-      //console.log("tempData", tempData, data.ename)
+      console.log("tempData", tempData, data.ename)
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date

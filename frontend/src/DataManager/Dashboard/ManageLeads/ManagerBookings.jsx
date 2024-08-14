@@ -30,6 +30,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import io from 'socket.io-client';
 
 function ManagerBookings() {
   const userId = localStorage.getItem("dataManagerUserId");
@@ -58,6 +59,13 @@ function ManagerBookings() {
   const [companyName, setCompanyName] = "";
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
+
+
+
+
+
+
+
   const fetchDatadebounce = async () => {
     try {
       // Set isLoading to true while fetching data
@@ -92,6 +100,24 @@ function ManagerBookings() {
   useEffect(() => {
     document.title = `Dataanalyst-Sahay-CRM`;
   }, []);
+
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+        secure: true, // Use HTTPS
+        path: '/socket.io',
+        reconnection: true,
+        transports: ['websocket'],
+    });
+
+    socket.on("Remaining_Payment_Added" , (res)=>{
+      fetchRedesignedFormData();
+    })
+   
+
+    return () => {
+        socket.disconnect();
+    };
+}, []);
 
   useEffect(() => {
     setLeadFormData(
@@ -567,14 +593,14 @@ function ManagerBookings() {
         `${secretKey}/bookings/redesigned-delete-morePayments/${currentLeadform["Company Name"]}/${BookingIndex}/${encodedServiceName}`
       );
 
-      const findCompany = rmServicesData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
-      if (findCompany) {
-        const response2 = await axios.post(`${secretKey}/bookings/delete-remaining-payment/`, {
-          companyName: currentLeadform["Company Name"],
-          serviceName: serviceName
-        })
+      // const findCompany = rmServicesData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
+      // if (findCompany) {
+      //   const response2 = await axios.post(`${secretKey}/bookings/delete-remaining-payment/`, {
+      //     companyName: currentLeadform["Company Name"],
+      //     serviceName: serviceName
+      //   })
 
-      }
+      // }
 
       Swal.fire(
         "Payment Updated",
@@ -1478,7 +1504,8 @@ function ManagerBookings() {
                                                   <FaPlus/>
                                                   </IconButton>} */}
                                                 {/* add remaining Edit */}
-                                                {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 && <div className="edit-remaining">
+                                                {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 && 
+                                                <div className="edit-remaining">
                                                   <IconButton onClick={() => {
                                                     setIsUpdateMode(true)
                                                     setTempUpdateMode(true)
@@ -1744,8 +1771,6 @@ function ManagerBookings() {
 
 
                                                         </div>
-
-
 
                                                       </div>
                                                     </div>

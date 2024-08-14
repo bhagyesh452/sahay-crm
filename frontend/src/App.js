@@ -80,6 +80,9 @@ import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.js
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
 import CustomerDashboard from "./Customer-Panel/CustomerDashboard.jsx";
 import EmployeeView from "./Hr_panel/Components/EmployeeView.jsx";
+import AdminExecutiveLogin from "./AdminExecutive/Login/AdminExecutiveLogin.jsx";
+import AdminExecutiveDashboard from "./AdminExecutive/Dashboard/AdminExecutiveDashboard.jsx";
+import AdminExecutiveRecievedBox from "./AdminExecutive/RecievedBookingBox/AdminExecutiveRecievedBox.jsx";
 
 
 function App() {
@@ -91,6 +94,7 @@ function App() {
   const [managerToken, setManagerToken] = useState(localStorage.getItem("managerToken") || null)
   const [bdmToken, setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
   const [rmofcertificationToken, setrmofcertificationToken] = useState(localStorage.getItem("rmofcertificationToken" || null))
+  const [adminExecutiveToken, setAdminExecutiveToken] = useState(localStorage.getItem("adminExecutiveToken" || null))
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
   const [hrToken, setHrToken] = useState(localStorage.getItem("HrToken") || null)
 
@@ -127,8 +131,8 @@ function App() {
 
           {/* --------------------------------------------------Path for Customer-Panel---------------------------------------------------------- */}
           <Route path='/customer/login' element={<CustomerLogin />}></Route>
-          <Route path='/customer/dashboard/:email' element={<CustomerDashboard />}></Route> 
-        
+          <Route path='/customer/dashboard/:email' element={<CustomerDashboard />}></Route>
+
           {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
 
 
@@ -151,6 +155,10 @@ function App() {
           <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} />
 
 
+          {/* --------------------------------------------------admin executive components---------------------------------------------------------- */}
+          <Route path='/adminexecutive/login' element={<AdminExecutiveLogin setAdminExecutiveToken={setAdminExecutiveToken} />} />
+          <Route path='/adminexecutive/dashboard/:userId/' element={<AdminExecutiveDashboard />} />
+          <Route path='/adminexecutive/received-booking-box/:userId' element={<AdminExecutiveRecievedBox />} />
           {/* -----------------------------------------datamanager components--------------------------------------- */}
 
           <Route path="/dataanalyst/login" element={<DataManagerLogin setManagerToken={setManagerToken} />} />

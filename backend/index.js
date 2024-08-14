@@ -362,6 +362,33 @@ app.post("/api/rmofcertificationlogin", async (req, res) => {
   }
 })
 
+app.post("/api/adminexecutivelogin", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+  });
+
+ 
+  //console.log(user)
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Admin Executive") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const adminExecutiveToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ adminExecutiveToken });
+    //socketIO.emit("Employee-login");
+  }
+})
+
 app.post("/api/rmoffundinglogin", async (req, res) => {
   const { email, password } = req.body;
 

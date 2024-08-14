@@ -13,3 +13,9 @@
 /Payment-Request
 /EmployeeImages
 /EmployeeDocs
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/tests
+/test-examples
