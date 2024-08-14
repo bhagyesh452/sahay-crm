@@ -364,9 +364,9 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
   const aadharCardDetails = getFileDetails(req.files ? req.files["aadharCard"] : []);
   const panCardDetails = getFileDetails(req.files ? req.files["panCard"] : []);
   const educationCertificateDetails = getFileDetails(req.files ? req.files["educationCertificate"] : []);
-  const relievingCertificateDetails = getFileDetails(req.files ? req.files["relievingCertificate"] : []);
-  const salarySlipDetails = getFileDetails(req.files ? req.files["salarySlip"] : []);
-  const profilePhotoDetails = getFileDetails(req.files ? req.files["profilePhoto"] : []);
+  const relievingCertificateDetails = getFileDetails(req.files ? req?.files["relievingCertificate"] : []);
+  const salarySlipDetails = getFileDetails(req.files ? req?.files["salarySlip"] : []);
+  const profilePhotoDetails = getFileDetails(req.files ? req?.files["profilePhoto"] : []);
 
   try {
     if (!empId) {

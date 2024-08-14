@@ -102,6 +102,8 @@ router.post('/addAttendance', async (req, res) => {
         status
     } = req.body;
 
+    console.log("Request body is :", req.body);
+
     try {
         // Parse the date to extract year, month, and day
         const selectedDate = new Date(attendanceDate);
@@ -111,66 +113,34 @@ router.post('/addAttendance', async (req, res) => {
 
         console.log("Parsed Values - Year:", year, "Month:", month, "Day:", day);
 
-        // Find or create the document based on _id
-        let attendance = await attendanceModel.findById(id);
+         // Always create a new document
+         const newAttendance = new attendanceModel({
+            _id: id, // Create a new ObjectId for the new document
+            employeeId: employeeId,
+            employeeName: ename,
+            designation: designation,
+            department: department,
+            branchOffice: branchOffice,
+            years: [{
+                year: year,
+                months: [{
+                    month: month,
+                    days: [{
+                        date: day,
+                        dayName: dayName,
+                        inTime: inTime,
+                        outTime: outTime,
+                        workingHours: workingHours,
+                        status: status
+                    }]
+                }]
+            }]
+        });
 
-        if (!attendance) {
-            // If no document found, create a new one
-            attendance = new attendanceModel({
-                _id: id,
-                employeeId: employeeId,
-                employeeName: ename,
-                designation: designation,
-                department: department,
-                branchOffice: branchOffice,
-                years: []
-            });
-        }
+        // Save the new attendance document
+        const savedAttendance = await newAttendance.save();
 
-        // Check if the year array exists
-        let yearArray = attendance.years.find(y => y.year === year);
-        if (!yearArray) {
-            yearArray = { year: year, months: [] };
-            attendance.years.push(yearArray);
-        }
-        
-        // Check if the month array exists
-        let monthArray = yearArray.months.find(m => m.month === month);
-        if (!monthArray) {
-            monthArray = { month: month, days: [] };
-            yearArray.months.push(monthArray);
-        }
-
-        console.log("Year Array:", yearArray);
-        console.log("Month Array:", monthArray);
-
-        // Check if the day exists
-        let dayArray = monthArray.days.find(d => d.date === day);
-        if (dayArray) {
-            // Update existing day
-            dayArray.inTime = inTime;
-            dayArray.outTime = outTime;
-            dayArray.workingHours = workingHours;
-            dayArray.status = status;
-        } else {
-            // Add new day
-            monthArray.days.push({
-                date: day,
-                dayName: dayName,
-                inTime: inTime,
-                outTime: outTime,
-                workingHours: workingHours,
-                status: status
-            });
-        }
-
-        console.log("Updated Month Array:", monthArray);
-
-        // Save the attendance document
-        const updatedAttendance = await attendance.save();
-        console.log("Saved Document:", updatedAttendance);
-
-        res.status(200).json({ message: 'Attendance added successfully', data: updatedAttendance });
+        res.status(200).json({ message: 'Attendance added successfully', data: savedAttendance });
     } catch (error) {
         console.error('Error adding attendance:', error);
         res.status(500).json({ message: 'Server error' });

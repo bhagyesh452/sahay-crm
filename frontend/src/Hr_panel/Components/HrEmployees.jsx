@@ -33,6 +33,9 @@ function HrEmployees() {
   const [deletedEmployee, setDeletedEmployee] = useState([]);
   const [deletedData, setDeletedData] = useState([]);
   const [companyData, setCompanyData] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
+  const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
 
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
@@ -85,9 +88,19 @@ function HrEmployees() {
     try {
       setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/einfo`);
-      const employeeData = res.data;
-      setEmployee(employeeData);
-      // console.log("Fetched Employees are:", employeeData);
+      setEmployee(res.data);
+      // console.log("Fetched Employees are:", res.data);
+      const result = res.data.filter((emp) => {
+        return (
+          emp.ename?.toLowerCase().includes(searchValue) ||
+          emp.number?.toString().includes(searchValue) ||
+          emp.email?.toLowerCase().includes(searchValue) ||
+          emp.newDesignation?.toLowerCase().includes(searchValue) ||
+          emp.branchOffice?.toLowerCase().includes(searchValue)
+        );
+      });
+      // console.log("Search result from employee list is :", result);
+      setEmployeeSearchResult(result);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     } finally {
@@ -99,9 +112,19 @@ function HrEmployees() {
     try {
       setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-      const deletedEmployeeData = res.data;
-      setDeletedEmployee(deletedEmployeeData);
-      // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
+      setDeletedEmployee(res.data);
+      // console.log("Fetched Deleted Employees are:", res.data);
+      const result = res.data.filter((emp) => {
+        return (
+          emp.ename?.toLowerCase().includes(searchValue) ||
+          emp.number?.toString().includes(searchValue) ||
+          emp.email?.toLowerCase().includes(searchValue) ||
+          emp.newDesignation?.toLowerCase().includes(searchValue) ||
+          emp.branchOffice?.toLowerCase().includes(searchValue)
+        );
+      });
+      // console.log("Search result from deleted employee list is :", result);
+      setDeletedEmployeeSearchResult(result);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     } finally {
@@ -261,7 +284,7 @@ function HrEmployees() {
     fetchEmployee();
     fetchCompanyData();
     fetchDeletedEmployee();
-  }, []);
+  }, [searchValue]);
 
   const fetchPersonalInfo = async () => {
     try {
@@ -301,7 +324,10 @@ function HrEmployees() {
                       placeholder="Search…"
                       type="text"
                       name="bdeName-search"
-                      id="bdeName-search" />
+                      id="bdeName-search"
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
+                    />
                   </div>
                 </div>
                 <div className="btn-group ml-1" role="group" aria-label="Basic example">
@@ -328,7 +354,7 @@ function HrEmployees() {
                         Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        {employee.length || 0}
+                        {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0}
                       </div>
                     </div>
                   </a>
@@ -340,7 +366,7 @@ function HrEmployees() {
                         Deleted Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        {deletedEmployee.length || 0}
+                        {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0}
                       </div>
                     </div>
                   </a>
@@ -398,9 +424,9 @@ function HrEmployees() {
                         </tbody>
                       ) : (
                         <>
-                          {employee.length !== 0 ? (
+                          {(searchValue ? employeeSearchResult : employee).length !== 0 ? (
                             <tbody>
-                              {employee.map((emp, index) => {
+                              {(searchValue ? employeeSearchResult : employee).map((emp, index) => {
                                 const profilePhotoUrl = emp.profilePhoto?.length !== 0
                                   ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                   : emp.gender === "Male" ? EmpDfaullt : FemaleEmployee;
@@ -422,7 +448,7 @@ function HrEmployees() {
                                             // Split the item.ename string into an array of words based on spaces
                                             const names = (emp.ename || "").trim().split(/\s+/);
 
-                                            console.log("names", names);
+                                            // console.log("names", names);
 
                                             // Check if there's only one name or multiple names
                                             if (names.length === 1) {
@@ -551,9 +577,9 @@ function HrEmployees() {
                       </tbody>
                     ) : (
                       <>
-                        {deletedEmployee.length !== 0 ? (
+                        {(searchValue ? deletedEmployeeSearchResult : deletedEmployee).length !== 0 ? (
                           <tbody>
-                            {deletedEmployee.map((emp, index) => {
+                            {(searchValue ? deletedEmployeeSearchResult : deletedEmployee).map((emp, index) => {
                               const profilePhotoUrl = emp.profilePhoto?.length !== 0
                                 ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                 : EmpDfaullt;
@@ -571,10 +597,20 @@ function HrEmployees() {
                                         />
                                       </div>
                                       <div className="">
-                                        {(() => {
-                                          const names = (emp.ename || "").split(" ");
-                                          return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                                        })()}
+                                      {(() => {
+                                            // Split the item.ename string into an array of words based on spaces
+                                            const names = (emp.ename || "").trim().split(/\s+/);
+
+                                            // console.log("names", names);
+
+                                            // Check if there's only one name or multiple names
+                                            if (names.length === 1) {
+                                              return names[0]; // If there's only one name, return it as-is
+                                            }
+
+                                            // Return the first and last name, or an empty string if not available
+                                            return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                          })()}
                                       </div>
                                     </div>
                                   </td>
