@@ -2943,12 +2943,14 @@ td input {
   position: sticky;
   left: 0;
   width: 60px;
+  z-index: 1;
 }
 .rm-sticky-left-2
 {
   position: sticky;
   left: 60px;
   box-shadow: 3px 0px 4px -4px #cccccc !important;
+  z-index: 1;
 }
 /* .rm-sticky-left-3
 {
