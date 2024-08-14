@@ -97,7 +97,7 @@ try{
                     <div className="col-sm-6 p-0">
                         <div className="card card-md login-box">
                             <div className="card-body">
-                                <h2 className="h2 text-center mb-4">ADMIN-HEAD LOGIN</h2>
+                                <h2 className="h2 text-center mb-4">ADMIN-EXECUTIVE LOGIN</h2>
                                 <form action="#" method="get" autocomplete="off" novalidate>
                                     <div className="mb-3">
                                         <label className="form-label">Username</label>

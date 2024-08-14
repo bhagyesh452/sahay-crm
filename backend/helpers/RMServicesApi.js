@@ -3,6 +3,7 @@ var router = express.Router()
 const dotenv = require('dotenv')
 const app = express();
 dotenv.config();
+const { exec } = require('child_process');
 
 app.use(express.json());
 
@@ -17,7 +18,26 @@ const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 const RMCertificationHistoryModel = require('../models/RMCerificationHistoryModel.js')
 
+function runTestScript(companyName) {
+  console.log("Company Name:", companyName);
 
+  // Ensure the companyName is properly quoted to handle spaces or special characters
+  //const command = `npx playwright test C:/Users/shiva/OneDrive/Desktop/Sahay-crm/sahay-crm/backend/tests/copy.spec.js`;
+
+  // exec(command, (error, stdout, stderr) => {
+  //   if (error) {
+  //     console.error(`Error executing script: ${error.message}`);
+  //     return;
+  //   }
+  //   if (stderr) {
+  //     console.error(`Script stderr: ${stderr}`);
+  //     return;
+  //   }
+  //   console.log(`Script stdout: ${stdout}`);
+  // });
+}
+
+//runTestScript("FUN BLAST INDIA LLP")
 
 
 
@@ -58,6 +78,7 @@ router.get("/redesigned-final-leadData-rm", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
+
 
 router.post('/post-rmservicesdata', async (req, res) => {
   const { dataToSend } = req.body;
@@ -651,6 +672,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         { new: true }
       );
 
+      if(subCategoryStatus === "Approved"){
+        console.log("hello wworld")
+        runTestScript(companyName);
+      }
       console.log("updatedcompany", updatedCompany)
       console.log("submittedOn" , submittedOn)
 
@@ -994,7 +1019,6 @@ router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 
 router.post(`/post-save-nswsemail/`, async (req, res) => {
@@ -1460,15 +1484,17 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
     //console.log("totalAmount", totalAmount)
     //console.log(currentReceivedPayment)
 
-    if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
-      return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
-    }
+    // if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
+    //   return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
+    // }
     // Update the record if validation passes
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       { "Company Name": companyName, serviceName: serviceName },
       { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
       { new: true }
     );
+
+    console.log("updatedcompany" , updatedCompany)
     if (!updatedCompany) {
       return res.status(400).json({ message: "Failed to save the updated document" });
     }

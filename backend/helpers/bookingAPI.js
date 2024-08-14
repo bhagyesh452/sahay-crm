@@ -321,7 +321,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
 
         if (existingRmCertData) {
           // Find the relevant service data from newGoingToUpdate
-          const serviceData = newGoingToUpdate.services.find(service => 
+          const serviceData = newGoingToUpdate.services.find(service =>
             service.serviceName === serviceName);
 
           if (serviceData) {
@@ -403,7 +403,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
       socketIO.emit('booking-updated', { name: boom.bdeName, companyName: companyName })
       res
         .status(200)
-        .json({ message: "Document updated successfully"});
+        .json({ message: "Document updated successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -5413,6 +5413,139 @@ router.delete("/redesigned-delete-model/:companyName", async (req, res) => {
 
 //  *************************************************  Expanse Section Post Requests *****************************************************************
 
+// router.post(
+//   "/redesigned-submit-morePayments/:CompanyName",
+//   upload.fields([
+//     { name: "otherDocs", maxCount: 50 },
+//     { name: "paymentReceipt", maxCount: 1 },
+//   ]),
+//   async (req, res) => {
+//     try {
+//       const objectData = req.body;
+//       const socketIO = req.io;
+
+//       const newPaymentReceipt = req.files["paymentReceipt"] || [];
+//       const companyName = objectData["Company Name"];
+//       const bookingIndex = objectData.bookingIndex;
+//       const publishDate = new Date();
+//       const companyMainObject = await RedesignedLeadformModel.findOne({
+//         "Company Name": companyName,
+//       });
+
+//       const bookingDate = bookingIndex === "0" ? formatDate(companyMainObject.bookingDate) : formatDate(companyMainObject.moreBookings[bookingIndex - 1].bookingDate);
+//       const sendingObject = {
+//         serviceName: objectData.serviceName,
+//         remainingAmount: objectData.remainingAmount,
+//         paymentMethod: objectData.paymentMethod,
+//         extraRemarks: objectData.extraRemarks,
+//         totalPayment: objectData.pendingAmount,
+//         receivedPayment: objectData.receivedAmount,
+//         pendingPayment: objectData.remainingAmount,
+//         paymentReceipt: newPaymentReceipt,
+//         withGST: objectData.withGST,
+//         paymentDate: objectData.paymentDate,
+//         publishDate: publishDate
+//       };
+
+//       const sheetObject = {
+//         "Company Name": companyName,
+//         serviceName: objectData.serviceName,
+//         "Remaining Payment": objectData.receivedAmount,
+//         "Payment Method": objectData.paymentMethod,
+//         "Payment Date": formatDate(objectData.paymentDate),
+//         "Payment Remarks": objectData.extraRemarks,
+//         "Booking Date": bookingDate
+//       }
+//       await appendRemainingDataToSheet(sheetObject);
+
+//       if (bookingIndex == 0) {
+//         //.log("Hi guyz");
+//         const findObject = await RedesignedLeadformModel.findOne({
+//           "Company Name": companyName,
+//         })
+//         const findService = findObject.services.find((obj) => obj.serviceName === objectData.serviceName)
+//         const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
+//         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
+//         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
+
+
+//         const latestDate = new Date();
+//         // Handle updating RedesignedLeadformModel for bookingIndex 0
+//         // Example code: Uncomment and replace with your logic
+//         await RedesignedLeadformModel.updateOne(
+//           { "Company Name": companyName },
+//           {
+//             $set: {
+//               receivedAmount: newReceivedAmount,
+//               pendingAmount: newPendingAmount,
+//               generatedReceivedAmount: newGeneratedReceivedAmount,
+//               lastActionDate: latestDate
+//             },
+//           }
+//         );
+
+//         // Push sendingObject into remainingPayments array
+//         const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
+//           { "Company Name": companyName },
+//           { $push: { remainingPayments: sendingObject } },
+//           { new: true }
+//         );
+//         const bdeName = companyMainObject.bdeName;
+//         //console.log("Remaining Payment added", bdeName, companyName)
+//         socketIO.emit('Remaining_Payment_Added', { name: bdeName, companyName: companyName })
+//         return res.status(200).send("Successfully submitted more payments.");
+//       } else {
+//         const mainObject = await RedesignedLeadformModel.findOne({
+//           "Company Name": companyName,
+//         })
+//         const findObject = mainObject.moreBookings[bookingIndex - 1];
+//         const findService = findObject.services.find((obj) => obj.serviceName === objectData.serviceName)
+//         const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
+//         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
+//         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
+//         findObject.remainingPayments.$push
+
+
+//         // Handle updating RedesignedLeadformModel for bookingIndex 0
+//         // Example code: Uncomment and replace with your logic
+
+//         const latestDateUpdate = new Date();
+
+//         // Push sendingObject into remainingPayments array
+//         await RedesignedLeadformModel.updateOne(
+//           { "Company Name": companyName },
+//           {
+//             $set: {
+//               lastActionDate: latestDateUpdate,
+//               [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
+//               [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
+//               [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount
+//             }
+//           }
+//         );
+//         const updatedObject = await RedesignedLeadformModel.updateOne(
+//           { "Company Name": companyName },
+//           {
+//             $push: {
+//               [`moreBookings.${bookingIndex - 1}.remainingPayments`]: sendingObject,
+
+//             }
+//           },
+
+
+//         );
+//         const bdeName = findObject.bdeName;
+//         socketIO.emit('Remaining_Payment_Added', { name: bdeName, companyName: companyName })
+
+//         return res.status(200).send("Successfully submitted more payments.");
+//       }
+//     } catch (error) {
+//       console.error("Error submitting more payments:", error);
+//       return res.status(500).send("Internal Server Error.");
+//     }
+//   }
+// );
+
 router.post(
   "/redesigned-submit-morePayments/:CompanyName",
   upload.fields([
@@ -5468,21 +5601,43 @@ router.post(
         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
 
+        const totalPaymentWithGST = parseInt(findService.totalPaymentWGST) || 0;
+        const firstPaymentNew = parseInt(findService.firstPayment) || 0;
+        const receivedAmountExisting = (parseInt(findService.pendingRecievedAmount)) ? 
+        parseInt(findService.pendingRecievedAmount) : 
+        parseInt(objectData.receivedAmount) || 0;
+        const receivedAmountNew = parseInt(objectData.receivedAmount) || 0;
+
+        console.log("recieveddexisting" , receivedAmountExisting)
+
+        const remainingAmountCalculated = totalPaymentWithGST - firstPaymentNew - (((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew);
+        const pendingReceivedPaymentCalculated = ((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew;
+
+        console.log("remaining", remainingAmountCalculated);
+        console.log("pendingReceived", pendingReceivedPaymentCalculated);
 
         const latestDate = new Date();
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
-        await RedesignedLeadformModel.updateOne(
+        const updatedObjectNew = await RedesignedLeadformModel.updateOne(
           { "Company Name": companyName },
           {
             $set: {
               receivedAmount: newReceivedAmount,
               pendingAmount: newPendingAmount,
               generatedReceivedAmount: newGeneratedReceivedAmount,
-              lastActionDate: latestDate
+              lastActionDate: latestDate,
+              "services.$[elem].remainingAmount": remainingAmountCalculated,
+              "services.$[elem].pendingRecievedAmount": pendingReceivedPaymentCalculated
             },
+          },
+          {
+            arrayFilters: [{ "elem.serviceName": objectData.serviceName }]
           }
         );
+
+        console.log("updatedObject", updatedObjectNew)
+
 
         // Push sendingObject into remainingPayments array
         const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
@@ -5545,6 +5700,8 @@ router.post(
     }
   }
 );
+
+
 router.post(
   "/redesigned-update-morePayments/:CompanyName",
   upload.fields([
@@ -5844,7 +6001,7 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
         });
         console.log("updatedcompany", updatedCompany)
       }
-      socketIO.emit('rm-recievedamount-updated');
+      socketIO.emit('rm-recievedamount-deleted');
       console.log("newupdatedarray", newUpdatedArray)
 
       return res.status(200).send("Successfully deleted last payment.");

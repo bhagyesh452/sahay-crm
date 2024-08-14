@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHeader";
-import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
+//import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHeader";
+//import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
 import { SlActionRedo } from "react-icons/sl";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { options } from '../../components/Options.js';
@@ -12,7 +12,7 @@ import wordimg from "../../static/my-images/word.png";
 import PdfImageViewerAdmin from "../../admin/PdfViewerAdmin.jsx";
 import pdfimg from "../../static/my-images/pdf.png";
 import Swal from "sweetalert2";
-import RmofCertificationAllBookings from '../RM-CERT-BOOKINGS/RmofCertificationAllBookings.jsx';
+//import RmofCertificationAllBookings from '../RM-CERT-BOOKINGS/RmofCertificationAllBookings.jsx';
 import {
     Button,
     Dialog,
@@ -29,6 +29,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import io from 'socket.io-client';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import AdminExecutiveHeader from '../Components/AdminExecutiveHeader.jsx';
+//import AdminExecutiveLogin from '../Login/AdminExecutiveLogin.jsx';
+import AdminExecutiveNavbar from '../Components/AdminExecutiveNavbar.jsx';
 
 function AdminExecutiveRecievedBox() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -264,16 +267,12 @@ function AdminExecutiveRecievedBox() {
 
     const certificationLabels = [
         "Start-Up India Certificate",
-        "Company Incorporation",
         "Organization DSC",
         "Director DSC",
-        "Self Certification",
-        "GeM"
     ];
 
     const certificationLabelsNew = [
         "Start-Up India Certificate",
-        "Company Incorporation",
         "Organization DSC",
         "Director DSC",
     ];
@@ -360,31 +359,6 @@ function AdminExecutiveRecievedBox() {
         setSelectedCompanyData([])
         setDataToSend(defaultLeadData)
     }
-
-    // const handleOpenServices = (companyName) => {
-    //     // Filter the mainDataSwap array to get the companies that match the provided companyName
-    //     setSelectedCompanyName(companyName)
-    //     const selectedServices = redesignedData
-    //         .filter((company) => company["Company Name"] === companyName)
-    //         .flatMap((company) => {
-    //             if (company.moreBookings.length !== 0) {
-    //                 return [
-    //                     ...company.services,
-    //                     ...company.moreBookings.flatMap((item) => item.services),
-    //                 ];
-    //             } else {
-    //                 return company.services || [];
-    //             }
-    //         })
-    //         .filter((service) => certificationLabels.includes(service.serviceName));
-    //     console.log("new slecetd", selectedServices)
-    //     // Map through the selected services to get the service names
-    //     const servicesNames = selectedServices.map((service) => service.serviceName);
-    //     // Log the selected services and service names
-    //     setServiceNames(servicesNames)
-    // };
-
-
 
     const [isSwappingAllServices, setIsSwappingAllServices] = useState(false);
 
@@ -628,25 +602,15 @@ function AdminExecutiveRecievedBox() {
     };
 
     //--------------function to disable click-------------------------
-    // const shouldDisableButton = ![
-    //     ...obj.services,
-    //     ...(obj.moreBookings || []).flatMap(booking => booking.services)
-    // ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-
-
-    //console.log("rmmainbookingservice", rmSelectedServiceMainBooking)
-    //console.log("rmmorebookingservice", rmSelectedServiceMoreBooking)
-    // console.log("leadformdata", leadFormData)
-    // console.log("currentleadform", currentLeadform)
-
+   
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
 
     return (
         <div>
-            <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
-            <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
+            <AdminExecutiveHeader name={employeeData.ename} designation={employeeData.designation} />
+            <AdminExecutiveNavbar rmCertificationUserId={rmCertificationUserId} />
             {!openAllBooking && (
                 <div className="booking-list-main">
                     <div className="booking_list_Filter">
@@ -2644,12 +2608,12 @@ function AdminExecutiveRecievedBox() {
                 <CircularProgress color="inherit" />
             </Backdrop>)}
 
-            {openAllBooking && (
+            {/* {openAllBooking && (
                 <RmofCertificationAllBookings
                     setOpenAllBookingPanel={setOpenAllBooking}
                     completeData={completeRedesignedData}
                 />
-            )}
+            )} */}
         </div>
     )
 }

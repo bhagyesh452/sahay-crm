@@ -72,6 +72,12 @@ const ServiceSchema = new mongoose.Schema({
   },
   expanseDate: {
     type: Date
+  },
+  pendingRecievedAmount:{
+    type:Number
+  },
+  remainingAmount:{
+    type:Number
   }
 });
 

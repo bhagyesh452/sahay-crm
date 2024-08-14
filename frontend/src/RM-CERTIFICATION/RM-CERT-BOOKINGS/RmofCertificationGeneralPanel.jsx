@@ -16,7 +16,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import io from 'socket.io-client';
 import { BsFilter } from "react-icons/bs";
-import FilterableTable from '../Extra-Components/FilterableTable';
+//import FilterableTable from '../Extra-Components/FilterableTable';
 
 function RmofCertificationGeneralPanel({ showFilter }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
@@ -84,6 +84,10 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         });
 
         socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
+
+        socket.on("rm-recievedamount-deleted", (res) => {
             fetchData()
         });
 
@@ -311,7 +315,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                 <BsFilter onClick={() => handleFilterClick("bookingDate")} />
                                             </div>
                                             
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -326,7 +330,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-3">
@@ -339,7 +343,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                 <BsFilter onClick={() => handleFilterClick("Company Name")} />
                                             </div>
                                             
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -354,7 +358,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -368,7 +372,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("Company Number")}
                                                     />
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -383,7 +387,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -397,7 +401,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("Company Email")}
                                                     />
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -412,7 +416,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -426,7 +430,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("caNumber")}
                                                     />
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -441,7 +445,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -455,7 +459,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("serviceName")}
                                                     />
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -470,7 +474,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={rmServicesData}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -484,7 +488,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("subCategoryStatus")}
                                                     />
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -499,7 +503,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     {/* <th>Remark</th> */}
@@ -514,7 +518,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("withDSC")}
                                                     />
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -529,7 +533,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -543,7 +547,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         onClick={() => handleFilterClick("bdeName")}
                                                     />
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
                                                 ref={filterMenuRef}
@@ -558,7 +562,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={rmServicesData}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -573,7 +577,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                     />
                                                 </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'bdmName' && (
+                                            {/* {showFilterMenu && activeFilterField === 'bdmName' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"
@@ -587,7 +591,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -602,7 +606,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                     />
                                                 </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                            {/* {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"
@@ -616,7 +620,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -631,7 +635,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                     />
                                                 </div>
                                           {/* ---------------------filter component--------------------------- */}
-                                          {showFilterMenu && activeFilterField === 'receivedPayment' && (
+                                          {/* {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"
@@ -645,7 +649,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th>
@@ -661,7 +665,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                     />
                                                 </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                          {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                          {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"
@@ -675,7 +679,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     </th>
                                     <th className="rm-sticky-action">
