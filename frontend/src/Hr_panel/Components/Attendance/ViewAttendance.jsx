@@ -370,7 +370,7 @@ function ViewAttendance({ year, month }) {
                     {/* SBR Data */}
                     <div class="tab-pane" id="sbr">
                         <div className="table table-responsive table-style-4 m-0">
-                            <table className="table table-vcenter table-nowrap attendance-table tbl-collps">
+                            <table className="table table-vcenter table-nowrap attendance-table tbl-collps attendance-tbl">
                                 <thead className="tr-sticky">
                                     <tr>
                                         <th className='hr-sticky-left-1'>Sr. No</th>

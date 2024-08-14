@@ -1244,6 +1244,10 @@ table.table.top_5_table tbody tr.myself td {
 {
     position: relative;
 }
+.attendance-tbl
+{
+    width: 2600px;
+}
 @media (max-width: 1528px)
 {
     .hr_emply_list_navtabs
