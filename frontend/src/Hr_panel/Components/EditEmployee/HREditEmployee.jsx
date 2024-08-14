@@ -255,7 +255,7 @@ export default function HREditEmployee() {
     salary: "",
     firstMonthSalaryCondition: "",
     firstMonthSalary: "",
-    offerLetter: "",
+    offerLetter: null,
     panNumber: "",
     aadharNumber: "",
     uanNumber: ""
@@ -313,12 +313,12 @@ export default function HREditEmployee() {
   };
 
   const [empDocumentInfo, setEmpDocumentInfo] = useState({
-    aadharCard: "",
-    panCard: "",
-    educationCertificate: "",
-    relievingCertificate: "",
-    salarySlip: "",
-    profilePhoto: ""
+    aadharCard: null,
+    panCard: null,
+    educationCertificate: null,
+    relievingCertificate: null,
+    salarySlip: null,
+    profilePhoto: null
   });
   const validateEmpDocumentInfo = () => {
     const newErrors = {};
@@ -376,7 +376,7 @@ export default function HREditEmployee() {
         salary: data.salary || "",
         firstMonthSalaryCondition: data.firstMonthSalaryCondition || "",
         firstMonthSalary: data.firstMonthSalary || "",
-        offerLetter: offerLetterDocument.length > 0 && offerLetterDocument,
+        offerLetter: offerLetterDocument.length > 0 ? offerLetterDocument : null,
         panNumber: data.panNumber || "",
         aadharNumber: data.aadharNumber || "",
         uanNumber: data.uanNumber || ""
@@ -389,12 +389,12 @@ export default function HREditEmployee() {
       });
 
       setEmpDocumentInfo({
-        aadharCard: aadharCardDocument.length > 0 && aadharCardDocument,
-        panCard: panCardDocument.length > 0 && panCardDocument,
-        educationCertificate: educationCertificateDocument.length > 0 && educationCertificateDocument,
-        relievingCertificate: relievingCertificateDocument.length > 0 && relievingCertificateDocument,
-        salarySlip: salarySlipDocument.length > 0 && salarySlipDocument,
-        profilePhoto: profilePhotoDocument.length > 0 && profilePhotoDocument
+        aadharCard: aadharCardDocument.length > 0 ? aadharCardDocument : null,
+        panCard: panCardDocument.length > 0 ? panCardDocument : null,
+        educationCertificate: educationCertificateDocument.length > 0 ? educationCertificateDocument : null,
+        relievingCertificate: relievingCertificateDocument.length > 0 ? relievingCertificateDocument : null,
+        salarySlip: salarySlipDocument.length > 0 ? salarySlipDocument : null,
+        profilePhoto: profilePhotoDocument.length > 0 ? profilePhotoDocument : null
       });
 
       setOfferLetterDocument(data.offerLetter ? data.offerLetter : []);

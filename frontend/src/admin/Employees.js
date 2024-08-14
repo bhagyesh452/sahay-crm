@@ -1122,7 +1122,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                             // Split the item.ename string into an array of words based on spaces
                             const names = (item.ename || "").trim().split(/\s+/);
 
-                            console.log("names", names);
+                            // console.log("names", names);
 
                             // Check if there's only one name or multiple names
                             if (names.length === 1) {

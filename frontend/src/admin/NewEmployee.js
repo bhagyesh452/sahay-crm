@@ -54,15 +54,15 @@ function NewEmployee() {
             // console.log("Fetched Employees are:", employeeData);
             const result = res.data.filter((emp) => {
                 return (
-                  emp.ename?.toLowerCase().includes(searchValue) ||
-                  emp.number?.toString().includes(searchValue) ||
-                  emp.email?.toLowerCase().includes(searchValue) ||
-                  emp.newDesignation?.toLowerCase().includes(searchValue) ||
-                  emp.branchOffice?.toLowerCase().includes(searchValue)
+                    emp.ename?.toLowerCase().includes(searchValue) ||
+                    emp.number?.toString().includes(searchValue) ||
+                    emp.email?.toLowerCase().includes(searchValue) ||
+                    emp.newDesignation?.toLowerCase().includes(searchValue) ||
+                    emp.branchOffice?.toLowerCase().includes(searchValue)
                 );
-              });
-            //   console.log("Search result from employee list is :", result);
-              setEmployeeSearchResult(result);
+            });
+            // console.log("Search result from employee list is :", result);
+            setEmployeeSearchResult(result);
         } catch (error) {
             console.log("Error fetching employees data:", error);
         }
@@ -75,15 +75,15 @@ function NewEmployee() {
             // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
             const result = res.data.filter((emp) => {
                 return (
-                  emp.ename?.toLowerCase().includes(searchValue) ||
-                  emp.number?.toString().includes(searchValue) ||
-                  emp.email?.toLowerCase().includes(searchValue) ||
-                  emp.newDesignation?.toLowerCase().includes(searchValue) ||
-                  emp.branchOffice?.toLowerCase().includes(searchValue)
+                    emp.ename?.toLowerCase().includes(searchValue) ||
+                    emp.number?.toString().includes(searchValue) ||
+                    emp.email?.toLowerCase().includes(searchValue) ||
+                    emp.newDesignation?.toLowerCase().includes(searchValue) ||
+                    emp.branchOffice?.toLowerCase().includes(searchValue)
                 );
-              });
-            //   console.log("Search result from deleted employee list is :", result);
-              setDeletedEmployeeSearchResult(result);
+            });
+            // console.log("Search result from deleted employee list is :", result);
+            setDeletedEmployeeSearchResult(result);
         } catch (error) {
             console.log("Error fetching employees data:", error);
         }
@@ -138,7 +138,7 @@ function NewEmployee() {
         <div>
             <Header />
             <Navbar number={1} />
-            
+
             {/* New Code Of Employee */}
             <div className="page-wrapper">
                 <div className="page-header rm_Filter m-0">

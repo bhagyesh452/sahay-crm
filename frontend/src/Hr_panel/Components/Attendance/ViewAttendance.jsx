@@ -131,6 +131,14 @@ function ViewAttendance({ year, month }) {
         setShowPopup(false);
         setInTime("");
         setOutTime("");
+
+        try {
+            const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
+            console.log("Created attendance record is :", res.data);
+        } catch (error) {
+            console.log("Error adding attendance record", error);
+        }
+        
         // setEmployeeId("");
         // setBranchOffice("");
         // setDesignation("");

@@ -271,7 +271,7 @@ function AddAttendance({ year, month }) {
                                         </td>
                                         <td>
                                             <button type="submit" className="action-btn action-btn-primary" onClick={() =>
-                                                handleSubmit(emp._id, emp.employeeId, emp.ename, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours)}>
+                                                handleSubmit(emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours)}>
                                                 <GiCheckMark />
                                             </button>
                                         </td>
