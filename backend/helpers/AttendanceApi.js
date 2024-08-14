@@ -133,7 +133,7 @@ router.post('/addAttendance', async (req, res) => {
             yearArray = { year: year, months: [] };
             attendance.years.push(yearArray);
         }
-
+        
         // Check if the month array exists
         let monthArray = yearArray.months.find(m => m.month === month);
         if (!monthArray) {

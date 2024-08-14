@@ -282,7 +282,7 @@ function HrEmployees() {
       <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
       <Navbar />
       <div className="page-wrapper">
-        
+
         <div className="page-header rm_Filter m-0">
           <div className="container-xl">
             <div className="d-flex  justify-content-between">
@@ -316,7 +316,7 @@ function HrEmployees() {
             </div>
           </div>
         </div>
-        
+
         <div className="page-body rm_Dtl_box m-0">
           <div className="container-xl mt-2">
             <div className="my-tab card-header">
@@ -359,7 +359,7 @@ function HrEmployees() {
                 </li>
               </ul>
             </div>
-            
+
             <div class="tab-content card-body">
               <div class="tab-pane active" id="Employees">
                 <div className="RM-my-booking-lists">
@@ -419,7 +419,17 @@ function HrEmployees() {
                                         </div>
                                         <div className="">
                                           {(() => {
-                                            const names = (emp.ename || "").split(" ");
+                                            // Split the item.ename string into an array of words based on spaces
+                                            const names = (emp.ename || "").trim().split(/\s+/);
+
+                                            console.log("names", names);
+
+                                            // Check if there's only one name or multiple names
+                                            if (names.length === 1) {
+                                              return names[0]; // If there's only one name, return it as-is
+                                            }
+
+                                            // Return the first and last name, or an empty string if not available
                                             return `${names[0] || ""} ${names[names.length - 1] || ""}`;
                                           })()}
                                         </div>
@@ -459,14 +469,14 @@ function HrEmployees() {
                                           <FaRegEye />
                                         </Link>
                                       </button>
-                                      
+
                                       <button
                                         className="action-btn action-btn-alert ml-1"
                                         onClick={() => handleEditClick(emp._id)}
                                       >
                                         <MdModeEdit />
                                       </button>
-                                      
+
                                       <button
                                         className="action-btn action-btn-danger ml-1"
                                         onClick={() => {
@@ -602,7 +612,7 @@ function HrEmployees() {
                                         <FaRegEye />
                                       </Link>
                                     </button>
-                                    
+
                                     <button
                                       className="action-btn action-btn-danger ml-1"
                                       onClick={() => handlePermanentDeleteEmployee(emp._id)}
