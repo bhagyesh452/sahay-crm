@@ -56,10 +56,12 @@ function ViewAttendance({ year, month }) {
     const [sindhuBhawanBranchEmployees, setSindhuBhawanBranchEmployees] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
 
+    const [id, setId] = useState("");
     const [employeeId, setEmployeeId] = useState("");
     const [empName, setEmpName] = useState("");
     const [branchOffice, setBranchOffice] = useState("");
     const [designation, setDesignation] = useState("");
+    const [department, setDepartment] = useState("");
     const [attendanceDate, setAttendanceDate] = useState();
     const [dayName, setDayName] = useState("");
     const [workingHours, setWorkingHours] = useState("");
@@ -85,8 +87,9 @@ function ViewAttendance({ year, month }) {
         setShowPopup(false);
     };
 
-    const handleDayClick = (day, empName, empId, designation, branch) => {
+    const handleDayClick = (day, id, empName, empId, designation, department, branch) => {
         setShowPopup(true);
+        setId(id);
         setEmpName(empName);
         setEmployeeId(empId)
         // Format the date as "DD-MM-YYYY"
@@ -97,35 +100,74 @@ function ViewAttendance({ year, month }) {
 
         setAttendanceDate(formattedDate);
         setDesignation(designation);
+        setDepartment(department);
         setBranchOffice(branch);
-        setWorkingHours("4:00");
+        // setWorkingHours("4:00");
         setStatus("Half Day");
         setDayName(dayName);
         // console.log("Attendance date is :", formattedDate);
         // console.log("Day name is :", dayName);
     };
 
-    const handleSubmit = async (name, empId, branch, designation, date, inTime, outTime, day, status, workingHours) => {
+    const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
+
+        const workingHours = calculateWorkingHours(inTime, outTime);
+
+        const payload = {
+            id: id,
+            employeeId: empId,
+            ename: name,
+            designation: designation,
+            department: department,
+            branchOffice: branch,
+            attendanceDate: date,
+            dayName: day,
+            inTime: inTime,
+            outTime: outTime,
+            workingHours: workingHours,
+            status: status
+        };
+
         setShowPopup(false);
         setInTime("");
         setOutTime("");
-        setEmployeeId("");
-        setBranchOffice("");
-        setDesignation("");
-        setDayName("");
-        setWorkingHours("");
-        setStatus("");
+        // setEmployeeId("");
+        // setBranchOffice("");
+        // setDesignation("");
+        // setDepartment("")
+        // setDayName("");
+        // setWorkingHours("");
+        // setStatus("");
+        
+        // console.log("Employee id :", empId);
+        // console.log("Employee name :", name);
+        // console.log("Employee designation :", designation);
+        // console.log("Employee department :", department);
+        // console.log("Employee branch :", branch);
+        // console.log("Attendance date :", date);
+        // console.log("Attendance day is :", day);
+        // console.log("In time is :", inTime);
+        // console.log("Out time is :", outTime);
+        // console.log("Working hours :", workingHours);
+        // console.log("Attendance status is :", status);
 
-        console.log("Employee name :", name);
-        console.log("Employee id :", empId);
-        console.log("Employee branch :", branch);
-        console.log("Employee designation :", designation);
-        console.log("Attendance date :", date);
-        console.log("In time is :", inTime);
-        console.log("Out time is :", outTime);
-        console.log("Attendance day is :", day);
-        console.log("Attendance status is :", status);
-        console.log("Working hours :", workingHours);
+        console.log("Data to be send :", payload);
+    };
+
+    const calculateWorkingHours = (inTime, outTime) => {
+        const inTimeDate = new Date(`1970-01-01T${inTime}:00`);
+        const outTimeDate = new Date(`1970-01-01T${outTime}:00`);
+    
+        let differenceInMs = outTimeDate - inTimeDate;
+        if (differenceInMs < 0) {
+            // If outTime is past midnight, add 24 hours to outTime
+            differenceInMs += 24 * 60 * 60 * 1000;
+        }
+    
+        const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
+        const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+        return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`;
     };
 
     useEffect(() => {
@@ -244,7 +286,7 @@ function ViewAttendance({ year, month }) {
                                                     {selectedMonthDays.map(day => (
                                                         <td key={day}>
                                                             <div className={day <= daysInMonth ? 'p-add' : 'p-disabled'}>
-                                                                {day <= daysInMonth && <FaPlus onClick={() => handleDayClick(day, emp.ename, emp.employeeId, emp.newDesignation, emp.branchOffice)} />}
+                                                                {day <= daysInMonth && <FaPlus onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)} />}
                                                             </div>
                                                         </td>
                                                     ))}
@@ -342,7 +384,7 @@ function ViewAttendance({ year, month }) {
                                                     {selectedMonthDays.map(day => (
                                                         <td key={day}>
                                                             <div className={day <= daysInMonth ? 'p-add' : 'p-disabled'}>
-                                                                {day <= daysInMonth && <FaPlus onClick={() => handleDayClick(day, emp.ename)} />}
+                                                                {day <= daysInMonth && <FaPlus onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)} />}
                                                             </div>
                                                         </td>
                                                     ))}
@@ -463,7 +505,7 @@ function ViewAttendance({ year, month }) {
                         </div>
                     </div>
                 </DialogContent>
-                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(empName, employeeId, branchOffice, designation, attendanceDate, inTime, outTime, dayName, status, workingHours)}>
+                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime, status)}>
                     Submit
                 </Button>
             </Dialog>

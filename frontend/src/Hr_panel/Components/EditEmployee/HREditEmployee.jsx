@@ -391,7 +391,7 @@ export default function HREditEmployee() {
       setEmpDocumentInfo({
         aadharCard: aadharCardDocument.length > 0 && aadharCardDocument,
         panCard: panCardDocument.length > 0 && panCardDocument,
-        educationCertificate: educationCertificateDocument > 0 && educationCertificateDocument,
+        educationCertificate: educationCertificateDocument.length > 0 && educationCertificateDocument,
         relievingCertificate: relievingCertificateDocument.length > 0 && relievingCertificateDocument,
         salarySlip: salarySlipDocument.length > 0 && salarySlipDocument,
         profilePhoto: profilePhotoDocument.length > 0 && profilePhotoDocument

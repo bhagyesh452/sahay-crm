@@ -1,17 +1,20 @@
 const mongoose = require("mongoose");
 
 const attendanceSchema = new mongoose.Schema({
-    employeeId: {
-        type: String,
-        unique: true,
-    },
+    // employeeId: {
+    //     type: String,
+    //     unique: true,
+    // },
     employeeName: {
         type: String
     },
-    branchOffice: {
+    designation: {
         type: String
     },
-    designation: {
+    department: {
+        type: String
+    },
+    branchOffice: {
         type: String
     },
     years: [{
@@ -26,7 +29,7 @@ const attendanceSchema = new mongoose.Schema({
             },
             days: [{
                 date: {
-                    type: Number,  // e.g., 1, 2, 3...31
+                    type: String,  // e.g., 1, 2, 3...31
                     required: true
                 },
                 dayName: {

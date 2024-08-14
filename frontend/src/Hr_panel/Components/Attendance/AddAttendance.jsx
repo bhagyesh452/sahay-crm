@@ -32,12 +32,25 @@ function AddAttendance({ year, month }) {
     const monthNumber = monthNamesToNumbers[month];
 
     // Get the current date for the provided year and month
-    const currentDate = new Date(year, monthNumber - 1, new Date().getDate());
+    const currentDate = new Date(year, monthNumber - 1, new Date().getDate() + 1);
     const formattedDate = currentDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
 
     const [isLoading, setIsLoading] = useState(false);
-    const [attendanceDate, setAttendanceDate] = useState(formattedDate);
     const [employee, setEmployee] = useState([]);
+
+    const [employeeId, setEmployeeId] = useState("");
+    const [empName, setEmpName] = useState("");
+    const [branchOffice, setBranchOffice] = useState("");
+    const [designation, setDesignation] = useState("");
+    const [department, setDepartment] = useState("");
+    const [attendanceDate, setAttendanceDate] = useState(formattedDate);
+    const [dayName, setDayName] = useState("");
+    const [workingHours, setWorkingHours] = useState("");
+    const [status, setStatus] = useState("Present");
+    const [inTime, setInTime] = useState("");
+    const [outTime, setOutTime] = useState("");
+
+    const [attendanceData, setAttendanceData] = useState({});
 
     const fetchEmployees = async () => {
         try {
@@ -51,9 +64,107 @@ function AddAttendance({ year, month }) {
         }
     };
 
+    const handleInputChange = (empId, field, value) => {
+        setAttendanceData(prevState => ({
+            ...prevState,
+            [empId]: {
+                ...prevState[empId],
+                [field]: value,
+            }
+        }));
+    };
+
+    const calculateWorkingHours = (inTime, outTime) => {
+        const inTimeDate = new Date(`1970-01-01T${inTime}:00`);
+        const outTimeDate = new Date(`1970-01-01T${outTime}:00`);
+
+        let differenceInMs = outTimeDate - inTimeDate;
+        if (differenceInMs < 0) {
+            // If outTime is past midnight, add 24 hours to outTime
+            differenceInMs += 24 * 60 * 60 * 1000;
+        }
+
+        const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
+        const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
+
+        return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`;
+    };
+
+    const handleSubmit = async (id, empId, name, designation, department, branch, date, inTime, outTime, workingHours) => {
+
+        const selectedDate = new Date(date);
+        const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        const payload = {
+            id: id,
+            employeeId: empId,
+            ename: name,
+            designation: designation,
+            department: department,
+            branchOffice: branch,
+            attendanceDate: date,
+            dayName: dayName,
+            inTime: inTime,
+            outTime: outTime,
+            workingHours: workingHours,
+            status: status
+        };
+        try {
+            const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
+            console.log("Created attendance record is :", res.data);
+        } catch (error) {
+            console.log("Error adding attendance record", error);
+        }
+
+        // setInTime("");
+        // setOutTime("");
+        // setEmployeeId("");
+        // setBranchOffice("");
+        // setDesignation("");
+        // setDepartment("")
+        // setDayName("");
+        // setWorkingHours("");
+        // setStatus("");
+
+        // console.log("Employee id :", empId);
+        // console.log("Employee name :", name);
+        // console.log("Employee designation :", designation);
+        // console.log("Employee department :", department);
+        // console.log("Employee branch :", branch);
+        // console.log("Attendance date :", date);
+        // console.log("Attendance day is :", dayName);
+        // console.log("In time is :", inTime);
+        // console.log("Out time is :", outTime);
+        // console.log("Working hours :", workingHours);
+        // console.log("Attendance status is :", status);
+
+        // Clear data for the current employee after submission
+        // setAttendanceData(prevState => ({
+        //     ...prevState,
+        //     [id]: {}
+        // }));
+
+        console.log("Data to be send :", payload);
+    };
+
     useEffect(() => {
         fetchEmployees();
     }, []);
+
+    useEffect(() => {
+        const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+        setAttendanceData(prevState => {
+            const updatedData = {};
+            Object.keys(prevState).forEach(empId => {
+                updatedData[empId] = {
+                    ...prevState[empId],
+                    attendanceDate: formattedDate,
+                    dayName: dayName
+                };
+            });
+            return updatedData;
+        });
+    }, [formattedDate]);
 
     return (
         <div>
@@ -94,6 +205,10 @@ function AddAttendance({ year, month }) {
                                     ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                     : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
 
+                                const empAttendance = attendanceData[emp._id] || {};
+                                const { inTime = "", outTime = "", attendanceDate = formattedDate } = empAttendance;
+                                const workingHours = calculateWorkingHours(inTime, outTime);
+
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
@@ -107,7 +222,9 @@ function AddAttendance({ year, month }) {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{emp.newDesignation}</td>
+                                        <td>{emp.newDesignation === "Business Development Executive" && "BDE" ||
+                                            emp.newDesignation === "Business Development Manager" && "BDM" ||
+                                            emp.newDesignation}</td>
                                         <td>{emp.department}</td>
                                         <td>{emp.branchOffice}</td>
                                         <td>
@@ -116,28 +233,45 @@ function AddAttendance({ year, month }) {
                                                     type='date'
                                                     className='form-control date-f'
                                                     value={attendanceDate}
-                                                    onChange={(e) => setAttendanceDate(e.target.value)} // Add your change handler here
+                                                    onChange={(e) =>
+                                                        handleInputChange(emp._id, "attendanceDate", e.target.value)
+                                                    }
                                                 />
                                             </div>
                                         </td>
                                         <td>
                                             <div className='attendance-date-tbl'>
-                                                <input type='time' className='form-cantrol in-time' />
+                                                <input
+                                                    type='time'
+                                                    className='form-cantrol in-time'
+                                                    value={inTime}
+                                                    onChange={(e) =>
+                                                        handleInputChange(emp._id, "inTime", e.target.value)
+                                                    }
+                                                />
                                             </div>
                                         </td>
                                         <td>
                                             <div className='attendance-date-tbl'>
-                                                <input type='time' className='form-cantrol out-time' />
+                                                <input
+                                                    type='time'
+                                                    className='form-cantrol out-time'
+                                                    value={outTime}
+                                                    onChange={(e) =>
+                                                        handleInputChange(emp._id, "outTime", e.target.value)
+                                                    }
+                                                />
                                             </div>
                                         </td>
                                         <td>
-                                            09:12:00
+                                            {(inTime && outTime) && workingHours}
                                         </td>
                                         <td>
-                                            <span className='badge badge-completed'>Present</span>
+                                            <span className='badge badge-completed'>{status}</span>
                                         </td>
                                         <td>
-                                            <button type="submit" className="action-btn action-btn-primary">
+                                            <button type="submit" className="action-btn action-btn-primary" onClick={() =>
+                                                handleSubmit(emp._id, emp.employeeId, emp.ename, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours)}>
                                                 <GiCheckMark />
                                             </button>
                                         </td>
@@ -158,8 +292,6 @@ function AddAttendance({ year, month }) {
             </div>
         </div>
     )
-
 }
-
 
 export default AddAttendance;
