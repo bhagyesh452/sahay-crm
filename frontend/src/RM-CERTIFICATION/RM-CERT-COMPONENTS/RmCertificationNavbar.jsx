@@ -50,7 +50,8 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                 <li className={
                   location.pathname === `/adminhead/dashboard/${rmCertificationUserId}` ? "nav-item active" : "nav-item"
                 }
-                  onClick={handleDashboardClick}>
+                  //</ul>onClick={handleDashboardClick}
+                  >
 
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -77,8 +78,10 @@ function RmCertificationNavbar({ rmCertificationUserId }) {
                   </a>
                 </li>
                 
-                  <Link style={{ textDecoration: "none", color: "black" }} className={location.pathname === `/adminhead/received-booking-box/${rmCertificationUserId}` ? "nav-item active" : 'nav-item' }
-                      to= {`/adminhead/received-booking-box/${rmCertificationUserId}`}>
+                  <Link style={{ textDecoration: "none", color: "black" }} 
+                  className={location.pathname === `/adminhead/received-booking-box/${rmCertificationUserId}` ? "nav-item active" : 'nav-item' }
+                      to= {`/adminhead/received-booking-box/${rmCertificationUserId}`}
+                      >
                       <a className="nav-link" href="./">
                         <span className="nav-link-icon d-md-none d-lg-inline-block">
                           {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}

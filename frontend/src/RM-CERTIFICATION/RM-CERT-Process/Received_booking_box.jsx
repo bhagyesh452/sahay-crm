@@ -40,6 +40,7 @@ function Received_booking_box() {
     const [employeeData, setEmployeeData] = useState([])
     const [openBacdrop, setOpenBacdrop] = useState(false)
     const [currentLeadform, setCurrentLeadform] = useState(null);
+    const [searchText, setSearchText] = useState("")
     const defaultLeadData = {
         "Company Name": "",
         "Company Number": 0,
@@ -59,7 +60,7 @@ function Received_booking_box() {
         totalPaymentWGST: 0,
         withGST: "",
         withDSC: false,
-        paymentTerms:"",
+        paymentTerms: "",
         firstPayment: 0,
         secondPayment: 0,
         thirdPayment: 0,
@@ -161,6 +162,14 @@ function Received_booking_box() {
 
     }, []);
 
+    useEffect(()=>{
+        setLeadFormData(
+            redesignedData.filter((obj)=>
+            obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
+        )
+
+    },[searchText])
+
     //--------fetching booking data by default date should be operation date of rm portal date-------------------------------
     const [redesignedData, setRedesignedData] = useState([]);
     const [leadFormData, setLeadFormData] = useState([]);
@@ -192,26 +201,16 @@ function Received_booking_box() {
                 .filter(obj => {
                     //const lastActionDate = new Date(item.lastActionDate);
                     const mainBookingDate = parseDate(obj.bookingDate);
-                    mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-
-                    // Log the values for debugging
-                    console.log("Main Booking Date:", mainBookingDate, "Today:", today);
-
+                    mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the da
                     // Check if any of the moreBookings dates are >= today
                     const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
                         const bookingDate = parseDate(booking.bookingDate);
                         bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
 
-                        // Log the booking date for debugging
-                        console.log("Company Name:", obj["Company Name"], "Booking Date:", bookingDate, "Today:", today);
+                      
 
                         return bookingDate >= today;
                     });
-
-                    // Log the condition results
-                    console.log("Company Name:", obj["Company Name"]);
-                    console.log("Main Booking Date Valid:", mainBookingDate >= today);
-                    console.log("Has Valid More Bookings Date:", hasValidMoreBookingsDate);
 
                     // Check if the main booking date or any moreBookings date is >= today
                     const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
@@ -224,8 +223,6 @@ function Received_booking_box() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-
-            console.log("filteredData", filteredAndSortedData)
 
             // Process each document to combine services and filter them
             const processedData = filteredAndSortedData.map(item => {
@@ -681,7 +678,7 @@ function Received_booking_box() {
                     totalPaymentWGST: serviceData.totalPaymentWGST || 0,
                     withGST: serviceData.withGST,
                     withDSC: serviceData.withDSC || 0,
-                    paymentTerms:serviceData.paymentTerms || "", // Default to 0 if not provided
+                    paymentTerms: serviceData.paymentTerms || "", // Default to 0 if not provided
                     firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
                     secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
                     thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
@@ -702,7 +699,7 @@ function Received_booking_box() {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
             }
         });
-        console.log("dataToSend" , dataToSend)
+        console.log("dataToSend", dataToSend)
 
         if (dataToSend.length !== 0) {
             setOpenBacdrop(true)
@@ -807,8 +804,8 @@ function Received_booking_box() {
         if (shouldDisableButton) {
             // Directly run the response if shouldDisableButton is true
             try {
-                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}` ,{
-                    displayOfDateForRmCert:new Date()
+                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`, {
+                    displayOfDateForRmCert: new Date()
                 });
                 // Handle the response
                 if (response.status === 200) {
@@ -839,10 +836,10 @@ function Received_booking_box() {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}` ,{
-                            
-                                displayOfDateForRmCert:new Date()
-                            
+                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`, {
+
+                            displayOfDateForRmCert: new Date()
+
                         });
                         // Handle the response
                         if (response.status === 200) {
@@ -919,10 +916,11 @@ function Received_booking_box() {
                                             </span>
                                             <input
                                                 type="text"
+                                                value={searchText}
                                                 class="form-control"
                                                 placeholder="Search Company"
                                                 aria-label="Search in website"
-
+                                                onChange={(e) => setSearchText(e.target.value)}
                                             />
                                         </div>
                                     </div>

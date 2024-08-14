@@ -16,7 +16,8 @@ const FollowUpModel = require('../models/FollowUp.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
-const RMCertificationHistoryModel = require('../models/RMCerificationHistoryModel.js')
+const RMCertificationHistoryModel = require('../models/RMCerificationHistoryModel.js');
+const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 
 function runTestScript(companyName) {
   console.log("Company Name:", companyName);
@@ -132,6 +133,58 @@ router.post('/post-rmservicesdata', async (req, res) => {
   }
 });
 
+router.post('/post-adminexecutivedata', async (req, res) => {
+  const { dataToSend } = req.body;
+  const publishDate = new Date();
+  try {
+    let createData = [];
+    let existingRecords = [];
+    let successEntries = 0;
+    let failedEntries = 0;
+
+    //console.log("dataToSend" , dataToSend)
+
+    for (const item of dataToSend) {
+      try {
+        // Check if the record already exists
+        const existingRecord = await AdminExecutiveModel.findOne({
+          "Company Name": item["Company Name"],
+          serviceName: item.serviceName
+        });
+
+        if (!existingRecord) {
+          const data = {
+            ...item,
+            bookingPublishDate: publishDate
+          };
+          //console.log("createdData" , data)
+          const newRecord = await AdminExecutiveModel.create(data);
+          //console.log("newRecord" , newRecord)
+          createData.push(newRecord);
+          successEntries++;
+        } else {
+          existingRecords.push(existingRecord);
+          failedEntries++;
+        }
+      } catch (error) {
+        console.error("Error saving record:", error.message);
+        failedEntries++;
+      }
+    }
+    // Respond with success message and created data
+    res.status(200).json({
+      message: "Details added to RM services",
+      data: createData,
+      successEntries: successEntries,
+      failedEntries: failedEntries,
+      existingRecords: existingRecords
+    });
+  } catch (error) {
+    console.error("Error creating/updating data:", error);
+    res.status(500).send("Error creating/updating data");
+  }
+});
+
 router.post('/post-rmservices-from-listview', async (req, res) => {
   const { dataToSend } = req.body;
   try {
@@ -161,6 +214,16 @@ router.post('/post-rmservices-from-listview', async (req, res) => {
 router.get("/rm-sevicesgetrequest", async (req, res) => {
   try {
     const response = await RMCertificationModel.find();
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+router.get("/adminexecutivedata", async (req, res) => {
+  try {
+    const response = await AdminExecutiveModel.find();
     res.status(200).json(response);
   } catch (error) {
     console.log("Error fetching data", error);
@@ -420,6 +483,60 @@ router.post("/postrmselectedservicestobookings/:CompanyName", async (req, res) =
           ...relevantServices.map(service => service.serviceName)
         ]));
         document.moreBookings[index].servicesTakenByRmOfCertification = uniqueMoreBookingServices;
+      }
+    });
+
+    // Save the updated document
+    const updatedDocument = await document.save();
+
+    if (!updatedDocument) {
+      console.error("Failed to save the updated document");
+      return res.status(500).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/postsdminselectedservicestobooking/:CompanyName", async (req, res) => {
+  try {
+    const companyName = req.params.CompanyName;
+    const { adminServicesMainBooking, adminServicesMoreBooking } = req.body;
+    const socketIO = req.io;
+    console.log("rmservicesmainbooking", adminServicesMainBooking)
+    console.log("rmservicesmorebooking", adminServicesMoreBooking)
+    // Fetch the document
+    const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+
+    if (!document) {
+      console.error("Document not found");
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    // Update the servicesTakenByRmOfCertification for main bookings
+    const uniqueMainServices = Array.from(new Set([
+      ...document.servicesTakenByAdminExecutive,
+      ...adminServicesMainBooking
+    ]));
+    document.servicesTakenByAdminExecutive = uniqueMainServices;
+
+    // Iterate through moreBookings and update only relevant objects
+    document.moreBookings.forEach((booking, index) => {
+      const relevantServices = booking.services.filter(service =>
+        adminServicesMoreBooking.includes(service.serviceName)
+      );
+      console.log("relevantservices", relevantServices)
+      if (relevantServices.length > 0) {
+        const currentServices = booking.servicesTakenByAdminExecutive || [];
+        const uniqueMoreBookingServices = Array.from(new Set([
+          ...currentServices,
+          ...relevantServices.map(service => service.serviceName)
+        ]));
+        document.moreBookings[index].servicesTakenByAdminExecutive = uniqueMoreBookingServices;
       }
     });
 
@@ -1279,6 +1396,32 @@ router.post("/postmethodtoremovecompanyfromrmpanel/:companyName", async (req, re
       { "Company Name": companyName },
       { isVisibleToRmOfCerification: false ,
         displayOfDateForRmCert:displayOfDateForRmCert ? displayOfDateForRmCert : new Date()
+       },
+      { new: true }
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res.status(200).json({ message: "Document updated successfully", data: updatedDocument });
+  } catch (error) {
+    console.error("Error updating data", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/postmethodtoremovecompanyfromadminexecutivepanel/:companyName", async (req, res) => {
+  const { companyName } = req.params;
+  const { displayOfDateForAdminExecutive } = req.body;
+  const socketIO = req.io;
+  console.log("date" ,displayOfDateForAdminExecutive )
+
+  try {
+    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { isVisibleToAdminExecutive: false ,
+        displayOfDateForAdminExecutive:displayOfDateForAdminExecutive ? displayOfDateForAdminExecutive : new Date()
        },
       { new: true }
     );
