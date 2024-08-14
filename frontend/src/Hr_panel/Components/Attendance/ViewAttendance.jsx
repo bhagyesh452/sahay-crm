@@ -111,7 +111,40 @@ function ViewAttendance({ year, month }) {
 
     const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
 
-        const workingHours = calculateWorkingHours(inTime, outTime);
+        // const workingHours = calculateWorkingHours(inTime, outTime);
+        const calculateWorkingHours = (inTime, outTime) => {
+            const [inHours, inMinutes] = inTime.split(':').map(Number);
+            const [outHours, outMinutes] = outTime.split(':').map(Number);
+
+            const inTimeMinutes = inHours * 60 + inMinutes;
+            const outTimeMinutes = outHours * 60 + outMinutes;
+
+            let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+
+            if (workingMinutes < 0) {
+                workingMinutes += 24 * 60; // Adjust for overnight shifts
+            }
+
+            return workingMinutes;
+        };
+
+        const workingMinutes = calculateWorkingHours(inTime, outTime);
+
+        // Convert minutes back to HH:MM format for display
+        const hours = Math.floor(workingMinutes / 60);
+        const minutes = workingMinutes % 60;
+        const workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+        let status;
+        if (workingMinutes >= 435) { // 7 hours 15 minutes in minutes
+            status = "Present";
+        } else if (workingMinutes >= 218) { // 7 hours 15 minutes / 2 in minutes
+            status = "Half Day";
+        } else if (workingMinutes <= 120) { // 2 hours in minutes
+            status = "Leave";
+        } else {
+            status = "Leave";
+        }
 
         const payload = {
             id: id,
@@ -138,7 +171,7 @@ function ViewAttendance({ year, month }) {
         } catch (error) {
             console.log("Error adding attendance record", error);
         }
-        
+
         // setEmployeeId("");
         // setBranchOffice("");
         // setDesignation("");
@@ -146,7 +179,7 @@ function ViewAttendance({ year, month }) {
         // setDayName("");
         // setWorkingHours("");
         // setStatus("");
-        
+
         // console.log("Employee id :", empId);
         // console.log("Employee name :", name);
         // console.log("Employee designation :", designation);
@@ -162,19 +195,24 @@ function ViewAttendance({ year, month }) {
         console.log("Data to be send :", payload);
     };
 
+    const timeToMinutes = (time) => {
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    };
+
     const calculateWorkingHours = (inTime, outTime) => {
         const inTimeDate = new Date(`1970-01-01T${inTime}:00`);
         const outTimeDate = new Date(`1970-01-01T${outTime}:00`);
-    
+
         let differenceInMs = outTimeDate - inTimeDate;
         if (differenceInMs < 0) {
             // If outTime is past midnight, add 24 hours to outTime
             differenceInMs += 24 * 60 * 60 * 1000;
         }
-    
+
         const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
         const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
-    
+
         return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`;
     };
 
@@ -294,7 +332,10 @@ function ViewAttendance({ year, month }) {
                                                     {selectedMonthDays.map(day => (
                                                         <td key={day}>
                                                             <div className={day <= daysInMonth ? 'p-add' : 'p-disabled'}>
-                                                                {day <= daysInMonth && <FaPlus onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)} />}
+                                                                <button className="action-btn-alert"
+                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}>
+                                                                    {day <= daysInMonth && <FaPlus />}
+                                                                </button>
                                                             </div>
                                                         </td>
                                                     ))}

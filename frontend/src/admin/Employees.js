@@ -448,15 +448,24 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       setJdate(null);
       setNewDesignation("");
       setBranchOffice("");
+
       const result = response.data.filter((emp) => {
+        const mappedDesignation = searchValue.toLowerCase() === "bde" 
+          ? "business development executive" 
+          : searchValue.toLowerCase() === "bdm"
+          ? "business development manager"
+          : searchValue.toLowerCase();
+  
         return (
-          emp.ename?.toLowerCase().includes(searchValue) ||
+          emp.ename?.toLowerCase().includes(searchValue.toLowerCase()) ||
           emp.number?.toString().includes(searchValue) ||
-          emp.email?.toLowerCase().includes(searchValue) ||
-          emp.newDesignation?.toLowerCase().includes(searchValue) ||
-          emp.branchOffice?.toLowerCase().includes(searchValue)
+          emp.email?.toLowerCase().includes(searchValue.toLowerCase()) ||
+          emp.newDesignation?.toLowerCase().includes(mappedDesignation) ||
+          emp.branchOffice?.toLowerCase().includes(searchValue.toLowerCase()) ||
+          emp.department?.toLowerCase().includes(searchValue.toLowerCase())
         );
       });
+      
       // console.log("Search result from employee list is :", result);
       setSearchResult(result);
     } catch (error) {

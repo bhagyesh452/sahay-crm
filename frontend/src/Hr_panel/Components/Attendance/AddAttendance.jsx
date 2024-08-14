@@ -90,11 +90,45 @@ function AddAttendance({ year, month }) {
         return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`;
     };
 
-    const handleSubmit = async (id, empId, name, designation, department, branch, date, inTime, outTime, workingHours) => {
+    const handleSubmit = async (id, empId, name, designation, department, branch, date, inTime, outTime) => {
 
         const selectedDate = new Date(date);
         const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
-        
+
+        const calculateWorkingHours = (inTime, outTime) => {
+            const [inHours, inMinutes] = inTime.split(':').map(Number);
+            const [outHours, outMinutes] = outTime.split(':').map(Number);
+    
+            const inTimeMinutes = inHours * 60 + inMinutes;
+            const outTimeMinutes = outHours * 60 + outMinutes;
+    
+            let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+    
+            if (workingMinutes < 0) {
+                workingMinutes += 24 * 60; // Adjust for overnight shifts
+            }
+    
+            return workingMinutes;
+        };
+    
+        const workingMinutes = calculateWorkingHours(inTime, outTime);
+    
+        // Convert minutes back to HH:MM format for display
+        const hours = Math.floor(workingMinutes / 60);
+        const minutes = workingMinutes % 60;
+        const workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+    
+        let status;
+        if (workingMinutes >= 435) { // 7 hours 15 minutes in minutes
+            status = "Present";
+        } else if (workingMinutes >= 218) { // 7 hours 15 minutes / 2 in minutes
+            status = "Half Day";
+        } else if (workingMinutes <= 120) { // 2 hours in minutes
+            status = "Leave";
+        } else {
+            status = "Leave";
+        }
+
         const payload = {
             id: id,
             employeeId: empId,
@@ -146,6 +180,11 @@ function AddAttendance({ year, month }) {
 
         console.log("Data to be send :", payload);
     };
+
+    const timeToMinutes = (time) => {
+        const [hours, minutes] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    };    
 
     useEffect(() => {
         fetchEmployees();
