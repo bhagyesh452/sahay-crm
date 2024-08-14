@@ -511,7 +511,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
                 ))}
 
             </select>
-            {mainStatus === "Process" && <button className='td_add_remarks_btn'
+            {mainStatus === "Process" && <button className='td_add_remarks_btn ml-1'
                 onClick={() => {
                     handleDisableIndustry(companyName, serviceName)
 
