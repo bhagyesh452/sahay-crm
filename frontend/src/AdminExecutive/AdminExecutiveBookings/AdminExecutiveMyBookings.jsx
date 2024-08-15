@@ -24,6 +24,10 @@ import io from 'socket.io-client';
 import AdminExecutiveHeader from "../Components/AdminExecutiveHeader";
 import AdminExecutiveNavbar from "../Components/AdminExecutiveNavbar";
 import AdminExecutiveGeneralPanel from "./AdminExecutiveGeneralPanel";
+import AdminExecutiveProcessPanel from "./AdminExecutiveProcessPanel";
+import AdminExecutiveHoldPanel from "./AdminExecutiveHoldPanel";
+import AdminExecutiveDefaulterPanel from "./AdminExecutiveDefaulterPanel";
+import AdminExecutiveApprovedPanel from "./AdminExecutiveApprovedPanel";
 
 function AdminExecutiveMyBookings() {
     const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId")
@@ -270,54 +274,50 @@ function AdminExecutiveMyBookings() {
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link" data-bs-toggle="tab" href="#InProcess">
-                                                <div className="d-flex align-items-center justify-content-between w-100"
-                                                    onClick={() => setActiveTab("InProcess")}
-                                                >
+                                                <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         In Process
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
-
+                                                        0
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Approved"
-                                                onClick={() => setActiveTab("Approved")}>
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Approved">
+                                               
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Approved
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
+                                                        0
 
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold" onClick={() => setActiveTab("Hold")}>
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold">
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Hold
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
-
+                                                       0
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Defaulter" onClick={() => setActiveTab("Defaulter")}>
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Defaulter">
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Defaulter
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
+                                                        0
 
                                                     </div>
                                                 </div>
@@ -330,24 +330,16 @@ function AdminExecutiveMyBookings() {
                                         <AdminExecutiveGeneralPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.General} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
-                                        {/* <RmofCertificationProcessPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.InProcess}
-                                            onFilterToggle={() => {
-                                                // Callback to handle filter menu visibility
-                                                setShowFilterIcon(prev => ({
-                                                    ...prev,
-                                                    InProcess: !prev.InProcess
-                                                }));
-                                            }}
-                                        /> */}
+                                        <AdminExecutiveProcessPanel/>
                                     </div>
                                     <div class="tab-pane" id="Approved">
-                                        {/* <RmofCertificationApprovedPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Approved} /> */}
+                                       <AdminExecutiveApprovedPanel/>
                                     </div>
                                     <div class="tab-pane" id="Hold">
-                                        {/* <RmofCertificationHoldPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Hold} /> */}
+                                        <AdminExecutiveHoldPanel/>
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
-                                        {/* <RmofCertificationDefaulterPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Defaulter} /> */}
+                                        <AdminExecutiveDefaulterPanel/>
                                     </div>
                                 </div>
                             </div>
