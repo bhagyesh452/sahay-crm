@@ -2942,6 +2942,10 @@ td input {
 {
   width: 4500px !important;
 }
+.adminEx_table
+{
+  width: 3000px !important;
+}
 .rm-sticky-left-1
 {
   position: sticky;
@@ -2988,6 +2992,7 @@ td input {
   position: sticky;
   right: 0;
   box-shadow: -3px 0px 4px -4px #cccccc !important;
+  z-index: 1;
 }
 .table-style-3 table tbody tr:nth-child(even) td:nth-child(1)
 {
