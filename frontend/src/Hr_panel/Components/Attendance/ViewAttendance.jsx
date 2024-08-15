@@ -269,7 +269,7 @@ function ViewAttendance({ year, month }) {
                 <div class="tab-content card-body">
                     <div class="tab-pane active" id="gota">
                         <div className="table table-responsive table-style-4 m-0">
-                            <table className="table table-vcenter table-nowrap attendance-table tbl-collps">
+                            <table className="table table-vcenter table-nowrap attendance-table">
                                 <thead className="tr-sticky">
                                     <tr>
                                         <th className='hr-sticky-left-1'>Sr. No</th>
@@ -277,7 +277,7 @@ function ViewAttendance({ year, month }) {
 
                                         {/* Generate table headers with day labels */}
                                         {selectedMonthDays.map(day => (
-                                            <th key={day}>{getDayLabel(day)}</th>
+                                            <th className='th-day' key={day}>{getDayLabel(day)}</th>
                                         ))}
                                         <th className='hr-sticky-action3'>
                                             <div className='p-present'>
@@ -331,8 +331,8 @@ function ViewAttendance({ year, month }) {
                                                     </td>
                                                     {selectedMonthDays.map(day => (
                                                         <td key={day}>
-                                                            <div className={day <= daysInMonth ? 'p-add' : 'p-disabled'}>
-                                                                <button className="action-btn-alert"
+                                                            <div>
+                                                                <button className={day <= daysInMonth ? 'p-add' : 'p-disabled'}
                                                                     onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}>
                                                                     {day <= daysInMonth && <FaPlus />}
                                                                 </button>
