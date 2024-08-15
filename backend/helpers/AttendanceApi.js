@@ -19,7 +19,7 @@ router.post('/addAttendance', async (req, res) => {
         status
     } = req.body;
 
-    console.log("Request body is:", req.body);
+    // console.log("Request body is:", req.body);
 
     try {
         // Parse the date to extract year, month, and day

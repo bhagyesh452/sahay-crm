@@ -145,32 +145,39 @@ function AddAttendance({ year, month }) {
         try {
             const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
             const attendanceData = res.data.data;
-            console.log("Attendance successfully displayed:", attendanceData);
 
-            // Structure to store attendance data by employee ID
             const attendanceMap = {};
-
             attendanceData.forEach(employee => {
                 const { _id, years } = employee;
                 attendanceMap[_id] = {}; // Initialize object for each employee
 
-                // Iterate through each year
                 years.forEach(yearData => {
                     const { year, months } = yearData;
+
                     months.forEach(monthData => {
                         const { month, days } = monthData;
+
                         days.forEach(dayData => {
                             const { date, inTime, outTime, workingHours, status } = dayData;
-                            if (!attendanceMap[_id][date]) {
-                                attendanceMap[_id][date] = {};
+
+                            if (!attendanceMap[_id][year]) {
+                                attendanceMap[_id][year] = {};
                             }
-                            attendanceMap[_id][date] = { inTime, outTime, workingHours, status };
+                            if (!attendanceMap[_id][year][month]) {
+                                attendanceMap[_id][year][month] = {};
+                            }
+
+                            attendanceMap[_id][year][month][date] = {
+                                inTime,
+                                outTime,
+                                workingHours,
+                                status
+                            };
                         });
                     });
                 });
             });
 
-            // Set the mapped data to state
             setAttendanceData(attendanceMap);
         } catch (error) {
             console.log("Error fetching attendance record", error);
@@ -238,7 +245,20 @@ function AddAttendance({ year, month }) {
                                     : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
 
                                 const empAttendance = attendanceData[emp._id] || {};
+                                // console.log("Emp attendance is :", empAttendance);
                                 const { inTime = "", outTime = "", attendanceDate = formattedDate } = empAttendance;
+                                const currentYear = new Date().getFullYear();
+                                const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+                                const currentDate = new Date().getDate();
+                                const myDate = new Date(attendanceDate).getDate();
+
+                                const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
+                                    inTime: "",
+                                    outTime: "",
+                                    workingHours: "",
+                                    status: ""
+                                };
+                                // console.log("Emp attendance details :", attendanceDetails);
 
                                 // Calculate working hours only if both inTime and outTime are available
                                 const workingHours = (inTime && outTime) ? calculateWorkingHours(inTime, outTime) : "00:00";
@@ -291,8 +311,8 @@ function AddAttendance({ year, month }) {
                                                 <input
                                                     type='time'
                                                     className='form-cantrol in-time'
-                                                    value={inTime}
-                                                    onChange={(e) =>
+                                                    value={attendanceDetails.inTime || inTime}
+                                                    onChange={(e) => 
                                                         handleInputChange(emp._id, "inTime", e.target.value)
                                                     }
                                                 />
@@ -303,18 +323,20 @@ function AddAttendance({ year, month }) {
                                                 <input
                                                     type='time'
                                                     className='form-cantrol out-time'
-                                                    value={outTime}
-                                                    onChange={(e) =>
+                                                    value={attendanceDetails.outTime || outTime}
+                                                    onChange={(e) => 
                                                         handleInputChange(emp._id, "outTime", e.target.value)
                                                     }
                                                 />
                                             </div>
                                         </td>
                                         <td>
-                                            {workingHours !== "00:00" ? workingHours : ""}
+                                            {attendanceDetails.workingHours || workingHours !== "00:00" && workingHours}
                                         </td>
                                         <td>
-                                            <span className='badge badge-completed'>{status}</span>
+                                            <span className='badge badge-completed'>
+                                                {attendanceDetails.status || status}
+                                            </span>
                                         </td>
                                         <td>
                                             <button type="submit" className="action-btn action-btn-primary" onClick={() =>
