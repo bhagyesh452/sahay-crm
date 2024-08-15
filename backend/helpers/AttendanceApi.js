@@ -2,6 +2,7 @@ const attendanceModel = require("../models/AttendanceModel");
 const express = require("express");
 const router = express.Router();
 
+// Adding attendance from id :
 router.post('/addAttendance', async (req, res) => {
     const {
         id,
@@ -27,7 +28,7 @@ router.post('/addAttendance', async (req, res) => {
         const month = selectedDate.toLocaleString('default', { month: 'long' }); // e.g., January
         const day = selectedDate.getDate();
 
-        console.log("Parsed Values - Year:", year, "Month:", month, "Day:", day);
+        // console.log("Parsed Values - Year:", year, "Month:", month, "Day:", day);
 
         // Check if the attendance record already exists for this employee and date
         let attendance = await attendanceModel.findById(id);
@@ -94,7 +95,6 @@ router.post('/addAttendance', async (req, res) => {
                     });
                 } else {
                     let dayArray = monthArray.days.find(d => d.date === day);
-                    console.log("Day array is :", dayArray);
 
                     // If day does not exist, create it
                     if (!dayArray) {
@@ -126,6 +126,30 @@ router.post('/addAttendance', async (req, res) => {
         console.error('Error adding/updating attendance:', error);
         res.status(500).json({ message: 'Server error' });
     }
+});
+
+// Displaying all attendance :
+router.get('/viewAllAttendance', async(req, res) => {
+    try {
+        const attendanceData = await attendanceModel.find();
+        res.status(200).json({result: true, message: "Attendance records successfully displayed", data: attendanceData});
+    } catch(error) {
+        console.log("Error fetching attendance records", error);
+        res.status(500).json({result: false, message: "Error fetching attendance records"});
+    }   
+});
+
+// Displaying attendance from id :
+router.get('/viewAttendance/:id', async(req, res) => {
+    const {id} = req.params;
+
+    try {
+        const attendanceData = await attendanceModel.findById(id);
+        res.status(200).json({result: true, message: "Attendance record successfully displayed", data: attendanceData});
+    } catch(error) {
+        console.log("Error fetching attendance record", error);
+        res.status(500).json({result: false, message: "Error fetching attendance record"});
+    }   
 });
 
 module.exports = router;

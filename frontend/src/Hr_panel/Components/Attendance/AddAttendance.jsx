@@ -5,6 +5,7 @@ import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 import { GiCheckMark } from "react-icons/gi";
 import ClipLoader from 'react-spinners/ClipLoader';
 import Nodata from '../../../components/Nodata';
+import Swal from 'sweetalert2';
 
 function AddAttendance({ year, month }) {
 
@@ -38,6 +39,7 @@ function AddAttendance({ year, month }) {
     const [isLoading, setIsLoading] = useState(false);
     const [employee, setEmployee] = useState([]);
 
+    const [id, setId] = useState("");
     const [employeeId, setEmployeeId] = useState("");
     const [empName, setEmpName] = useState("");
     const [branchOffice, setBranchOffice] = useState("");
@@ -45,10 +47,10 @@ function AddAttendance({ year, month }) {
     const [department, setDepartment] = useState("");
     const [attendanceDate, setAttendanceDate] = useState(formattedDate);
     const [dayName, setDayName] = useState("");
-    const [workingHours, setWorkingHours] = useState("");
-    const [status, setStatus] = useState("Present");
     const [inTime, setInTime] = useState("");
     const [outTime, setOutTime] = useState("");
+    const [workingHours, setWorkingHours] = useState("");
+    const [status, setStatus] = useState("");
 
     const [attendanceData, setAttendanceData] = useState({});
 
@@ -57,6 +59,7 @@ function AddAttendance({ year, month }) {
             setIsLoading(true);
             const res = await axios.get(`${secretKey}/employee/einfo`);
             setEmployee(res.data);
+            fetchAttendance();
         } catch (error) {
             console.log("Error fetching employees", error);
         } finally {
@@ -74,60 +77,10 @@ function AddAttendance({ year, month }) {
         }));
     };
 
-    const calculateWorkingHours = (inTime, outTime) => {
-        const inTimeDate = new Date(`1970-01-01T${inTime}:00`);
-        const outTimeDate = new Date(`1970-01-01T${outTime}:00`);
-
-        let differenceInMs = outTimeDate - inTimeDate;
-        if (differenceInMs < 0) {
-            // If outTime is past midnight, add 24 hours to outTime
-            differenceInMs += 24 * 60 * 60 * 1000;
-        }
-
-        const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
-        const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
-
-        return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`;
-    };
-
-    const handleSubmit = async (id, empId, name, designation, department, branch, date, inTime, outTime) => {
+    const handleSubmit = async (id, empId, name, designation, department, branch, date, inTime, outTime, workingHours, status) => {
 
         const selectedDate = new Date(date);
         const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
-
-        const calculateWorkingHours = (inTime, outTime) => {
-            const [inHours, inMinutes] = inTime.split(':').map(Number);
-            const [outHours, outMinutes] = outTime.split(':').map(Number);
-    
-            const inTimeMinutes = inHours * 60 + inMinutes;
-            const outTimeMinutes = outHours * 60 + outMinutes;
-    
-            let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
-    
-            if (workingMinutes < 0) {
-                workingMinutes += 24 * 60; // Adjust for overnight shifts
-            }
-    
-            return workingMinutes;
-        };
-    
-        const workingMinutes = calculateWorkingHours(inTime, outTime);
-    
-        // Convert minutes back to HH:MM format for display
-        const hours = Math.floor(workingMinutes / 60);
-        const minutes = workingMinutes % 60;
-        const workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-    
-        let status;
-        if (workingMinutes >= 435) { // 7 hours 15 minutes in minutes
-            status = "Present";
-        } else if (workingMinutes >= 218) { // 7 hours 15 minutes / 2 in minutes
-            status = "Half Day";
-        } else if (workingMinutes <= 120) { // 2 hours in minutes
-            status = "Leave";
-        } else {
-            status = "Leave";
-        }
 
         const payload = {
             id: id,
@@ -146,20 +99,12 @@ function AddAttendance({ year, month }) {
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
             console.log("Created attendance record is :", res.data);
+            Swal.fire("success", "Attendance Successfully Added/Updated", "success");
         } catch (error) {
             console.log("Error adding attendance record", error);
+            Swal.fire("error", "Error adding/updating attendance", "error");
         }
-
-        // setInTime("");
-        // setOutTime("");
-        // setEmployeeId("");
-        // setBranchOffice("");
-        // setDesignation("");
-        // setDepartment("")
-        // setDayName("");
-        // setWorkingHours("");
-        // setStatus("");
-
+        fetchAttendance();
         // console.log("Employee id :", empId);
         // console.log("Employee name :", name);
         // console.log("Employee designation :", designation);
@@ -172,22 +117,70 @@ function AddAttendance({ year, month }) {
         // console.log("Working hours :", workingHours);
         // console.log("Attendance status is :", status);
 
-        // Clear data for the current employee after submission
-        // setAttendanceData(prevState => ({
-        //     ...prevState,
-        //     [id]: {}
-        // }));
-
         console.log("Data to be send :", payload);
     };
 
-    const timeToMinutes = (time) => {
-        const [hours, minutes] = time.split(':').map(Number);
-        return hours * 60 + minutes;
-    };    
+    const calculateWorkingHours = (inTime, outTime) => {
+        if (!inTime || !outTime) return "00:00"; // Ensure both times are available
+
+        const [inHours, inMinutes] = inTime.split(':').map(Number);
+        const [outHours, outMinutes] = outTime.split(':').map(Number);
+
+        const inTimeMinutes = inHours * 60 + inMinutes;
+        const outTimeMinutes = outHours * 60 + outMinutes;
+
+        let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+
+        if (workingMinutes < 0) {
+            workingMinutes += 24 * 60; // Adjust for overnight shifts
+        }
+
+        // Convert minutes back to HH:MM format
+        const hours = Math.floor(workingMinutes / 60);
+        const minutes = workingMinutes % 60;
+        return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+    };
+
+    const fetchAttendance = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
+            const attendanceData = res.data.data;
+            console.log("Attendance successfully displayed:", attendanceData);
+
+            // Structure to store attendance data by employee ID
+            const attendanceMap = {};
+
+            attendanceData.forEach(employee => {
+                const { _id, years } = employee;
+                attendanceMap[_id] = {}; // Initialize object for each employee
+
+                // Iterate through each year
+                years.forEach(yearData => {
+                    const { year, months } = yearData;
+                    months.forEach(monthData => {
+                        const { month, days } = monthData;
+                        days.forEach(dayData => {
+                            const { date, inTime, outTime, workingHours, status } = dayData;
+                            if (!attendanceMap[_id][date]) {
+                                attendanceMap[_id][date] = {};
+                            }
+                            attendanceMap[_id][date] = { inTime, outTime, workingHours, status };
+                        });
+                    });
+                });
+            });
+
+            // Set the mapped data to state
+            setAttendanceData(attendanceMap);
+        } catch (error) {
+            console.log("Error fetching attendance record", error);
+        }
+    };
+
 
     useEffect(() => {
         fetchEmployees();
+        fetchAttendance();
     }, []);
 
     useEffect(() => {
@@ -246,7 +239,22 @@ function AddAttendance({ year, month }) {
 
                                 const empAttendance = attendanceData[emp._id] || {};
                                 const { inTime = "", outTime = "", attendanceDate = formattedDate } = empAttendance;
-                                const workingHours = calculateWorkingHours(inTime, outTime);
+
+                                // Calculate working hours only if both inTime and outTime are available
+                                const workingHours = (inTime && outTime) ? calculateWorkingHours(inTime, outTime) : "00:00";
+
+                                // Determine the status
+                                let status;
+                                const workingMinutes = (inTime && outTime) ? workingHours.split(':').reduce((acc, time) => (60 * acc) + +time) : 0;
+                                if (workingMinutes >= 435) {
+                                    status = "Present";
+                                } else if (workingMinutes >= 218) {
+                                    status = "Half Day";
+                                } else if (workingMinutes <= 120) {
+                                    status = "Leave";
+                                } else {
+                                    status = "Leave";
+                                }
 
                                 return (
                                     <tr key={index}>
@@ -303,14 +311,14 @@ function AddAttendance({ year, month }) {
                                             </div>
                                         </td>
                                         <td>
-                                            {(inTime && outTime) && workingHours}
+                                            {workingHours !== "00:00" ? workingHours : ""}
                                         </td>
                                         <td>
                                             <span className='badge badge-completed'>{status}</span>
                                         </td>
                                         <td>
                                             <button type="submit" className="action-btn action-btn-primary" onClick={() =>
-                                                handleSubmit(emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours)}>
+                                                handleSubmit(emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}>
                                                 <GiCheckMark />
                                             </button>
                                         </td>

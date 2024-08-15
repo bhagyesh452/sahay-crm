@@ -6,6 +6,7 @@ import { FaPlus } from "react-icons/fa6";
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import Swal from 'sweetalert2';
 import Nodata from '../../../components/Nodata';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -49,7 +50,10 @@ function ViewAttendance({ year, month }) {
 
     const selectedMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonth = today.getMonth() + 1; // JavaScript months are 0-based
+    const currentYear = today.getFullYear();
 
     const [isLoading, setIsLoading] = useState(false);
     const [gotaBranchEmployees, setGotaBranchEmployees] = useState([]);
@@ -168,17 +172,11 @@ function ViewAttendance({ year, month }) {
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
             console.log("Created attendance record is :", res.data);
+            Swal.fire("success", "Attendance Successfully Added/Updated", "success");
         } catch (error) {
             console.log("Error adding attendance record", error);
+            Swal.fire("error", "Error adding/updating attendance", "error");
         }
-
-        // setEmployeeId("");
-        // setBranchOffice("");
-        // setDesignation("");
-        // setDepartment("")
-        // setDayName("");
-        // setWorkingHours("");
-        // setStatus("");
 
         // console.log("Employee id :", empId);
         // console.log("Employee name :", name);
@@ -193,27 +191,6 @@ function ViewAttendance({ year, month }) {
         // console.log("Attendance status is :", status);
 
         console.log("Data to be send :", payload);
-    };
-
-    const timeToMinutes = (time) => {
-        const [hours, minutes] = time.split(':').map(Number);
-        return hours * 60 + minutes;
-    };
-
-    const calculateWorkingHours = (inTime, outTime) => {
-        const inTimeDate = new Date(`1970-01-01T${inTime}:00`);
-        const outTimeDate = new Date(`1970-01-01T${outTime}:00`);
-
-        let differenceInMs = outTimeDate - inTimeDate;
-        if (differenceInMs < 0) {
-            // If outTime is past midnight, add 24 hours to outTime
-            differenceInMs += 24 * 60 * 60 * 1000;
-        }
-
-        const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
-        const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
-
-        return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}`;
     };
 
     useEffect(() => {
@@ -329,16 +306,27 @@ function ViewAttendance({ year, month }) {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    {selectedMonthDays.map(day => (
-                                                        <td key={day}>
-                                                            <div>
-                                                                <button className={day <= daysInMonth ? 'p-add' : 'p-disabled'}
-                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}>
-                                                                    {day <= daysInMonth && <FaPlus />}
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    ))}
+                                                    {selectedMonthDays.map(day => {
+                                                        // Determine if the button should be disabled
+                                                        const isFutureDate =
+                                                            year > currentYear ||
+                                                            (year === currentYear && monthNumber > currentMonth) ||
+                                                            (year === currentYear && monthNumber === currentMonth && day > currentDay);
+
+                                                        return (
+                                                            <td key={day}>
+                                                                <div>
+                                                                    <button
+                                                                        className={day <= daysInMonth ? 'p-add' : ''}
+                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                        disabled={isFutureDate} // Disable button for future dates
+                                                                    >
+                                                                        {day <= daysInMonth && <FaPlus />}
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        );
+                                                    })}
                                                     <td className='hr-sticky-action3'>
                                                         25
                                                     </td>
@@ -430,13 +418,27 @@ function ViewAttendance({ year, month }) {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    {selectedMonthDays.map(day => (
-                                                        <td key={day}>
-                                                            <div className={day <= daysInMonth ? 'p-add' : 'p-disabled'}>
-                                                                {day <= daysInMonth && <FaPlus onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)} />}
-                                                            </div>
-                                                        </td>
-                                                    ))}
+                                                    {selectedMonthDays.map(day => {
+                                                        // Determine if the button should be disabled
+                                                        const isFutureDate =
+                                                            year > currentYear ||
+                                                            (year === currentYear && monthNumber > currentMonth) ||
+                                                            (year === currentYear && monthNumber === currentMonth && day > currentDay);
+
+                                                        return (
+                                                            <td key={day}>
+                                                                <div>
+                                                                    <button
+                                                                        className={day <= daysInMonth ? 'p-add' : ''}
+                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                        disabled={isFutureDate} // Disable button for future dates
+                                                                    >
+                                                                        {day <= daysInMonth && <FaPlus />}
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        );
+                                                    })}
                                                     <td className='hr-sticky-action3'>
                                                         25
                                                     </td>
