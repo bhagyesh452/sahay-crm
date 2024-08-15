@@ -24,10 +24,14 @@ const DscLetterStatusDropdown = () => {
           {selectedStatus}
         </button>
         <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('Untouched', 'untouched_status')} href="#">Created</a></li>
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('Support', 'cdbp-status')} href="#">Support</a></li>
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('In Progress', 'clnt_no_repond_status')} href="#">In Progress</a></li>
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">Finished</a></li>
+          <li><a className="dropdown-item" onClick={() => handleStatusChange('Untouched', 'untouched_status')} href="#">Draft Pending</a></li>
+          <li><a className="dropdown-item" onClick={() => handleStatusChange('Support', 'cdbp-status')} href="#">Draft Sent</a></li>
+          <li><a className="dropdown-item" onClick={() => handleStatusChange('In Progress', 'clnt_no_repond_status')} href="#">Letter Received</a></li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+              Draft Done - Not Sent
+            </a>
+          </li>
         </ul>
       </div>
     </section>

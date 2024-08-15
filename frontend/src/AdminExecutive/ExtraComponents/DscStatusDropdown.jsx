@@ -24,10 +24,57 @@ const DscStatusDropdown = () => {
           {selectedStatus}
         </button>
         <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('Untouched', 'untouched_status')} href="#">Created</a></li>
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('Support', 'cdbp-status')} href="#">Support</a></li>
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('In Progress', 'clnt_no_repond_status')} href="#">In Progress</a></li>
-          <li><a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">Finished</a></li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Untouched', 'untouched_status')} href="#">
+              Call Done Docs Pending
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Support', 'cdbp-status')} href="#">
+               Client Not Responding
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('In Progress', 'clnt_no_repond_status')} href="#">
+              Need To Call
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+              Working
+            </a>
+          </li>
+
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+              Hold
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+             Defaulter
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+              Approved
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+               KYC Pending
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+                KYC Rejected
+            </a>
+          </li>
+          <li>
+            <a className="dropdown-item" onClick={() => handleStatusChange('Finished', 'support-status')} href="#">
+                KYC Incomplete
+            </a>
+          </li>
         </ul>
       </div>
     </section>

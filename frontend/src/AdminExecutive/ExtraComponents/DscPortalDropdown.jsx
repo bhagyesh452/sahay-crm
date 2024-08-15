@@ -6,7 +6,16 @@ const DscPortalDropdown = () => {
   return (
       <select className='sec-indu-select sec-indu-select-gray'>
         <option>
-          hi
+            PANTASIGN
+        </option>
+        <option>
+            CARE4SIGN
+        </option>
+        <option>
+            CAPRICORN
+        </option>
+        <option>
+            EXTRATRUST
         </option>
       </select>
   );
