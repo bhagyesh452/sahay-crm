@@ -252,8 +252,8 @@ function AdminExecutiveMyBookings() {
                     <div className="page-body rm_Dtl_box m-0">
                         <div className="container-xl mt-2">
                             <div className="rm_main_card">
-                                <div className="my-tab card-header" style={{ marginBottom: "-2px" }}>
-                                    <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
+                                <div className="my-tab card-header for_adminex" style={{ marginBottom: "-2px" }}>
+                                    <ul class="nav nav-tabs rm_task_section_navtabs for_adminex_navtabs  nav-fill p-0">
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link active" data-bs-toggle="tab" href="#General"
                                                 onClick={() => setActiveTab("General")}
@@ -278,34 +278,6 @@ function AdminExecutiveMyBookings() {
                                                     </div>
                                                     <div className="rm_tsn_bdge">
                                                         {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
-
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#ReadyToSubmit"
-                                                onClick={() => setActiveTab("ReadyToSubmit")}>
-                                                <div className="d-flex align-items-center justify-content-between w-100">
-                                                    <div className="rm_txt_tsn">
-                                                        Ready To Submit
-                                                    </div>
-                                                    <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0}
-
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Submited"
-                                                onClick={() => setActiveTab("Submited")}>
-                                                <div className="d-flex align-items-center justify-content-between w-100">
-                                                    <div className="rm_txt_tsn">
-                                                        Submited
-                                                    </div>
-                                                    <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0}
 
                                                     </div>
                                                 </div>
@@ -367,12 +339,6 @@ function AdminExecutiveMyBookings() {
                                                 }));
                                             }}
                                         /> */}
-                                    </div>
-                                    <div class="tab-pane" id="ReadyToSubmit">
-                                        {/* <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit} /> */}
-                                    </div>
-                                    <div class="tab-pane" id="Submited">
-                                        {/* <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Submited} /> */}
                                     </div>
                                     <div class="tab-pane" id="Approved">
                                         {/* <RmofCertificationApprovedPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Approved} /> */}

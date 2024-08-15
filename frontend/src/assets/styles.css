@@ -2816,6 +2816,10 @@ td input {
   margin-bottom: -1px !important;
   padding-right: 10px !important;
 }
+.for_adminex_navtabs
+{
+  flex: 0 0 64% !important;
+}
 /* .rm_task_section_navitem
 {
   border-right: 1px solid #eee !important;
@@ -3259,6 +3263,10 @@ td input {
   {
     flex: 0 1 96%;
   } 
+  .for_adminex_navtabs
+  {
+    flex: 0 0 65% !important;
+  }
 }
 @media only screen and (max-width: 1527px) and (min-width: 1400px)
 {
@@ -3266,6 +3274,10 @@ td input {
   {
     flex: 0 1 95%;
   } 
+  .for_adminex_navtabs
+  {
+    flex: 0 0 66% !important;
+  }
 }
 @media only screen and (max-width:1399px) and (min-width: 1200px)
 {
@@ -3276,6 +3288,10 @@ td input {
   .rm_task_section_navtabs
   {
     flex: 0 0 100%;
+  }
+  .for_adminex_navtabs
+  {
+    flex: 0 0 66% !important;
   } 
 }
 @media only screen and (max-width:1199px) and (min-width: 50px)
@@ -3287,6 +3303,10 @@ td input {
   .rm_task_section_navitem .nav-link
   {
     width: 93% !important;
+  }
+  .for_adminex_navtabs
+  {
+    flex: 0 0 65% !important;
   }
 }
 .disabled {
