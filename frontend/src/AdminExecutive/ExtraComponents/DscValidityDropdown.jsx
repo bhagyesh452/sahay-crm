@@ -6,7 +6,13 @@ const DscValidityDropdown = () => {
   return (
       <select className='sec-indu-select sec-indu-select-gray'>
         <option>
-          hi
+          1 Year
+        </option>
+        <option>
+          2 Years
+        </option>
+        <option>
+          3 Years
         </option>
       </select>
   );
