@@ -6,7 +6,10 @@ import { FaPlus } from "react-icons/fa6";
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { FaRegCalendarPlus } from "react-icons/fa6";
+import { LuMailPlus } from "react-icons/lu";
 import Swal from 'sweetalert2';
+import { HiMiniViewfinderCircle } from "react-icons/hi2";
 import Nodata from '../../../components/Nodata';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -254,7 +257,18 @@ function ViewAttendance({ year, month }) {
 
                                         {/* Generate table headers with day labels */}
                                         {selectedMonthDays.map(day => (
-                                            <th className='th-day' key={day}>{getDayLabel(day)}</th>
+                                            <th className='th-day' key={day}>
+                                                <div className='d-flex align-items-center justify-content-between'>
+                                                    <div>
+                                                        {getDayLabel(day)}
+                                                    </div>
+                                                    <div className='view-attendance-th-icon'> 
+                                                        <FaRegCalendarPlus/>
+                                                    </div>
+                                                </div>
+                                                
+
+                                            </th>
                                         ))}
                                         <th className='hr-sticky-action3'>
                                             <div className='p-present'>
@@ -413,8 +427,11 @@ function ViewAttendance({ year, month }) {
                                                             <div className="tbl-pro-img">
                                                                 <img src={profilePhotoUrl} alt="Profile" className="profile-photo" />
                                                             </div>
-                                                            <div className="">
-                                                                {emp.ename}
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                <div>{emp.ename}</div>
+                                                                <div>
+                                                                    <LuMailPlus />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </td>

@@ -56,6 +56,7 @@ import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/Empl
 import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerDashboard.jsx";
 import TestLeads from "./admin/TestLeads.jsx";
 import "../src/assets/v2_style.css"
+import "../src/assets/hover.css"
 import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
@@ -84,7 +85,7 @@ import AdminExecutiveLogin from "./AdminExecutive/Login/AdminExecutiveLogin.jsx"
 import AdminExecutiveDashboard from "./AdminExecutive/Dashboard/AdminExecutiveDashboard.jsx";
 import AdminExecutiveRecievedBox from "./AdminExecutive/RecievedBookingBox/AdminExecutiveRecievedBox.jsx";
 import AdminExecutiveMyBookings from "./AdminExecutive/AdminExecutiveBookings/AdminExecutiveMyBookings.jsx";
-
+import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -128,7 +129,7 @@ function App() {
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
           <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
           <Route path='/employee/show-notification/:userId' element={newtoken ? <EmployeeShowNotification /> : <Navigate to='/' />}></Route>
-
+          <Route path='/employee-assets/:userId' element={newtoken ? <EmployeeAssets /> : <Navigate to='/' />}></Route>
 
           {/* --------------------------------------------------Path for Customer-Panel---------------------------------------------------------- */}
           <Route path='/customer/login' element={<CustomerLogin />}></Route>

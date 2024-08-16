@@ -165,6 +165,20 @@ function EmpNav({ userId, bdmWork }) {
                   </a>
 
                 </Link>
+                <Link style={{ textDecoration: "none", color: "black" }}
+                  className={
+                    location.pathname === `/employee-assets/${userId}` ? "nav-item active" : "nav-item"
+                  }
+                  to={`/employee-assets/${userId}`}
+                >
+                  <a className="nav-link" href="#">
+                    <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <VscGraph style={{ height: "24px", width: "19px" }} />
+                    </span>
+                    <span className="nav-link-title">Assets</span>
+                  </a>
+
+                </Link>
               </ul>
 
             </div>
