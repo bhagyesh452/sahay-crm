@@ -9,7 +9,8 @@ import Swal from "sweetalert2";
 
 
 
-const StatusDropdown = ({ mainStatus,
+const StatusDropdown = ({ 
+  mainStatus,
   subStatus,
   setNewSubStatus,
   companyName,

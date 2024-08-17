@@ -16,6 +16,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import io from 'socket.io-client';
 import { BsFilter } from "react-icons/bs";
+import DscStatusDropdown from '../ExtraComponents/DscStatusDropdown';
 
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
@@ -80,25 +81,25 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
             transports: ['websocket'],
         });
 
-        socket.on("rm-general-status-updated", (res) => {
+        socket.on("adminexectuive-general-status-updated", (res) => {
             fetchData()
         });
 
-        socket.on("rm-recievedamount-updated", (res) => {
-            fetchData()
-        });
+        // socket.on("rm-recievedamount-updated", (res) => {
+        //     fetchData()
+        // });
 
-        socket.on("rm-recievedamount-deleted", (res) => {
-            fetchData()
-        });
+        // socket.on("rm-recievedamount-deleted", (res) => {
+        //     fetchData()
+        // });
 
-        socket.on("booking-deleted", (res) => {
-            fetchData()
-        });
+        // socket.on("booking-deleted", (res) => {
+        //     fetchData()
+        // });
 
-        socket.on("booking-updated", (res) => {
-            fetchData()
-        });
+        // socket.on("booking-updated", (res) => {
+        //     fetchData()
+        // });
 
 
         return () => {
@@ -197,7 +198,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
 
             // Check if the user confirmed the action
             if (result.isConfirmed) {
-                const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
+                const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox-foradminexecutive`, {
                     companyName,
                     serviceName
                 });
@@ -724,9 +725,9 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
 
                                         <td>{obj.serviceName}</td>
                                         <td>
-                                            {/* <div>
+                                            <div>
                                                 {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <StatusDropdown
+                                                    <DscStatusDropdown
                                                         key={`${obj["Company Name"]}-${obj.serviceName}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
                                                         mainStatus={obj.mainCategoryStatus}
                                                         subStatus={obj.subCategoryStatus}
@@ -736,7 +737,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                                                         refreshData={refreshData}
                                                     />
                                                 )}
-                                            </div> */}
+                                            </div>
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
                                         <td>
@@ -777,12 +778,12 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                                                 <FaRegEye />
                                             </button>
                                             <button className="action-btn action-btn-danger ml-1"
-                                                onClick={() => (
+                                                  onClick={() => {
                                                     handleRevokeCompanyToRecievedBox(
                                                         obj["Company Name"],
                                                         obj.serviceName
                                                     )
-                                                )}
+                                                }}
                                             >
                                                 <CiUndo />
                                             </button>

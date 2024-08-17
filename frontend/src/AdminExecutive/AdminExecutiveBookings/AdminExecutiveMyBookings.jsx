@@ -68,22 +68,10 @@ function AdminExecutiveMyBookings() {
             transports: ['websocket'],
         });
 
-        socket.on("rm-general-status-updated", (res) => {
+        socket.on("adminexecutive-general-status-updated", (res) => {
+            console.log("socketChala")
             fetchRMServicesData()
         });
-
-        socket.on("rm-recievedamount-updated", (res) => {
-            fetchRMServicesData()
-        });
-
-        socket.on("booking-deleted", (res) => {
-            fetchRMServicesData()
-        });
-
-        socket.on("booking-updated", (res) => {
-            fetchRMServicesData()
-        });
-
 
         return () => {
             socket.disconnect();
@@ -204,7 +192,7 @@ function AdminExecutiveMyBookings() {
         }
     };
 
-    console.log("showFilter", showFilterIcon)
+    //console.log("showFilter", showFilterIcon)
 
 
 
@@ -279,7 +267,7 @@ function AdminExecutiveMyBookings() {
                                                         In Process
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        0
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
                                                     </div>
                                                 </div>
                                             </a>
@@ -292,8 +280,7 @@ function AdminExecutiveMyBookings() {
                                                         Approved
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        0
-
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
                                                     </div>
                                                 </div>
                                             </a>
@@ -305,7 +292,8 @@ function AdminExecutiveMyBookings() {
                                                         Hold
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                       0
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
+
                                                     </div>
                                                 </div>
                                             </a>
@@ -317,7 +305,8 @@ function AdminExecutiveMyBookings() {
                                                         Defaulter
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        0
+                                                    {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
+
 
                                                     </div>
                                                 </div>

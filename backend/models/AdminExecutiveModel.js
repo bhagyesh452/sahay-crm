@@ -138,7 +138,6 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     },
     dscPortal: {
         type: String,
-        default: "RonakKumar"
     },
     dscType: {
         type: String,
@@ -182,9 +181,9 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
         type: Date,
         default: new Date()
     },
-    // submittedOn: {
-    //     type: Date
-    // },
+    submittedOn: {
+        type: Date
+    },
     previousMainCategoryStatus: {
         type: String,
         default: "General"
