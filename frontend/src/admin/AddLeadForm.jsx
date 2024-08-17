@@ -1419,6 +1419,7 @@ export default function AddLeadForm({
                       <option value="ROHS">ROHS</option>
                       <option value="IEC 17020">IEC 17020</option>
                       <option value="GFSI">GFSI</option>
+                      <option value="GMO">GMO</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}

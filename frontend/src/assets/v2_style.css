@@ -1156,7 +1156,6 @@ table.table.top_5_table tbody tr.myself td {
     height: 20px;
     width: 20px;
     text-align: center;
-    line-height: 15px;
     border-radius: 100px;
     background: #dbe6ff;
     font-weight: 600;
@@ -1164,12 +1163,17 @@ table.table.top_5_table tbody tr.myself td {
     border: 1px solid #a3c3ff;
     margin: 0 auto;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
 }
 .attendance-table
 {
-    width: 2200px;
+    width: 3200px;
+    border-collapse: separate;
+    border-spacing: 0 0;
 }
-
 .table-style-4 {
     max-height: calc(100vh - 240px);
     border-width: 1px;
@@ -1244,6 +1248,19 @@ table.table.top_5_table tbody tr.myself td {
 {
     position: relative;
 }
+th.th-day {
+    width: 90px;
+}
+.view-attendance-th-icon
+{
+    font-size: 14px;
+    line-height: 10px;
+    cursor: pointer;
+}
+.view-attendance-th-icon:hover
+{
+    color: #ede105;
+}
 @media (max-width: 1528px)
 {
     .hr_emply_list_navtabs
@@ -1309,3 +1326,173 @@ table.table.top_5_table tbody tr.myself td {
   .filter-container input {
     width: 300px;
   }
+
+
+.E_assets_main
+{
+    height: calc(100vh - 182px);
+}
+.employee-assets-left
+{
+    background: #fff;
+    height: calc(100vh - 182px);
+    border-right: 1px solid #eee;
+    overflow-y: auto;
+}
+.employee-assets-left .nav-link
+{
+    border: none ! IMPORTANT;
+    border-bottom: 1px solid #f3f3f3 !important;
+}  
+.employee-assets-left .nav-link.active
+{
+    background: #54575a;
+    color: #fff !important;
+} 
+
+.employee-assets-right
+{
+    background: #f7f7f7;
+    height: calc(100vh - 182px);
+    overflow-y: auto;
+}
+.E_Start-Up_Assets_inner
+{
+
+}
+.ESAI_head
+{
+    margin: 10px 0 10px 0;
+    text-align: right;
+}
+.ESAI_data
+{
+    margin-top: 40px;
+}
+.ESAI_data_card 
+{
+    background-color: #fff;
+    width: 96%;
+    padding: 28px 20px 20px 20px;
+    border-radius: 10px;
+    text-align: left;
+    position: relative;
+    box-shadow: 2px 2px 19px -5px rgb(199, 199, 199);
+    min-height: 86px;
+    vertical-align: top;
+    transform: translateY(0);
+    cursor: pointer;
+    border: 1px solid #eee;
+    transition-duration: 0.3s;
+    margin-bottom: 24px !important;
+}
+.ESAI_data_card_h
+{
+    color: #ffffff;
+    font-size: 14px;
+    font-family: RobotoRegular, sans-serif;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 4px 0;
+    margin: 0;
+    position: absolute;
+    background: #494949;
+    padding: 6px 8px;
+    width: 80%;
+    border-radius: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -15px;
+    text-align: center;
+    z-index: 3;
+}
+.ESAI_data_card_b
+{
+    min-height: 48px;
+    font-size: 14px;
+    color: #1a1a30;
+    font-family: KhandSemiBold, sans-serif;
+    line-height: 1.4;
+    word-break: break-word;
+    margin: 0;
+    text-align: center;
+}
+.ESAI_data_card_F
+{
+    /* margin-top: -60px;
+    opacity: 0;
+    transition-duration: 0.3s; */
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    right: 0;
+    border-radius: 10px;
+    background: #0000008c;
+    z-index: 1;
+    opacity: 0;
+    transition-duration: 0.3s;
+}
+.ESAI_data_card:hover
+{
+    background: #ffffff;
+    z-index: 99;
+}
+.ESAI_data_card:hover .ESAI_data_card_F
+{
+    margin-top: 0px;
+    opacity: 1;
+}
+.btn
+{
+    overflow: hidden;
+}
+.ESAI_data_card_F-btn
+{
+    position: absolute;
+	left: 50%;
+	top: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+
+}
+
+/* Sweep To Right */
+/* .sweep-to-right {
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    position: relative;
+    -webkit-transition-property: color;
+    transition-property: color;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+  }
+  .sweep-to-right:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #dfdfdf;
+    -webkit-transform: scaleX(0);
+    transform: scaleX(0);
+    -webkit-transform-origin: 0 50%;
+    transform-origin: 0 50%;
+    -webkit-transition-property: transform;
+    transition-property: transform;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -webkit-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+  }
+  .sweep-to-right:hover, .sweep-to-right:focus, .sweep-to-right:active {
+    color: #000;
+  }
+  .sweep-to-right:hover:before, .sweep-to-right:focus:before, .sweep-to-right:active:before {
+    -webkit-transform: scaleX(1);
+    transform: scaleX(1);
+  }
+   */
