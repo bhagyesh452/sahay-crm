@@ -76,6 +76,8 @@ function ViewAttendance({ year, month }) {
     const [inTime, setInTime] = useState("");
     const [outTime, setOutTime] = useState("");
 
+    const [attendanceData, setAttendanceData] = useState({});
+
     const fetchEmployees = async () => {
         try {
             setIsLoading(true);
@@ -83,6 +85,7 @@ function ViewAttendance({ year, month }) {
             const data = res.data;
             setGotaBranchEmployees(data.filter((branch) => branch.branchOffice === "Gota"));
             setSindhuBhawanBranchEmployees(data.filter((branch) => branch.branchOffice === "Sindhu Bhawan"));
+            fetchAttendance();
         } catch (error) {
             console.log("Error fetching employees", error);
         } finally {
@@ -110,7 +113,7 @@ function ViewAttendance({ year, month }) {
         setDepartment(department);
         setBranchOffice(branch);
         // setWorkingHours("4:00");
-        setStatus("Half Day");
+        // setStatus("Half Day");
         setDayName(dayName);
         // console.log("Attendance date is :", formattedDate);
         // console.log("Day name is :", dayName);
@@ -180,7 +183,7 @@ function ViewAttendance({ year, month }) {
             console.log("Error adding attendance record", error);
             Swal.fire("error", "Error adding/updating attendance", "error");
         }
-
+        fetchAttendance();
         // console.log("Employee id :", empId);
         // console.log("Employee name :", name);
         // console.log("Employee designation :", designation);
@@ -196,8 +199,52 @@ function ViewAttendance({ year, month }) {
         console.log("Data to be send :", payload);
     };
 
+    const fetchAttendance = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
+            const attendanceData = res.data.data;
+
+            const attendanceMap = {};
+            attendanceData.forEach(employee => {
+                const { _id, years } = employee;
+                attendanceMap[_id] = {}; // Initialize object for each employee
+
+                years.forEach(yearData => {
+                    const { year, months } = yearData;
+
+                    months.forEach(monthData => {
+                        const { month, days } = monthData;
+
+                        days.forEach(dayData => {
+                            const { date, inTime, outTime, workingHours, status } = dayData;
+
+                            if (!attendanceMap[_id][year]) {
+                                attendanceMap[_id][year] = {};
+                            }
+                            if (!attendanceMap[_id][year][month]) {
+                                attendanceMap[_id][year][month] = {};
+                            }
+
+                            attendanceMap[_id][year][month][date] = {
+                                inTime,
+                                outTime,
+                                workingHours,
+                                status
+                            };
+                        });
+                    });
+                });
+            });
+
+            setAttendanceData(attendanceMap);
+        } catch (error) {
+            console.log("Error fetching attendance record", error);
+        }
+    };
+
     useEffect(() => {
         fetchEmployees();
+        // fetchAttendance();
     }, []);
 
     // console.log("Gota employees are :", gotaBranchEmployees);
@@ -262,12 +309,10 @@ function ViewAttendance({ year, month }) {
                                                     <div>
                                                         {getDayLabel(day)}
                                                     </div>
-                                                    <div className='view-attendance-th-icon'> 
-                                                        <FaRegCalendarPlus/>
+                                                    <div className='view-attendance-th-icon'>
+                                                        <FaRegCalendarPlus />
                                                     </div>
                                                 </div>
-                                                
-
                                             </th>
                                         ))}
                                         <th className='hr-sticky-action3'>
@@ -320,7 +365,27 @@ function ViewAttendance({ year, month }) {
                                                             </div>
                                                         </div>
                                                     </td>
+
                                                     {selectedMonthDays.map(day => {
+                                                        const empAttendance = attendanceData[emp._id] || {};
+                                                        const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
+                                                        const { attendanceDate = formattedDate } = empAttendance;
+                                                        
+                                                        const currentYear = new Date().getFullYear();
+                                                        const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+                                                        const currentDate = new Date().getDate();
+                                                        const myDate = new Date(attendanceDate).getDate();
+
+                                                        const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
+                                                            inTime: "",
+                                                            outTime: "",
+                                                            workingHours: "",
+                                                            status: ""
+                                                        };
+
+                                                        console.log("Emp attendance details :", attendanceDetails);
+
+                                                        const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
                                                         // Determine if the button should be disabled
                                                         const isFutureDate =
                                                             year > currentYear ||
@@ -329,7 +394,17 @@ function ViewAttendance({ year, month }) {
 
                                                         return (
                                                             <td key={day}>
-                                                                <div>
+                                                                <div className={`
+                                                                    ${status === "Present" ? "p-present" : ""}
+                                                                    ${status === "Half Day" ? "H-Halfday" : ""}
+                                                                    ${status === "Leave" ? "l-leave" : ""}
+                                                                    `.trim()}>
+                                                                    {status === "Present" ? "P" :
+                                                                        status === "Half Day" ? "H" :
+                                                                            status === "Leave" ? "L" : ""}
+                                                                </div>
+
+                                                                {!status && <div>
                                                                     <button
                                                                         className={day <= daysInMonth ? 'p-add' : ''}
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
@@ -337,10 +412,11 @@ function ViewAttendance({ year, month }) {
                                                                     >
                                                                         {day <= daysInMonth && <FaPlus />}
                                                                     </button>
-                                                                </div>
+                                                                </div>}
                                                             </td>
                                                         );
                                                     })}
+                                                    
                                                     <td className='hr-sticky-action3'>
                                                         25
                                                     </td>
@@ -357,7 +433,7 @@ function ViewAttendance({ year, month }) {
                                 ) : (
                                     <tbody>
                                         <tr>
-                                            <td colSpan="12" style={{ textAlign: "center" }}>
+                                            <td colSpan="36" style={{ textAlign: "center" }}>
                                                 <Nodata />
                                             </td>
                                         </tr>
@@ -472,7 +548,7 @@ function ViewAttendance({ year, month }) {
                                 ) : (
                                     <tbody>
                                         <tr>
-                                            <td colSpan="12" style={{ textAlign: "center" }}>
+                                            <td colSpan="36" style={{ textAlign: "center" }}>
                                                 <Nodata />
                                             </td>
                                         </tr>
@@ -573,7 +649,7 @@ function ViewAttendance({ year, month }) {
                         </div>
                     </div>
                 </DialogContent>
-                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime, status)}>
+                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                     Submit
                 </Button>
             </Dialog>

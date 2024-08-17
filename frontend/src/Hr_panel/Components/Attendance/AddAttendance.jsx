@@ -47,7 +47,7 @@ function AddAttendance({ year, month }) {
     const [department, setDepartment] = useState("");
     const [attendanceDate, setAttendanceDate] = useState(formattedDate);
     const [dayName, setDayName] = useState("");
-    const [inTime, setInTime] = useState("");
+    const [inTimeNow, setInTimeNow] = useState(null);
     const [outTime, setOutTime] = useState("");
     const [workingHours, setWorkingHours] = useState("");
     const [status, setStatus] = useState("");
@@ -139,6 +139,7 @@ function AddAttendance({ year, month }) {
         const hours = Math.floor(workingMinutes / 60);
         const minutes = workingMinutes % 60;
         return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
     };
 
     const fetchAttendance = async () => {
@@ -183,7 +184,6 @@ function AddAttendance({ year, month }) {
             console.log("Error fetching attendance record", error);
         }
     };
-
 
     useEffect(() => {
         fetchEmployees();
@@ -246,7 +246,7 @@ function AddAttendance({ year, month }) {
 
                                 const empAttendance = attendanceData[emp._id] || {};
                                 // console.log("Emp attendance is :", empAttendance);
-                                const { inTime = "", outTime = "", attendanceDate = formattedDate } = empAttendance;
+                                const { attendanceDate = formattedDate } = empAttendance;
                                 const currentYear = new Date().getFullYear();
                                 const currentMonth = new Date().toLocaleString('default', { month: 'long' });
                                 const currentDate = new Date().getDate();
@@ -258,6 +258,10 @@ function AddAttendance({ year, month }) {
                                     workingHours: "",
                                     status: ""
                                 };
+
+                                const inTime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
+                                const outTime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+
                                 // console.log("Emp attendance details :", attendanceDetails);
 
                                 // Calculate working hours only if both inTime and outTime are available
@@ -273,7 +277,7 @@ function AddAttendance({ year, month }) {
                                 } else if (workingMinutes <= 120) {
                                     status = "Leave";
                                 } else {
-                                    status = "Leave";
+                                    status = "";
                                 }
 
                                 return (
@@ -311,8 +315,9 @@ function AddAttendance({ year, month }) {
                                                 <input
                                                     type='time'
                                                     className='form-cantrol in-time'
-                                                    value={attendanceDetails.inTime || inTime}
-                                                    onChange={(e) => 
+                                                    // value={attendanceDetails.inTime || inTime}
+                                                    value={inTime}
+                                                    onChange={(e) =>
                                                         handleInputChange(emp._id, "inTime", e.target.value)
                                                     }
                                                 />
@@ -323,8 +328,9 @@ function AddAttendance({ year, month }) {
                                                 <input
                                                     type='time'
                                                     className='form-cantrol out-time'
-                                                    value={attendanceDetails.outTime || outTime}
-                                                    onChange={(e) => 
+                                                    // value={attendanceDetails.outTime || outTime}
+                                                    value={outTime}
+                                                    onChange={(e) =>
                                                         handleInputChange(emp._id, "outTime", e.target.value)
                                                     }
                                                 />
@@ -334,7 +340,10 @@ function AddAttendance({ year, month }) {
                                             {attendanceDetails.workingHours || workingHours !== "00:00" && workingHours}
                                         </td>
                                         <td>
-                                            <span className='badge badge-completed'>
+                                            <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
+                                                    (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
+                                                        (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : ""
+                                                }`}>
                                                 {attendanceDetails.status || status}
                                             </span>
                                         </td>
