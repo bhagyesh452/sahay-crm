@@ -3966,6 +3966,11 @@ border: 1px solid #ffefc6 !important;
 .badge-completed {
   background-color: #28a745;
 }
+
+.badge-half-day {
+  background-color: #2094c2;
+}
+
 .no_data_table
 {
   width: 100%;
