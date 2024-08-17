@@ -16,6 +16,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import io from 'socket.io-client';
 import { BsFilter } from "react-icons/bs";
+import StatusDropdownAdminExecutive from '../AdminExecutiveExtraComponents/StatusDropdownAdminExecutive';
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
 function AdminExecutiveGeneralPanel({ showFilter }) {
@@ -723,9 +724,9 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
 
                                         <td>{obj.serviceName}</td>
                                         <td>
-                                            {/* <div>
+                                            <div>
                                                 {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <StatusDropdown
+                                                    <StatusDropdownAdminExecutive
                                                         key={`${obj["Company Name"]}-${obj.serviceName}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
                                                         mainStatus={obj.mainCategoryStatus}
                                                         subStatus={obj.subCategoryStatus}
@@ -735,7 +736,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                                                         refreshData={refreshData}
                                                     />
                                                 )}
-                                            </div> */}
+                                            </div>
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
                                         <td>
