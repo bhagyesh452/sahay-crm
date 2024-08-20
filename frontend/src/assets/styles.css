@@ -2889,6 +2889,19 @@ td input {
     font-size: 10px;
     z-index: 2;
 }
+.btn_style_1
+{
+  border-radius: 4px;
+  box-shadow: 1px 1px 4px -3px #000;
+  margin: 3px;
+  padding: 6px 10px;
+}
+.btn_style_1_primary
+{
+  background: #fff4d5;
+  border: 1px solid #ffba00;
+  color: #d69c00;
+} 
 .action-btn
 {
   border: none;
