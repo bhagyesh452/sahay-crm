@@ -7,6 +7,8 @@ import ClipLoader from 'react-spinners/ClipLoader';
 function ShowAttendanceForParticularDate({ selectedDate, close }) {
 
     // console.log("Selected date is :", selectedDate);
+    
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const date = new Date(selectedDate);
     const currentDay = date.getDate();
@@ -26,7 +28,6 @@ function ShowAttendanceForParticularDate({ selectedDate, close }) {
     // console.log("Current month is :", currentMonth);
     // console.log("Current year is :", currentYear);
 
-    const secretKey = process.env.REACT_APP_SECRET_KEY;
 
     const [isLoading, setIsLoading] = useState(false);
     const [attendanceData, setAttendanceData] = useState([]);
