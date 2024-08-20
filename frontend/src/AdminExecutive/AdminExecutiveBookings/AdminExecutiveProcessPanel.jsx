@@ -56,8 +56,8 @@ function AdminExecutiveProcessPanel() {
                 const filteredData = servicesData
                     .filter(item => item.mainCategoryStatus === "Process")
                     .sort((a, b) => {
-                        const dateA = new Date(a.addedOn);
-                        const dateB = new Date(b.addedOn);
+                        const dateA = new Date(a.dateOfChangingMainStatus);
+                        const dateB = new Date(b.dateOfChangingMainStatus);
                         return dateB - dateA; // Sort in descending order
                     });
                 setRmServicesData(filteredData);
