@@ -64,6 +64,11 @@ function Attendance() {
         fetchPersonalInfo();
     }, []);
 
+    const [showBackButton, setshowBackButton] = useState(false)
+    const [showAddAttendanceNew, setShowAddAttendanceNew] = useState(false)
+
+    console.log("showattendance" , showAddAttendance)
+
     return (
         <div>
             <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
@@ -115,9 +120,15 @@ function Attendance() {
                                             <IoMdArrowRoundBack className='mr-1' /> Back
                                         </button>
                                     )}
-                                    {!showAddAttendance && <button type="button" className="btn mybtn" onClick={() => setShowAddAttendance(true)}>
+                                    {!showAddAttendance && !showBackButton &&
+                                    <button type="button" className="btn mybtn" onClick={() => setShowAddAttendance(true)}>
                                         <TiUserAddOutline className='mr-1' /> Add Attendance
-                                    </button>}
+                                    </button>
+                                    }
+                                    {showBackButton && 
+                                    <button type="button" className="btn mybtn" onClick={() => setShowAddAttendance(false)}>
+                                    <TiUserAddOutline className='mr-1' /> Back
+                                </button>}
                                 </div>
                             </div>
                         </div>
@@ -125,7 +136,7 @@ function Attendance() {
                 </div>
                 <div className="page-body m-0">
                     <div className="container-xl mt-2">
-                        {!showAddAttendance && <ViewAttendance year={selectedYear} month={selectedMonth} />}
+                        {(!showAddAttendance)&& <ViewAttendance year={selectedYear} month={selectedMonth} backButton={setshowBackButton} />}
                         {showAddAttendance && <AddAttendance year={selectedYear} month={selectedMonth} />}
                     </div>
                 </div>
