@@ -506,7 +506,7 @@ function AdminExecutiveDefaulterPanel() {
                                     <td>{obj["Company Email"]}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj.caNumber}</div>
+                                        <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
                                             <a
                                                 href={`https://wa.me/${obj.caNumber}`}
                                                 target="_blank"
