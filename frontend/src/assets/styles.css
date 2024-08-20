@@ -2934,6 +2934,10 @@ td input {
 {
   width: 2200px !important;
 }
+.admin_ex_table
+{
+  width: 2500px !important;
+}
 .rm_table_inprocess
 {
   width: 4214px!important

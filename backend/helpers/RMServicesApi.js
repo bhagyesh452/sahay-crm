@@ -2200,47 +2200,57 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
   const socketIO = req.io;
 
   try {
-    // Fetch the current record for validation
+    // Fetch the current records for validation
     const company = await RMCertificationModel.findOne({
       "Company Name": companyName,
       serviceName: serviceName
     });
 
-    if (!company) {
-      return res.status(400).json({ message: "Company or service not found" });
-    }
+    const AdminExecutiveCompany = await AdminExecutiveModel.findOne({
+      "Company Name": companyName,
+      serviceName: serviceName
+    });
 
-    // Validate that the pendingReceivedPayment does not exceed the total amount
-    const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
-    const currentReceivedPayment = company.pendingRecievedPayment || 0;
-
-    //console.log("totalAmount", totalAmount)
-    //console.log(currentReceivedPayment)
-
-    // if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
-    //   return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
+    // if (!company || !AdminExecutiveCompany) {
+    //   return res.status(400).json({ message: "Company or service not found" });
     // }
-    // Update the record if validation passes
+
+    // Update the RMCertificationModel record
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       { "Company Name": companyName, serviceName: serviceName },
-      { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
+      {
+        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+        pendingRecievedPaymentDate
+      },
       { new: true }
     );
 
-    console.log("updatedcompany" , updatedCompany)
-    if (!updatedCompany) {
-      return res.status(400).json({ message: "Failed to save the updated document" });
-    }
+    
+
+    // Update the AdminExecutiveModel record
+    const updatedCompanyAdminExecutive = await AdminExecutiveModel.findOneAndUpdate(
+      { "Company Name": companyName, serviceName: serviceName },
+      {
+        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+        pendingRecievedPaymentDate
+      },
+      { new: true }
+    );
+    console.log("updatedcompanyh" , updatedCompanyAdminExecutive)
+    // if (!updatedCompany || !updatedCompanyAdminExecutive) {
+    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // }
+
     // Emit socket event
     socketIO.emit('rm-recievedamount-updated');
-
     res.status(200).json({ message: "Pending Amount Added Successfully", data: updatedCompany });
 
   } catch (error) {
-    console.log("Error submitting remaining payment", error);
+    console.error("Error submitting remaining payment", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 router.get('/sectors', async (req, res) => {
   try {
