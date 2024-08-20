@@ -19,7 +19,7 @@ const DscTypeDropdown = ({
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   // Function to handle the dropdown item click
-  const handleStatusChange = async(newStatus, statusClass) => {
+  const handleStatusChange = async (newStatus, statusClass) => {
     setStatus(newStatus);
     setStatusClass(`${statusClass}-status`);
 
@@ -43,7 +43,7 @@ const DscTypeDropdown = ({
           serviceName,
           dscType: newStatus
         });
-      }  else if (mainStatus === "Hold") {
+      } else if (mainStatus === "Hold") {
         response = await axios.post(`${secretKey}/rm-services/update-dscType-adminexecutive`, {
           companyName,
           serviceName,
@@ -81,7 +81,7 @@ const DscTypeDropdown = ({
 
   return (
     <section className="rm_status_dropdown">
-      <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
+      {/* <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
@@ -120,7 +120,20 @@ const DscTypeDropdown = ({
             </a>
           </li>
         </ul>
-      </div>
+      </div> */}
+      <select
+        className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        aria-labelledby="dropdownMenuButton1"
+        onChange={(e) => handleStatusChange(e.target.value)}
+        value={status === "Not Applicable" ? "" : status}
+        //disabled={status === "Not Applicable"}
+      >
+        <option value="" disabled>Select DSC Type</option>
+        <option value="Only Signature">Only Signature</option>
+        <option value="Only Encryption">Only Encryption</option>
+        <option value="Combo">Combo</option>
+      </select>
     </section>
   );
 };

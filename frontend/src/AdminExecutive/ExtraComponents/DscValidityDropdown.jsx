@@ -81,7 +81,7 @@ const DscValidityDropdown = ({
 
   return (
     <section className="rm_status_dropdown">
-      <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
+      {/* <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
@@ -120,7 +120,19 @@ const DscValidityDropdown = ({
             </a>
           </li>
         </ul>
-      </div>
+      </div> */}
+       <select
+                className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                aria-labelledby="dropdownMenuButton1"
+                onChange={(e) => handleStatusChange(e.target.value)}
+                value={!status ? "" : status}
+            >
+                <option value="" disabled>Select DSC Validity</option>
+                <option value="1 Years">1 Years</option>
+                <option value="2 Years">2 Years</option>
+                <option value="3 Years">3 Years</option>
+            </select>
     </section>
   );
 };

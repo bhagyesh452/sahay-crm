@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -17,7 +17,7 @@ const DscExpanceReimbursement = ({
     const [expenseDateNew, setExpenseDateNew] = useState(expenseDate ? new Date(expenseDate).toISOString().substring(0, 10) : ""); // Format date for input
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    
+
     const handleStatusChange = async (newStatus, statusClass) => {
         setStatus(newStatus);
         setStatusClass(`${statusClass}-status`);
@@ -48,7 +48,7 @@ const DscExpanceReimbursement = ({
 
         const fullDateTime = selectedDate.toISOString(); // Full date-time string
         console.log("expensedate", fullDateTime);
-        
+
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-reimbursemntdate-adminexecutive`, {
                 cname,
@@ -65,60 +65,40 @@ const DscExpanceReimbursement = ({
 
     const getStatusClass = (status) => {
         switch (status) {
-          case "Unpaid":
-            return "untouched_status";
-          case "Paid":
-            return "cdbp-status";
-          default:
-            return "";
+            case "Unpaid":
+                return "untouched_status";
+            case "Paid":
+                return "cdbp-status";
+            default:
+                return "";
         }
-      };
-    
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         setStatusClass(getStatusClass(dscExpenseStatus));
-      }, [dscExpenseStatus]);
+    }, [dscExpenseStatus]);
 
 
     return (
         <section className="rm_status_dropdown d-flex align-items-center justify-content-around">
-            <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
-                <button
-                    className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
-                    type="button"
-                    id="dropdownMenuButton1"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    {!status ? "Select Expense Status" : status}
-                </button>
-                <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-                    <li>
-                        <span className="dropdown-item disabled" style={{ cursor: 'not-allowed' }}>
-                            Select Expense Status
-                        </span>
-                    </li>
-                    <li>
-                        <a className="dropdown-item"
-                            onClick={() =>
-                                handleStatusChange('Unpaid', 'untouched_status')} href="#"
-                        >
-                            Unpaid
-                        </a>
-                    </li>
-                    <li>
-                        <a className="dropdown-item"
-                            onClick={() =>
-                                handleStatusChange('Paid', 'cdbp-status')} href="#">
-                            Paid
-                        </a>
-                    </li>
-                </ul>
-            </div>
+
+            <select
+                className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                aria-labelledby="dropdownMenuButton1"
+                onChange={(e) => handleStatusChange(e.target.value)}
+                value={status}
+            >
+                <option value="" disabled>Select Expense Status</option>
+                <option value="Paid">Paid</option>
+                <option value="Unpaid">Unpaid</option>
+            </select>
+           <div className='ml-1 mr-1'>|</div>
             <div>
                 <input
                     value={expenseDateNew}
                     type='date'
-                    disabled={dscExpenseStatus !== "Paid"} 
+                    disabled={dscExpenseStatus !== "Paid"}
                     onChange={(e) => {
                         setExpenseDateNew(e.target.value);
                         handleSubmitExpenseDate(companyName, serviceName, e.target.value);
