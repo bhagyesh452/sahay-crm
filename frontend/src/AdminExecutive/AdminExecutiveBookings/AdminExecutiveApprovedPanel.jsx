@@ -503,7 +503,8 @@ function AdminExecutiveApprovedPanel() {
                                     <td>{obj["Company Email"]}</td>
                                     <td>
                                         <div className="d-flex align-items-center justify-content-center wApp">
-                                            <div>{obj.caNumber}</div>
+                                        <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
+
                                             <a
                                                 href={`https://wa.me/${obj.caNumber}`}
                                                 target="_blank"
@@ -608,10 +609,13 @@ function AdminExecutiveApprovedPanel() {
                                     <td>
                                         <DscExpanceReimbursement
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            expanseReimbursement={obj.expenseReimbursementStatus}
+                                            dscExpenseStatus={obj.expenseReimbursementStatus}
+                                            expenseDate={obj.expenseReimbursementDate}
                                         />
                                     </td>
                                     <td>
