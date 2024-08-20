@@ -83,7 +83,7 @@ const DscLetterStatusDropdown = ({
 
   return (
     <section className="rm_status_dropdown">
-      <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
+      {/* <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
         <button
           className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
           type="button"
@@ -129,7 +129,20 @@ const DscLetterStatusDropdown = ({
             </a>
           </li>
         </ul>
-      </div>
+      </div> */}
+       <select
+        className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        aria-labelledby="dropdownMenuButton1"
+        onChange={(e) => handleStatusChange(e.target.value)}
+        value={status === "Not Started" ? "" : status}
+      >
+        <option value="" disabled>Select Letter Status</option>
+        <option value="Draft Pending">Draft Pending</option>
+        <option value="Draft Sent">Draft Sent</option>
+        <option value="Letter Received">Letter Received</option>
+        <option value="Draft Done - Not Sent">Draft Done - Not Sent</option>
+      </select>
     </section>
   );
 };

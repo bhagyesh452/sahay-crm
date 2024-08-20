@@ -112,6 +112,10 @@ function ManagerBookings() {
     socket.on("Remaining_Payment_Added" , (res)=>{
       fetchRedesignedFormData();
     })
+
+    socket.on("rm-recievedamount-deleted" , (res)=>{
+      fetchRedesignedFormData();
+    })
    
 
     return () => {
@@ -150,14 +154,18 @@ function ManagerBookings() {
   }, [nowToFetch]);
 
   const [rmServicesData, setRmServicesData] = useState([])
+  const [adminExecutiveData, setAdminExecutiveData] = useState([])
 
   const fetchData = async () => {
 
     try {
 
       const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+      const ExecutiveDataResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`);
       const servicesData = servicesResponse.data;
+      const newservicesdata = ExecutiveDataResponse.data
       setRmServicesData(servicesData)
+      setAdminExecutiveData(newservicesdata)
 
     } catch (error) {
       console.error("Error fetching data", error.message);
@@ -474,6 +482,9 @@ function ManagerBookings() {
       return true;
     }
     const findCompany = rmServicesData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
+    const findCompanyAdmin = adminExecutiveData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
+    console.log("findCompany" , findCompanyAdmin)
+   
     console.log("findCompany", findCompany)
     if (!tempUpdateMode) {
       try {
@@ -486,7 +497,7 @@ function ManagerBookings() {
             },
           }
         );
-        if (findCompany) {
+        if (findCompany || findCompanyAdmin ) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
@@ -519,7 +530,7 @@ function ManagerBookings() {
             },
           }
         );
-        if (findCompany) {
+        if (findCompany || findCompanyAdmin) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
@@ -1246,7 +1257,7 @@ function ManagerBookings() {
                                           {obj.serviceName}{" "}
                                           {obj.withDSC &&
                                             obj.serviceName ===
-                                            "Start Up Certificate" &&
+                                            "Start-Up India Certificate" &&
                                             "With DSC"}
                                         </div>
                                       </div>
@@ -2577,7 +2588,7 @@ function ManagerBookings() {
                                               {obj.serviceName}{" "}
                                               {obj.withDSC &&
                                                 obj.serviceName ===
-                                                "Start Up Certificate" &&
+                                                "Start-Up India Certificate" &&
                                                 "With DSC"}
                                             </div>
                                           </div>

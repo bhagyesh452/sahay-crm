@@ -146,24 +146,6 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     dscValidity: {
         type: String,
     },
-    //   nswsMailId:{
-    //     type:String
-    //   },
-    //   nswsPaswsord:{
-    //     type:String
-    //   },
-    //   websiteLink:{
-    //     type:String
-    //   },
-    //   companyBriefing:{
-    //     type:String,
-    //   },
-    //   industry:{
-    //     type:String
-    //   },
-    //   sector:{
-    //     type:String
-    //   },
     portalCharges: {
         type: Number
     },
@@ -172,6 +154,9 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     },
     expenseReimbursementStatus: {
         type: String
+    },
+    expenseReimbursementDate: {
+        type: Date
     },
     lastActionDate: {
         type: Date,
@@ -201,18 +186,6 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     courierStatus:{
         type:String
     },
-    // SecondTimeSubmitDate: {
-    //     type: Date,
-    // },
-    // ThirdTimeSubmitDate: {
-    //     type: Date
-    // },
-    // lastAttemptSubmitted: {
-    //     type: String,
-    // },
-    // isIndustryEnabled: {
-    //     type: Boolean,
-    // }
 });
 
 const AdminExecutiveModel = mongoose.model("AdminExecutiveModel", AdminExecutiveServicesSchema)

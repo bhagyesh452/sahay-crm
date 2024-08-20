@@ -21,7 +21,9 @@ const StatusDropdown = ({
   writername,
   designername,
   contentStatus,
-  brochureStatus
+  brochureStatus,
+  letterStatus,
+  dscStatus
 }) => {
   const [status, setStatus] = useState(subStatus);
   const [statusClass, setStatusClass] = useState("");
@@ -142,7 +144,9 @@ const StatusDropdown = ({
           const conditions = {
             industryAndSector: serviceName === "Start-Up India Certificate" && !industry && !sector,
             contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
-            brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved")
+            brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved"),
+            letterStatus:letterStatus && letterStatus !== "Letter Received",
+            dscStatus:dscStatus && dscStatus !== "Approved"
           };
           const messages = [];
 
@@ -157,6 +161,12 @@ const StatusDropdown = ({
 
           if (conditions.brochureStatus) {
             messages.push("Brochure status must be Completed or Approved");
+          }
+          if(conditions.letterStatus){
+            messages.push("DSC Letter Status must be received !")
+          }
+          if(conditions.dscStatus){
+            messages.push("DSC Status must be approved!")
           }
           if (messages.length > 0) {
             const title = "Error";

@@ -631,12 +631,13 @@ function AdminExecutiveProcessPanel() {
                                     <td>
                                         <DscExpanceReimbursement
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
                                             companyName={obj["Company Name"]}
                                             serviceName={obj.serviceName}
                                             refreshData={refreshData}
-                                            expanseReimbursement={obj.expenseReimbursementStatus}
-                                            mainStatus={obj.mainCategoryStatus}
-                                            subStatus={obj.subCategoryStatus}
+                                            dscExpenseStatus={obj.expenseReimbursementStatus}
+                                            expenseDate={obj.expenseReimbursementDate}
                                         />
                                     </td>
                                     <td>

@@ -1655,7 +1655,7 @@ router.post(`/post-save-portalchargespaidvia-adminexecutive/`, async (req, res) 
 });
 
 router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
-  const { companyName, serviceName, reimbursemnt } = req.body;
+  const { companyName, serviceName, expenseReimbursementStatus } = req.body;
   //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
@@ -1665,7 +1665,7 @@ router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        expenseReimbursementStatus: reimbursemnt
+        expenseReimbursementStatus: expenseReimbursementStatus
       },
       { new: true }
     )
@@ -1677,6 +1677,35 @@ router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
     //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-save-reimbursemntdate-adminexecutive/`, async (req, res) => {
+  const { cname, sname, value } = req.body;
+  console.log("date" , value)
+  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
+  const socketIO = req.io;
+  try {
+    const company = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: cname,
+        serviceName: sname
+      },
+      {
+        expenseReimbursementDate: new Date(value)
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
     res.status(200).json({ message: "Document updated successfully", data: company });
 
   } catch (error) {
@@ -2171,47 +2200,57 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
   const socketIO = req.io;
 
   try {
-    // Fetch the current record for validation
+    // Fetch the current records for validation
     const company = await RMCertificationModel.findOne({
       "Company Name": companyName,
       serviceName: serviceName
     });
 
-    if (!company) {
-      return res.status(400).json({ message: "Company or service not found" });
-    }
+    const AdminExecutiveCompany = await AdminExecutiveModel.findOne({
+      "Company Name": companyName,
+      serviceName: serviceName
+    });
 
-    // Validate that the pendingReceivedPayment does not exceed the total amount
-    const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
-    const currentReceivedPayment = company.pendingRecievedPayment || 0;
-
-    //console.log("totalAmount", totalAmount)
-    //console.log(currentReceivedPayment)
-
-    // if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
-    //   return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
+    // if (!company || !AdminExecutiveCompany) {
+    //   return res.status(400).json({ message: "Company or service not found" });
     // }
-    // Update the record if validation passes
+
+    // Update the RMCertificationModel record
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       { "Company Name": companyName, serviceName: serviceName },
-      { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
+      {
+        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+        pendingRecievedPaymentDate
+      },
       { new: true }
     );
 
-    console.log("updatedcompany" , updatedCompany)
-    if (!updatedCompany) {
-      return res.status(400).json({ message: "Failed to save the updated document" });
-    }
+    
+
+    // Update the AdminExecutiveModel record
+    const updatedCompanyAdminExecutive = await AdminExecutiveModel.findOneAndUpdate(
+      { "Company Name": companyName, serviceName: serviceName },
+      {
+        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+        pendingRecievedPaymentDate
+      },
+      { new: true }
+    );
+    console.log("updatedcompanyh" , updatedCompanyAdminExecutive)
+    // if (!updatedCompany || !updatedCompanyAdminExecutive) {
+    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // }
+
     // Emit socket event
     socketIO.emit('rm-recievedamount-updated');
-
     res.status(200).json({ message: "Pending Amount Added Successfully", data: updatedCompany });
 
   } catch (error) {
-    console.log("Error submitting remaining payment", error);
+    console.error("Error submitting remaining payment", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 router.get('/sectors', async (req, res) => {
   try {

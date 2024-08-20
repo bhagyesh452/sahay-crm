@@ -562,17 +562,17 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['dscStatus'] = el}>
-                                                Letter Status
+                                            <div ref={el => fieldRefs.current['withDSC'] = el}>
+                                                DSC Applicable
                                             </div>
-
-                                            <div className='RM_filter_icon'>
-                                                <BsFilter
-                                                    onClick={() => handleFilterClick("dscStatus")}
-                                                />
-                                            </div>
+                                            
+                                                <div className='RM_filter_icon'>
+                                                    <BsFilter
+                                                        onClick={() => handleFilterClick("withDSC")}
+                                                    />
+                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
+                                            {/* {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"
@@ -591,17 +591,17 @@ function RmofCertificationReadyToSubmitPanel({ showFilter }) {
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['withDSC'] = el}>
-                                                DSC Applicable
+                                            <div ref={el => fieldRefs.current['dscStatus'] = el}>
+                                                Letter Status
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("withDSC")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("dscStatus")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'withDSC' && (
+                                            {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"

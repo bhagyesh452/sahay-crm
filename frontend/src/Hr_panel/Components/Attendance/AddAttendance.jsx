@@ -67,12 +67,35 @@ function AddAttendance({ year, month }) {
         }
     };
 
+    // const handleInputChange = (empId, field, value) => {
+    //     setAttendanceData(prevState => ({
+    //         ...prevState,
+    //         [empId]: {
+    //             ...prevState[empId],
+    //             [field]: value,
+    //         }
+    //     }));
+    // };
+
     const handleInputChange = (empId, field, value) => {
+        // Parse the year and month from the date input if the field is attendanceDate
+        let newYear = year;
+        let newMonth = month;
+    
+        if (field === 'attendanceDate') {
+            const dateParts = value.split('-');
+            if (dateParts.length === 3) {
+                newYear = dateParts[0];
+                newMonth = new Date(value).toLocaleString('default', { month: 'long' });
+            }
+        }
+    
         setAttendanceData(prevState => ({
             ...prevState,
             [empId]: {
                 ...prevState[empId],
                 [field]: value,
+                ...(field === 'attendanceDate' && { currentYear: newYear, currentMonth: newMonth })
             }
         }));
     };
@@ -246,9 +269,10 @@ function AddAttendance({ year, month }) {
 
                                 const empAttendance = attendanceData[emp._id] || {};
                                 // console.log("Emp attendance is :", empAttendance);
-                                const { attendanceDate = formattedDate } = empAttendance;
-                                const currentYear = new Date().getFullYear();
-                                const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+                                
+                                const attendanceDate = empAttendance.attendanceDate || formattedDate;
+                                const currentYear = empAttendance.currentYear || year; // Use year prop or stored value
+                                const currentMonth = empAttendance.currentMonth || month; // Use month prop or stored value
                                 const currentDate = new Date().getDate();
                                 const myDate = new Date(attendanceDate).getDate();
 
@@ -341,8 +365,8 @@ function AddAttendance({ year, month }) {
                                         </td>
                                         <td>
                                             <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
-                                                    (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
-                                                        (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : ""
+                                                (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
+                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : ""
                                                 }`}>
                                                 {attendanceDetails.status || status}
                                             </span>

@@ -1100,6 +1100,8 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                                         brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                         industry={obj.industry}
                                                         sector={obj.sector}
+                                                        letterStatus={obj.letterStatus}
+                                                        dscStatus={obj.dscStatus}
 
                                                     />
                                                 )}
