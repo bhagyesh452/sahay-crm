@@ -85,21 +85,21 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
             fetchData()
         });
 
-        // socket.on("rm-recievedamount-updated", (res) => {
-        //     fetchData()
-        // });
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
 
-        // socket.on("rm-recievedamount-deleted", (res) => {
-        //     fetchData()
-        // });
+        socket.on("rm-recievedamount-deleted", (res) => {
+            fetchData()
+        });
 
         // socket.on("booking-deleted", (res) => {
         //     fetchData()
         // });
 
-        // socket.on("booking-updated", (res) => {
-        //     fetchData()
-        // });
+        socket.on("booking-updated", (res) => {
+            fetchData()
+        });
 
 
         return () => {
@@ -297,7 +297,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                         </Backdrop>
                     )}
                     {rmServicesData.length > 0 ? (
-                        <table className="table table-vcenter table-nowrap rm_table">
+                        <table className="table table-vcenter table-nowrap admin_ex_table">
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="G_rm-sticky-left-1">
