@@ -93,9 +93,9 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
             fetchData()
         });
 
-        // socket.on("booking-deleted", (res) => {
-        //     fetchData()
-        // });
+        socket.on("booking-deleted", (res) => {
+            fetchData()
+        });
 
         socket.on("booking-updated", (res) => {
             fetchData()
