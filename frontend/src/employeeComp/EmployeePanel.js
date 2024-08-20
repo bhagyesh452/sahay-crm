@@ -585,9 +585,9 @@ function EmployeePanel() {
   const fetchNewData = async (status) => {
     const cleanString = (str) => {
       return str.replace(/\u00A0/g, ' ').trim();
-  };
+    };
 
-  const cleanedEname = cleanString(data.ename);
+    const cleanedEname = cleanString(data.ename);
 
     try {
       if (!status) {
@@ -3054,7 +3054,14 @@ function EmployeePanel() {
   return (
     <div>
       {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
-      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <Header
+        id={data._id}
+        name={data.ename}
+        empProfile={data.profilePhoto &&
+          data.profilePhoto.length !== 0 &&
+          data.profilePhoto[0].filename}
+        gender={data.gender}
+        designation={data.newDesignation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {/* Dialog box for Request Data */}
 
