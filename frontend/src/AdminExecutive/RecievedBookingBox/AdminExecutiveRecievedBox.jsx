@@ -177,43 +177,169 @@ function AdminExecutiveRecievedBox() {
     const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
+    // const fetchRedesignedFormData = async (page) => {
+    //     const today = new Date("2024-04-09");
+    //     today.setHours(0, 0, 0, 0); // Set to start of today
+    //     const parseDate = (dateString) => {
+    //         // If date is in "YYYY-MM-DD" format, convert it to a Date object
+    //         if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    //             return new Date(dateString);
+    //         }
+
+    //         // Otherwise, parse the date string with a Date object
+    //         return new Date(dateString);
+    //     };
+    //     setOpenBacdrop(true)
+    //     try {
+    //         const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
+    //         const data = response.data;
+
+    //         // Filter and sort data based on lastActionDate
+    //         const filteredAndSortedData = data
+    //             .filter(obj => {
+    //                 //const lastActionDate = new Date(item.lastActionDate);
+    //                 const mainBookingDate = parseDate(obj.bookingDate);
+    //                 mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+    //                 // Check if any of the moreBookings dates are >= today
+    //                 const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
+    //                     const bookingDate = parseDate(booking.bookingDate);
+    //                     bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+    //                     return bookingDate >= today;
+    //                 });
+
+    //                 // Log the condition results
+
+    //                 // Check if the main booking date or any moreBookings date is >= today
+    //                 const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
+
+    //                 // Return true if date is valid and visible to RM
+    //                 return isDateValid && (obj.isVisibleToAdminExecutive !== false && obj.permanentlDeleteFromAdminExecutive !== true);
+    //             })
+    //             .sort((a, b) => {
+    //                 const dateA = new Date(a.lastActionDate);
+    //                 const dateB = new Date(b.lastActionDate);
+    //                 return dateB - dateA; // Sort in descending order
+    //             });
+
+    //         // Process each document to combine services and filter them
+    //         const processedData = filteredAndSortedData.map(item => {
+    //             // Combine servicesTakenByRmOfCertification and rmservicestaken for each document
+    //             const combinedServices = [
+    //                 ...(item.servicesTakenByAdminExecutive || []),
+    //                 ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByAdminExecutive || [])
+    //             ];
+
+    //             // Remove duplicates
+    //             const uniqueServices = [...new Set(combinedServices)];
+
+    //             return {
+    //                 ...item,
+    //                 combinedServices: uniqueServices // Add combined services to the document
+    //             };
+    //         });
+
+    //         // Create an array of filtered service names for each document
+    //         const filteredServicesData = filteredAndSortedData.map(item => {
+    //             // Extract primary services
+    //             const primaryServices = item.services || [];
+
+    //             // Combine services from moreBookings
+    //             const moreBookingServices = item.moreBookings
+    //                 ? item.moreBookings.flatMap((booking) => booking.services || [])
+    //                 : [];
+
+    //             // Combine services
+    //             const combinedServices = [
+    //                 ...primaryServices,
+    //                 ...moreBookingServices
+    //             ];
+
+    //             // Filter services based on certificationLabels
+    //             const filteredServices = combinedServices.filter((service) =>
+    //                 (certificationLabels.includes(service.serviceName))
+    //             );
+               
+
+    //             // Map through the filtered services to get service names
+    //             return filteredServices.map((service) => service.serviceName);
+    //         });
+
+    //         // Find companies that do not match the filteredServices
+    //         const nonMatchingCompanies = processedData.filter((item, index) => {
+    //             // Find the filtered services for the same index
+    //             const filteredServiceNames = filteredServicesData[index];
+                
+    //             const noCertificationServices = !(
+    //                 item.servicesTakenByAdminExecutive && item.servicesTakenByAdminExecutive.length > 0 ||
+    //                 (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByAdminExecutive && booking.servicesTakenByAdminExecutive.length > 0))
+    //             );
+
+    //             // Compare combinedServices with filteredServiceNames
+    //             return !(item.combinedServices.length === filteredServiceNames.length &&
+    //                 item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;;
+    //         });
+
+    //         const completeData = response.data
+    //             .sort((a, b) => {
+    //                 const dateA = new Date(a.lastActionDate);
+    //                 const dateB = new Date(b.lastActionDate);
+    //                 return dateB - dateA; // Sort in descending order
+    //             });
+
+    //         // Log or use the non-matching data
+    //         //console.log("Non-Matching Companies:", nonMatchingCompanies);
+
+    //         // Set state or use non-matching data as needed
+    //         setLeadFormData(nonMatchingCompanies);
+    //         setRedesignedData(nonMatchingCompanies);
+    //         setCompleteRedesignedData(completeData);
+    //     } catch (error) {
+    //         console.error("Error fetching data:", error.message);
+    //     } finally {
+    //         setOpenBacdrop(false)
+    //     }
+    // };
+
     const fetchRedesignedFormData = async (page) => {
         const today = new Date("2024-04-09");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
-            // If date is in "YYYY-MM-DD" format, convert it to a Date object
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
                 return new Date(dateString);
             }
-
-            // Otherwise, parse the date string with a Date object
             return new Date(dateString);
         };
-        setOpenBacdrop(true)
+    
+        setOpenBacdrop(true);
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
-
-            // Filter and sort data based on lastActionDate
-            const filteredAndSortedData = data
+    
+            // Filter out documents where shouldDisableButton condition is true
+            const validDocuments = data.filter(obj => {
+                const shouldDisableButton = ![
+                    ...(obj.services || []),
+                    ...(obj.moreBookings || []).flatMap(booking => booking.services || [])
+                ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
+                
+                return !shouldDisableButton; // Exclude documents where shouldDisableButton is true
+            });
+    
+            // Filter and sort valid documents based on lastActionDate
+            const filteredAndSortedData = validDocuments
                 .filter(obj => {
-                    //const lastActionDate = new Date(item.lastActionDate);
                     const mainBookingDate = parseDate(obj.bookingDate);
                     mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-
-                    // Check if any of the moreBookings dates are >= today
+    
                     const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
                         const bookingDate = parseDate(booking.bookingDate);
                         bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
                         return bookingDate >= today;
                     });
-
-                    // Log the condition results
-
-                    // Check if the main booking date or any moreBookings date is >= today
+    
                     const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
-
-                    // Return true if date is valid and visible to RM
+    
                     return isDateValid && (obj.isVisibleToAdminExecutive !== false && obj.permanentlDeleteFromAdminExecutive !== true);
                 })
                 .sort((a, b) => {
@@ -221,86 +347,68 @@ function AdminExecutiveRecievedBox() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-
-            // Process each document to combine services and filter them
+    
             const processedData = filteredAndSortedData.map(item => {
-                // Combine servicesTakenByRmOfCertification and rmservicestaken for each document
                 const combinedServices = [
                     ...(item.servicesTakenByAdminExecutive || []),
                     ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByAdminExecutive || [])
                 ];
-
-                // Remove duplicates
+    
                 const uniqueServices = [...new Set(combinedServices)];
-
+    
                 return {
                     ...item,
-                    combinedServices: uniqueServices // Add combined services to the document
+                    combinedServices: uniqueServices
                 };
             });
-
-            // Create an array of filtered service names for each document
+    
             const filteredServicesData = filteredAndSortedData.map(item => {
-                // Extract primary services
                 const primaryServices = item.services || [];
-
-                // Combine services from moreBookings
                 const moreBookingServices = item.moreBookings
                     ? item.moreBookings.flatMap((booking) => booking.services || [])
                     : [];
-
-                // Combine services
+    
                 const combinedServices = [
                     ...primaryServices,
                     ...moreBookingServices
                 ];
-
-                // Filter services based on certificationLabels
+    
                 const filteredServices = combinedServices.filter((service) =>
                     (certificationLabels.includes(service.serviceName))
                 );
-               
-
-                // Map through the filtered services to get service names
+    
                 return filteredServices.map((service) => service.serviceName);
             });
-
-            // Find companies that do not match the filteredServices
+    
             const nonMatchingCompanies = processedData.filter((item, index) => {
-                // Find the filtered services for the same index
                 const filteredServiceNames = filteredServicesData[index];
-                
+    
                 const noCertificationServices = !(
                     item.servicesTakenByAdminExecutive && item.servicesTakenByAdminExecutive.length > 0 ||
                     (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByAdminExecutive && booking.servicesTakenByAdminExecutive.length > 0))
                 );
-
-                // Compare combinedServices with filteredServiceNames
+    
                 return !(item.combinedServices.length === filteredServiceNames.length &&
-                    item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;;
+                    item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;
             });
-
+    
             const completeData = response.data
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
-                    return dateB - dateA; // Sort in descending order
+                    return dateB - dateA;
                 });
-
-            // Log or use the non-matching data
-            //console.log("Non-Matching Companies:", nonMatchingCompanies);
-
-            // Set state or use non-matching data as needed
+    
             setLeadFormData(nonMatchingCompanies);
             setRedesignedData(nonMatchingCompanies);
             setCompleteRedesignedData(completeData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         } finally {
-            setOpenBacdrop(false)
+            setOpenBacdrop(false);
         }
     };
-
+    
     console.log("leadformdata", leadFormData)
 
 
@@ -1016,7 +1124,9 @@ function AdminExecutiveRecievedBox() {
                                                             [
                                                                 ...obj.services,
                                                                 ...(obj.moreBookings || []).flatMap(booking => booking.services)
-                                                            ].map((service, index) => {
+                                                            ].filter(service => 
+                                                                certificationLabels.some(label => service.serviceName.includes(label))
+                                                            ).map((service, index) => {
                                                                 // Check if the service is in servicesTakenByRmOfCertification
                                                                 const isInMainServices = obj.servicesTakenByAdminExecutive &&
                                                                     obj.servicesTakenByAdminExecutive.includes(service.serviceName);

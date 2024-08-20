@@ -1655,7 +1655,7 @@ router.post(`/post-save-portalchargespaidvia-adminexecutive/`, async (req, res) 
 });
 
 router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
-  const { companyName, serviceName, reimbursemnt } = req.body;
+  const { companyName, serviceName, expenseReimbursementStatus } = req.body;
   //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
@@ -1665,7 +1665,7 @@ router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        expenseReimbursementStatus: reimbursemnt
+        expenseReimbursementStatus: expenseReimbursementStatus
       },
       { new: true }
     )
@@ -1677,6 +1677,35 @@ router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
     //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-save-reimbursemntdate-adminexecutive/`, async (req, res) => {
+  const { cname, sname, value } = req.body;
+  console.log("date" , value)
+  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
+  const socketIO = req.io;
+  try {
+    const company = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: cname,
+        serviceName: sname
+      },
+      {
+        expenseReimbursementDate: new Date(value)
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
     res.status(200).json({ message: "Document updated successfully", data: company });
 
   } catch (error) {

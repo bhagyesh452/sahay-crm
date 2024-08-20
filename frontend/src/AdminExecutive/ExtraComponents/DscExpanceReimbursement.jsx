@@ -1,107 +1,132 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
-import { Button, Dialog, DialogContent, DialogTitle, IconButton,DialogActions } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
-import { FaPencilAlt } from "react-icons/fa";
+const DscExpanceReimbursement = ({
+    companyName,
+    serviceName,
+    expanseReimbursement,
+    refreshData,
+    mainStatus,
+    subStatus,
+    dscExpenseStatus,
+    expenseDate }) => {
 
-const DscExpanceReimbursement = ({ companyName, serviceName, expanseReimbursement ,refreshData , mainStatus ,subStatus}) => {
-    const [reimbursemnt, setReimbursement] = useState(expanseReimbursement);
+    const [status, setStatus] = useState(dscExpenseStatus);
+    const [statusClass, setStatusClass] = useState('created-status');
+    const [expenseDateNew, setExpenseDateNew] = useState(expenseDate ? new Date(expenseDate).toISOString().substring(0, 10) : ""); // Format date for input
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [openEmailPopup, setOpenEmailPopup] = useState(false);
+    
+    const handleStatusChange = async (newStatus, statusClass) => {
+        setStatus(newStatus);
+        setStatusClass(`${statusClass}-status`);
 
-    const handleSubmitExpanseReimbursement = async () => {
         try {
             const response = await axios.post(`${secretKey}/rm-services/post-save-reimbursemnt-adminexecutive`, {
                 companyName,
                 serviceName,
-                reimbursemnt
+                expenseReimbursementStatus: newStatus
             });
-            if (response.status === 200) {
-                // Swal.fire(
-                //     'Email Added!',
-                //     'The email has been successfully added.',
-                //     'success'
-                // );
-                refreshData();
-                setOpenEmailPopup(false); // Close the popup on success
-            }
+
+            refreshData();
+            console.log("Status updated successfully:", response.data);
         } catch (error) {
-            console.error("Error saving email:", error.message); // Log only the error message
+            console.error("Error updating status:", error.message);
         }
     };
 
-    const handleCloseEmailPopUp = () => {
-              setOpenEmailPopup(false)
+    const handleSubmitExpenseDate = async (cname, sname, value) => {
+        const selectedDate = new Date(value); // The date selected by the user
+        const currentTime = new Date(); // Current time
+
+        // Combine the selected date with the current time
+        selectedDate.setHours(currentTime.getHours());
+        selectedDate.setMinutes(currentTime.getMinutes());
+        selectedDate.setSeconds(currentTime.getSeconds());
+        selectedDate.setMilliseconds(currentTime.getMilliseconds());
+
+        const fullDateTime = selectedDate.toISOString(); // Full date-time string
+        console.log("expensedate", fullDateTime);
+        
+        try {
+            const response = await axios.post(`${secretKey}/rm-services/post-save-reimbursemntdate-adminexecutive`, {
+                cname,
+                sname,
+                value: fullDateTime
+            });
+            if (response.status === 200) {
+                refreshData();
+            }
+        } catch (error) {
+            console.error("Error saving expense date:", error.message);
+        }
     };
 
-    console.log("subSstaus" , subStatus)
+    const getStatusClass = (status) => {
+        switch (status) {
+          case "Unpaid":
+            return "untouched_status";
+          case "Paid":
+            return "cdbp-status";
+          default:
+            return "";
+        }
+      };
+    
+      useEffect(() => {
+        setStatusClass(getStatusClass(dscExpenseStatus));
+      }, [dscExpenseStatus]);
+
 
     return (
-        <div>
-             <div className={'d-flex align-items-center justify-content-between'}>
-            <div
-                className="My_Text_Wrap"
-                title={expanseReimbursement}
-            >
-                {!expanseReimbursement ? "Enter Expanse Reimbursement" : expanseReimbursement}
+        <section className="rm_status_dropdown d-flex align-items-center justify-content-around">
+            <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
+                <button
+                    className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
+                    type="button"
+                    id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    {!status ? "Select Expense Status" : status}
+                </button>
+                <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+                    <li>
+                        <span className="dropdown-item disabled" style={{ cursor: 'not-allowed' }}>
+                            Select Expense Status
+                        </span>
+                    </li>
+                    <li>
+                        <a className="dropdown-item"
+                            onClick={() =>
+                                handleStatusChange('Unpaid', 'untouched_status')} href="#"
+                        >
+                            Unpaid
+                        </a>
+                    </li>
+                    <li>
+                        <a className="dropdown-item"
+                            onClick={() =>
+                                handleStatusChange('Paid', 'cdbp-status')} href="#">
+                            Paid
+                        </a>
+                    </li>
+                </ul>
             </div>
-           
-              <button className={'td_add_remarks_btn ml-1'}
-                onClick={() => {
-                   
-                    setOpenEmailPopup(true)
-                }}
-            >
-                <FaPencilAlt/>
-            </button>
+            <div>
+                <input
+                    value={expenseDateNew}
+                    type='date'
+                    disabled={dscExpenseStatus !== "Paid"} 
+                    onChange={(e) => {
+                        setExpenseDateNew(e.target.value);
+                        handleSubmitExpenseDate(companyName, serviceName, e.target.value);
+                    }}
+                />
             </div>
-          
-            <Dialog
-                className='My_Mat_Dialog'
-                open={openEmailPopup}
-                onClose={handleCloseEmailPopUp}
-                fullWidth
-                maxWidth="xs"
-            >
-                <DialogTitle>
-                <h3 className='m-0'>{companyName}</h3>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="card-footer">
-                        <div className="remarks-input">
-                            <input
-                                type='email'
-                                placeholder="Enter NSWS Email Address"
-                                className="form-control"
-                                value={reimbursemnt}
-                                onChange={(e) => setReimbursement(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-                <DialogActions className='p-0'>
-                    <Button onClick={handleCloseEmailPopUp}
-                        variant="contained"
-                        color="error"
-                        style={{ width: "100%",borderRadius:"0px" }} className='m-0'>Close</Button>
-                    
-                    <Button
-                        onClick={handleSubmitExpanseReimbursement}
-                        variant="contained"
-                        color="primary"
-                        style={{ width: "100%",borderRadius:"0px" }}
-                        className='m-0'
-                    >
-                        Submit
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-
+        </section>
     );
 };
 
 export default DscExpanceReimbursement;
-
