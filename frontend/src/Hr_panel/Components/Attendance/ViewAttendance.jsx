@@ -7,18 +7,17 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FaRegCalendarPlus } from "react-icons/fa6";
-import { LuMailPlus } from "react-icons/lu";
 import Swal from 'sweetalert2';
-import { HiMiniViewfinderCircle } from "react-icons/hi2";
 import Nodata from '../../../components/Nodata';
 import ShowAttendanceForParticularDate from './ShowAttendanceForParticularDate';
+import ShowAttendanceForParticularEmployee from './ShowAttendanceForParticularEmployee';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
 
-function ViewAttendance({ year, month , backButton }) {
+function ViewAttendance({ year, month }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -64,6 +63,9 @@ function ViewAttendance({ year, month , backButton }) {
     const [sindhuBhawanBranchEmployees, setSindhuBhawanBranchEmployees] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
     const [showAttendanceForParticularDate, setShowAttendanceForParticularDate] = useState(false);
+    const [showAttendanceForParticularEmployee, setShowAttendanceForParticularEmployee] = useState(false);
+    const [disableInTime, setDisableInTime] = useState(false);
+    const [disableOutTime, setDisableOutTime] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
 
     const [id, setId] = useState("");
@@ -91,6 +93,16 @@ function ViewAttendance({ year, month , backButton }) {
         setShowAttendanceForParticularDate(false);
     }
 
+    const handleShowParticularEmployeeAttendance = (id, name) => {
+        setShowAttendanceForParticularEmployee(true);
+        setId(id);
+        setEmpName(name);
+    }
+
+    const handleCloseParticularEmployeeAttendance = () => {
+        setShowAttendanceForParticularEmployee(false);
+    }
+
     const fetchEmployees = async () => {
         try {
             setIsLoading(true);
@@ -112,7 +124,7 @@ function ViewAttendance({ year, month , backButton }) {
         setOutTimeError("");
     };
 
-    const handleDayClick = (day, id, empName, empId, designation, department, branch) => {
+    const handleDayClick = (day, id, empName, empId, designation, department, branch, intime, outtime) => {
 
         // Format the date as "DD-MM-YYYY"
         const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
@@ -123,12 +135,26 @@ function ViewAttendance({ year, month , backButton }) {
         setShowPopup(true);
         setId(id);
         setEmpName(empName);
+        setInTime(intime);
+        setOutTime(outtime);
         setEmployeeId(empId);
         setAttendanceDate(formattedDate);
         setDesignation(designation);
         setDepartment(department);
         setBranchOffice(branch);
         setDayName(dayName);
+
+        const attendanceDetails = attendanceData[id]?.[year]?.[month]?.[day] || {};
+    const status = attendanceDetails.status || "";
+
+    // Disable In Time and Out Time based on status
+    if (status === "Present" || status === "Leave" || status === "Half Day") {
+        setDisableInTime(true);
+        setDisableOutTime(true);
+    } else {
+        setDisableInTime(false);
+        setDisableOutTime(false);
+    }
 
         // console.log("Attendance date is :", formattedDate);
         // console.log("Day name is :", dayName);
@@ -214,6 +240,8 @@ function ViewAttendance({ year, month , backButton }) {
         setOutTime("");
         setInTimeError("");
         setOutTimeError("");
+        setDisableInTime(true);
+        setDisableOutTime(true);
 
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
@@ -357,9 +385,8 @@ function ViewAttendance({ year, month , backButton }) {
                                                             {getDayLabel(day)}
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
-                                                            <FaRegCalendarPlus onClick={() => {
-                                                                backButton(true)
-                                                                handleCalendarIconClick(fullDate)}} />
+                                                            <FaRegCalendarPlus onClick={() =>
+                                                                handleCalendarIconClick(fullDate)} />
                                                         </div>
                                                     </div>
                                                 </th>
@@ -414,7 +441,7 @@ function ViewAttendance({ year, month , backButton }) {
                                                             <div className="tbl-pro-img">
                                                                 <img src={profilePhotoUrl} alt="Profile" className="profile-photo" />
                                                             </div>
-                                                            <div className="">
+                                                            <div onClick={() => handleShowParticularEmployeeAttendance(emp._id, emp.ename)} className="cursor-pointer">
                                                                 {emp.ename}
                                                             </div>
                                                         </div>
@@ -449,15 +476,19 @@ function ViewAttendance({ year, month , backButton }) {
                                                         // console.log("Emp attendance details :", attendanceDetails);
 
                                                         const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
-                                                        // Determine if the button should be disabled
+                                                        const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
+                                                        const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
 
                                                         return (
                                                             <td key={day}>
-                                                                <div className={`
+                                                                <div
+                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                    className={`
                                                                     ${status === "Present" ? "p-present" : ""}
                                                                     ${status === "Half Day" ? "H-Halfday" : ""}
                                                                     ${status === "Leave" ? "l-leave" : ""}
                                                                     `.trim()}>
+
                                                                     {status === "Present" ? "P" :
                                                                         status === "Half Day" ? "H" :
                                                                             status === "Leave" ? "L" : ""}
@@ -580,7 +611,9 @@ function ViewAttendance({ year, month , backButton }) {
                                                                 <img src={profilePhotoUrl} alt="Profile" className="profile-photo" />
                                                             </div>
                                                             <div className="d-flex align-items-center justify-content-center">
-                                                                <div>{emp.ename}</div>
+                                                                <div onClick={() => handleShowParticularEmployeeAttendance(emp._id, emp.ename)} className="cursor-pointer">
+                                                                    {emp.ename}
+                                                                </div>
                                                                 {/* <div>
                                                                     <LuMailPlus />
                                                                 </div> */}
@@ -617,11 +650,14 @@ function ViewAttendance({ year, month , backButton }) {
                                                         // console.log("Emp attendance details :", attendanceDetails);
 
                                                         const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
-                                                        // Determine if the button should be disabled
+                                                        const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
+                                                        const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
 
                                                         return (
                                                             <td key={day}>
-                                                                <div className={`
+                                                                <div
+                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                    className={`
                                                                     ${status === "Present" ? "p-present" : ""}
                                                                     ${status === "Half Day" ? "H-Halfday" : ""}
                                                                     ${status === "Leave" ? "l-leave" : ""}
@@ -736,6 +772,7 @@ function ViewAttendance({ year, month , backButton }) {
                                                     setInTime(e.target.value);
                                                     if (e.target.value) setInTimeError(""); // Clear error when valid
                                                 }}
+                                                disabled={disableInTime}
                                             />
                                             {inTimeError && <p className="text-danger">{inTimeError}</p>}
                                         </div>
@@ -760,6 +797,7 @@ function ViewAttendance({ year, month , backButton }) {
                                                     setOutTime(e.target.value);
                                                     if (e.target.value) setOutTimeError(""); // Clear error when valid
                                                 }}
+                                                disabled={disableOutTime}
                                             />
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
                                         </div>
@@ -775,6 +813,7 @@ function ViewAttendance({ year, month , backButton }) {
             </Dialog>
 
             {showAttendanceForParticularDate && <ShowAttendanceForParticularDate selectedDate={selectedDate} close={hanleCloseParticularDateAttendance} />}
+            {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}
         </>
     )
 }
