@@ -87,7 +87,7 @@ const DscExpanceReimbursement = ({
                 //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
                 aria-labelledby="dropdownMenuButton1"
                 onChange={(e) => handleStatusChange(e.target.value)}
-                value={status}
+                value={!status ? "" : status}
             >
                 <option value="" disabled>Select Expense Status</option>
                 <option value="Paid">Paid</option>
