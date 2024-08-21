@@ -90,6 +90,12 @@ function RmofCertificationDefaulterPanel({ showFilter }) {
         socket.on("booking-updated", (res) => {
             fetchData()
         });
+        socket.on("adminexecutive-general-status-updated", (res) => {
+            fetchData()
+        });
+        socket.on("adminexecutive-letter-updated", (res) => {
+            fetchData()
+        });
 
         return () => {
             socket.disconnect();
@@ -614,6 +620,35 @@ function RmofCertificationDefaulterPanel({ showFilter }) {
                                     </div>
                                 </th>
                                 <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['dscStatus'] = el}>
+                                                Letter Status
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("dscStatus")}
+                                                />
+                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
+                                                <div
+                                                ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                <th>
                                     <div className='d-flex align-items-center justify-content-center  position-relative'>
                                         <div ref={el => fieldRefs.current['dscStatus'] = el}>
                                             DSC Status
@@ -1120,18 +1155,13 @@ function RmofCertificationDefaulterPanel({ showFilter }) {
                                         />
                                     </td>
                                     <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                    <td>
-                                        <div>{obj.withDSC ? (
-                                            // <DscStatusDropdown 
-                                            // companyName = {obj["Company Name"]}
-                                            // serviceName = {obj.serviceName}
-                                            // mainStatus = {obj.mainCategoryStatus}
-                                            // dscStatus = {obj.dscStatus}
-                                            // />
-                                            "Not Started"
-                                        ) :
-                                            ("Not Applicable")}</div>
-                                    </td>
+                                    <td>{obj.letterStatus ? obj.letterStatus : "Not Entered Yet"}</td>
+                                        <td>
+                                            <div>{obj.dscStatus ? (
+                                                obj.dscStatus
+                                            ) :
+                                                ("Not Applicable")}</div>
+                                        </td>
                                     <td>
                                         <ContentWriterDropdown
                                             key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key

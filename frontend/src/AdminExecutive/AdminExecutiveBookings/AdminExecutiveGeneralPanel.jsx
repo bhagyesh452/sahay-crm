@@ -15,7 +15,9 @@ import Nodata from '../../components/Nodata';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import io from 'socket.io-client';
-import { BsFilter } from "react-icons/bs"
+import { BsFilter } from "react-icons/bs";
+import DscStatusDropdown from '../ExtraComponents/DscStatusDropdown';
+
 //import FilterableTable from '../Extra-Components/FilterableTable';
 import StatusDropdownAdminExecutive from "../AdminExecutiveExtraComponents/StatusDropdownAdminExecutive"
 
@@ -80,7 +82,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
             transports: ['websocket'],
         });
 
-        socket.on("rm-general-status-updated", (res) => {
+        socket.on("adminexectuive-general-status-updated", (res) => {
             fetchData()
         });
 
@@ -197,7 +199,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
 
             // Check if the user confirmed the action
             if (result.isConfirmed) {
-                const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
+                const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox-foradminexecutive`, {
                     companyName,
                     serviceName
                 });
@@ -296,7 +298,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                         </Backdrop>
                     )}
                     {rmServicesData.length > 0 ? (
-                        <table className="table table-vcenter table-nowrap rm_table">
+                        <table className="table table-vcenter table-nowrap admin_ex_table">
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="G_rm-sticky-left-1">
@@ -709,7 +711,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                                         <td>{obj["Company Email"]}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
-                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
                                                 {obj.caCase === "Yes" && (
                                                     <a
                                                         href={`https://wa.me/${obj.caNumber}`}
@@ -726,7 +728,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                                         <td>
                                             <div>
                                                 {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <StatusDropdownAdminExecutive
+                                                    <DscStatusDropdown
                                                         key={`${obj["Company Name"]}-${obj.serviceName}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
                                                         mainStatus={obj.mainCategoryStatus}
                                                         subStatus={obj.subCategoryStatus}
@@ -777,12 +779,12 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                                                 <FaRegEye />
                                             </button>
                                             <button className="action-btn action-btn-danger ml-1"
-                                                onClick={() => (
+                                                  onClick={() => {
                                                     handleRevokeCompanyToRecievedBox(
                                                         obj["Company Name"],
                                                         obj.serviceName
                                                     )
-                                                )}
+                                                }}
                                             >
                                                 <CiUndo />
                                             </button>

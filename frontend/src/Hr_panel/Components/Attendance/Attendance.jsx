@@ -115,9 +115,11 @@ function Attendance() {
                                             <IoMdArrowRoundBack className='mr-1' /> Back
                                         </button>
                                     )}
-                                    {!showAddAttendance && <button type="button" className="btn mybtn" onClick={() => setShowAddAttendance(true)}>
+                                    {!showAddAttendance &&
+                                    <button type="button" className="btn mybtn" onClick={() => setShowAddAttendance(true)}>
                                         <TiUserAddOutline className='mr-1' /> Add Attendance
-                                    </button>}
+                                    </button>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -125,7 +127,7 @@ function Attendance() {
                 </div>
                 <div className="page-body m-0">
                     <div className="container-xl mt-2">
-                        {!showAddAttendance && <ViewAttendance year={selectedYear} month={selectedMonth} />}
+                        {(!showAddAttendance)&& <ViewAttendance year={selectedYear} month={selectedMonth} />}
                         {showAddAttendance && <AddAttendance year={selectedYear} month={selectedMonth} />}
                     </div>
                 </div>

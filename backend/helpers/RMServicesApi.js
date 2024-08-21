@@ -622,6 +622,66 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
   }
 });
 
+router.post(`/update-substatus-adminexecutive-changegeneral/`, async (req, res) => {
+  const { 
+    companyName,
+    serviceName,
+    subCategoryStatus,
+    mainCategoryStatus,
+    previousMainCategoryStatus,
+    previousSubCategoryStatus,
+    dateOfChangingMainStatus,
+    movedFromMainCategoryStatus,
+    movedToMainCategoryStatus } = req.body;
+  const socketIO = req.io;
+
+  //console.log("here" , movedFromMainCategoryStatus,movedToMainCategoryStatus)
+
+  try {
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        subCategoryStatus: subCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus,
+        lastActionDate: new Date(),
+        dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
+        previousMainCategoryStatus: previousMainCategoryStatus,
+        previousSubCategoryStatus: previousSubCategoryStatus
+      },
+      { new: true }
+    );
+
+    const updateCompanyRm = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        dscStatus:subCategoryStatus
+      },
+      {new : true}
+    )
+
+    // if (!updatedCompany) {
+    //   console.error("Failed to save the updated document");
+    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // }
+
+    // Emit socket event if needed
+    //socketIO.emit('update', { companyName, serviceName });
+    socketIO.emit('adminexecutive-general-status-updated', { companyName: companyName });
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 
 // router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
@@ -880,48 +940,169 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   }
 });
 
-router.get('/get-status', async (req, res) => {
-  const { companyName, serviceName } = req.query;
+router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
+  const { 
+    companyName,
+    serviceName,
+    subCategoryStatus,
+    mainCategoryStatus,
+    previousMainCategoryStatus,
+    previousSubCategoryStatus,
+    movedFromMainCategoryStatus,
+    movedToMainCategoryStatus,
+    approvalTime
+   } = req.body;
+  const socketIO = req.io;
+  //console.log(req.body);
 
   try {
-    const record = await RMCertificationModel.findOne({
-      "Company Name": companyName,
-      serviceName: serviceName
-    });
-    if (!record) {
-      return res.status(404).json({ message: 'Record not found' });
+    // Step 1: Find the company document in RMCertificationModel
+    const company = await AdminExecutiveModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
+
+    if (!company) {
+      console.error("Company not found");
+      return res.status(400).json({ message: "Company not found" });
     }
 
-    res.status(200).json({ hasUpdatedReadyToSubmitStatus: record.hasUpdatedReadyToSubmitStatus });
+    // Determine the submittedOn date
+    // let submittedOn = company.submittedOn;
+    let updateFields = {}; // Fields to be updated
+
+     if (subCategoryStatus !== "Undo") {
+   
+      // Conditionally include dateOfChangingMainStatus
+      if (["Process", "Approved","Hold", "Defaulter"].includes(subCategoryStatus)) {
+        updateFields.dateOfChangingMainStatus = new Date();
+      }
+
+      // Step 2: Update the RMCertificationModel document
+      const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+        { ["Company Name"]: companyName, serviceName: serviceName },
+        {
+          subCategoryStatus: subCategoryStatus,
+          mainCategoryStatus: mainCategoryStatus,
+          lastActionDate: new Date(),
+          approvalTime: approvalTime,
+          ...updateFields,
+          previousMainCategoryStatus: previousMainCategoryStatus,
+          previousSubCategoryStatus: previousSubCategoryStatus,
+          approvalTime : approvalTime ? approvalTime : new Date()
+        },
+        { new: true }
+      );
+
+      const updateCompanyRm = await RMCertificationModel.findOneAndUpdate(
+        {
+          ["Company Name"]: companyName,
+          serviceName: serviceName
+        },
+        {
+          dscStatus:subCategoryStatus
+        },
+        {new : true}
+      )
+
+      // if(subCategoryStatus === "Approved"){
+      //   console.log("hello wworld")
+      //   runTestScript(companyName);
+      // }
+      console.log("updatedcompany", updatedCompany)
+      
+
+      // if (!updatedCompany) {
+      //   console.error("Failed to save the updated document");
+      //   return res.status(400).json({ message: "Failed to save the updated document" });
+      // }
+
+      // // Step 3: Find or create the history entry in RMCertificationHistoryModel
+      // let historyEntry = await RMCertificationHistoryModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
+
+      // if (historyEntry) {
+      //   // Push a new history record into the existing document
+      //   historyEntry.history.push({
+      //     movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+      //     movedToMainCategoryStatus: movedToMainCategoryStatus,
+      //     mainCategoryStatus: mainCategoryStatus,
+      //     subCategoryStatus: subCategoryStatus,
+      //     statusChangeDate: new Date()
+      //   });
+      //   const createCompany = await historyEntry.save();
+      //   //console.log("history" , createCompany)
+      // } else {
+      //   // Create a new document if not found
+      //   const createCompany = await RMCertificationHistoryModel.create({
+      //     "Company Name": companyName,
+      //     serviceName: serviceName,
+      //     history: [{
+      //       movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+      //       movedToMainCategoryStatus: movedToMainCategoryStatus,
+      //       mainCategoryStatus: mainCategoryStatus,
+      //       subCategoryStatus: subCategoryStatus,
+      //       statusChangeDate: new Date()
+      //     }]
+      //   });
+
+      //   //console.log("history" , createCompany)
+      // }
+
+      // Emit socket event
+      socketIO.emit('adminexecutive-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+      res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+
+    } else {
+      // If subCategoryStatus is "Undo", update with previous statuses and no new date
+      const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+        { ["Company Name"]: companyName, serviceName: serviceName },
+        {
+          subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,
+          mainCategoryStatus: company.previousMainCategoryStatus,
+          previousMainCategoryStatus: company.mainCategoryStatus,
+          previousSubCategoryStatus: company.subCategoryStatus,
+          lastActionDate: new Date(),
+          approvalTime: company.approvalTime,
+          dateOfChangingMainStatus: company.dateOfChangingMainStatus,
+          Remarks: [],
+          dscStatus: "Not Started",
+          letterStatus: "Not Started",
+          dscPortal: "Drashti Thakkar",
+          dscType: "Not Applicable",
+          dscValidity: "",
+          portalCharges: "",
+          chargesPaidVia: "",
+          expenseReimbursementStatus: "",
+          tokenStoredInBox: "",
+          courierStatus: "",
+        },
+        { new: true }
+      );
+
+      const updateCompanyRm = await RMCertificationModel.findOneAndUpdate(
+        {
+          ["Company Name"]: companyName,
+          serviceName: serviceName
+        },
+        {
+          dscStatus:company.previousMainCategoryStatus
+        },
+        {new : true}
+      )
+
+      if (!updatedCompany) {
+        console.error("Failed to save the updated document");
+        return res.status(400).json({ message: "Failed to save the updated document" });
+      }
+
+      // Emit socket event
+      socketIO.emit('adminexecutive-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
+      res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+    }
+
   } catch (error) {
-    console.error('Error fetching status:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-router.post('/set-status', async (req, res) => {
-  const { companyName, serviceName, hasUpdatedReadyToSubmitStatus } = req.body;
-
-  try {
-    const updateResult = await RMCertificationModel.findOneAndUpdate(
-      {
-        "Company Name": companyName,
-        serviceName: serviceName
-      },
-      { $set: { hasUpdatedReadyToSubmitStatus } }
-    );
-    console.log("updateresult", updateResult)
-
-    if (updateResult.modifiedCount === 0) {
-      return res.status(404).json({ message: 'Record not found or no change made' });
-    }
-
-    res.status(200).json({ message: 'Status updated successfully' });
-  } catch (error) {
-    console.error('Error updating status:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
 
 router.post(`/update-dsc-rmofcertification/`, async (req, res) => {
   const { companyName, serviceName, dscStatus } = req.body;
@@ -990,6 +1171,248 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
 
     // Perform the update
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(`/update-letter-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, letterStatus } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await AdminExecutiveModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName
+    });
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { letterStatus: letterStatus };
+
+    // if (contentStatus === "Approved") {
+    //   if (company.brochureStatus === "Approved") {
+    //     updateFields = {
+    //       ...updateFields,
+    //       mainCategoryStatus: "Ready To Submit",
+    //       subCategoryStatus: "Ready To Submit"
+    //     };
+    //   }
+
+    // }
+
+    console.log("updateFields", updateFields)
+
+    // Perform the update
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      updateFields,
+      { new: true }
+    );
+
+    const updatedCompanyRm = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    socketIO.emit('adminexecutive-letter-updated', { name: updatedCompany.bdeName, companyName: companyName });
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(`/update-dscportal-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, dscPortal } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await AdminExecutiveModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName
+    });
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { dscPortal: dscPortal };
+
+    // if (contentStatus === "Approved") {
+    //   if (company.brochureStatus === "Approved") {
+    //     updateFields = {
+    //       ...updateFields,
+    //       mainCategoryStatus: "Ready To Submit",
+    //       subCategoryStatus: "Ready To Submit"
+    //     };
+    //   }
+
+    // }
+
+    console.log("updateFields", updateFields)
+
+    // Perform the update
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(`/update-dscType-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, dscType } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await AdminExecutiveModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName
+    });
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { dscType: dscType };
+
+    // if (contentStatus === "Approved") {
+    //   if (company.brochureStatus === "Approved") {
+    //     updateFields = {
+    //       ...updateFields,
+    //       mainCategoryStatus: "Ready To Submit",
+    //       subCategoryStatus: "Ready To Submit"
+    //     };
+    //   }
+
+    // }
+
+    console.log("updateFields", updateFields)
+
+    // Perform the update
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(`/update-dscValidity-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, dscValidity } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await AdminExecutiveModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName
+    });
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { dscValidity: dscValidity };
+
+    // if (contentStatus === "Approved") {
+    //   if (company.brochureStatus === "Approved") {
+    //     updateFields = {
+    //       ...updateFields,
+    //       mainCategoryStatus: "Ready To Submit",
+    //       subCategoryStatus: "Ready To Submit"
+    //     };
+    //   }
+
+    // }
+
+    console.log("updateFields", updateFields)
+
+    // Perform the update
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
       {
         ["Company Name"]: companyName,
         serviceName: serviceName
@@ -1161,6 +1584,128 @@ router.post(`/post-save-nswsemail/`, async (req, res) => {
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
     //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-save-portalcharges-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, charges } = req.body;
+  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
+  const socketIO = req.io;
+  try {
+    const company = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        portalCharges: charges
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-save-portalchargespaidvia-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, chargesPaidV } = req.body;
+  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
+  const socketIO = req.io;
+  try {
+    const company = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        chargesPaidVia: chargesPaidV
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, expenseReimbursementStatus } = req.body;
+  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
+  const socketIO = req.io;
+  try {
+    const company = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        expenseReimbursementStatus: expenseReimbursementStatus
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/post-save-reimbursemntdate-adminexecutive/`, async (req, res) => {
+  const { cname, sname, value } = req.body;
+  console.log("date" , value)
+  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
+  const socketIO = req.io;
+  try {
+    const company = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: cname,
+        serviceName: sname
+      },
+      {
+        expenseReimbursementDate: new Date(value)
+      },
+      { new: true }
+    )
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+
     res.status(200).json({ message: "Document updated successfully", data: company });
 
   } catch (error) {
@@ -1604,53 +2149,108 @@ router.post("/delete_company_from_taskmanager_and_send_to_recievedbox", async (r
   }
 });
 
+router.post("/delete_company_from_taskmanager_and_send_to_recievedbox-foradminexecutive", async (req, res) => {
+  const { companyName, serviceName } = req.body;
+  const socketIO = req.io;
+  try {
+    // Find the document by companyName
+    const document = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+
+    if (!document) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Remove serviceName from servicesTakenByRmOfCertification
+    const updatedServices = document.servicesTakenByAdminExecutive.filter(service => service !== serviceName);
+    document.servicesTakenByAdminExecutive = updatedServices;
+
+    // Remove serviceName from moreBookings array of objects
+    document.moreBookings.forEach(booking => {
+      booking.servicesTakenByAdminExecutive = booking.servicesTakenByAdminExecutive.filter(service => service !== serviceName);
+    });
+
+    // Save the updated document
+    await document.save();
+
+    // Delete from RMCertificationModel
+    const response2 = await AdminExecutiveModel.findOneAndDelete({
+      "Company Name": companyName,
+      serviceName: serviceName
+    });
+
+    // If response2 is null, it means nothing was deleted from RMCertificationModel
+    if (!response2) {
+      console.log("No matching document found in RMCertificationModel for deletion");
+    }
+
+    // Emit the socket event
+    socketIO.emit('adminexecutive-general-status-updated', { name: document.bdeName, companyName: companyName });
+
+    // Respond to the client
+    res.status(200).json({ message: "Company successfully deleted and service removed from RedesignedLeadModel" });
+  } catch (error) {
+    console.log("Error Deleting Company From Task Manager", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 router.post("/rmcertification-update-remainingpayments", async (req, res) => {
   const { companyName, serviceName, pendingRecievedPayment, pendingRecievedPaymentDate } = req.body;
   const socketIO = req.io;
 
   try {
-    // Fetch the current record for validation
+    // Fetch the current records for validation
     const company = await RMCertificationModel.findOne({
       "Company Name": companyName,
       serviceName: serviceName
     });
 
-    if (!company) {
-      return res.status(400).json({ message: "Company or service not found" });
-    }
+    const AdminExecutiveCompany = await AdminExecutiveModel.findOne({
+      "Company Name": companyName,
+      serviceName: serviceName
+    });
 
-    // Validate that the pendingReceivedPayment does not exceed the total amount
-    const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
-    const currentReceivedPayment = company.pendingRecievedPayment || 0;
-
-    //console.log("totalAmount", totalAmount)
-    //console.log(currentReceivedPayment)
-
-    // if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
-    //   return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
+    // if (!company || !AdminExecutiveCompany) {
+    //   return res.status(400).json({ message: "Company or service not found" });
     // }
-    // Update the record if validation passes
+
+    // Update the RMCertificationModel record
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       { "Company Name": companyName, serviceName: serviceName },
-      { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
+      {
+        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+        pendingRecievedPaymentDate
+      },
       { new: true }
     );
 
-    console.log("updatedcompany" , updatedCompany)
-    if (!updatedCompany) {
-      return res.status(400).json({ message: "Failed to save the updated document" });
-    }
+    
+
+    // Update the AdminExecutiveModel record
+    const updatedCompanyAdminExecutive = await AdminExecutiveModel.findOneAndUpdate(
+      { "Company Name": companyName, serviceName: serviceName },
+      {
+        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+        pendingRecievedPaymentDate
+      },
+      { new: true }
+    );
+    console.log("updatedcompanyh" , updatedCompanyAdminExecutive)
+    // if (!updatedCompany || !updatedCompanyAdminExecutive) {
+    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // }
+
     // Emit socket event
     socketIO.emit('rm-recievedamount-updated');
-
     res.status(200).json({ message: "Pending Amount Added Successfully", data: updatedCompany });
 
   } catch (error) {
-    console.log("Error submitting remaining payment", error);
+    console.error("Error submitting remaining payment", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 router.get('/sectors', async (req, res) => {
   try {

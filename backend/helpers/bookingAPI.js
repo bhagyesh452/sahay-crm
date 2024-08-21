@@ -20,6 +20,7 @@ const { appendDataToSheet, appendRemainingDataToSheet } = require('./Google_shee
 const NotiModel = require('../models/Notifications.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
 const mongoose = require('mongoose'); // Import mongoose
+const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const ObjectId = mongoose.Types.ObjectId;
 
 const storage = multer.diskStorage({
@@ -291,6 +292,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
     const tempDateToday = new Date();
 
     const newGoingToUpdate = { ...goingToUpdate, lastActionDate: tempDateToday }
+    console.log("newGpingtoupdate" , newGoingToUpdate)
 
     try {
       const companyData = await RedesignedLeadformModel.findOne({ "Company Name": companyName })
@@ -314,6 +316,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
 
       // Update RMCertificationModel
       for (const serviceName of serviceNames) {
+        console.log("serviceName", serviceName)
         const existingRmCertData = await RMCertificationModel.findOne({
           "Company Name": companyName,
           serviceName
@@ -325,7 +328,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
             service.serviceName === serviceName);
 
           if (serviceData) {
-            console.log("serviceData", serviceData);
+            //console.log("serviceData", serviceData);
             // Create updatedFields object to merge existing data with newGoingToUpdate
             const updatedFields = {
               ...existingRmCertData.toObject(), // Copy existing fields
@@ -372,17 +375,99 @@ router.post("/update-redesigned-final-form/:CompanyName",
               "Company Name": companyName,
               serviceName
             });
-            await RedesignedLeadformModel.findOneAndUpdate(
-              {
-                "Company Name": companyName
-              },
-              {
-                $pull: { servicesTakenByRmOfCertification: serviceName } // Remove serviceName from rmtakenservices array
-              }
-            );
+            if (serviceName) {
+              const updatedDoc = await RedesignedLeadformModel.findOneAndUpdate(
+                {
+                  "Company Name": companyName,
+                },
+                {
+                  $pull: { servicesTakenByRmOfCertification: serviceName }
+                },
+                { new: true }
+              );
+
+              console.log("Updated servicesTakenByRmOfCertification:", updatedDoc.servicesTakenByRmOfCertification);
+            }
           }
         }
       }
+
+      for (const serviceName of serviceNames) {
+        console.log("servicename", serviceName);
+      
+        const existingAdminExecutiveModel = await AdminExecutiveModel.findOne({
+          "Company Name": companyName,
+          serviceName
+        });
+      
+        if (existingAdminExecutiveModel) {
+          const serviceData = newGoingToUpdate.services.find(service => service.serviceName === serviceName);
+      
+          if (serviceData) {
+            console.log("serviceData", serviceData);
+      
+            const updatedFields = {
+              ...existingAdminExecutiveModel.toObject(),
+              bdeName: newGoingToUpdate.bdeName,
+              bdeEmail: newGoingToUpdate.bdeEmail,
+              bdmName: newGoingToUpdate.bdmName,
+              bdmType: newGoingToUpdate.bdmType,
+              bookingDate: newGoingToUpdate.bookingDate,
+              paymentMethod: newGoingToUpdate.paymentMethod,
+              caCase: newGoingToUpdate.caCase,
+              caNumber: newGoingToUpdate.caNumber,
+              caEmail: newGoingToUpdate.caEmail,
+              serviceName: serviceData.serviceName,
+              totalPaymentWOGST: serviceData.totalPaymentWOGST,
+              totalPaymentWGST: serviceData.totalPaymentWGST,
+              withGST: serviceData.withGST,
+              withDSC: serviceData.withDSC,
+              firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment,
+              secondPayment: serviceData.secondPayment,
+              thirdPayment: serviceData.thirdPayment,
+              fourthPayment: serviceData.fourthPayment,
+              secondPaymentRemarks: serviceData.secondPaymentRemarks,
+              thirdPaymentRemarks: serviceData.thirdPaymentRemarks,
+              fourthPaymentRemarks: serviceData.fourthPaymentRemarks,
+              bookingPublishDate: serviceData.bookingPublishDate,
+              lastActionDate: tempDateToday,
+            };
+      
+            console.log("updatedFields", updatedFields);
+      
+            await AdminExecutiveModel.findOneAndUpdate(
+              {
+                "Company Name": companyName,
+                serviceName
+              },
+              updatedFields,
+              { new: true }
+            );
+          } else {
+            console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingAdminData.`);
+      
+            await AdminExecutiveModel.deleteOne({
+              "Company Name": companyName,
+              serviceName
+            });
+      
+            if (serviceName) {
+              const updatedDoc = await RedesignedLeadformModel.findOneAndUpdate(
+                {
+                  "Company Name": companyName,
+                },
+                {
+                  $pull: { servicesTakenByAdminExecutive: serviceName }
+                },
+                { new: true }
+              );
+      
+              console.log("Updated AdminExecutive:", updatedDoc.servicesTakenByAdminExecutive);
+            }
+          }
+        }
+      }
+      
 
       const deleteFormRequest = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": companyName },
@@ -5196,6 +5281,11 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       serviceName: { $in: serviceNames }
     });
 
+    const deleteResult2 = await AdminExecutiveModel.findOneAndDelete({
+      "Company Name": leadForm["Company Name"],
+      serviceName: { $in: serviceNames }
+    });
+
     console.log('Delete Result:', deleteResult); // Debug log
 
     if (deletedBooking) {
@@ -5205,9 +5295,10 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       //console.log("deleteDraft", deleteDraft)
     }
 
-    if (updateMainBooking.bdmAcceptStatus !== null && updateMainBooking.bdmAcceptStatus === "Accept") {
+    if (updateMainBooking && updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
     }
+    
     socketIO.emit('booking-deleted');
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
@@ -5351,6 +5442,10 @@ router.delete(
       if (bookingToRemove) {
         const serviceNames = bookingToRemove.services.map(service => service.serviceName);
         const deleteResult = await RMCertificationModel.findOneAndDelete({
+          "Company Name": leadForm["Company Name"],
+          serviceName: { $in: serviceNames }
+        });
+        const deleteResult2 = await AdminExecutiveModel.findOneAndDelete({
           "Company Name": leadForm["Company Name"],
           serviceName: { $in: serviceNames }
         });
@@ -5603,12 +5698,12 @@ router.post(
 
         const totalPaymentWithGST = parseInt(findService.totalPaymentWGST) || 0;
         const firstPaymentNew = parseInt(findService.firstPayment) || 0;
-        const receivedAmountExisting = (parseInt(findService.pendingRecievedAmount)) ? 
-        parseInt(findService.pendingRecievedAmount) : 
-        parseInt(objectData.receivedAmount) || 0;
+        const receivedAmountExisting = (parseInt(findService.pendingRecievedAmount)) ?
+          parseInt(findService.pendingRecievedAmount) :
+          parseInt(objectData.receivedAmount) || 0;
         const receivedAmountNew = parseInt(objectData.receivedAmount) || 0;
 
-        console.log("recieveddexisting" , receivedAmountExisting)
+        console.log("recieveddexisting", receivedAmountExisting)
 
         const remainingAmountCalculated = totalPaymentWithGST - firstPaymentNew - (((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew);
         const pendingReceivedPaymentCalculated = ((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew;
@@ -6001,6 +6096,20 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
         });
         console.log("updatedcompany", updatedCompany)
       }
+
+
+      const findAdminExecutiveCompany = await AdminExecutiveModel.findOne({ "Company Name": companyName, serviceName: serviceName });
+      if (findAdminExecutiveCompany) {
+        const updatedCompany = await AdminExecutiveModel.findOneAndUpdate({
+          "Company Name": companyName,
+          serviceName: serviceName
+        }, {
+          $set: {
+            pendingRecievedPayment: (parseInt(findRmCertCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
+          }
+        });
+        console.log("updatedcompany", updatedCompany)
+      }
       socketIO.emit('rm-recievedamount-deleted');
       console.log("newupdatedarray", newUpdatedArray)
 
@@ -6051,8 +6160,20 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
         });
         console.log("updatedcompany", updatedCompany)
       }
-      socketIO.emit('rm-recievedamount-updated');
 
+      const findAdminExecutiveCompany = await AdminExecutiveModel.findOne({ "Company Name": companyName, serviceName: serviceName });
+      if (findAdminExecutiveCompany) {
+        const updatedCompany = await AdminExecutiveModel.findOneAndUpdate({
+          "Company Name": companyName,
+          serviceName: serviceName
+        }, {
+          $set: {
+            pendingRecievedPayment: (parseInt(findRmCertCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
+          }
+        });
+        console.log("updatedcompany", updatedCompany)
+      }
+      socketIO.emit('rm-recievedamount-deleted');
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
       console.error("Error deleting more payments:", error);

@@ -2934,6 +2934,10 @@ td input {
 {
   width: 2200px !important;
 }
+.admin_ex_table
+{
+  width: 2500px !important;
+}
 .rm_table_inprocess
 {
   width: 4214px!important
@@ -3966,6 +3970,11 @@ border: 1px solid #ffefc6 !important;
 .badge-completed {
   background-color: #28a745;
 }
+
+.badge-half-day {
+  background-color: #2094c2;
+}
+
 .no_data_table
 {
   width: 100%;

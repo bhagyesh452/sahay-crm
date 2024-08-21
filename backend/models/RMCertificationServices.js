@@ -133,6 +133,10 @@ const RMCertificationServicesSchema = new mongoose.Schema({
     type:String,
     default:"Not Started"
   },
+  letterStatus:{
+    type:String,
+    default:"Not Started"
+  },
   contentStatus:{
      type:String,
     default:"Not Started"

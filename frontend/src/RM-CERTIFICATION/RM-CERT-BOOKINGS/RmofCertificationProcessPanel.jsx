@@ -100,6 +100,12 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
         socket.on("booking-updated", (res) => {
             fetchData()
         });
+        socket.on("adminexecutive-general-status-updated", (res) => {
+            fetchData()
+        });
+        socket.on("adminexecutive-letter-updated", (res) => {
+            fetchData()
+        });
 
 
         return () => {
@@ -586,6 +592,35 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['dscStatus'] = el}>
+                                                Letter Status
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("dscStatus")}
+                                                />
+                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
+                                                <div
+                                                ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['dscStatus'] = el}>
                                                 DSC Status
                                             </div>
 
@@ -1035,7 +1070,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                         <td>{obj["Company Email"]}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
-                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "Not Applicable"}</div>
+                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
                                                 {obj.caCase === "Yes" && (
                                                     <a
                                                         href={`https://wa.me/${obj.caNumber}`}
@@ -1065,6 +1100,8 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                                         brochureStatus={obj.brochureStatus ? obj.brochureStatus : "Not Started"}
                                                         industry={obj.industry}
                                                         sector={obj.sector}
+                                                        letterStatus={obj.letterStatus}
+                                                        dscStatus={obj.dscStatus}
 
                                                     />
                                                 )}
@@ -1109,15 +1146,10 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                             />
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
+                                        <td>{obj.letterStatus ? obj.letterStatus : "Not Entered Yet"}</td>
                                         <td>
-                                            <div>{obj.withDSC ? (
-                                                // <DscStatusDropdown 
-                                                // companyName = {obj["Company Name"]}
-                                                // serviceName = {obj.serviceName}
-                                                // mainStatus = {obj.mainCategoryStatus}
-                                                // dscStatus = {obj.dscStatus}
-                                                // />
-                                                "Not Started"
+                                            <div>{obj.dscStatus ? (
+                                                obj.dscStatus
                                             ) :
                                                 ("Not Applicable")}</div>
                                         </td>
