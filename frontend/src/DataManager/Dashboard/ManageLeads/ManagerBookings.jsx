@@ -494,7 +494,14 @@ function ManagerBookings() {
       return true;
     }
 
-
+    Swal.fire({
+      title: 'Processing Payment...',
+      text: 'Please wait while your payment is being updated.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     // Debug logs to check data
     console.log("rmServicesData:", rmServicesData);
     console.log("adminExecutiveData:", adminExecutiveData);
