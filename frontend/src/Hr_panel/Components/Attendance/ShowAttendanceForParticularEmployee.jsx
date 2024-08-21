@@ -61,7 +61,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                     });
                 }
             });
-
+            filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
             setAttendanceData(filteredData);
         } catch (error) {
             console.log("Error fetching attendance record", error);
@@ -78,7 +78,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
         <div>
             <Dialog className='My_Mat_Dialog' fullWidth maxWidth="md" open={() => open()}>
                 <DialogTitle style={{ textAlign: "center" }}>
-                    {`Attendance Details for ${name}`}
+                    {`Attendance Details for ${name} for ${month} ${year}`}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         close();
                     }}>
