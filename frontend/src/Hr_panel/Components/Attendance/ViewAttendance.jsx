@@ -725,7 +725,7 @@ function ViewAttendance({ year, month }) {
                         <div className="modal-content">
                             <div className="modal-body">
                                 <div className="mb-3">
-                                    <div className="d-flex">
+                                    <div className='row'>
                                         <div className="col-6 me-1">
                                             <label className="form-label">Employee Name</label>
                                             <input
@@ -750,8 +750,7 @@ function ViewAttendance({ year, month }) {
                                             // onChange={(e) => handleInputChange("middleName", e.target.value)}
                                             />
                                         </div>
-                                    </div>
-                                    <div className="d-flex mt-3">
+                                    
                                         <div className="col-6 me-1">
                                             <label className="form-label">In Time</label>
                                             {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
