@@ -999,9 +999,9 @@ function ViewAttendance({ year, month }) {
                         </div>
                     </div>
                 </DialogContent>
-                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                {!inTime && !outTime && <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                     Submit
-                </Button>
+                </Button>}
             </Dialog>
 
             {showAttendanceForParticularDate && <ShowAttendanceForParticularDate selectedDate={selectedDate} close={hanleCloseParticularDateAttendance} />}
