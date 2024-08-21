@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import { Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import Swal from "sweetalert2";
 
 const DscExpanceReimbursement = ({
     companyName,
@@ -15,6 +17,7 @@ const DscExpanceReimbursement = ({
     const [status, setStatus] = useState(dscExpenseStatus);
     const [statusClass, setStatusClass] = useState('created-status');
     const [expenseDateNew, setExpenseDateNew] = useState(expenseDate ? new Date(expenseDate).toISOString().substring(0, 10) : ""); // Format date for input
+    const [openDatePopup, setOpenDatePopup] = useState(false)
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -28,7 +31,9 @@ const DscExpanceReimbursement = ({
                 serviceName,
                 expenseReimbursementStatus: newStatus
             });
-
+            if (newStatus === "Paid") {
+                setOpenDatePopup(true)
+            }
             refreshData();
             console.log("Status updated successfully:", response.data);
         } catch (error) {
@@ -56,6 +61,7 @@ const DscExpanceReimbursement = ({
                 value: fullDateTime
             });
             if (response.status === 200) {
+                setOpenDatePopup(false)
                 refreshData();
             }
         } catch (error) {
@@ -78,33 +84,92 @@ const DscExpanceReimbursement = ({
         setStatusClass(getStatusClass(dscExpenseStatus));
     }, [dscExpenseStatus]);
 
+    const handleCloseDatePopup = () => {
+        setOpenDatePopup(false)
+    }
+
+    const stringDateFormat=(dateString)=>{
+        if(!dateString){
+            return ""
+        }
+        const date = new Date(dateString)
+
+         // Check for invalid dates
+    if (isNaN(date.getTime())) return "";
+     return date.toLocaleDateString("en-US" , {
+        year : "numeric",
+        month : "long",
+        day : "numeric"
+     })
+
+    }
+
 
     return (
         <section className="rm_status_dropdown d-flex align-items-center justify-content-around">
 
-            <select
-                className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
-                //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
-                aria-labelledby="dropdownMenuButton1"
-                onChange={(e) => handleStatusChange(e.target.value)}
-                value={!status ? "" : status}
+
+            {expenseDateNew ?
+                (<div>
+                    Paid On {stringDateFormat(expenseDateNew)}
+                </div>)
+                : (
+                    <select
+                        className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                        //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                        aria-labelledby="dropdownMenuButton1"
+                        onChange={(e) => handleStatusChange(e.target.value)}
+                        value={!status ? "" : status}
+                    >
+                        <option value="" disabled>Select Expense Status</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Unpaid">Unpaid</option>
+                    </select>
+                )}
+            <Dialog
+                className='My_Mat_Dialog'
+                open={openDatePopup}
+                onClose={handleCloseDatePopup}
+                fullWidth
+                maxWidth="xs"
             >
-                <option value="" disabled>Select Expense Status</option>
-                <option value="Paid">Paid</option>
-                <option value="Unpaid">Unpaid</option>
-            </select>
-           <div className='ml-1 mr-1'>|</div>
-            <div>
-                <input
-                    value={expenseDateNew}
-                    type='date'
-                    disabled={dscExpenseStatus !== "Paid"}
-                    onChange={(e) => {
-                        setExpenseDateNew(e.target.value);
-                        handleSubmitExpenseDate(companyName, serviceName, e.target.value);
-                    }}
-                />
-            </div>
+                <DialogTitle>
+                    <h3 className='m-0'>{companyName}</h3>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="card-footer">
+                        <div className="remarks-input">
+                            <input
+                                style={{ width: "100%",borderRadius: "6px",padding:"3px 5px 4px 5px" }}
+                                value={expenseDateNew}
+                                type='date'
+                                disabled={dscExpenseStatus !== "Paid"}
+                                onChange={(e) => {
+                                    setExpenseDateNew(e.target.value);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions className='p-0'>
+                    <Button onClick={handleCloseDatePopup}
+                        variant="contained"
+                        color="error"
+                        style={{ width: "100%", borderRadius: "0px" }} className='m-0'>Close</Button>
+
+                    <Button
+                        onClick={() => {
+                            handleSubmitExpenseDate(companyName, serviceName, expenseDateNew);
+                        }}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: "100%", borderRadius: "0px" }}
+                        className='m-0'
+                    >
+                        Submit
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </section>
     );
 };
