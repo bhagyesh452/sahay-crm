@@ -5819,7 +5819,18 @@ router.post(
         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
         findObject.remainingPayments.$push
+        
+        const totalPaymentWithGST = parseInt(findService.totalPaymentWGST) || 0;
+        const firstPaymentNew = parseInt(findService.firstPayment) || 0;
+        const receivedAmountExisting = (parseInt(findService.pendingRecievedAmount)) ?
+          parseInt(findService.pendingRecievedAmount) :
+          parseInt(objectData.receivedAmount) || 0;
+        const receivedAmountNew = parseInt(objectData.receivedAmount) || 0;
 
+        console.log("recieveddexisting", receivedAmountExisting)
+
+        const remainingAmountCalculated = totalPaymentWithGST - firstPaymentNew - (((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew);
+        const pendingReceivedPaymentCalculated = ((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew;
 
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
@@ -5834,8 +5845,13 @@ router.post(
               lastActionDate: latestDateUpdate,
               [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
               [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
-              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount
+              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
+              [`moreBookings.${bookingIndex - 1}.services.$[elem].remainingAmount`]: remainingAmountCalculated,
+              [`moreBookings.${bookingIndex - 1}.services.$[elem].pendingRecievedAmount`]: pendingReceivedPaymentCalculated,
             }
+          },
+          {
+            arrayFilters: [{ "elem.serviceName": objectData.serviceName }]
           }
         );
         const updatedObject = await RedesignedLeadformModel.updateOne(
