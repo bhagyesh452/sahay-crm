@@ -162,13 +162,13 @@ function Received_booking_box() {
 
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         setLeadFormData(
-            redesignedData.filter((obj)=>
-            obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
+            redesignedData.filter((obj) =>
+                obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
         )
 
-    },[searchText])
+    }, [searchText])
 
     //--------fetching booking data by default date should be operation date of rm portal date-------------------------------
     const [redesignedData, setRedesignedData] = useState([]);
@@ -180,7 +180,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-05-09");
+        const today = new Date("2024-08-21");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
@@ -207,7 +207,7 @@ function Received_booking_box() {
                         const bookingDate = parseDate(booking.bookingDate);
                         bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
 
-                      
+
 
                         return bookingDate >= today;
                     });
@@ -659,7 +659,10 @@ function Received_booking_box() {
             const totalReceivedPayment = remainingPaymentData.reduce((total, service) => {
                 return total + service.receivedPayment;
             }, 0);
-            
+
+            // Get the payment date, ensuring remainingPaymentData is not empty
+            const pendingRecievedPaymentDate = remainingPaymentData.length > 0 ? remainingPaymentData[0].paymentDate : null;
+
             console.log("Total Received Payment:", totalReceivedPayment);
             // Check if serviceData is found
             if (serviceData) {
@@ -693,7 +696,7 @@ function Received_booking_box() {
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
                     bookingPublishDate: serviceData.bookingPublishDate || '',
                     pendingRecievedPayment: remainingPaymentData ? totalReceivedPayment : 0,
-                    pendingRecievedPaymentDate: remainingPaymentData ? remainingPaymentData[0].paymentDate : null,
+                    pendingRecievedPaymentDate: pendingRecievedPaymentDate,
                     addedOn: new Date() // Handle optional fields
                 };
 
