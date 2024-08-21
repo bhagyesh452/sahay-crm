@@ -100,16 +100,33 @@ router.post('/post-rmservicesdata', async (req, res) => {
           serviceName: item.serviceName
         });
 
+        const existingRecordofAdminExecutive = await AdminExecutiveModel.findOne({
+          "Company Name": item["Company Name"],
+          serviceName: item.serviceName
+        })
+
         if (!existingRecord) {
-          const data = {
-            ...item,
-            bookingPublishDate: publishDate
-          };
-          //console.log("createdData" , data)
-          const newRecord = await RMCertificationModel.create(data);
+          if(existingRecordofAdminExecutive){
+            const data = {
+              ...item,
+              bookingPublishDate: publishDate,
+              letterStatus:existingRecordofAdminExecutive.letterStatus
+            };
+            const newRecord = await RMCertificationModel.create(data);
           //console.log("newRecord" , newRecord)
           createData.push(newRecord);
           successEntries++;
+          }else{
+            const data = {
+              ...item,
+              bookingPublishDate: publishDate,
+            };
+            const newRecord = await RMCertificationModel.create(data);
+          //console.log("newRecord" , newRecord)
+          createData.push(newRecord);
+          successEntries++;
+          }
+          //console.log("createdData" , data)
         } else {
           existingRecords.push(existingRecord);
           failedEntries++;
