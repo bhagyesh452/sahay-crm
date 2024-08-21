@@ -338,7 +338,7 @@ function ViewAttendance({ year, month }) {
 
     // console.log("Gota employees are :", gotaBranchEmployees);
     // console.log("Sindhu Bhawan employees are :", sindhuBhawanBranchEmployees);
-    console.log("Deleted employees are :", deletedEmployees);
+    // console.log("Deleted employees are :", deletedEmployees);
 
     return (
         <>
@@ -896,7 +896,7 @@ function ViewAttendance({ year, month }) {
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
-                    {inTime && outTime ? "View attendance" : "Add attendance"}
+                    {disableInTime && disableOutTime ? "View attendance" : "Add attendance"}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         handleClosePopup();
                         setInTime("");
@@ -999,7 +999,7 @@ function ViewAttendance({ year, month }) {
                         </div>
                     </div>
                 </DialogContent>
-                {!inTime && !outTime && <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                {!disableInTime && !disableOutTime && <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                     Submit
                 </Button>}
             </Dialog>
