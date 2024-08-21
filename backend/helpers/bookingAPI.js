@@ -6233,7 +6233,7 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
           serviceName: serviceName
         }, {
           $set: {
-            pendingRecievedPayment: (parseInt(findRmCertCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
+            pendingRecievedPayment: (parseInt(findAdminExecutiveCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
           }
         });
         console.log("updatedcompany", updatedCompany)

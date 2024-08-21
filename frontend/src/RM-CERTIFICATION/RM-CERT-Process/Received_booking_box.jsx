@@ -654,8 +654,13 @@ function Received_booking_box() {
         selectedServices.forEach(serviceName => {
             // Find the detailed service object in combinedServices
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-            const remainingPaymentData = combinedRemainingpaymentsForServices.find(service => service.serviceName === serviceName)
+            const remainingPaymentData = combinedRemainingpaymentsForServices.filter(service => service.serviceName === serviceName)
             console.log("RemainingPaymentData", remainingPaymentData)
+            const totalReceivedPayment = remainingPaymentData.reduce((total, service) => {
+                return total + service.receivedPayment;
+            }, 0);
+            
+            console.log("Total Received Payment:", totalReceivedPayment);
             // Check if serviceData is found
             if (serviceData) {
                 // Create an object with the required fields from selectedCompanyData and serviceData
@@ -687,8 +692,8 @@ function Received_booking_box() {
                     thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
                     bookingPublishDate: serviceData.bookingPublishDate || '',
-                    pendingRecievedPayment: remainingPaymentData ? remainingPaymentData.receivedPayment : 0,
-                    pendingRecievedPaymentDate: remainingPaymentData ? remainingPaymentData.paymentDate : null,
+                    pendingRecievedPayment: remainingPaymentData ? totalReceivedPayment : 0,
+                    pendingRecievedPaymentDate: remainingPaymentData ? remainingPaymentData[0].paymentDate : null,
                     addedOn: new Date() // Handle optional fields
                 };
 

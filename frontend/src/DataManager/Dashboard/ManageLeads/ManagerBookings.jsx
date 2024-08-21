@@ -483,7 +483,7 @@ function ManagerBookings() {
     }
     const findCompany = rmServicesData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
     const findCompanyAdmin = adminExecutiveData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
-    console.log("findCompany" , findCompanyAdmin)
+    console.log("findCompany" , findCompany)
    
     console.log("findCompany", findCompany)
     if (!tempUpdateMode) {
@@ -497,8 +497,17 @@ function ManagerBookings() {
             },
           }
         );
-        if (findCompany || findCompanyAdmin ) {
+        if (findCompany) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
+            companyName: remainingObject["Company Name"],
+            serviceName: remainingObject.serviceName,
+            pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
+            pendingRecievedPaymentDate: remainingObject.paymentDate
+          });
+          console.log("remaing payment", response2.data)
+        }
+        if (findCompanyAdmin) {
+          const response2 = await axios.post(`${secretKey}/rm-services/adminexecutive-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
             pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
@@ -530,8 +539,17 @@ function ManagerBookings() {
             },
           }
         );
-        if (findCompany || findCompanyAdmin) {
+        if (findCompany) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
+            companyName: remainingObject["Company Name"],
+            serviceName: remainingObject.serviceName,
+            pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
+            pendingRecievedPaymentDate: remainingObject.paymentDate
+          });
+          console.log("remaing payment", response2.data)
+        }
+        if (findCompanyAdmin) {
+          const response2 = await axios.post(`${secretKey}/rm-services/adminexecutive-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
             pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
