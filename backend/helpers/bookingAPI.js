@@ -5281,6 +5281,11 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       serviceName: { $in: serviceNames }
     });
 
+    const deleteResult2 = await AdminExecutiveModel.findOneAndDelete({
+      "Company Name": leadForm["Company Name"],
+      serviceName: { $in: serviceNames }
+    });
+
     console.log('Delete Result:', deleteResult); // Debug log
 
     if (deletedBooking) {
@@ -5290,9 +5295,10 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       //console.log("deleteDraft", deleteDraft)
     }
 
-    if (updateMainBooking.bdmAcceptStatus !== null && updateMainBooking.bdmAcceptStatus === "Accept") {
+    if (updateMainBooking && updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
     }
+    
     socketIO.emit('booking-deleted');
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
@@ -5436,6 +5442,10 @@ router.delete(
       if (bookingToRemove) {
         const serviceNames = bookingToRemove.services.map(service => service.serviceName);
         const deleteResult = await RMCertificationModel.findOneAndDelete({
+          "Company Name": leadForm["Company Name"],
+          serviceName: { $in: serviceNames }
+        });
+        const deleteResult2 = await AdminExecutiveModel.findOneAndDelete({
           "Company Name": leadForm["Company Name"],
           serviceName: { $in: serviceNames }
         });
