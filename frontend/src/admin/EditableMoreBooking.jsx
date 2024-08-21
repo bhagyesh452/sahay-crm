@@ -115,8 +115,11 @@ export default function EditableMoreBooking({
 
       // Set the retrieved data in the state
       const tempData = response.data;
-      console.log(response.data);
-      setUnames(tempData);
+      const filteredData = tempData.filter(employee =>
+        employee.designation === "Sales Executive" ||
+        employee.designation === "Sales Manager")
+      console.log("filteredData" , filteredData);
+      setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }

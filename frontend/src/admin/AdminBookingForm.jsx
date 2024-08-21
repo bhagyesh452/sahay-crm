@@ -119,8 +119,11 @@ export default function AdminBookingForm({
 
       // Set the retrieved data in the state
       const tempData = response.data;
-      console.log(response.data);
-      setUnames(tempData);
+      const filteredData = tempData.filter(employee =>
+        employee.designation === "Sales Executive" ||
+        employee.designation === "Sales Manager")
+      console.log("filteredData", filteredData);
+      setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -190,8 +193,8 @@ export default function AdminBookingForm({
         const servicestoSend = newLeadData.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
-          
-          if(!isNaN(new Date(service.secondPaymentRemarks))){
+
+          if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.secondPaymentRemarks
@@ -205,7 +208,7 @@ export default function AdminBookingForm({
               setSecondTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.thirdPaymentRemarks))){
+          if (!isNaN(new Date(service.thirdPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.thirdPaymentRemarks
@@ -219,7 +222,7 @@ export default function AdminBookingForm({
               setThirdTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.fourthPaymentRemarks))){
+          if (!isNaN(new Date(service.fourthPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.fourthPaymentRemarks
@@ -234,7 +237,7 @@ export default function AdminBookingForm({
             }
           }
 
-          
+
 
           return {
             ...service,
@@ -269,7 +272,7 @@ export default function AdminBookingForm({
           setIsoType(service.isoTypeObject);
 
 
-          if(!isNaN(new Date(service.secondPaymentRemarks))){
+          if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.secondPaymentRemarks
@@ -283,7 +286,7 @@ export default function AdminBookingForm({
               setSecondTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.thirdPaymentRemarks))){
+          if (!isNaN(new Date(service.thirdPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.thirdPaymentRemarks
@@ -297,7 +300,7 @@ export default function AdminBookingForm({
               setThirdTempRemarks(prev => [...prev, tempState]);
             }
           }
-          if(!isNaN(new Date(service.fourthPaymentRemarks))){
+          if (!isNaN(new Date(service.fourthPaymentRemarks))) {
             const tempState = {
               serviceID: index,
               value: service.fourthPaymentRemarks
@@ -612,50 +615,50 @@ export default function AdminBookingForm({
           const servicestoSend = leadData.services.map((service, index) => {
             // Find the corresponding isoType object for the current index
             const iso = isoType.find(obj => obj.serviceID === index);
-        
+
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
-                if (
-                    iso.type === "" ||
-                    (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
-                    (iso.type === "Non IAF" && iso.Nontype === "")
-                ) {
-                    updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
-                } else {
-                    updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
-                }
+              if (
+                iso.type === "" ||
+                (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
+                (iso.type === "Non IAF" && iso.Nontype === "")
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+              }
             }
-        
+
             // Update the payment remarks based on specific conditions
             const secondRemark = service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
-                : service.secondPaymentRemarks;
-        
+              ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
+              : service.secondPaymentRemarks;
+
             const thirdRemark = service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
-                : service.thirdPaymentRemarks;
-        
+              ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
+              : service.thirdPaymentRemarks;
+
             const fourthRemark = service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
-                : service.fourthPaymentRemarks;
-        
+              ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
+              : service.fourthPaymentRemarks;
+
             // Return the updated service object
             return {
-                ...service,
-                serviceName: updatedServiceName,
-                secondPaymentRemarks: secondRemark,
-                thirdPaymentRemarks: thirdRemark,
-                fourthPaymentRemarks: fourthRemark,
-                isoTypeObject: isoType
+              ...service,
+              serviceName: updatedServiceName,
+              secondPaymentRemarks: secondRemark,
+              thirdPaymentRemarks: thirdRemark,
+              fourthPaymentRemarks: fourthRemark,
+              isoTypeObject: isoType
             };
-        });
-        
-        // Check if any service has an "Invalid" serviceName
-        if (servicestoSend.some(obj => obj.serviceName === "Invalid")) {
+          });
+
+          // Check if any service has an "Invalid" serviceName
+          if (servicestoSend.some(obj => obj.serviceName === "Invalid")) {
             Swal.fire("Select Complete ISO Service Fields!");
             return true; // Assuming this is inside a function and you want to exit early
-        }
+          }
 
 
           dataToSend = {
@@ -999,7 +1002,7 @@ export default function AdminBookingForm({
           },
         }
       );
-      console.log("response" , response.data)
+      console.log("response", response.data)
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
@@ -1126,7 +1129,7 @@ export default function AdminBookingForm({
                         setIsoType(remainingObject);
                       }
                     }}>
-                     <option value="" selected disabled>Select ISO VALIDITY</option>
+                      <option value="" selected disabled>Select ISO VALIDITY</option>
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEARS VALIDITY">3 YEARS VALIDITY</option>
                       <option value="3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)">3 YEARS VALIDITY ( 1 YEAR PAID SURVEILLANCE)</option>
@@ -1716,27 +1719,27 @@ export default function AdminBookingForm({
                           {leadData.services[i].thirdPaymentRemarks ===
                             "On Particular Date" && (
                               <div className="mt-2">
-                              <input
-                                value={thirdTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
-                                onChange={(e) => {
-                                  const tempState = {
-                                    serviceID: i,
-                                    value: e.target.value
-                                  };
-                                  const prevState = thirdTempRemarks.find(obj => obj.serviceID === i);
-                                  if (prevState) {
-                                    setThirdTempRemarks(prev =>
-                                      prev.map(obj => (obj.serviceID === i ? tempState : obj))
-                                    );
-                                  } else {
-                                    setThirdTempRemarks(prev => [...prev, tempState]);
-                                  }
-                                }}
-                                className="form-control"
-                                type="date"
-                                placeholder="dd/mm/yyyy"
-                              />
-                            </div>
+                                <input
+                                  value={thirdTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  onChange={(e) => {
+                                    const tempState = {
+                                      serviceID: i,
+                                      value: e.target.value
+                                    };
+                                    const prevState = thirdTempRemarks.find(obj => obj.serviceID === i);
+                                    if (prevState) {
+                                      setThirdTempRemarks(prev =>
+                                        prev.map(obj => (obj.serviceID === i ? tempState : obj))
+                                      );
+                                    } else {
+                                      setThirdTempRemarks(prev => [...prev, tempState]);
+                                    }
+                                  }}
+                                  className="form-control"
+                                  type="date"
+                                  placeholder="dd/mm/yyyy"
+                                />
+                              </div>
                             )}
                         </div>
                       </div>
@@ -1842,7 +1845,7 @@ export default function AdminBookingForm({
                             "On Particular Date" && (
                               <div className="mt-2">
                                 <input
-                                   value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
+                                  value={fourthTempRemarks.find(obj => obj.serviceID === i)?.value || ''}
                                   onChange={(e) => {
                                     const tempState = {
                                       serviceID: i,
@@ -2073,22 +2076,22 @@ export default function AdminBookingForm({
     });
   };
 
- 
-  const functionShowSizeLimit = (e)=>{
+
+  const functionShowSizeLimit = (e) => {
     const file = e.target.files[0];
     const maxSizeMB = 24;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
-  
-    if( Math.round(file.size/(1024*1024)) > maxSizeMB){
-      Swal.fire('Size limit exceeded!','Please Upload file less than 24MB','warning');
+
+    if (Math.round(file.size / (1024 * 1024)) > maxSizeMB) {
+      Swal.fire('Size limit exceeded!', 'Please Upload file less than 24MB', 'warning');
       return false;
-    }else {
+    } else {
       return true;
     }
   }
 
 
-  console.log("Lead-Data : ",leadData)
+  console.log("Lead-Data : ", leadData)
 
   return (
     <div>
@@ -3085,7 +3088,7 @@ export default function AdminBookingForm({
                                         className="form-control mt-1"
                                         id="Company"
                                         onChange={(e) => {
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               paymentReceipt: [
@@ -3096,8 +3099,8 @@ export default function AdminBookingForm({
                                             }));
                                           }
                                           // Update the state with the selected files
-                                         
-                                          
+
+
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -3189,7 +3192,7 @@ export default function AdminBookingForm({
                                       <input
                                         type="file"
                                         onChange={(e) => {
-                                          if(functionShowSizeLimit(e)){
+                                          if (functionShowSizeLimit(e)) {
                                             setLeadData((prevLeadData) => ({
                                               ...prevLeadData,
                                               otherDocs: [
@@ -3564,7 +3567,7 @@ export default function AdminBookingForm({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                            <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                 ₹{" "}{parseInt(
                                                   obj.secondPayment
                                                 ).toLocaleString()}{" "}
@@ -3583,7 +3586,7 @@ export default function AdminBookingForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   {parseInt(
                                                     obj.thirdPayment
                                                   ).toLocaleString()}{" "}
@@ -3603,7 +3606,7 @@ export default function AdminBookingForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{ textTransform: "uppercase" }}>
+                                                <div className="form-label-data" style={{ textTransform: "uppercase" }}>
                                                   ₹{" "}{parseInt(
                                                     obj.fourthPayment
                                                   ).toLocaleString()}{" "}
@@ -4070,11 +4073,11 @@ export default function AdminBookingForm({
       </div>
       {/* --------------------------------backedrop------------------------- */}
       {loader && (<Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={loader}
-                onClick={()=> setLoader(false)}>
-                <CircularProgress color="inherit" />
-            </Backdrop>)}
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loader}
+        onClick={() => setLoader(false)}>
+        <CircularProgress color="inherit" />
+      </Backdrop>)}
     </div>
   );
 }
