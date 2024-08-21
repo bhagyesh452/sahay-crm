@@ -739,7 +739,7 @@ export default function HorizontalNonLinearStepper() {
           <div className="card-body p-3">
             <Box sx={{ width: '100%' }}>
               {/* <Stepper sx={{ width: '80%', margin: "30px 130px", padding: '0px' }} nonLinear activeStep={activeStep}> */}
-              {/* <Stepper nonLinear activeStep={activeStep}>
+              <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
                     <StepButton color="inherit" onClick={handleStep(index)} className={
@@ -749,11 +749,11 @@ export default function HorizontalNonLinearStepper() {
                     </StepButton>
                   </Step>
                 ))}
-              </Stepper> */}
+              </Stepper>
 
 
               {/* Here this will not move to next step untill data is not saved for current step and not clicked on next button */}
-              <Stepper nonLinear activeStep={activeStep}>
+              {/* <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
                     <StepButton
@@ -766,7 +766,7 @@ export default function HorizontalNonLinearStepper() {
                     </StepButton>
                   </Step>
                 ))}
-              </Stepper>
+              </Stepper> */}
 
               <div className="mb-4 steprForm-bg he_steprForm_e_add">
                 <div className="steprForm">
