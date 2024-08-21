@@ -56,8 +56,8 @@ function AdminExecutiveHoldPanel() {
                 const filteredData = servicesData
                     .filter(item => item.mainCategoryStatus === "Hold")
                     .sort((a, b) => {
-                        const dateA = new Date(a.addedOn);
-                        const dateB = new Date(b.addedOn);
+                        const dateA = new Date(a.dateOfChangingMainStatus);
+                        const dateB = new Date(b.dateOfChangingMainStatus);
                         return dateB - dateA; // Sort in descending order
                     });
                 setRmServicesData(filteredData);
@@ -89,21 +89,21 @@ function AdminExecutiveHoldPanel() {
             fetchData()
         });
 
-        // socket.on("rm-recievedamount-updated", (res) => {
-        //     fetchData()
-        // });
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchData()
+        });
 
-        // socket.on("rm-recievedamount-deleted", (res) => {
-        //     fetchData()
-        // });
+        socket.on("rm-recievedamount-deleted", (res) => {
+            fetchData()
+        });
 
-        // socket.on("booking-deleted", (res) => {
-        //     fetchData()
-        // });
+        socket.on("booking-deleted", (res) => {
+            fetchData()
+        });
 
-        // socket.on("booking-updated", (res) => {
-        //     fetchData()
-        // });
+        socket.on("booking-updated", (res) => {
+            fetchData()
+        });
 
 
         return () => {
