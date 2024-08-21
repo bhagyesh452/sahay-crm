@@ -84,6 +84,8 @@ router.get("/redesigned-final-leadData-rm", async (req, res) => {
 router.post('/post-rmservicesdata', async (req, res) => {
   const { dataToSend } = req.body;
   const publishDate = new Date();
+  const socketIO = req.io;
+
   try {
     let createData = [];
     let existingRecords = [];
@@ -136,6 +138,7 @@ router.post('/post-rmservicesdata', async (req, res) => {
         failedEntries++;
       }
     }
+    socketIO.emit('rm-services-added');
     // Respond with success message and created data
     res.status(200).json({
       message: "Details added to RM services",
@@ -153,6 +156,8 @@ router.post('/post-rmservicesdata', async (req, res) => {
 router.post('/post-adminexecutivedata', async (req, res) => {
   const { dataToSend } = req.body;
   const publishDate = new Date();
+  const socketIO = req.io;
+
   try {
     let createData = [];
     let existingRecords = [];
@@ -189,6 +194,7 @@ router.post('/post-adminexecutivedata', async (req, res) => {
       }
     }
     // Respond with success message and created data
+    socketIO.emit('adminexecutive-services-added');
     res.status(200).json({
       message: "Details added to RM services",
       data: createData,
@@ -2288,7 +2294,7 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
     // }
 
     // Validate that the pendingReceivedPayment does not exceed the total amount
-    const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
+    //const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
     const currentReceivedPayment = company.pendingRecievedPayment || 0;
 
     //console.log("totalAmount", totalAmount)
@@ -2335,7 +2341,7 @@ router.post("/adminexecutive-update-remainingpayments", async (req, res) => {
     // }
 
     // Validate that the pendingReceivedPayment does not exceed the total amount
-    const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
+    //const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
     const currentReceivedPayment = company.pendingRecievedPayment || 0;
 
     //console.log("totalAmount", totalAmount)
