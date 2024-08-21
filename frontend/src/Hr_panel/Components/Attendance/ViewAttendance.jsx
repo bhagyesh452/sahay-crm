@@ -725,10 +725,10 @@ function ViewAttendance({ year, month }) {
                         </div>
                     </div>
 
-                    
+
 
                     {/* Deleted Employees Data */}
-                    <div class="tab-pane" id="sbr">
+                    <div class="tab-pane" id="DeletedEmployees">
                         <div className="table table-responsive table-style-4 m-0">
                             <table className="table table-vcenter table-nowrap attendance-table tbl-collps attendance-tbl">
                                 <thead className="tr-sticky">
@@ -806,9 +806,6 @@ function ViewAttendance({ year, month }) {
                                                                 <div onClick={() => handleShowParticularEmployeeAttendance(emp._id, emp.ename)} className="cursor-pointer">
                                                                     {emp.ename}
                                                                 </div>
-                                                                {/* <div>
-                                                                    <LuMailPlus />
-                                                                </div> */}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -822,11 +819,6 @@ function ViewAttendance({ year, month }) {
                                                         const currentMonth = month; // Use the prop month instead of the current month
                                                         const currentDay = new Date().getDate();
                                                         const myDate = new Date(attendanceDate).getDate();
-
-                                                        const currentDate = new Date(); // Today's date
-                                                        const selectedDate = new Date(`${currentYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`);
-
-                                                        const isFutureDate = selectedDate > currentDate;
 
                                                         const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
                                                             inTime: "",
@@ -861,9 +853,9 @@ function ViewAttendance({ year, month }) {
 
                                                                 {!status && <div>
                                                                     <button
-                                                                        className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
-                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
-                                                                        disabled={isFutureDate} // Disable button for future dates
+                                                                        className='p-disabled'
+                                                                        // onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                        disabled // Disable button for future dates
                                                                     >
                                                                         {day <= daysInMonth && <FaPlus />}
                                                                     </button>
@@ -904,7 +896,7 @@ function ViewAttendance({ year, month }) {
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
-                    Add attendance {" "}
+                    {inTime && outTime ? "View attendance" : "Add attendance"}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         handleClosePopup();
                         setInTime("");
@@ -947,7 +939,7 @@ function ViewAttendance({ year, month }) {
                                                 />
                                             </div>
                                         </div>
-                                    
+
                                         <div className="col-lg-3">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">In Time</label>
