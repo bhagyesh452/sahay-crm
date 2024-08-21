@@ -186,7 +186,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
     const fetchAttendance = async () => {
         setIsLoading(true);
         try {
-            const res = await axios.get(`${secretKey}/attendance/viewAllAttendance/`);
+            const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
             const allAttendanceData = res.data.data;
 
             const totalDays = new Date(year, new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1, 0).getDate();
