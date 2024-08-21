@@ -829,7 +829,13 @@ export default function EditableMoreBooking({
       }));
 
       const dataToSend = {
-        ...leadData, services: servicestoSend, requestBy: employeeName, bookingSource: selectedValues, generatedTotalAmount: generatedTotalAmount, generatedReceivedAmount: generatedReceivedAmount, receivedAmount: parseInt(leadData.services
+        ...leadData, 
+        services: servicestoSend, 
+        requestBy: employeeName, 
+        bookingSource: selectedValues, 
+        generatedTotalAmount: generatedTotalAmount, 
+        generatedReceivedAmount: generatedReceivedAmount, 
+        receivedAmount: parseInt(leadData.services
           .reduce(
             (total, service) =>
               service.paymentTerms ===
@@ -909,7 +915,13 @@ export default function EditableMoreBooking({
           : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
       }, 0);
       const dataToSend = {
-        ...leadData, generatedTotalAmount: generatedTotalAmount, services: servicestoSend, generatedReceivedAmount: generatedReceivedAmount, bookingSource: selectedValues, step4changed: step4changed, receivedAmount: parseInt(leadData.services
+        ...leadData, 
+        generatedTotalAmount: generatedTotalAmount, 
+        services: servicestoSend, 
+        generatedReceivedAmount: generatedReceivedAmount, 
+        bookingSource: selectedValues, 
+        step4changed: step4changed, 
+        receivedAmount: parseInt(leadData.services
           .reduce(
             (total, service) =>
               service.paymentTerms ===
@@ -982,8 +994,8 @@ export default function EditableMoreBooking({
           });
           // console.log(activeStep, dataToSend);
           
-
-
+          console.log("dataToSend" , dataToSend)
+          console.log("formData" , formData)
           const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
