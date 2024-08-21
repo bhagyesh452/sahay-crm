@@ -1157,7 +1157,10 @@ export default function EditableMoreBooking({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select 
+                className="form-select mt-1 ml-1" style={{ width: '120px' }} disabled={completed[activeStep] === true} 
+                value={isoType && isoType.find(obj => obj.serviceID === i).type} 
+                onChange={(e) => {
                   const currentObject = isoType.find(obj => obj.serviceID === i);
 
                   if (currentObject) {

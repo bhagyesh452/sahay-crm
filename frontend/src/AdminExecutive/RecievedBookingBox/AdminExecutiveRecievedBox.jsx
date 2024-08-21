@@ -302,7 +302,7 @@ function AdminExecutiveRecievedBox() {
     // };
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-04-09");
+        const today = new Date("2024-08-21");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -730,8 +730,12 @@ function AdminExecutiveRecievedBox() {
         selectedServices.forEach(serviceName => {
             // Find the detailed service object in combinedServices
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-            const remainingPaymentData = combinedRemainingpaymentsForServices.find(service => service.serviceName === serviceName)
+            const remainingPaymentData = combinedRemainingpaymentsForServices.filter(service => service.serviceName === serviceName)
             console.log("RemainingPaymentData", remainingPaymentData)
+            const totalReceivedPayment = remainingPaymentData.reduce((total, service) => {
+                return total + service.receivedPayment;
+            }, 0);
+            const pendingRecievedPaymentDate = remainingPaymentData.length > 0 ? remainingPaymentData[0].paymentDate : null;
             // Check if serviceData is found
             if (serviceData) {
                 // Create an object with the required fields from selectedCompanyData and serviceData
@@ -763,8 +767,8 @@ function AdminExecutiveRecievedBox() {
                     thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
                     bookingPublishDate: serviceData.bookingPublishDate || '',
-                    pendingRecievedPayment: remainingPaymentData ? remainingPaymentData.receivedPayment : 0,
-                    pendingRecievedPaymentDate: remainingPaymentData ? remainingPaymentData.paymentDate : null,
+                    pendingRecievedPayment: remainingPaymentData ? totalReceivedPayment : 0,
+                    pendingRecievedPaymentDate: pendingRecievedPaymentDate,
                     addedOn: new Date() // Handle optional fields
                 };
 
