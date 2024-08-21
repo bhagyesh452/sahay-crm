@@ -61,6 +61,7 @@ function ViewAttendance({ year, month }) {
     const [isLoading, setIsLoading] = useState(false);
     const [gotaBranchEmployees, setGotaBranchEmployees] = useState([]);
     const [sindhuBhawanBranchEmployees, setSindhuBhawanBranchEmployees] = useState([]);
+    const [deletedEmployees, setDeletedEmployees] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
     const [showAttendanceForParticularDate, setShowAttendanceForParticularDate] = useState(false);
     const [showAttendanceForParticularEmployee, setShowAttendanceForParticularEmployee] = useState(false);
@@ -118,6 +119,20 @@ function ViewAttendance({ year, month }) {
         }
     };
 
+    const fetchDeletedEmployees = async () => {
+        try {
+            setIsLoading(true);
+            const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+            setDeletedEmployees(res.data);
+            fetchAttendance();
+            // console.log("Fetched Deleted Employees are:", res.data);
+        } catch (error) {
+            console.log("Error fetching employees data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleClosePopup = () => {
         setShowPopup(false);
         setInTimeError("");
@@ -145,16 +160,16 @@ function ViewAttendance({ year, month }) {
         setDayName(dayName);
 
         const attendanceDetails = attendanceData[id]?.[year]?.[month]?.[day] || {};
-    const status = attendanceDetails.status || "";
+        const status = attendanceDetails.status || "";
 
-    // Disable In Time and Out Time based on status
-    if (status === "Present" || status === "Leave" || status === "Half Day") {
-        setDisableInTime(true);
-        setDisableOutTime(true);
-    } else {
-        setDisableInTime(false);
-        setDisableOutTime(false);
-    }
+        // Disable In Time and Out Time based on status
+        if (status === "Present" || status === "Leave" || status === "Half Day") {
+            setDisableInTime(true);
+            setDisableOutTime(true);
+        } else {
+            setDisableInTime(false);
+            setDisableOutTime(false);
+        }
 
         // console.log("Attendance date is :", formattedDate);
         // console.log("Day name is :", dayName);
@@ -317,11 +332,13 @@ function ViewAttendance({ year, month }) {
 
     useEffect(() => {
         fetchEmployees();
+        fetchDeletedEmployees();
         fetchAttendance();
     }, [year, month]);
 
     // console.log("Gota employees are :", gotaBranchEmployees);
     // console.log("Sindhu Bhawan employees are :", sindhuBhawanBranchEmployees);
+    console.log("Deleted employees are :", deletedEmployees);
 
     return (
         <>
@@ -359,13 +376,15 @@ function ViewAttendance({ year, month }) {
                                         Deleted
                                     </div>
                                     <div className="rm_tsn_bdge">
-                                        1
+                                        {deletedEmployees.length || 0}
                                     </div>
                                 </div>
                             </a>
                         </li>
                     </ul>
                 </div>
+
+                {/* Gota Employees Data */}
                 <div class="tab-content card-body">
                     <div class="tab-pane active" id="gota">
                         <div className="table table-responsive table-style-4 m-0">
@@ -535,7 +554,7 @@ function ViewAttendance({ year, month }) {
 
 
 
-                    {/* SBR Data */}
+                    {/* SBR Employees Data */}
                     <div class="tab-pane" id="sbr">
                         <div className="table table-responsive table-style-4 m-0">
                             <table className="table table-vcenter table-nowrap attendance-table tbl-collps attendance-tbl">
@@ -705,10 +724,184 @@ function ViewAttendance({ year, month }) {
                             </table>
                         </div>
                     </div>
+
+                    
+
+                    {/* Deleted Employees Data */}
+                    <div class="tab-pane" id="sbr">
+                        <div className="table table-responsive table-style-4 m-0">
+                            <table className="table table-vcenter table-nowrap attendance-table tbl-collps attendance-tbl">
+                                <thead className="tr-sticky">
+                                    <tr>
+                                        <th className='hr-sticky-left-1'>Sr. No</th>
+                                        <th className='hr-sticky-left-2'>Name</th>
+
+                                        {/* Generate table headers with day labels */}
+                                        {selectedMonthDays.map(day => {
+                                            const fullDate = new Date(`${day}-${month}-${year}`); // Assuming month is 1-based (January is 1)
+                                            return (
+                                                <th className='th-day' key={day}>
+                                                    <div className='d-flex align-items-center justify-content-between'>
+                                                        <div>
+                                                            {getDayLabel(day)}
+                                                        </div>
+                                                        <div className='view-attendance-th-icon'>
+                                                            <FaRegCalendarPlus onClick={() => handleCalendarIconClick(fullDate)} />
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            );
+                                        })}
+
+                                        <th className='hr-sticky-action3'>
+                                            <div className='p-present'>
+                                                P
+                                            </div>
+                                        </th>
+                                        <th className='hr-sticky-action2'>
+                                            <div className='l-leave'>
+                                                L
+                                            </div>
+                                        </th>
+                                        <th className='hr-sticky-action1'>
+                                            <div className='H-Halfday'>
+                                                H
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                {isLoading ? (
+                                    <tbody>
+                                        <div className="LoaderTDSatyle w-100">
+                                            <ClipLoader
+                                                color="lightgrey"
+                                                loading={true}
+                                                size={30}
+                                                aria-label="Loading Spinner"
+                                                data-testid="loader"
+                                            />
+                                        </div>
+                                    </tbody>
+                                ) : deletedEmployees.length !== 0 ? (
+                                    <tbody>
+                                        {deletedEmployees.map((emp, index) => {
+                                            const profilePhotoUrl = emp.profilePhoto?.length !== 0
+                                                ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                                : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
+
+                                            let presentCount = 0;
+                                            let leaveCount = 0;
+                                            let halfDayCount = 0;
+
+                                            return (
+                                                <tr key={index}>
+                                                    <td className='hr-sticky-left-1'>{index + 1}</td>
+                                                    <td className='hr-sticky-left-2'>
+                                                        <div className="d-flex align-items-center">
+                                                            <div className="tbl-pro-img">
+                                                                <img src={profilePhotoUrl} alt="Profile" className="profile-photo" />
+                                                            </div>
+                                                            <div className="d-flex align-items-center justify-content-center">
+                                                                <div onClick={() => handleShowParticularEmployeeAttendance(emp._id, emp.ename)} className="cursor-pointer">
+                                                                    {emp.ename}
+                                                                </div>
+                                                                {/* <div>
+                                                                    <LuMailPlus />
+                                                                </div> */}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    {selectedMonthDays.map(day => {
+                                                        const empAttendance = attendanceData[emp._id] || {};
+                                                        const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
+                                                        const { attendanceDate = formattedDate } = empAttendance;
+
+                                                        const currentYear = year; // Use the prop year instead of the current year
+                                                        const currentMonth = month; // Use the prop month instead of the current month
+                                                        const currentDay = new Date().getDate();
+                                                        const myDate = new Date(attendanceDate).getDate();
+
+                                                        const currentDate = new Date(); // Today's date
+                                                        const selectedDate = new Date(`${currentYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`);
+
+                                                        const isFutureDate = selectedDate > currentDate;
+
+                                                        const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
+                                                            inTime: "",
+                                                            outTime: "",
+                                                            workingHours: "",
+                                                            status: ""
+                                                        };
+
+                                                        if (attendanceDetails.status === "Present") presentCount++;
+                                                        if (attendanceDetails.status === "Leave") leaveCount++;
+                                                        if (attendanceDetails.status === "Half Day") halfDayCount++;
+
+                                                        // console.log("Emp attendance details :", attendanceDetails);
+
+                                                        const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
+                                                        const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
+                                                        const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+
+                                                        return (
+                                                            <td key={day}>
+                                                                <div
+                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                    className={`
+                                                                    ${status === "Present" ? "p-present" : ""}
+                                                                    ${status === "Half Day" ? "H-Halfday" : ""}
+                                                                    ${status === "Leave" ? "l-leave" : ""}
+                                                                    `.trim()}>
+                                                                    {status === "Present" ? "P" :
+                                                                        status === "Half Day" ? "H" :
+                                                                            status === "Leave" ? "L" : ""}
+                                                                </div>
+
+                                                                {!status && <div>
+                                                                    <button
+                                                                        className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
+                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                        disabled={isFutureDate} // Disable button for future dates
+                                                                    >
+                                                                        {day <= daysInMonth && <FaPlus />}
+                                                                    </button>
+                                                                </div>}
+                                                            </td>
+                                                        );
+                                                    })}
+
+                                                    <td className='hr-sticky-action3'>
+                                                        {presentCount}
+                                                    </td>
+                                                    <td className='hr-sticky-action2'>
+                                                        {leaveCount}
+                                                    </td>
+                                                    <td className='hr-sticky-action1'>
+                                                        {halfDayCount}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="36" style={{ textAlign: "center" }}>
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                )}
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>}
 
-            {/* Pop-up to be opened after click on plus button */}
+            {/* Pop-up to be opened after click on plus button to add or view attendance */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Add attendance {" "}
