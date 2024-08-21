@@ -334,7 +334,7 @@ function ViewAttendance({ year, month }) {
         fetchEmployees();
         fetchDeletedEmployees();
         fetchAttendance();
-    }, [year, month]);
+    }, [year, month, showAttendanceForParticularEmployee]);
 
     // console.log("Gota employees are :", gotaBranchEmployees);
     // console.log("Sindhu Bhawan employees are :", sindhuBhawanBranchEmployees);

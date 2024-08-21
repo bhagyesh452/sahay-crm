@@ -186,51 +186,44 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
     const fetchAttendance = async () => {
         setIsLoading(true);
         try {
-            const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
-            const allAttendanceData = res.data.data;
-
+            const res = await axios.get(`${secretKey}/attendance/viewAttendance/${id}`);
+            const attendanceData = res.data.data;  // This is now an object for a single employee
+            console.log("Attendance data is:", attendanceData);
+    
             const totalDays = new Date(year, new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1, 0).getDate();
-            const today = new Date().getDate(); // Current date of the month
+            const today = new Date().getDate();  // Current date of the month
             const currentMonth = getCurrentMonthName();
             const isCurrentMonth = month === currentMonth;
-            let name = "";
-            let designation = "";
-            
+    
+            let name = attendanceData.employeeName; // Get employee name directly from the fetched data
+            let designation = attendanceData.designation;  // Get designation directly from the fetched data
             const filteredData = [];
-            const filledDates = new Set(); // To track dates with existing data
-
-            // Collect all filled dates
-            allAttendanceData.forEach(employee => {
-                if (employee._id === id) {  // Check for the specific employee ID
-                    employee.years.forEach(yearData => {
-                        if (yearData.year === year) {  // Check for the specific year
-                            yearData.months.forEach(monthData => {
-                                if (monthData.month === month) {  // Check for the specific month
-                                    monthData.days.forEach(dayData => {
-                                        const { date: dayDate, inTime, outTime, workingHours, status } = dayData;
-
-                                        filledDates.add(dayDate); // Add filled date to the set
-
-                                        // Add data for the current month up to today or all data for past months
-                                        if (isCurrentMonth && dayDate <= today || !isCurrentMonth) {
-
-                                            name = employee.employeeName;
-                                            designation = employee.designation;
-
-                                            filteredData.push({
-                                                _id: employee._id,
-                                                employeeId: employee.employeeId,
-                                                employeeName: employee.employeeName,
-                                                designation: employee.designation,
-                                                department: employee.department,
-                                                branchOffice: employee.branchOffice,
-                                                date: dayDate,
-                                                inTime,
-                                                outTime,
-                                                workingHours,
-                                                status
-                                            });
-                                        }
+            const filledDates = new Set();  // To track dates with existing data
+    
+            // Process attendance data
+            attendanceData.years.forEach(yearData => {
+                if (yearData.year === year) {  // Check for the specific year
+                    yearData.months.forEach(monthData => {
+                        if (monthData.month === month) {  // Check for the specific month
+                            monthData.days.forEach(dayData => {
+                                const { date: dayDate, inTime, outTime, workingHours, status } = dayData;
+    
+                                filledDates.add(dayDate);  // Add filled date to the set
+    
+                                // Add data for the current month up to today or all data for past months
+                                if (isCurrentMonth && dayDate <= today || !isCurrentMonth) {
+                                    filteredData.push({
+                                        _id: attendanceData._id,
+                                        employeeId: attendanceData.employeeId,
+                                        employeeName: attendanceData.employeeName,
+                                        designation: attendanceData.designation,
+                                        department: attendanceData.department,
+                                        branchOffice: attendanceData.branchOffice,
+                                        date: dayDate,
+                                        inTime,
+                                        outTime,
+                                        workingHours,
+                                        status
                                     });
                                 }
                             });
@@ -238,7 +231,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                     });
                 }
             });
-
+    
             // Include dates with no data in current month
             if (isCurrentMonth) {
                 for (let date = 1; date <= today; date++) {
@@ -246,8 +239,6 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                         filteredData.push({
                             employeeName: name, // Example placeholder for missing data
                             designation: designation,
-                            // department: '',
-                            // branchOffice: '',
                             date: date,
                             inTime: '',
                             outTime: '',
@@ -263,8 +254,6 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                         filteredData.push({
                             employeeName: name, // Example placeholder for missing data
                             designation: designation,
-                            // department: '',
-                            // branchOffice: '',
                             date: date,
                             inTime: '',
                             outTime: '',
@@ -274,7 +263,8 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                     }
                 }
             }
-
+    
+            // Sort the filtered data by date
             filteredData.sort((a, b) => new Date(`${year}-${month}-${a.date}`) - new Date(`${year}-${month}-${b.date}`));
             setAttendanceData(filteredData);
         } catch (error) {
@@ -283,7 +273,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
             setIsLoading(false);
         }
     };
-
+    
     useEffect(() => {
         fetchEmployees();
         fetchAttendance();
