@@ -12,6 +12,8 @@ import { LiaDigitalTachographSolid } from "react-icons/lia";
 import { VscGraph } from "react-icons/vsc";
 import { GrDocumentStore } from "react-icons/gr";
 import axios from 'axios';
+import { IoNewspaperOutline } from "react-icons/io5";
+
 
 
 
@@ -165,7 +167,7 @@ function EmpNav({ userId, bdmWork }) {
                   </a>
 
                 </Link>
-                {/* <Link style={{ textDecoration: "none", color: "black" }}
+                <Link style={{ textDecoration: "none", color: "black" }}
                   className={
                     location.pathname === `/employee-assets/${userId}` ? "nav-item active" : "nav-item"
                   }
@@ -173,12 +175,12 @@ function EmpNav({ userId, bdmWork }) {
                 >
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <VscGraph style={{ height: "24px", width: "19px" }} />
+                      <IoNewspaperOutline style={{ height: "24px", width: "19px" }} />
                     </span>
                     <span className="nav-link-title">Assets</span>
                   </a>
 
-                </Link> */}
+                </Link>
               </ul>
 
             </div>

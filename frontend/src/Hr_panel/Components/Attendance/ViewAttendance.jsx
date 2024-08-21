@@ -709,7 +709,7 @@ function ViewAttendance({ year, month }) {
             </div>}
 
             {/* Pop-up to be opened after click on plus button */}
-            <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="sm">
+            <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
                     Add attendance {" "}
                     <IconButton style={{ float: "right" }} onClick={() => {
@@ -721,84 +721,91 @@ function ViewAttendance({ year, month }) {
                     </IconButton>{" "}
                 </DialogTitle>
                 <DialogContent>
-                    <div className="modal-dialog modal-lg" role="document">
+                    <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-body">
                                 <div className="mb-3">
-                                    <div className="d-flex">
-                                        <div className="col-6 me-1">
-                                            <label className="form-label">Employee Name</label>
-                                            <input
-                                                type="text"
-                                                name="empName"
-                                                className="form-control mt-1"
-                                                placeholder="Employee name"
-                                                value={empName}
-                                                disabled
-                                            // onChange={(e) => handleInputChange("firstName", e.target.value)}
-                                            />
+                                    <div className='row'>
+                                        <div className="col-lg-3">
+                                            <div className='attendance-date-tbl'>
+                                                <label className="form-label">Employee Name</label>
+                                                <input
+                                                    type="text"
+                                                    name="empName"
+                                                    className="form-control date-f mt-1"
+                                                    placeholder="Employee name"
+                                                    value={empName}
+                                                    disabled
+                                                // onChange={(e) => handleInputChange("firstName", e.target.value)}
+                                                />
+                                            </div>
                                         </div>
 
-                                        <div className="col-6 me-1">
-                                            <label className="form-label">Attendance Date</label>
-                                            <input
-                                                type="date"
-                                                name="attendanceDate"
-                                                className="form-control mt-1"
-                                                value={attendanceDate}
-                                                disabled
-                                            // onChange={(e) => handleInputChange("middleName", e.target.value)}
-                                            />
+                                        <div className="col-lg-3">
+                                            <div className='attendance-date-tbl'>
+                                                <label className="form-label">Attendance Date</label>
+                                                <input
+                                                    type="date"
+                                                    name="attendanceDate"
+                                                    className="form-control date-f mt-1"
+                                                    value={attendanceDate}
+                                                    disabled
+                                                // onChange={(e) => handleInputChange("middleName", e.target.value)}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="d-flex mt-3">
-                                        <div className="col-6 me-1">
-                                            <label className="form-label">In Time</label>
-                                            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DemoContainer components={['TimePicker']}>
-                                                    <TimePicker
-                                                        // label="In Time"
-                                                        value={dayjs(inTime)}
-                                                        onChange={(newValue) => setInTime(newValue ? newValue.format('HH:mm') : '')}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider> */}
-                                            <input
-                                                type="time"
-                                                name="inTime"
-                                                className="form-control mt-1"
-                                                value={inTime}
-                                                onChange={(e) => {
-                                                    setInTime(e.target.value);
-                                                    if (e.target.value) setInTimeError(""); // Clear error when valid
-                                                }}
-                                                disabled={disableInTime}
-                                            />
+                                    
+                                        <div className="col-lg-3">
+                                            <div className='attendance-date-tbl'>
+                                                <label className="form-label">In Time</label>
+                                                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DemoContainer components={['TimePicker']}>
+                                                        <TimePicker
+                                                            // label="In Time"
+                                                            value={dayjs(inTime)}
+                                                            onChange={(newValue) => setInTime(newValue ? newValue.format('HH:mm') : '')}
+                                                        />
+                                                    </DemoContainer>
+                                                </LocalizationProvider> */}
+                                                <input
+                                                    type="time"
+                                                    name="inTime"
+                                                    className="form-control in-time w-100"
+                                                    value={inTime}
+                                                    onChange={(e) => {
+                                                        setInTime(e.target.value);
+                                                        if (e.target.value) setInTimeError(""); // Clear error when valid
+                                                    }}
+                                                    disabled={disableInTime}
+                                                />
+                                            </div>
                                             {inTimeError && <p className="text-danger">{inTimeError}</p>}
                                         </div>
 
-                                        <div className="col-6 me-1">
-                                            <label className="form-label">Out Time</label>
-                                            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DemoContainer components={['TimePicker']}>
-                                                    <TimePicker
-                                                        // label="Out Time"
-                                                        value={dayjs(outTime)}
-                                                        onChange={(newValue) => setOutTime(newValue ? newValue.format('HH:mm') : '')}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider> */}
-                                            <input
-                                                type="time"
-                                                name="outTime"
-                                                className="form-control mt-1"
-                                                value={outTime}
-                                                onChange={(e) => {
-                                                    setOutTime(e.target.value);
-                                                    if (e.target.value) setOutTimeError(""); // Clear error when valid
-                                                }}
-                                                disabled={disableOutTime}
-                                            />
+                                        <div className="col-lg-3">
+                                            <div className='attendance-date-tbl'>
+                                                <label className="form-label">Out Time</label>
+                                                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DemoContainer components={['TimePicker']}>
+                                                        <TimePicker
+                                                            // label="Out Time"
+                                                            value={dayjs(outTime)}
+                                                            onChange={(newValue) => setOutTime(newValue ? newValue.format('HH:mm') : '')}
+                                                        />
+                                                    </DemoContainer>
+                                                </LocalizationProvider> */}
+                                                <input
+                                                    type="time"
+                                                    name="outTime"
+                                                    className="form-control out-time w-100"
+                                                    value={outTime}
+                                                    onChange={(e) => {
+                                                        setOutTime(e.target.value);
+                                                        if (e.target.value) setOutTimeError(""); // Clear error when valid
+                                                    }}
+                                                    disabled={disableOutTime}
+                                                />
+                                            </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
                                         </div>
                                     </div>
@@ -807,9 +814,9 @@ function ViewAttendance({ year, month }) {
                         </div>
                     </div>
                 </DialogContent>
-                {!disableInTime && !disableOutTime && <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                     Submit
-                </Button>}
+                </Button>
             </Dialog>
 
             {showAttendanceForParticularDate && <ShowAttendanceForParticularDate selectedDate={selectedDate} close={hanleCloseParticularDateAttendance} />}

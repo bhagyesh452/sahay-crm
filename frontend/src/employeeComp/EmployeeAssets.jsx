@@ -349,10 +349,15 @@ function EmployeeAssets() {
             <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
             <EmpNav userId={userId} bdmWork={data.bdmWork} />
             {!openDetailsPage && (<div className="page-wrapper">
-                <div className="page-header rm_Filter m-0 d-none">
+                <div className="page-header rm_Filter m-0">
                     <div className="container-xl">
-                        <div className="d-flex  justify-content-between">
-                            <div className="d-flex w-100">
+                        <div className="d-flex  ">
+                            <div className="d-flex w-100 justify-content-between">
+                                <div className="btn-group ml-1" role="group" aria-label="Basic example">
+                                    <button type="button" className="btn mybtn"  >
+                                        <IoFilterOutline className='mr-1' /> Filter
+                                    </button>
+                                </div>
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div class="input-icon ml-1">
                                         <span class="input-icon-addon">
@@ -371,11 +376,6 @@ function EmployeeAssets() {
 
                                         />
                                     </div>
-                                </div>
-                                <div className="btn-group ml-1" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn"  >
-                                        <IoFilterOutline className='mr-1' /> Filter
-                                    </button>
                                 </div>
                             </div>
                         </div>

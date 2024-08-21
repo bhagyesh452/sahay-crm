@@ -1098,6 +1098,7 @@ table.table.top_5_table tbody tr.myself td {
     background-position: right 6px center;
     cursor: pointer;
     text-transform: uppercase;
+    border: none;
 }
 .attendance-date-tbl .out-time
 {
@@ -1108,6 +1109,7 @@ table.table.top_5_table tbody tr.myself td {
     background-position: right 6px center;
     cursor: pointer;
     text-transform: uppercase;
+    border: none;
 }
 .p-present
 {
@@ -1355,16 +1357,40 @@ th.th-day {
     border-right: 1px solid #eee;
     overflow-y: auto;
 }
+.employee-assets-left nav 
+{
+    padding: 10px !important;
+}
 .employee-assets-left .nav-link
 {
     border: none ! IMPORTANT;
     border-bottom: 1px solid #f3f3f3 !important;
+    border-radius: 5px !important;
+    position: relative;
 }  
 .employee-assets-left .nav-link.active
 {
     background: #54575a;
     color: #fff !important;
+    position: relative;
 } 
+.employee-assets-left .nav-link.active::after
+{
+    position: absolute;
+    content: "";
+    width: 13px;
+    height: 13px;
+    border: 1px solid #54575a;
+    rotate: 45deg;
+    background: #54575a;
+    top: 11px;
+    right: -6px;
+    z-index: 1;
+    border-left: 1px solid #54575a;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    transition: 0.5s;
+}
 
 .employee-assets-right
 {
@@ -1473,7 +1499,157 @@ th.th-day {
 	transform: translate(-50%, -50%);
 
 }
-
+.emply_S_assets_dtl_bg
+{
+    background: #d2d2d2 url(../static/my-images/bg.png) no-repeat 0 0;
+    background-size: cover;
+    min-height: 225px;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    opacity: 0.1;
+    z-index: -6;
+    top: 0;
+    left: 0;
+}
+.services_assets_dtl_main
+{
+    position: relative;
+    z-index: 1;
+}
+.emply_S_assets_dtl
+{
+    position: relative;
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    height: 100%;
+    z-index: 1;
+    min-height: 225px;
+}
+.emply_S_assets_dtl_head_brdcrm
+{
+    font-size: 11px;
+    margin: 0px 0px;
+    text-transform: uppercase;
+    color: #a5a5a5;
+}
+.emply_S_assets_dtl_head_sname
+{
+    font-size: 28px;
+    font-weight: 700;
+    color: #706f76;
+}
+.emply_S_assets_dtl_head_tagline
+{
+    font-size: 18px;
+    font-weight: 500;
+    color: #a3a3a3;
+}
+.emply_S_assets_dtl_inner
+{
+    margin-top: -60px;
+    z-index: 1;
+    
+}
+.emply_S_assets_dtl_inner_left
+{
+    padding: 20px 15px;
+    height: 400px;
+    position: relative;
+    z-index: 0;
+}
+.lbg
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: url(../static/city.svg);
+    background-position: bottom;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+    width: 100%;
+    height: 400px;
+    z-index: -1;
+}
+.emply_S_assets_dtl_inner_right
+{
+    border-left: 1px solid #eee;
+    height: 400px;
+    padding: 0px 15px;
+    overflow-y: auto;
+}
+.emply_S_assets_dtl_inner_left .nav-link:hover
+{
+    border: 1px solid #eeeeee00 !important;
+}
+.emply_S_assets_dtl_inner_left .nav-link.active
+{
+    border: 1px solid #eeeeee00 !important;
+    background: #fff !important;
+    border-bottom: 2px solid #fbba1c !important;
+}
+.ES_assetsdtl_Linner_h, .ES_assetsdtl_Linner_p
+{
+    padding: 0px 10px;
+    margin-top: 20px;
+}
+.ES_assetsdtl_Linner_p
+{
+    padding: 0px 10px;
+}
+.ES_assetsdtl_Linner_p p
+{
+    font-size: 16px;
+    color: #6b6b6b;
+}
+.ES_assetsdtl_Linner_p ul li
+{
+    font-size: 16px;
+    color: #6b6b6b;
+    margin: 10px 0;
+}
+.esadir_docs
+{
+    padding: 8px 15px 12px 15px;
+}
+.esadir_docs_depart_name
+{
+    font-size: 14px;
+    color: #878787;
+    font-weight: 600;
+    margin-top: 2px;
+}
+.esadir_docs_depart_name a
+{
+    color: #1790c8;
+    cursor:pointer;
+}
+.link_wrap
+{
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+.ConcerneddepartPerson p
+{
+    font-size: 14px;
+    color: #4d4d4d;
+    margin: 0;
+}
+.ConcerneddepartPerson label
+{
+    font-size: 12px;
+    color: #727272;
+    margin: 0;
+    font-weight: 400;
+}
+.wp-icon
+{
+    line-height: 7px;
+    color: #4CAF50;
+}
 /* Sweep To Right */
 /* .sweep-to-right {
     -webkit-transform: perspective(1px) translateZ(0);
