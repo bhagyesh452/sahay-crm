@@ -21,7 +21,7 @@ import DscStatusDropdown from '../ExtraComponents/DscStatusDropdown';
 //import FilterableTable from '../Extra-Components/FilterableTable';
 import StatusDropdownAdminExecutive from "../AdminExecutiveExtraComponents/StatusDropdownAdminExecutive"
 
-function AdminExecutiveGeneralPanel({ showFilter }) {
+function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
     const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -38,7 +38,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
     const [completeRmData, setcompleteRmData] = useState([])
     const [dataToFilter, setdataToFilter] = useState([])
     // Fetch Data Function
-    const fetchData = async () => {
+    const fetchData = async (searchQuery = "") => {
         setOpenBacdrop(true);
         try {
 
@@ -46,7 +46,9 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
             const userData = employeeResponse.data.find((item) => item._id === adminExecutiveUserId);
             setEmployeeData(userData);
 
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`);
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`,{
+                params: { search: searchQuery }
+            });
             const servicesData = servicesResponse.data;
 
             if (Array.isArray(servicesData)) {
@@ -71,7 +73,9 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
             setOpenBacdrop(false);
         }
     };
-
+    useEffect(() => {
+        fetchData(searchText)
+   }, [searchText]);
 
 
     useEffect(() => {
@@ -83,23 +87,23 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
         });
 
         socket.on("adminexectuive-general-status-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-deleted", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("booking-deleted", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("booking-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
 
@@ -112,12 +116,12 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
 
     const refreshData = () => {
 
-        fetchData();
+        fetchData(searchText);
     };
 
     // useEffect to fetch data on component mount
     useEffect(() => {
-        fetchData();
+        fetchData(searchText);
     }, [adminExecutiveUserId, secretKey]);
 
     const formatDatePro = (inputDate) => {
@@ -169,7 +173,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                 updatedOn: new Date()
             });
             if (response.status === 200) {
-                fetchData();
+                fetchData(searchText);
                 functionCloseRemarksPopup();
                 Swal.fire(
                     'Remarks Added!',
@@ -205,7 +209,7 @@ function AdminExecutiveGeneralPanel({ showFilter }) {
                 });
 
                 if (response.status === 200) {
-                    fetchData();
+                    fetchData(searchText);
                     Swal.fire(
                         'Company Reverted Back!',
                         'Company has been sent back to the received box.',

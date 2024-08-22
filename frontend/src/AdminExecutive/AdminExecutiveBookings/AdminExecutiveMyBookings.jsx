@@ -42,7 +42,8 @@ function AdminExecutiveMyBookings() {
     const [showFilterIconSubmitted, setShowFilterIconSubmitted] = useState(false)
     const [showFilterIconDefaulter, setShowFilterIconDefaulter] = useState(false)
     const [showFilterIconHold, setShowFilterIconHold] = useState(false)
-    const [showFilterIconApproved, setShowFilterIconApproved] = useState(false)
+    const [showFilterIconApproved, setShowFilterIconApproved] = useState(false);
+    const [search, setSearch] = useState("");
     //const [showFilterIcon, setShowFilterIcon] = useState(false)
     const [activeTab, setActiveTab] = useState("General");
     const [showFilterIcon, setShowFilterIcon] = useState({
@@ -70,7 +71,22 @@ function AdminExecutiveMyBookings() {
 
         socket.on("adminexecutive-general-status-updated", (res) => {
             console.log("socketChala")
-            fetchRMServicesData()
+            fetchRMServicesData(search)
+        });
+        
+        socket.on("rm-recievedamount-updated", (res) => {
+            fetchRMServicesData(search)
+        });
+
+        socket.on("rm-recievedamount-deleted", (res) => {
+            fetchRMServicesData(search)
+        });
+        socket.on("booking-deleted", (res) => {
+            fetchRMServicesData(search)
+        });
+
+        socket.on("booking-updated", (res) => {
+            fetchRMServicesData(search)
         });
 
         return () => {
@@ -93,10 +109,12 @@ function AdminExecutiveMyBookings() {
         }
     };
 
-    const fetchRMServicesData = async () => {
+    const fetchRMServicesData = async (searchQuery = "") => {
         try {
             setCurrentDataLoading(true)
-            const response = await axios.get(`${secretKey}/rm-services/adminexecutivedata`)
+            const response = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
+                params: { search: searchQuery }
+            })
             setRmServicesData(response.data)
             //console.log(response.data)
         } catch (error) {
@@ -109,6 +127,10 @@ function AdminExecutiveMyBookings() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        fetchRMServicesData(search); // Fetch data when search query changes
+    }, [search]);
 
     useEffect(() => {
         fetchRMServicesData()
@@ -194,7 +216,9 @@ function AdminExecutiveMyBookings() {
 
     //console.log("showFilter", showFilterIcon)
 
-
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value); // Update search query state
+    };
 
     const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
     const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
@@ -235,7 +259,9 @@ function AdminExecutiveMyBookings() {
                                             placeholder="Search…"
                                             type="text"
                                             name="bdeName-search"
-                                            id="bdeName-search" />
+                                            id="bdeName-search" 
+                                            value={search}
+                                            onChange={handleSearchChange} />
                                     </div>
                                 </div>
                             </div>
@@ -316,19 +342,19 @@ function AdminExecutiveMyBookings() {
                                 </div>
                                 <div class="tab-content card-body">
                                     <div class="tab-pane active" id="General">
-                                        <AdminExecutiveGeneralPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.General} />
+                                        <AdminExecutiveGeneralPanel searchText={search} rmServicesData={rmServicesData} showFilter={showFilterIcon.General} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
-                                        <AdminExecutiveProcessPanel/>
+                                        <AdminExecutiveProcessPanel searchText={search}/>
                                     </div>
                                     <div class="tab-pane" id="Approved">
-                                       <AdminExecutiveApprovedPanel/>
+                                       <AdminExecutiveApprovedPanel searchText={search}/>
                                     </div>
                                     <div class="tab-pane" id="Hold">
-                                        <AdminExecutiveHoldPanel/>
+                                        <AdminExecutiveHoldPanel searchText={search}/>
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
-                                        <AdminExecutiveDefaulterPanel/>
+                                        <AdminExecutiveDefaulterPanel searchText={search}/>
                                     </div>
                                 </div>
                             </div>

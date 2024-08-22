@@ -25,7 +25,7 @@ import DscExpanceReimbursement from './../ExtraComponents/DscExpanceReimbursemen
 
 
 
-function AdminExecutiveApprovedPanel() {
+function AdminExecutiveApprovedPanel({searchText}) {
 
     const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
     const [employeeData, setEmployeeData] = useState([]);
@@ -43,7 +43,7 @@ function AdminExecutiveApprovedPanel() {
     const [completeRmData, setcompleteRmData] = useState([])
     const [dataToFilter, setdataToFilter] = useState([])
     // Fetch Data Function
-    const fetchData = async () => {
+    const fetchData = async (searchQuery = "") => {
         setOpenBacdrop(true);
         try {
 
@@ -51,7 +51,9 @@ function AdminExecutiveApprovedPanel() {
             const userData = employeeResponse.data.find((item) => item._id === adminExecutiveUserId);
             setEmployeeData(userData);
 
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`);
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`,{
+                params: { search: searchQuery }
+            });
             const servicesData = servicesResponse.data;
 
             if (Array.isArray(servicesData)) {
@@ -77,7 +79,9 @@ function AdminExecutiveApprovedPanel() {
         }
     };
 
-
+    useEffect(() => {
+        fetchData(searchText)
+   }, [searchText]);
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -88,23 +92,23 @@ function AdminExecutiveApprovedPanel() {
         });
 
         socket.on('adminexecutive-general-status-updated', (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-deleted", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("booking-deleted", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("booking-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
 
@@ -117,12 +121,12 @@ function AdminExecutiveApprovedPanel() {
 
     const refreshData = () => {
 
-        fetchData();
+        fetchData(searchText);
     };
 
     // useEffect to fetch data on component mount
     useEffect(() => {
-        fetchData();
+        fetchData(searchText);
     }, [adminExecutiveUserId, secretKey]);
 
     const formatDatePro = (inputDate) => {
@@ -174,7 +178,7 @@ function AdminExecutiveApprovedPanel() {
                 updatedOn: new Date()
             });
             if (response.status === 200) {
-                fetchData();
+                fetchData(searchText);
                 functionCloseRemarksPopup();
                 Swal.fire(
                     'Remarks Added!',
@@ -210,7 +214,7 @@ function AdminExecutiveApprovedPanel() {
                 });
 
                 if (response.status === 200) {
-                    fetchData();
+                    fetchData(searchText);
                     Swal.fire(
                         'Company Reverted Back!',
                         'Company has been sent back to the received box.',

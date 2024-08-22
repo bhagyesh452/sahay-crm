@@ -167,7 +167,8 @@ function RmofCertificationMyBookings() {
                                             name="bdeName-search"
                                             id="bdeName-search"
                                             value={search}
-                                            onChange={handleSearchChange} />
+                                            onChange={handleSearchChange} 
+                                            />
                                     </div>
                                 </div>
                             </div>

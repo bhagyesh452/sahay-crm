@@ -283,7 +283,31 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
 
 router.get("/adminexecutivedata", async (req, res) => {
   try {
-    const response = await AdminExecutiveModel.find();
+    const { search } = req.query; // Extract search query from request
+
+      // Build query object
+      let query = {};
+      if (search) {
+          const regex = new RegExp(search, 'i'); // Case-insensitive search
+          const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+          query = {
+              $or: [
+                  { "Company Name": regex }, // Match companyName field
+                  { serviceName: regex },
+                  { "Company Email": regex },
+                  { bdeName: regex },
+                  { bdmName: regex },
+                  // Only include the number fields if numberSearch is a valid number
+                  ...(isNaN(numberSearch) ? [] : [
+                      { "Company Number": numberSearch }, // Match companyNumber field
+                      { caNumber: numberSearch } // Match caNumber field
+                  ])
+              ]
+          };
+      }
+      // Fetch data from the database with an optional query filter
+      const response = await AdminExecutiveModel.find(query);
     res.status(200).json(response);
   } catch (error) {
     console.log("Error fetching data", error);
