@@ -2703,6 +2703,10 @@ td input {
   margin-right: 6px;
   max-width: 122px;
 }
+.admin-executive .rm_bking_item_serices
+{
+  max-width: 184px;
+}
 .rm_bking_by, .rm_bking_time
 {
   font-size: 10px;

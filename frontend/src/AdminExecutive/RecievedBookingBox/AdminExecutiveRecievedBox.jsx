@@ -1011,7 +1011,7 @@ function AdminExecutiveRecievedBox() {
             <AdminExecutiveHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
             <AdminExecutiveNavbar adminExecutiveUserId={adminExecutiveUserId} />
             {(!openAllBooking && !openTrashBoxPanel) && (
-                <div className="booking-list-main">
+                <div className="booking-list-main admin-executive">
                     <div className="booking_list_Filter">
                         <div className="container-xl">
                             <div className="row justify-content-between align-items-center">
@@ -1229,8 +1229,15 @@ function AdminExecutiveRecievedBox() {
                                                                     <div
                                                                         key={index}
                                                                         className={`rm_bking_item_serices ${className} My_Text_Wrap mb-1`}
+                                                                        title={service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} with DSC`
+                                                                            : service.serviceName}
                                                                     >
-                                                                        {service.serviceName}
+                                                                        {service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} with DSC`
+                                                                            : service.serviceName}
                                                                     </div>
                                                                 );
                                                             })
