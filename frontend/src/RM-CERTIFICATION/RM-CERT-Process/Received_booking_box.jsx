@@ -204,42 +204,41 @@ function Received_booking_box() {
     const [activeIndexBooking, setActiveIndexBooking] = useState(0)
     const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
+    const today = new Date("2024-08-21");
+    today.setHours(0, 0, 0, 0); // Set to start of today
+
+    const parseDate = (dateString) => {
+        // If date is in "YYYY-MM-DD" format, convert it to a Date object
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+            return new Date(dateString);
+        }
+
+        // Otherwise, parse the date string with a Date object
+        return new Date(dateString);
+    };
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-21");
-        today.setHours(0, 0, 0, 0); // Set to start of today
-    
-        const parseDate = (dateString) => {
-            // If date is in "YYYY-MM-DD" format, convert it to a Date object
-            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-                return new Date(dateString);
-            }
-    
-            // Otherwise, parse the date string with a Date object
-            return new Date(dateString);
-        };
-    
         setOpenBacdrop(true);
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
-    
+
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
                 .filter(obj => {
                     const mainBookingDate = parseDate(obj.bookingDate);
                     mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-    
+
                     // Check if any of the moreBookings dates are >= today
                     const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
                         const bookingDate = parseDate(booking.bookingDate);
                         bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
                         return bookingDate >= today;
                     });
-    
+
                     // Check if the main booking date or any moreBookings date is >= today
                     const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
-    
+
                     // Return true if date is valid and visible to RM
                     return isDateValid && (obj.isVisibleToRmOfCerification !== false && obj.permanentlDeleteFromRmCert !== true);
                 })
@@ -248,7 +247,7 @@ function Received_booking_box() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-    
+
             // Process each document to combine services and filter them
             const processedData = filteredAndSortedData.map(item => {
                 // Combine servicesTakenByRmOfCertification and rmservicestaken for each document
@@ -256,73 +255,73 @@ function Received_booking_box() {
                     ...(item.servicesTakenByRmOfCertification || []),
                     ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByRmOfCertification || [])
                 ];
-    
+
                 // Remove duplicates
                 const uniqueServices = [...new Set(combinedServices)];
-    
+
                 return {
                     ...item,
                     combinedServices: uniqueServices // Add combined services to the document
                 };
             });
-    
+
             // Create an array of filtered service names for each document
             const filteredServicesData = filteredAndSortedData.map(item => {
                 // Extract primary services
                 const primaryServices = item.services || [];
-    
+
                 // Combine services from moreBookings
                 const moreBookingServices = item.moreBookings
                     ? item.moreBookings.flatMap((booking) => booking.services || [])
                     : [];
-    
+
                 // Combine services
                 const combinedServices = [
                     ...primaryServices,
                     ...moreBookingServices
                 ];
-    
+
                 // Filter services based on certificationLabels and bookingDate >= today
                 const filteredServices = combinedServices.filter((service) => {
-                    const serviceBookingDate = item.moreBookings.some(booking => 
+                    const serviceBookingDate = item.moreBookings.some(booking =>
                         booking.services.includes(service)
                     ) ? new Date(
                         item.moreBookings.find(booking =>
                             booking.services.includes(service)
                         ).bookingDate
                     ) : new Date(item.bookingDate);
-    
+
                     serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-                    
+
                     return certificationLabels.includes(service.serviceName) && serviceBookingDate >= today;
                 });
-    
+
                 // Map through the filtered services to get service names
                 return filteredServices.map((service) => service.serviceName);
             });
-    
+
             // Find companies that do not match the filteredServices
             const nonMatchingCompanies = processedData.filter((item, index) => {
                 // Find the filtered services for the same index
                 const filteredServiceNames = filteredServicesData[index];
-    
+
                 const noCertificationServices = !(
                     item.servicesTakenByRmOfCertification && item.servicesTakenByRmOfCertification.length > 0 ||
                     (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByRmOfCertification && booking.servicesTakenByRmOfCertification.length > 0))
                 );
-    
+
                 // Compare combinedServices with filteredServiceNames
                 return !(item.combinedServices.length === filteredServiceNames.length &&
                     item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;
             });
-    
+
             const completeData = response.data
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-    
+
             // Set state or use non-matching data as needed
             setLeadFormData(nonMatchingCompanies);
             setRedesignedData(nonMatchingCompanies);
@@ -333,7 +332,7 @@ function Received_booking_box() {
             setOpenBacdrop(false);
         }
     };
-    
+
     console.log("leadformdata", leadFormData)
 
 
@@ -574,16 +573,6 @@ function Received_booking_box() {
     const [isSwappingAllServices, setIsSwappingAllServices] = useState(false);
 
     const handleOpenServices = (companyName) => {
-        const today = new Date("2024-08-21");
-        today.setHours(0, 0, 0, 0); // Set to start of today
-
-        const parseDate = (dateString) => {
-            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-                return new Date(dateString);
-            }
-            return new Date(dateString);
-        };
-
         setSelectedCompanyName(companyName);
 
         const selectedServicesHere = redesignedData
@@ -1046,9 +1035,6 @@ function Received_booking_box() {
                                                         </div>
                                                         <div className='d-flex'>
                                                             {(() => {
-                                                                const today = new Date("2024-08-21");
-                                                                today.setHours(0, 0, 0, 0); // Normalize to start of the day
-
                                                                 const shouldDisableButton = ![
                                                                     ...obj.services,
                                                                     ...(obj.moreBookings || []).flatMap(booking => booking.services)
@@ -1067,7 +1053,6 @@ function Received_booking_box() {
 
                                                                     return certificationLabels.some(label => service.serviceName.includes(label)) && serviceBookingDate >= today;
                                                                 });
-
                                                                 return (
                                                                     <>
                                                                         {!shouldDisableButton && (
@@ -1122,8 +1107,7 @@ function Received_booking_box() {
                                                                 ...obj.services,
                                                                 ...(obj.moreBookings || []).flatMap(booking => booking.services)
                                                             ].map((service, index) => {
-                                                                const today = new Date("2024-08-21");
-                                                                today.setHours(0, 0, 0, 0); // Normalize to start of the day
+
 
                                                                 // Determine the booking date for the current service
                                                                 const bookingDate = obj.moreBookings.some(booking =>
