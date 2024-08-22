@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from '../Header/Header';
 import Navbar from '../Navbar/Navbar';
@@ -14,7 +14,6 @@ function Attendance() {
 
     const currentYear = new Date().getFullYear();
     const currentMonth = format(new Date(), 'MMMM'); // e.g., 'August'
-
 
     const [isLoading, setIsLoading] = useState(false);
     const [employee, setEmployee] = useState([]);
