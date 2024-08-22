@@ -31,6 +31,8 @@ import {
   FormControl,
 } from "@mui/material";
 import io from 'socket.io-client';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ManagerBookings() {
   const userId = localStorage.getItem("dataManagerUserId");
@@ -57,6 +59,7 @@ function ManagerBookings() {
   const [openOtherDocs, setOpenOtherDocs] = useState(false);
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
+  const [openBacdrop, setOpenBacdrop] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
 
@@ -144,6 +147,7 @@ function ManagerBookings() {
   }, [searchText]);
 
   const fetchRedesignedFormData = async () => {
+    setOpenBacdrop(true)
     try {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
@@ -158,6 +162,8 @@ function ManagerBookings() {
       setLeadFormData(sortedData); // Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
+    }finally{
+      setOpenBacdrop(false)
     }
   };
 
@@ -635,7 +641,9 @@ function ManagerBookings() {
     setOpenAddExpanse(true)
   }
 
-
+  const handleCloseBackdrop = () => {
+    setOpenBacdrop(false)
+}
 
 
   const functionDeleteRemainingPayment = async (BookingIndex, serviceName) => {
@@ -3826,7 +3834,15 @@ function ManagerBookings() {
           </button>
         </div>
       </Dialog>
+      {/* --------------------------------backedrop------------------------- */}
+      {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
     </div>
+    
   );
 }
 
