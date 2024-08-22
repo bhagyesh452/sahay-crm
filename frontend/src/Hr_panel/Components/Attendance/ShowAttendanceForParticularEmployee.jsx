@@ -35,6 +35,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
     const [branchOffice, setBranchOffice] = useState("");
 
     const [employee, setEmployee] = useState([]);
+    const [deletedEmployees, setDeletedEmployees] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
     const [inputValues, setInputValues] = useState({});
 
@@ -65,6 +66,28 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
             });
         } catch (error) {
             console.log("Error fetching employees", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchDeletedEmployees = async () => {
+        try {
+            setIsLoading(true);
+            const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+            setDeletedEmployees(res.data);
+            res.data.map((emp) => {
+                if (emp._id === id) {
+                    setEmpId(emp._id);
+                    setEmpName(emp.empFullName);
+                    setEmployeeId(emp.employeeId);
+                    setDesignation(emp.newDesignation);
+                    setDepartment(emp.department);
+                    setBranchOffice(emp.branchOffice);
+                }
+            });
+        } catch (error) {
+            console.log("Error fetching employees data:", error);
         } finally {
             setIsLoading(false);
         }
@@ -283,107 +306,19 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
             setIsLoading(false);
         }
     };
-
-
-    // const fetchAttendance = async () => {
-    //     setIsLoading(true);
-    //     try {
-    //         const res = await axios.get(`${secretKey}/attendance/viewAttendance/${id}`);
-    //         const attendanceData = res.data.data;  // This is now an object for a single employee
-    //         console.log("Attendance data is:", attendanceData);
     
-    //         const totalDays = new Date(year, new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1, 0).getDate();
-    //         const today = new Date().getDate();  // Current date of the month
-    //         const currentMonth = getCurrentMonthName();
-    //         const isCurrentMonth = month === currentMonth;
-    
-    //         let name = attendanceData.employeeName; // Get employee name directly from the fetched data
-    //         let designation = attendanceData.designation;  // Get designation directly from the fetched data
-    //         const filteredData = [];
-    //         const filledDates = new Set();  // To track dates with existing data
-    
-    //         // Process attendance data
-    //         attendanceData.years.forEach(yearData => {
-    //             if (yearData.year === year) {  // Check for the specific year
-    //                 yearData.months.forEach(monthData => {
-    //                     if (monthData.month === month) {  // Check for the specific month
-    //                         monthData.days.forEach(dayData => {
-    //                             const { date: dayDate, inTime, outTime, workingHours, status } = dayData;
-    
-    //                             filledDates.add(dayDate);  // Add filled date to the set
-    
-    //                             // Add data for the current month up to today or all data for past months
-    //                             if (isCurrentMonth && dayDate <= today || !isCurrentMonth) {
-    //                                 filteredData.push({
-    //                                     _id: attendanceData._id,
-    //                                     employeeId: attendanceData.employeeId,
-    //                                     employeeName: attendanceData.employeeName,
-    //                                     designation: attendanceData.designation,
-    //                                     department: attendanceData.department,
-    //                                     branchOffice: attendanceData.branchOffice,
-    //                                     date: dayDate,
-    //                                     inTime,
-    //                                     outTime,
-    //                                     workingHours,
-    //                                     status
-    //                                 });
-    //                             }
-    //                         });
-    //                     }
-    //                 });
-    //             }
-    //         });
-    
-    //         // Include dates with no data in current month
-    //         if (isCurrentMonth) {
-    //             for (let date = 1; date <= today; date++) {
-    //                 if (!filledDates.has(date)) {
-    //                     filteredData.push({
-    //                         employeeName: name, // Example placeholder for missing data
-    //                         designation: designation,
-    //                         date: date,
-    //                         inTime: '',
-    //                         outTime: '',
-    //                         workingHours: '',
-    //                         status: ''
-    //                     });
-    //                 }
-    //             }
-    //         } else {
-    //             // For past months, include all days from 1 to totalDays
-    //             for (let date = 1; date <= totalDays; date++) {
-    //                 if (!filledDates.has(date)) {
-    //                     filteredData.push({
-    //                         employeeName: name, // Example placeholder for missing data
-    //                         designation: designation,
-    //                         date: date,
-    //                         inTime: '',
-    //                         outTime: '',
-    //                         workingHours: '',
-    //                         status: ''
-    //                     });
-    //                 }
-    //             }
-    //         }
-    
-    //         // Sort the filtered data by date
-    //         filteredData.sort((a, b) => new Date(`${year}-${month}-${a.date}`) - new Date(`${year}-${month}-${b.date}`));
-    //         setAttendanceData(filteredData);
-    //     } catch (error) {
-    //         console.log("Error fetching attendance record", error);
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
     
     useEffect(() => {
         fetchEmployees();
+        fetchDeletedEmployees();
         fetchAttendance();
     }, [year, month, id]);
 
+    const isDeleted = deletedEmployees.some(deletedEmp => deletedEmp._id === id);
+
     return (
         <div>
-            <Dialog className='My_Mat_Dialog' fullWidth maxWidth="md" open={() => open()}>
+            <Dialog className='My_Mat_Dialog' fullWidth maxWidth="lg" open={() => open()}>
                 <DialogTitle style={{ textAlign: "center" }}>
                     {`Attendance Details for ${name} for ${month} ${year}`}
                     <IconButton style={{ float: "right" }} onClick={() => {
@@ -397,6 +332,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                     <div className="table table-responsive table-style-2 m-0">
                         <table className="table table-vcenter table-nowrap">
                             <thead>
+                                
                                 <tr className="tr-sticky">
                                     <th>Sr. No</th>
                                     <th>Employee Name</th>
@@ -406,7 +342,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                     <th>Out Time</th>
                                     <th>Working Hours</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    {!isDeleted && <th>Action</th>}
                                 </tr>
                             </thead>
 
@@ -484,6 +420,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                             className='form-cantrol in-time'
                                                             value={inTime}
                                                             onChange={(e) => handleInputChange(emp.date, 'inTime', e.target.value)}
+                                                            disabled={isDeleted}
                                                         />
                                                     </div>
                                                 </td>
@@ -494,6 +431,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                             className='form-cantrol out-time'
                                                             value={outTime}
                                                             onChange={(e) => handleInputChange(emp.date, 'outTime', e.target.value)}
+                                                            disabled={isDeleted}
                                                         />
                                                     </div>
                                                 </td>
@@ -508,7 +446,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                         {status}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                {!isDeleted && <td>
                                                     <button type="submit" className="action-btn action-btn-primary" onClick={() =>
                                                         handleSubmit(empId, employeeId, empName, designation, department, branchOffice,
                                                             convertToDateInputFormat(new Date(`${year}-${month}-${emp.date}`)),
@@ -518,7 +456,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                             status)}>
                                                         <GiCheckMark />
                                                     </button>
-                                                </td>
+                                                </td>}
                                             </tr>
                                         )
                                     })}
