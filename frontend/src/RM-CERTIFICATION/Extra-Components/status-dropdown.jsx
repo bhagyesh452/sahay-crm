@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 
 
 
-const StatusDropdown = ({ 
+const StatusDropdown = ({
   mainStatus,
   subStatus,
   setNewSubStatus,
@@ -43,17 +43,19 @@ const StatusDropdown = ({
       if (mainStatus === "General") {
         movedFromMainCategoryStatus = "General";
         movedToMainCategoryStatus = "Process";
-        response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification-changegeneral`, {
-          companyName,
-          serviceName,
-          subCategoryStatus: newStatus,
-          mainCategoryStatus: "Process",
-          previousMainCategoryStatus: "General",
-          previousSubCategoryStatus: newStatus,
-          dateOfChangingMainStatus: new Date(),
-          movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-          movedToMainCategoryStatus: movedToMainCategoryStatus
-        });
+        if (newStatus !== "Untouched") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification-changegeneral`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Process",
+            previousMainCategoryStatus: "General",
+            previousSubCategoryStatus: newStatus,
+            dateOfChangingMainStatus: new Date(),
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus
+          });
+        }
         //console.log("movedfromstatus" , movedFromMainCategoryStatus , movedToMainCategoryStatus)
       }
       else if (mainStatus === "Process") {
@@ -145,8 +147,8 @@ const StatusDropdown = ({
             industryAndSector: serviceName === "Start-Up India Certificate" && !industry && !sector,
             contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
             brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved"),
-            letterStatus:letterStatus && letterStatus !== "Letter Received",
-            dscStatus:dscStatus && dscStatus !== "Approved"
+            letterStatus: letterStatus && letterStatus !== "Letter Received",
+            dscStatus: dscStatus && dscStatus !== "Approved"
           };
           const messages = [];
 
@@ -162,10 +164,10 @@ const StatusDropdown = ({
           if (conditions.brochureStatus) {
             messages.push("Brochure status must be Completed or Approved");
           }
-          if(conditions.letterStatus){
+          if (conditions.letterStatus) {
             messages.push("DSC Letter Status must be received !")
           }
-          if(conditions.dscStatus){
+          if (conditions.dscStatus) {
             messages.push("DSC Status must be approved!")
           }
           if (messages.length > 0) {
@@ -219,7 +221,7 @@ const StatusDropdown = ({
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
             lastAttemptSubmitted: "1st",
-            submittedOn : new Date()
+            submittedOn: new Date()
           });
         } else if (newStatus === "Defaulter") {
           movedFromMainCategoryStatus = "Ready To Submit";
@@ -285,7 +287,7 @@ const StatusDropdown = ({
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
-         
+
         } else if (newStatus === "Defaulter") {
           movedFromMainCategoryStatus = "Submitted";
           movedToMainCategoryStatus = "Defaulter";
@@ -326,7 +328,7 @@ const StatusDropdown = ({
             lastAttemptSubmitted: "3rd"
             //mainCategoryStatus: "Defaulter",
           });
-        }else if (newStatus === "Submitted") {
+        } else if (newStatus === "Submitted") {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
             serviceName,
@@ -334,10 +336,10 @@ const StatusDropdown = ({
             ThirdTimeSubmitDate: new Date(),
             SecondTimeSubmitDate: new Date(),
             lastAttemptSubmitted: "1st",
-            submittedOn:new Date()
+            submittedOn: new Date()
             //mainCategoryStatus: "Defaulter",
           });
-        } 
+        }
         else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
             companyName,
