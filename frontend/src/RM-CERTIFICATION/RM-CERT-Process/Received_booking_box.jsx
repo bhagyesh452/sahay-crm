@@ -128,6 +128,13 @@ function Received_booking_box() {
             fetchRedesignedFormData()
         });
 
+        socket.on("rm-recievedamount-deleted" , (res)=>{
+            fetchRedesignedFormData()
+        });
+        socket.on("Remaining_Payment_Added" , (res)=>{
+            fetchRedesignedFormData()
+        })
+
 
         return () => {
             socket.disconnect();
@@ -180,7 +187,7 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-04-01");
+        const today = new Date("2024-08-21");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object

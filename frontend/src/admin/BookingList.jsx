@@ -31,6 +31,8 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -53,6 +55,7 @@ function BookingList() {
   const [openOtherDocs, setOpenOtherDocs] = useState(false);
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
+  const [openBacdrop, setOpenBacdrop] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const isAdmin = true;
   const fetchDatadebounce = async () => {
@@ -136,7 +139,9 @@ function BookingList() {
     );
   }, [searchText]);
 
+  
   const fetchRedesignedFormData = async () => {
+   setOpenBacdrop(true)
     try {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
@@ -150,8 +155,14 @@ function BookingList() {
       setLeadFormData(sortedData); // Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
+    } finally {
+      setOpenBacdrop(false)
     }
   };
+
+  const handleCloseBackdrop = () => {
+    setOpenBacdrop(false)
+}
 
   useEffect(() => {
     fetchRedesignedFormData();
@@ -1523,10 +1534,10 @@ function BookingList() {
                                                           </div>
                                                         </div>
                                                         <div class="col-sm-7 align-self-stretc p-0">
-                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap" 
-                                                          title={
-                                                            paymentObj.paymentMethod
-                                                          }
+                                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee My_Text_Wrap"
+                                                            title={
+                                                              paymentObj.paymentMethod
+                                                            }
                                                           >
                                                             {
                                                               paymentObj.paymentMethod
@@ -2951,6 +2962,13 @@ function BookingList() {
           </div>
         </div>
       )}
+       {/* --------------------------------backedrop------------------------- */}
+       {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
 
       {bookingFormOpen && (
         <>

@@ -126,6 +126,13 @@ function AdminExecutiveRecievedBox() {
             fetchRedesignedFormData()
         });
 
+        socket.on("rm-recievedamount-deleted" , (res)=>{
+            fetchRedesignedFormData()
+        });
+        socket.on("Remaining_Payment_Added" , (res)=>{
+            fetchRedesignedFormData()
+        })
+
 
         return () => {
             socket.disconnect();
@@ -302,7 +309,7 @@ function AdminExecutiveRecievedBox() {
     // };
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-04-01");
+        const today = new Date("2024-08-21");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
