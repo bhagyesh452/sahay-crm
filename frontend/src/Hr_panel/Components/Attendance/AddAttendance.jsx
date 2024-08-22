@@ -388,7 +388,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                             </div>
                                         </td>
                                         <td>
-                                            {attendanceDetails.workingHours || workingHours !== "00:00" && workingHours}
+                                            {attendanceDetails.workingHours || workingHours}
                                         </td>
                                         <td>
                                             <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
