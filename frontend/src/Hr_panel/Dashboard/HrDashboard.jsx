@@ -33,7 +33,7 @@ function Dashboard() {
     }, []);
 
     const formatSalary = (amount) => {
-        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+        return new Intl.NumberFormat('en-IN', { minimumFractionDigits: 0 }).format(amount);
     };
 
     const fetchEmployees = async () => {
