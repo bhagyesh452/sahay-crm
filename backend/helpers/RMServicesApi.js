@@ -112,7 +112,8 @@ router.post('/post-rmservicesdata', async (req, res) => {
             const data = {
               ...item,
               bookingPublishDate: publishDate,
-              letterStatus: existingRecordofAdminExecutive.letterStatus
+              letterStatus: existingRecordofAdminExecutive.letterStatus,
+              dscStatus:existingRecordofAdminExecutive.subCategoryStatus
             };
             const newRecord = await RMCertificationModel.create(data);
             //console.log("newRecord" , newRecord)
