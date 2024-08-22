@@ -491,7 +491,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         }
     }
 
-    console.log("enableStatus" , enableStatus)
+    
 
 
 

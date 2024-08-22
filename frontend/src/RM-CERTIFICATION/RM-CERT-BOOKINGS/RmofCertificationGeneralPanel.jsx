@@ -34,6 +34,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [completeRmData, setcompleteRmData] = useState([])
     const [dataToFilter, setdataToFilter] = useState([])
+    const [search, setSearch] = useState("");
     // Fetch Data Function
     const fetchData = async () => {
         setOpenBacdrop(true);
@@ -108,7 +109,6 @@ function RmofCertificationGeneralPanel({ showFilter }) {
 
 
     const refreshData = () => {
-
         fetchData();
     };
 

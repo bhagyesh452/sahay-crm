@@ -188,6 +188,13 @@ const DscStatusDropdown = ({
             subCategoryStatus: newStatus,
             //mainCategoryStatus: "Defaulter",
           });
+        }else {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Defaulter"
+          });
         }
       }
       else if (mainStatus === "Hold") {
@@ -224,6 +231,13 @@ const DscStatusDropdown = ({
             serviceName,
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Process"
+          });
+        }else {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold"
           });
         }
       }
