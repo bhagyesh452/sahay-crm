@@ -92,6 +92,26 @@ function AdminExecutiveRecievedBox() {
         return `${number}${suffix}`;
     };
 
+    function numberToWords(n) {
+        const words = [
+            "Zero", "First", "Second", "Third", "Fourth", "Fifth", 
+            "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", 
+            "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", 
+            "seventeenth", "eighteenth", "nineteenth", "twentieth"
+        ];
+    
+        if (n <= 20) {
+            return words[n];
+        } else {
+            const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+            const unit = n % 10;
+            const ten = Math.floor(n / 10);
+    
+            return tens[ten] + (unit ? "-" + words[unit] : "");
+        }
+    }
+    
+
     const formatTime = (dateString) => {
         //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
         const date = new Date(dateString)
@@ -310,7 +330,7 @@ function AdminExecutiveRecievedBox() {
     // };
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-03-21");
+        const today = new Date("2024-08-21");
         today.setHours(0, 0, 0, 0); // Set to start of today
         const parseDate = (dateString) => {
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -1185,7 +1205,7 @@ function AdminExecutiveRecievedBox() {
                                                                         : obj.bookingPublishDate
                                                                 ) // Use obj.bookingDate if moreBookings is empty or not present
                                                             }
-                                                            <span className='ml-1'>(First Booking)</span>
+                                                            <span className='ml-1'>({numberToWords(activeIndexBooking)} Booking)</span>
                                                         </div>
                                                         <div className='rm_bking_by'>
                                                             By  {obj.bdeName}

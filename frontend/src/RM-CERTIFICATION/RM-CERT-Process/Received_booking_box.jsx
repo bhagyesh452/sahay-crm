@@ -93,6 +93,25 @@ function Received_booking_box() {
         return `${number}${suffix}`;
     };
 
+    function numberToWords(n) {
+        const words = [
+            "Zero", "First", "Second", "Third", "Fourth", "Fifth",
+            "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh",
+            "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth",
+            "seventeenth", "eighteenth", "nineteenth", "twentieth"
+        ];
+
+        if (n <= 20) {
+            return words[n];
+        } else {
+            const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+            const unit = n % 10;
+            const ten = Math.floor(n / 10);
+
+            return tens[ten] + (unit ? "-" + words[unit] : "");
+        }
+    }
+
     const formatTime = (dateString) => {
         //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
         const date = new Date(dateString)
@@ -128,10 +147,10 @@ function Received_booking_box() {
             fetchRedesignedFormData()
         });
 
-        socket.on("rm-recievedamount-deleted" , (res)=>{
+        socket.on("rm-recievedamount-deleted", (res) => {
             fetchRedesignedFormData()
         });
-        socket.on("Remaining_Payment_Added" , (res)=>{
+        socket.on("Remaining_Payment_Added", (res) => {
             fetchRedesignedFormData()
         })
 
@@ -187,41 +206,40 @@ function Received_booking_box() {
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-03-21");
+        const today = new Date("2024-08-21");
         today.setHours(0, 0, 0, 0); // Set to start of today
+    
         const parseDate = (dateString) => {
             // If date is in "YYYY-MM-DD" format, convert it to a Date object
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
                 return new Date(dateString);
             }
-
+    
             // Otherwise, parse the date string with a Date object
             return new Date(dateString);
         };
-        setOpenBacdrop(true)
+    
+        setOpenBacdrop(true);
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
-
+    
             // Filter and sort data based on lastActionDate
             const filteredAndSortedData = data
                 .filter(obj => {
-                    //const lastActionDate = new Date(item.lastActionDate);
                     const mainBookingDate = parseDate(obj.bookingDate);
-                    mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the da
+                    mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+    
                     // Check if any of the moreBookings dates are >= today
                     const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
                         const bookingDate = parseDate(booking.bookingDate);
                         bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-
-
-
                         return bookingDate >= today;
                     });
-
+    
                     // Check if the main booking date or any moreBookings date is >= today
                     const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
-
+    
                     // Return true if date is valid and visible to RM
                     return isDateValid && (obj.isVisibleToRmOfCerification !== false && obj.permanentlDeleteFromRmCert !== true);
                 })
@@ -230,7 +248,7 @@ function Received_booking_box() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-
+    
             // Process each document to combine services and filter them
             const processedData = filteredAndSortedData.map(item => {
                 // Combine servicesTakenByRmOfCertification and rmservicestaken for each document
@@ -238,66 +256,73 @@ function Received_booking_box() {
                     ...(item.servicesTakenByRmOfCertification || []),
                     ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByRmOfCertification || [])
                 ];
-
+    
                 // Remove duplicates
                 const uniqueServices = [...new Set(combinedServices)];
-
+    
                 return {
                     ...item,
                     combinedServices: uniqueServices // Add combined services to the document
                 };
             });
-
+    
             // Create an array of filtered service names for each document
             const filteredServicesData = filteredAndSortedData.map(item => {
                 // Extract primary services
                 const primaryServices = item.services || [];
-
+    
                 // Combine services from moreBookings
                 const moreBookingServices = item.moreBookings
                     ? item.moreBookings.flatMap((booking) => booking.services || [])
                     : [];
-
+    
                 // Combine services
                 const combinedServices = [
                     ...primaryServices,
                     ...moreBookingServices
                 ];
-
-                // Filter services based on certificationLabels
-                const filteredServices = combinedServices.filter((service) =>
-                    certificationLabels.includes(service.serviceName)
-                );
-
+    
+                // Filter services based on certificationLabels and bookingDate >= today
+                const filteredServices = combinedServices.filter((service) => {
+                    const serviceBookingDate = item.moreBookings.some(booking => 
+                        booking.services.includes(service)
+                    ) ? new Date(
+                        item.moreBookings.find(booking =>
+                            booking.services.includes(service)
+                        ).bookingDate
+                    ) : new Date(item.bookingDate);
+    
+                    serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+                    
+                    return certificationLabels.includes(service.serviceName) && serviceBookingDate >= today;
+                });
+    
                 // Map through the filtered services to get service names
                 return filteredServices.map((service) => service.serviceName);
             });
-
+    
             // Find companies that do not match the filteredServices
             const nonMatchingCompanies = processedData.filter((item, index) => {
                 // Find the filtered services for the same index
                 const filteredServiceNames = filteredServicesData[index];
-
+    
                 const noCertificationServices = !(
                     item.servicesTakenByRmOfCertification && item.servicesTakenByRmOfCertification.length > 0 ||
                     (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByRmOfCertification && booking.servicesTakenByRmOfCertification.length > 0))
                 );
-
+    
                 // Compare combinedServices with filteredServiceNames
                 return !(item.combinedServices.length === filteredServiceNames.length &&
-                    item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;;
+                    item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;
             });
-
+    
             const completeData = response.data
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-
-            // Log or use the non-matching data
-            //console.log("Non-Matching Companies:", nonMatchingCompanies);
-
+    
             // Set state or use non-matching data as needed
             setLeadFormData(nonMatchingCompanies);
             setRedesignedData(nonMatchingCompanies);
@@ -305,10 +330,10 @@ function Received_booking_box() {
         } catch (error) {
             console.error("Error fetching data:", error.message);
         } finally {
-            setOpenBacdrop(false)
+            setOpenBacdrop(false);
         }
     };
-
+    
     console.log("leadformdata", leadFormData)
 
 
@@ -549,17 +574,33 @@ function Received_booking_box() {
     const [isSwappingAllServices, setIsSwappingAllServices] = useState(false);
 
     const handleOpenServices = (companyName) => {
+        const today = new Date("2024-08-21");
+        today.setHours(0, 0, 0, 0); // Set to start of today
+
+        const parseDate = (dateString) => {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                return new Date(dateString);
+            }
+            return new Date(dateString);
+        };
+
         setSelectedCompanyName(companyName);
 
         const selectedServicesHere = redesignedData
             .filter((company) => company["Company Name"] === companyName)
             .flatMap((company) => {
-                const allServices = company.moreBookings.length !== 0
-                    ? [
-                        ...company.services,
-                        ...company.moreBookings.flatMap((item) => item.services),
-                    ]
-                    : company.services || [];
+                const bookingDate = parseDate(company.bookingDate);
+                bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                const mainServices = bookingDate >= today ? company.services : [];
+                const moreBookingServices = company.moreBookings.flatMap((item) => {
+                    const moreBookingDate = parseDate(item.bookingDate);
+                    moreBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                    return moreBookingDate >= today ? item.services : [];
+                });
+
+                const allServices = [...mainServices, ...moreBookingServices];
 
                 const filteredServices = allServices.filter((service) => {
                     const isServiceTakenByRmOfCertification = company.servicesTakenByRmOfCertification?.includes(service.serviceName);
@@ -572,8 +613,6 @@ function Received_booking_box() {
 
                 return filteredServices.filter((service) => certificationLabels.includes(service.serviceName));
             });
-
-        //console.log("new selected here", selectedServicesHere);
 
         const servicesNames = selectedServicesHere.map((service) => service.serviceName);
         setServiceNames(servicesNames);
@@ -590,6 +629,7 @@ function Received_booking_box() {
             setOpenServicesPopup(true);
         }
     };
+
 
     useEffect(() => {
         if (isSwappingAllServices) {
@@ -1006,10 +1046,27 @@ function Received_booking_box() {
                                                         </div>
                                                         <div className='d-flex'>
                                                             {(() => {
+                                                                const today = new Date("2024-08-21");
+                                                                today.setHours(0, 0, 0, 0); // Normalize to start of the day
+
                                                                 const shouldDisableButton = ![
                                                                     ...obj.services,
                                                                     ...(obj.moreBookings || []).flatMap(booking => booking.services)
-                                                                ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
+                                                                ].some(service => {
+                                                                    const serviceBookingDate = obj.moreBookings.some(booking =>
+                                                                        booking.services.includes(service)
+                                                                    )
+                                                                        ? new Date(
+                                                                            obj.moreBookings.find(booking =>
+                                                                                booking.services.includes(service)
+                                                                            ).bookingDate
+                                                                        )
+                                                                        : new Date(obj.bookingDate);
+
+                                                                    serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                                                                    return certificationLabels.some(label => service.serviceName.includes(label)) && serviceBookingDate >= today;
+                                                                });
 
                                                                 return (
                                                                     <>
@@ -1041,6 +1098,7 @@ function Received_booking_box() {
                                                             })()}
 
 
+
                                                             <button
                                                                 className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
                                                                 onClick={() => {
@@ -1064,21 +1122,39 @@ function Received_booking_box() {
                                                                 ...obj.services,
                                                                 ...(obj.moreBookings || []).flatMap(booking => booking.services)
                                                             ].map((service, index) => {
+                                                                const today = new Date("2024-08-21");
+                                                                today.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                                                                // Determine the booking date for the current service
+                                                                const bookingDate = obj.moreBookings.some(booking =>
+                                                                    booking.services.includes(service)
+                                                                )
+                                                                    ? new Date(
+                                                                        obj.moreBookings.find(booking =>
+                                                                            booking.services.includes(service)
+                                                                        ).bookingDate
+                                                                    )
+                                                                    : new Date(obj.bookingDate);
+
+                                                                bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
                                                                 // Check if the service is in servicesTakenByRmOfCertification
                                                                 const isInMainServices = obj.servicesTakenByRmOfCertification &&
                                                                     obj.servicesTakenByRmOfCertification.includes(service.serviceName);
 
                                                                 // Check if the service is in any moreBookings' servicesTakenIn
                                                                 const isInMoreBookingServices = obj.moreBookings.some(booking =>
-                                                                    booking.servicesTakenByRmOfCertification && booking.servicesTakenByRmOfCertification.includes(service.serviceName)
+                                                                    booking.servicesTakenByRmOfCertification &&
+                                                                    booking.servicesTakenByRmOfCertification.includes(service.serviceName)
                                                                 );
 
                                                                 // Determine the className based on conditions
-                                                                const className = isInMainServices || isInMoreBookingServices
-                                                                    ? 'clr-bg-light-f3f3dd bdr-l-clr-c5c51f clr-f3f3dd'
-                                                                    : certificationLabels.some(label => service.serviceName.includes(label))
-                                                                        ? 'clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1'
-                                                                        : 'clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad';
+                                                                const className =
+                                                                    isInMainServices || isInMoreBookingServices
+                                                                        ? 'clr-bg-light-f3f3dd bdr-l-clr-c5c51f clr-f3f3dd'
+                                                                        : certificationLabels.some(label => service.serviceName.includes(label)) && bookingDate >= today
+                                                                            ? 'clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1'
+                                                                            : 'clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad';
 
                                                                 return (
                                                                     <div
@@ -1091,6 +1167,7 @@ function Received_booking_box() {
                                                             })
                                                         ) : null}
                                                     </div>
+
                                                     <div className='d-flex justify-content-between align-items-center mt-1'>
                                                         <div className='rm_bking_time'>
                                                             {formatTime(
@@ -1109,7 +1186,7 @@ function Received_booking_box() {
                                                                         : obj.bookingPublishDate
                                                                 ) // Use obj.bookingDate if moreBookings is empty or not present
                                                             }
-                                                            <span className='ml-1'>(First Booking)</span>
+                                                            <span className='ml-1'>({numberToWords(activeIndexBooking)} Booking)</span>
                                                         </div>
                                                         <div className='rm_bking_by'>
                                                             By  {obj.bdeName}
