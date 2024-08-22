@@ -15,12 +15,24 @@ function Attendance() {
     const currentYear = new Date().getFullYear();
     const currentMonth = format(new Date(), 'MMMM'); // e.g., 'August'
 
+
     const [isLoading, setIsLoading] = useState(false);
     const [employee, setEmployee] = useState([]);
     const [myInfo, setMyInfo] = useState([]);
+    const [employeeInfo, setEmployeeInfo] = useState([]);
+
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [selectedDate, setSelectedDate] = useState("");
     const [showAddAttendance, setShowAddAttendance] = useState(false);
+
+    const fetchSelectedDate = (date, employeeData) => {
+        // console.log("Selected date from attendance component is :", date);
+        setSelectedDate(date);
+        setEmployeeInfo(employeeData);
+        // console.log("Fetched employees are :", employeeData);
+        setShowAddAttendance(true);
+    };
 
     const fetchPersonalInfo = async () => {
         try {
@@ -111,14 +123,21 @@ function Attendance() {
                                         <button
                                             type="button"
                                             className="btn mybtn"
-                                            onClick={() => setShowAddAttendance(false)}>
+                                            onClick={() => {
+                                                setShowAddAttendance(false);
+                                                setEmployeeInfo([]);
+                                                setSelectedDate("");
+                                            }}>
                                             <IoMdArrowRoundBack className='mr-1' /> Back
                                         </button>
                                     )}
                                     {!showAddAttendance &&
-                                    <button type="button" className="btn mybtn" onClick={() => setShowAddAttendance(true)}>
-                                        <TiUserAddOutline className='mr-1' /> Add Attendance
-                                    </button>
+                                        <button type="button" className="btn mybtn" onClick={() => {
+                                            setShowAddAttendance(true);
+                                            setEmployeeInfo(employee);
+                                        }}>
+                                            <TiUserAddOutline className='mr-1' /> Add Attendance
+                                        </button>
                                     }
                                 </div>
                             </div>
@@ -127,8 +146,8 @@ function Attendance() {
                 </div>
                 <div className="page-body m-0">
                     <div className="container-xl mt-2">
-                        {(!showAddAttendance)&& <ViewAttendance year={selectedYear} month={selectedMonth} />}
-                        {showAddAttendance && <AddAttendance year={selectedYear} month={selectedMonth} />}
+                        {(!showAddAttendance) && <ViewAttendance year={selectedYear} month={selectedMonth} date={fetchSelectedDate} />}
+                        {showAddAttendance && <AddAttendance year={selectedYear} month={selectedMonth} date={selectedDate} employeeData={employeeInfo} />}
                     </div>
                 </div>
             </div>
