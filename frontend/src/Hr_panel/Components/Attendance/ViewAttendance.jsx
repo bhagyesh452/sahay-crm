@@ -884,7 +884,7 @@ function ViewAttendance({ year, month, date }) {
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
-                    {disableInTime && disableOutTime ? "View attendance" : "Add attendance"}
+                    {disableInTime && disableOutTime ? "Update attendance" : "Add attendance"}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         handleClosePopup();
                         setInTime("");
@@ -922,8 +922,8 @@ function ViewAttendance({ year, month, date }) {
                                                     name="attendanceDate"
                                                     className="form-control date-f mt-1"
                                                     value={attendanceDate}
-                                                    disabled={disableInTime && disableOutTime}
-                                                    onChange={(e) => setAttendanceDate(e.target.value)}
+                                                    // onChange={(e) => setAttendanceDate(e.target.value)}
+                                                    readOnly
                                                 />
                                             </div>
                                         </div>
@@ -949,7 +949,7 @@ function ViewAttendance({ year, month, date }) {
                                                         setInTime(e.target.value);
                                                         if (e.target.value) setInTimeError(""); // Clear error when valid
                                                     }}
-                                                    disabled={disableInTime}
+                                                    // disabled={disableInTime}
                                                 />
                                             </div>
                                             {inTimeError && <p className="text-danger">{inTimeError}</p>}
@@ -976,7 +976,7 @@ function ViewAttendance({ year, month, date }) {
                                                         setOutTime(e.target.value);
                                                         if (e.target.value) setOutTimeError(""); // Clear error when valid
                                                     }}
-                                                    disabled={disableOutTime}
+                                                    // disabled={disableOutTime}
                                                 />
                                             </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
@@ -987,9 +987,9 @@ function ViewAttendance({ year, month, date }) {
                         </div>
                     </div>
                 </DialogContent>
-                {!disableInTime && !disableOutTime && <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                     Submit
-                </Button>}
+                </Button>
             </Dialog>
 
             {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}
