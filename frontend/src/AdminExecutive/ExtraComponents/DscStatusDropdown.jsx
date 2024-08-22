@@ -385,7 +385,7 @@ const DscStatusDropdown = ({
               </a>
             </li>
 
-            <li>
+            {/* <li>
               <a className="dropdown-item" onClick={() => handleStatusChange('Hold', 'support-status')} href="#">
                 Hold
               </a>
@@ -394,7 +394,7 @@ const DscStatusDropdown = ({
               <a className="dropdown-item" onClick={() => handleStatusChange('Defaulter', 'support-status')} href="#">
                 Defaulter
               </a>
-            </li>
+            </li> */}
           </ul>
         ) : mainStatus === "Process" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
