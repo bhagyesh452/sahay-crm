@@ -7,7 +7,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import Nodata from '../../../components/Nodata';
 import Swal from 'sweetalert2';
 
-function AddAttendance({ year, month }) {
+function AddAttendance({ year, month, date, employeeData }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -28,6 +28,17 @@ function AddAttendance({ year, month }) {
 
     // console.log("Current year is :", year);
     // console.log("Current month is :", month);
+    // console.log("Current date is :", date);
+
+    const convertToDateInputFormat = (selectedDate) => {
+        if (!selectedDate) return '';
+        const date = new Date(selectedDate);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
 
     // Convert month name to month number
     const monthNumber = monthNamesToNumbers[month];
@@ -81,7 +92,7 @@ function AddAttendance({ year, month }) {
         // Parse the year and month from the date input if the field is attendanceDate
         let newYear = year;
         let newMonth = month;
-    
+
         if (field === 'attendanceDate') {
             const dateParts = value.split('-');
             if (dateParts.length === 3) {
@@ -89,7 +100,7 @@ function AddAttendance({ year, month }) {
                 newMonth = new Date(value).toLocaleString('default', { month: 'long' });
             }
         }
-    
+
         setAttendanceData(prevState => ({
             ...prevState,
             [empId]: {
@@ -121,7 +132,7 @@ function AddAttendance({ year, month }) {
         };
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
-            console.log("Created attendance record is :", res.data);
+            // console.log("Created attendance record is :", res.data);
             Swal.fire("success", "Attendance Successfully Added/Updated", "success");
         } catch (error) {
             console.log("Error adding attendance record", error);
@@ -140,7 +151,7 @@ function AddAttendance({ year, month }) {
         // console.log("Working hours :", workingHours);
         // console.log("Attendance status is :", status);
 
-        console.log("Data to be send :", payload);
+        // console.log("Data to be send :", payload);
     };
 
     const calculateWorkingHours = (inTime, outTime) => {
@@ -228,6 +239,18 @@ function AddAttendance({ year, month }) {
         });
     }, [formattedDate]);
 
+    const [isDeleted, setIsDeleted] = useState(false);
+
+    useEffect(() => {
+        let deletedFound = false;
+        employeeData.forEach((emp) => {
+            if (emp.deletedDate) {
+                deletedFound = true;
+            }
+        });
+        setIsDeleted(deletedFound);
+    }, [employeeData]);
+
     return (
         <div>
             <div className="table table-responsive table-style-2 m-0">
@@ -244,7 +267,7 @@ function AddAttendance({ year, month }) {
                             <th>Out Time</th>
                             <th>Working Hours</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            {!isDeleted && <th>Action</th>}
                         </tr>
                     </thead>
 
@@ -260,17 +283,18 @@ function AddAttendance({ year, month }) {
                                 />
                             </div>
                         </tbody>
-                    ) : employee.length !== 0 ? (
+                    ) : employeeData.length !== 0 ? (
                         <tbody>
-                            {employee.map((emp, index) => {
+                            {employeeData.map((emp, index) => {
                                 const profilePhotoUrl = emp.profilePhoto?.length !== 0
                                     ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                     : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
 
                                 const empAttendance = attendanceData[emp._id] || {};
                                 // console.log("Emp attendance is :", empAttendance);
-                                
-                                const attendanceDate = empAttendance.attendanceDate || formattedDate;
+
+                                const attendanceDate = empAttendance.attendanceDate || !date ? formattedDate : convertToDateInputFormat(date);
+
                                 const currentYear = empAttendance.currentYear || year; // Use year prop or stored value
                                 const currentMonth = empAttendance.currentMonth || month; // Use month prop or stored value
                                 const currentDate = new Date().getDate();
@@ -328,6 +352,7 @@ function AddAttendance({ year, month }) {
                                                     type='date'
                                                     className='form-control date-f'
                                                     value={attendanceDate}
+                                                    disabled={date}
                                                     onChange={(e) =>
                                                         handleInputChange(emp._id, "attendanceDate", e.target.value)
                                                     }
@@ -341,6 +366,7 @@ function AddAttendance({ year, month }) {
                                                     className='form-cantrol in-time'
                                                     // value={attendanceDetails.inTime || inTime}
                                                     value={inTime}
+                                                    disabled={emp.deletedDate}
                                                     onChange={(e) =>
                                                         handleInputChange(emp._id, "inTime", e.target.value)
                                                     }
@@ -354,6 +380,7 @@ function AddAttendance({ year, month }) {
                                                     className='form-cantrol out-time'
                                                     // value={attendanceDetails.outTime || outTime}
                                                     value={outTime}
+                                                    disabled={emp.deletedDate}
                                                     onChange={(e) =>
                                                         handleInputChange(emp._id, "outTime", e.target.value)
                                                     }
@@ -371,12 +398,12 @@ function AddAttendance({ year, month }) {
                                                 {attendanceDetails.status || status}
                                             </span>
                                         </td>
-                                        <td>
+                                        {!emp.deletedDate && <td>
                                             <button type="submit" className="action-btn action-btn-primary" onClick={() =>
                                                 handleSubmit(emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}>
                                                 <GiCheckMark />
                                             </button>
-                                        </td>
+                                        </td>}
                                     </tr>
                                 )
                             })}

@@ -9,7 +9,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import { FaRegCalendarPlus } from "react-icons/fa6";
 import Swal from 'sweetalert2';
 import Nodata from '../../../components/Nodata';
-import ShowAttendanceForParticularDate from './ShowAttendanceForParticularDate';
 import ShowAttendanceForParticularEmployee from './ShowAttendanceForParticularEmployee';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -17,7 +16,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
 
-function ViewAttendance({ year, month }) {
+function ViewAttendance({ year, month, date }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -63,7 +62,6 @@ function ViewAttendance({ year, month }) {
     const [sindhuBhawanBranchEmployees, setSindhuBhawanBranchEmployees] = useState([]);
     const [deletedEmployees, setDeletedEmployees] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
-    const [showAttendanceForParticularDate, setShowAttendanceForParticularDate] = useState(false);
     const [showAttendanceForParticularEmployee, setShowAttendanceForParticularEmployee] = useState(false);
     const [disableInTime, setDisableInTime] = useState(false);
     const [disableOutTime, setDisableOutTime] = useState(false);
@@ -84,15 +82,6 @@ function ViewAttendance({ year, month }) {
     const [inTimeError, setInTimeError] = useState(""); // State for In Time error
     const [outTimeError, setOutTimeError] = useState(""); // State for Out Time error
     const [attendanceData, setAttendanceData] = useState({});
-
-    const handleCalendarIconClick = (date) => {
-        setSelectedDate(date);
-        setShowAttendanceForParticularDate(true);
-    };
-
-    const hanleCloseParticularDateAttendance = () => {
-        setShowAttendanceForParticularDate(false);
-    }
 
     const handleShowParticularEmployeeAttendance = (id, name) => {
         setShowAttendanceForParticularEmployee(true);
@@ -342,7 +331,7 @@ function ViewAttendance({ year, month }) {
 
     return (
         <>
-            {!showAttendanceForParticularDate && <div>
+            <div>
                 <div className="my-tab card-header">
                     <ul class="nav nav-tabs hr_emply_list_navtabs nav-fill p-0">
                         <li class="nav-item hr_emply_list_navitem">
@@ -404,8 +393,7 @@ function ViewAttendance({ year, month }) {
                                                             {getDayLabel(day)}
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
-                                                            <FaRegCalendarPlus onClick={() =>
-                                                                handleCalendarIconClick(fullDate)} />
+                                                            <FaRegCalendarPlus onClick={() => date(fullDate, gotaBranchEmployees)} />
                                                         </div>
                                                     </div>
                                                 </th>
@@ -573,7 +561,7 @@ function ViewAttendance({ year, month }) {
                                                             {getDayLabel(day)}
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
-                                                            <FaRegCalendarPlus onClick={() => handleCalendarIconClick(fullDate)} />
+                                                            <FaRegCalendarPlus onClick={() => date(fullDate, sindhuBhawanBranchEmployees)} />
                                                         </div>
                                                     </div>
                                                 </th>
@@ -746,7 +734,7 @@ function ViewAttendance({ year, month }) {
                                                             {getDayLabel(day)}
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
-                                                            <FaRegCalendarPlus onClick={() => handleCalendarIconClick(fullDate)} />
+                                                            <FaRegCalendarPlus onClick={() => date(fullDate, deletedEmployees)} />
                                                         </div>
                                                     </div>
                                                 </th>
@@ -891,7 +879,7 @@ function ViewAttendance({ year, month }) {
                     </div>
 
                 </div>
-            </div>}
+            </div>
 
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
@@ -1004,7 +992,6 @@ function ViewAttendance({ year, month }) {
                 </Button>}
             </Dialog>
 
-            {showAttendanceForParticularDate && <ShowAttendanceForParticularDate selectedDate={selectedDate} close={hanleCloseParticularDateAttendance} />}
             {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}
         </>
     )
