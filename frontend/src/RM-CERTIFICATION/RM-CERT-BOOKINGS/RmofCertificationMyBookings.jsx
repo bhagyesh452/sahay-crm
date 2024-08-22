@@ -39,7 +39,8 @@ function RmofCertificationMyBookings() {
     const [showFilterIconSubmitted, setShowFilterIconSubmitted] = useState(false)
     const [showFilterIconDefaulter, setShowFilterIconDefaulter] = useState(false)
     const [showFilterIconHold, setShowFilterIconHold] = useState(false)
-    const [showFilterIconApproved, setShowFilterIconApproved] = useState(false)
+    const [showFilterIconApproved, setShowFilterIconApproved] = useState(false);
+    const [search, setSearch] = useState("");
     //const [showFilterIcon, setShowFilterIcon] = useState(false)
     const [activeTab, setActiveTab] = useState("General");
     const [showFilterIcon, setShowFilterIcon] = useState({
@@ -66,19 +67,22 @@ function RmofCertificationMyBookings() {
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchRMServicesData()
+            fetchRMServicesData(search)
         });
 
         socket.on("rm-recievedamount-updated", (res) => {
-            fetchRMServicesData()
+            fetchRMServicesData(search)
         });
 
+        socket.on("rm-recievedamount-deleted", (res) => {
+            fetchRMServicesData(search)
+        });
         socket.on("booking-deleted", (res) => {
-            fetchRMServicesData()
+            fetchRMServicesData(search)
         });
 
         socket.on("booking-updated", (res) => {
-            fetchRMServicesData()
+            fetchRMServicesData(search)
         });
 
 
@@ -102,110 +106,39 @@ function RmofCertificationMyBookings() {
         }
     };
 
-    const fetchRMServicesData = async () => {
+    // Fetch data from backend with optional search query
+    const fetchRMServicesData = async (searchQuery = "") => {
         try {
-            setCurrentDataLoading(true)
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`)
-            setRmServicesData(response.data)
-            //console.log(response.data)
+            setCurrentDataLoading(true);
+            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+                params: { search: searchQuery }
+            });
+            setRmServicesData(response.data);
         } catch (error) {
-            console.error("Error fetching data", error.message)
+            console.error("Error fetching data", error.message);
         } finally {
-            setCurrentDataLoading(false)
+            setCurrentDataLoading(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        fetchRMServicesData(); // Fetch data initially
+    }, [employeeData]);
+
+    useEffect(() => {
+        fetchRMServicesData(search); // Fetch data when search query changes
+    }, [search]);
+
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value); // Update search query state
+    };
 
     useEffect(() => {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        fetchRMServicesData()
 
-    }, [employeeData])
-
-    const handleDeleteRmBooking = async (companyName, serviceName) => {
-        // Display confirmation dialog using SweetAlert
-        const confirmDelete = await Swal.fire({
-            title: 'Are you sure?',
-            text: `Do you want to delete ${serviceName} for ${companyName}?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!',
-        });
-
-        // Proceed with deletion if user confirms
-        if (confirmDelete.isConfirmed) {
-            try {
-                // Send delete request to backend
-                const response = await axios.delete(`${secretKey}/rm-services/delete-rm-services`, {
-                    data: { companyName, serviceName }
-                });
-
-                //console.log(response.data);
-                Swal.fire('Deleted!', 'The record has been deleted.', 'success');
-                fetchData();
-                // Handle UI updates or further actions after deletion
-            } catch (error) {
-                console.error("Error Deleting Company", error.message);
-                Swal.fire('Error!', 'Failed to delete the record.', 'error');
-                // Handle error scenario, e.g., show an error message or handle error state
-            }
-        } else {
-            // Handle cancel or dismiss scenario if needed
-            Swal.fire('Cancelled', 'Delete operation cancelled.', 'info');
-        }
-    };
-
-
-    //console.log("servicesdata", rmServicesData)
-
-    //---------date format------------------------
-
-    function formatDatePro(inputDate) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        const formattedDate = new Date(inputDate).toLocaleDateString(
-            "en-US",
-            options
-        );
-        return formattedDate;
-    }
-
-    function formatDate(dateString) {
-        dateString = "2024-07-26"
-        const [year, month, date] = dateString.split('-');
-        return `${date}/${month}/${year}`
-    }
-
-    const handleTabClick = (tab) => {
-        if (activeTab === tab) {
-            // Double-click detected
-            setShowFilterIcon((prevState) => ({
-                ...prevState,
-                [tab]: !prevState[tab] // Toggle the filter icon state
-            }));
-        } else {
-            // Single-click detected
-            setActiveTab(tab);
-            setShowFilterIcon({
-                General: tab === "General",
-                InProcess: tab === "InProcess",
-                ReadyToSubmit: tab === "ReadyToSubmit",
-                Submitted: tab === "Submited",
-                Approved: tab === "Approved",
-                Hold: tab === "Hold",
-                Defaulter: tab === "Defaulter"
-            });
-        }
-    };
-
-    console.log("showFilter", showFilterIcon)
-
-
-
-    const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
+    console.log("searcg", search)
     const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
 
     return (
@@ -218,19 +151,7 @@ function RmofCertificationMyBookings() {
                     <div className="page-header rm_Filter m-0">
                         <div className="container-xl">
                             <div className="d-flex aling-items-center justify-content-between">
-                                {/* <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn"
-                                        onClick={() => handleTabClick(activeTab)}
-                                    >
-                                        <IoFilterOutline className='mr-1' /> Filter
-                                    </button>
-                                </div> */}
                                 <div className="d-flex align-items-center">
-                                    {/* {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
-                                    </div>
-                                )} */}
                                     <div class="input-icon ml-1">
                                         <span class="input-icon-addon">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -244,7 +165,9 @@ function RmofCertificationMyBookings() {
                                             placeholder="Search…"
                                             type="text"
                                             name="bdeName-search"
-                                            id="bdeName-search" />
+                                            id="bdeName-search"
+                                            value={search}
+                                            onChange={handleSearchChange} />
                                     </div>
                                 </div>
                             </div>
@@ -356,33 +279,51 @@ function RmofCertificationMyBookings() {
                                 </div>
                                 <div class="tab-content card-body">
                                     <div class="tab-pane active" id="General">
-                                        <RmofCertificationGeneralPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.General} />
+                                        <RmofCertificationGeneralPanel searchText={search} rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "General")} showFilter={showFilterIcon.General} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
-                                        <RmofCertificationProcessPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.InProcess} 
-                                        onFilterToggle={() => {
-                                            // Callback to handle filter menu visibility
-                                            setShowFilterIcon(prev => ({
-                                                ...prev,
-                                                InProcess: !prev.InProcess
-                                            }));
-                                        }} 
+                                        <RmofCertificationProcessPanel
+                                            searchText={search}
+                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Process")}
+                                            showFilter={showFilterIcon.InProcess}
+                                            onFilterToggle={() => {
+                                                // Callback to handle filter menu visibility
+                                                setShowFilterIcon(prev => ({
+                                                    ...prev,
+                                                    InProcess: !prev.InProcess
+                                                }));
+                                            }}
                                         />
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
-                                        <RmofCertificationReadyToSubmitPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit} />
+                                        <RmofCertificationReadyToSubmitPanel
+                                            searchText={search}
+                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Ready To Submit")}
+                                            rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit} />
                                     </div>
                                     <div class="tab-pane" id="Submited">
-                                        <RmofCertificationSubmittedPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Submited} />
+                                        <RmofCertificationSubmittedPanel
+                                            searchText={search}
+                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Submitted")}
+                                            showFilter={showFilterIcon.Submited} />
                                     </div>
                                     <div class="tab-pane" id="Approved">
-                                        <RmofCertificationApprovedPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Approved} />
+                                        <RmofCertificationApprovedPanel
+                                            searchText={search}
+                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Approved")}
+                                            showFilter={showFilterIcon.Approved} />
                                     </div>
                                     <div class="tab-pane" id="Hold">
-                                        <RmofCertificationHoldPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Hold} />
+                                        <RmofCertificationHoldPanel
+                                            searchText={search}
+                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Hold")}
+                                            showFilter={showFilterIcon.Hold} />
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
-                                        <RmofCertificationDefaulterPanel rmServicesData={rmServicesData} showFilter={showFilterIcon.Defaulter} />
+                                        <RmofCertificationDefaulterPanel
+                                            searchText={search}
+                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Defaulter")}
+                                            showFilter={showFilterIcon.Defaulter} />
                                     </div>
                                 </div>
                             </div>

@@ -147,8 +147,8 @@ const StatusDropdown = ({
             industryAndSector: serviceName === "Start-Up India Certificate" && !industry && !sector,
             contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
             brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved"),
-            letterStatus: letterStatus && letterStatus !== "Letter Received",
-            dscStatus: dscStatus && dscStatus !== "Approved"
+            letterStatus: letterStatus && (serviceName === "Start-Up India Certificate" || serviceName === "Organization DSC" || serviceName === "Director DSC") && letterStatus !== "Letter Received",
+            dscStatus: dscStatus && (serviceName === "Start-Up India Certificate" || serviceName === "Organization DSC" || serviceName === "Director DSC") && dscStatus !== "Approved"
           };
           const messages = [];
 

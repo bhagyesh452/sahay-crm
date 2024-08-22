@@ -29,7 +29,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { BsFilter } from "react-icons/bs";
 
 
-function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
+function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle }) {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
@@ -83,28 +83,28 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-deleted", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("booking-deleted", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
         socket.on("booking-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
         socket.on("adminexecutive-general-status-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
         socket.on("adminexecutive-letter-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
 
@@ -114,14 +114,16 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
     }, [newStatusProcess]);
 
 
-    const fetchData = async () => {
+    const fetchData = async (searchQuery = "") => {
         setOpenBacdrop(true);
         try {
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
 
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+                params: { search: searchQuery }
+            });
             const servicesData = servicesResponse.data;
 
             if (Array.isArray(servicesData)) {
@@ -147,14 +149,16 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
     };
 
     useEffect(() => {
-        fetchData();
+        fetchData(searchText);
     }, [rmCertificationUserId, secretKey]);
 
-   
 
+    useEffect(() => {
+        fetchData(searchText)
+    }, [searchText])
 
     const refreshData = () => {
-        fetchData();
+        fetchData(searchText);
     };
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
@@ -191,7 +195,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                 //console.log("response", response.data);
 
                 if (response.status === 200) {
-                    fetchData();
+                    fetchData(searchText);
                     functionCloseRemarksPopup();
                     // Swal.fire(
                     //     'Remarks Added!',
@@ -214,7 +218,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                 data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
             });
             if (response.status === 200) {
-                fetchData();
+                fetchData(searchText);
                 functionCloseRemarksPopup();
             }
             // Refresh the list
@@ -260,7 +264,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                 });
 
                 if (response.status === 200) {
-                    fetchData();
+                    fetchData(searchText);
                     Swal.fire(
                         'Company Reverted Back!',
                         'Company has been sent back to the received box.',
@@ -304,7 +308,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
     const handleFilter = (newData) => {
         setRmServicesData(newData);
     };
-   
+
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -937,7 +941,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
 
                                             <div className='RM_filter_icon'>
                                                 <BsFilter
-                                                 ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     onClick={() => handleFilterClick("bdmName")}
                                                 />
                                             </div>
@@ -1269,12 +1273,12 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
                                         </td>
 
                                         <td className="rm-sticky-action"><button className="action-btn action-btn-primary"
-                                        onClick={()=>{
-                                            handleRevokeCompanyToRecievedBox(
-                                                obj["Company Name"],
-                                                obj.serviceName
-                                            )
-                                        }}
+                                            onClick={() => {
+                                                handleRevokeCompanyToRecievedBox(
+                                                    obj["Company Name"],
+                                                    obj.serviceName
+                                                )
+                                            }}
 
                                         ><FaRegEye /></button>
                                         </td>

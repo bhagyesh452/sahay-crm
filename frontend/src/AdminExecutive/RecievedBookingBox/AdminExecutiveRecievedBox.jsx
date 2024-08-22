@@ -1133,9 +1133,9 @@ function AdminExecutiveRecievedBox() {
 
                                                                     serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
 
-                                                                    return certificationLabels.some(label => service.serviceName.includes(label)) && 
-                                                                    serviceBookingDate >= today &&
-                                                                    service.withDSC;
+                                                                    return certificationLabels.some(label => service.serviceName.includes(label)) &&
+                                                                        serviceBookingDate >= today &&
+                                                                        service.withDSC;
                                                                 });
                                                                 return (
                                                                     <>
@@ -1219,9 +1219,9 @@ function AdminExecutiveRecievedBox() {
                                                                 // Determine the className based on conditions
                                                                 const className = isInMainServices || isInMoreBookingServices
                                                                     ? 'clr-bg-light-f3f3dd bdr-l-clr-c5c51f clr-f3f3dd'
-                                                                    : certificationLabels.some(label => service.serviceName.includes(label) 
-                                                                    && bookingDate >= today 
-                                                                    && service.withDSC)
+                                                                    : certificationLabels.some(label => service.serviceName.includes(label)
+                                                                        && bookingDate >= today
+                                                                        && service.withDSC)
                                                                         ? 'clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1'
                                                                         : 'clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad';
 
@@ -1229,8 +1229,15 @@ function AdminExecutiveRecievedBox() {
                                                                     <div
                                                                         key={index}
                                                                         className={`rm_bking_item_serices ${className} My_Text_Wrap mb-1`}
+                                                                        title={service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} withDSC`
+                                                                            : service.serviceName}
                                                                     >
-                                                                        {service.serviceName}
+                                                                        {service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} withDSC`
+                                                                            : service.serviceName}
                                                                     </div>
                                                                 );
                                                             })

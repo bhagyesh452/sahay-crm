@@ -18,7 +18,7 @@ import io from 'socket.io-client';
 import { BsFilter } from "react-icons/bs";
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
-function RmofCertificationGeneralPanel({ showFilter }) {
+function RmofCertificationGeneralPanel({ searchText, rmFilteredData, showFilter }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -34,9 +34,9 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [completeRmData, setcompleteRmData] = useState([])
     const [dataToFilter, setdataToFilter] = useState([])
-    const [search, setSearch] = useState("");
     // Fetch Data Function
-    const fetchData = async () => {
+    
+    const fetchData = async (searchQuery = "") => {
         setOpenBacdrop(true);
         try {
 
@@ -44,8 +44,11 @@ function RmofCertificationGeneralPanel({ showFilter }) {
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
 
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+                params: { search: searchQuery }
+            });
             const servicesData = servicesResponse.data;
+            console.log("serviceData" , servicesData)
 
             if (Array.isArray(servicesData)) {
                 const filteredData = servicesData
@@ -81,23 +84,23 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         });
 
         socket.on("rm-general-status-updated", (res) => {
-            fetchData()
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-updated", (res) => {
-            fetchData()
+             fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-deleted", (res) => {
-            fetchData()
+             fetchData(searchText)
         });
 
         socket.on("booking-deleted", (res) => {
-            fetchData()
+             fetchData(searchText)
         });
 
         socket.on("booking-updated", (res) => {
-            fetchData()
+             fetchData(searchText)
         });
 
 
@@ -107,14 +110,18 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     }, [newStatus]);
 
 
+    useEffect(() => {
+         fetchData(searchText)
+    }, [searchText]);
+
 
     const refreshData = () => {
-        fetchData();
+         fetchData(searchText);
     };
 
     // useEffect to fetch data on component mount
     useEffect(() => {
-        fetchData();
+         fetchData(searchText);
     }, [rmCertificationUserId, secretKey]);
 
     const formatDatePro = (inputDate) => {
@@ -166,7 +173,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                 updatedOn: new Date()
             });
             if (response.status === 200) {
-                fetchData();
+                 fetchData(searchText);
                 functionCloseRemarksPopup();
                 Swal.fire(
                     'Remarks Added!',
@@ -202,7 +209,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                 });
 
                 if (response.status === 200) {
-                    fetchData();
+                     fetchData(searchText);
                     Swal.fire(
                         'Company Reverted Back!',
                         'Company has been sent back to the received box.',
@@ -244,7 +251,7 @@ function RmofCertificationGeneralPanel({ showFilter }) {
     const handleFilter = (newData) => {
         setRmServicesData(newData);
     };
-   
+
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -261,7 +268,6 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         }
     };
 
-    console.log("rmservicesdata" , rmServicesData)
 
     // Effect to handle clicks outside the filter menu
     useEffect(() => {
@@ -278,8 +284,8 @@ function RmofCertificationGeneralPanel({ showFilter }) {
         };
     }, []);
 
-    
-  
+
+    console.log("search" , searchText)
 
 
     return (
@@ -310,11 +316,11 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                                 Booking Date
                                             </div>
-                                         
+
                                             <div className='RM_filter_icon'>
                                                 <BsFilter onClick={() => handleFilterClick("bookingDate")} />
                                             </div>
-                                            
+
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
@@ -338,11 +344,11 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Name'] = el}>
                                                 Company Name
                                             </div>
-                                            
+
                                             <div className='RM_filter_icon'>
                                                 <BsFilter onClick={() => handleFilterClick("Company Name")} />
                                             </div>
-                                            
+
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
@@ -366,12 +372,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Number'] = el}>
                                                 Company Number
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Number")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("Company Number")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
@@ -395,12 +401,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Email'] = el}>
                                                 Company Email
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Email")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("Company Email")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
@@ -424,12 +430,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['caNumber'] = el}>
                                                 CA Number
                                             </div >
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("caNumber")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("caNumber")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
@@ -453,12 +459,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['serviceName'] = el}>
                                                 Service Name
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("serviceName")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("serviceName")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
@@ -482,12 +488,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Status
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("subCategoryStatus")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("subCategoryStatus")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
@@ -512,12 +518,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['withDSC'] = el}>
                                                 DSC Applicable
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("withDSC")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("withDSC")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
@@ -541,12 +547,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['bdeName'] = el}>
                                                 BDE Name
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bdeName")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("bdeName")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component---------------------------
                                             {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
@@ -570,12 +576,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['bdmName'] = el}>
                                                 BDM Name
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bdmName")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("bdmName")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {/* {showFilterMenu && activeFilterField === 'bdmName' && (
                                                 <div
@@ -599,12 +605,12 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
                                                 Total Payment
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("totalPaymentWGST")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("totalPaymentWGST")}
+                                                />
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
                                             {/* {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
                                                 <div
@@ -628,14 +634,14 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['receivedPayment'] = el}>
                                                 Received Payment
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("receivedPayment")}
-                                                    />
-                                                </div>
-                                          {/* ---------------------filter component--------------------------- */}
-                                          {/* {showFilterMenu && activeFilterField === 'receivedPayment' && (
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("receivedPayment")}
+                                                />
+                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"
@@ -657,15 +663,15 @@ function RmofCertificationGeneralPanel({ showFilter }) {
                                             <div ref={el => fieldRefs.current['pendingPayment'] = el}>
                                                 Pending Payment
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("pendingPayment")}
 
-                                                    />
-                                                </div>
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("pendingPayment")}
+
+                                                />
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                          {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                            {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
                                                 ref={filterMenuRef}
                                                     className="filter-menu"
