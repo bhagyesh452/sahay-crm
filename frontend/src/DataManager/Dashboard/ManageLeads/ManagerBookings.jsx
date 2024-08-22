@@ -103,25 +103,37 @@ function ManagerBookings() {
 
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-        secure: true, // Use HTTPS
-        path: '/socket.io',
-        reconnection: true,
-        transports: ['websocket'],
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
     });
 
-    socket.on("Remaining_Payment_Added" , (res)=>{
+    socket.on("Remaining_Payment_Added", (res) => {
       fetchRedesignedFormData();
+      fetchData();
     })
 
-    socket.on("rm-recievedamount-deleted" , (res)=>{
+    socket.on("rm-recievedamount-deleted", (res) => {
       fetchRedesignedFormData();
+      fetchData();
+    });
+
+    socket.on("rm-services-added", (res) => {
+      fetchRedesignedFormData();
+      fetchData();
+    });
+
+    socket.on("adminexecutive-services-added", (res) => {
+      fetchRedesignedFormData();
+      fetchData();
     })
-   
+
 
     return () => {
-        socket.disconnect();
+      socket.disconnect();
     };
-}, []);
+  }, []);
 
   useEffect(() => {
     setLeadFormData(
@@ -481,10 +493,22 @@ function ManagerBookings() {
       Swal.fire("Incorrect Details!", "Please Enter Details Properly", "warning");
       return true;
     }
+
+    Swal.fire({
+      title: 'Processing Payment...',
+      text: 'Please wait while your payment is being updated.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+    // Debug logs to check data
+    console.log("rmServicesData:", rmServicesData);
+    console.log("adminExecutiveData:", adminExecutiveData);
     const findCompany = rmServicesData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
     const findCompanyAdmin = adminExecutiveData.find(company => company["Company Name"] === remainingObject["Company Name"] && company.serviceName === remainingObject.serviceName)
-    console.log("findCompany" , findCompanyAdmin)
-   
+    console.log("findCompany", findCompanyAdmin)
+
     console.log("findCompany", findCompany)
     if (!tempUpdateMode) {
       try {
@@ -497,8 +521,17 @@ function ManagerBookings() {
             },
           }
         );
-        if (findCompany || findCompanyAdmin ) {
+        if (findCompany) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
+            companyName: remainingObject["Company Name"],
+            serviceName: remainingObject.serviceName,
+            pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
+            pendingRecievedPaymentDate: remainingObject.paymentDate
+          });
+          console.log("remaing payment", response2.data)
+        }
+        if (findCompanyAdmin) {
+          const response2 = await axios.post(`${secretKey}/rm-services/adminexecutive-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
             pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
@@ -530,8 +563,17 @@ function ManagerBookings() {
             },
           }
         );
-        if (findCompany || findCompanyAdmin) {
+        if (findCompany) {
           const response2 = await axios.post(`${secretKey}/rm-services/rmcertification-update-remainingpayments/`, {
+            companyName: remainingObject["Company Name"],
+            serviceName: remainingObject.serviceName,
+            pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
+            pendingRecievedPaymentDate: remainingObject.paymentDate
+          });
+          console.log("remaing payment", response2.data)
+        }
+        if (findCompanyAdmin) {
+          const response2 = await axios.post(`${secretKey}/rm-services/adminexecutive-update-remainingpayments/`, {
             companyName: remainingObject["Company Name"],
             serviceName: remainingObject.serviceName,
             pendingRecievedPayment: parseInt(remainingObject.receivedAmount),
@@ -1515,24 +1557,24 @@ function ManagerBookings() {
                                                   <FaPlus/>
                                                   </IconButton>} */}
                                                 {/* add remaining Edit */}
-                                                {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 && 
-                                                <div className="edit-remaining">
-                                                  <IconButton onClick={() => {
-                                                    setIsUpdateMode(true)
-                                                    setTempUpdateMode(true)
-                                                    functionOpenRemainingPayment(
-                                                      obj,
-                                                      "secondPayment",
-                                                      currentLeadform[
-                                                      "Company Name"
-                                                      ], 0,
-                                                      currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[0],
-                                                    )
-                                                  }
-                                                  }>
-                                                    <MdModeEdit style={{ height: '14px', width: '14px' }} />
-                                                  </IconButton>
-                                                </div>}
+                                                {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 &&
+                                                  <div className="edit-remaining">
+                                                    <IconButton onClick={() => {
+                                                      setIsUpdateMode(true)
+                                                      setTempUpdateMode(true)
+                                                      functionOpenRemainingPayment(
+                                                        obj,
+                                                        "secondPayment",
+                                                        currentLeadform[
+                                                        "Company Name"
+                                                        ], 0,
+                                                        currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[0],
+                                                      )
+                                                    }
+                                                    }>
+                                                      <MdModeEdit style={{ height: '14px', width: '14px' }} />
+                                                    </IconButton>
+                                                  </div>}
                                               </div>
                                             </div>
                                           </div>

@@ -121,8 +121,11 @@ export default function RedesignedForm({
 
       // Set the retrieved data in the state
       const tempData = response.data;
-      console.log(response.data);
-      setUnames(tempData);
+      const filteredData = tempData.filter(employee =>
+        employee.designation === "Sales Executive" ||
+        employee.designation === "Sales Manager")
+      console.log("filteredData" , filteredData);
+      setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -942,50 +945,50 @@ export default function RedesignedForm({
           const servicestoSend = leadData.services.map((service, index) => {
             // Find the corresponding isoType object for the current index
             const iso = isoType.find(obj => obj.serviceID === index);
-        
+
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
-                if (
-                    iso.type === "" ||
-                    (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
-                    (iso.type === "Non IAF" && iso.Nontype === "")
-                ) {
-                    updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
-                } else {
-                    updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
-                }
+              if (
+                iso.type === "" ||
+                (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
+                (iso.type === "Non IAF" && iso.Nontype === "")
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+              }
             }
-        
+
             // Update the payment remarks based on specific conditions
             const secondRemark = service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
-                : service.secondPaymentRemarks;
-        
+              ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
+              : service.secondPaymentRemarks;
+
             const thirdRemark = service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
-                : service.thirdPaymentRemarks;
-        
+              ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
+              : service.thirdPaymentRemarks;
+
             const fourthRemark = service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
-                : service.fourthPaymentRemarks;
-        
+              ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
+              : service.fourthPaymentRemarks;
+
             // Return the updated service object
             return {
-                ...service,
-                serviceName: updatedServiceName,
-                secondPaymentRemarks: secondRemark,
-                thirdPaymentRemarks: thirdRemark,
-                fourthPaymentRemarks: fourthRemark,
-                isoTypeObject: isoType
+              ...service,
+              serviceName: updatedServiceName,
+              secondPaymentRemarks: secondRemark,
+              thirdPaymentRemarks: thirdRemark,
+              fourthPaymentRemarks: fourthRemark,
+              isoTypeObject: isoType
             };
-        });
-        
-        // Check if any service has an "Invalid" serviceName
-        if (servicestoSend.some(obj => obj.serviceName === "Invalid")) {
+          });
+
+          // Check if any service has an "Invalid" serviceName
+          if (servicestoSend.some(obj => obj.serviceName === "Invalid")) {
             Swal.fire("Select Complete ISO Service Fields!");
             return true; // Assuming this is inside a function and you want to exit early
-        }
+          }
 
           dataToSend = {
             services: servicestoSend,

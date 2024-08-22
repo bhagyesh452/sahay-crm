@@ -84,6 +84,8 @@ router.get("/redesigned-final-leadData-rm", async (req, res) => {
 router.post('/post-rmservicesdata', async (req, res) => {
   const { dataToSend } = req.body;
   const publishDate = new Date();
+  const socketIO = req.io;
+
   try {
     let createData = [];
     let existingRecords = [];
@@ -100,16 +102,33 @@ router.post('/post-rmservicesdata', async (req, res) => {
           serviceName: item.serviceName
         });
 
+        const existingRecordofAdminExecutive = await AdminExecutiveModel.findOne({
+          "Company Name": item["Company Name"],
+          serviceName: item.serviceName
+        })
+
         if (!existingRecord) {
-          const data = {
-            ...item,
-            bookingPublishDate: publishDate
-          };
+          if (existingRecordofAdminExecutive) {
+            const data = {
+              ...item,
+              bookingPublishDate: publishDate,
+              letterStatus: existingRecordofAdminExecutive.letterStatus
+            };
+            const newRecord = await RMCertificationModel.create(data);
+            //console.log("newRecord" , newRecord)
+            createData.push(newRecord);
+            successEntries++;
+          } else {
+            const data = {
+              ...item,
+              bookingPublishDate: publishDate,
+            };
+            const newRecord = await RMCertificationModel.create(data);
+            //console.log("newRecord" , newRecord)
+            createData.push(newRecord);
+            successEntries++;
+          }
           //console.log("createdData" , data)
-          const newRecord = await RMCertificationModel.create(data);
-          //console.log("newRecord" , newRecord)
-          createData.push(newRecord);
-          successEntries++;
         } else {
           existingRecords.push(existingRecord);
           failedEntries++;
@@ -119,6 +138,7 @@ router.post('/post-rmservicesdata', async (req, res) => {
         failedEntries++;
       }
     }
+    socketIO.emit('rm-services-added');
     // Respond with success message and created data
     res.status(200).json({
       message: "Details added to RM services",
@@ -136,6 +156,8 @@ router.post('/post-rmservicesdata', async (req, res) => {
 router.post('/post-adminexecutivedata', async (req, res) => {
   const { dataToSend } = req.body;
   const publishDate = new Date();
+  const socketIO = req.io;
+
   try {
     let createData = [];
     let existingRecords = [];
@@ -172,6 +194,7 @@ router.post('/post-adminexecutivedata', async (req, res) => {
       }
     }
     // Respond with success message and created data
+    socketIO.emit('adminexecutive-services-added');
     res.status(200).json({
       message: "Details added to RM services",
       data: createData,
@@ -623,7 +646,7 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
 });
 
 router.post(`/update-substatus-adminexecutive-changegeneral/`, async (req, res) => {
-  const { 
+  const {
     companyName,
     serviceName,
     subCategoryStatus,
@@ -660,9 +683,9 @@ router.post(`/update-substatus-adminexecutive-changegeneral/`, async (req, res) 
         serviceName: serviceName
       },
       {
-        dscStatus:subCategoryStatus
+        dscStatus: subCategoryStatus
       },
-      {new : true}
+      { new: true }
     )
 
     // if (!updatedCompany) {
@@ -801,7 +824,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     movedToMainCategoryStatus,
     lastAttemptSubmitted,
     submittedOn
-   } = req.body;
+  } = req.body;
   const socketIO = req.io;
   //console.log(req.body);
 
@@ -818,12 +841,12 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     // let submittedOn = company.submittedOn;
     let updateFields = {}; // Fields to be updated
 
-     if (subCategoryStatus !== "Undo") {
-    //   submittedOn = (mainCategoryStatus === "Submitted")
-    //     ? company.submittedOn || new Date()  // Use existing submittedOn or current date
-    //     : (subCategoryStatus === "Submitted")
-    //       ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
-    //       : company.submittedOn;  // Retain existing submittedOn otherwise
+    if (subCategoryStatus !== "Undo") {
+      //   submittedOn = (mainCategoryStatus === "Submitted")
+      //     ? company.submittedOn || new Date()  // Use existing submittedOn or current date
+      //     : (subCategoryStatus === "Submitted")
+      //       ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
+      //       : company.submittedOn;  // Retain existing submittedOn otherwise
 
       // Conditionally include dateOfChangingMainStatus
       if (["Process", "Approved", "Submitted", "Hold", "Defaulter", "Ready To Submit"].includes(subCategoryStatus)) {
@@ -843,18 +866,18 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           previousSubCategoryStatus: previousSubCategoryStatus,
           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : company.SecondTimeSubmitDate,
           ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : company.ThirdTimeSubmitDate,
-          lastAttemptSubmitted:lastAttemptSubmitted,
-          submittedOn : submittedOn ? submittedOn : new Date()
+          lastAttemptSubmitted: lastAttemptSubmitted,
+          submittedOn: submittedOn ? submittedOn : new Date()
         },
         { new: true }
       );
 
-      if(subCategoryStatus === "Approved"){
+      if (subCategoryStatus === "Approved") {
         console.log("hello wworld")
         runTestScript(companyName);
       }
       console.log("updatedcompany", updatedCompany)
-      console.log("submittedOn" , submittedOn)
+      console.log("submittedOn", submittedOn)
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");
@@ -919,7 +942,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           websiteLink: "",
           industry: "",
           sector: "",
-          lastAttemptSubmitted:""
+          lastAttemptSubmitted: ""
         },
         { new: true }
       );
@@ -941,7 +964,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
 });
 
 router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
-  const { 
+  const {
     companyName,
     serviceName,
     subCategoryStatus,
@@ -951,7 +974,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
     movedFromMainCategoryStatus,
     movedToMainCategoryStatus,
     approvalTime
-   } = req.body;
+  } = req.body;
   const socketIO = req.io;
   //console.log(req.body);
 
@@ -968,10 +991,10 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
     // let submittedOn = company.submittedOn;
     let updateFields = {}; // Fields to be updated
 
-     if (subCategoryStatus !== "Undo") {
-   
+    if (subCategoryStatus !== "Undo") {
+
       // Conditionally include dateOfChangingMainStatus
-      if (["Process", "Approved","Hold", "Defaulter"].includes(subCategoryStatus)) {
+      if (["Process", "Approved", "Hold", "Defaulter"].includes(subCategoryStatus)) {
         updateFields.dateOfChangingMainStatus = new Date();
       }
 
@@ -986,7 +1009,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
           ...updateFields,
           previousMainCategoryStatus: previousMainCategoryStatus,
           previousSubCategoryStatus: previousSubCategoryStatus,
-          approvalTime : approvalTime ? approvalTime : new Date()
+          approvalTime: approvalTime ? approvalTime : new Date()
         },
         { new: true }
       );
@@ -997,9 +1020,9 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
           serviceName: serviceName
         },
         {
-          dscStatus:subCategoryStatus
+          dscStatus: subCategoryStatus
         },
-        {new : true}
+        { new: true }
       )
 
       // if(subCategoryStatus === "Approved"){
@@ -1007,7 +1030,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
       //   runTestScript(companyName);
       // }
       console.log("updatedcompany", updatedCompany)
-      
+
 
       // if (!updatedCompany) {
       //   console.error("Failed to save the updated document");
@@ -1082,9 +1105,9 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
           serviceName: serviceName
         },
         {
-          dscStatus:company.previousMainCategoryStatus
+          dscStatus: company.previousMainCategoryStatus
         },
-        {new : true}
+        { new: true }
       )
 
       if (!updatedCompany) {
@@ -1687,7 +1710,7 @@ router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
 
 router.post(`/post-save-reimbursemntdate-adminexecutive/`, async (req, res) => {
   const { cname, sname, value } = req.body;
-  console.log("date" , value)
+  console.log("date", value)
   //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
@@ -1808,7 +1831,7 @@ router.post(`/post-save-websitelink/`, async (req, res) => {
 });
 
 router.post(`/post-save-industry/`, async (req, res) => {
-  const { companyName, serviceName, industryOption ,isIndustryEnabled ,sector} = req.body;
+  const { companyName, serviceName, industryOption, isIndustryEnabled, sector } = req.body;
   //console.log("dscStatus", serviceName, companyName, industryOption)
   const socketIO = req.io;
   try {
@@ -1820,7 +1843,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
       {
         industry: industryOption,
         //isIndustryEnabled:isIndustryEnabled,
-        sector:sector
+        sector: sector
       },
       { new: true }
     )
@@ -1840,7 +1863,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
 });
 
 router.post(`/post-enable-industry/`, async (req, res) => {
-  const { companyName, serviceName,isIndustryEnabled } = req.body;
+  const { companyName, serviceName, isIndustryEnabled } = req.body;
   //console.log("dscStatus", serviceName, companyName, industryOption)
   const socketIO = req.io;
   try {
@@ -1850,7 +1873,7 @@ router.post(`/post-enable-industry/`, async (req, res) => {
         serviceName: serviceName
       },
       {
-        isIndustryEnabled:isIndustryEnabled
+        isIndustryEnabled: isIndustryEnabled
       },
       { new: true }
     )
@@ -1870,7 +1893,7 @@ router.post(`/post-enable-industry/`, async (req, res) => {
 });
 
 router.post(`/post-save-sector/`, async (req, res) => {
-  const { companyName, serviceName, sectorOption , isIndustryEnabled } = req.body;
+  const { companyName, serviceName, sectorOption, isIndustryEnabled } = req.body;
   //.log("dscStatus", serviceName, companyName, sectorOption)
   const socketIO = req.io;
   try {
@@ -1881,7 +1904,7 @@ router.post(`/post-save-sector/`, async (req, res) => {
       },
       {
         sector: sectorOption,
-        isIndustryEnabled:isIndustryEnabled
+        isIndustryEnabled: isIndustryEnabled
       },
       { new: true }
     )
@@ -1934,14 +1957,15 @@ router.post("/postmethodtoremovecompanyfromrmpanel/:companyName", async (req, re
   const { companyName } = req.params;
   const { displayOfDateForRmCert } = req.body;
   const socketIO = req.io;
-  console.log("date" ,displayOfDateForRmCert )
+  console.log("date", displayOfDateForRmCert)
 
   try {
     const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
       { "Company Name": companyName },
-      { isVisibleToRmOfCerification: false ,
-        displayOfDateForRmCert:displayOfDateForRmCert ? displayOfDateForRmCert : new Date()
-       },
+      {
+        isVisibleToRmOfCerification: false,
+        displayOfDateForRmCert: displayOfDateForRmCert ? displayOfDateForRmCert : new Date()
+      },
       { new: true }
     );
 
@@ -1960,14 +1984,15 @@ router.post("/postmethodtoremovecompanyfromadminexecutivepanel/:companyName", as
   const { companyName } = req.params;
   const { displayOfDateForAdminExecutive } = req.body;
   const socketIO = req.io;
-  console.log("date" ,displayOfDateForAdminExecutive )
+  console.log("date", displayOfDateForAdminExecutive)
 
   try {
     const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
       { "Company Name": companyName },
-      { isVisibleToAdminExecutive: false ,
-        displayOfDateForAdminExecutive:displayOfDateForAdminExecutive ? displayOfDateForAdminExecutive : new Date()
-       },
+      {
+        isVisibleToAdminExecutive: false,
+        displayOfDateForAdminExecutive: displayOfDateForAdminExecutive ? displayOfDateForAdminExecutive : new Date()
+      },
       { new: true }
     );
 
@@ -1984,14 +2009,15 @@ router.post("/postmethodtoremovecompanyfromadminexecutivepanel/:companyName", as
 
 router.post("/postmethodtogetbackfromtrashbox/:companyName", async (req, res) => {
   const { companyName } = req.params;
- const socketIO = req.io;
+  const socketIO = req.io;
 
 
   try {
     const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
       { "Company Name": companyName },
-      { isVisibleToRmOfCerification: true,
-       },
+      {
+        isVisibleToRmOfCerification: true,
+      },
       { new: true }
     );
 
@@ -2007,22 +2033,23 @@ router.post("/postmethodtogetbackfromtrashbox/:companyName", async (req, res) =>
 });
 
 router.post("/postmethodtoremovelcompaniesfromtrashboxpemanently", async (req, res) => {
-  
-  const{ permanentlDeleteDateFromRmCert } = req.body;
- const socketIO = req.io;
 
- //console.log("deletedata" , permanentlDeleteDateFromRmCert)
+  const { permanentlDeleteDateFromRmCert } = req.body;
+  const socketIO = req.io;
+
+  //console.log("deletedata" , permanentlDeleteDateFromRmCert)
 
 
   try {
     const updatedDocument = await RedesignedLeadformModel.updateMany(
-      { 
-        isVisibleToRmOfCerification:false
-       },
-      { permanentlDeleteFromRmCert: true,
-        permanentlDeleteDateFromRmCert:permanentlDeleteDateFromRmCert
+      {
+        isVisibleToRmOfCerification: false
+      },
+      {
+        permanentlDeleteFromRmCert: true,
+        permanentlDeleteDateFromRmCert: permanentlDeleteDateFromRmCert
 
-       },
+      },
       { new: true }
     );
 
@@ -2060,7 +2087,7 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
     if (!updateDocument) {
       return res.status(404).json({ message: "Document not found" });
     }
-   
+
     res.status(200).json({ message: "Remarks added successfully", data: updateDocument });
   } catch (error) {
     console.error("Error updating data:", error);
@@ -2195,80 +2222,176 @@ router.post("/delete_company_from_taskmanager_and_send_to_recievedbox-foradminex
 });
 
 
+// router.post("/rmcertification-update-remainingpayments", async (req, res) => {
+//   const { companyName, serviceName, pendingRecievedPayment, pendingRecievedPaymentDate } = req.body;
+//   const socketIO = req.io;
+
+//   try {
+//     // Fetch the current records for validation
+//     const company = await RMCertificationModel.findOne({
+//       "Company Name": companyName,
+//       serviceName: serviceName
+//     });
+
+//     const AdminExecutiveCompany = await AdminExecutiveModel.findOne({
+//       "Company Name": companyName,
+//       serviceName: serviceName
+//     });
+
+//     // if (!company || !AdminExecutiveCompany) {
+//     //   return res.status(400).json({ message: "Company or service not found" });
+//     // }
+
+//     // Update the RMCertificationModel record
+//     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+//       { "Company Name": companyName, serviceName: serviceName },
+//       {
+//         $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+//         pendingRecievedPaymentDate
+//       },
+//       { new: true }
+//     );
+
+
+
+//     // Update the AdminExecutiveModel record
+//     const updatedCompanyAdminExecutive = await AdminExecutiveModel.findOneAndUpdate(
+//       { "Company Name": companyName, serviceName: serviceName },
+//       {
+//         $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
+//         pendingRecievedPaymentDate
+//       },
+//       { new: true }
+//     );
+//     console.log("updatedcompanyh" , updatedCompanyAdminExecutive)
+//     // if (!updatedCompany || !updatedCompanyAdminExecutive) {
+//     //   return res.status(400).json({ message: "Failed to save the updated document" });
+//     // }
+
+//     // Emit socket event
+//     socketIO.emit('rm-recievedamount-updated');
+//     res.status(200).json({ message: "Pending Amount Added Successfully", data: updatedCompany });
+
+//   } catch (error) {
+//     console.error("Error submitting remaining payment", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+
 router.post("/rmcertification-update-remainingpayments", async (req, res) => {
   const { companyName, serviceName, pendingRecievedPayment, pendingRecievedPaymentDate } = req.body;
   const socketIO = req.io;
 
   try {
-    // Fetch the current records for validation
+    // Fetch the current record for validation
     const company = await RMCertificationModel.findOne({
       "Company Name": companyName,
       serviceName: serviceName
     });
 
-    const AdminExecutiveCompany = await AdminExecutiveModel.findOne({
+    // if (!company) {
+    //   return res.status(400).json({ message: "Company or service not found" });
+    // }
+
+    // Validate that the pendingReceivedPayment does not exceed the total amount
+    //const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
+    const currentReceivedPayment = company.pendingRecievedPayment || 0;
+
+    //console.log("totalAmount", totalAmount)
+    //console.log(currentReceivedPayment)
+
+    // if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
+    //   return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
+    // }
+    // Update the record if validation passes
+    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+      { "Company Name": companyName, serviceName: serviceName },
+      { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
+      { new: true }
+    );
+
+    console.log("updatedcompany", updatedCompany)
+    if (!updatedCompany) {
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
+    // Emit socket event
+    socketIO.emit('rm-recievedamount-updated');
+
+    res.status(200).json({ message: "Pending Amount Added Successfully", data: updatedCompany });
+
+  } catch (error) {
+    console.log("Error submitting remaining payment", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/adminexecutive-update-remainingpayments", async (req, res) => {
+  const { companyName, serviceName, pendingRecievedPayment, pendingRecievedPaymentDate } = req.body;
+  const socketIO = req.io;
+
+  try {
+    // Fetch the current record for validation
+    const company = await AdminExecutiveModel.findOne({
       "Company Name": companyName,
       serviceName: serviceName
     });
 
-    // if (!company || !AdminExecutiveCompany) {
+    // if (!company) {
     //   return res.status(400).json({ message: "Company or service not found" });
     // }
 
-    // Update the RMCertificationModel record
-    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
-      { "Company Name": companyName, serviceName: serviceName },
-      {
-        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
-        pendingRecievedPaymentDate
-      },
-      { new: true }
-    );
+    // Validate that the pendingReceivedPayment does not exceed the total amount
+    //const totalAmount = company.totalPaymentWGST; // Assuming this is the total amount
+    const currentReceivedPayment = company.pendingRecievedPayment || 0;
 
-    
+    //console.log("totalAmount", totalAmount)
+    //console.log(currentReceivedPayment)
 
-    // Update the AdminExecutiveModel record
-    const updatedCompanyAdminExecutive = await AdminExecutiveModel.findOneAndUpdate(
-      { "Company Name": companyName, serviceName: serviceName },
-      {
-        $inc: { pendingRecievedPayment: pendingRecievedPayment }, 
-        pendingRecievedPaymentDate
-      },
-      { new: true }
-    );
-    console.log("updatedcompanyh" , updatedCompanyAdminExecutive)
-    // if (!updatedCompany || !updatedCompanyAdminExecutive) {
-    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // if (pendingRecievedPayment + currentReceivedPayment > totalAmount) {
+    //   return res.status(400).json({ message: "Pending received payment exceeds the total amount" });
     // }
-
+    // Update the record if validation passes
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+      { "Company Name": companyName, serviceName: serviceName },
+      { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
+      { new: true }
+    );
+    console.log("adminupdated", updatedCompany)
+    
+    if (!updatedCompany) {
+      return res.status(400).json({ message: "Failed to save the updated document" });
+    }
     // Emit socket event
     socketIO.emit('rm-recievedamount-updated');
+
     res.status(200).json({ message: "Pending Amount Added Successfully", data: updatedCompany });
 
   } catch (error) {
-    console.error("Error submitting remaining payment", error);
+    console.log("Error submitting remaining payment", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 
+
+
 router.get('/sectors', async (req, res) => {
   try {
-      const { industry } = req.query;
+    const { industry } = req.query;
 
-      // Validate industry query parameter
-      if (!industry) {
-          return res.status(400).json({ error: 'Industry parameter is required' });
-      }
+    // Validate industry query parameter
+    if (!industry) {
+      return res.status(400).json({ error: 'Industry parameter is required' });
+    }
 
-      // Fetch sectors from the database based on the industry
-      const sectors = await RMCertificationModel.find({ industry });
+    // Fetch sectors from the database based on the industry
+    const sectors = await RMCertificationModel.find({ industry });
 
-      // Send response with sectors
-      res.json(sectors);
+    // Send response with sectors
+    res.json(sectors);
   } catch (error) {
-      console.error('Error fetching sectors:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching sectors:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

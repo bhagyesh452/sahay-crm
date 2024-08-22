@@ -115,8 +115,11 @@ export default function EditableMoreBooking({
 
       // Set the retrieved data in the state
       const tempData = response.data;
-      console.log(response.data);
-      setUnames(tempData);
+      const filteredData = tempData.filter(employee =>
+        employee.designation === "Sales Executive" ||
+        employee.designation === "Sales Manager")
+      console.log("filteredData" , filteredData);
+      setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -826,7 +829,13 @@ export default function EditableMoreBooking({
       }));
 
       const dataToSend = {
-        ...leadData, services: servicestoSend, requestBy: employeeName, bookingSource: selectedValues, generatedTotalAmount: generatedTotalAmount, generatedReceivedAmount: generatedReceivedAmount, receivedAmount: parseInt(leadData.services
+        ...leadData, 
+        services: servicestoSend, 
+        requestBy: employeeName, 
+        bookingSource: selectedValues, 
+        generatedTotalAmount: generatedTotalAmount, 
+        generatedReceivedAmount: generatedReceivedAmount, 
+        receivedAmount: parseInt(leadData.services
           .reduce(
             (total, service) =>
               service.paymentTerms ===
@@ -906,7 +915,13 @@ export default function EditableMoreBooking({
           : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
       }, 0);
       const dataToSend = {
-        ...leadData, generatedTotalAmount: generatedTotalAmount, services: servicestoSend, generatedReceivedAmount: generatedReceivedAmount, bookingSource: selectedValues, step4changed: step4changed, receivedAmount: parseInt(leadData.services
+        ...leadData, 
+        generatedTotalAmount: generatedTotalAmount, 
+        services: servicestoSend, 
+        generatedReceivedAmount: generatedReceivedAmount, 
+        bookingSource: selectedValues, 
+        step4changed: step4changed, 
+        receivedAmount: parseInt(leadData.services
           .reduce(
             (total, service) =>
               service.paymentTerms ===
@@ -979,8 +994,8 @@ export default function EditableMoreBooking({
           });
           // console.log(activeStep, dataToSend);
           
-
-
+          console.log("dataToSend" , dataToSend)
+          console.log("formData" , formData)
           const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
@@ -1142,7 +1157,10 @@ export default function EditableMoreBooking({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select className="form-select mt-1 ml-1" style={{ width: '120px' }} disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select 
+                className="form-select mt-1 ml-1" style={{ width: '120px' }} disabled={completed[activeStep] === true} 
+                value={isoType && isoType.find(obj => obj.serviceID === i).type} 
+                onChange={(e) => {
                   const currentObject = isoType.find(obj => obj.serviceID === i);
 
                   if (currentObject) {
