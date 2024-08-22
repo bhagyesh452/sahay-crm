@@ -28,8 +28,9 @@ import Nodata from "../../components/Nodata.jsx";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { RiDatabaseLine } from "react-icons/ri";
 import { GrDocumentPerformance } from "react-icons/gr";
+import { MdMedicalServices } from "react-icons/md";
 import AdminEmployeePerformanceReport from "./AdminEmployeePerformanceReport.jsx";
-
+import ServiceAnalysis from "./ServiceAnalysis.jsx";
 
 
 
@@ -141,6 +142,15 @@ function Dashboard() {
                                     }
                                     {...a11yProps(3)}
                                 />
+                                <Tab
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{fontSize:"12px"}}>Service Analysis</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(3)}
+                                />
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0} className="mat-tab-inner">
@@ -157,6 +167,9 @@ function Dashboard() {
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <AdminEmployeePerformanceReport />
+                        </CustomTabPanel>
+                        <CustomTabPanel value={value} index={5} className="mat-tab-inner">
+                            <ServiceAnalysis />
                         </CustomTabPanel>
                     </div>
                 </div>
