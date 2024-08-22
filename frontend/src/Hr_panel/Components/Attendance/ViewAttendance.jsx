@@ -922,8 +922,8 @@ function ViewAttendance({ year, month, date }) {
                                                     name="attendanceDate"
                                                     className="form-control date-f mt-1"
                                                     value={attendanceDate}
-                                                    disabled
-                                                // onChange={(e) => handleInputChange("middleName", e.target.value)}
+                                                    disabled={disableInTime && disableOutTime}
+                                                    onChange={(e) => setAttendanceDate(e.target.value)}
                                                 />
                                             </div>
                                         </div>
