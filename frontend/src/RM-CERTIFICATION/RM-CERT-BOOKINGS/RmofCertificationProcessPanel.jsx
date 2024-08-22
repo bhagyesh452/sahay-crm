@@ -150,7 +150,7 @@ function RmofCertificationProcessPanel({ showFilter, onFilterToggle }) {
         fetchData();
     }, [rmCertificationUserId, secretKey]);
 
-    console.log("showFilter", showFilter)
+   
 
 
     const refreshData = () => {

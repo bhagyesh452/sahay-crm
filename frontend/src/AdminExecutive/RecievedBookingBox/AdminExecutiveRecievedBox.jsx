@@ -58,7 +58,7 @@ function AdminExecutiveRecievedBox() {
         totalPaymentWGST: 0,
         withGST: "",
         withDSC: false,
-        paymentTerms:"",
+        paymentTerms: "",
         firstPayment: 0,
         secondPayment: 0,
         thirdPayment: 0,
@@ -71,7 +71,7 @@ function AdminExecutiveRecievedBox() {
     };
     const [openAllBooking, setOpenAllBooking] = useState(false);
     const [openTrashBoxPanel, setOpenTrashBoxPanel] = useState(false)
-    
+
 
     const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId")
 
@@ -94,23 +94,23 @@ function AdminExecutiveRecievedBox() {
 
     function numberToWords(n) {
         const words = [
-            "Zero", "First", "Second", "Third", "Fourth", "Fifth", 
-            "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", 
-            "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", 
+            "Zero", "First", "Second", "Third", "Fourth", "Fifth",
+            "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh",
+            "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth",
             "seventeenth", "eighteenth", "nineteenth", "twentieth"
         ];
-    
+
         if (n <= 20) {
             return words[n];
         } else {
             const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
             const unit = n % 10;
             const ten = Math.floor(n / 10);
-    
+
             return tens[ten] + (unit ? "-" + words[unit] : "");
         }
     }
-    
+
 
     const formatTime = (dateString) => {
         //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
@@ -147,10 +147,10 @@ function AdminExecutiveRecievedBox() {
             fetchRedesignedFormData()
         });
 
-        socket.on("rm-recievedamount-deleted" , (res)=>{
+        socket.on("rm-recievedamount-deleted", (res) => {
             fetchRedesignedFormData()
         });
-        socket.on("Remaining_Payment_Added" , (res)=>{
+        socket.on("Remaining_Payment_Added", (res) => {
             fetchRedesignedFormData()
         })
 
@@ -188,13 +188,13 @@ function AdminExecutiveRecievedBox() {
 
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         setLeadFormData(
-            redesignedData.filter((obj)=>
-            obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
+            redesignedData.filter((obj) =>
+                obj["Company Name"].toLowerCase().includes(searchText.toLowerCase()))
         )
 
-    },[searchText])
+    }, [searchText])
 
     //--------fetching booking data by default date should be operation date of rm portal date-------------------------------
     const [redesignedData, setRedesignedData] = useState([]);
@@ -204,7 +204,14 @@ function AdminExecutiveRecievedBox() {
     const [activeIndexBooking, setActiveIndexBooking] = useState(0)
     const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
-
+    const today = new Date("2024-05-21");
+    today.setHours(0, 0, 0, 0); // Set to start of today
+    const parseDate = (dateString) => {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+            return new Date(dateString);
+        }
+        return new Date(dateString);
+    };
     // const fetchRedesignedFormData = async (page) => {
     //     const today = new Date("2024-04-09");
     //     today.setHours(0, 0, 0, 0); // Set to start of today
@@ -287,7 +294,7 @@ function AdminExecutiveRecievedBox() {
     //             const filteredServices = combinedServices.filter((service) =>
     //                 (certificationLabels.includes(service.serviceName))
     //             );
-               
+
 
     //             // Map through the filtered services to get service names
     //             return filteredServices.map((service) => service.serviceName);
@@ -297,7 +304,7 @@ function AdminExecutiveRecievedBox() {
     //         const nonMatchingCompanies = processedData.filter((item, index) => {
     //             // Find the filtered services for the same index
     //             const filteredServiceNames = filteredServicesData[index];
-                
+
     //             const noCertificationServices = !(
     //                 item.servicesTakenByAdminExecutive && item.servicesTakenByAdminExecutive.length > 0 ||
     //                 (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByAdminExecutive && booking.servicesTakenByAdminExecutive.length > 0))
@@ -330,44 +337,37 @@ function AdminExecutiveRecievedBox() {
     // };
 
     const fetchRedesignedFormData = async (page) => {
-        const today = new Date("2024-08-21");
-        today.setHours(0, 0, 0, 0); // Set to start of today
-        const parseDate = (dateString) => {
-            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-                return new Date(dateString);
-            }
-            return new Date(dateString);
-        };
-    
+
+
         setOpenBacdrop(true);
         try {
             const response = await axios.get(`${secretKey}/bookings/redesigned-final-leadData`);
             const data = response.data;
-    
+
             // Filter out documents where shouldDisableButton condition is true
             const validDocuments = data.filter(obj => {
                 const shouldDisableButton = ![
                     ...(obj.services || []),
                     ...(obj.moreBookings || []).flatMap(booking => booking.services || [])
                 ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-                
+
                 return !shouldDisableButton; // Exclude documents where shouldDisableButton is true
             });
-    
+
             // Filter and sort valid documents based on lastActionDate
             const filteredAndSortedData = validDocuments
                 .filter(obj => {
                     const mainBookingDate = parseDate(obj.bookingDate);
                     mainBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
-    
+
                     const hasValidMoreBookingsDate = obj.moreBookings && obj.moreBookings.some(booking => {
                         const bookingDate = parseDate(booking.bookingDate);
                         bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
                         return bookingDate >= today;
                     });
-    
+
                     const isDateValid = mainBookingDate >= today || hasValidMoreBookingsDate;
-    
+
                     return isDateValid && (obj.isVisibleToAdminExecutive !== false && obj.permanentlDeleteFromAdminExecutive !== true);
                 })
                 .sort((a, b) => {
@@ -375,58 +375,70 @@ function AdminExecutiveRecievedBox() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-    
+
             const processedData = filteredAndSortedData.map(item => {
                 const combinedServices = [
                     ...(item.servicesTakenByAdminExecutive || []),
                     ...(item.moreBookings || []).flatMap(booking => booking.servicesTakenByAdminExecutive || [])
                 ];
-    
+
                 const uniqueServices = [...new Set(combinedServices)];
-    
+
                 return {
                     ...item,
                     combinedServices: uniqueServices
                 };
             });
-    
+
             const filteredServicesData = filteredAndSortedData.map(item => {
                 const primaryServices = item.services || [];
                 const moreBookingServices = item.moreBookings
                     ? item.moreBookings.flatMap((booking) => booking.services || [])
                     : [];
-    
+
                 const combinedServices = [
                     ...primaryServices,
                     ...moreBookingServices
                 ];
-    
-                const filteredServices = combinedServices.filter((service) =>
-                    (certificationLabels.includes(service.serviceName))
-                );
-    
+
+                // Filter services based on certificationLabels and bookingDate >= today
+                const filteredServices = combinedServices.filter((service) => {
+                    const serviceBookingDate = item.moreBookings.some(booking =>
+                        booking.services.includes(service)
+                    ) ? new Date(
+                        item.moreBookings.find(booking =>
+                            booking.services.includes(service)
+                        ).bookingDate
+                    ) : new Date(item.bookingDate);
+
+                    serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                    return certificationLabels.includes(service.serviceName) && serviceBookingDate >= today;
+                });
+
+                // Map through the filtered services to get service names
                 return filteredServices.map((service) => service.serviceName);
             });
-    
+
             const nonMatchingCompanies = processedData.filter((item, index) => {
                 const filteredServiceNames = filteredServicesData[index];
-    
+
                 const noCertificationServices = !(
                     item.servicesTakenByAdminExecutive && item.servicesTakenByAdminExecutive.length > 0 ||
                     (item.moreBookings && item.moreBookings.some(booking => booking.servicesTakenByAdminExecutive && booking.servicesTakenByAdminExecutive.length > 0))
                 );
-    
+
                 return !(item.combinedServices.length === filteredServiceNames.length &&
                     item.combinedServices.every(service => filteredServiceNames.includes(service))) || noCertificationServices;
             });
-    
+
             const completeData = response.data
                 .sort((a, b) => {
                     const dateA = new Date(a.lastActionDate);
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA;
                 });
-    
+
             setLeadFormData(nonMatchingCompanies);
             setRedesignedData(nonMatchingCompanies);
             setCompleteRedesignedData(completeData);
@@ -436,7 +448,7 @@ function AdminExecutiveRecievedBox() {
             setOpenBacdrop(false);
         }
     };
-    
+
     console.log("leadformdata", leadFormData)
 
 
@@ -651,12 +663,18 @@ function AdminExecutiveRecievedBox() {
         const selectedServicesHere = redesignedData
             .filter((company) => company["Company Name"] === companyName)
             .flatMap((company) => {
-                const allServices = company.moreBookings.length !== 0
-                    ? [
-                        ...company.services,
-                        ...company.moreBookings.flatMap((item) => item.services),
-                    ]
-                    : company.services || [];
+                const bookingDate = parseDate(company.bookingDate);
+                bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                const mainServices = bookingDate >= today ? company.services : [];
+                const moreBookingServices = company.moreBookings.flatMap((item) => {
+                    const moreBookingDate = parseDate(item.bookingDate);
+                    moreBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                    return moreBookingDate >= today ? item.services : [];
+                });
+
+                const allServices = [...mainServices, ...moreBookingServices];
 
                 const filteredServices = allServices.filter((service) => {
                     const isServiceTakenByAdminExecutive = company.servicesTakenByAdminExecutive?.includes(service.serviceName);
@@ -786,7 +804,7 @@ function AdminExecutiveRecievedBox() {
                     totalPaymentWGST: serviceData.totalPaymentWGST || 0,
                     withGST: serviceData.withGST,
                     withDSC: serviceData.withDSC || 0,
-                    paymentTerms:serviceData.paymentTerms || "", // Default to 0 if not provided
+                    paymentTerms: serviceData.paymentTerms || "", // Default to 0 if not provided
                     firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
                     secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
                     thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
@@ -807,7 +825,7 @@ function AdminExecutiveRecievedBox() {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
             }
         });
-        console.log("dataToSend" , dataToSend)
+        console.log("dataToSend", dataToSend)
 
         if (dataToSend.length !== 0) {
             setOpenBacdrop(true)
@@ -912,8 +930,8 @@ function AdminExecutiveRecievedBox() {
         if (shouldDisableButton) {
             // Directly run the response if shouldDisableButton is true
             try {
-                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromadminexecutivepanel/${companyName}` ,{
-                    displayOfDateForAdminExecutive:new Date()
+                const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromadminexecutivepanel/${companyName}`, {
+                    displayOfDateForAdminExecutive: new Date()
                 });
                 // Handle the response
                 if (response.status === 200) {
@@ -944,10 +962,10 @@ function AdminExecutiveRecievedBox() {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}` ,{
-                            
-                                displayOfDateForRmCert:new Date()
-                            
+                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`, {
+
+                            displayOfDateForRmCert: new Date()
+
                         });
                         // Handle the response
                         if (response.status === 200) {
@@ -1102,8 +1120,23 @@ function AdminExecutiveRecievedBox() {
                                                                 const shouldDisableButton = ![
                                                                     ...obj.services,
                                                                     ...(obj.moreBookings || []).flatMap(booking => booking.services)
-                                                                ].some(service => certificationLabels.some(label => service.serviceName.includes(label) && service.withDSC));
+                                                                ].some(service => {
+                                                                    const serviceBookingDate = obj.moreBookings.some(booking =>
+                                                                        booking.services.includes(service)
+                                                                    )
+                                                                        ? new Date(
+                                                                            obj.moreBookings.find(booking =>
+                                                                                booking.services.includes(service)
+                                                                            ).bookingDate
+                                                                        )
+                                                                        : new Date(obj.bookingDate);
 
+                                                                    serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+                                                                    return certificationLabels.some(label => service.serviceName.includes(label)) && 
+                                                                    serviceBookingDate >= today &&
+                                                                    service.withDSC;
+                                                                });
                                                                 return (
                                                                     <>
                                                                         {!shouldDisableButton && (
@@ -1134,6 +1167,7 @@ function AdminExecutiveRecievedBox() {
                                                             })()}
 
 
+
                                                             <button
                                                                 className='btn btn-sm btn-swap-round d-flex btn-swap-round-reject align-items-center'
                                                                 onClick={() => {
@@ -1156,9 +1190,22 @@ function AdminExecutiveRecievedBox() {
                                                             [
                                                                 ...obj.services,
                                                                 ...(obj.moreBookings || []).flatMap(booking => booking.services)
-                                                            ].filter(service => 
+                                                            ].filter(service =>
                                                                 certificationLabels.some(label => service.serviceName.includes(label))
                                                             ).map((service, index) => {
+                                                                // Determine the booking date for the current service
+                                                                const bookingDate = obj.moreBookings.some(booking =>
+                                                                    booking.services.includes(service)
+                                                                )
+                                                                    ? new Date(
+                                                                        obj.moreBookings.find(booking =>
+                                                                            booking.services.includes(service)
+                                                                        ).bookingDate
+                                                                    )
+                                                                    : new Date(obj.bookingDate);
+
+                                                                bookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
                                                                 // Check if the service is in servicesTakenByRmOfCertification
                                                                 const isInMainServices = obj.servicesTakenByAdminExecutive &&
                                                                     obj.servicesTakenByAdminExecutive.includes(service.serviceName);
@@ -1166,13 +1213,15 @@ function AdminExecutiveRecievedBox() {
                                                                 // Check if the service is in any moreBookings' servicesTakenIn
                                                                 const isInMoreBookingServices = obj.moreBookings.some(booking =>
                                                                     booking.servicesTakenByAdminExecutive && booking.servicesTakenByAdminExecutive.includes(service.serviceName)
-                                                                
+
                                                                 );
 
                                                                 // Determine the className based on conditions
                                                                 const className = isInMainServices || isInMoreBookingServices
                                                                     ? 'clr-bg-light-f3f3dd bdr-l-clr-c5c51f clr-f3f3dd'
-                                                                    : certificationLabels.some(label => service.serviceName.includes(label) && service.withDSC)
+                                                                    : certificationLabels.some(label => service.serviceName.includes(label) 
+                                                                    && bookingDate >= today 
+                                                                    && service.withDSC)
                                                                         ? 'clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1'
                                                                         : 'clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad';
 

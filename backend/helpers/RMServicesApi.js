@@ -113,7 +113,7 @@ router.post('/post-rmservicesdata', async (req, res) => {
               ...item,
               bookingPublishDate: publishDate,
               letterStatus: existingRecordofAdminExecutive.letterStatus,
-              dscStatus:existingRecordofAdminExecutive.subCategoryStatus
+              dscStatus: existingRecordofAdminExecutive.subCategoryStatus
             };
             const newRecord = await RMCertificationModel.create(data);
             //console.log("newRecord" , newRecord)
@@ -705,113 +705,6 @@ router.post(`/update-substatus-adminexecutive-changegeneral/`, async (req, res) 
   }
 });
 
-
-
-
-// router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
-//   const { companyName, serviceName, subCategoryStatus, mainCategoryStatus, previousMainCategoryStatus, previousSubCategoryStatus, SecondTimeSubmitDate, ThirdTimeSubmitDate } = req.body;
-//   const socketIO = req.io;
-//   console.log(req.body)
-//   try {
-//     // Step 1: Find the company document
-//     const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
-
-//     if (!company) {
-//       console.error("Company not found");
-//       return res.status(400).json({ message: "Company not found" });
-//     }
-
-//     // Step 2: Determine the submittedOn date
-//     let submittedOn = company.submittedOn;
-//     let updateFields = {}; // Fields to be updated
-
-//     if (subCategoryStatus !== "Undo") {
-//       submittedOn = (mainCategoryStatus === "Submitted")
-//         ? company.submittedOn || new Date()  // Use existing submittedOn or current date
-//         : (subCategoryStatus === "Submitted")
-//           ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
-//           : company.submittedOn;  // Retain existing submittedOn otherwise
-
-//       // Conditionally include dateOfChangingMainStatus
-//       if (["Process", "Approved", "Submitted", "Hold", "Defaulter", "ReadyToSubmit"].includes(subCategoryStatus)) {
-//         updateFields.dateOfChangingMainStatus = new Date();
-//       }
-
-//       // Step 3: Update the document with the calculated dates
-//       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
-//         {
-//           ["Company Name"]: companyName,
-//           serviceName: serviceName
-//         },
-//         {
-//           subCategoryStatus: subCategoryStatus,
-//           mainCategoryStatus: mainCategoryStatus,
-//           lastActionDate: new Date(),
-//           submittedOn: submittedOn,
-//           ...updateFields, // Conditionally include dateOfChangingMainStatus
-//           previousMainCategoryStatus: previousMainCategoryStatus,
-//           previousSubCategoryStatus: previousSubCategoryStatus,
-//           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : null,
-//           ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : null
-//         },
-//         { new: true }
-//       );
-
-//       if (!updatedCompany) {
-//         console.error("Failed to save the updated document");
-//         return res.status(400).json({ message: "Failed to save the updated document" });
-//       }
-
-//       // Emit socket event
-//       socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
-//       res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
-
-//     } else {
-//       // If subCategoryStatus is "Undo", update with previous statuses and no new date
-//       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
-//         {
-//           ["Company Name"]: companyName,
-//           serviceName: serviceName
-//         },
-//         {
-//           subCategoryStatus: company.previousMainCategoryStatus === "General" ? "Untouched" : company.previousSubCategoryStatus,  // Keep existing subCategoryStatus
-//           mainCategoryStatus: company.previousMainCategoryStatus,
-//           previousMainCategoryStatus: company.mainCategoryStatus,
-//           previousSubCategoryStatus: company.subCategoryStatus,// Restore previous mainCategoryStatus
-//           lastActionDate: new Date(),
-//           submittedOn: company.submittedOn,
-//           dateOfChangingMainStatus: company.dateOfChangingMainStatus, // Retain existing date
-//           Remarks: [],
-//           dscStatus: "Not Started",
-//           contentStatus: "Not Started",
-//           contentWriter: "Drashti Thakkar",
-//           brochureStatus: "Not Applicable",
-//           brochureDesigner: "",
-//           nswsMailId: "",
-//           nswsPaswsord: "",
-//           websiteLink: "",
-//           industry: "",
-//           sector: ""  // Retain existing submittedOn
-//         },
-//         { new: true }
-//       );
-
-//       if (!updatedCompany) {
-//         console.error("Failed to save the updated document");
-//         return res.status(400).json({ message: "Failed to save the updated document" });
-//       }
-
-//       // Emit socket event
-//       socketIO.emit('rm-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
-//       res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
-//     }
-
-//   } catch (error) {
-//     console.error("Error updating document:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   const { companyName,
     serviceName,
@@ -831,6 +724,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
 
   try {
     // Step 1: Find the company document in RMCertificationModel
+    const findCompanyAdmin = await AdminExecutiveModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
     const company = await RMCertificationModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
 
     if (!company) {
@@ -868,7 +762,9 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           SecondTimeSubmitDate: SecondTimeSubmitDate ? SecondTimeSubmitDate : company.SecondTimeSubmitDate,
           ThirdTimeSubmitDate: ThirdTimeSubmitDate ? ThirdTimeSubmitDate : company.ThirdTimeSubmitDate,
           lastAttemptSubmitted: lastAttemptSubmitted,
-          submittedOn: submittedOn ? submittedOn : new Date()
+          submittedOn: submittedOn ? submittedOn : new Date(),
+          letterStatus: findCompanyAdmin ? findCompanyAdmin.letterStatus : "Not Started",
+          dscStatus: findCompanyAdmin ? findCompanyAdmin.subCategoryStatus : "Not Started",
         },
         { new: true }
       );
@@ -933,7 +829,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
           submittedOn: company.submittedOn,
           dateOfChangingMainStatus: company.dateOfChangingMainStatus,
           Remarks: [],
-          dscStatus: "Not Started",
+          letterStatus: findCompanyAdmin ? findCompanyAdmin.letterStatus : "Not Started",
+          dscStatus: findCompanyAdmin ? findCompanyAdmin.subCategoryStatus : "Not Started",
           contentStatus: "Not Started",
           contentWriter: "Drashti Thakkar",
           brochureStatus: "Not Applicable",
@@ -1030,7 +927,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
       //   console.log("hello wworld")
       //   runTestScript(companyName);
       // }
-      console.log("updatedcompany", updatedCompany)
+      console.log("updatedcompany", updateCompanyRm)
 
 
       // if (!updatedCompany) {
@@ -2358,7 +2255,7 @@ router.post("/adminexecutive-update-remainingpayments", async (req, res) => {
       { new: true }
     );
     console.log("adminupdated", updatedCompany)
-    
+
     if (!updatedCompany) {
       return res.status(400).json({ message: "Failed to save the updated document" });
     }
