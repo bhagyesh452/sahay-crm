@@ -50,52 +50,73 @@ function ServiceAnalysis() {
     }, []);
 
     // const getServiceAnalysisData = () => {
-    //     // Filter booking data by selected month and year
-    //     const filteredData = bookingData.filter(booking => {
-    //         const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
-    //         const bookingYear = new Date(booking.bookingDate).getFullYear();
-    //         return bookingMonth === selectedMonth && bookingYear === selectedYear;
-    //     });
-
     //     // Initialize an object to store service analysis data
     //     const serviceAnalysis = {};
 
-    //     filteredData.forEach(booking => {
-    //         booking.services.forEach(service => {
-    //             if (!serviceAnalysis[service.serviceName]) {
-    //                 serviceAnalysis[service.serviceName] = {
-    //                     timesSold: 0,
-    //                     totalPayment: 0,
-    //                     advancePayment: 0,
-    //                     remainingPayment: 0,
-    //                 };
-    //             }
+    //     const processServiceData = (booking, service) => {
+    //         if (!serviceAnalysis[service.serviceName]) {
+    //             serviceAnalysis[service.serviceName] = {
+    //                 timesSold: 0,
+    //                 totalPayment: 0,
+    //                 advancePayment: 0,
+    //                 remainingPayment: 0,
+    //             };
+    //         }
 
-    //             // Update the service analysis data
-    //             serviceAnalysis[service.serviceName].timesSold += 1;
-    //             serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
-    //             serviceAnalysis[service.serviceName].advancePayment += service.firstPayment;
+    //         // Update the service analysis data
+    //         serviceAnalysis[service.serviceName].timesSold += 1;
+    //         serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
 
-    //             // Handle payment terms
-    //             if (service.paymentTerms === "Full Advanced") {
-    //                 // Ensure totalPayment and advancePayment are the same
-    //                 serviceAnalysis[service.serviceName].remainingPayment = 0;
-    //                 serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWOGST;
-    //             } else if (service.paymentTerms === "two-part") {
-    //                 // Calculate remaining payment as the sum of second, third, and fourth payments
-    //                 const secondPayment = service.secondPayment || 0;
-    //                 const thirdPayment = service.thirdPayment || 0;
-    //                 const fourthPayment = service.fourthPayment || 0;
+    //         // Handle payment terms
+    //         if (service.paymentTerms === "Full Advanced") {
+    //             // Ensure totalPayment and advancePayment are the same
+    //             serviceAnalysis[service.serviceName].remainingPayment = 0;
+    //             serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWOGST;
 
-    //                 serviceAnalysis[service.serviceName].remainingPayment += secondPayment + thirdPayment + fourthPayment;
-    //             } else {
-    //                 // Calculate remaining payment from remainingPayments array for other payment terms
-    //                 booking.remainingPayments.forEach(remaining => {
-    //                     if (remaining.serviceName === service.serviceName) {
-    //                         serviceAnalysis[service.serviceName].remainingPayment += remaining.totalPayment;
-    //                     }
-    //                 });
-    //             }
+    //         } else if (service.paymentTerms === "two-part") {
+    //             // Deduct 18% GST if withGST is true
+    //             const adjustedFirstPayment = service.withGST
+    //                 ? service.firstPayment / 1.18   // Remove 18% GST from advance payment
+    //                 : service.firstPayment;
+
+    //             serviceAnalysis[service.serviceName].advancePayment += adjustedFirstPayment;
+                
+    //             // Calculate remaining payment as the sum of second, third, and fourth payments
+    //             const secondPayment = service.secondPayment || 0;
+    //             const thirdPayment = service.thirdPayment || 0;
+    //             const fourthPayment = service.fourthPayment || 0;
+    //             const remainingPayment = (secondPayment + thirdPayment + fourthPayment) / 1.18;
+
+    //             serviceAnalysis[service.serviceName].remainingPayment += remainingPayment;
+    
+    //             // serviceAnalysis[service.serviceName].remainingPayment += (secondPayment + thirdPayment + fourthPayment) / 1.18; // Remove 18% GST from remaining payment
+    //             console.log(`Company: ${booking.companyName}, Service: ${service.serviceName}, Remaining Payment: ${remainingPayment}`);
+    //         } else {
+    //             // Calculate remaining payment from remainingPayments array for other payment terms
+    //             booking.remainingPayments.forEach(remaining => {
+    //                 if (remaining.serviceName === service.serviceName) {
+    //                     serviceAnalysis[service.serviceName].remainingPayment += remaining.totalPayment;
+    //                 }
+    //             });
+    //         }
+    //     };
+
+    //     const processBooking = (booking) => {
+    //         const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
+    //         const bookingYear = new Date(booking.bookingDate).getFullYear();
+
+    //         if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
+    //             booking.services.forEach(service => processServiceData(booking, service));
+    //         }
+    //     };
+
+    //     // Process main booking data
+    //     bookingData.forEach(booking => {
+    //         processBooking(booking);
+
+    //         // Process moreBookings array
+    //         booking.moreBookings.forEach(moreBooking => {
+    //             processBooking(moreBooking);
     //         });
     //     });
 
@@ -110,13 +131,12 @@ function ServiceAnalysis() {
     //     }));
     // };
 
-
-
     const getServiceAnalysisData = () => {
         // Initialize an object to store service analysis data
         const serviceAnalysis = {};
-
+    
         const processServiceData = (booking, service) => {
+            // Initialize service data if not present
             if (!serviceAnalysis[service.serviceName]) {
                 serviceAnalysis[service.serviceName] = {
                     timesSold: 0,
@@ -125,60 +145,67 @@ function ServiceAnalysis() {
                     remainingPayment: 0,
                 };
             }
-
+    
             // Update the service analysis data
             serviceAnalysis[service.serviceName].timesSold += 1;
             serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
-
+    
             // Handle payment terms
             if (service.paymentTerms === "Full Advanced") {
-                // Ensure totalPayment and advancePayment are the same
                 serviceAnalysis[service.serviceName].remainingPayment = 0;
-                serviceAnalysis[service.serviceName].advancePayment = service.totalPaymentWOGST;
-
+                serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWOGST;
+    
             } else if (service.paymentTerms === "two-part") {
-                // Deduct 18% GST if withGST is true
                 const adjustedFirstPayment = service.withGST
-                    ? service.firstPayment / 1.18   // Remove 18% GST from advance payment
+                    ? service.firstPayment / 1.18
                     : service.firstPayment;
-
+    
                 serviceAnalysis[service.serviceName].advancePayment += adjustedFirstPayment;
-
-                // Calculate remaining payment as the sum of second, third, and fourth payments
+    
+                // Accumulate remaining payments
                 const secondPayment = service.secondPayment || 0;
                 const thirdPayment = service.thirdPayment || 0;
                 const fourthPayment = service.fourthPayment || 0;
-
-                serviceAnalysis[service.serviceName].remainingPayment += (secondPayment + thirdPayment + fourthPayment) / 1.18; // Remove 18% GST from remaining payment
+    
+                const remainingPayment = (secondPayment + thirdPayment + fourthPayment) / 1.18;
+    
+                // Accumulate the remaining payment for the service
+                serviceAnalysis[service.serviceName].remainingPayment += remainingPayment;
+    
+                // Log company name, service name, and remaining payment
+                console.log(`Company: ${booking.companyName}, Service: ${service.serviceName}, Remaining Payment: ${serviceAnalysis[service.serviceName].remainingPayment}`);
             } else {
-                // Calculate remaining payment from remainingPayments array for other payment terms
                 booking.remainingPayments.forEach(remaining => {
                     if (remaining.serviceName === service.serviceName) {
+                        // Accumulate the remaining payment for the service
                         serviceAnalysis[service.serviceName].remainingPayment += remaining.totalPayment;
+    
+                        // Log company name, service name, and remaining payment
+                        console.log(`Company: ${booking.companyName}, Service: ${service.serviceName}, Remaining Payment: ${serviceAnalysis[service.serviceName].remainingPayment}`);
                     }
                 });
             }
         };
-
+    
         const processBooking = (booking) => {
             const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
             const bookingYear = new Date(booking.bookingDate).getFullYear();
-
+    
             if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
                 booking.services.forEach(service => processServiceData(booking, service));
             }
         };
-
+    
         // Process main booking data
         bookingData.forEach(booking => {
             processBooking(booking);
-
+    
             // Process moreBookings array
             booking.moreBookings.forEach(moreBooking => {
                 processBooking(moreBooking);
             });
         });
-
+    
         return Object.entries(serviceAnalysis).map(([serviceName, data], index) => ({
             id: index + 1,
             serviceName,
@@ -189,8 +216,15 @@ function ServiceAnalysis() {
             averageSellingPrice: data.totalPayment / data.timesSold || 0,
         }));
     };
+    
 
     const serviceAnalysisData = getServiceAnalysisData();
+
+    const totalTimesSold = serviceAnalysisData.reduce((total, service) => total + service.timesSold, 0);
+    const totalTotalPayment = serviceAnalysisData.reduce((total, service) => total + service.totalPayment, 0);
+    const totalAdvancePayment = serviceAnalysisData.reduce((total, service) => total + service.advancePayment, 0);
+    const totalRemainingPayment = serviceAnalysisData.reduce((total, service) => total + service.remainingPayment, 0);
+    const totalAverageSellingPrice = totalTimesSold ? (totalTotalPayment / totalTimesSold) : 0;
 
     return (
         <div className="card">
@@ -257,19 +291,34 @@ function ServiceAnalysis() {
                                 </tr>
                             </tbody>
                         ) : serviceAnalysisData.length !== 0 ? (
-                            <tbody>
-                                {serviceAnalysisData.map((service, index) => (
-                                    <tr key={index}>
-                                        <td>{service.id}</td>
-                                        <td>{service.serviceName}</td>
-                                        <td>{service.timesSold}</td>
-                                        <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
-                                        <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
-                                        <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
-                                        <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
+                            <>
+
+                                <tbody>
+                                    {serviceAnalysisData.map((service, index) => (
+                                        <tr key={index}>
+                                            <td>{service.id}</td>
+                                            <td>{service.serviceName}</td>
+                                            <td>{service.timesSold}</td>
+                                            <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
+                                            <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
+                                            <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
+                                            <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+
+                                <tfoot className="admin-dash-tbl-tfoot">
+                                    <tr style={{ fontWeight: 500 }}>
+                                        <td>Total</td>
+                                        <td>{serviceAnalysisData.length}</td>
+                                        <td>{totalTimesSold}</td>
+                                        <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
+                                        <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
+                                        <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
+                                        <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
                                     </tr>
-                                ))}
-                            </tbody>
+                                </tfoot>
+                            </>
                         ) : (
                             <tbody>
                                 <tr>
