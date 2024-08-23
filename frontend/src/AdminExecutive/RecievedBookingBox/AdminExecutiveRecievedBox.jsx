@@ -204,7 +204,7 @@ function AdminExecutiveRecievedBox() {
     const [activeIndexBooking, setActiveIndexBooking] = useState(0)
     const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
-    const today = new Date("2024-08-22");
+    const today = new Date("2024-08-23");
     today.setHours(0, 0, 0, 0); // Set to start of today
     const parseDate = (dateString) => {
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -1229,8 +1229,15 @@ function AdminExecutiveRecievedBox() {
                                                                     <div
                                                                         key={index}
                                                                         className={`rm_bking_item_serices ${className} My_Text_Wrap mb-1`}
+                                                                        title={service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} with DSC`
+                                                                            : service.serviceName}
                                                                     >
-                                                                        {service.serviceName}
+                                                                        {service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} with DSC`
+                                                                            : service.serviceName}
                                                                     </div>
                                                                 );
                                                             })
