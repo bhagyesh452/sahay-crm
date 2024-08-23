@@ -313,10 +313,12 @@ router.post("/update-redesigned-final-form/:CompanyName",
         // Set all properties except "moreBookings"
         { new: true } // Return the updated document
       );
-
-      if (!updatedDocument) {
-        return res.status(404).json({ error: "Document not found" });
-      }
+      
+      console.log("updateddocument" , newGoingToUpdate)
+      
+      // if (!updatedDocument) {
+      //   return res.status(404).json({ error: "Document not found" });
+      // }
       const serviceNames = companyData.services.map(service => service.serviceName);
      
       // Update RMCertificationModel
@@ -350,6 +352,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
+              paymentTerms: serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
@@ -360,6 +363,9 @@ router.post("/update-redesigned-final-form/:CompanyName",
               bookingPublishDate: serviceData.bookingPublishDate, // Update bookingPublishDate
               lastActionDate: tempDateToday, // Update lastActionDate
             };
+
+            console.log("updatedfields" , updatedFields)
+
             await RMCertificationModel.findOneAndUpdate(
               {
                 "Company Name": companyName,
@@ -418,6 +424,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
+              paymentTerms: serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
@@ -609,6 +616,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
+              paymentTerms:serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
@@ -684,6 +692,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
+              paymentTerms:serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
