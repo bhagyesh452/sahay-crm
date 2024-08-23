@@ -1229,8 +1229,15 @@ function AdminExecutiveRecievedBox() {
                                                                     <div
                                                                         key={index}
                                                                         className={`rm_bking_item_serices ${className} My_Text_Wrap mb-1`}
+                                                                        title={service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} with DSC`
+                                                                            : service.serviceName}
                                                                     >
-                                                                        {service.serviceName}
+                                                                        {service.serviceName === 'Start-Up India Certificate' &&
+                                                                            service.withDSC
+                                                                            ? `${service.serviceName} with DSC`
+                                                                            : service.serviceName}
                                                                     </div>
                                                                 );
                                                             })
