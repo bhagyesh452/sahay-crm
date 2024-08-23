@@ -204,7 +204,7 @@ function Received_booking_box() {
     const [activeIndexBooking, setActiveIndexBooking] = useState(0)
     const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
-    const today = new Date("2024-05-21");
+    const today = new Date("2024-08-22");
     today.setHours(0, 0, 0, 0); // Set to start of today
 
     const parseDate = (dateString) => {
