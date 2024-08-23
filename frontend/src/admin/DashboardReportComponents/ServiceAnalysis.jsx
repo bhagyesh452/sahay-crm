@@ -49,56 +49,136 @@ function ServiceAnalysis() {
         fetchBookings();
     }, []);
 
+    // const getServiceAnalysisData = () => {
+    //     // Filter booking data by selected month and year
+    //     const filteredData = bookingData.filter(booking => {
+    //         const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
+    //         const bookingYear = new Date(booking.bookingDate).getFullYear();
+    //         return bookingMonth === selectedMonth && bookingYear === selectedYear;
+    //     });
+
+    //     // Initialize an object to store service analysis data
+    //     const serviceAnalysis = {};
+
+    //     filteredData.forEach(booking => {
+    //         booking.services.forEach(service => {
+    //             if (!serviceAnalysis[service.serviceName]) {
+    //                 serviceAnalysis[service.serviceName] = {
+    //                     timesSold: 0,
+    //                     totalPayment: 0,
+    //                     advancePayment: 0,
+    //                     remainingPayment: 0,
+    //                 };
+    //             }
+
+    //             // Update the service analysis data
+    //             serviceAnalysis[service.serviceName].timesSold += 1;
+    //             serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
+    //             serviceAnalysis[service.serviceName].advancePayment += service.firstPayment;
+
+    //             // Handle payment terms
+    //             if (service.paymentTerms === "Full Advanced") {
+    //                 // Ensure totalPayment and advancePayment are the same
+    //                 serviceAnalysis[service.serviceName].remainingPayment = 0;
+    //                 serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWOGST;
+    //             } else if (service.paymentTerms === "two-part") {
+    //                 // Calculate remaining payment as the sum of second, third, and fourth payments
+    //                 const secondPayment = service.secondPayment || 0;
+    //                 const thirdPayment = service.thirdPayment || 0;
+    //                 const fourthPayment = service.fourthPayment || 0;
+
+    //                 serviceAnalysis[service.serviceName].remainingPayment += secondPayment + thirdPayment + fourthPayment;
+    //             } else {
+    //                 // Calculate remaining payment from remainingPayments array for other payment terms
+    //                 booking.remainingPayments.forEach(remaining => {
+    //                     if (remaining.serviceName === service.serviceName) {
+    //                         serviceAnalysis[service.serviceName].remainingPayment += remaining.totalPayment;
+    //                     }
+    //                 });
+    //             }
+    //         });
+    //     });
+
+    //     return Object.entries(serviceAnalysis).map(([serviceName, data], index) => ({
+    //         id: index + 1,
+    //         serviceName,
+    //         timesSold: data.timesSold,
+    //         totalPayment: data.totalPayment,
+    //         advancePayment: data.advancePayment,
+    //         remainingPayment: data.remainingPayment,
+    //         averageSellingPrice: data.totalPayment / data.timesSold || 0,
+    //     }));
+    // };
+
+
+
     const getServiceAnalysisData = () => {
-        // Filter booking data by selected month and year
-        const filteredData = bookingData.filter(booking => {
-            const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
-            const bookingYear = new Date(booking.bookingDate).getFullYear();
-            return bookingMonth === selectedMonth && bookingYear === selectedYear;
-        });
-    
         // Initialize an object to store service analysis data
         const serviceAnalysis = {};
-    
-        filteredData.forEach(booking => {
-            booking.services.forEach(service => {
-                if (!serviceAnalysis[service.serviceName]) {
-                    serviceAnalysis[service.serviceName] = {
-                        timesSold: 0,
-                        totalPayment: 0,
-                        advancePayment: 0,
-                        remainingPayment: 0,
-                    };
-                }
-    
-                // Update the service analysis data
-                serviceAnalysis[service.serviceName].timesSold += 1;
-                serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWGST;
-                serviceAnalysis[service.serviceName].advancePayment += service.firstPayment;
-    
-                // Handle payment terms
-                if (service.paymentTerms === "Full Advanced") {
-                    // Ensure totalPayment and advancePayment are the same
-                    serviceAnalysis[service.serviceName].remainingPayment = 0;
-                serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWGST;
-                } else if (service.paymentTerms === "two-part") {
-                    // Calculate remaining payment as the sum of second, third, and fourth payments
-                    const secondPayment = service.secondPayment || 0;
-                    const thirdPayment = service.thirdPayment || 0;
-                    const fourthPayment = service.fourthPayment || 0;
-    
-                    serviceAnalysis[service.serviceName].remainingPayment += secondPayment + thirdPayment + fourthPayment;
-                } else {
-                    // Calculate remaining payment from remainingPayments array for other payment terms
-                    booking.remainingPayments.forEach(remaining => {
-                        if (remaining.serviceName === service.serviceName) {
-                            serviceAnalysis[service.serviceName].remainingPayment += remaining.totalPayment;
-                        }
-                    });
-                }
+
+        const processServiceData = (booking, service) => {
+            if (!serviceAnalysis[service.serviceName]) {
+                serviceAnalysis[service.serviceName] = {
+                    timesSold: 0,
+                    totalPayment: 0,
+                    advancePayment: 0,
+                    remainingPayment: 0,
+                };
+            }
+
+            // Update the service analysis data
+            serviceAnalysis[service.serviceName].timesSold += 1;
+            serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
+
+            // Handle payment terms
+            if (service.paymentTerms === "Full Advanced") {
+                // Ensure totalPayment and advancePayment are the same
+                serviceAnalysis[service.serviceName].remainingPayment = 0;
+                serviceAnalysis[service.serviceName].advancePayment = service.totalPaymentWOGST;
+
+            } else if (service.paymentTerms === "two-part") {
+                // Deduct 18% GST if withGST is true
+                const adjustedFirstPayment = service.withGST
+                    ? service.firstPayment / 1.18   // Remove 18% GST from advance payment
+                    : service.firstPayment;
+
+                serviceAnalysis[service.serviceName].advancePayment += adjustedFirstPayment;
+
+                // Calculate remaining payment as the sum of second, third, and fourth payments
+                const secondPayment = service.secondPayment || 0;
+                const thirdPayment = service.thirdPayment || 0;
+                const fourthPayment = service.fourthPayment || 0;
+
+                serviceAnalysis[service.serviceName].remainingPayment += (secondPayment + thirdPayment + fourthPayment) / 1.18; // Remove 18% GST from remaining payment
+            } else {
+                // Calculate remaining payment from remainingPayments array for other payment terms
+                booking.remainingPayments.forEach(remaining => {
+                    if (remaining.serviceName === service.serviceName) {
+                        serviceAnalysis[service.serviceName].remainingPayment += remaining.totalPayment;
+                    }
+                });
+            }
+        };
+
+        const processBooking = (booking) => {
+            const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
+            const bookingYear = new Date(booking.bookingDate).getFullYear();
+
+            if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
+                booking.services.forEach(service => processServiceData(booking, service));
+            }
+        };
+
+        // Process main booking data
+        bookingData.forEach(booking => {
+            processBooking(booking);
+
+            // Process moreBookings array
+            booking.moreBookings.forEach(moreBooking => {
+                processBooking(moreBooking);
             });
         });
-    
+
         return Object.entries(serviceAnalysis).map(([serviceName, data], index) => ({
             id: index + 1,
             serviceName,
@@ -183,10 +263,10 @@ function ServiceAnalysis() {
                                         <td>{service.id}</td>
                                         <td>{service.serviceName}</td>
                                         <td>{service.timesSold}</td>
-                                        <td>₹ {formatSalary(service.totalPayment)}</td>
-                                        <td>₹ {formatSalary(service.advancePayment)}</td>
-                                        <td>₹ {formatSalary(service.remainingPayment)}</td>
-                                        <td>₹ {formatSalary(service.averageSellingPrice)}</td>
+                                        <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
+                                        <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
+                                        <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
+                                        <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
                                     </tr>
                                 ))}
                             </tbody>

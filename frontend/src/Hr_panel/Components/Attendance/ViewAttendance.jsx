@@ -7,6 +7,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FaRegCalendarPlus } from "react-icons/fa6";
+import { FcCancel } from "react-icons/fc";
 import Swal from 'sweetalert2';
 import Nodata from '../../../components/Nodata';
 import ShowAttendanceForParticularEmployee from './ShowAttendanceForParticularEmployee';
@@ -439,6 +440,7 @@ function ViewAttendance({ year, month, date }) {
                                             let presentCount = 0;
                                             let leaveCount = 0;
                                             let halfDayCount = 0;
+                                            const joiningDate = new Date(emp.jdate);
 
                                             return (
                                                 <tr key={index}>
@@ -502,13 +504,13 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    <button
+                                                                    {selectedDate < joiningDate ? <FcCancel style={{fontSize: "25px"}}/> : <button
                                                                         className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
                                                                         disabled={isFutureDate} // Disable button for future dates
                                                                     >
                                                                         {day <= daysInMonth && <FaPlus />}
-                                                                    </button>
+                                                                    </button>}
                                                                 </div>}
                                                             </td>
                                                         );
