@@ -66,6 +66,7 @@ function ViewAttendance({ year, month, date }) {
     const [showAttendanceForParticularEmployee, setShowAttendanceForParticularEmployee] = useState(false);
     const [disableInTime, setDisableInTime] = useState(false);
     const [disableOutTime, setDisableOutTime] = useState(false);
+    const [isDeleted, setIsDeleted] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
 
     const [id, setId] = useState("");
@@ -125,6 +126,7 @@ function ViewAttendance({ year, month, date }) {
 
     const handleClosePopup = () => {
         setShowPopup(false);
+        setIsDeleted(false);
         setInTimeError("");
         setOutTimeError("");
     };
@@ -610,6 +612,7 @@ function ViewAttendance({ year, month, date }) {
                                             let presentCount = 0;
                                             let leaveCount = 0;
                                             let halfDayCount = 0;
+                                            const joiningDate = new Date(emp.jdate);
 
                                             return (
                                                 <tr key={index}>
@@ -677,13 +680,13 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    <button
+                                                                    {selectedDate < joiningDate ? <FcCancel style={{fontSize: "25px"}}/> : <button
                                                                         className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
                                                                         disabled={isFutureDate} // Disable button for future dates
                                                                     >
                                                                         {day <= daysInMonth && <FaPlus />}
-                                                                    </button>
+                                                                    </button>}
                                                                 </div>}
                                                             </td>
                                                         );
@@ -783,6 +786,7 @@ function ViewAttendance({ year, month, date }) {
                                             let presentCount = 0;
                                             let leaveCount = 0;
                                             let halfDayCount = 0;
+                                            const joiningDate = new Date(emp.jdate);
 
                                             return (
                                                 <tr key={index}>
@@ -810,6 +814,9 @@ function ViewAttendance({ year, month, date }) {
                                                         const currentDay = new Date().getDate();
                                                         const myDate = new Date(attendanceDate).getDate();
 
+                                                        const currentDate = new Date(); // Today's date
+                                                        const selectedDate = new Date(`${currentYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`);
+
                                                         const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
                                                             inTime: "",
                                                             outTime: "",
@@ -830,7 +837,10 @@ function ViewAttendance({ year, month, date }) {
                                                         return (
                                                             <td key={day}>
                                                                 <div
-                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                    onClick={() => {
+                                                                        setIsDeleted(true);
+                                                                        handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime);
+                                                                    }}
                                                                     className={`
                                                                     ${status === "Present" ? "p-present" : ""}
                                                                     ${status === "Half Day" ? "H-Halfday" : ""}
@@ -842,13 +852,13 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    <button
+                                                                    {selectedDate < joiningDate ? <FcCancel style={{fontSize: "25px"}}/> : <button
                                                                         className='p-disabled'
                                                                         // onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
                                                                         disabled // Disable button for future dates
                                                                     >
                                                                         {day <= daysInMonth && <FaPlus />}
-                                                                    </button>
+                                                                    </button>}
                                                                 </div>}
                                                             </td>
                                                         );
@@ -886,7 +896,7 @@ function ViewAttendance({ year, month, date }) {
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
-                    {disableInTime && disableOutTime ? "Update attendance" : "Add attendance"}
+                    {disableInTime && disableOutTime || isDeleted ? "Update attendance" : "Add attendance"}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         handleClosePopup();
                         setInTime("");
@@ -951,7 +961,7 @@ function ViewAttendance({ year, month, date }) {
                                                         setInTime(e.target.value);
                                                         if (e.target.value) setInTimeError(""); // Clear error when valid
                                                     }}
-                                                    // disabled={disableInTime}
+                                                    disabled={isDeleted}
                                                 />
                                             </div>
                                             {inTimeError && <p className="text-danger">{inTimeError}</p>}
@@ -978,7 +988,7 @@ function ViewAttendance({ year, month, date }) {
                                                         setOutTime(e.target.value);
                                                         if (e.target.value) setOutTimeError(""); // Clear error when valid
                                                     }}
-                                                    // disabled={disableOutTime}
+                                                    disabled={isDeleted}
                                                 />
                                             </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
@@ -989,9 +999,9 @@ function ViewAttendance({ year, month, date }) {
                         </div>
                     </div>
                 </DialogContent>
-                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                {!isDeleted && <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                     Submit
-                </Button>
+                </Button>}
             </Dialog>
 
             {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}
