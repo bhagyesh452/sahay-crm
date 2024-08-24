@@ -1669,6 +1669,42 @@ th.th-day {
     font-size: 25px;
     z-index: -1;
 }
+.leavecheck input[type=checkbox]{
+    display: none;
+}
+
+.leavecheck input[type=checkbox]:checked + .checkbox-alias{
+    opacity: 1;
+    background: hsl(0, 77%, 80%);
+    color: #6a0d0d;
+}
+.leavecheck input[type=checkbox]:checked + .checkbox-alias .leavecheckicon{
+    display: block;
+    color: #6a0d0d;
+}
+.leavecheckicon
+{
+    display: none;
+    font-size: 12px;
+    line-height: 7px;
+    transition-duration: 0.3s;
+}
+.checkbox-alias
+{
+    padding: 4px 14px 4px 14px;
+    border-radius: 100px;
+    background: #e3e3e3;
+    font-size: 12px;
+    background-position: right 6px center;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition-duration: 0.3s;
+    border: none;
+    width: 100%;
+    opacity: 0.5;
+    border: 1px solid #dadfe5;
+}
+
 /* Sweep To Right */
 /* .sweep-to-right {
     -webkit-transform: perspective(1px) translateZ(0);
