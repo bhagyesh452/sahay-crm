@@ -130,7 +130,6 @@ function ServiceAnalysis() {
     //         averageSellingPrice: data.totalPayment / data.timesSold || 0,
     //     }));
     // };
-    let remainignPaymentGneretaed = 0;
 
     const getServiceAnalysisData = () => {
         // Initialize an object to store service analysis data
@@ -164,11 +163,11 @@ function ServiceAnalysis() {
                 serviceAnalysis[service.serviceName].advancePayment += adjustedFirstPayment;
     
                 // Collect remaining payments for this service
-                const secondPayment = service.secondPayment || 0;
-                const thirdPayment = service.thirdPayment || 0;
-                const fourthPayment = service.fourthPayment || 0;
+                const secondPayment = service.withGST ? service.secondPayment/1.18 : service.secondPayment;
+                const thirdPayment = service.withGST ? service.thirdPayment/1.18 : service.thirdPayment;
+                const fourthPayment = service.withGST ? service.fourthPayment/1.18 : service.fourthPayment;
     
-                const remainingPayment = (secondPayment + thirdPayment + fourthPayment) / 1.18;
+                const remainingPayment = (secondPayment + thirdPayment + fourthPayment);
     
                 // Push the remaining payment to the array
                 serviceAnalysis[service.serviceName].remainingPaymentsArray.push(remainingPayment);

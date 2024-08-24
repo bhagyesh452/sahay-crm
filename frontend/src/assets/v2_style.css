@@ -1153,6 +1153,19 @@ table.table.top_5_table tbody tr.myself td {
     margin: 0 auto;
     cursor: pointer;
 }
+.s-sunday
+{
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 100px;
+    background: #b5cdf0;
+    font-weight: 600;
+    color: #0025f5;
+    border: 1px solid #b5cdf0;
+    margin: 0 auto;
+}
 .p-add
 {
     height: 20px;
