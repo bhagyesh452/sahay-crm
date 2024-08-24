@@ -27,6 +27,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 //import FilterableTable from '../Extra-Components/FilterableTable';
 import { BsFilter } from "react-icons/bs";
+import NSWSMobileNo from '../Extra-Components/NSWSMobileNo';
 
 
 function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle }) {
@@ -763,6 +764,34 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle 
                                             )} */}
                                         </div>
                                     </th>
+                                     <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['nswsPhoneNo'] = el}>
+                                                NSWS Phone No
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                <BsFilter
+                                                    onClick={() => handleFilterClick("nswsPhoneNo")}
+                                                />
+                                            </div>
+                                            {/* {showFilterMenu && activeFilterField === 'nswsMailId' && (
+                                                <div
+                                                ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['nswsMailId'] = el}>
@@ -1106,6 +1135,7 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle 
                                                         sector={obj.sector}
                                                         letterStatus={obj.letterStatus}
                                                         dscStatus={obj.dscStatus}
+                                                        dscApplicable={obj.withDSC}
 
                                                     />
                                                 )}
@@ -1150,12 +1180,12 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle 
                                             />
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                        <td>{obj.letterStatus ? obj.letterStatus : "Not Entered Yet"}</td>
+                                        <td>{obj.withDSC ? obj.letterStatus : "Not Applicable"}</td>
                                         <td>
-                                            <div>{obj.dscStatus ? (
+                                            <div>{obj.withDSC ? (
                                                 obj.dscStatus
                                             ) :
-                                                ("Not Applicable")}</div>
+                                                "Not Applicable"}</div>
                                         </td>
                                         <td>
                                             <ContentWriterDropdown
@@ -1199,6 +1229,14 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle 
                                                 designername={obj.brochureDesigner}
                                                 refreshData={refreshData}
                                             /></td>
+                                            <td>
+                                                <NSWSMobileNo 
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                refreshData={refreshData}
+                                                nswsMobileNo={obj.nswsMobileNo ? obj.nswsMobileNo : obj["Company Number"]}/>
+                                            </td>
                                         <td className='td_of_NSWSeMAIL'>
                                             <NSWSEmailInput
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key

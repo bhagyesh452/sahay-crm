@@ -32,6 +32,8 @@ import { IconX } from "@tabler/icons-react";
 import { TiTrash } from "react-icons/ti";
 import AdminExecutiveHeader from '../Components/AdminExecutiveHeader.jsx';
 import AdminExecutiveNavbar from '../Components/AdminExecutiveNavbar.jsx';
+import AdminExecutiveTrashBox from '../AdminExecutiveBookings/AdminExecutiveTrashBox.jsx';
+import RmofCertificationAllBookings from '../../RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationAllBookings.jsx';
 
 function AdminExecutiveRecievedBox() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -204,7 +206,7 @@ function AdminExecutiveRecievedBox() {
     const [activeIndexBooking, setActiveIndexBooking] = useState(0)
     const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
-    const today = new Date("2024-08-23");
+    const today = new Date("2024-05-23");
     today.setHours(0, 0, 0, 0); // Set to start of today
     const parseDate = (dateString) => {
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -874,49 +876,6 @@ function AdminExecutiveRecievedBox() {
     //----------function to remove company from rm panel-----------------------
 
 
-
-    // const handleDisplayOffToRm = async (companyName, company) => {
-    //     console.log("company", company)
-
-    //     const shouldDisableButton = ![
-    //         ...company.services,
-    //         ...(company.moreBookings || []).flatMap(booking => booking.services)
-    //     ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-
-    //     console.log("shoulddisablebutton" , shouldDisableButton)
-
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: `Do you want to remove ${companyName} from RM panel?`,
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonText: 'Yes, remove it!',
-    //         cancelButtonText: 'No, keep it'
-    //     }).then(async (result) => {
-    //         if (result.isConfirmed) {
-    //             try {
-    //                 const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
-    //                 //console.log(response.data);
-    //                 if (response.status === 200) {
-    //                     fetchRedesignedFormData();
-    //                     Swal.fire(
-    //                         'Removed!',
-    //                         'The company has been removed from RM panel.',
-    //                         'success'
-    //                     );
-    //                 }
-    //             } catch (error) {
-    //                 console.log("Internal Server Error", error.message);
-    //                 Swal.fire(
-    //                     'Error!',
-    //                     'There was an error removing the company from RM panel.',
-    //                     'error'
-    //                 );
-    //             }
-    //         }
-    //     });
-    // };
-
     const handleDisplayOffToRm = async (companyName, company) => {
         console.log("company", company);
 
@@ -962,9 +921,9 @@ function AdminExecutiveRecievedBox() {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`, {
+                        const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromadminexecutivepanel/${companyName}`, {
 
-                            displayOfDateForRmCert: new Date()
+                            displayOfDateForAdminExecutive: new Date()
 
                         });
                         // Handle the response
@@ -1052,7 +1011,7 @@ function AdminExecutiveRecievedBox() {
                                     </div>
                                 </div>
                                 <div className="col-6 d-flex justify-content-end">
-                                    {/* <button className='btn btn-primary mr-1'
+                                     <button className='btn btn-primary mr-1'
                                         onClick={() => setOpenTrashBoxPanel(true)}
                                     >
                                         <TiTrash
@@ -1063,12 +1022,12 @@ function AdminExecutiveRecievedBox() {
                                                 marginLeft: "-4px"
                                             }} />
                                         Trash
-                                    </button> */}
-                                    {/* <button className='btn btn-primary'
+                                    </button> 
+                                     <button className='btn btn-primary'
                                         onClick={() => setOpenAllBooking(true)}
                                     >
                                         All Booking
-                                    </button> */}
+                                    </button> 
                                 </div>
                             </div>
                         </div>
@@ -3478,17 +3437,17 @@ function AdminExecutiveRecievedBox() {
                 <CircularProgress color="inherit" />
             </Backdrop>)}
 
-            {/* {openAllBooking && (
+             {openAllBooking && (
                 <RmofCertificationAllBookings
                     setOpenAllBookingPanel={setOpenAllBooking}
                     completeData={completeRedesignedData}
                 />
             )}
             {openTrashBoxPanel && (
-                <RmofCertificationTrashBoxPanel
+                <AdminExecutiveTrashBox
                     setOpenTrashBox={setOpenTrashBoxPanel}
                     completeData={completeRedesignedData} />
-            )} */}
+            )}
         </div>
     )
 }

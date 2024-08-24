@@ -152,6 +152,9 @@ const RMCertificationServicesSchema = new mongoose.Schema({
  brochureDesigner:{
   type:String,
 },
+nswsMobileNo:{
+  type:String
+},
   nswsMailId:{
     type:String
   },

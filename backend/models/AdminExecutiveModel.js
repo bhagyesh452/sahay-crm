@@ -146,10 +146,19 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     dscValidity: {
         type: String,
     },
+    otpVerificationStatus: {
+        type: String,
+    },
     portalCharges: {
         type: Number
     },
     chargesPaidVia: {
+        type: String
+    },
+    dscPhoneNo: {
+        type: String
+    },
+    dscEmailId: {
         type: String
     },
     expenseReimbursementStatus: {

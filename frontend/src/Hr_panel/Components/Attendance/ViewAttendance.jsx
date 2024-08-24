@@ -506,7 +506,7 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    {selectedDate < joiningDate ? <FcCancel style={{fontSize: "25px"}}/> : <button
+                                                                    {selectedDate < joiningDate ? <div className='before-joining-icon'><FcCancel/></div> : <button
                                                                         className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
                                                                         disabled={isFutureDate} // Disable button for future dates
@@ -680,7 +680,7 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    {selectedDate < joiningDate ? <FcCancel style={{fontSize: "25px"}}/> : <button
+                                                                    {selectedDate < joiningDate ? <div className='before-joining-icon'><FcCancel/> </div>: <button
                                                                         className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
                                                                         disabled={isFutureDate} // Disable button for future dates
@@ -852,7 +852,7 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    {selectedDate < joiningDate ? <FcCancel className='before-joining-icon'/> : <button
+                                                                    {selectedDate < joiningDate ?<div className='before-joining-icon'><FcCancel/> </div>: <button
                                                                         className='p-disabled'
                                                                         // onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
                                                                         disabled // Disable button for future dates
