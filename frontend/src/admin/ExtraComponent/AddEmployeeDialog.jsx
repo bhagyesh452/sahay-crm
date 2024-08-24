@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MdDelete } from "react-icons/md";
 import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -22,6 +22,8 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
     const [showPassword, setShowPassword] = useState(false);
     const [isUpdateMode, setIsUpdateMode] = useState(false);
     const [openPopup, setOpenPopup] = useState(false);
+    const [lastEmployeeId, setLastEmployeeId] = useState("");
+    const [employeeID, setEmployeeID] = useState("");
     const [ename, setEname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -37,6 +39,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
     const [reportingManager, setReportingManager] = useState("");
     const [nowFetched, setNowFetched] = useState(false);
     const [otherdesignation, setotherDesignation] = useState("");
+    const [employeeData, setEmployeeData] = useState([]);
     const [companyData, setCompanyData] = useState([]);
     const [errors, setErrors] = useState([]);
     const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
@@ -176,6 +179,69 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
         ));
     };
 
+    const fetchAllEmployee = async () => {
+        try {
+          const res = await axios.get(`${secretKey}/employee/einfo`);
+          const employeeData = res.data;
+          setEmployeeData(employeeData);
+          console.log("Fetched Employees are:", res.data)
+        } catch (error) {
+          console.log("Error fetching employees data:")
+        }
+      };
+
+    const fetchLastEmployeeId = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/lastEmployeeId/fetchLastEmployeeId`);
+            setLastEmployeeId(res.data.data[0].lastEmployeeId);
+            //   console.log("Last employee id is :", res.data.data[0].lastEmployeeId);
+        } catch (error) {
+            console.log("Error fetching last employee id", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAllEmployee();
+        fetchLastEmployeeId();
+    }, []);
+
+    const changeLastEmployeeId = async (newEmployeeId) => {
+        try {
+            const res = await axios.put(`${secretKey}/lastEmployeeId/changeLastEmployeeId`, { newEmployeeId });
+            console.log("Last employee id successfully changed :", res.data.data);
+        } catch (error) {
+            console.log("Error updating last employee id", error);
+        }
+    };
+
+    const effectRan = useRef(false);
+    useEffect(() => {
+        // Check if the effect has already run
+        if (effectRan.current === false && employeeData.length > 0 && lastEmployeeId) {
+
+            // Extract the numeric part from the last employee ID
+            const numericPart = parseInt(lastEmployeeId.slice(-4), 10);
+            let newEmployeeIdNumber;
+            // Increment the numeric part by 1 to get the next employee ID
+            if (numericPart === 0) {
+                newEmployeeIdNumber = numericPart + employeeData.length + 1;
+            } else {
+                newEmployeeIdNumber = numericPart + 1;
+            }
+            // Format the new employee ID with leading zeros to maintain the SSPL0000 format
+            const newEmployeeId = `SSPL${newEmployeeIdNumber.toString().padStart(4, '0')}`;
+
+            // Set the new employee ID
+            setEmployeeID(newEmployeeId);
+
+            // Update the last employee ID in the backend
+            changeLastEmployeeId(newEmployeeId);
+
+            // Set the effectRan ref to true so that the effect doesn't run again
+            effectRan.current = true;
+        }
+    }, []);
+
     const fetchData = async () => {
         try {
             setIsLoading(true);
@@ -296,6 +362,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                 let dataToSend = {
                     email: email,
                     number: number,
+                    employeeID: employeeID,
                     ename: `${firstName} ${lastName}`,
                     empFullName: `${firstName} ${middleName} ${lastName}`,
                     department: department,
@@ -313,6 +380,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                 let dataToSendUpdated = {
                     email: email,
                     number: number,
+                    employeeID: employeeID,
                     ename: `${firstName} ${lastName}`,
                     empFullName: `${firstName} ${middleName} ${lastName}`,
                     department: department,
