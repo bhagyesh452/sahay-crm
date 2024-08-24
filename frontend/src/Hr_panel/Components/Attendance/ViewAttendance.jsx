@@ -852,7 +852,7 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    {selectedDate < joiningDate ? <FcCancel style={{fontSize: "25px"}}/> : <button
+                                                                    {selectedDate < joiningDate ? <FcCancel className='before-joining-icon'/> : <button
                                                                         className='p-disabled'
                                                                         // onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
                                                                         disabled // Disable button for future dates
