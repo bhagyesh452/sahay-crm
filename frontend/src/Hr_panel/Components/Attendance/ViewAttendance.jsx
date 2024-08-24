@@ -10,6 +10,7 @@ import { FaRegCalendarPlus } from "react-icons/fa6";
 import { FcCancel } from "react-icons/fc";
 import Swal from 'sweetalert2';
 import Nodata from '../../../components/Nodata';
+import { GiCheckMark } from "react-icons/gi";
 import ShowAttendanceForParticularEmployee from './ShowAttendanceForParticularEmployee';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -985,7 +986,7 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                         </div>
 
-                                        <div className="col-lg-3">
+                                        <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">Attendance Date</label>
                                                 <input
@@ -999,7 +1000,7 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                         </div>
 
-                                        <div className="col-lg-3">
+                                        <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">In Time</label>
                                                 {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -1026,7 +1027,7 @@ function ViewAttendance({ year, month, date }) {
                                             {inTimeError && <p className="text-danger">{inTimeError}</p>}
                                         </div>
 
-                                        <div className="col-lg-3">
+                                        <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">Out Time</label>
                                                 {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -1052,6 +1053,24 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
                                         </div>
+                                        <div className="col-lg-1">
+                                        <label className="form-label mt-5 text-center">OR</label>
+                                        </div>
+                                        <div className="col-lg-2">
+                                            <div className='attendance-date-tbl'>
+                                                <label className="form-label">On Leave</label>
+                                                <div className='leavecheck'>
+                                                    <input type="checkbox" name="rGroup" value="1" id="r1"/>
+                                                    <label class="checkbox-alias" for="r1">
+                                                        <div className='d-flex align-items-center justify-content-center'>
+                                                            <div className='leavecheckicon mr-1'><GiCheckMark/></div>
+                                                            <div>On Leave</div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
