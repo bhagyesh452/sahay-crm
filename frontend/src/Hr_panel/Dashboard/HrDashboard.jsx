@@ -80,7 +80,8 @@ function Dashboard() {
                 acc[key].femaleCount += 1;
             }
             acc[key].totalEmployees += 1;
-            acc[key].totalSalary += curr.salary;
+            const salary = isNaN(curr.salary) || !curr.salary ? 0 : curr.salary;
+            acc[key].totalSalary += salary;
             return acc;
         }, {});
         // return Object.values(groupedData);
