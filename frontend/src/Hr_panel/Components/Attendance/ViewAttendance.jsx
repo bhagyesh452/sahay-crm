@@ -589,7 +589,7 @@ function ViewAttendance({ year, month, date }) {
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
                                                             <FaRegCalendarPlus
-                                                                onClick={() => !isSunday && date(fullDate, gotaBranchEmployees)} // Disable onClick for Sundays
+                                                                onClick={() => !isSunday && date(fullDate, sindhuBhawanBranchEmployees)} // Disable onClick for Sundays
                                                                 style={{ color: isSunday ? 'gray' : 'inherit', cursor: isSunday ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
                                                             />
                                                         </div>
@@ -782,7 +782,7 @@ function ViewAttendance({ year, month, date }) {
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
                                                             <FaRegCalendarPlus
-                                                                onClick={() => !isSunday && date(fullDate, gotaBranchEmployees)} // Disable onClick for Sundays
+                                                                onClick={() => !isSunday && date(fullDate, deletedEmployees)} // Disable onClick for Sundays
                                                                 style={{ color: isSunday ? 'gray' : 'inherit', cursor: isSunday ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
                                                             />
                                                         </div>
