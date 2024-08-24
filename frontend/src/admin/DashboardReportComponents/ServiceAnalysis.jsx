@@ -130,19 +130,20 @@ function ServiceAnalysis() {
     //         averageSellingPrice: data.totalPayment / data.timesSold || 0,
     //     }));
     // };
+    let remainignPaymentGneretaed = 0;
 
     const getServiceAnalysisData = () => {
         // Initialize an object to store service analysis data
         const serviceAnalysis = {};
     
         const processServiceData = (booking, service) => {
-            // Initialize service data if not present
+            // Initialize the service if not already in serviceAnalysis
             if (!serviceAnalysis[service.serviceName]) {
                 serviceAnalysis[service.serviceName] = {
                     timesSold: 0,
                     totalPayment: 0,
                     advancePayment: 0,
-                    remainingPayment: 0,
+                    remainingPaymentsArray: [], // Array to store remaining payments
                 };
             }
     
@@ -150,40 +151,28 @@ function ServiceAnalysis() {
             serviceAnalysis[service.serviceName].timesSold += 1;
             serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
     
-            // Handle payment terms
             if (service.paymentTerms === "Full Advanced") {
-                serviceAnalysis[service.serviceName].remainingPayment = 0;
+                // Full advanced payment, no remaining payment
                 serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWOGST;
     
             } else if (service.paymentTerms === "two-part") {
+                // Calculate advance payment (adjusted for GST if applicable)
                 const adjustedFirstPayment = service.withGST
                     ? service.firstPayment / 1.18
                     : service.firstPayment;
     
                 serviceAnalysis[service.serviceName].advancePayment += adjustedFirstPayment;
     
-                // Accumulate remaining payments
+                // Collect remaining payments for this service
                 const secondPayment = service.secondPayment || 0;
                 const thirdPayment = service.thirdPayment || 0;
                 const fourthPayment = service.fourthPayment || 0;
     
                 const remainingPayment = (secondPayment + thirdPayment + fourthPayment) / 1.18;
     
-                // Accumulate the remaining payment for the service
-                serviceAnalysis[service.serviceName].remainingPayment += remainingPayment;
+                // Push the remaining payment to the array
+                serviceAnalysis[service.serviceName].remainingPaymentsArray.push(remainingPayment);
     
-                // Log company name, service name, and remaining payment
-                console.log(`Company: ${booking.companyName}, Service: ${service.serviceName}, Remaining Payment: ${serviceAnalysis[service.serviceName].remainingPayment}`);
-            } else {
-                booking.remainingPayments.forEach(remaining => {
-                    if (remaining.serviceName === service.serviceName) {
-                        // Accumulate the remaining payment for the service
-                        serviceAnalysis[service.serviceName].remainingPayment += remaining.totalPayment;
-    
-                        // Log company name, service name, and remaining payment
-                        console.log(`Company: ${booking.companyName}, Service: ${service.serviceName}, Remaining Payment: ${serviceAnalysis[service.serviceName].remainingPayment}`);
-                    }
-                });
             }
         };
     
@@ -206,18 +195,22 @@ function ServiceAnalysis() {
             });
         });
     
-        return Object.entries(serviceAnalysis).map(([serviceName, data], index) => ({
-            id: index + 1,
-            serviceName,
-            timesSold: data.timesSold,
-            totalPayment: data.totalPayment,
-            advancePayment: data.advancePayment,
-            remainingPayment: data.remainingPayment,
-            averageSellingPrice: data.totalPayment / data.timesSold || 0,
-        }));
+        // Calculate total remaining payments for each service
+        return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
+            const totalRemainingPayment = data.remainingPaymentsArray.reduce((sum, payment) => sum + payment, 0);
+    
+            return {
+                id: index + 1,
+                serviceName,
+                timesSold: data.timesSold,
+                totalPayment: data.totalPayment,
+                advancePayment: data.advancePayment,
+                remainingPayment: totalRemainingPayment,  // Return the total remaining payment
+                averageSellingPrice: data.totalPayment / data.timesSold || 0,
+            };
+        });
     };
     
-
     const serviceAnalysisData = getServiceAnalysisData();
 
     const totalTimesSold = serviceAnalysisData.reduce((total, service) => total + service.timesSold, 0);
