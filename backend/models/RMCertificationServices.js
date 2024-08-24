@@ -203,7 +203,10 @@ nswsMobileNo:{
  },
  isIndustryEnabled:{
   type:Boolean,
- }
+ },
+ otpVerificationStatus: {
+  type: String,
+},
 })
 
 const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)

@@ -399,14 +399,6 @@ function AdminExecutiveHoldPanel({ searchText }) {
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>OTP/DSC Verification Status</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
-                  </div>
-                </th>
-                <th>
-                  <div className="d-flex align-items-center justify-content-center position-relative">
                     <div>DSC Portal</div>
                     <div className="RM_filter_icon">
                       <BsFilter />
@@ -610,17 +602,6 @@ function AdminExecutiveHoldPanel({ searchText }) {
                           />
                         )}
                       </div>
-                    </td>
-                    <td>
-                        <OtpVerificationStatus 
-                         key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                         mainStatus={obj.mainCategoryStatus}
-                         subStatus={obj.subCategoryStatus}
-                         companyName={obj["Company Name"]}
-                         serviceName={obj.serviceName}
-                         refreshData={refreshData}
-                         otpVerificationStatus={obj.otpVerificationStatus}
-                         />
                     </td>
                     <td>
                       <div>

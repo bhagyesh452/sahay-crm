@@ -24,7 +24,8 @@ const StatusDropdown = ({
   brochureStatus,
   letterStatus,
   dscStatus,
-  dscApplicable
+  dscApplicable,
+  otpStatus
 }) => {
   const [status, setStatus] = useState(subStatus);
   const [statusClass, setStatusClass] = useState("");
@@ -149,7 +150,8 @@ const StatusDropdown = ({
             contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
             brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved"),
             letterStatus: dscApplicable && letterStatus && (serviceName === "Start-Up India Certificate" || serviceName === "Organization DSC" || serviceName === "Director DSC") && letterStatus !== "Letter Received",
-            dscStatus: dscApplicable && dscStatus && (serviceName === "Start-Up India Certificate" || serviceName === "Organization DSC" || serviceName === "Director DSC") && dscStatus !== "Approved"
+            dscStatus: dscApplicable && dscStatus && (serviceName === "Start-Up India Certificate" || serviceName === "Organization DSC" || serviceName === "Director DSC") && dscStatus !== "Approved",
+            otpStatus:otpStatus !== "Both Done",
           };
           const messages = [];
 
@@ -170,6 +172,9 @@ const StatusDropdown = ({
           }
           if (conditions.dscStatus) {
             messages.push("DSC Status must be approved!")
+          }
+          if (conditions.otpStatus) {
+            messages.push("Otp Status must be Both Done!")
           }
           if (messages.length > 0) {
             const title = "Error";
@@ -478,6 +483,8 @@ const StatusDropdown = ({
         switch (subStatus) {
           case "Call Done Brief Pending":
             return "cdbp-status";
+            case "All Done DSC Pending":
+            return "cdbp-status";
           case "Client Not Responding":
             return "clnt_no_repond_status";
           case "Documents Pending":
@@ -713,6 +720,15 @@ const StatusDropdown = ({
                 href="#"
               >
                 Call Done Brief Pending
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("All Done DSC Pending", "cdbp-status")}
+                href="#"
+              >
+                All Done DSC Pending
               </a>
             </li>
             <li>
