@@ -806,14 +806,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                         )} */}
                     </div>
                   </th>
-                  <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div>OTP/DSC Verification Status</div>
-                      <div className="RM_filter_icon">
-                        <BsFilter />
-                      </div>
-                    </div>
-                  </th>
+
                   <th>
                     <div className="d-flex align-items-center justify-content-center position-relative">
                       <div
@@ -900,6 +893,14 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 />
                                             </div>
                                         )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div>OTP/DSC Verification Status</div>
+                      <div className="RM_filter_icon">
+                        <BsFilter />
+                      </div>
                     </div>
                   </th>
                   <th>
@@ -1256,7 +1257,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                               ? obj.websiteLink
                               : obj.companyBriefing
                               ? obj.companyBriefing
-                              : obj["Company Email"]
+                              : "Enter Website Link"
                           }
                           companyBriefing={
                             obj.companyBriefing ? obj.companyBriefing : ""
@@ -1327,28 +1328,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           refreshData={refreshData}
                         />
                       </td>
-                      <td>
-                        <OtpVerificationStatus
-                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                          mainStatus={obj.mainCategoryStatus}
-                          subStatus={obj.subCategoryStatus}
-                          companyName={obj["Company Name"]}
-                          serviceName={obj.serviceName}
-                          refreshData={refreshData}
-                          otpVerificationStatus={obj.otpVerificationStatus}
-                        />
-                      </td>
-                      <td>
-                        <OtpVerificationStatus
-                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                          mainStatus={obj.mainCategoryStatus}
-                          subStatus={obj.subCategoryStatus}
-                          companyName={obj["Company Name"]}
-                          serviceName={obj.serviceName}
-                          refreshData={refreshData}
-                          otpVerificationStatus={obj.otpVerificationStatus}
-                        />
-                      </td>
+
                       <td>
                         <NSWSMobileNo
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -1388,7 +1368,17 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           }
                         />
                       </td>
-
+                      <td>
+                        <OtpVerificationStatus
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          mainStatus={obj.mainCategoryStatus}
+                          subStatus={obj.subCategoryStatus}
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          otpVerificationStatus={obj.otpVerificationStatus}
+                        />
+                      </td>
                       <td>
                         <IndustryDropdown
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key

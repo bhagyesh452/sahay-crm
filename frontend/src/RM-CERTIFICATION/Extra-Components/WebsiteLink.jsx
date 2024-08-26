@@ -6,7 +6,7 @@ import { FaPencilAlt } from "react-icons/fa";
 
 const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , companyBriefing }) => {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [link, setLink] = useState(websiteLink);
+    const [link, setLink] = useState("");
     const [error, setError] = useState('');
     const [openWebsiteLinkPopup, setOpenWebsitePopup] = useState(false);
     const [briefing, setBriefing] = useState(companyBriefing);
@@ -81,7 +81,7 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , comp
         <div>
             <div className='d-flex align-items-center justify-content-between'>
                 <div className="My_Text_Wrap" title={websiteLink}>
-                    {websiteLink}
+                    {link ? link : "Enter Website Link"}
                 </div>
                 <button className='td_add_remarks_btn' onClick={() => setOpenWebsitePopup(true)}>
                     <FaPencilAlt />
@@ -105,7 +105,7 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , comp
                                 type='text'
                                 placeholder="Enter Website link"
                                 className="form-control"
-                                value={link}
+                                value={""? "Enter Website Link" : link}
                                 onChange={(e) => setLink(e.target.value)}
                             />
                         </div>
