@@ -368,8 +368,6 @@ function Received_booking_box() {
     const certificationLabels = [
         "Start-Up India Certificate",
         "Company Incorporation",
-        "Organization DSC",
-        "Director DSC",
         "Self Certification",
         "GeM"
     ];
@@ -377,8 +375,6 @@ function Received_booking_box() {
     const certificationLabelsNew = [
         "Start-Up India Certificate",
         "Company Incorporation",
-        "Organization DSC",
-        "Director DSC",
         "Self Certification",
         "GeM"
     ];
