@@ -35,6 +35,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 //import FilterableTable from '../Extra-Components/FilterableTable';
 import { BsFilter } from "react-icons/bs";
 import NSWSMobileNo from "../Extra-Components/NSWSMobileNo";
+import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus";
 
 function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
@@ -825,6 +826,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                                             )} */}
                     </div>
                   </th>
+                 
                   <th>
                     <div className="d-flex align-items-center justify-content-center position-relative">
                       <div
@@ -911,6 +913,14 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                                                     />
                                                 </div>
                                             )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div>OTP/DSC Verification Status</div>
+                      <div className="RM_filter_icon">
+                        <BsFilter />
+                      </div>
                     </div>
                   </th>
                   <th>
@@ -1385,7 +1395,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                               ? obj.websiteLink
                               : obj.companyBriefing
                               ? obj.companyBriefing
-                              : obj["Company Email"]
+                              :"Enter Website Link"
                           }
                         />
                       </td>
@@ -1462,6 +1472,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           refreshData={refreshData}
                         />
                       </td>
+
                       <td>
                         <NSWSMobileNo
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -1501,7 +1512,17 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           }
                         />
                       </td>
-
+                      <td>
+                        <OtpVerificationStatus
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          mainStatus={obj.mainCategoryStatus}
+                          subStatus={obj.subCategoryStatus}
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          otpVerificationStatus={obj.otpVerificationStatus}
+                        />
+                      </td>
                       <td>
                         <IndustryDropdown
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key

@@ -1,22 +1,23 @@
+// Token In Box Number
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton,DialogActions } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
-import { FaWhatsapp } from "react-icons/fa";
+
 import { FaPencilAlt } from "react-icons/fa";
 
-const NSWSMobileNo = ({ companyName, serviceName, nswsMobileNo ,refreshData , mainStatus}) => {
-    const [email, setEmail] = useState(nswsMobileNo);
+const OtpInboxNo = ({ companyName, serviceName, otpInboxNo ,refreshData , mainStatus}) => {
+    const [charges, setCharges] = useState(otpInboxNo);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [openEmailPopup, setOpenEmailPopup] = useState(false);
 
-    const handleSubmitNSWSEmail = async () => {
+    const handleSubmitPortalCharges = async () => {
         try {
-            const response = await axios.post(`${secretKey}/rm-services/post-save-nswsphoneno`, {
+            const response = await axios.post(`${secretKey}/rm-services/post-save-otpinboxno-adminexecutive`, {
                 companyName,
                 serviceName,
-                email
+                charges
             });
             if (response.status === 200) {
                 // Swal.fire(
@@ -38,30 +39,21 @@ const NSWSMobileNo = ({ companyName, serviceName, nswsMobileNo ,refreshData , ma
 
     return (
         <div>
-            <div className="d-flex align-items-center justify-content-center wApp">
-                <div className={'d-flex align-items-center justify-content-between'}>
-                    <div
-                        className="My_Text_Wrap"
-                        title={nswsMobileNo}
-                    >
-                        {nswsMobileNo}
-                    </div>
-                    <button className='td_add_remarks_btn ml-1'
-                        onClick={() => {  setOpenEmailPopup(true)  }}>
-                        <FaPencilAlt/>
-                    </button>
-                </div>
-                <a
-                    href={`https://wa.me/${nswsMobileNo}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                        marginLeft: "10px",
-                        lineHeight: "14px",
-                        fontSize: "14px",
-                    }}
-                    ><FaWhatsapp />
-                </a>
+             <div className={'d-flex align-items-center justify-content-between'}>
+            <div
+                className="My_Text_Wrap"
+                title={otpInboxNo}
+            >
+                {otpInboxNo ? otpInboxNo : "Enter Token In Box Number"}
+            </div>
+            <button className='td_add_remarks_btn ml-1'
+                onClick={() => {
+                   
+                    setOpenEmailPopup(true)
+                }}
+            >
+                <FaPencilAlt/>
+            </button>
             </div>
           
             <Dialog
@@ -79,10 +71,10 @@ const NSWSMobileNo = ({ companyName, serviceName, nswsMobileNo ,refreshData , ma
                         <div className="remarks-input">
                             <input
                                 type='email'
-                                placeholder="Enter NSWS Phone No"
+                                placeholder="Enter NSWS Email Address"
                                 className="form-control"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={charges}
+                                onChange={(e) => setCharges(e.target.value)}
                             />
                         </div>
                     </div>
@@ -94,7 +86,7 @@ const NSWSMobileNo = ({ companyName, serviceName, nswsMobileNo ,refreshData , ma
                         style={{ width: "100%",borderRadius:"0px" }} className='m-0'>Close</Button>
                     
                     <Button
-                        onClick={handleSubmitNSWSEmail}
+                        onClick={handleSubmitPortalCharges}
                         variant="contained"
                         color="primary"
                         style={{ width: "100%",borderRadius:"0px" }}
@@ -109,5 +101,5 @@ const NSWSMobileNo = ({ companyName, serviceName, nswsMobileNo ,refreshData , ma
     );
 };
 
-export default NSWSMobileNo;
+export default OtpInboxNo;
 

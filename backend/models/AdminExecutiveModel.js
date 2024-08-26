@@ -162,7 +162,8 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
         type: String
     },
     expenseReimbursementStatus: {
-        type: String
+        type: String,
+        default:"Unpaid"
     },
     expenseReimbursementDate: {
         type: Date
@@ -193,6 +194,9 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
         type:String
     },
     courierStatus:{
+        type:String
+    },
+    otpInboxNo:{
         type:String
     },
 });

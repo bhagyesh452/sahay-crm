@@ -32,6 +32,7 @@ import DscPhoneNo from "../ExtraComponents/DscPhoneNo";
 import DscEmailId from "../ExtraComponents/DscEmailId";
 import DscRemarks from "../ExtraComponents/DscRemarks";
 import OtpVerificationStatus from "../ExtraComponents/OtpVerificationStatus";
+import OtpInboxNo from "../ExtraComponents/OtpInboxNo";
 
 function AdminExecutiveApprovedPanel({ searchText }) {
   const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
@@ -396,14 +397,6 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>OTP/DSC Verification Status</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
-                  </div>
-                </th>
-                <th>
-                  <div className="d-flex align-items-center justify-content-center position-relative">
                     <div>DSC Portal</div>
                     <div className="RM_filter_icon">
                       <BsFilter />
@@ -461,6 +454,14 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div>Reimbursement Status</div>
+                    <div className="RM_filter_icon">
+                      <BsFilter />
+                    </div>
+                  </div>
+                </th>
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div>Token In Box No</div>
                     <div className="RM_filter_icon">
                       <BsFilter />
                     </div>
@@ -598,17 +599,6 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                       </div>
                     </td>
                     <td>
-                        <OtpVerificationStatus 
-                         key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                         mainStatus={obj.mainCategoryStatus}
-                         subStatus={obj.subCategoryStatus}
-                         companyName={obj["Company Name"]}
-                         serviceName={obj.serviceName}
-                         refreshData={refreshData}
-                         otpVerificationStatus={obj.otpVerificationStatus}
-                         />
-                    </td>
-                    <td>
                       <div>
                         {obj.mainCategoryStatus && obj.subCategoryStatus && (
                           <DscPortalDropdown
@@ -706,6 +696,16 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                         dscExpenseStatus={obj.expenseReimbursementStatus}
                         expenseDate={obj.expenseReimbursementDate}
                       />
+                    </td>
+                    <td>
+                      {/* Token In Box Number */}
+                      <OtpInboxNo
+                      key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                      companyName={obj["Company Name"]}
+                      serviceName={obj.serviceName}
+                      refreshData={refreshData}
+                      otpInboxNo={obj.otpInboxNo ? obj.otpInboxNo : ""}
+                      mainStatus={obj.mainCategoryStatus}/>
                     </td>
                     <td>{obj.bdeName}</td>
                     <td>{obj.bdmName}</td>

@@ -32,6 +32,7 @@ import DscPhoneNo from "../ExtraComponents/DscPhoneNo";
 import DscEmailId from "../ExtraComponents/DscEmailId";
 import DscRemarks from "../ExtraComponents/DscRemarks";
 import OtpVerificationStatus from "../ExtraComponents/OtpVerificationStatus";
+import OtpInboxNo from "../ExtraComponents/OtpInboxNo";
 
 function AdminExecutiveProcessPanel({ searchText }) {
   const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
@@ -396,14 +397,6 @@ function AdminExecutiveProcessPanel({ searchText }) {
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>OTP/DSC Verification Status</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
-                  </div>
-                </th>
-                <th>
-                  <div className="d-flex align-items-center justify-content-center position-relative">
                     <div>DSC Portal</div>
                     <div className="RM_filter_icon">
                       <BsFilter />
@@ -466,6 +459,7 @@ function AdminExecutiveProcessPanel({ searchText }) {
                     </div>
                   </div>
                 </th>
+                
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div>BDE</div>
@@ -609,17 +603,6 @@ function AdminExecutiveProcessPanel({ searchText }) {
                       </div>
                     </td>
                     <td>
-                        <OtpVerificationStatus 
-                         key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                         mainStatus={obj.mainCategoryStatus}
-                         subStatus={obj.subCategoryStatus}
-                         companyName={obj["Company Name"]}
-                         serviceName={obj.serviceName}
-                         refreshData={refreshData}
-                         otpVerificationStatus={obj.otpVerificationStatus}
-                         />
-                    </td>
-                    <td>
                       <div>
                         {obj.mainCategoryStatus && obj.subCategoryStatus && (
                           <DscPortalDropdown
@@ -719,6 +702,7 @@ function AdminExecutiveProcessPanel({ searchText }) {
                         expenseDate={obj.expenseReimbursementDate}
                       />
                     </td>
+                   
                     <td>{obj.bdeName}</td>
                     <td>{obj.bdmName}</td>
                     <td className="rm-sticky-action">

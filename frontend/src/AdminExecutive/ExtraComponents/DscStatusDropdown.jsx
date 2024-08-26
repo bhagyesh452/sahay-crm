@@ -47,6 +47,7 @@ const DscStatusDropdown = ({
       if (mainStatus === "General") {
         movedFromMainCategoryStatus = "General";
         movedToMainCategoryStatus = "Process";
+        let expenseReimbursementStatus = "Unpaid"
         response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive-changegeneral`, {
           companyName,
           serviceName,
@@ -56,7 +57,8 @@ const DscStatusDropdown = ({
           previousSubCategoryStatus: newStatus,
           dateOfChangingMainStatus: new Date(),
           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-          movedToMainCategoryStatus: movedToMainCategoryStatus
+          movedToMainCategoryStatus: movedToMainCategoryStatus,
+          expenseReimbursementStatus:expenseReimbursementStatus,
         });
         //console.log("movedfromstatus" , movedFromMainCategoryStatus , movedToMainCategoryStatus)
       }else if (mainStatus === "Process") {
