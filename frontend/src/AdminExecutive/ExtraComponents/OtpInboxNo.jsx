@@ -1,3 +1,4 @@
+// Token In Box Number
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton,DialogActions } from "@mui/material";
@@ -43,7 +44,7 @@ const OtpInboxNo = ({ companyName, serviceName, otpInboxNo ,refreshData , mainSt
                 className="My_Text_Wrap"
                 title={otpInboxNo}
             >
-                {otpInboxNo ? otpInboxNo : "Enter OTP Inbox No"}
+                {otpInboxNo ? otpInboxNo : "Enter Token In Box Number"}
             </div>
             <button className='td_add_remarks_btn ml-1'
                 onClick={() => {

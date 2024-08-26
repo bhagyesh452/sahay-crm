@@ -461,7 +461,7 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>OTP Inbox No</div>
+                    <div>Token In Box No</div>
                     <div className="RM_filter_icon">
                       <BsFilter />
                     </div>
@@ -698,6 +698,7 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                       />
                     </td>
                     <td>
+                      {/* Token In Box Number */}
                       <OtpInboxNo
                       key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                       companyName={obj["Company Name"]}
