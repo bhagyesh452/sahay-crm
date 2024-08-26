@@ -67,6 +67,8 @@ function ViewAttendance({ year, month, date }) {
     const [showAttendanceForParticularEmployee, setShowAttendanceForParticularEmployee] = useState(false);
     const [disableInTime, setDisableInTime] = useState(false);
     const [disableOutTime, setDisableOutTime] = useState(false);
+    const [disableOnLeave, setDisableOnLeave] = useState(false);
+    const [isOnLeave, setIsOnLeave] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
 
@@ -81,7 +83,9 @@ function ViewAttendance({ year, month, date }) {
     const [workingHours, setWorkingHours] = useState("");
     const [status, setStatus] = useState("");
     const [inTime, setInTime] = useState("");
+    const [originalInTime, setOriginalInTime] = useState("");
     const [outTime, setOutTime] = useState("");
+    const [originalOutTime, setOriginalOutTime] = useState("");
     const [inTimeError, setInTimeError] = useState(""); // State for In Time error
     const [outTimeError, setOutTimeError] = useState(""); // State for Out Time error
     const [attendanceData, setAttendanceData] = useState({});
@@ -132,6 +136,32 @@ function ViewAttendance({ year, month, date }) {
         setOutTimeError("");
     };
 
+    const handleCheckboxChange = (e) => {
+        const isChecked = e.target.checked;
+        setIsOnLeave(isChecked);
+
+        if (isChecked) {
+            // If On Leave is checked, disable In Time and Out Time, and set default values
+            setInTime("00:00");
+            setOutTime("00:00");
+            setWorkingHours("00:00");
+            setStatus("Leave");
+            setDisableInTime(true);
+            setDisableOutTime(true);
+        } else {
+            if (originalInTime && originalOutTime) {
+                setInTime(originalInTime);
+                setOutTime(originalOutTime);
+            }
+            else {
+                setInTime("");
+                setOutTime("");
+            }
+            setDisableInTime(false);
+            setDisableOutTime(false);
+        }
+    };
+
     const handleDayClick = (day, id, empName, empId, designation, department, branch, intime, outtime) => {
 
         // Format the date as "DD-MM-YYYY"
@@ -144,7 +174,9 @@ function ViewAttendance({ year, month, date }) {
         setId(id);
         setEmpName(empName);
         setInTime(intime);
+        setOriginalInTime(intime);
         setOutTime(outtime);
+        setOriginalOutTime(outtime);
         setEmployeeId(empId);
         setAttendanceDate(formattedDate);
         setDesignation(designation);
@@ -162,6 +194,18 @@ function ViewAttendance({ year, month, date }) {
         } else {
             setDisableInTime(false);
             setDisableOutTime(false);
+        }
+
+        if (status === "Leave") {
+            setDisableInTime(true);
+            setDisableOutTime(true);
+            setIsOnLeave(true); // Set the checkbox to true
+        } else {
+            setDisableInTime(false);
+            setDisableOutTime(false);
+            setIsOnLeave(false); // Set the checkbox to false
+            setInTime(intime);
+            setOutTime(outtime);
         }
 
         // console.log("Attendance date is :", formattedDate);
@@ -193,39 +237,46 @@ function ViewAttendance({ year, month, date }) {
             return;
         }
 
-        // const workingHours = calculateWorkingHours(inTime, outTime);
-        const calculateWorkingHours = (inTime, outTime) => {
-            const [inHours, inMinutes] = inTime.split(':').map(Number);
-            const [outHours, outMinutes] = outTime.split(':').map(Number);
-
-            const inTimeMinutes = inHours * 60 + inMinutes;
-            const outTimeMinutes = outHours * 60 + outMinutes;
-
-            let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
-
-            if (workingMinutes < 0) {
-                workingMinutes += 24 * 60; // Adjust for overnight shifts
-            }
-
-            return workingMinutes;
-        };
-
-        const workingMinutes = calculateWorkingHours(inTime, outTime);
-
-        // Convert minutes back to HH:MM format for display
-        const hours = Math.floor(workingMinutes / 60);
-        const minutes = workingMinutes % 60;
-        const workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-
-        let status;
-        if (workingMinutes >= 435) { // 7 hours 15 minutes in minutes
-            status = "Present";
-        } else if (workingMinutes >= 218) { // 7 hours 15 minutes / 2 in minutes
-            status = "Half Day";
-        } else if (workingMinutes <= 120) { // 2 hours in minutes
+        let workingHours, status;
+        if (isOnLeave) {
+            inTime = "00:00";
+            outTime = "00:00";
+            workingHours = "00:00";
             status = "Leave";
         } else {
-            status = "Leave";
+            // const workingHours = calculateWorkingHours(inTime, outTime);
+            const calculateWorkingHours = (inTime, outTime) => {
+                const [inHours, inMinutes] = inTime.split(':').map(Number);
+                const [outHours, outMinutes] = outTime.split(':').map(Number);
+
+                const inTimeMinutes = inHours * 60 + inMinutes;
+                const outTimeMinutes = outHours * 60 + outMinutes;
+
+                let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+
+                if (workingMinutes < 0) {
+                    workingMinutes += 24 * 60; // Adjust for overnight shifts
+                }
+
+                return workingMinutes;
+            };
+
+            const workingMinutes = calculateWorkingHours(inTime, outTime);
+
+            // Convert minutes back to HH:MM format for display
+            const hours = Math.floor(workingMinutes / 60);
+            const minutes = workingMinutes % 60;
+            workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+            if (workingMinutes >= 435) { // 7 hours 15 minutes in minutes
+                status = "Present";
+            } else if (workingMinutes >= 218) { // 7 hours 15 minutes / 2 in minutes
+                status = "Half Day";
+            } else if (workingMinutes <= 120) { // 2 hours in minutes
+                status = "Leave";
+            } else {
+                status = "Leave";
+            }
         }
 
         const payload = {
@@ -513,7 +564,7 @@ function ViewAttendance({ year, month, date }) {
                                                                 {!status && (
                                                                     <div>
                                                                         {selectedDate < joiningDate ? (
-                                                                            <div className='before-joining-icon'><FcCancel/></div>
+                                                                            <div className='before-joining-icon'><FcCancel /></div>
                                                                         ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
                                                                             // Check if the previous day (Saturday) or the next day (Monday) has "Leave" status
                                                                             attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
@@ -706,7 +757,7 @@ function ViewAttendance({ year, month, date }) {
                                                                 {!status && (
                                                                     <div>
                                                                         {selectedDate < joiningDate ? (
-                                                                            <div className='before-joining-icon'><FcCancel/></div>
+                                                                            <div className='before-joining-icon'><FcCancel /></div>
                                                                         ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
                                                                             // Check if the previous day (Saturday) or the next day (Monday) has "Leave" status
                                                                             attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
@@ -899,7 +950,7 @@ function ViewAttendance({ year, month, date }) {
 
                                                                 {!status && <div>
                                                                     {selectedDate < joiningDate ? (
-                                                                        <div className='before-joining-icon'><FcCancel/></div>
+                                                                        <div className='before-joining-icon'><FcCancel /></div>
                                                                     ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
                                                                         attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
                                                                             attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status === "Leave" ? (
@@ -956,7 +1007,7 @@ function ViewAttendance({ year, month, date }) {
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
-                    {disableInTime && disableOutTime || isDeleted ? "Update attendance" : "Add attendance"}
+                    {(originalInTime && originalOutTime || isDeleted) ? "Update attendance" : "Add attendance"}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         handleClosePopup();
                         setInTime("");
@@ -1021,7 +1072,7 @@ function ViewAttendance({ year, month, date }) {
                                                         setInTime(e.target.value);
                                                         if (e.target.value) setInTimeError(""); // Clear error when valid
                                                     }}
-                                                    disabled={isDeleted}
+                                                    disabled={isDeleted || isOnLeave}
                                                 />
                                             </div>
                                             {inTimeError && <p className="text-danger">{inTimeError}</p>}
@@ -1048,22 +1099,26 @@ function ViewAttendance({ year, month, date }) {
                                                         setOutTime(e.target.value);
                                                         if (e.target.value) setOutTimeError(""); // Clear error when valid
                                                     }}
-                                                    disabled={isDeleted}
+                                                    disabled={isDeleted || isOnLeave}
                                                 />
                                             </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
                                         </div>
                                         <div className="col-lg-1">
-                                        <label className="form-label mt-5 text-center">OR</label>
+                                            <label className="form-label mt-5 text-center">OR</label>
                                         </div>
                                         <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">On Leave</label>
                                                 <div className='leavecheck'>
-                                                    <input type="checkbox" name="rGroup" value="1" id="r1"/>
+                                                    <input type="checkbox" name="rGroup" value="1" id="r1"
+                                                        checked={isOnLeave}
+                                                        onChange={handleCheckboxChange}
+                                                        disabled={disableOnLeave}
+                                                    />
                                                     <label class="checkbox-alias" for="r1">
                                                         <div className='d-flex align-items-center justify-content-center'>
-                                                            <div className='leavecheckicon mr-1'><GiCheckMark/></div>
+                                                            <div className='leavecheckicon mr-1'><GiCheckMark /></div>
                                                             <div>On Leave</div>
                                                         </div>
                                                     </label>

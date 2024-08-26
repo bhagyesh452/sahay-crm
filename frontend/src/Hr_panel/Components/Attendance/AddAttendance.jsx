@@ -6,10 +6,56 @@ import { GiCheckMark } from "react-icons/gi";
 import ClipLoader from 'react-spinners/ClipLoader';
 import Nodata from '../../../components/Nodata';
 import Swal from 'sweetalert2';
+import Stack from '@mui/material/Stack';
+import { styled } from '@mui/material/styles';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 function AddAttendance({ year, month, date, employeeData }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+    const AntSwitch = styled(Switch)(({ theme }) => ({
+        width: 28,
+        height: 16,
+        padding: 0,
+        display: 'flex',
+        '&:active': {
+            '& .MuiSwitch-thumb': {
+                width: 15,
+            },
+            '& .MuiSwitch-switchBase.Mui-checked': {
+                transform: 'translateX(9px)',
+            },
+        },
+        '& .MuiSwitch-switchBase': {
+            padding: 2,
+            '&.Mui-checked': {
+                transform: 'translateX(12px)',
+                color: '#fff',
+                '& + .MuiSwitch-track': {
+                    opacity: 1,
+                    backgroundColor: theme.palette.mode === 'dark' ? '#177ddc' : '#1890ff',
+                },
+            },
+        },
+        '& .MuiSwitch-thumb': {
+            boxShadow: '0 2px 4px 0 rgb(0 35 11 / 20%)',
+            width: 12,
+            height: 12,
+            borderRadius: 6,
+            transition: theme.transitions.create(['width'], {
+                duration: 200,
+            }),
+        },
+        '& .MuiSwitch-track': {
+            borderRadius: 16 / 2,
+            opacity: 1,
+            backgroundColor:
+                theme.palette.mode === 'dark' ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.25)',
+            boxSizing: 'border-box',
+        },
+    }));
 
     const monthNamesToNumbers = {
         "January": 1,
@@ -61,6 +107,7 @@ function AddAttendance({ year, month, date, employeeData }) {
     const [inTimeNow, setInTimeNow] = useState(null);
     const [outTime, setOutTime] = useState("");
     const [workingHours, setWorkingHours] = useState("");
+    const [isOnLeave, setIsOnLeave] = useState(false);
     const [status, setStatus] = useState("");
 
     const [attendanceData, setAttendanceData] = useState({});
@@ -87,6 +134,86 @@ function AddAttendance({ year, month, date, employeeData }) {
     //         }
     //     }));
     // };
+
+    const handleCheckboxChange = (empId, isChecked) => {
+        setIsOnLeave(isChecked);
+        if (isChecked) {
+            console.log("Inside if condition");
+            // When "On Leave" is checked, set values to "00:00" and "Leave"
+            setAttendanceData(prevState => ({
+                ...prevState,
+                [empId]: {
+                    ...prevState[empId],
+                    inTime: "00:00",
+                    outTime: "00:00",
+                    workingHours: "00:00",
+                    status: "Leave"
+                }
+            }));
+
+        } else {
+            console.log("Inside else condition");
+            setIsOnLeave(isChecked);
+            setAttendanceData(prevState => ({
+                ...prevState,
+                [empId]: {
+                    ...prevState[empId],
+                    inTime: "",
+                    outTime: "",
+                    workingHours: "",
+                    status: ""
+                }
+            }));
+        }
+    };
+
+
+    // const handleCheckboxChange = async (empId, isChecked, name, designation, department, branch, date, inTime, outTime, workingHours, status) => {
+    //     setIsOnLeave(isChecked);
+    
+    //     // Define the new attendance data based on the checkbox state
+    //     const updatedData = isChecked
+    //         ? { inTime: "00:00", outTime: "00:00", workingHours: "00:00", status: "Leave" }
+    //         : { inTime: "", outTime: "", workingHours: "", status: "" };
+    
+    //     // Update the local state
+    //     setAttendanceData(prevState => ({
+    //         ...prevState,
+    //         [empId]: {
+    //             ...prevState[empId],
+    //             ...updatedData
+    //         }
+    //     }));
+    
+    //     // Prepare the payload for the API request
+    //     const selectedDate = new Date(date);
+    //     const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+    
+    //     const payload = {
+    //         employeeId: empId,
+    //         ename: name,
+    //         designation: designation,
+    //         department: department,
+    //         branchOffice: branch,
+    //         attendanceDate: date,
+    //         dayName: dayName,
+    //         inTime: updatedData.inTime,
+    //         outTime: updatedData.outTime,
+    //         workingHours: updatedData.workingHours,
+    //         status: updatedData.status
+    //     };
+    
+    //     try {
+    //         const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
+    //         Swal.fire("Success", "Attendance Successfully Updated", "success");
+    //     } catch (error) {
+    //         console.log("Error updating attendance record", error);
+    //         Swal.fire("Error", "Error updating attendance", "error");
+    //     }
+    
+    //     fetchAttendance(); // Refresh the attendance data after updating
+    // };
+    
 
     const handleInputChange = (empId, field, value) => {
         // Parse the year and month from the date input if the field is attendanceDate
@@ -265,6 +392,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                             <th>Date</th>
                             <th>In Time</th>
                             <th>Out Time</th>
+                            <th>On Leave</th>
                             <th>Working Hours</th>
                             <th>Status</th>
                             {!isDeleted && <th>Action</th>}
@@ -313,7 +441,9 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 // console.log("Emp attendance details :", attendanceDetails);
 
                                 // Calculate working hours only if both inTime and outTime are available
-                                const workingHours = (inTime && outTime) ? calculateWorkingHours(inTime, outTime) : "00:00";
+                                const workingHours = (inTime && outTime && !isOnLeave) ? calculateWorkingHours(inTime, outTime) : "00:00";
+
+                                let onLeave = attendanceData[emp._id]?.status === "Leave" || attendanceDetails.status === "Leave" || "";
 
                                 // Determine the status
                                 let status;
@@ -366,7 +496,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                                     className='form-cantrol in-time'
                                                     // value={attendanceDetails.inTime || inTime}
                                                     value={inTime}
-                                                    disabled={emp.deletedDate}
+                                                    disabled={emp.deletedDate || onLeave}
                                                     onChange={(e) =>
                                                         handleInputChange(emp._id, "inTime", e.target.value)
                                                     }
@@ -380,12 +510,29 @@ function AddAttendance({ year, month, date, employeeData }) {
                                                     className='form-cantrol out-time'
                                                     // value={attendanceDetails.outTime || outTime}
                                                     value={outTime}
-                                                    disabled={emp.deletedDate}
+                                                    disabled={emp.deletedDate || onLeave}
                                                     onChange={(e) =>
                                                         handleInputChange(emp._id, "outTime", e.target.value)
                                                     }
                                                 />
                                             </div>
+                                        </td>
+                                        <td>
+                                            <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                                                {/* <AntSwitch
+                                                    checked={onLeave}
+                                                    onClick={(e) => handleCheckboxChange(emp._id, e.target.checked)}
+                                                    inputProps={{ 'aria-label': 'ant design' }} /> */}
+                                                <FormControlLabel
+                                                    control={
+                                                        <Switch
+                                                            checked={onLeave}
+                                                            onChange={(e) => handleCheckboxChange(emp._id, e.target.checked)}
+                                                            // onChange={(e) => handleCheckboxChange(emp._id, e.target.checked, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}
+                                                        />
+                                                    }
+                                                />
+                                            </Stack>
                                         </td>
                                         <td>
                                             {attendanceDetails.workingHours || workingHours}
