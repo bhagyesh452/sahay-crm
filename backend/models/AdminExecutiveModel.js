@@ -196,6 +196,9 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     courierStatus:{
         type:String
     },
+    otpInboxNo:{
+        type:String
+    },
 });
 
 const AdminExecutiveModel = mongoose.model("AdminExecutiveModel", AdminExecutiveServicesSchema)

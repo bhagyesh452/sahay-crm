@@ -81,7 +81,7 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , comp
         <div>
             <div className='d-flex align-items-center justify-content-between'>
                 <div className="My_Text_Wrap" title={websiteLink}>
-                    {link ? link : "Enter Website Link"}
+                    {link ? link  : companyBriefing ? companyBriefing :  "Enter Website Link"}
                 </div>
                 <button className='td_add_remarks_btn' onClick={() => setOpenWebsitePopup(true)}>
                     <FaPencilAlt />

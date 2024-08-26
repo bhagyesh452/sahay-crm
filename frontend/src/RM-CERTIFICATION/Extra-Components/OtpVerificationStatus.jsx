@@ -76,7 +76,6 @@ const OtpVerificationStatus = ({
         <option value="Both Done">Both Done</option>
         <option value="DSC Link Done, OTP Pending">DSC Link Done, OTP Pending</option>
         <option value="OTP Done, DSC Link Pending">OTP Done, DSC Link Pending</option>
-        <option value="OTP Done, DSC Link Pending">OTP Done, DSC Link Pending</option>
         <option value="Not Applicable">Not Applicable</option>
       </select>
     </section>

@@ -1606,6 +1606,59 @@ router.post(`/post-save-dscemailid-adminexecutive/`, async (req, res) => {
   }
 });
 
+router.post(`/post-save-otpinboxno-adminexecutive/`, async (req, res) => {
+  const { companyName, serviceName, charges } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await AdminExecutiveModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName,
+    });
+
+    console.log("company" , company)
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { otpInboxNo: charges };
+
+    console.log("updateFields", updateFields);
+
+    // Perform the update
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName,
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.post(`/update-dscType-adminexecutive/`, async (req, res) => {
   const { companyName, serviceName, dscType } = req.body;
   //console.log("contentStatus", contentStatus, companyName, serviceName)
