@@ -758,7 +758,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter }) {
                                             )} */}
                     </div>
                   </th>
-                  <th>
+                  <th className="d-none">
                     <div className="d-flex align-items-center justify-content-center position-relative">
                       <div
                         ref={(el) =>
@@ -790,7 +790,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter }) {
                                             )} */}
                     </div>
                   </th>
-                  <th>
+                  <th className="d-none">
                     <div className="d-flex align-items-center justify-content-center position-relative">
                       <div
                         ref={(el) => (fieldRefs.current["brochureStatus"] = el)}
@@ -1409,7 +1409,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter }) {
                         />
                       </td>
                       {/* For Brochure */}
-                      <td>
+                      <td className="d-none">
                         <BrochureDesignerDropdown
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}
@@ -1423,7 +1423,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter }) {
                           refreshData={refreshData}
                         />
                       </td>
-                      <td>
+                      <td className="d-none">
                         <BrochureStatusDropdown
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}

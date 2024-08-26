@@ -738,7 +738,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             )} */}
                                         </div>
                                     </th>
-                                    <th>
+                                    <th className="d-none">
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['brochureStatus'] = el}>
                                                 Brochure Status
@@ -766,7 +766,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             )} */}
                                         </div>
                                     </th>
-                                    <th>
+                                    <th className="d-none">
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['nswsPhoneNo'] = el}>
                                                 NSWS Phone No
@@ -1192,7 +1192,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                 refreshData={refreshData}
                                             /></td>
                                         {/* For Brochure */}
-                                        <td>
+                                        <td className="d-none">
                                             <BrochureDesignerDropdown
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
@@ -1202,7 +1202,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                 refreshData={refreshData}
                                             />
                                         </td>
-                                        <td>
+                                        <td className="d-none">
                                             <BrochureStatusDropdown
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
