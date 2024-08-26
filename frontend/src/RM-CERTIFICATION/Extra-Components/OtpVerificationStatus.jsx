@@ -71,8 +71,8 @@ const OtpVerificationStatus = ({
         onChange={(e) => handleStatusChange(e.target.value)}
         value={!status ? "" : status}
       >
-        <option value="" disabled>Select Status</option>
-        <option value="Both Pending">Both Pending </option>
+        {/* <option value="" disabled>Select Status</option> */}
+        <option value="Both Pending" selected>Both Pending </option>
         <option value="Both Done">Both Done</option>
         <option value="DSC Link Done, OTP Pending">DSC Link Done, OTP Pending</option>
         <option value="OTP Done, DSC Link Pending">OTP Done, DSC Link Pending</option>

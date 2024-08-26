@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton,DialogActions } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
-
+import { FaWhatsapp } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 
 const NSWSMobileNo = ({ companyName, serviceName, nswsMobileNo ,refreshData , mainStatus}) => {
@@ -38,21 +38,30 @@ const NSWSMobileNo = ({ companyName, serviceName, nswsMobileNo ,refreshData , ma
 
     return (
         <div>
-             <div className={'d-flex align-items-center justify-content-between'}>
-            <div
-                className="My_Text_Wrap"
-                title={nswsMobileNo}
-            >
-                {nswsMobileNo}
-            </div>
-            <button className='td_add_remarks_btn ml-1'
-                onClick={() => {
-                   
-                    setOpenEmailPopup(true)
-                }}
-            >
-                <FaPencilAlt/>
-            </button>
+            <div className="d-flex align-items-center justify-content-center wApp">
+                <div className={'d-flex align-items-center justify-content-between'}>
+                    <div
+                        className="My_Text_Wrap"
+                        title={nswsMobileNo}
+                    >
+                        {nswsMobileNo}
+                    </div>
+                    <button className='td_add_remarks_btn ml-1'
+                        onClick={() => {  setOpenEmailPopup(true)  }}>
+                        <FaPencilAlt/>
+                    </button>
+                </div>
+                <a
+                    href={`https://wa.me/${nswsMobileNo}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        marginLeft: "10px",
+                        lineHeight: "14px",
+                        fontSize: "14px",
+                    }}
+                    ><FaWhatsapp />
+                </a>
             </div>
           
             <Dialog
