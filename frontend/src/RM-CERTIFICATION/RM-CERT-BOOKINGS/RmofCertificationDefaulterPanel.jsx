@@ -883,7 +883,7 @@ useEffect(() => {
                       )}
                     </div>
                   </th>
-                  <th>
+                  <th className="d-none">
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
                         Brochure Designer
