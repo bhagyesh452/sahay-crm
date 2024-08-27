@@ -400,12 +400,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -461,13 +464,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                               <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -490,13 +496,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                               <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -522,12 +531,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={rmServicesData}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -555,12 +567,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -586,13 +601,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                 <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -616,12 +634,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -645,6 +666,9 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -674,12 +698,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -704,12 +731,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -733,13 +763,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                 <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -765,13 +798,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                               <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -796,12 +832,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -855,12 +894,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -885,12 +927,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -921,12 +966,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -946,13 +994,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                 <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -991,12 +1042,15 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={rmServicesData}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -1019,13 +1073,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                 <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -1052,13 +1109,16 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                 <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
                                         )} */}
                     </div>
@@ -1086,45 +1146,51 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
                                                 <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
-                                        )} */}
-                    </div>
-                  </th>
-                  <th>
-                    <div className="d-flex align-items-center justify-content-center  position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["pendingPayment"] = el)}
-                      >
-                        Pending Payment
-                      </div>
+                                        )}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className='d-flex align-items-center justify-content-center  position-relative'>
+                                        <div ref={el => fieldRefs.current['pendingPayment'] = el}>
+                                            Pending Payment
+                                        </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("pendingPayment")}
-                        />
-                      </div>
-                      {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                        <div className='RM_filter_icon'>
+                                        {isActiveField('pendingPayment') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("pendingPayment")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("pendingPayment")} />
+                                                )}
+                                        </div>
+                                        {/* ---------------------filter component--------------------------- */}
+                                        {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                             <div
                                                 ref={filterMenuRef}
                                                 className="filter-menu"
                                                 style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                             >
-                                                <FilterableTable
-                                                    data={rmServicesData}
-                                                    filterField={activeFilterField}
-                                                    onFilter={handleFilter}
-                                                    completeData={completeRmData}
-                                                    dataForFilter={dataToFilter}
-                                                />
+                                               <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Defaulter"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
                                             </div>
-                                        )} */}
+                                        )}  */}
                     </div>
                   </th>
                   <th className="rm-sticky-action">Action</th>

@@ -307,7 +307,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter }) {
     };
   }, []);
 
-  const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
+  
 
   return (
     <div>

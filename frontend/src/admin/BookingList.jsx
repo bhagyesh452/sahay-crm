@@ -139,9 +139,9 @@ function BookingList() {
     );
   }, [searchText]);
 
-  
+
   const fetchRedesignedFormData = async () => {
-   setOpenBacdrop(true)
+    setOpenBacdrop(true)
     try {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
@@ -162,7 +162,7 @@ function BookingList() {
 
   const handleCloseBackdrop = () => {
     setOpenBacdrop(false)
-}
+  }
 
   useEffect(() => {
     fetchRedesignedFormData();
@@ -713,7 +713,7 @@ function BookingList() {
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                              <div className="b_Services_name d-flex flex-wrap">
+                              {/* <div className="b_Services_name d-flex flex-wrap">
                                 {(obj.services.length !== 0 ||
                                   (obj.moreBookings &&
                                     obj.moreBookings.length !== 0)) &&
@@ -752,6 +752,57 @@ function BookingList() {
                                           )}
                                       </>
                                     ))}
+                              </div> */}
+                              <div className="b_Services_name d-flex flex-wrap">
+                                {(obj.services.length !== 0 || (obj.moreBookings && obj.moreBookings.length !== 0)) &&
+                                  (() => {
+                                    // Combine services from both main and more bookings
+                                    const allBookings = [
+                                      ...obj.moreBookings,
+                                      // Creating a dummy booking object for obj.services with a default date
+                                      { services: obj.services, bookingDate: '1970-01-01' } // Default date for main services
+                                    ];
+
+                                    // Convert bookingDate strings to Date objects
+                                    const servicesWithDates = allBookings.flatMap(booking =>
+                                      booking.services.map(service => ({
+                                        ...service,
+                                        bookingDate: new Date(booking.bookingDate)
+                                      }))
+                                    );
+
+                                    // Find the latest booking date
+                                    const latestDate = new Date(Math.max(...servicesWithDates.map(service => service.bookingDate.getTime())));
+
+                                    // Filter services based on the latest booking date
+                                    const latestServices = servicesWithDates.filter(service =>
+                                      service.bookingDate.getTime() === latestDate.getTime()
+                                    );
+
+                                    // Slice the filtered services to show only the first 3
+                                    const displayedServices = latestServices.slice(0, 3);
+
+                                    // Calculate the count of additional services
+                                    const additionalCount = Math.max(servicesWithDates.length - 3, 0);
+
+                                    return (
+                                      <>
+                                        {displayedServices.map((service, index) => (
+                                          <div key={service.serviceId} className="sname mb-1">
+                                            {service.serviceName}
+                                          </div>
+                                        ))}
+
+                                        {/* Show additional count if there are more than 3 services */}
+                                        {additionalCount > 0 && (
+                                          <div className="sname mb-1">
+                                            {`+${additionalCount}`}
+                                          </div>
+                                        )}
+                                      </>
+                                    );
+                                  })()
+                                }
                               </div>
                               <div className="d-flex align-items-center justify-content-between">
                                 {(obj.remainingPayments.length !== 0 || obj.moreBookings.some((moreObj) => moreObj.remainingPayments.length !== 0)) &&
@@ -2962,13 +3013,13 @@ function BookingList() {
           </div>
         </div>
       )}
-       {/* --------------------------------backedrop------------------------- */}
-       {openBacdrop && (<Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={openBacdrop}
-                onClick={handleCloseBackdrop}>
-                <CircularProgress color="inherit" />
-            </Backdrop>)}
+      {/* --------------------------------backedrop------------------------- */}
+      {openBacdrop && (<Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBacdrop}
+        onClick={handleCloseBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>)}
 
       {bookingFormOpen && (
         <>

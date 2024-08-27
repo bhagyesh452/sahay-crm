@@ -485,7 +485,8 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
                 serviceName: serviceName,
                 isIndustryEnabled: true
 
-            })
+            });
+            refreshData();
         } catch (error) {
             console.log("Enable Update Status Industry")
         }

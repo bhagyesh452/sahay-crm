@@ -398,6 +398,9 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -424,11 +427,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -455,11 +461,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -484,11 +493,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -515,16 +527,19 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
+                                                        dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )} */}
@@ -548,11 +563,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -580,11 +598,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'websiteLink' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -609,11 +630,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -638,11 +662,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -667,11 +694,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -697,11 +727,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'contentWriter' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -727,11 +760,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'contentStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -759,11 +795,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'brochureDesigner' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -789,11 +828,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'brochureStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -820,11 +862,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'nswsMailId' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -848,11 +893,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'nswsMailId' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -878,11 +926,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -914,11 +965,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'industry' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -940,11 +994,14 @@ function RmofCertificationProcessPanel({
                       </div>
                       {/* {showFilterMenu && activeFilterField === 'sector' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -999,16 +1056,19 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
+                                                        dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )} */}
@@ -1029,11 +1089,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'bdmName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -1062,11 +1125,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -1095,11 +1161,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -1126,11 +1195,14 @@ function RmofCertificationProcessPanel({
                       {/* ---------------------filter component--------------------------- */}
                       {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
-                                                 ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Process"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
