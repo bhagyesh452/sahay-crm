@@ -442,7 +442,7 @@ const IndustryDropdown = ({ mainStatus, industry, setNewSubStatus, companyName, 
         { name: "Passenger Experience", options: passengerExperience },
         { name: "Travel & Tourism", options: travel },
         { name: "Indic Language Startup", options: indicLanguageStartup }
-    ];
+    ];  
 
 
 

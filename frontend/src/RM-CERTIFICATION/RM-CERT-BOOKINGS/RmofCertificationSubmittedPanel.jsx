@@ -959,7 +959,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                       )}
                     </div>
                   </th>
-                  <th className="d-none">
+                  <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['nswsPhoneNo'] = el}>
                         NSWS Phone No
