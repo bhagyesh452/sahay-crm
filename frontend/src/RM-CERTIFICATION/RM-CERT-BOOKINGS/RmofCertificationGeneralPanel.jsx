@@ -42,7 +42,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
     const [isScrollLocked, setIsScrollLocked] = useState(false);
     const [filteredData, setFilteredData] = useState([]);
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
-const [error, setError] = useState('')
+    const [error, setError] = useState('')
     // Fetch Data Function
 
     // const fetchData = async (searchQuery = "", page = 1, activeTab = "General") => {
@@ -640,7 +640,7 @@ const [error, setError] = useState('')
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                            {isActiveField('subCategoryStatus') ? (
+                                                {isActiveField('subCategoryStatus') ? (
                                                     <FaFilter onClick={() => handleFilterClick("subCategoryStatus")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("subCategoryStatus")} />
@@ -653,7 +653,7 @@ const [error, setError] = useState('')
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                     <FilterableTable
+                                                    <FilterableTable
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -675,7 +675,7 @@ const [error, setError] = useState('')
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                            {isActiveField('withDSC') ? (
+                                                {isActiveField('withDSC') ? (
                                                     <FaFilter onClick={() => handleFilterClick("withDSC")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("withDSC")} />
@@ -688,7 +688,7 @@ const [error, setError] = useState('')
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                     <FilterableTable
+                                                    <FilterableTable
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -709,7 +709,7 @@ const [error, setError] = useState('')
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                            {isActiveField('withDSC') ? (
+                                                {isActiveField('withDSC') ? (
                                                     <FaFilter onClick={() => handleFilterClick("bdeName")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("bdeName")} />
@@ -722,7 +722,7 @@ const [error, setError] = useState('')
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                  <FilterableTable
+                                                    <FilterableTable
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -743,7 +743,7 @@ const [error, setError] = useState('')
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                            {isActiveField('bdmName') ? (
+                                                {isActiveField('bdmName') ? (
                                                     <FaFilter onClick={() => handleFilterClick("bdmName")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("bdmName")} />
@@ -756,7 +756,7 @@ const [error, setError] = useState('')
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                      <FilterableTable
+                                                    <FilterableTable
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -777,7 +777,7 @@ const [error, setError] = useState('')
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                            {isActiveField('totalPaymentWGST') ? (
+                                                {isActiveField('totalPaymentWGST') ? (
                                                     <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
@@ -811,7 +811,7 @@ const [error, setError] = useState('')
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                            {isActiveField('receivedPayment') ? (
+                                                {isActiveField('receivedPayment') ? (
                                                     <FaFilter onClick={() => handleFilterClick("receivedPayment")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("receivedPayment")} />
@@ -845,7 +845,7 @@ const [error, setError] = useState('')
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                            {isActiveField('pendingPayment') ? (
+                                                {isActiveField('pendingPayment') ? (
                                                     <FaFilter onClick={() => handleFilterClick("pendingPayment")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("pendingPayment")} />
@@ -858,7 +858,7 @@ const [error, setError] = useState('')
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                     <FilterableTable
+                                                    <FilterableTable
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
