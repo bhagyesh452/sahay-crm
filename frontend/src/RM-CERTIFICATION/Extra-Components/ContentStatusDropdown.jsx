@@ -73,6 +73,8 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
         return "need_to_call";
       case "Pending":
         return "inprogress-status";
+        case "Alloted":
+          return "inprogress-status";
       case "Completed":
         return "approved-status";
       case "In Approval":
@@ -98,40 +100,7 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
     setStatusClass(getStatusClass(contentStatus));
   }, [contentStatus]);
 
-  // useEffect(() => {
-  //   const updateStatus = async () => {
-  //     if (contentStatus === "Approved" && brochureStatus === "Approved") {
-  //       try {
-  //         //console.log("Updating status...");
-  //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: "Ready To Submit",
-  //           mainCategoryStatus: "Ready To Submit",
-  //           previousMainCategoryStatus: mainStatus,
-  //           previousSubCategoryStatus: status
-  //         });
-  //         ///console.log("Status updated successfully:", response.data);
-
-  //         if (response.status === 200) {
-  //           // Ensure refreshData is called correctly
-  //           //console.log("Calling refreshData");
-  //           await refreshData();
-  //         } else {
-  //           console.error("Failed to update status:", response.status);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error updating status:", error.message);
-  //       }
-  //     }
-  //   };
-
-  //   updateStatus();
-  // }, [contentStatus, brochureStatus]);
-
-  // console.log("contentstat" , contentStatus , brochureStatus)
-
-  //console.log("writername", companyName, serviceName, writername, contentStatus)
+ 
 
 
   return (
@@ -182,6 +151,15 @@ const ContentStatusDropdown = ({ companyName, serviceName, mainStatus, contentSt
               href="#"
             >
               Pending
+            </a>
+          </li>
+          <li>
+            <a
+              className="dropdown-item"
+              onClick={() => handleStatusChange("Alloted", "inprogress-status")}
+              href="#"
+            >
+              Alloted
             </a>
           </li>
           <li>

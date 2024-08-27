@@ -146,14 +146,24 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     dscValidity: {
         type: String,
     },
+    otpVerificationStatus: {
+        type: String,
+    },
     portalCharges: {
         type: Number
     },
     chargesPaidVia: {
         type: String
     },
-    expenseReimbursementStatus: {
+    dscPhoneNo: {
         type: String
+    },
+    dscEmailId: {
+        type: String
+    },
+    expenseReimbursementStatus: {
+        type: String,
+        default:"Unpaid"
     },
     expenseReimbursementDate: {
         type: Date
@@ -184,6 +194,9 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
         type:String
     },
     courierStatus:{
+        type:String
+    },
+    otpInboxNo:{
         type:String
     },
 });

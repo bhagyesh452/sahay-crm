@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
@@ -24,6 +24,7 @@ export default function HorizontalNonLinearStepper() {
   const [completed, setCompleted] = useState({});
   const [errors, setErrors] = useState({});
   const [empId, setEmpId] = useState("");
+  const [lastEmployeeId, setLastEmployeeId] = useState("");
   const [employeeID, setEmployeeID] = useState("");
   const [employeeData, setEmployeeData] = useState([]);
 
@@ -38,10 +39,20 @@ export default function HorizontalNonLinearStepper() {
     }
   };
 
+  const fetchLastEmployeeId = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/lastEmployeeId/fetchLastEmployeeId`);
+      setLastEmployeeId(res.data.data[0].lastEmployeeId);
+      // console.log("Last employee id is :", res.data.data[0].lastEmployeeId);
+    } catch (error) {
+      console.log("Error fetching last employee id", error);
+    }
+  };
+
   useEffect(() => {
     fetchAllEmployee();
+    fetchLastEmployeeId();
   }, []);
-
 
   const [isPersonalInfoNext, setIsPersonalInfoNext] = useState(false);
   const [isEmployeementInfoNext, setIsEmployeementInfoNext] = useState(false);
@@ -244,9 +255,50 @@ export default function HorizontalNonLinearStepper() {
     officialEmail: ""
   });
 
+  const changeLastEmployeeId = async (newEmployeeId) => {
+    try {
+      const res = await axios.put(`${secretKey}/lastEmployeeId/changeLastEmployeeId`, { newEmployeeId });
+      console.log("Last employee id successfully changed :", res.data.data);
+    } catch (error) {
+      console.log("Error updating last employee id", error);
+    }
+  };
+
+  // Use a ref to track if the effect has run
+  const effectRan = useRef(false);
   useEffect(() => {
-    setEmployeeID(`SSPL00${employeeData.length + 1}`)
-  }, [employeeData.length, activeStep]);
+    // Check if the effect has already run
+    if (effectRan.current === false && employeeData.length > 0) {
+      // Check if employeeID is already set in the database
+      if (employeementInfo.employeeID) {
+        // If employeeID is already set, use the existing ID
+        setEmployeeID(employeementInfo.employeeID);
+      } else {
+        // If no employeeID exists, generate a new one
+        if (lastEmployeeId) {
+          // Extract the numeric part from the last employee ID
+          const numericPart = parseInt(lastEmployeeId.slice(-4), 10);
+          let newEmployeeIdNumber;
+          // Increment the numeric part by 1 to get the next employee ID
+          if (numericPart === 0) {
+            newEmployeeIdNumber = numericPart + employeeData.length + 1;
+          } else {
+            newEmployeeIdNumber = numericPart + 1;
+          }
+          // Format the new employee ID with leading zeros to maintain the SSPL0000 format
+          const newEmployeeId = `SSPL${newEmployeeIdNumber.toString().padStart(4, '0')}`;
+
+          // Set the new employee ID
+          setEmployeeID(newEmployeeId);
+
+          // Update the last employee ID in the backend
+          changeLastEmployeeId(newEmployeeId);
+        }
+      }
+      // Set the effectRan ref to true so that the effect doesn't run again
+      effectRan.current = true;
+    }
+  }, [activeStep]);
 
   const validateEmploymentInfo = () => {
     const newErrors = {};
@@ -572,12 +624,12 @@ export default function HorizontalNonLinearStepper() {
         const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
         console.log("Employee successfully deleted from draft model :", res2.data);
 
-        Swal.fire("success", "Employee created successfully!");
+        Swal.fire("success", "Employee created successfully!", "success");
         navigate("/hr/employees");
       }
     } catch (error) {
       console.log("Error creating employee:", error);
-      Swal.fire("error", "Error creating employee");
+      Swal.fire("error", "Error creating employee", "error");
     }
   };
 
@@ -739,7 +791,7 @@ export default function HorizontalNonLinearStepper() {
           <div className="card-body p-3">
             <Box sx={{ width: '100%' }}>
               {/* <Stepper sx={{ width: '80%', margin: "30px 130px", padding: '0px' }} nonLinear activeStep={activeStep}> */}
-              <Stepper nonLinear activeStep={activeStep}>
+              {/* <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
                     <StepButton color="inherit" onClick={handleStep(index)} className={
@@ -749,11 +801,11 @@ export default function HorizontalNonLinearStepper() {
                     </StepButton>
                   </Step>
                 ))}
-              </Stepper>
+              </Stepper> */}
 
 
               {/* Here this will not move to next step untill data is not saved for current step and not clicked on next button */}
-              {/* <Stepper nonLinear activeStep={activeStep}>
+              <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
                     <StepButton
@@ -766,7 +818,7 @@ export default function HorizontalNonLinearStepper() {
                     </StepButton>
                   </Step>
                 ))}
-              </Stepper> */}
+              </Stepper>
 
               <div className="mb-4 steprForm-bg he_steprForm_e_add">
                 <div className="steprForm">

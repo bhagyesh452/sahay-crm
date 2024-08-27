@@ -7,8 +7,10 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FaRegCalendarPlus } from "react-icons/fa6";
+import { FcCancel } from "react-icons/fc";
 import Swal from 'sweetalert2';
 import Nodata from '../../../components/Nodata';
+import { GiCheckMark } from "react-icons/gi";
 import ShowAttendanceForParticularEmployee from './ShowAttendanceForParticularEmployee';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -65,6 +67,9 @@ function ViewAttendance({ year, month, date }) {
     const [showAttendanceForParticularEmployee, setShowAttendanceForParticularEmployee] = useState(false);
     const [disableInTime, setDisableInTime] = useState(false);
     const [disableOutTime, setDisableOutTime] = useState(false);
+    const [disableOnLeave, setDisableOnLeave] = useState(false);
+    const [isOnLeave, setIsOnLeave] = useState(false);
+    const [isDeleted, setIsDeleted] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
 
     const [id, setId] = useState("");
@@ -78,7 +83,9 @@ function ViewAttendance({ year, month, date }) {
     const [workingHours, setWorkingHours] = useState("");
     const [status, setStatus] = useState("");
     const [inTime, setInTime] = useState("");
+    const [originalInTime, setOriginalInTime] = useState("");
     const [outTime, setOutTime] = useState("");
+    const [originalOutTime, setOriginalOutTime] = useState("");
     const [inTimeError, setInTimeError] = useState(""); // State for In Time error
     const [outTimeError, setOutTimeError] = useState(""); // State for Out Time error
     const [attendanceData, setAttendanceData] = useState({});
@@ -124,8 +131,35 @@ function ViewAttendance({ year, month, date }) {
 
     const handleClosePopup = () => {
         setShowPopup(false);
+        setIsDeleted(false);
         setInTimeError("");
         setOutTimeError("");
+    };
+
+    const handleCheckboxChange = (e) => {
+        const isChecked = e.target.checked;
+        setIsOnLeave(isChecked);
+
+        if (isChecked) {
+            // If On Leave is checked, disable In Time and Out Time, and set default values
+            setInTime("00:00");
+            setOutTime("00:00");
+            setWorkingHours("00:00");
+            setStatus("Leave");
+            setDisableInTime(true);
+            setDisableOutTime(true);
+        } else {
+            if (originalInTime && originalOutTime) {
+                setInTime(originalInTime);
+                setOutTime(originalOutTime);
+            }
+            else {
+                setInTime("");
+                setOutTime("");
+            }
+            setDisableInTime(false);
+            setDisableOutTime(false);
+        }
     };
 
     const handleDayClick = (day, id, empName, empId, designation, department, branch, intime, outtime) => {
@@ -140,7 +174,9 @@ function ViewAttendance({ year, month, date }) {
         setId(id);
         setEmpName(empName);
         setInTime(intime);
+        setOriginalInTime(intime);
         setOutTime(outtime);
+        setOriginalOutTime(outtime);
         setEmployeeId(empId);
         setAttendanceDate(formattedDate);
         setDesignation(designation);
@@ -158,6 +194,18 @@ function ViewAttendance({ year, month, date }) {
         } else {
             setDisableInTime(false);
             setDisableOutTime(false);
+        }
+
+        if (status === "Leave") {
+            setDisableInTime(true);
+            setDisableOutTime(true);
+            setIsOnLeave(true); // Set the checkbox to true
+        } else {
+            setDisableInTime(false);
+            setDisableOutTime(false);
+            setIsOnLeave(false); // Set the checkbox to false
+            setInTime(intime);
+            setOutTime(outtime);
         }
 
         // console.log("Attendance date is :", formattedDate);
@@ -189,39 +237,46 @@ function ViewAttendance({ year, month, date }) {
             return;
         }
 
-        // const workingHours = calculateWorkingHours(inTime, outTime);
-        const calculateWorkingHours = (inTime, outTime) => {
-            const [inHours, inMinutes] = inTime.split(':').map(Number);
-            const [outHours, outMinutes] = outTime.split(':').map(Number);
-
-            const inTimeMinutes = inHours * 60 + inMinutes;
-            const outTimeMinutes = outHours * 60 + outMinutes;
-
-            let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
-
-            if (workingMinutes < 0) {
-                workingMinutes += 24 * 60; // Adjust for overnight shifts
-            }
-
-            return workingMinutes;
-        };
-
-        const workingMinutes = calculateWorkingHours(inTime, outTime);
-
-        // Convert minutes back to HH:MM format for display
-        const hours = Math.floor(workingMinutes / 60);
-        const minutes = workingMinutes % 60;
-        const workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-
-        let status;
-        if (workingMinutes >= 435) { // 7 hours 15 minutes in minutes
-            status = "Present";
-        } else if (workingMinutes >= 218) { // 7 hours 15 minutes / 2 in minutes
-            status = "Half Day";
-        } else if (workingMinutes <= 120) { // 2 hours in minutes
+        let workingHours, status;
+        if (isOnLeave) {
+            inTime = "00:00";
+            outTime = "00:00";
+            workingHours = "00:00";
             status = "Leave";
         } else {
-            status = "Leave";
+            // const workingHours = calculateWorkingHours(inTime, outTime);
+            const calculateWorkingHours = (inTime, outTime) => {
+                const [inHours, inMinutes] = inTime.split(':').map(Number);
+                const [outHours, outMinutes] = outTime.split(':').map(Number);
+
+                const inTimeMinutes = inHours * 60 + inMinutes;
+                const outTimeMinutes = outHours * 60 + outMinutes;
+
+                let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+
+                if (workingMinutes < 0) {
+                    workingMinutes += 24 * 60; // Adjust for overnight shifts
+                }
+
+                return workingMinutes;
+            };
+
+            const workingMinutes = calculateWorkingHours(inTime, outTime);
+
+            // Convert minutes back to HH:MM format for display
+            const hours = Math.floor(workingMinutes / 60);
+            const minutes = workingMinutes % 60;
+            workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+            if (workingMinutes >= 435) { // 7 hours 15 minutes in minutes
+                status = "Present";
+            } else if (workingMinutes >= 218) { // 7 hours 15 minutes / 2 in minutes
+                status = "Half Day";
+            } else if (workingMinutes <= 120) { // 2 hours in minutes
+                status = "Leave";
+            } else {
+                status = "Leave";
+            }
         }
 
         const payload = {
@@ -386,6 +441,7 @@ function ViewAttendance({ year, month, date }) {
                                         {/* Generate table headers with day labels */}
                                         {selectedMonthDays.map(day => {
                                             const fullDate = new Date(`${day}-${month}-${year}`); // Assuming month is 1-based (January is 1)
+                                            const isSunday = fullDate.getDay() === 0;
                                             return (
                                                 <th className='th-day' key={day}>
                                                     <div className='d-flex align-items-center justify-content-between'>
@@ -393,7 +449,10 @@ function ViewAttendance({ year, month, date }) {
                                                             {getDayLabel(day)}
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
-                                                            <FaRegCalendarPlus onClick={() => date(fullDate, gotaBranchEmployees)} />
+                                                            <FaRegCalendarPlus
+                                                                onClick={() => !isSunday && date(fullDate, gotaBranchEmployees)} // Disable onClick for Sundays
+                                                                style={{ color: isSunday ? 'gray' : 'inherit', cursor: isSunday ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
+                                                            />
                                                         </div>
                                                     </div>
                                                 </th>
@@ -439,6 +498,7 @@ function ViewAttendance({ year, month, date }) {
                                             let presentCount = 0;
                                             let leaveCount = 0;
                                             let halfDayCount = 0;
+                                            const joiningDate = new Date(emp.jdate);
 
                                             return (
                                                 <tr key={index}>
@@ -501,15 +561,33 @@ function ViewAttendance({ year, month, date }) {
                                                                             status === "Leave" ? "L" : ""}
                                                                 </div>
 
-                                                                {!status && <div>
-                                                                    <button
-                                                                        className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
-                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
-                                                                        disabled={isFutureDate} // Disable button for future dates
-                                                                    >
-                                                                        {day <= daysInMonth && <FaPlus />}
-                                                                    </button>
-                                                                </div>}
+                                                                {!status && (
+                                                                    <div>
+                                                                        {selectedDate < joiningDate ? (
+                                                                            <div className='before-joining-icon'><FcCancel /></div>
+                                                                        ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
+                                                                            // Check if the previous day (Saturday) or the next day (Monday) has "Leave" status
+                                                                            attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
+                                                                                attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status === "Leave" ? (
+                                                                                <>
+                                                                                    <div className="l-leave">L</div>    {/* Fill Sunday with "L" if adjacent days have "Leave" */}
+                                                                                    <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if adjacent days have Leave */}
+                                                                                </>
+                                                                            ) : (
+                                                                                <div className="s-sunday">S</div> // Otherwise, fill with "S"
+                                                                            )
+                                                                        ) : (
+                                                                            <button
+                                                                                className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
+                                                                                onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                                disabled={isFutureDate} // Disable button for future dates
+                                                                            >
+                                                                                {day <= daysInMonth && <FaPlus />}
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+
                                                             </td>
                                                         );
                                                     })}
@@ -554,6 +632,7 @@ function ViewAttendance({ year, month, date }) {
                                         {/* Generate table headers with day labels */}
                                         {selectedMonthDays.map(day => {
                                             const fullDate = new Date(`${day}-${month}-${year}`); // Assuming month is 1-based (January is 1)
+                                            const isSunday = fullDate.getDay() === 0;
                                             return (
                                                 <th className='th-day' key={day}>
                                                     <div className='d-flex align-items-center justify-content-between'>
@@ -561,7 +640,10 @@ function ViewAttendance({ year, month, date }) {
                                                             {getDayLabel(day)}
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
-                                                            <FaRegCalendarPlus onClick={() => date(fullDate, sindhuBhawanBranchEmployees)} />
+                                                            <FaRegCalendarPlus
+                                                                onClick={() => !isSunday && date(fullDate, sindhuBhawanBranchEmployees)} // Disable onClick for Sundays
+                                                                style={{ color: isSunday ? 'gray' : 'inherit', cursor: isSunday ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
+                                                            />
                                                         </div>
                                                     </div>
                                                 </th>
@@ -608,6 +690,7 @@ function ViewAttendance({ year, month, date }) {
                                             let presentCount = 0;
                                             let leaveCount = 0;
                                             let halfDayCount = 0;
+                                            const joiningDate = new Date(emp.jdate);
 
                                             return (
                                                 <tr key={index}>
@@ -621,9 +704,6 @@ function ViewAttendance({ year, month, date }) {
                                                                 <div onClick={() => handleShowParticularEmployeeAttendance(emp._id, emp.ename)} className="cursor-pointer">
                                                                     {emp.ename}
                                                                 </div>
-                                                                {/* <div>
-                                                                    <LuMailPlus />
-                                                                </div> */}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -674,15 +754,33 @@ function ViewAttendance({ year, month, date }) {
                                                                             status === "Leave" ? "L" : ""}
                                                                 </div>
 
-                                                                {!status && <div>
-                                                                    <button
-                                                                        className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
-                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
-                                                                        disabled={isFutureDate} // Disable button for future dates
-                                                                    >
-                                                                        {day <= daysInMonth && <FaPlus />}
-                                                                    </button>
-                                                                </div>}
+                                                                {!status && (
+                                                                    <div>
+                                                                        {selectedDate < joiningDate ? (
+                                                                            <div className='before-joining-icon'><FcCancel /></div>
+                                                                        ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
+                                                                            // Check if the previous day (Saturday) or the next day (Monday) has "Leave" status
+                                                                            attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
+                                                                                attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status === "Leave" ? (
+                                                                                <>
+                                                                                    <div className="l-leave">L</div>    {/* Fill Sunday with "L" if adjacent days have "Leave" */}
+                                                                                    <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if adjacent days have Leave */}
+                                                                                </>
+                                                                            ) : (
+                                                                                <div className="s-sunday">S</div> // Otherwise, fill with "S"
+                                                                            )
+                                                                        ) : (
+                                                                            <button
+                                                                                className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
+                                                                                onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                                disabled={isFutureDate} // Disable button for future dates
+                                                                            >
+                                                                                {day <= daysInMonth && <FaPlus />}
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+
                                                             </td>
                                                         );
                                                     })}
@@ -727,6 +825,7 @@ function ViewAttendance({ year, month, date }) {
                                         {/* Generate table headers with day labels */}
                                         {selectedMonthDays.map(day => {
                                             const fullDate = new Date(`${day}-${month}-${year}`); // Assuming month is 1-based (January is 1)
+                                            const isSunday = fullDate.getDay() === 0;
                                             return (
                                                 <th className='th-day' key={day}>
                                                     <div className='d-flex align-items-center justify-content-between'>
@@ -734,7 +833,10 @@ function ViewAttendance({ year, month, date }) {
                                                             {getDayLabel(day)}
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
-                                                            <FaRegCalendarPlus onClick={() => date(fullDate, deletedEmployees)} />
+                                                            <FaRegCalendarPlus
+                                                                onClick={() => !isSunday && date(fullDate, deletedEmployees)} // Disable onClick for Sundays
+                                                                style={{ color: isSunday ? 'gray' : 'inherit', cursor: isSunday ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
+                                                            />
                                                         </div>
                                                     </div>
                                                 </th>
@@ -781,6 +883,7 @@ function ViewAttendance({ year, month, date }) {
                                             let presentCount = 0;
                                             let leaveCount = 0;
                                             let halfDayCount = 0;
+                                            const joiningDate = new Date(emp.jdate);
 
                                             return (
                                                 <tr key={index}>
@@ -808,6 +911,9 @@ function ViewAttendance({ year, month, date }) {
                                                         const currentDay = new Date().getDate();
                                                         const myDate = new Date(attendanceDate).getDate();
 
+                                                        const currentDate = new Date(); // Today's date
+                                                        const selectedDate = new Date(`${currentYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`);
+
                                                         const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
                                                             inTime: "",
                                                             outTime: "",
@@ -828,7 +934,10 @@ function ViewAttendance({ year, month, date }) {
                                                         return (
                                                             <td key={day}>
                                                                 <div
-                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                    onClick={() => {
+                                                                        setIsDeleted(true);
+                                                                        handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime);
+                                                                    }}
                                                                     className={`
                                                                     ${status === "Present" ? "p-present" : ""}
                                                                     ${status === "Half Day" ? "H-Halfday" : ""}
@@ -840,13 +949,27 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
 
                                                                 {!status && <div>
-                                                                    <button
-                                                                        className='p-disabled'
-                                                                        // onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
-                                                                        disabled // Disable button for future dates
-                                                                    >
-                                                                        {day <= daysInMonth && <FaPlus />}
-                                                                    </button>
+                                                                    {selectedDate < joiningDate ? (
+                                                                        <div className='before-joining-icon'><FcCancel /></div>
+                                                                    ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
+                                                                        attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
+                                                                            attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status === "Leave" ? (
+                                                                            <>
+                                                                                <div className="l-leave">L</div>    {/* Fill Sunday with "L" if adjacent days have "Leave" */}
+                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if adjacent days have Leave */}
+                                                                            </>
+                                                                        ) : (
+                                                                            <div className="s-sunday">S</div> // Otherwise, fill with "S"
+                                                                        )
+                                                                    ) : (
+                                                                        <button
+                                                                            className='p-disabled'
+                                                                            // onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                            disabled // Disable button for future dates
+                                                                        >
+                                                                            {day <= daysInMonth && <FaPlus />}
+                                                                        </button>
+                                                                    )}
                                                                 </div>}
                                                             </td>
                                                         );
@@ -884,7 +1007,7 @@ function ViewAttendance({ year, month, date }) {
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
-                    {disableInTime && disableOutTime ? "Update attendance" : "Add attendance"}
+                    {(originalInTime && originalOutTime || isDeleted) ? "Update attendance" : "Add attendance"}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         handleClosePopup();
                         setInTime("");
@@ -914,7 +1037,7 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                         </div>
 
-                                        <div className="col-lg-3">
+                                        <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">Attendance Date</label>
                                                 <input
@@ -928,7 +1051,7 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                         </div>
 
-                                        <div className="col-lg-3">
+                                        <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">In Time</label>
                                                 {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -949,13 +1072,13 @@ function ViewAttendance({ year, month, date }) {
                                                         setInTime(e.target.value);
                                                         if (e.target.value) setInTimeError(""); // Clear error when valid
                                                     }}
-                                                    // disabled={disableInTime}
+                                                    disabled={isDeleted || isOnLeave}
                                                 />
                                             </div>
                                             {inTimeError && <p className="text-danger">{inTimeError}</p>}
                                         </div>
 
-                                        <div className="col-lg-3">
+                                        <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">Out Time</label>
                                                 {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -976,20 +1099,42 @@ function ViewAttendance({ year, month, date }) {
                                                         setOutTime(e.target.value);
                                                         if (e.target.value) setOutTimeError(""); // Clear error when valid
                                                     }}
-                                                    // disabled={disableOutTime}
+                                                    disabled={isDeleted || isOnLeave}
                                                 />
                                             </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
                                         </div>
+                                        <div className="col-lg-1">
+                                            <label className="form-label mt-5 text-center">OR</label>
+                                        </div>
+                                        <div className="col-lg-2">
+                                            <div className='attendance-date-tbl'>
+                                                <label className="form-label">On Leave</label>
+                                                <div className='leavecheck'>
+                                                    <input type="checkbox" name="rGroup" value="1" id="r1"
+                                                        checked={isOnLeave}
+                                                        onChange={handleCheckboxChange}
+                                                        disabled={disableOnLeave}
+                                                    />
+                                                    <label class="checkbox-alias" for="r1">
+                                                        <div className='d-flex align-items-center justify-content-center'>
+                                                            <div className='leavecheckicon mr-1'><GiCheckMark /></div>
+                                                            <div>On Leave</div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </DialogContent>
-                <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                {!isDeleted && <Button className="btn btn-primary bdr-radius-none" variant="contained" onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                     Submit
-                </Button>
+                </Button>}
             </Dialog>
 
             {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}

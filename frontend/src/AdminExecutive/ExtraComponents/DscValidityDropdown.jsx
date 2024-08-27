@@ -129,9 +129,9 @@ const DscValidityDropdown = ({
                 value={!status ? "" : status}
             >
                 <option value="" disabled>Select DSC Validity</option>
-                <option value="1 Years">1 Years</option>
-                <option value="2 Years">2 Years</option>
-                <option value="3 Years">3 Years</option>
+                <option value="1 Years">1 Year</option>
+                <option value="2 Years">2 Year</option>
+                <option value="3 Years">3 Year</option>
             </select>
     </section>
   );

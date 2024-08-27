@@ -204,7 +204,7 @@ function Received_booking_box() {
     const [activeIndexBooking, setActiveIndexBooking] = useState(0)
     const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] = useState(0)
     const [completeRedesignedData, setCompleteRedesignedData] = useState([])
-    const today = new Date("2023-08-23");
+    const today = new Date("2024-08-24");
     today.setHours(0, 0, 0, 0); // Set to start of today
 
     const parseDate = (dateString) => {
@@ -368,8 +368,6 @@ function Received_booking_box() {
     const certificationLabels = [
         "Start-Up India Certificate",
         "Company Incorporation",
-        "Organization DSC",
-        "Director DSC",
         "Self Certification",
         "GeM"
     ];
@@ -377,8 +375,6 @@ function Received_booking_box() {
     const certificationLabelsNew = [
         "Start-Up India Certificate",
         "Company Incorporation",
-        "Organization DSC",
-        "Director DSC",
         "Self Certification",
         "GeM"
     ];
