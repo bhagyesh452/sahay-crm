@@ -22,18 +22,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ContentStatusDropdown from "../Extra-Components/ContentStatusDropdown";
 import NSWSEmailInput from "../Extra-Components/NSWSEmailInput";
 import { VscSaveAs } from "react-icons/vsc";
-import NSWSPasswordInput from '../Extra-Components/NSWSPasswordInput';
-import WebsiteLink from '../Extra-Components/WebsiteLink';
-import IndustryDropdown from '../Extra-Components/Industry-Dropdown';
-import SectorDropdown from '../Extra-Components/SectorDropdown';
-import BrochureStatusDropdown from '../Extra-Components/BrochureStatusDropdown';
-import BrochureDesignerDropdown from '../Extra-Components/BrochureDesignerDrodown';
-import Nodata from '../../components/Nodata';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import FilterableTable from '../Extra-Components/FilterableTable';
-import { BsFilter } from "react-icons/bs";
-import { FaFilter } from "react-icons/fa";
 import NSWSPasswordInput from "../Extra-Components/NSWSPasswordInput";
 import WebsiteLink from "../Extra-Components/WebsiteLink";
 import IndustryDropdown from "../Extra-Components/Industry-Dropdown";
@@ -77,42 +65,6 @@ function RmofCertificationProcessPanel({
   const [completeRmData, setcompleteRmData] = useState([]);
   const [dataToFilter, setdataToFilter] = useState([]);
 
-function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle, activeTab }) {
-
-    const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
-    const [employeeData, setEmployeeData] = useState([])
-    const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [currentDataLoading, setCurrentDataLoading] = useState(false)
-    const [isFilter, setIsFilter] = useState(false)
-    const [rmServicesData, setRmServicesData] = useState([])
-    const [newStatusProcess, setNewStatusProcess] = useState("Process")
-    const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
-    const [currentCompanyName, setCurrentCompanyName] = useState("")
-    const [currentServiceName, setCurrentServiceName] = useState("")
-    const [remarksHistory, setRemarksHistory] = useState([])
-    const [changeRemarks, setChangeRemarks] = useState("");
-    const [historyRemarks, setHistoryRemarks] = useState([]);
-    const [email, setEmail] = useState('');
-    const [openEmailPopup, setOpenEmailPopup] = useState(false);
-    const [password, setPassword] = useState('');
-    const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
-    const [selectedIndustry, setSelectedIndustry] = useState("");
-    const [sectorOptions, setSectorOptions] = useState([]);
-    const [error, setError] = useState('')
-    const [openBacdrop, setOpenBacdrop] = useState(false);
-    const [completeRmData, setcompleteRmData] = useState([])
-    const [dataToFilter, setdataToFilter] = useState([])
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const [filteredData, setFilteredData] = useState([]);
-    const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [isScrollLocked, setIsScrollLocked] = useState(false);
-    const [currentFilterField, setCurrentFilterField] = useState(null)
-    const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const fieldRefs = useRef({});
-    const filterMenuRef = useRef(null); // Ref for the filter menu container
-    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
   function formatDatePro(inputDate) {
     const date = new Date(inputDate);
     const day = date.getDate();
@@ -142,406 +94,304 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
             transports: ["websocket"],
           });
 
-        socket.on("rm-general-status-updated", (res) => {
-            fetchData(searchText, page)
-        });
+    socket.on("rm-general-status-updated", (res) => {
+      fetchData(searchText);
+    });
 
-        socket.on("rm-industry-enabled", (res) => {
-            if (filteredData && filteredData.length > 0) {
-                fetchData(searchText, 1, true)
-            } else {
-                fetchData(searchText, page, false)
-            }
-        });
-        socket.on("rm-recievedamount-updated", (res) => {
-            fetchData(searchText, page)
-        });
+    socket.on("rm-recievedamount-updated", (res) => {
+      fetchData(searchText);
+    });
 
-        socket.on("rm-recievedamount-deleted", (res) => {
-            fetchData(searchText, page)
-        });
+    socket.on("rm-recievedamount-deleted", (res) => {
+      fetchData(searchText);
+    });
 
-        socket.on("booking-deleted", (res) => {
-            fetchData(searchText, page)
-        });
-        socket.on("booking-updated", (res) => {
-            fetchData(searchText, page)
-        });
-        socket.on("adminexecutive-general-status-updated", (res) => {
-            fetchData(searchText, page)
-        });
-        socket.on("adminexecutive-letter-updated", (res) => {
-            fetchData(searchText, page)
-        });
+    socket.on("booking-deleted", (res) => {
+      fetchData(searchText);
+    });
+    socket.on("booking-updated", (res) => {
+      fetchData(searchText);
+    });
+    socket.on("adminexecutive-general-status-updated", (res) => {
+      fetchData(searchText);
+    });
+    socket.on("adminexecutive-letter-updated", (res) => {
+      fetchData(searchText);
+    });
 
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [newStatusProcess]);
-
-    // const fetchData = async (searchQuery = "") => {
-    //     setOpenBacdrop(true);
-    //     try {
-    //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-    //         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-    //         setEmployeeData(userData);
-
-    //         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-    //             params: { search: searchQuery }
-    //         });
-    //         const servicesData = servicesResponse.data;
-
-    //         if (Array.isArray(servicesData)) {
-    //             const filteredData = servicesData
-    //                 .filter(item => item.mainCategoryStatus === "Process")
-    //                 .sort((a, b) => {
-    //                     const dateA = new Date(a.dateOfChangingMainStatus);
-    //                     const dateB = new Date(b.dateOfChangingMainStatus);
-    //                     return dateB - dateA; // Sort in descending order
-    //                 });
-    //             setRmServicesData(filteredData);
-    //             setRmServicesData(filteredData);
-    //             setcompleteRmData(filteredData)
-    //             setdataToFilter(filteredData)
-    //         } else {
-    //             console.error("Expected an array for services data, but got:", servicesData);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error fetching data", error.message);
-    //     } finally {
-    //         setOpenBacdrop(false);
-    //     }
-    // };
-
-
-    // const fetchData = async (searchQuery = "", page = 1, isFilter) => {
-    //     setOpenBacdrop(true);
-    //     try {
-
-    //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-    //         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-    //         setEmployeeData(userData);
-
-    //         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-    //             params: { search: searchQuery, page, activeTab: "Process" }
-    //         });
-    //         const { data, totalPages } = servicesResponse.data;
-    //         console.log("response", servicesResponse.data)
-
-    //         // If it's a search query, replace the data; otherwise, append for pagination
-    //         if (isFilter) {
-    //             setRmServicesData(filteredData)
-    //             setcompleteRmData(data)
-    //             setdataToFilter(data)
-    //         } else if (page === 1) {
-    //             // This is either the first page load or a search operation
-    //             setRmServicesData(data);
-    //             setcompleteRmData(data);
-    //             setdataToFilter(data);
-    //         } else {
-    //             // This is a pagination request
-    //             setRmServicesData(prevData => [...prevData, ...data]);
-    //             setcompleteRmData(prevData => [...prevData, ...data]);
-    //             setdataToFilter(prevData => [...prevData, ...data])
-    //         }
-    //         setTotalPages(totalPages)
-
-    //     } catch (error) {
-    //         console.error("Error fetching data", error.message);
-    //     } finally {
-    //         setOpenBacdrop(false);
-    //     }
-    // };
-
-    const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
-        setOpenBacdrop(true);
-        try {
-            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-            setEmployeeData(userData);
-
-            let params = { search: searchQuery, page, activeTab: "Process" };
-
-            // If filtering is active, extract companyName and serviceName from filteredData
-            if (isFilter && filteredData && filteredData.length > 0) {
-                console.log("yahan chal rha", isFilter)
-                const companyNames = filteredData.map(item => item["Company Name"]).join(',');
-                const serviceNames = filteredData.map(item => item.serviceName).join(',');
-
-                // Add filtered company names and service names to the params
-                params.companyNames = companyNames;
-                params.serviceNames = serviceNames;
-            }
-
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-                params: params
-            });
-
-            const { data, totalPages } = servicesResponse.data;
-
-
-            if (page === 1) {
-                setRmServicesData(data);
-                setcompleteRmData(data);
-                setdataToFilter(data);
-            } else {
-                setRmServicesData(prevData => [...prevData, ...data]);
-                setcompleteRmData(prevData => [...prevData, ...data]);
-                setdataToFilter(prevData => [...prevData, ...data]);
-            }
-
-            setTotalPages(totalPages);
-
-        } catch (error) {
-            console.error("Error fetching data", error.message);
-        } finally {
-            setOpenBacdrop(false);
-        }
+    return () => {
+      socket.disconnect();
     };
+  }, [newStatusProcess]);
 
-    useEffect(() => {
-        fetchData(searchText, page);
-    }, [rmCertificationUserId, secretKey]);
+  const fetchData = async (searchQuery = "") => {
+    setOpenBacdrop(true);
+    try {
+      const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+      const userData = employeeResponse.data.find(
+        (item) => item._id === rmCertificationUserId
+      );
+      setEmployeeData(userData);
 
-    useEffect(() => {
-        fetchData(searchText, page);
-    }, [searchText, page]);
-
-    // useEffect(() => {
-    //     setRmServicesData([])
-    //     setPage(1)
-    // }, [activeTab])
-
-    // useEffect(()=>{
-    //     fetchData(searchText , page)
-
-    // },[activeFilterField])
-
-
-    useEffect(() => {
-        const tableContainer = document.querySelector('#processTable');
-
-        const handleScroll = debounce(() => {
-            if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
-                if (page < totalPages) {
-                    setPage(prevPage => prevPage + 1); // Load next page
-                }
-            }
-        }, 200);
-
-        tableContainer.addEventListener('scroll', handleScroll);
-        return () => tableContainer.removeEventListener('scroll', handleScroll);
-    }, [page, totalPages, filteredData]);
-
-
-
-    const refreshData = () => {
-        if (filteredData && filteredData.length > 0) {
-            fetchData(searchText, 1, true)
-        } else {
-            fetchData(searchText, page, false);
+      const servicesResponse = await axios.get(
+        `${secretKey}/rm-services/rm-sevicesgetrequest`,
+        {
+          params: { search: searchQuery },
         }
+      );
+      const servicesData = servicesResponse.data;
 
-    };
-    function formatDate(dateString) {
-        const [year, month, date] = dateString.split('-');
-        return `${date}/${month}/${year}`
+      if (Array.isArray(servicesData)) {
+        const filteredData = servicesData
+          .filter((item) => item.mainCategoryStatus === "Process")
+          .sort((a, b) => {
+            const dateA = new Date(a.dateOfChangingMainStatus);
+            const dateB = new Date(b.dateOfChangingMainStatus);
+            return dateB - dateA; // Sort in descending order
+          });
+        setRmServicesData(filteredData);
+        setRmServicesData(filteredData);
+        setcompleteRmData(filteredData);
+        setdataToFilter(filteredData);
+      } else {
+        console.error(
+          "Expected an array for services data, but got:",
+          servicesData
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching data", error.message);
+    } finally {
+      setOpenBacdrop(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(searchText);
+  }, [rmCertificationUserId, secretKey]);
+
+  useEffect(() => {
+    fetchData(searchText);
+  }, [searchText]);
+
+  const refreshData = () => {
+    fetchData(searchText);
+  };
+  function formatDate(dateString) {
+    const [year, month, date] = dateString.split("-");
+    return `${date}/${month}/${year}`;
+  }
+
+  //------------------------Remarks Popup Section-----------------------------
+  const handleOpenRemarksPopup = async (companyName, serviceName) => {
+    console.log("RemarksPopup");
+  };
+  const functionCloseRemarksPopup = () => {
+    setChangeRemarks("");
+    setError("");
+    setOpenRemarksPopUp(false);
+  };
+  const debouncedSetChangeRemarks = useCallback(
+    debounce((value) => {
+      setChangeRemarks(value);
+    }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    [] // Empty dependency array to ensure the function is memoized
+  );
+
+  const handleSubmitRemarks = async () => {
+    //console.log("changeremarks", changeRemarks)
+    try {
+      if (changeRemarks) {
+        const response = await axios.post(
+          `${secretKey}/rm-services/post-remarks-for-rmofcertification`,
+          {
+            currentCompanyName,
+            currentServiceName,
+            changeRemarks,
+            updatedOn: new Date(),
+          }
+        );
+
+        //console.log("response", response.data);
+
+        if (response.status === 200) {
+          fetchData(searchText);
+          functionCloseRemarksPopup();
+          // Swal.fire(
+          //     'Remarks Added!',
+          //     'The remarks have been successfully added.',
+          //     'success'
+          // );
+        }
+      } else {
+        setError("Remarks Cannot Be Empty!");
+      }
+    } catch (error) {
+      console.log("Error Submitting Remarks", error.message);
+    }
+  };
+
+  const handleDeleteRemarks = async (remarks_id) => {
+    try {
+      const response = await axios.delete(
+        `${secretKey}/rm-services/delete-remark-rmcert`,
+        {
+          data: {
+            remarks_id,
+            companyName: currentCompanyName,
+            serviceName: currentServiceName,
+          },
+        }
+      );
+      if (response.status === 200) {
+        fetchData(searchText);
+        functionCloseRemarksPopup();
+      }
+      // Refresh the list
+    } catch (error) {
+      console.error("Error deleting remark:", error);
     }
   };
 
   //--------------------function for industry change--------------------------
 
-//   const handleIndustryChange = (industry, options) => {
-//     setSelectedIndustry(industry);
-//     setSectorOptions(options);
-//   };
+  const handleIndustryChange = (industry, options) => {
+    setSelectedIndustry(industry);
+    setSectorOptions(options);
+  };
 
-  
+  const handleCloseBackdrop = () => {
+    setOpenBacdrop(false);
+  };
+
   const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
 
-//   const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
-//     try {
-//       // Show confirmation dialog
-//       const result = await Swal.fire({
-//         title: "Are you sure?",
-//         text: "Do you want to revert the company back to the received box?",
-//         icon: "warning",
-//         showCancelButton: true,
-//         confirmButtonText: "Yes, revert it!",
-//         cancelButtonText: "No, cancel!",
-//         reverseButtons: true,
-//       });
+  const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
+    try {
+      // Show confirmation dialog
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to revert the company back to the received box?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, revert it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
+      });
 
-    
-    
-    
-    
-      const handleDeleteRemarks = async (remarks_id) => {
-        try {
-            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-            });
-            if (response.status === 200) {
-                if (filteredData && filteredData.length > 0) {
-                    fetchData(searchText, page, true);
-                } else {
-                    fetchData(searchText, page, false);
-                }
+      // Check if the user confirmed the action
+      if (result.isConfirmed) {
+        const response = await axios.post(
+          `${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`,
+          {
+            companyName,
+            serviceName,
+          }
+        );
 
-                functionCloseRemarksPopup();
-            }
-            // Refresh the list
-        } catch (error) {
-            console.error("Error deleting remark:", error);
-        }
-    };
-
-
-
-    //--------------------function for industry change--------------------------
-
-    const handleIndustryChange = (industry, options) => {
-        setSelectedIndustry(industry);
-        setSectorOptions(options);
-    };
-
-    const handleCloseBackdrop = () => {
-        setOpenBacdrop(false)
-    }
-
-
-    
-
-    const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
-        try {
-            // Show confirmation dialog
-            const result = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you want to revert the company back to the received box?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, revert it!',
-                cancelButtonText: 'No, cancel!',
-                reverseButtons: true
-            });
-
-            // Check if the user confirmed the action
-            if (result.isConfirmed) {
-                const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
-                    companyName,
-                    serviceName
-                });
-
-                if (response.status === 200) {
-                    fetchData(searchText, page);
-                    Swal.fire(
-                        'Company Reverted Back!',
-                        'Company has been sent back to the received box.',
-                        'success'
-                    );
-                } else {
-                    Swal.fire(
-                        'Error',
-                        'Failed to revert the company back to the received box.',
-                        'error'
-                    );
-                }
-            } else {
-                Swal.fire(
-                    'Cancelled',
-                    'The company has not been reverted.',
-                    'info'
-                );
-            }
-
-        } catch (error) {
-            console.log("Error Deleting Company from task manager", error.message);
-            Swal.fire(
-                'Error',
-                'An error occurred while processing your request.',
-                'error'
-            );
-        }
-    };
-
-    //-------------------filter method-------------------------------
-
-    const handleFilter = (newData) => {
-        console.log("newData", newData)
-        setFilteredData(newData)
-        setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Process"));
-    };
-
-
-    const handleFilterClick = (field) => {
-        if (activeFilterField === field) {
-            setShowFilterMenu(!showFilterMenu);
-            setIsScrollLocked(!showFilterMenu);
+        if (response.status === 200) {
+          fetchData(searchText);
+          Swal.fire(
+            "Company Reverted Back!",
+            "Company has been sent back to the received box.",
+            "success"
+          );
         } else {
-            setActiveFilterField(field);
-            setShowFilterMenu(true);
-            setIsScrollLocked(true);
-
-            const rect = fieldRefs.current[field].getBoundingClientRect();
-            setFilterPosition({ top: rect.bottom, left: rect.left });
+          Swal.fire(
+            "Error",
+            "Failed to revert the company back to the received box.",
+            "error"
+          );
         }
+      } else {
+        Swal.fire("Cancelled", "The company has not been reverted.", "info");
+      }
+    } catch (error) {
+      console.log("Error Deleting Company from task manager", error.message);
+      Swal.fire(
+        "Error",
+        "An error occurred while processing your request.",
+        "error"
+      );
+    }
+  };
 
-        // Update the active filter fields array
-        setActiveFilterFields(prevFields => {
+  // ------------filter functions----------------------------
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [activeFilterField, setActiveFilterField] = useState(null);
+  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+  const fieldRefs = useRef({});
+  const filterMenuRef = useRef(null); // Ref for the filter menu container
 
-            // Add the field if it's not active
-            return [...prevFields, field];
+  const handleFilter = (newData) => {
+    setRmServicesData(newData);
+  };
 
-        });
+  const handleFilterClick = (field) => {
+    if (activeFilterField === field) {
+      // Toggle off if the same field is clicked again
+      setShowFilterMenu(!showFilterMenu);
+    } else {
+      // Set the active field and show filter menu
+      setActiveFilterField(field);
+      setShowFilterMenu(true);
+
+      // Get the position of the clicked filter icon
+      const rect = fieldRefs.current[field].getBoundingClientRect();
+      setFilterPosition({ top: rect.bottom, left: rect.left });
+    }
+  };
+
+  // Effect to handle clicks outside the filter menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        filterMenuRef.current &&
+        !filterMenuRef.current.contains(event.target)
+      ) {
+        setShowFilterMenu(false);
+      }
     };
-    const isActiveField = (field) => activeFilterFields.includes(field);
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-                setShowFilterMenu(false);
-                setIsScrollLocked(false);
-            }
-        };
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-    return (
-        <div>
-            <div className="RM-my-booking-lists">
-                <div className="table table-responsive table-style-3 m-0" id='processTable'>
-                    {openBacdrop && (
-                        <Backdrop
-                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                            open={openBacdrop}
-                        >
-                            <CircularProgress color="inherit" />
-                        </Backdrop>
-                    )}
-                    {rmServicesData.length > 0 ? (
-                        <table className="table table-vcenter table-nowrap rm_table_inprocess">
-                            <thead>
-                                <tr className="tr-sticky">
-                                    <th className="rm-sticky-left-1">Sr.No</th>
-                                    <th className="rm-sticky-left-2">
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['Company Name'] = el}>
-                                                Company Name
-                                            </div>
+  return (
+    <div>
+      <div className="RM-my-booking-lists">
+        <div className="table table-responsive table-style-3 m-0">
+          {openBacdrop && (
+            <Backdrop
+              sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={openBacdrop}
+            >
+              <CircularProgress color="inherit" />
+            </Backdrop>
+          )}
+          {rmServicesData.length > 0 ? (
+            <table className="table table-vcenter table-nowrap rm_table_inprocess">
+              <thead>
+                <tr className="tr-sticky">
+                  <th className="rm-sticky-left-1">Sr.No</th>
+                  <th className="rm-sticky-left-2">
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["Company Name"] = el)}
+                      >
+                        Company Name
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('Company Name') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("Company Name")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("Company Name")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'Company Name' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("Company Name")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -558,24 +408,24 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['Company Number'] = el}>
-                                                Company Number
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["Company Number"] = el)}
+                      >
+                        Company Number
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('Company Number') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("Company Number")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("Company Number")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === "Company Number" && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("Company Number")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -592,24 +442,24 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['Company Email'] = el}>
-                                                Company Email
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["Company Email"] = el)}
+                      >
+                        Company Email
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('Company Email') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("Company Email")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("Company Email")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'Company Email' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("Company Email")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -626,24 +476,22 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['caNumber'] = el}>
-                                                CA Number
-                                            </div >
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div ref={(el) => (fieldRefs.current["caNumber"] = el)}>
+                        CA Number
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('caNumber') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("caNumber")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("caNumber")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'caNumber' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("caNumber")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -660,24 +508,24 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['serviceName'] = el}>
-                                                Service Name
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["serviceName"] = el)}
+                      >
+                        Service Name
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('serviceName') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("servicesName")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("serviceName")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'serviceName' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("serviceName")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -694,24 +542,26 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
-                                                Status
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) =>
+                          (fieldRefs.current["subCategoryStatus"] = el)
+                        }
+                      >
+                        Status
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('subCategoryStatus') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("subCategoryStatus")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("subCategoryStatus")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("subCategoryStatus")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -728,25 +578,25 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>Remark</th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['websiteLink'] = el}>
-                                                Website Link/Brief
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>Remark</th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["websiteLink"] = el)}
+                      >
+                        Website Link/Brief
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('websiteLink') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("websiteLink")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("websiteLink")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'websiteLink' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("websiteLink")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'websiteLink' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -763,24 +613,22 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['withDSC'] = el}>
-                                                DSC Applicable
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div ref={(el) => (fieldRefs.current["withDSC"] = el)}>
+                        DSC Applicable
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('withDSC') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("withDSC")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("withDSC")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'withDSC' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("withDSC")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -797,24 +645,22 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['letterStatus'] = el}>
-                                                Letter Status
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div ref={(el) => (fieldRefs.current["dscStatus"] = el)}>
+                        Letter Status
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('letterStatus') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("letterStatus")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("letterStatus")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'letterStatus' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("dscStatus")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -831,24 +677,22 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['dscStatus'] = el}>
-                                                DSC Status
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div ref={(el) => (fieldRefs.current["dscStatus"] = el)}>
+                        DSC Status
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('dscStatus') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("dscStatus")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("dscStatus")} />
-                                                )}
-                                            </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'dscStatus' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("dscStatus")}
+                        />
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -865,23 +709,23 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['contentWriter'] = el}>
-                                                Content Writer
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["contentWriter"] = el)}
+                      >
+                        Content Writer
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('contentWriter') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("contentWriter")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("contentWriter")} />
-                                                )}
-                                            </div>
-                                            {showFilterMenu && activeFilterField === 'contentWriter' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("contentWriter")}
+                        />
+                      </div>
+                      {/* {showFilterMenu && activeFilterField === 'contentWriter' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -898,23 +742,23 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['contentStatus'] = el}>
-                                                Content Status
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["contentStatus"] = el)}
+                      >
+                        Content Status
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('contentStatus') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("contentStatus")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("contentStatus")} />
-                                                )}
-                                            </div>
-                                            {showFilterMenu && activeFilterField === 'contentStatus' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("contentStatus")}
+                        />
+                      </div>
+                      {/* {showFilterMenu && activeFilterField === 'contentStatus' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -931,23 +775,25 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
-                                                Brochure Designer
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th className="d-none">
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) =>
+                          (fieldRefs.current["brochureDesigner"] = el)
+                        }
+                      >
+                        Brochure Designer
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('brochureDesigner') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("brochureDesigner")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("brochureDesigner")} />
-                                                )}
-                                            </div>
-                                            {showFilterMenu && activeFilterField === 'brochureDesigner' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("brochureDesigner")}
+                        />
+                      </div>
+                      {/* {showFilterMenu && activeFilterField === 'brochureDesigner' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -964,23 +810,23 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['brochureStatus'] = el}>
-                                                Brochure Status
-                                            </div>
+                                            )} */}
+                    </div>
+                  </th>
+                  <th className="d-none">
+                    <div className="d-flex align-items-center justify-content-center position-relative">
+                      <div
+                        ref={(el) => (fieldRefs.current["brochureStatus"] = el)}
+                      >
+                        Brochure Status
+                      </div>
 
-                                            <div className='RM_filter_icon'>
-                                                {isActiveField('brochureStatus') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("brochureStatus")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("brochureStatus")} />
-                                                )}
-                                            </div>
-                                            {showFilterMenu && activeFilterField === 'brochureStatus' && (
+                      <div className="RM_filter_icon">
+                        <BsFilter
+                          onClick={() => handleFilterClick("brochureStatus")}
+                        />
+                      </div>
+                      {/* {showFilterMenu && activeFilterField === 'brochureStatus' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
@@ -997,7 +843,7 @@ function RmofCertificationProcessPanel({ searchText, showFilter, onFilterToggle,
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} 
+                                            )} */}
                     </div>
                   </th>
 
