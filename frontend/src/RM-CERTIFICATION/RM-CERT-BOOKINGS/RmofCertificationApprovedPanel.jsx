@@ -30,7 +30,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { BsFilter } from "react-icons/bs";
 
 
-function RmofCertificationApprovedPanel({ searchText , showFilter }) {
+function RmofCertificationApprovedPanel({ searchText , showFilter,activeTab }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -125,33 +125,34 @@ function RmofCertificationApprovedPanel({ searchText , showFilter }) {
     }, [newStatusApproved]);
 
 
-    const fetchData = async (searchQuery = "") => {
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    // Fetch Data Function
+
+    const fetchData = async (searchQuery = "", page = 1) => {
         setOpenBacdrop(true);
         try {
+
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
 
             const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-                params: { search: searchQuery }
+                params: { search: searchQuery, page,activeTab:"Approved" }
             });
-            const servicesData = servicesResponse.data;
+            const { data, totalPages } = servicesResponse.data;
+            console.log("response", servicesResponse.data)
 
-            if (Array.isArray(servicesData)) {
-                const filteredData = servicesData
-                    .filter(item => item.mainCategoryStatus === "Approved")
-                    .sort((a, b) => {
-                        const dateA = new Date(a.dateOfChangingMainStatus);
-                        const dateB = new Date(b.dateOfChangingMainStatus);
-                        return dateB - dateA; // Sort in descending order
-                    });
-                setRmServicesData(filteredData);
-                setRmServicesData(filteredData);
-                setcompleteRmData(filteredData)
-                setdataToFilter(filteredData)
+            // If it's a search query, replace the data; otherwise, append for pagination
+            if (page === 1) {
+                // This is either the first page load or a search operation
+                setRmServicesData(data);
             } else {
-                console.error("Expected an array for services data, but got:", servicesData);
+                // This is a pagination request
+                setRmServicesData(prevData => [...prevData, ...data]);
             }
+            setTotalPages(totalPages)
+
         } catch (error) {
             console.error("Error fetching data", error.message);
         } finally {
@@ -159,17 +160,28 @@ function RmofCertificationApprovedPanel({ searchText , showFilter }) {
         }
     };
 
+    useEffect(() => {
+        const tableContainer = document.querySelector('#approvedTable');
+    
+        const handleScroll = debounce(() => {
+            if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+                if (page < totalPages) {
+                    setPage(prevPage => prevPage + 1); // Load next page
+                }
+            }
+        },200);
+    
+        tableContainer.addEventListener('scroll', handleScroll);
+        return () => tableContainer.removeEventListener('scroll', handleScroll);
+    }, [page, totalPages,activeTab]);
+
+    useEffect(() => {
+        fetchData(searchText, page);
+    }, [searchText, page]);
     // useEffect to fetch data on component mount
     useEffect(() => {
          fetchData(searchText);
     }, [rmCertificationUserId, secretKey]);
-
-    useEffect(() => {
-        fetchData(searchText)
-    }, [searchText])
-
-
-
 
     const refreshData = () => {
          fetchData(searchText);
@@ -360,7 +372,7 @@ function RmofCertificationApprovedPanel({ searchText , showFilter }) {
     return (
         <div>
             <div className="RM-my-booking-lists">
-                <div className="table table-responsive table-style-3 m-0">
+                <div className="table table-responsive table-style-3 m-0" id='approvedTable'>
                     {openBacdrop && (
                         <Backdrop
                             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -18,9 +18,10 @@ const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 const RMCertificationHistoryModel = require('../models/RMCerificationHistoryModel.js');
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
+const AdminExecutiveHistoryModel = require('../models/AdminExecutiveHistoryModel.js');
 
 function runTestScript(companyName) {
-  console.log("Company Name:", companyName);
+  //console.log("Company Name:", companyName);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
   //const command = `npx playwright test C:/Users/shiva/OneDrive/Desktop/Sahay-crm/sahay-crm/backend/tests/copy.spec.js`;
@@ -245,69 +246,340 @@ router.post('/post-rmservices-from-listview', async (req, res) => {
 //   }
 // });
 
-router.get('/rm-sevicesgetrequest', async (req, res) => {
+// router.get('/rm-sevicesgetrequest', async (req, res) => {
+//   try {
+//     const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+//     //console.log("search", search)
+//     // Build query object
+//     let query = {};
+//     if (search) {
+//       const regex = new RegExp(search, 'i'); // Case-insensitive search
+//       const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+//       query = {
+//         $or: [
+//           { "Company Name": regex }, // Match companyName field
+//           { serviceName: regex },
+//           { "Company Email": regex },
+//           { bdeName: regex },
+//           { bdmName: regex },
+//           // Only include the number fields if numberSearch is a valid number
+//           ...(isNaN(numberSearch) ? [] : [
+//             { "Company Number": numberSearch }, // Match companyNumber field
+//             { caNumber: numberSearch } // Match caNumber field
+//           ])
+//         ]
+//       };
+//     }
+//     //console.log("query", query)
+//     const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+//     // Fetch data with pagination
+//     let response;
+//     if (activeTab === "General") {
+//       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+//         .sort({ addedOn: -1 })
+//         .skip(skip)
+//         .limit(parseInt(limit));
+//     } else {
+//       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+//         .sort({ dateOfChangingMainStatus: -1 })
+//         .skip(skip)
+//         .limit(parseInt(limit));
+//     }
+
+//     //console.log("response" , response)
+
+//     const totalDocuments = await RMCertificationModel.countDocuments(query);
+
+//     const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+//     const totalDocumentsProcess = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+//     const totalDocumentsDefaulter = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+//     const totalDocumentsReadyToSubmit = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
+//     const totalDocumentsSubmitted = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
+//     const totalDocumentsHold = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+//     const totalDocumentsApproved = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+//     res.status(200).json({
+//       data: response,
+//       totalDocuments,
+//       totalDocumentsGeneral,
+//       totalDocumentsProcess,
+//       totalDocumentsDefaulter,
+//       totalDocumentsReadyToSubmit,
+//       totalDocumentsSubmitted,
+//       totalDocumentsHold,
+//       totalDocumentsApproved,
+//       currentPage: parseInt(page),
+//       totalPages: Math.ceil(totalDocuments / limit)
+//     });
+//   } catch (error) {
+//     console.log("Error fetching data", error);
+//     res.status(500).send({ message: "Internal Server Error" });
+//   }
+// });
+
+// router.get('/rm-sevicesgetrequest', async (req, res) => {
+//   try {
+//     const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+//     //console.log("search", search)
+//     // Build query object
+//     let query = {};
+//     if (search) {
+//       const regex = new RegExp(search, 'i'); // Case-insensitive search
+//       const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+//       query = {
+//         $or: [
+//           { "Company Name": regex }, // Match companyName field
+//           { serviceName: regex },
+//           { "Company Email": regex },
+//           { bdeName: regex },
+//           { bdmName: regex },
+//           // Only include the number fields if numberSearch is a valid number
+//           ...(isNaN(numberSearch) ? [] : [
+//             { "Company Number": numberSearch }, // Match companyNumber field
+//             { caNumber: numberSearch } // Match caNumber field
+//           ])
+//         ]
+//       };
+//     }
+//     //console.log("query", query)
+//     const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+//     // Fetch data with pagination
+//     let response;
+//     if (activeTab === "General") {
+//       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+//         .sort({ addedOn: -1 })
+//         .skip(skip)
+//         .limit(parseInt(limit));
+//     } else {
+//       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+//         .sort({ dateOfChangingMainStatus: -1 })
+//         .skip(skip)
+//         .limit(parseInt(limit));
+//     }
+
+//     //console.log("response" , response)
+
+//     const totalDocuments = await RMCertificationModel.countDocuments(query);
+
+//     const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+//     const totalDocumentsProcess = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+//     const totalDocumentsDefaulter = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+//     const totalDocumentsReadyToSubmit = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
+//     const totalDocumentsSubmitted = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
+//     const totalDocumentsHold = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+//     const totalDocumentsApproved = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+//     res.status(200).json({
+//       data: response,
+//       totalDocuments,
+//       totalDocumentsGeneral,
+//       totalDocumentsProcess,
+//       totalDocumentsDefaulter,
+//       totalDocumentsReadyToSubmit,
+//       totalDocumentsSubmitted,
+//       totalDocumentsHold,
+//       totalDocumentsApproved,
+//       currentPage: parseInt(page),
+//       totalPages: Math.ceil(totalDocuments / limit)
+//     });
+//   } catch (error) {
+//     console.log("Error fetching data", error);
+//     res.status(500).send({ message: "Internal Server Error" });
+//   }
+// });
+
+router.get('/rm-sevicesgetrequest-complete', async (req, res) => {
   try {
-      const { search } = req.query; // Extract search query from request
+    const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+    //console.log("search", search)
+    // Build query object
+    let query = {};
+    if (search) {
+      const regex = new RegExp(search, 'i'); // Case-insensitive search
+      const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
 
-      // Build query object
-      let query = {};
-      if (search) {
-          const regex = new RegExp(search, 'i'); // Case-insensitive search
-          const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+      query = {
+        $or: [
+          { "Company Name": regex }, // Match companyName field
+          { serviceName: regex },
+          { "Company Email": regex },
+          { bdeName: regex },
+          { bdmName: regex },
+          // Only include the number fields if numberSearch is a valid number
+          ...(isNaN(numberSearch) ? [] : [
+            { "Company Number": numberSearch }, // Match companyNumber field
+            { caNumber: numberSearch } // Match caNumber field
+          ])
+        ]
+      };
+    }
+    //console.log("query", query)
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
 
-          query = {
-              $or: [
-                  { "Company Name": regex }, // Match companyName field
-                  { serviceName: regex },
-                  { "Company Email": regex },
-                  { bdeName: regex },
-                  { bdmName: regex },
-                  // Only include the number fields if numberSearch is a valid number
-                  ...(isNaN(numberSearch) ? [] : [
-                      { "Company Number": numberSearch }, // Match companyNumber field
-                      { caNumber: numberSearch } // Match caNumber field
-                  ])
-              ]
-          };
-      }
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ addedOn: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
 
-      // Fetch data from the database with an optional query filter
-      const response = await RMCertificationModel.find(query);
-      res.status(200).json(response);
+    //console.log("response" , response)
+
+    const totalDocuments = await RMCertificationModel.countDocuments(query);
+
+    const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsProcess = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+    const totalDocumentsDefaulter = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+    const totalDocumentsReadyToSubmit = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
+    const totalDocumentsSubmitted = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
+    const totalDocumentsHold = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+    const totalDocumentsApproved = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsProcess,
+      totalDocumentsDefaulter,
+      totalDocumentsReadyToSubmit,
+      totalDocumentsSubmitted,
+      totalDocumentsHold,
+      totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
   } catch (error) {
-      console.log("Error fetching data", error);
-      res.status(500).send({ message: "Internal Server Error" });
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
   }
 });
+
+router.get('/rm-sevicesgetrequest', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 50, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+
+    // Build query object
+    let query = {};
+
+    if (search) {
+      const regex = new RegExp(search, 'i'); // Case-insensitive search
+      const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+      query = {
+        $or: [
+          { "Company Name": regex }, // Match companyName field
+          { serviceName: regex },
+          { "Company Email": regex },
+          { bdeName: regex },
+          { bdmName: regex },
+          // Only include the number fields if numberSearch is a valid number
+          ...(isNaN(numberSearch) ? [] : [
+            { "Company Number": numberSearch }, // Match companyNumber field
+            { caNumber: numberSearch } // Match caNumber field
+          ])
+        ]
+      };
+    }
+
+    // Add filtering based on companyNames and serviceNames if provided
+    if (companyNames) {
+      const companyNamesArray = companyNames.split(','); // Convert to array
+      query["Company Name"] = { $in: companyNamesArray };
+    }
+
+    if (serviceNames) {
+      const serviceNamesArray = serviceNames.split(','); // Convert to array
+      query.serviceName = { $in: serviceNamesArray };
+    }
+
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ addedOn: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
+    console.log(activeTab)
+    console.log(response)
+    const totalDocuments = await RMCertificationModel.countDocuments(query);
+
+    const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsProcess = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+    const totalDocumentsDefaulter = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+    const totalDocumentsReadyToSubmit = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
+    const totalDocumentsSubmitted = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
+    const totalDocumentsHold = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+    const totalDocumentsApproved = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsProcess,
+      totalDocumentsDefaulter,
+      totalDocumentsReadyToSubmit,
+      totalDocumentsSubmitted,
+      totalDocumentsHold,
+      totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+
+
 
 
 router.get("/adminexecutivedata", async (req, res) => {
   try {
     const { search } = req.query; // Extract search query from request
 
-      // Build query object
-      let query = {};
-      if (search) {
-          const regex = new RegExp(search, 'i'); // Case-insensitive search
-          const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+    // Build query object
+    let query = {};
+    if (search) {
+      const regex = new RegExp(search, 'i'); // Case-insensitive search
+      const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
 
-          query = {
-              $or: [
-                  { "Company Name": regex }, // Match companyName field
-                  { serviceName: regex },
-                  { "Company Email": regex },
-                  { bdeName: regex },
-                  { bdmName: regex },
-                  // Only include the number fields if numberSearch is a valid number
-                  ...(isNaN(numberSearch) ? [] : [
-                      { "Company Number": numberSearch }, // Match companyNumber field
-                      { caNumber: numberSearch } // Match caNumber field
-                  ])
-              ]
-          };
-      }
-      // Fetch data from the database with an optional query filter
-      const response = await AdminExecutiveModel.find(query);
+      query = {
+        $or: [
+          { "Company Name": regex }, // Match companyName field
+          { serviceName: regex },
+          { "Company Email": regex },
+          { bdeName: regex },
+          { bdmName: regex },
+          // Only include the number fields if numberSearch is a valid number
+          ...(isNaN(numberSearch) ? [] : [
+            { "Company Number": numberSearch }, // Match companyNumber field
+            { caNumber: numberSearch } // Match caNumber field
+          ])
+        ]
+      };
+    }
+    // Fetch data from the database with an optional query filter
+    const response = await AdminExecutiveModel.find(query);
     res.status(200).json(response);
   } catch (error) {
     console.log("Error fetching data", error);
@@ -391,7 +663,7 @@ function escapeRegex(string) {
 
 router.get("/search-booking-data", async (req, res) => {
   const { searchText, currentPage, itemsPerPage } = req.query;
-  console.log(searchText, currentPage, itemsPerPage);
+  //console.log(searchText, currentPage, itemsPerPage);
   const page = parseInt(currentPage) || 1; // Page number
   const limit = parseInt(itemsPerPage) || 500; // Items per page
   const skip = (page - 1) * limit; // Number of documents to skip
@@ -706,65 +978,6 @@ router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, re
   }
 });
 
-router.post(`/update-substatus-adminexecutive-changegeneral/`, async (req, res) => {
-  const {
-    companyName,
-    serviceName,
-    subCategoryStatus,
-    mainCategoryStatus,
-    previousMainCategoryStatus,
-    previousSubCategoryStatus,
-    dateOfChangingMainStatus,
-    movedFromMainCategoryStatus,
-    movedToMainCategoryStatus } = req.body;
-  const socketIO = req.io;
-
-  //console.log("here" , movedFromMainCategoryStatus,movedToMainCategoryStatus)
-
-  try {
-    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
-      {
-        ["Company Name"]: companyName,
-        serviceName: serviceName
-      },
-      {
-        subCategoryStatus: subCategoryStatus,
-        mainCategoryStatus: mainCategoryStatus,
-        lastActionDate: new Date(),
-        dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
-        previousMainCategoryStatus: previousMainCategoryStatus,
-        previousSubCategoryStatus: previousSubCategoryStatus
-      },
-      { new: true }
-    );
-
-    const updateCompanyRm = await RMCertificationModel.findOneAndUpdate(
-      {
-        ["Company Name"]: companyName,
-        serviceName: serviceName
-      },
-      {
-        dscStatus: subCategoryStatus
-      },
-      { new: true }
-    )
-
-    // if (!updatedCompany) {
-    //   console.error("Failed to save the updated document");
-    //   return res.status(400).json({ message: "Failed to save the updated document" });
-    // }
-
-    // Emit socket event if needed
-    //socketIO.emit('update', { companyName, serviceName });
-    socketIO.emit('adminexecutive-general-status-updated', { companyName: companyName });
-    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
-
-  } catch (error) {
-    console.error("Error updating document:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   const { companyName,
     serviceName,
@@ -797,12 +1010,6 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
     let updateFields = {}; // Fields to be updated
 
     if (subCategoryStatus !== "Undo") {
-      //   submittedOn = (mainCategoryStatus === "Submitted")
-      //     ? company.submittedOn || new Date()  // Use existing submittedOn or current date
-      //     : (subCategoryStatus === "Submitted")
-      //       ? new Date()  // Set to current date if subCategoryStatus is "Submitted"
-      //       : company.submittedOn;  // Retain existing submittedOn otherwise
-
       // Conditionally include dateOfChangingMainStatus
       if (["Process", "Approved", "Submitted", "Hold", "Defaulter", "Ready To Submit"].includes(subCategoryStatus)) {
         updateFields.dateOfChangingMainStatus = new Date();
@@ -921,6 +1128,77 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
   }
 });
 
+router.post(`/update-substatus-adminexecutive-changegeneral/`, async (req, res) => {
+  const {
+    companyName,
+    serviceName,
+    subCategoryStatus,
+    mainCategoryStatus,
+    previousMainCategoryStatus,
+    previousSubCategoryStatus,
+    dateOfChangingMainStatus,
+    movedFromMainCategoryStatus,
+    movedToMainCategoryStatus } = req.body;
+  const socketIO = req.io;
+
+  //console.log("here" , movedFromMainCategoryStatus,movedToMainCategoryStatus)
+
+  try {
+    const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        subCategoryStatus: subCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus,
+        lastActionDate: new Date(),
+        dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
+        previousMainCategoryStatus: previousMainCategoryStatus,
+        previousSubCategoryStatus: previousSubCategoryStatus
+      },
+      { new: true }
+    );
+
+    const updateCompanyRm = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        dscStatus: subCategoryStatus
+      },
+      { new: true }
+    )
+
+    const creatingNewCompany = await AdminExecutiveHistoryModel.create({
+      "Company Name": companyName,
+      serviceName: serviceName,
+      history: [{
+        movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+        movedToMainCategoryStatus: movedToMainCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus,
+        subCategoryStatus: subCategoryStatus,
+        statusChangeDate: new Date()
+      }]
+    });
+
+    // if (!updatedCompany) {
+    //   console.error("Failed to save the updated document");
+    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // }
+
+    // Emit socket event if needed
+    //socketIO.emit('update', { companyName, serviceName });
+    socketIO.emit('adminexecutive-general-status-updated', { companyName: companyName });
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
   const {
     companyName,
@@ -996,35 +1274,35 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
       // }
 
       // // Step 3: Find or create the history entry in RMCertificationHistoryModel
-      // let historyEntry = await RMCertificationHistoryModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
+      let historyEntry = await AdminExecutiveHistoryModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });
 
-      // if (historyEntry) {
-      //   // Push a new history record into the existing document
-      //   historyEntry.history.push({
-      //     movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-      //     movedToMainCategoryStatus: movedToMainCategoryStatus,
-      //     mainCategoryStatus: mainCategoryStatus,
-      //     subCategoryStatus: subCategoryStatus,
-      //     statusChangeDate: new Date()
-      //   });
-      //   const createCompany = await historyEntry.save();
-      //   //console.log("history" , createCompany)
-      // } else {
-      //   // Create a new document if not found
-      //   const createCompany = await RMCertificationHistoryModel.create({
-      //     "Company Name": companyName,
-      //     serviceName: serviceName,
-      //     history: [{
-      //       movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-      //       movedToMainCategoryStatus: movedToMainCategoryStatus,
-      //       mainCategoryStatus: mainCategoryStatus,
-      //       subCategoryStatus: subCategoryStatus,
-      //       statusChangeDate: new Date()
-      //     }]
-      //   });
+      if (historyEntry) {
+        // Push a new history record into the existing document
+        historyEntry.history.push({
+          movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+          movedToMainCategoryStatus: movedToMainCategoryStatus,
+          mainCategoryStatus: mainCategoryStatus,
+          subCategoryStatus: subCategoryStatus,
+          statusChangeDate: new Date()
+        });
+        const createCompany = await historyEntry.save();
+        //console.log("history" , createCompany)
+      } else {
+        // Create a new document if not found
+        const createCompany = await AdminExecutiveHistoryModel.create({
+          "Company Name": companyName,
+          serviceName: serviceName,
+          history: [{
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus,
+            mainCategoryStatus: mainCategoryStatus,
+            subCategoryStatus: subCategoryStatus,
+            statusChangeDate: new Date()
+          }]
+        });
 
-      //   //console.log("history" , createCompany)
-      // }
+        //console.log("history" , createCompany)
+      }
 
       // Emit socket event
       socketIO.emit('adminexecutive-general-status-updated', { name: updatedCompany.bdeName, companyName: companyName });
@@ -1564,7 +1842,7 @@ router.post(`/post-save-nswsemail/`, async (req, res) => {
 
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
-    //socketIO.emit('rm-general-status-updated', { name: company.bdeName, companyName: companyName })
+    //socketIO.emit('rm-nswsemail')
     res.status(200).json({ message: "Document updated successfully", data: company });
 
   } catch (error) {
@@ -1841,7 +2119,7 @@ router.post(`/post-enable-industry/`, async (req, res) => {
     }
     // Emit socket event
     //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
-    socketIO.emit('rm-general-status-updated')
+    //socketIO.emit('rm-industry-enabled')
     res.status(200).json({ message: "Document updated successfully", data: company });
 
   } catch (error) {
@@ -2268,7 +2546,7 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
       { new: true }
     );
 
-    console.log("updatedcompany", updatedCompany)
+    //console.log("updatedcompany", updatedCompany)
     if (!updatedCompany) {
       return res.status(400).json({ message: "Failed to save the updated document" });
     }
@@ -2314,7 +2592,7 @@ router.post("/adminexecutive-update-remainingpayments", async (req, res) => {
       { pendingRecievedPayment: pendingRecievedPayment + currentReceivedPayment, pendingRecievedPaymentDate },
       { new: true }
     );
-    console.log("adminupdated", updatedCompany)
+    //console.log("adminupdated", updatedCompany)
 
     if (!updatedCompany) {
       return res.status(400).json({ message: "Failed to save the updated document" });
@@ -2353,9 +2631,69 @@ router.get('/sectors', async (req, res) => {
   }
 });
 
+// -------------filter api-----------------------
+router.get('/column-values', async (req, res) => {
+  try {
+    const { filterField, activeTab } = req.query;
+    console.log(activeTab)
+    // Construct the filter criteria
+    const filterCriteria = {
+      mainCategoryStatus: activeTab
+    };
+
+    console.log("filterField", filterField)
 
 
+    // Get distinct values for the filter field with the additional filter
+    const values = await RMCertificationModel.distinct(filterField, filterCriteria).exec();
 
+    res.json(values);
+  } catch (error) {
+    console.error('Error fetching column values:', error);
+    res.status(500).send('Server Error');
+  }
+});
+
+
+router.get('/filter-data', async (req, res) => {
+  try {
+    const { filters, filterField, sortOrder } = req.query;
+
+    // Convert filters to an array if it's a string
+    const filterArray = Array.isArray(filters) ? filters : JSON.parse(filters || '[]');
+
+    // Build query
+    let query = {};
+    if (filterArray.length > 0 && filterField) {
+      query[filterField] = { $in: filterArray };
+    }
+
+    // Fetch data with filtering
+    let data = await RMCertificationModel.find(query).exec();
+
+    // Handle sorting
+    if (sortOrder && filterField) {
+      data = data.sort((a, b) => {
+        if (filterField === 'bookingDate') {
+          const dateA = new Date(a[filterField]);
+          const dateB = new Date(b[filterField]);
+          return sortOrder === 'oldest' ? dateA - dateB : dateB - dateA;
+        }
+
+        if (sortOrder === 'oldest') {
+          return a[filterField] < b[filterField] ? -1 : 1;
+        } else {
+          return a[filterField] > b[filterField] ? -1 : 1;
+        }
+      });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Server Error');
+  }
+});
 
 
 

@@ -1149,6 +1149,17 @@ router.delete("/deleteAdminSelectedLeads", async (req, res) => {
   }
 });
 
+router.get("/deletedLeadsComplete", async (req, res) => {
+  try {
+    const deletedLeads = await DeletedLeadsModel.find(); // Fetch data from the DeletedLeadsModel
+    res.status(200).json(deletedLeads); // Send the fetched data in the response
+  } catch (error) {
+    console.log("Error fetching Deleted Leads", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 router.get('/searchCompany', async (req, res) => {
   try {
     const { id } = req.query;

@@ -27,9 +27,11 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 //import FilterableTable from '../Extra-Components/FilterableTable';
 import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+import FilterableTable from '../Extra-Components/FilterableTable';
 
 
-function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
+function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab }) {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
@@ -54,7 +56,15 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
     const [openBacdrop, setOpenBacdrop] = useState(false);
     const [completeRmData, setcompleteRmData] = useState([])
     const [dataToFilter, setdataToFilter] = useState([]);
-
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [isScrollLocked, setIsScrollLocked] = useState(false);
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filteredData, setFilteredData] = useState(rmServicesData);
+    const [filterField, setFilterField] = useState("")
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
 
 
     function formatDatePro(inputDate) {
@@ -84,29 +94,36 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
         });
 
         socket.on("rm-general-status-updated", (res) => {
-             fetchData(searchText)
+            fetchData(searchText)
         });
 
+        socket.on("rm-industry-enabled", (res) => {
+            if (filteredData && filteredData.length > 0) {
+                fetchData(searchText, 1, true)
+            } else {
+                fetchData(searchText, page, false)
+            }
+        });
         socket.on("rm-recievedamount-updated", (res) => {
-             fetchData(searchText)
+            fetchData(searchText)
         });
 
         socket.on("rm-recievedamount-deleted", (res) => {
-             fetchData(searchText)
+            fetchData(searchText)
         });
 
         socket.on("booking-deleted", (res) => {
-             fetchData(searchText)
+            fetchData(searchText)
         });
 
         socket.on("booking-updated", (res) => {
-             fetchData(searchText)
+            fetchData(searchText)
         });
         socket.on("adminexecutive-general-status-updated", (res) => {
-             fetchData(searchText)
+            fetchData(searchText)
         });
         socket.on("adminexecutive-letter-updated", (res) => {
-             fetchData(searchText)
+            fetchData(searchText)
         });
         return () => {
             socket.disconnect();
@@ -114,33 +131,80 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
     }, [newStatusProcess]);
 
 
-    const fetchData = async (searchQuery = "") => {
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    // Fetch Data Function
+
+    // const fetchData = async (searchQuery = "", page = 1) => {
+    //     setOpenBacdrop(true);
+    //     try {
+
+    //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+    //         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+    //         setEmployeeData(userData);
+
+    //         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+    //             params: { search: searchQuery, page, activeTab: "Ready To Submit" }
+    //         });
+    //         const { data, totalPages } = servicesResponse.data;
+    //         console.log("response", servicesResponse.data)
+
+    //         // If it's a search query, replace the data; otherwise, append for pagination
+    //         if (page === 1) {
+    //             // This is either the first page load or a search operation
+    //             setRmServicesData(data);
+    //         } else {
+    //             // This is a pagination request
+    //             setRmServicesData(prevData => [...prevData, ...data]);
+    //         }
+    //         setTotalPages(totalPages)
+
+    //     } catch (error) {
+    //         console.error("Error fetching data", error.message);
+    //     } finally {
+    //         setOpenBacdrop(false);
+    //     }
+    // };
+
+    const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
         setOpenBacdrop(true);
         try {
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
             setEmployeeData(userData);
 
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-                params: { search: searchQuery }
-            });
-            const servicesData = servicesResponse.data;
+            let params = { search: searchQuery, page, activeTab: "Ready To Submit" };
 
-            if (Array.isArray(servicesData)) {
-                const filteredData = servicesData
-                    .filter(item => item.mainCategoryStatus === "Ready To Submit")
-                    .sort((a, b) => {
-                        const dateA = new Date(a.dateOfChangingMainStatus);
-                        const dateB = new Date(b.dateOfChangingMainStatus);
-                        return dateB - dateA; // Sort in descending order
-                    });
-                setRmServicesData(filteredData);
-                setRmServicesData(filteredData);
-                setcompleteRmData(filteredData)
-                setdataToFilter(filteredData)
-            } else {
-                console.error("Expected an array for services data, but got:", servicesData);
+            // If filtering is active, extract companyName and serviceName from filteredData
+            if (isFilter && filteredData && filteredData.length > 0) {
+                console.log("yahan chal rha", isFilter)
+                const companyNames = filteredData.map(item => item["Company Name"]).join(',');
+                const serviceNames = filteredData.map(item => item.serviceName).join(',');
+
+                // Add filtered company names and service names to the params
+                params.companyNames = companyNames;
+                params.serviceNames = serviceNames;
             }
+
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+                params: params
+            });
+
+            const { data, totalPages } = servicesResponse.data;
+
+
+            if (page === 1) {
+                setRmServicesData(data);
+                setcompleteRmData(data);
+                setdataToFilter(data);
+            } else {
+                setRmServicesData(prevData => [...prevData, ...data]);
+                setcompleteRmData(prevData => [...prevData, ...data]);
+                setdataToFilter(prevData => [...prevData, ...data]);
+            }
+
+            setTotalPages(totalPages);
+
         } catch (error) {
             console.error("Error fetching data", error.message);
         } finally {
@@ -148,18 +212,40 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
         }
     };
 
-    useEffect(() => {
-         fetchData(searchText);
-    }, [rmCertificationUserId, secretKey]);
 
     useEffect(() => {
-        fetchData(searchText)
-    }, [searchText])
+        const tableContainer = document.querySelector('#readyToSubmitTable');
+
+        const handleScroll = debounce(() => {
+            if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+                if (page < totalPages) {
+                    setPage(prevPage => prevPage + 1); // Load next page
+                }
+            }
+        }, 200);
+
+        tableContainer.addEventListener('scroll', handleScroll);
+        return () => tableContainer.removeEventListener('scroll', handleScroll);
+    }, [page, totalPages, filteredData]);
+
+    useEffect(() => {
+        fetchData(searchText, page);
+    }, [searchText, page]);
+
+
+    useEffect(() => {
+        fetchData(searchText);
+    }, [rmCertificationUserId, secretKey]);
 
 
     const refreshData = () => {
-         fetchData(searchText);
+        if (filteredData && filteredData.length > 0) {
+            fetchData(searchText, 1, true)
+        } else {
+            fetchData(searchText, page, false);
+        }
     };
+
     function formatDate(dateString) {
         const [year, month, date] = dateString.split('-');
         return `${date}/${month}/${year}`
@@ -195,13 +281,12 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                 //console.log("response", response.data);
 
                 if (response.status === 200) {
-                     fetchData(searchText);
+                    if (filteredData && filteredData.length > 0) {
+                        fetchData(searchText, page, true);
+                    } else {
+                        fetchData(searchText, page, false);
+                    }
                     functionCloseRemarksPopup();
-                    // Swal.fire(
-                    //     'Remarks Added!',
-                    //     'The remarks have been successfully added.',
-                    //     'success'
-                    // );
                 }
             } else {
                 setError('Remarks Cannot Be Empty!')
@@ -218,7 +303,12 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                 data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
             });
             if (response.status === 200) {
-                 fetchData(searchText);
+                if (filteredData && filteredData.length > 0) {
+                    fetchData(searchText, page, true);
+                } else {
+                    fetchData(searchText, page, false);
+                }
+
                 functionCloseRemarksPopup();
             }
             // Refresh the list
@@ -261,7 +351,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                 });
 
                 if (response.status === 200) {
-                     fetchData(searchText);
+                    fetchData(searchText);
                     Swal.fire(
                         'Company Reverted Back!',
                         'Company has been sent back to the received box.',
@@ -293,42 +383,46 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
     };
 
     // ------------filter functions----------------------------
-    const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [filteredData, setFilteredData] = useState(rmServicesData);
-    const [filterField, setFilterField] = useState("")
-    const filterMenuRef = useRef(null); // Ref for the filter menu container
 
     // useEffect(() => {
     //     setShowFilterMenu(showFilter);
     // }, [showFilter]);
 
     const handleFilter = (newData) => {
-        setRmServicesData(newData);
+        console.log("newData", newData)
+        setFilteredData(newData)
+        setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Ready To Submit"));
     };
-    const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const fieldRefs = useRef({});
+
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
-            // Toggle off if the same field is clicked again
             setShowFilterMenu(!showFilterMenu);
+            setIsScrollLocked(!showFilterMenu);
         } else {
-            // Set the active field and show filter menu
             setActiveFilterField(field);
             setShowFilterMenu(true);
+            setIsScrollLocked(true);
 
-            // Get the position of the clicked filter icon
             const rect = fieldRefs.current[field].getBoundingClientRect();
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
-    };
 
-    // Effect to handle clicks outside the filter menu
+        // Update the active filter fields array
+        setActiveFilterFields(prevFields => {
+
+            // Add the field if it's not active
+            return [...prevFields, field];
+
+        });
+    };
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
                 setShowFilterMenu(false);
+                setIsScrollLocked(false);
             }
         };
 
@@ -341,11 +435,10 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
 
 
 
-
     return (
         <div>
             <div className="RM-my-booking-lists">
-                <div className="table table-responsive table-style-3 m-0">
+                <div className="table table-responsive table-style-3 m-0" id="readyToSubmitTable">
                     {openBacdrop && (
                         <Backdrop
                             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -364,20 +457,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Name'] = el}>
                                                 Company Name
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Name")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Company Name') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === "Company Name" && (
+                                            {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -385,7 +483,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -393,20 +491,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Number'] = el}>
                                                 Company Number
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Number")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Company Number') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === "Company Number" && (
+                                            {showFilterMenu && activeFilterField === "Company Number" && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -414,7 +517,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -422,20 +525,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['Company Email'] = el}>
                                                 Company Email
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Email")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('Company Email') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'Company Email' && (
+                                            {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -443,7 +551,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -451,20 +559,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['caNumber'] = el}>
                                                 CA Number
                                             </div >
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("caNumber")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('caNumber') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("caNumber")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("caNumber")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'caNumber' && (
+                                            {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -472,7 +585,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
 
                                         </div>
                                     </th>
@@ -481,49 +594,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['serviceName'] = el}>
                                                 Service Name
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("serviceName")}
-                                                    />
-                                                </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'serviceName' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
-                                                    />
-                                                </div>
-                                            )} */}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
-                                                Status
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('serviceName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("servicesName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("serviceName")} />
+                                                )}
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("subCategoryStatus")}
-                                                    />
-                                                </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                                            {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -531,7 +620,41 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
+                                                Status
+                                            </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('subCategoryStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                                                )}
+                                            </div>
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>Remark</th>
@@ -540,20 +663,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['websiteLink'] = el}>
                                                 Website Link/Brief
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("websiteLink")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('websiteLink') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("websiteLink")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("websiteLink")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'websiteLink' && (
+                                            {showFilterMenu && activeFilterField === 'websiteLink' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -561,7 +689,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -569,20 +697,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['withDSC'] = el}>
                                                 DSC Applicable
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("withDSC")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('withDSC') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("withDSC")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("withDSC")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'withDSC' && (
+                                            {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -590,28 +723,33 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['dscStatus'] = el}>
+                                            <div ref={el => fieldRefs.current['letterStatus'] = el}>
                                                 Letter Status
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                <BsFilter
-                                                    onClick={() => handleFilterClick("dscStatus")}
-                                                />
+                                                {isActiveField('letterStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("letterStatus")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("letterStatus")} />
+                                                )}
                                             </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
+                                            {showFilterMenu && activeFilterField === 'letterStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -619,7 +757,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -627,20 +765,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['dscStatus'] = el}>
                                                 DSC Status
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("dscStatus")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('dscStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("dscStatus")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("dscStatus")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
+                                            {showFilterMenu && activeFilterField === 'dscStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -648,7 +791,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
 
                                         </div>
                                     </th>
@@ -657,19 +800,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['contentWriter'] = el}>
                                                 Content Writer
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("contentWriter")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'contentWriter' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('contentWriter') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("contentWriter")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("contentWriter")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'contentWriter' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -677,7 +825,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -685,19 +833,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['contentStatus'] = el}>
                                                 Content Status
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("contentStatus")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'contentStatus' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('contentStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("contentStatus")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("contentStatus")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'contentStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -705,7 +858,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -713,19 +866,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
                                                 Brochure Designer
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("brochureDesigner")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'brochureDesigner' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('brochureDesigner') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("brochureDesigner")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("brochureDesigner")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'brochureDesigner' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -733,7 +891,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -741,19 +899,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['brochureStatus'] = el}>
                                                 Brochure Status
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("brochureStatus")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'brochureStatus' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('brochureStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("brochureStatus")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("brochureStatus")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'brochureStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -761,7 +924,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -769,19 +932,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['nswsMailId'] = el}>
                                                 NSWS Email Id
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("nswsMailId")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'nswsMailId' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('nswsMailId') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("nswsMailId")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("nswsMailId")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'nswsMailId' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -789,7 +957,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -797,19 +965,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['nswsPaswsord'] = el}>
                                                 NSWS Password
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("nswsPaswsord")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('nswsPaswsord') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("nswsPaswsord")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("nswsPaswsord")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -817,7 +990,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -825,19 +998,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['industry'] = el}>
                                                 Industry
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("industry")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'industry' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('industry') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("industry")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("industry")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'industry' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -845,7 +1023,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -853,19 +1031,24 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['sector'] = el}>
                                                 Sector
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("sector")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'sector' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('sector') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("sector")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("sector")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'sector' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -873,7 +1056,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -883,31 +1066,38 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['bookingDate'] = el}>
                                                 Booking Date
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bookingDate")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('bookingDate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                )}
+                                            </div>
                                         </div></th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bdeName'] = el}>
                                                 BDE Name
                                             </div>
-                                         
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bdeName")}
-                                                    />
-                                                </div>
-                                            {/* {showFilterMenu && activeFilterField === 'bookingDate' && (
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -915,7 +1105,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -923,28 +1113,33 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['bdmName'] = el}>
                                                 BDM Name
                                             </div>
-                                           
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bdmName")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('bdmName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdmName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdmName")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                            {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
+                                                        dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -952,12 +1147,32 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
                                                 Total Payment
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("totalPaymentWGST")}
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('totalPaymentWGST') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                                )}
+                                            </div>
+                                            {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
                                                     />
                                                 </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -965,20 +1180,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['receivedPayment'] = el}>
                                                 Recieved Payment
                                             </div>
-                                            
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("receivedPayment")}
-                                                    />
-                                                </div>
+
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('receivedPayment') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("receivedPayment")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("receivedPayment")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                            {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -986,23 +1206,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'receivedPayment' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -1010,21 +1214,25 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                             <div ref={el => fieldRefs.current['pendingPayment'] = el}>
                                                 Pending Payment
                                             </div>
-                                          
-                                                <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("pendingPayment")}
 
-                                                    />
-                                                </div>
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('pendingPayment') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("pendingPayment")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("pendingPayment")} />
+                                                )}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                            {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -1032,7 +1240,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th className="rm-sticky-action">Action</th>
@@ -1246,12 +1454,12 @@ function RmofCertificationReadyToSubmitPanel({ searchText , showFilter }) {
                                         </td>
                                         <td className="rm-sticky-action">
                                             <button className="action-btn action-btn-primary"
-                                            onClick={() => (
-                                                handleRevokeCompanyToRecievedBox(
-                                                    obj["Company Name"],
-                                                    obj.serviceName
-                                                )
-                                            )}
+                                                onClick={() => (
+                                                    handleRevokeCompanyToRecievedBox(
+                                                        obj["Company Name"],
+                                                        obj.serviceName
+                                                    )
+                                                )}
 
                                             ><FaRegEye /></button>
                                         </td>
