@@ -36,38 +36,47 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { BsFilter } from "react-icons/bs";
 import NSWSMobileNo from "../Extra-Components/NSWSMobileNo";
 import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus";
+import { FaFilter } from "react-icons/fa";
+import FilterableTable from '../Extra-Components/FilterableTable';
+
+
 
 function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
-  const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
-  const [employeeData, setEmployeeData] = useState([]);
+  const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
+  const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [currentDataLoading, setCurrentDataLoading] = useState(false);
-  const [isFilter, setIsFilter] = useState(false);
-  const [rmServicesData, setRmServicesData] = useState([]);
-  const [newStatusSubmitted, setNewStatusSubmitted] = useState("Submitted");
+  const [currentDataLoading, setCurrentDataLoading] = useState(false)
+  const [isFilter, setIsFilter] = useState(false)
+  const [rmServicesData, setRmServicesData] = useState([])
+  const [newStatusProcess, setNewStatusProcess] = useState("Process")
   const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
-  const [currentCompanyName, setCurrentCompanyName] = useState("");
-  const [currentServiceName, setCurrentServiceName] = useState("");
-  const [remarksHistory, setRemarksHistory] = useState([]);
+  const [currentCompanyName, setCurrentCompanyName] = useState("")
+  const [currentServiceName, setCurrentServiceName] = useState("")
+  const [remarksHistory, setRemarksHistory] = useState([])
   const [changeRemarks, setChangeRemarks] = useState("");
   const [historyRemarks, setHistoryRemarks] = useState([]);
-  const [email, setEmail] = useState("");
+  const [newStatusSubmitted, setNewStatusSubmitted] = useState("Submitted")
+  const [email, setEmail] = useState('');
   const [openEmailPopup, setOpenEmailPopup] = useState(false);
+  const [password, setPassword] = useState('');
+  const [openPasswordPopup, setOpenPasswordPopup] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [sectorOptions, setSectorOptions] = useState([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('')
   const [openBacdrop, setOpenBacdrop] = useState(false);
-  const [lastSubmitAttempt, setLastSubmitAttempt] = useState("");
-  const [completeRmData, setcompleteRmData] = useState([]);
+  const [completeRmData, setcompleteRmData] = useState([])
   const [dataToFilter, setdataToFilter] = useState([]);
+  const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [filteredData, setFilteredData] = useState(rmServicesData);
+  const [filterField, setFilterField] = useState("")
+  const filterMenuRef = useRef(null); // Ref for the filter menu container
+  const [activeFilterField, setActiveFilterField] = useState(null);
+  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+  const fieldRefs = useRef({});
 
-  function formatDatePro(inputDate) {
-    const date = new Date(inputDate);
-    const day = date.getDate();
-    const month = date.toLocaleString("en-US", { month: "long" });
-    const year = date.getFullYear();
-    return `${day} ${month}, ${year}`;
-  }
+
 
   function formatDateNew(inputDate) {
     const date = new Date(inputDate);
@@ -92,86 +101,144 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
     return strTime;
   };
 
+  function formatDatePro(inputDate) {
+    const date = new Date(inputDate);
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+  }
+
+  function formatDate(dateString) {
+    dateString = "2024-07-26"
+    const [year, month, date] = dateString.split('-');
+    return `${date}/${month}/${year}`
+  }
+
   useEffect(() => {
     document.title = `AdminHead-Sahay-CRM`;
   }, []);
 
   useEffect(() => {
-    const socket =
-      secretKey === "http://localhost:3001/api"
-        ? io("http://localhost:3001")
-        : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: "/socket.io",
-            reconnection: true,
-            transports: ["websocket"],
-          });
-
-    socket.on("rm-general-status-updated", (res) => {
-      fetchData(searchText);
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
     });
 
+    socket.on("rm-general-status-updated", (res) => {
+      fetchData(searchText)
+    });
+
+    socket.on("rm-industry-enabled", (res) => {
+      if (filteredData && filteredData.length > 0) {
+        fetchData(searchText, 1, true)
+      } else {
+        fetchData(searchText, page, false)
+      }
+    });
     socket.on("rm-recievedamount-updated", (res) => {
-      fetchData(searchText);
+      fetchData(searchText)
     });
 
     socket.on("rm-recievedamount-deleted", (res) => {
-      fetchData(searchText);
+      fetchData(searchText)
     });
 
     socket.on("booking-deleted", (res) => {
-      fetchData(searchText);
+      fetchData(searchText)
     });
 
     socket.on("booking-updated", (res) => {
-      fetchData(searchText);
+      fetchData(searchText)
     });
     socket.on("adminexecutive-general-status-updated", (res) => {
-      fetchData(searchText);
+      fetchData(searchText)
     });
     socket.on("adminexecutive-letter-updated", (res) => {
-      fetchData(searchText);
+      fetchData(searchText)
     });
     return () => {
       socket.disconnect();
     };
   }, [newStatusSubmitted]);
 
-  const fetchData = async (searchQuery = "") => {
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  // Fetch Data Function
+
+  // const fetchData = async (searchQuery = "", page = 1) => {
+  //     setOpenBacdrop(true);
+  //     try {
+
+  //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+  //         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+  //         setEmployeeData(userData);
+
+  //         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+  //             params: { search: searchQuery, page, activeTab: "Submitted" }
+  //         });
+  //         const { data, totalPages } = servicesResponse.data;
+  //         console.log("response", servicesResponse.data)
+
+  //         // If it's a search query, replace the data; otherwise, append for pagination
+  //         if (page === 1) {
+  //             // This is either the first page load or a search operation
+  //             setRmServicesData(data);
+  //         } else {
+  //             // This is a pagination request
+  //             setRmServicesData(prevData => [...prevData, ...data]);
+  //         }
+  //         setTotalPages(totalPages)
+
+  //     } catch (error) {
+  //         console.error("Error fetching data", error.message);
+  //     } finally {
+  //         setOpenBacdrop(false);
+  //     }
+  // };
+
+  const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
     setOpenBacdrop(true);
     try {
       const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-      const userData = employeeResponse.data.find(
-        (item) => item._id === rmCertificationUserId
-      );
+      const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
       setEmployeeData(userData);
 
-      const servicesResponse = await axios.get(
-        `${secretKey}/rm-services/rm-sevicesgetrequest`,
-        {
-          params: { search: searchQuery },
-        }
-      );
-      const servicesData = servicesResponse.data;
+      let params = { search: searchQuery, page, activeTab: "Submitted" };
 
-      if (Array.isArray(servicesData)) {
-        const filteredData = servicesData
-          .filter((item) => item.mainCategoryStatus === "Submitted")
-          .sort((a, b) => {
-            const dateA = new Date(a.dateOfChangingMainStatus);
-            const dateB = new Date(b.dateOfChangingMainStatus);
-            return dateB - dateA; // Sort in descending order
-          });
-        setRmServicesData(filteredData);
-        setRmServicesData(filteredData);
-        setcompleteRmData(filteredData);
-        setdataToFilter(filteredData);
-      } else {
-        console.error(
-          "Expected an array for services data, but got:",
-          servicesData
-        );
+      // If filtering is active, extract companyName and serviceName from filteredData
+      if (isFilter && filteredData && filteredData.length > 0) {
+        console.log("yahan chal rha", isFilter)
+        const companyNames = filteredData.map(item => item["Company Name"]).join(',');
+        const serviceNames = filteredData.map(item => item.serviceName).join(',');
+
+        // Add filtered company names and service names to the params
+        params.companyNames = companyNames;
+        params.serviceNames = serviceNames;
       }
+
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+        params: params
+      });
+
+      const { data, totalPages } = servicesResponse.data;
+
+
+      if (page === 1) {
+        setRmServicesData(data);
+        setcompleteRmData(data);
+        setdataToFilter(data);
+      } else {
+        setRmServicesData(prevData => [...prevData, ...data]);
+        setcompleteRmData(prevData => [...prevData, ...data]);
+        setdataToFilter(prevData => [...prevData, ...data]);
+      }
+
+      setTotalPages(totalPages);
+
     } catch (error) {
       console.error("Error fetching data", error.message);
     } finally {
@@ -179,33 +246,54 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
     }
   };
 
+
+  useEffect(() => {
+    const tableContainer = document.querySelector('#submittedTable');
+
+    const handleScroll = debounce(() => {
+      if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+        if (page < totalPages) {
+          setPage(prevPage => prevPage + 1); // Load next page
+        }
+      }
+    }, 200);
+
+    tableContainer.addEventListener('scroll', handleScroll);
+    return () => tableContainer.removeEventListener('scroll', handleScroll);
+  }, [page, totalPages, filteredData]);
+
+  useEffect(() => {
+    fetchData(searchText, page);
+  }, [searchText, page]);
+
+
   useEffect(() => {
     fetchData(searchText);
   }, [rmCertificationUserId, secretKey]);
 
-  useEffect(() => {
-    fetchData(searchText);
-  }, [searchText]);
 
   const refreshData = () => {
-    fetchData(searchText);
+    if (filteredData && filteredData.length > 0) {
+      fetchData(searchText, 1, true)
+    } else {
+      fetchData(searchText, page, false);
+    }
   };
 
   function formatDate(dateString) {
-    const [year, month, date] = dateString.split("-");
-    return `${date}/${month}/${year}`;
+    const [year, month, date] = dateString.split('-');
+    return `${date}/${month}/${year}`
   }
 
-  //console.log("setnewsubstatus", newStatusSubmitted)
-
+  //------------------------Remarks Popup Section-----------------------------
   const handleOpenRemarksPopup = async (companyName, serviceName) => {
-    console.log("RemarksPopup");
-  };
+    console.log("RemarksPopup")
+  }
   const functionCloseRemarksPopup = () => {
-    setChangeRemarks("");
-    setError("");
-    setOpenRemarksPopUp(false);
-  };
+    setChangeRemarks('')
+    setError('')
+    setOpenRemarksPopUp(false)
+  }
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
       setChangeRemarks(value);
@@ -217,30 +305,27 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
     //console.log("changeremarks", changeRemarks)
     try {
       if (changeRemarks) {
-        const response = await axios.post(
-          `${secretKey}/rm-services/post-remarks-for-rmofcertification`,
-          {
-            currentCompanyName,
-            currentServiceName,
-            changeRemarks,
-            updatedOn: new Date(),
-          }
-        );
+        const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+          currentCompanyName,
+          currentServiceName,
+          changeRemarks,
+          updatedOn: new Date()
+        });
 
         //console.log("response", response.data);
 
         if (response.status === 200) {
-          fetchData(searchText);
+          if (filteredData && filteredData.length > 0) {
+            fetchData(searchText, page, true);
+          } else {
+            fetchData(searchText, page, false);
+          }
           functionCloseRemarksPopup();
-          // Swal.fire(
-          //     'Remarks Added!',
-          //     'The remarks have been successfully added.',
-          //     'success'
-          // );
         }
       } else {
-        setError("Remarks Cannot Be Empty!");
+        setError('Remarks Cannot Be Empty!')
       }
+
     } catch (error) {
       console.log("Error Submitting Remarks", error.message);
     }
@@ -248,18 +333,16 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
 
   const handleDeleteRemarks = async (remarks_id) => {
     try {
-      const response = await axios.delete(
-        `${secretKey}/rm-services/delete-remark-rmcert`,
-        {
-          data: {
-            remarks_id,
-            companyName: currentCompanyName,
-            serviceName: currentServiceName,
-          },
-        }
-      );
+      const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+        data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+      });
       if (response.status === 200) {
-        fetchData(searchText);
+        if (filteredData && filteredData.length > 0) {
+          fetchData(searchText, page, true);
+        } else {
+          fetchData(searchText, page, false);
+        }
+
         functionCloseRemarksPopup();
       }
       // Refresh the list
@@ -268,124 +351,126 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
     }
   };
 
+
+
+  //--------------------function for industry change--------------------------
+
   const handleIndustryChange = (industry, options) => {
     setSelectedIndustry(industry);
     setSectorOptions(options);
   };
 
-  const formatDateISO = (date) => {
-    // Customize the date formatting as needed
-    return new Intl.DateTimeFormat("en-US").format(date);
-  };
-
   const handleCloseBackdrop = () => {
-    setOpenBacdrop(false);
-  };
+    setOpenBacdrop(false)
+  }
 
   const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
     try {
       // Show confirmation dialog
       const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to revert the company back to the received box?",
-        icon: "warning",
+        title: 'Are you sure?',
+        text: 'Do you want to revert the company back to the received box?',
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: "Yes, revert it!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
+        confirmButtonText: 'Yes, revert it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
       });
 
       // Check if the user confirmed the action
       if (result.isConfirmed) {
-        const response = await axios.post(
-          `${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`,
-          {
-            companyName,
-            serviceName,
-          }
-        );
+        const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
+          companyName,
+          serviceName
+        });
 
         if (response.status === 200) {
           fetchData(searchText);
           Swal.fire(
-            "Company Reverted Back!",
-            "Company has been sent back to the received box.",
-            "success"
+            'Company Reverted Back!',
+            'Company has been sent back to the received box.',
+            'success'
           );
         } else {
           Swal.fire(
-            "Error",
-            "Failed to revert the company back to the received box.",
-            "error"
+            'Error',
+            'Failed to revert the company back to the received box.',
+            'error'
           );
         }
       } else {
-        Swal.fire("Cancelled", "The company has not been reverted.", "info");
+        Swal.fire(
+          'Cancelled',
+          'The company has not been reverted.',
+          'info'
+        );
       }
+
     } catch (error) {
       console.log("Error Deleting Company from task manager", error.message);
       Swal.fire(
-        "Error",
-        "An error occurred while processing your request.",
-        "error"
+        'Error',
+        'An error occurred while processing your request.',
+        'error'
       );
     }
   };
 
   // ------------filter functions----------------------------
-  const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [filteredData, setFilteredData] = useState(rmServicesData);
-  const [filterField, setFilterField] = useState("");
-  const filterMenuRef = useRef(null); // Ref for the filter menu container
 
   // useEffect(() => {
   //     setShowFilterMenu(showFilter);
   // }, [showFilter]);
 
   const handleFilter = (newData) => {
-    setRmServicesData(newData);
+    console.log("newData", newData)
+    setFilteredData(newData)
+    setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Submitted"));
   };
-  const [activeFilterField, setActiveFilterField] = useState(null);
-  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-  const fieldRefs = useRef({});
+
 
   const handleFilterClick = (field) => {
     if (activeFilterField === field) {
-      // Toggle off if the same field is clicked again
       setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
     } else {
-      // Set the active field and show filter menu
       setActiveFilterField(field);
       setShowFilterMenu(true);
+      setIsScrollLocked(true);
 
-      // Get the position of the clicked filter icon
       const rect = fieldRefs.current[field].getBoundingClientRect();
       setFilterPosition({ top: rect.bottom, left: rect.left });
     }
-  };
 
-  // Effect to handle clicks outside the filter menu
+    // Update the active filter fields array
+    setActiveFilterFields(prevFields => {
+
+      // Add the field if it's not active
+      return [...prevFields, field];
+
+    });
+  };
+  const isActiveField = (field) => activeFilterFields.includes(field);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        filterMenuRef.current &&
-        !filterMenuRef.current.contains(event.target)
-      ) {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
         setShowFilterMenu(false);
+        setIsScrollLocked(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
     <div>
       <div className="RM-my-booking-lists">
-        <div className="table table-responsive table-style-3 m-0">
+        <div className="table table-responsive table-style-3 m-0" id="submittedTable">
           {openBacdrop && (
             <Backdrop
               sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -400,766 +485,857 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                 <tr className="tr-sticky">
                   <th className="rm-sticky-left-1">Sr.No</th>
                   <th className="rm-sticky-left-2">
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["Company Name"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['Company Name'] = el}>
                         Company Name
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("Company Name")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('Company Name') ? (
+                          <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'Company Name' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'Company Name' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["Company Number"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative '>
+                      <div ref={el => fieldRefs.current['Company Number'] = el}>
                         Company Number
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("Company Number")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('Company Number') ? (
+                          <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === "Company Number" && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === "Company Number" && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["Company Email"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['Company Email'] = el}>
                         Company Email
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("Company Email")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('Company Email') ? (
+                          <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'Company Email' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'Company Email' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["caNumber"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['caNumber'] = el}>
                         CA Number
-                      </div>
+                      </div >
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("caNumber")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('caNumber') ? (
+                          <FaFilter onClick={() => handleFilterClick("caNumber")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("caNumber")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'caNumber' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'caNumber' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
+
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["serviceName"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['serviceName'] = el}>
                         Service Name
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("serviceName")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('serviceName') ? (
+                          <FaFilter onClick={() => handleFilterClick("servicesName")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("serviceName")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'serviceName' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'serviceName' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) =>
-                          (fieldRefs.current["subCategoryStatus"] = el)
-                        }
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                         Status
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("subCategoryStatus")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('subCategoryStatus') ? (
+                          <FaFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>Remark</th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["websiteLink"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['websiteLink'] = el}>
                         Website Link/Brief
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("websiteLink")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('websiteLink') ? (
+                          <FaFilter onClick={() => handleFilterClick("websiteLink")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("websiteLink")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'websiteLink' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'websiteLink' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["withDSC"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['withDSC'] = el}>
                         DSC Applicable
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("withDSC")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('withDSC') ? (
+                          <FaFilter onClick={() => handleFilterClick("withDSC")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("withDSC")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'withDSC' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'withDSC' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["dscStatus"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['letterStatus'] = el}>
                         Letter Status
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("dscStatus")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('letterStatus') ? (
+                          <FaFilter onClick={() => handleFilterClick("letterStatus")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("letterStatus")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'letterStatus' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["dscStatus"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['dscStatus'] = el}>
                         DSC Status
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("dscStatus")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('dscStatus') ? (
+                          <FaFilter onClick={() => handleFilterClick("dscStatus")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("dscStatus")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'dscStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'dscStatus' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
+
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["contentWriter"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['contentWriter'] = el}>
                         Content Writer
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("contentWriter")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('contentWriter') ? (
+                          <FaFilter onClick={() => handleFilterClick("contentWriter")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("contentWriter")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'contentWriter' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'contentWriter' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["contentStatus"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['contentStatus'] = el}>
                         Content Status
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("contentStatus")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('contentStatus') ? (
+                          <FaFilter onClick={() => handleFilterClick("contentStatus")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("contentStatus")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'contentStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'contentStatus' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th className="d-none">
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) =>
-                          (fieldRefs.current["brochureDesigner"] = el)
-                        }
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
                         Brochure Designer
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("brochureDesigner")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('brochureDesigner') ? (
+                          <FaFilter onClick={() => handleFilterClick("brochureDesigner")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("brochureDesigner")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'brochureDesigner' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'brochureDesigner' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th className="d-none">
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["brochureStatus"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['brochureStatus'] = el}>
                         Brochure Status
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("brochureStatus")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('brochureStatus') ? (
+                          <FaFilter onClick={() => handleFilterClick("brochureStatus")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("brochureStatus")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'brochureStatus' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'brochureStatus' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
-                 
-                  <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["nswsPhoneNo"] = el)}
-                      >
+                  <th className="d-none">
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['nswsPhoneNo'] = el}>
                         NSWS Phone No
                       </div>
 
-                      <div className="RM_filter_icon">
+                      <div className='RM_filter_icon'>
                         <BsFilter
                           onClick={() => handleFilterClick("nswsPhoneNo")}
                         />
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'nswsMailId' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'nswsPhoneNo' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["nswsMailId"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['nswsMailId'] = el}>
                         NSWS Email Id
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("nswsMailId")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('nswsMailId') ? (
+                          <FaFilter onClick={() => handleFilterClick("nswsMailId")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("nswsMailId")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'nswsMailId' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'nswsMailId' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["nswsPaswsord"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['nswsPaswsord'] = el}>
                         NSWS Password
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("nswsPaswsord")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('nswsPaswsord') ? (
+                          <FaFilter onClick={() => handleFilterClick("nswsPaswsord")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("nswsPaswsord")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
                     <div className="d-flex align-items-center justify-content-center position-relative">
                       <div>OTP/DSC Verification Status</div>
                       <div className="RM_filter_icon">
-                        <BsFilter />
+                        <div className='RM_filter_icon'>
+                          {isActiveField('otpVerificationStatus') ? (
+                            <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
+                          ) : (
+                            <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
+                          )}
+                        </div>
+                        {showFilterMenu && activeFilterField === 'otpVerificationStatus' && (
+                          <div
+                            ref={filterMenuRef}
+                            className="filter-menu"
+                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                          >
+                            <FilterableTable
+                              allFilterFields={setActiveFilterFields}
+                              filteredData={filteredData}
+                              activeTab={"Submitted"}
+                              data={rmServicesData}
+                              filterField={activeFilterField}
+                              onFilter={handleFilter}
+                              completeData={completeRmData}
+                              dataForFilter={dataToFilter}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["industry"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['industry'] = el}>
                         Industry
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("industry")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('industry') ? (
+                          <FaFilter onClick={() => handleFilterClick("industry")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("industry")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'industry' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'industry' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["sector"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['sector'] = el}>
                         Sector
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter onClick={() => handleFilterClick("sector")} />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('sector') ? (
+                          <FaFilter onClick={() => handleFilterClick("sector")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("sector")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'sector' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'sector' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["bookingDate"] = el)}
-                      >
+                    <div
+                      className='d-flex align-items-center justify-content-center position-relative'
+                    >
+                      <div ref={el => fieldRefs.current['bookingDate'] = el}>
                         Booking Date
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("bookingDate")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('bookingDate') ? (
+                          <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                        )}
                       </div>
-                      {/* {showFilterMenu && activeFilterField === 'bookingDate' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
-                    </div>
-                  </th>
+                    </div></th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["bdeName"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['bdeName'] = el}>
                         BDE Name
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("bdeName")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('bdeName') ? (
+                          <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                        )}
                       </div>
-                      {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'bdeName' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'bookingDate' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div ref={(el) => (fieldRefs.current["bdmName"] = el)}>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['bdmName'] = el}>
                         BDM Name
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("bdmName")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('bdmName') ? (
+                          <FaFilter onClick={() => handleFilterClick("bdmName")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("bdmName")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'bdmName' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'bdeName' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) =>
-                          (fieldRefs.current["totalPaymentWGST"] = el)
-                        }
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
                         Total Payment
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("totalPaymentWGST")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('totalPaymentWGST') ? (
+                          <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                        )}
                       </div>
-                      {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) =>
-                          (fieldRefs.current["receivedPayment"] = el)
-                        }
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['receivedPayment'] = el}>
                         Recieved Payment
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("receivedPayment")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('receivedPayment') ? (
+                          <FaFilter onClick={() => handleFilterClick("receivedPayment")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("receivedPayment")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'receivedPayment' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'receivedPayment' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
-                    <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div
-                        ref={(el) => (fieldRefs.current["pendingPayment"] = el)}
-                      >
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['pendingPayment'] = el}>
                         Pending Payment
                       </div>
 
-                      <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("pendingPayment")}
-                        />
+                      <div className='RM_filter_icon'>
+                        {isActiveField('pendingPayment') ? (
+                          <FaFilter onClick={() => handleFilterClick("pendingPayment")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("pendingPayment")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
@@ -1349,19 +1525,19 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                             title={
                               obj.Remarks && obj.Remarks.length > 0
                                 ? obj.Remarks.sort(
-                                    (a, b) =>
-                                      new Date(b.updatedOn) -
-                                      new Date(a.updatedOn)
-                                  )[0].remarks
+                                  (a, b) =>
+                                    new Date(b.updatedOn) -
+                                    new Date(a.updatedOn)
+                                )[0].remarks
                                 : "No Remarks"
                             }
                           >
                             {obj.Remarks && obj.Remarks.length > 0
                               ? obj.Remarks.sort(
-                                  (a, b) =>
-                                    new Date(b.updatedOn) -
-                                    new Date(a.updatedOn)
-                                )[0].remarks
+                                (a, b) =>
+                                  new Date(b.updatedOn) -
+                                  new Date(a.updatedOn)
+                              )[0].remarks
                               : "No Remarks"}
                           </div>
                           <button
@@ -1394,8 +1570,8 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                             obj.websiteLink
                               ? obj.websiteLink
                               : obj.companyBriefing
-                              ? obj.companyBriefing
-                              :"Enter Website Link"
+                                ? obj.companyBriefing
+                                : "Enter Website Link"
                           }
                         />
                       </td>
@@ -1595,62 +1771,62 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                         {obj.subCategoryStatus === "2nd Time Submitted"
                           ? "2nd"
                           : obj.subCategoryStatus === "3rd Time Submitted"
-                          ? "3rd"
-                          : obj.subCategoryStatus === "Submitted"
-                          ? "1st"
-                          : obj.lastAttemptSubmitted
-                          ? obj.lastAttemptSubmitted
-                          : "1st"}
+                            ? "3rd"
+                            : obj.subCategoryStatus === "Submitted"
+                              ? "1st"
+                              : obj.lastAttemptSubmitted
+                                ? obj.lastAttemptSubmitted
+                                : "1st"}
                       </td>
                       <td>
                         {obj.subCategoryStatus === "Submitted"
                           ? obj.submittedOn
                             ? `${formatDateNew(obj.submittedOn)} | ${formatTime(
-                                obj.submittedOn
-                              )}`
+                              obj.submittedOn
+                            )}`
                             : `${formatDateNew(new Date())} | ${formatTime(
-                                new Date()
-                              )}`
+                              new Date()
+                            )}`
                           : obj.subCategoryStatus === "2nd Time Submitted"
-                          ? obj.SecondTimeSubmitDate
-                            ? `${formatDateNew(
+                            ? obj.SecondTimeSubmitDate
+                              ? `${formatDateNew(
                                 obj.SecondTimeSubmitDate
                               )} | ${formatTime(obj.SecondTimeSubmitDate)}`
-                            : `${formatDateNew(new Date())} | ${formatTime(
+                              : `${formatDateNew(new Date())} | ${formatTime(
                                 new Date()
                               )}`
-                          : obj.subCategoryStatus === "3rd Time Submitted"
-                          ? obj.ThirdTimeSubmitDate
-                            ? `${formatDateNew(
-                                obj.ThirdTimeSubmitDate
-                              )} | ${formatTime(obj.ThirdTimeSubmitDate)}`
-                            : `${formatDateNew(new Date())} | ${formatTime(
-                                new Date()
-                              )}`
-                          : // Find the latest date among the three
-                            (() => {
-                              const dates = [
-                                obj.submittedOn,
-                                obj.SecondTimeSubmitDate,
-                                obj.ThirdTimeSubmitDate,
-                              ].filter((date) => date); // Filter out null or undefined dates
+                            : obj.subCategoryStatus === "3rd Time Submitted"
+                              ? obj.ThirdTimeSubmitDate
+                                ? `${formatDateNew(
+                                  obj.ThirdTimeSubmitDate
+                                )} | ${formatTime(obj.ThirdTimeSubmitDate)}`
+                                : `${formatDateNew(new Date())} | ${formatTime(
+                                  new Date()
+                                )}`
+                              : // Find the latest date among the three
+                              (() => {
+                                const dates = [
+                                  obj.submittedOn,
+                                  obj.SecondTimeSubmitDate,
+                                  obj.ThirdTimeSubmitDate,
+                                ].filter((date) => date); // Filter out null or undefined dates
 
-                              if (dates.length === 0) {
-                                return null;
-                              }
+                                if (dates.length === 0) {
+                                  return null;
+                                }
 
-                              const latestDate = new Date(
-                                Math.max(
-                                  ...dates.map((date) =>
-                                    new Date(date).getTime()
+                                const latestDate = new Date(
+                                  Math.max(
+                                    ...dates.map((date) =>
+                                      new Date(date).getTime()
+                                    )
                                   )
-                                )
-                              );
+                                );
 
-                              return `${formatDateNew(
-                                latestDate
-                              )} | ${formatTime(latestDate)}`;
-                            })()}
+                                return `${formatDateNew(
+                                  latestDate
+                                )} | ${formatTime(latestDate)}`;
+                              })()}
                       </td>
 
                       <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>

@@ -863,7 +863,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                             )}
                                         </div>
                                     </th>
-                                    <th>
+                                    <th className='d-none'>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['brochureDesigner'] = el}>
                                                 Brochure Designer
@@ -940,13 +940,16 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     onClick={() => handleFilterClick("nswsPhoneNo")}
                                                 />
                                             </div>
-                                            {/* {showFilterMenu && activeFilterField === 'nswsMailId' && (
+                                            {showFilterMenu && activeFilterField === 'nswsPhoneNo' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
@@ -954,7 +957,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -1027,7 +1030,31 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                         <div className="d-flex align-items-center justify-content-center position-relative">
                                             <div>OTP/DSC Verification Status</div>
                                             <div className="RM_filter_icon">
-                                                <BsFilter />
+                                                <div className='RM_filter_icon'>
+                                                    {isActiveField('otpVerificationStatus') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
+                                                    )}
+                                                </div>
+                                                {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTable
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            activeTab={"Ready To Submit"}
+                                                            data={rmServicesData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeRmData}
+                                                            dataForFilter={dataToFilter}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </th>
@@ -1421,14 +1448,14 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                 refreshData={refreshData}
                                             /></td>
 
-                                              <td>
-                                                <NSWSMobileNo 
+                                        <td>
+                                            <NSWSMobileNo
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
-                                                nswsMobileNo={obj.nswsMobileNo ? obj.nswsMobileNo : obj["Company Number"]}/>
-                                            </td>
+                                                nswsMobileNo={obj.nswsMobileNo ? obj.nswsMobileNo : obj["Company Number"]} />
+                                        </td>
                                         <td className='td_of_NSWSeMAIL'>
                                             <NSWSEmailInput
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
@@ -1447,8 +1474,8 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                 nswsPassword={obj.nswsPaswsord ? obj.nswsPaswsord : "Enter Password"}
                                             />
                                         </td>
-                                         <td>
-                                                <OtpVerificationStatus
+                                        <td>
+                                            <OtpVerificationStatus
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 mainStatus={obj.mainCategoryStatus}
                                                 subStatus={obj.subCategoryStatus}
@@ -1456,8 +1483,8 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
                                                 otpVerificationStatus={obj.otpVerificationStatus}
-                                                />
-                                            </td>
+                                            />
+                                        </td>
                                         <td className='td_of_Industry'>
                                             <IndustryDropdown
                                                 key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
