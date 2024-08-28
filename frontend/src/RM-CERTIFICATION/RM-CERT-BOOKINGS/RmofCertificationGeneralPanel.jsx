@@ -21,7 +21,7 @@ import { FaFilter } from "react-icons/fa";
 
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
-function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
+function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -42,7 +42,8 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
     const [isScrollLocked, setIsScrollLocked] = useState(false);
     const [filteredData, setFilteredData] = useState([]);
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
-    const [error, setError] = useState('')
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0)
     // Fetch Data Function
 
     // const fetchData = async (searchQuery = "", page = 1, activeTab = "General") => {
@@ -356,7 +357,19 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
     const handleFilter = (newData) => {
         setFilteredData(newData)
         setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "General"));
+
     };
+
+    useEffect(() => {
+        if (noOfAvailableData) {
+            showingFilterIcon(true)
+            totalFilteredData(noOfAvailableData)
+        } else {
+            showingFilterIcon(false)
+            totalFilteredData(0)
+        }
+
+    }, [noOfAvailableData, activeTab])
 
 
     const handleFilterClick = (field) => {
@@ -401,8 +414,10 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
     //     setPage(1); // Reset the page to 1 when a new search or filter is applied
     // }, [searchText, activeFilterField]);
 
-console.log("activeFilterFields" , activeFilterFields)
-
+    console.log("filteredData", filteredData)
+    console.log("activeTab", activeTab)
+    console.log("noofavaibaledatageneral" , noOfAvailableData)
+    console.log("rmservicesdatageneral" , rmServicesData)
 
     return (
         <div>
@@ -449,6 +464,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -484,6 +500,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -518,6 +535,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -552,6 +570,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -586,6 +605,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -620,6 +640,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -654,6 +675,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -689,6 +711,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -723,6 +746,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -757,6 +781,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -791,6 +816,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -825,6 +851,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -859,6 +886,7 @@ console.log("activeFilterFields" , activeFilterFields)
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}

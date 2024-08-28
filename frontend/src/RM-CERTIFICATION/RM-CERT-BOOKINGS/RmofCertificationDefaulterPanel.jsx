@@ -40,7 +40,7 @@ import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
 
 
-function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
+function RmofCertificationDefaulterPanel({ searchText, showFilter,totalFilteredData, showingFilterIcon ,activeTab }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -71,6 +71,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
   const [activeFilterField, setActiveFilterField] = useState(null);
   const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
   const fieldRefs = useRef({});
+  const [noOfAvailableData, setnoOfAvailableData] = useState(0)
 
   function formatDatePro(inputDate) {
     const date = new Date(inputDate);
@@ -121,29 +122,29 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
     const updateDocumentInState = (updatedDocument) => {
       console.log(updatedDocument)
       setRmServicesData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setcompleteRmData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setdataToFilter(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
-  };
-  socket.on("adminexecutive-general-status-updated", (res) => {
+    };
+    socket.on("adminexecutive-general-status-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
-  socket.on("adminexecutive-letter-updated", (res) => {
+
+    });
+    socket.on("adminexecutive-letter-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
+
+    });
     return () => {
       socket.disconnect();
     };
@@ -457,6 +458,18 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
 
     // });
   };
+
+  useEffect(() => {
+    if (noOfAvailableData) {
+      showingFilterIcon(true)
+      totalFilteredData(noOfAvailableData)
+    } else {
+      showingFilterIcon(false)
+      totalFilteredData(0)
+    }
+
+  }, [noOfAvailableData, activeTab])
+
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   useEffect(() => {
@@ -514,6 +527,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -548,6 +562,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -582,6 +597,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -616,6 +632,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -651,6 +668,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -685,6 +703,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -720,6 +739,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -754,6 +774,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -788,6 +809,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -822,6 +844,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -856,6 +879,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -889,6 +913,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -922,6 +947,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -955,6 +981,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -986,6 +1013,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1019,6 +1047,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1052,6 +1081,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1084,6 +1114,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1117,6 +1148,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1150,6 +1182,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1199,6 +1232,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1233,6 +1267,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1266,6 +1301,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1300,6 +1336,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1334,6 +1371,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1472,12 +1510,13 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           companyName={obj["Company Name"]}
                           serviceName={obj.serviceName}
                           refreshData={refreshData}
+                          onlyLink={obj.websiteLink ? obj.websiteLink : ""}
                           websiteLink={
                             obj.websiteLink
                               ? obj.websiteLink
                               : obj.companyBriefing
                                 ? obj.companyBriefing
-                                : "Enter Website Link"
+                                : ""
                           }
                           companyBriefing={
                             obj.companyBriefing ? obj.companyBriefing : ""

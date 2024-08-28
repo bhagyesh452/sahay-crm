@@ -8,9 +8,9 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { GiInfo } from "react-icons/gi";
 
-const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData, companyBriefing }) => {
+const WebsiteLink = ({ companyName, serviceName, onlyLink,websiteLink, refreshData, companyBriefing }) => {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [link, setLink] = useState("");
+    const [link, setLink] = useState(onlyLink);
     const [error, setError] = useState('');
     const [openWebsiteLinkPopup, setOpenWebsitePopup] = useState(false);
     const [briefing, setBriefing] = useState(companyBriefing);

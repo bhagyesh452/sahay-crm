@@ -4,7 +4,8 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
 
-const FilterableTable = ({ activeTab, 
+const FilterableTable = ({ 
+    activeTab, 
     filteredData, 
     data, 
     filterField, 
@@ -12,7 +13,8 @@ const FilterableTable = ({ activeTab,
     completeData, 
     dataForFilter, 
     activeFilters ,
-    allFilterFields}) => {
+    allFilterFields,
+    noofItems}) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -31,7 +33,6 @@ const FilterableTable = ({ activeTab,
         applyFilters(selectedFilters , filterField);
     }, [sortOrder]);
 
-    console.log("selectedFilter" , selectedFilters)
 
     useEffect(() => {
         if (filteredData && filteredData.length !== 0) {
@@ -122,6 +123,7 @@ const FilterableTable = ({ activeTab,
         // Ensure filters is always an object
         const safeFilters = filters || {};
         let dataToSort;
+        let numberOfFilteredItems = 0;
         // Combine all filters across different filter fields
         const allSelectedFilters = Object.values(safeFilters).flat();
 
@@ -176,8 +178,11 @@ const FilterableTable = ({ activeTab,
                         }
                         return columnFilters.includes(String(item[column]));
                     });
+                    
                     return match;
                 });
+                numberOfFilteredItems = dataToSort ? dataToSort.length : 0;
+                noofItems(numberOfFilteredItems)
             }
 
             // Apply sorting based on sortOrder
@@ -268,6 +273,8 @@ const FilterableTable = ({ activeTab,
                     });
                     return match;
                 });
+                numberOfFilteredItems = dataToSort ? dataToSort.length : 0;
+                noofItems(numberOfFilteredItems)
             }
 
             // Apply sorting based on sortOrder
@@ -311,7 +318,7 @@ const FilterableTable = ({ activeTab,
             }
         }
 
-        onFilter(dataToSort);
+        onFilter(dataToSort);  
     };
 
     const handleSelectAll = () => {
@@ -350,6 +357,7 @@ const FilterableTable = ({ activeTab,
             const { data, totalPages } = response.data;
             onFilter(data);
             allFilterFields([])
+            noofItems(0);
     
         } catch (error) {
             console.error("Error fetching complete data", error.message);
@@ -404,19 +412,6 @@ const FilterableTable = ({ activeTab,
                             Select All
                         </label>
                     </div>
-                    {/* <div className="inco-subFilter d-flex">
-                        <div style={{ marginRight: "5px" }}>
-                            <input
-                                type="checkbox"
-                                checked={selectedFilters.length === 0}
-                                onChange={()=>{
-                                    handleClearAll()}}
-                            />
-                        </div>
-                        <div className="filter-val">
-                            Clear All
-                        </div>
-                    </div> */}
                 </div>
                 <div className="inco_inner">
                     {columnValues.map(value => (

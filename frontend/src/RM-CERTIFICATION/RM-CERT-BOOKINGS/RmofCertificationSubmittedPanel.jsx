@@ -41,7 +41,7 @@ import FilterableTable from '../Extra-Components/FilterableTable';
 
 
 
-function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
+function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredData, showingFilterIcon ,activeTab }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -75,6 +75,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
   const [activeFilterField, setActiveFilterField] = useState(null);
   const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
   const fieldRefs = useRef({});
+  const [noOfAvailableData, setnoOfAvailableData] = useState(0)
 
 
 
@@ -156,29 +157,29 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
     const updateDocumentInState = (updatedDocument) => {
       console.log(updatedDocument)
       setRmServicesData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setcompleteRmData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setdataToFilter(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
-  };
-  socket.on("adminexecutive-general-status-updated", (res) => {
+    };
+    socket.on("adminexecutive-general-status-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
-  socket.on("adminexecutive-letter-updated", (res) => {
+
+    });
+    socket.on("adminexecutive-letter-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
+
+    });
     return () => {
       socket.disconnect();
     };
@@ -470,6 +471,18 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
 
     // });
   };
+
+  useEffect(() => {
+    if (noOfAvailableData) {
+      showingFilterIcon(true)
+      totalFilteredData(noOfAvailableData)
+    } else {
+      showingFilterIcon(false)
+      totalFilteredData(0)
+    }
+
+  }, [noOfAvailableData, activeTab]);
+
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   useEffect(() => {
@@ -525,6 +538,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -559,6 +573,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -593,6 +608,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -627,6 +643,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -662,6 +679,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -696,6 +714,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -731,6 +750,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -765,6 +785,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -799,6 +820,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -833,6 +855,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -867,6 +890,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -900,6 +924,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -933,6 +958,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -966,6 +992,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -997,6 +1024,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1030,6 +1058,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1063,6 +1092,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1095,6 +1125,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1128,6 +1159,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1161,190 +1193,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                            allFilterFields={setActiveFilterFields}
-                            filteredData={filteredData}
-                            activeTab={"Submitted"}
-                            data={rmServicesData}
-                            filterField={activeFilterField}
-                            onFilter={handleFilter}
-                            completeData={completeRmData}
-                            dataForFilter={dataToFilter}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </th>
-                  <th>
-                    <div
-                      className='d-flex align-items-center justify-content-center position-relative'
-                    >
-                      <div ref={el => fieldRefs.current['bookingDate'] = el}>
-                        Booking Date
-                      </div>
-
-                      <div className='RM_filter_icon'>
-                        {isActiveField('bookingDate') ? (
-                          <FaFilter onClick={() => handleFilterClick("bookingDate")} />
-                        ) : (
-                          <BsFilter onClick={() => handleFilterClick("bookingDate")} />
-                        )}
-                      </div>
-                    </div></th>
-                  <th>
-                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                      <div ref={el => fieldRefs.current['bdeName'] = el}>
-                        BDE Name
-                      </div>
-
-                      <div className='RM_filter_icon'>
-                        {isActiveField('bdeName') ? (
-                          <FaFilter onClick={() => handleFilterClick("bdeName")} />
-                        ) : (
-                          <BsFilter onClick={() => handleFilterClick("bdeName")} />
-                        )}
-                      </div>
-                      {showFilterMenu && activeFilterField === 'bookingDate' && (
-                        <div
-                          ref={filterMenuRef}
-                          className="filter-menu"
-                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                        >
-                          <FilterableTable
-                            allFilterFields={setActiveFilterFields}
-                            filteredData={filteredData}
-                            activeTab={"Submitted"}
-                            data={rmServicesData}
-                            filterField={activeFilterField}
-                            onFilter={handleFilter}
-                            completeData={completeRmData}
-                            dataForFilter={dataToFilter}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </th>
-                  <th>
-                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                      <div ref={el => fieldRefs.current['bdmName'] = el}>
-                        BDM Name
-                      </div>
-
-                      <div className='RM_filter_icon'>
-                        {isActiveField('bdmName') ? (
-                          <FaFilter onClick={() => handleFilterClick("bdmName")} />
-                        ) : (
-                          <BsFilter onClick={() => handleFilterClick("bdmName")} />
-                        )}
-                      </div>
-                      {/* ---------------------filter component--------------------------- */}
-                      {showFilterMenu && activeFilterField === 'bdeName' && (
-                        <div
-                          ref={filterMenuRef}
-                          className="filter-menu"
-                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                        >
-                          <FilterableTable
-                            allFilterFields={setActiveFilterFields}
-                            filteredData={filteredData}
-                            activeTab={"Submitted"}
-                            data={rmServicesData}
-                            filterField={activeFilterField}
-                            onFilter={handleFilter}
-                            completeData={completeRmData}
-                            dataForFilter={dataToFilter}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </th>
-                  <th>
-                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                      <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
-                        Total Payment
-                      </div>
-
-                      <div className='RM_filter_icon'>
-                        {isActiveField('totalPaymentWGST') ? (
-                          <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
-                        ) : (
-                          <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
-                        )}
-                      </div>
-                      {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
-                        <div
-                          ref={filterMenuRef}
-                          className="filter-menu"
-                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                        >
-                          <FilterableTable
-                            allFilterFields={setActiveFilterFields}
-                            filteredData={filteredData}
-                            activeTab={"Submitted"}
-                            data={rmServicesData}
-                            filterField={activeFilterField}
-                            onFilter={handleFilter}
-                            completeData={completeRmData}
-                            dataForFilter={dataToFilter}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </th>
-                  <th>
-                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                      <div ref={el => fieldRefs.current['receivedPayment'] = el}>
-                        Recieved Payment
-                      </div>
-
-                      <div className='RM_filter_icon'>
-                        {isActiveField('receivedPayment') ? (
-                          <FaFilter onClick={() => handleFilterClick("receivedPayment")} />
-                        ) : (
-                          <BsFilter onClick={() => handleFilterClick("receivedPayment")} />
-                        )}
-                      </div>
-                      {/* ---------------------filter component--------------------------- */}
-                      {showFilterMenu && activeFilterField === 'receivedPayment' && (
-                        <div
-                          ref={filterMenuRef}
-                          className="filter-menu"
-                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                        >
-                          <FilterableTable
-                            allFilterFields={setActiveFilterFields}
-                            filteredData={filteredData}
-                            activeTab={"Submitted"}
-                            data={rmServicesData}
-                            filterField={activeFilterField}
-                            onFilter={handleFilter}
-                            completeData={completeRmData}
-                            dataForFilter={dataToFilter}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </th>
-                  <th>
-                    <div className='d-flex align-items-center justify-content-center position-relative'>
-                      <div ref={el => fieldRefs.current['pendingPayment'] = el}>
-                        Pending Payment
-                      </div>
-
-                      <div className='RM_filter_icon'>
-                        {isActiveField('pendingPayment') ? (
-                          <FaFilter onClick={() => handleFilterClick("pendingPayment")} />
-                        ) : (
-                          <BsFilter onClick={() => handleFilterClick("pendingPayment")} />
-                        )}
-                      </div>
-                      {/* ---------------------filter component--------------------------- */}
-                      {showFilterMenu && activeFilterField === 'pendingPayment' && (
-                        <div
-                          ref={filterMenuRef}
-                          className="filter-menu"
-                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                        >
-                          <FilterableTable
+                          noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1453,6 +1302,195 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                                                     />
                                                 </div>
                                             )} */}
+                    </div>
+                  </th>
+                  <th>
+                    <div
+                      className='d-flex align-items-center justify-content-center position-relative'
+                    >
+                      <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                        Booking Date
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('bookingDate') ? (
+                          <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                        )}
+                      </div>
+                    </div></th>
+                  <th>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['bdeName'] = el}>
+                        BDE Name
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('bdeName') ? (
+                          <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                        )}
+                      </div>
+                      {showFilterMenu && activeFilterField === 'bookingDate' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                          noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['bdmName'] = el}>
+                        BDM Name
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('bdmName') ? (
+                          <FaFilter onClick={() => handleFilterClick("bdmName")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("bdmName")} />
+                        )}
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {showFilterMenu && activeFilterField === 'bdeName' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                          noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['totalPaymentWGST'] = el}>
+                        Total Payment
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('totalPaymentWGST') ? (
+                          <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                        )}
+                      </div>
+                      {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                          noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['receivedPayment'] = el}>
+                        Recieved Payment
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('receivedPayment') ? (
+                          <FaFilter onClick={() => handleFilterClick("receivedPayment")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("receivedPayment")} />
+                        )}
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {showFilterMenu && activeFilterField === 'receivedPayment' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                          noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                  <th>
+                    <div className='d-flex align-items-center justify-content-center position-relative'>
+                      <div ref={el => fieldRefs.current['pendingPayment'] = el}>
+                        Pending Payment
+                      </div>
+
+                      <div className='RM_filter_icon'>
+                        {isActiveField('pendingPayment') ? (
+                          <FaFilter onClick={() => handleFilterClick("pendingPayment")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("pendingPayment")} />
+                        )}
+                      </div>
+                      {/* ---------------------filter component--------------------------- */}
+                      {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                          noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th className="rm-sticky-action">Action</th>
@@ -1583,15 +1621,16 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           companyName={obj["Company Name"]}
                           serviceName={obj.serviceName}
                           refreshData={refreshData}
-                          companyBriefing={
-                            obj.companyBriefing ? obj.companyBriefing : ""
-                          }
+                          onlyLink={obj.websiteLink ? obj.websiteLink : ""}
                           websiteLink={
                             obj.websiteLink
                               ? obj.websiteLink
                               : obj.companyBriefing
                                 ? obj.companyBriefing
-                                : "Enter Website Link"
+                                : ""
+                          }
+                          companyBriefing={
+                            obj.companyBriefing ? obj.companyBriefing : ""
                           }
                         />
                       </td>
@@ -1746,47 +1785,6 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                           mainStatus={obj.mainCategoryStatus}
                         />
                       </td>
-                      <td>{formatDatePro(obj.bookingDate)}</td>
-                      <td>
-                        <div className="d-flex align-items-center justify-content-center">
-                          <div>{obj.bdeName}</div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center justify-content-center">
-                          <div>{obj.bdmName}</div>
-                        </div>
-                      </td>
-                      <td>
-                        ₹{" "}
-                        {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString(
-                          "en-IN"
-                        )}
-                      </td>
-                      <td>
-                        ₹{" "}
-                        {(
-                          parseInt(
-                            (obj.paymentTerms === "Full Advanced"
-                              ? obj.totalPaymentWGST
-                              : obj.firstPayment) || 0,
-                            10
-                          ) + parseInt(obj.pendingRecievedPayment || 0, 10)
-                        ).toLocaleString("en-IN")}
-                      </td>
-                      <td>
-                        ₹{" "}
-                        {(
-                          parseInt(obj.totalPaymentWGST || 0, 10) -
-                          (parseInt(
-                            (obj.paymentTerms === "Full Advanced"
-                              ? obj.totalPaymentWGST
-                              : obj.firstPayment) || 0,
-                            10
-                          ) +
-                            parseInt(obj.pendingRecievedPayment || 0, 10))
-                        ).toLocaleString("en-IN")}
-                      </td>
                       <td>
                         {obj.subCategoryStatus === "2nd Time Submitted"
                           ? "2nd"
@@ -1850,6 +1848,47 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter }) {
                       </td>
 
                       <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                      <td>{formatDatePro(obj.bookingDate)}</td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-center">
+                          <div>{obj.bdeName}</div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-center">
+                          <div>{obj.bdmName}</div>
+                        </div>
+                      </td>
+                      <td>
+                        ₹{" "}
+                        {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString(
+                          "en-IN"
+                        )}
+                      </td>
+                      <td>
+                        ₹{" "}
+                        {(
+                          parseInt(
+                            (obj.paymentTerms === "Full Advanced"
+                              ? obj.totalPaymentWGST
+                              : obj.firstPayment) || 0,
+                            10
+                          ) + parseInt(obj.pendingRecievedPayment || 0, 10)
+                        ).toLocaleString("en-IN")}
+                      </td>
+                      <td>
+                        ₹{" "}
+                        {(
+                          parseInt(obj.totalPaymentWGST || 0, 10) -
+                          (parseInt(
+                            (obj.paymentTerms === "Full Advanced"
+                              ? obj.totalPaymentWGST
+                              : obj.firstPayment) || 0,
+                            10
+                          ) +
+                            parseInt(obj.pendingRecievedPayment || 0, 10))
+                        ).toLocaleString("en-IN")}
+                      </td>
                       <td className="rm-sticky-action">
                         <button
                           className="action-btn action-btn-primary"
