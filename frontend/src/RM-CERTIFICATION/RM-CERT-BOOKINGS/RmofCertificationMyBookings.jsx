@@ -214,10 +214,29 @@ function RmofCertificationMyBookings() {
                                         />
                                     </div>
                                 </div>
-                                {showNoOfFilteredData &&
-                                    <div className="selection-data" >
-                                        FilteredData : <b>{noOfFilteredData}</b>
-                                    </div>}
+                                {showNoOfFilteredData && (
+                                    <div className="selection-data">
+                                        Result : <b>
+                                            {noOfFilteredData} /
+                                            {activeTab === "General"
+                                                ? totalDocumentsGeneral
+                                                : activeTab === "InProcess"
+                                                    ? totalDocumentsProcess
+                                                    : activeTab === "ReadyToSubmit"
+                                                        ? totalDocumentsReadyToSubmit
+                                                        : activeTab === "Submited"
+                                                            ? totalDocumentsSubmitted
+                                                            : activeTab === "Approved"
+                                                                ? totalDocumentsApproved
+                                                                : activeTab === "Hold"
+                                                                    ? totalDocumentsHold
+                                                                    : activeTab === "Defaulter"
+                                                                        ? totalDocumentsDefaulter
+                                                                        : 0}
+                                        </b>
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     </div>

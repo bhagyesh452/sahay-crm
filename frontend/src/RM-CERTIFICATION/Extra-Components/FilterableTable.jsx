@@ -14,7 +14,8 @@ const FilterableTable = ({
     dataForFilter, 
     activeFilters ,
     allFilterFields,
-    noofItems}) => {
+    noofItems,
+    showingMenu}) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -318,7 +319,7 @@ const FilterableTable = ({
             }
         }
 
-        onFilter(dataToSort);  
+        onFilter(dataToSort); 
     };
 
     const handleSelectAll = () => {
@@ -358,6 +359,7 @@ const FilterableTable = ({
             onFilter(data);
             allFilterFields([])
             noofItems(0);
+            showingMenu(false)
     
         } catch (error) {
             console.error("Error fetching complete data", error.message);
@@ -438,6 +440,7 @@ const FilterableTable = ({
                     style={{backgroundColor:"#e7e5e0"}}
                     onClick={()=>{
                     applyFilters(selectedFilters ,filterField )
+                    showingMenu(false)
                 }}>
                     Apply Filters
                     </button>
