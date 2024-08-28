@@ -403,7 +403,7 @@ const FilterableTable = ({ activeTab,
                             Select All
                         </div>
                     </div>
-                    <div className="inco-subFilter d-flex">
+                    {/* <div className="inco-subFilter d-flex">
                         <div style={{ marginRight: "5px" }}>
                             <input
                                 type="checkbox"
@@ -415,7 +415,7 @@ const FilterableTable = ({ activeTab,
                         <div className="filter-val">
                             Clear All
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="inco_inner">
                     {columnValues.map(value => (
@@ -434,7 +434,8 @@ const FilterableTable = ({ activeTab,
                         </div>
                     ))}
                 </div>
-                <div>
+                <div className='d-flex align-items-center justify-content-between'>
+                    <div className='w-50'>
                     <button className='filter-footer-btn btn-yellow'
                     style={{backgroundColor:"#e7e5e0"}}
                     onClick={()=>{
@@ -442,6 +443,16 @@ const FilterableTable = ({ activeTab,
                 }}>
                     Apply Filters
                     </button>
+                        </div>
+                   <div className='w-50'>
+                   <button className='filter-footer-btn btn-yellow'
+                    style={{backgroundColor:"#e7e5e0"}}
+                    onClick={()=>{
+                    handleClearAll()
+                }}>
+                    Clear Filters
+                    </button>
+                   </div>
                     </div>
             </div>
         </div >
