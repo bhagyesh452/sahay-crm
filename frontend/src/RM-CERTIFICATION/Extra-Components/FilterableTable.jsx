@@ -58,6 +58,9 @@ const FilterableTable = ({ activeTab,
                     ).toLocaleString('en-IN');
                     return pendingPayment;
                 }
+                if (filterField === 'withDSC') {
+                    return item[filterField] ? 'Yes' : 'No';
+                }
                 return item[filterField];
             }).filter(Boolean);
             setColumnValues([...new Set(values)]); // Ensure unique values
@@ -161,6 +164,9 @@ const FilterableTable = ({ activeTab,
                         if (column === 'pendingPayment') {
                             const pendingPayment = item.pendingPayment.toLocaleString('en-IN');
                             return columnFilters.includes(pendingPayment);
+                        }
+                        if (column === 'withDSC') {
+                            return columnFilters.includes(item.withDSC ? 'Yes' : 'No');
                         }
                         return columnFilters.includes(String(item[column]));
                     });
