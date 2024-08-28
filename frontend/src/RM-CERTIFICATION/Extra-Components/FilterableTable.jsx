@@ -122,7 +122,6 @@ const FilterableTable = ({ activeTab,
         // Ensure filters is always an object
         const safeFilters = filters || {};
         let dataToSort;
-
         // Combine all filters across different filter fields
         const allSelectedFilters = Object.values(safeFilters).flat();
 
@@ -154,6 +153,13 @@ const FilterableTable = ({ activeTab,
 
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
+                // Update the active filter fields array
+        allFilterFields(prevFields => {
+
+            // Add the field if it's not active
+            return [...prevFields, column];
+
+        });
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
@@ -215,6 +221,7 @@ const FilterableTable = ({ activeTab,
             }
         } else {
             dataToSort = dataForFilter.map(item => {
+                // Update the active filter fields arra
                 // Add numeric fields for sorting
                 const receivedPayment = (
                     parseInt(
@@ -240,6 +247,12 @@ const FilterableTable = ({ activeTab,
 
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
+                allFilterFields(prevFields => {
+
+                    // Add the field if it's not active
+                    return [...prevFields, column];
+        
+                });
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];

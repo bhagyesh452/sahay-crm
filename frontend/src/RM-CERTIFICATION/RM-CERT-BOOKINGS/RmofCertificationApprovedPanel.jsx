@@ -410,13 +410,13 @@ function RmofCertificationApprovedPanel({ searchText, showFilter }) {
       setFilterPosition({ top: rect.bottom, left: rect.left });
     }
 
-    // Update the active filter fields array
-    setActiveFilterFields(prevFields => {
+    // // Update the active filter fields array
+    // setActiveFilterFields(prevFields => {
 
-      // Add the field if it's not active
-      return [...prevFields, field];
+    //   // Add the field if it's not active
+    //   return [...prevFields, field];
 
-    });
+    // });
   };
   const isActiveField = (field) => activeFilterFields.includes(field);
 

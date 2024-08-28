@@ -372,13 +372,13 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
 
-        // Update the active filter fields array
-        setActiveFilterFields(prevFields => {
+        // // Update the active filter fields array
+        // setActiveFilterFields(prevFields => {
 
-            // Add the field if it's not active
-            return [...prevFields, field];
+        //     // Add the field if it's not active
+        //     return [...prevFields, field];
 
-        });
+        // });
     };
     const isActiveField = (field) => activeFilterFields.includes(field);
 
@@ -401,7 +401,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
     //     setPage(1); // Reset the page to 1 when a new search or filter is applied
     // }, [searchText, activeFilterField]);
 
-
+console.log("activeFilterFields" , activeFilterFields)
 
 
     return (
