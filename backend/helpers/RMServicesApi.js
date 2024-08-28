@@ -2520,6 +2520,38 @@ router.post(`/post-enable-industry/`, async (req, res) => {
   }
 });
 
+router.post(`/post-disasble-industry/`, async (req, res) => {
+  const { companyName, serviceName, isIndustryEnabled } = req.body;
+  console.log("industry", serviceName, companyName, industryOption)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName,
+      },
+      {
+        isIndustryEnabled: isIndustryEnabled,
+      },
+      { new: true }
+    );
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-industry-enabled')
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 router.post(`/post-save-sector/`, async (req, res) => {
   const { companyName, serviceName, sectorOption, isIndustryEnabled } =
     req.body;

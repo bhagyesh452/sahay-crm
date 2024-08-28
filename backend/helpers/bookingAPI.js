@@ -5909,8 +5909,7 @@ router.post(
 );
 
 
-router.post(
-  "/redesigned-update-morePayments/:CompanyName",
+router.post("/redesigned-update-morePayments/:CompanyName",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
