@@ -397,11 +397,12 @@ const FilterableTable = ({ activeTab,
                                 type="checkbox"
                                 checked={selectedFilters.length === columnValues.length}
                                 readOnly
+                                id='Select_All'
                             />
                         </div>
-                        <div className="filter-val">
+                        <label className="filter-val" for="Select_All">
                             Select All
-                        </div>
+                        </label>
                     </div>
                     {/* <div className="inco-subFilter d-flex">
                         <div style={{ marginRight: "5px" }}>
@@ -426,11 +427,13 @@ const FilterableTable = ({ activeTab,
                                     value={value}
                                     onChange={handleCheckboxChange}
                                     checked={selectedFilters[filterField]?.includes(String(value))}
+                                    id={value}
                                 />
                             </div>
-                            <div className="filter-val">
+                            <label className="filter-val" for={value}>
                                 {value}
-                            </div>
+                            </label>
+                            
                         </div>
                     ))}
                 </div>
