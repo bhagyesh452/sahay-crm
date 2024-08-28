@@ -235,15 +235,15 @@ router.post("/post-rmservices-from-listview", async (req, res) => {
   }
 });
 
-// router.get("/rm-sevicesgetrequest", async (req, res) => {
-//   try {
-//     const response = await RMCertificationModel.find();
-//     res.status(200).json(response);
-//   } catch (error) {
-//     console.log("Error fetching data", error);
-//     res.status(500).send({ message: "Internal Server Error" });
-//   }
-// });
+router.get("/rm-sevicesgetrequest/justfortest", async (req, res) => {
+  try {
+    const response = await RMCertificationModel.find();
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
 
 // router.get('/rm-sevicesgetrequest', async (req, res) => {
 //   try {
@@ -517,8 +517,8 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
         .skip(skip)
         .limit(parseInt(limit));
     }
-    console.log(activeTab)
-    console.log(response)
+    //console.log(activeTab)
+    //console.log(response)
     const totalDocuments = await RMCertificationModel.countDocuments(query);
 
     const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
@@ -751,8 +751,8 @@ router.get("/filter-rmofcertification-bookings", async (req, res) => {
       .limit(limit)
       .lean();
     const dataCount = await RedesignedLeadformModel.countDocuments(baseQuery);
-    console.log(baseQuery);
-    console.log("data", data.length, dataCount);
+    //console.log(baseQuery);
+    //console.log("data", data.length, dataCount);
     res.status(200).json({
       data: data,
       currentPage: page,
@@ -882,8 +882,8 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
       const companyName = req.params.CompanyName;
       const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
       const socketIO = req.io;
-      console.log("rmservicesmainbooking", rmServicesMainBooking);
-      console.log("rmservicesmorebooking", rmServicesMoreBooking);
+      //console.log("rmservicesmainbooking", rmServicesMainBooking);
+      //console.log("rmservicesmorebooking", rmServicesMoreBooking);
       // Fetch the document
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
@@ -908,7 +908,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
         const relevantServices = booking.services.filter((service) =>
           rmServicesMoreBooking.includes(service.serviceName)
         );
-        console.log("relevantservices", relevantServices);
+        //console.log("relevantservices", relevantServices);
         if (relevantServices.length > 0) {
           const currentServices =
             booking.servicesTakenByRmOfCertification || [];
@@ -951,8 +951,8 @@ router.post("/postsdminselectedservicestobooking/:CompanyName",
       const companyName = req.params.CompanyName;
       const { adminServicesMainBooking, adminServicesMoreBooking } = req.body;
       const socketIO = req.io;
-      console.log("rmservicesmainbooking", adminServicesMainBooking);
-      console.log("rmservicesmorebooking", adminServicesMoreBooking);
+      //console.log("rmservicesmainbooking", adminServicesMainBooking);
+      //console.log("rmservicesmorebooking", adminServicesMoreBooking);
       // Fetch the document
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
@@ -977,7 +977,7 @@ router.post("/postsdminselectedservicestobooking/:CompanyName",
         const relevantServices = booking.services.filter((service) =>
           adminServicesMoreBooking.includes(service.serviceName)
         );
-        console.log("relevantservices", relevantServices);
+        //console.log("relevantservices", relevantServices);
         if (relevantServices.length > 0) {
           const currentServices = booking.servicesTakenByAdminExecutive || [];
           const uniqueMoreBookingServices = Array.from(
@@ -1099,8 +1099,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       //   console.log("hello wworld");
       //   runTestScript(companyName);
       // }
-      console.log("updatedcompany", updatedCompany);
-      console.log("submittedOn", submittedOn);
+      //console.log("updatedcompany", updatedCompany);
+      //console.log("submittedOn", submittedOn);
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");
@@ -1354,7 +1354,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
       //   console.log("hello wworld")
       //   runTestScript(companyName);
       // }
-      console.log("updatedcompany", updateCompanyRm);
+      //console.log("updatedcompany", updateCompanyRm);
 
       // if (!updatedCompany) {
       //   console.error("Failed to save the updated document");
@@ -1529,7 +1529,7 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
@@ -1751,7 +1751,7 @@ router.post(`/post-save-phoneno-adminexecutive/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1802,7 +1802,7 @@ router.post(`/post-save-dscemailid-adminexecutive/`, async (req, res) => {
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { dscEmailId: charges };
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1844,7 +1844,7 @@ router.post(`/post-save-otpinboxno-adminexecutive/`, async (req, res) => {
       serviceName: serviceName,
     });
 
-    console.log("company", company)
+    //console.log("company", company)
 
     // Check if the company exists
     if (!company) {
@@ -1855,7 +1855,7 @@ router.post(`/post-save-otpinboxno-adminexecutive/`, async (req, res) => {
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { otpInboxNo: charges };
 
-    console.log("updateFields", updateFields);
+    //("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1917,7 +1917,7 @@ router.post(`/update-dscType-adminexecutive/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1979,7 +1979,7 @@ router.post(`/update-dscValidity-adminexecutive/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -2110,7 +2110,7 @@ router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
     //   }
 
     // }
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
     // Perform the update
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       {
@@ -2316,7 +2316,7 @@ router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
 
 router.post(`/post-save-reimbursemntdate-adminexecutive/`, async (req, res) => {
   const { cname, sname, value } = req.body;
-  console.log("date", value);
+  //console.log("date", value);
   //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
@@ -2655,7 +2655,7 @@ router.post(
     const { companyName } = req.params;
     const { displayOfDateForRmCert } = req.body;
     const socketIO = req.io;
-    console.log("date", displayOfDateForRmCert);
+    //console.log("date", displayOfDateForRmCert);
 
     try {
       const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
@@ -2690,7 +2690,7 @@ router.post(
     const { companyName } = req.params;
     const { displayOfDateForAdminExecutive } = req.body;
     const socketIO = req.io;
-    console.log("date", displayOfDateForAdminExecutive);
+    //console.log("date", displayOfDateForAdminExecutive);
 
     try {
       const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
@@ -3173,7 +3173,7 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
       { new: true }
     );
 
-    console.log("updatedcompany", updatedCompany);
+    //console.log("updatedcompany", updatedCompany);
     if (!updatedCompany) {
       return res
         .status(400)
@@ -3231,7 +3231,7 @@ router.post("/adminexecutive-update-remainingpayments", async (req, res) => {
       },
       { new: true }
     );
-    console.log("adminupdated", updatedCompany);
+    //console.log("adminupdated", updatedCompany);
 
     if (!updatedCompany) {
       return res

@@ -288,19 +288,21 @@ router.post("/update-redesigned-final-form/:CompanyName",
       ...boom, remainingPayments: []
     }
     const findCompany = await RedesignedLeadformModel.findOne({
-      "Company Name" : companyName
+      "Company Name": companyName
     })
     const goingToUpdate =
       step4changed === "true" ? updatedDocWithoutId : updatedDocs;
     const tempDateToday = new Date();
 
-    const newGoingToUpdate = { ...goingToUpdate, 
-      lastActionDate: tempDateToday, 
-      servicesTakenByRmOfCertification:findCompany.servicesTakenByRmOfCertification,
-      servicesTakenByAdminExecutive:findCompany.servicesTakenByAdminExecutive}
+    const newGoingToUpdate = {
+      ...goingToUpdate,
+      lastActionDate: tempDateToday,
+      servicesTakenByRmOfCertification: findCompany.servicesTakenByRmOfCertification,
+      servicesTakenByAdminExecutive: findCompany.servicesTakenByAdminExecutive
+    }
     //console.log("newgoingtoupdate" , newGoingToUpdate)
-    console.log("boom" , boom)
-    console.log("findCompany" , findCompany)
+    console.log("boom", boom)
+    console.log("findCompany", findCompany)
 
     try {
       const companyData = await RedesignedLeadformModel.findOne({ "Company Name": companyName })
@@ -313,14 +315,34 @@ router.post("/update-redesigned-final-form/:CompanyName",
         // Set all properties except "moreBookings"
         { new: true } // Return the updated document
       );
-      
-      console.log("updateddocument" , newGoingToUpdate)
-      
-      // if (!updatedDocument) {
-      //   return res.status(404).json({ error: "Document not found" });
-      // }
+
+      if (boom["Company Number"] !== findCompany["Company Number"] ||
+        boom["Company Email"] !== findCompany["Company Email"] ||
+        boom.panNumber !== findCompany.panNumber) {
+        await RMCertificationModel.updateMany(
+          { "Company Name": companyName },
+          {
+            $set: {
+              "Company Number": boom["Company Number"],
+              "Company Email": boom["Company Email"],
+              panNumber: boom.panNumber
+            }
+          }
+        );
+        await AdminExecutiveModel.updateMany(
+          { "Company Name": companyName },
+          {
+            $set: {
+              "Company Number": boom["Company Number"],
+              "Company Email": boom["Company Email"],
+              panNumber: boom.panNumber
+            }
+          }
+        );
+      }
+      console.log("updateddocument", newGoingToUpdate)
       const serviceNames = companyData.services.map(service => service.serviceName);
-     
+
       // Update RMCertificationModel
       for (const serviceName of serviceNames) {
         const existingRmCertData = await RMCertificationModel.findOne({
@@ -334,7 +356,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
             service.serviceName === serviceName);
 
           if (serviceData) {
-           
+
             // Create updatedFields object to merge existing data with newGoingToUpdate
             const updatedFields = {
               ...existingRmCertData.toObject(), // Copy existing fields
@@ -364,7 +386,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
               lastActionDate: tempDateToday, // Update lastActionDate
             };
 
-            console.log("updatedfields" , updatedFields)
+            console.log("updatedfields", updatedFields)
 
             await RMCertificationModel.findOneAndUpdate(
               {
@@ -406,7 +428,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
             service.serviceName === serviceName);
 
           if (serviceData) {
-           
+
             // Create updatedFields object to merge existing data with newGoingToUpdate
             const updatedFields = {
               ...existingRmCertData.toObject(), // Copy existing fields
@@ -616,7 +638,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
-              paymentTerms:serviceData.paymentTerms,
+              paymentTerms: serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
@@ -692,7 +714,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
-              paymentTerms:serviceData.paymentTerms,
+              paymentTerms: serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
@@ -5372,7 +5394,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     if (updateMainBooking && updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
     }
-    
+
     socketIO.emit('booking-deleted');
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
@@ -5828,7 +5850,7 @@ router.post(
         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
         findObject.remainingPayments.$push
-        
+
         const totalPaymentWithGST = parseInt(findService.totalPaymentWGST) || 0;
         const firstPaymentNew = parseInt(findService.firstPayment) || 0;
         const receivedAmountExisting = (parseInt(findService.pendingRecievedAmount)) ?

@@ -178,11 +178,12 @@ function ManagerBookings() {
 
     try {
 
-      const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest/justfortest`);
       const ExecutiveDataResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`);
-      const servicesData = servicesResponse.data;
-      const newservicesdata = ExecutiveDataResponse.data
-      setRmServicesData(servicesData)
+      const servicedata = servicesResponse.data;
+      const newservicesdata = ExecutiveDataResponse.data;
+      console.log("rmdata" , servicedata)
+      setRmServicesData(servicedata)
       setAdminExecutiveData(newservicesdata)
 
     } catch (error) {
@@ -323,6 +324,7 @@ function ManagerBookings() {
     }
   };
 
+  console.log("rmservicesdata" , rmServicesData)
 
 
 
