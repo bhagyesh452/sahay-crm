@@ -362,14 +362,14 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
 
     useEffect(() => {
         if (noOfAvailableData) {
-            showingFilterIcon(true)
-            totalFilteredData(noOfAvailableData)
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
         } else {
-            showingFilterIcon(false)
-            totalFilteredData(0)
+          showingFilterIcon(false)
+          totalFilteredData(0)
         }
-
-    }, [noOfAvailableData, activeTab])
+    
+      }, [noOfAvailableData, activeTab])
 
 
     const handleFilterClick = (field) => {
@@ -414,8 +414,8 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     //     setPage(1); // Reset the page to 1 when a new search or filter is applied
     // }, [searchText, activeFilterField]);
 
-    console.log("filteredData", filteredData)
-    console.log("activeTab", activeTab)
+    //console.log("filteredData", filteredData)
+    //console.log("activeTab", activeTab)
     console.log("noofavaibaledatageneral" , noOfAvailableData)
     console.log("rmservicesdatageneral" , rmServicesData)
 
@@ -431,6 +431,14 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                             <CircularProgress color="inherit" />
                         </Backdrop>
                     )}
+                   
+                                    <div className="selection-data">
+                                        Result : <b>
+                                            {noOfAvailableData}
+                                          
+                                        </b>
+                                    </div>
+                                
                     {rmServicesData.length > 0 ? (
                         <table className="table table-vcenter table-nowrap rm_table">
                             <thead>

@@ -493,15 +493,14 @@ function RmofCertificationProcessPanel({
 
     useEffect(() => {
         if (noOfAvailableData) {
-            showingFilterIcon(true)
-            totalFilteredData(noOfAvailableData)
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
         } else {
-            showingFilterIcon(false)
-            totalFilteredData(0)
+          showingFilterIcon(false)
+          totalFilteredData(0)
         }
-
-    }, [noOfAvailableData, activeTab])
-
+    
+      }, [noOfAvailableData, activeTab])
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -543,10 +542,10 @@ function RmofCertificationProcessPanel({
         }
     }, []);
 
-    console.log("activeTab", activeTab)
-    console.log("filteredData", filteredData)
+    //console.log("activeTab", activeTab)
+    //console.log("filteredData", filteredData)
     console.log("noofavaibaledataprocess", noOfAvailableData)
-    console.log("rmservicesdataprocess", rmServicesData)
+    //console.log("rmservicesdataprocess", rmServicesData)
 
     return (
         <div>
@@ -560,6 +559,12 @@ function RmofCertificationProcessPanel({
                             <CircularProgress color="inherit" />
                         </Backdrop>
                     )}
+                    <div className="selection-data">
+                                        Result : <b>
+                                            {noOfAvailableData}
+                                          
+                                        </b>
+                                    </div>
                     {rmServicesData.length > 0 ? (
                         <table className="table table-vcenter table-nowrap rm_table_inprocess">
                             <thead>
@@ -668,7 +673,6 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
@@ -1248,7 +1252,6 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />

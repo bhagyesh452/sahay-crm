@@ -409,6 +409,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
     }
 
   }, [noOfAvailableData, activeTab])
+
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   useEffect(() => {

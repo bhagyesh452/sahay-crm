@@ -481,7 +481,8 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
       totalFilteredData(0)
     }
 
-  }, [noOfAvailableData, activeTab]);
+  }, [noOfAvailableData, activeTab])
+
 
   const isActiveField = (field) => activeFilterFields.includes(field);
 

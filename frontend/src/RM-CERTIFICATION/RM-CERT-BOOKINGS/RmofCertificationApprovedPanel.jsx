@@ -1265,6 +1265,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1302,6 +1303,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1339,6 +1341,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1374,6 +1377,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1408,6 +1412,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1443,6 +1448,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1478,6 +1484,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             onFilter={handleFilter}
                             completeData={completeRmData}
                             showingMenu={setShowFilterMenu}
+                            
                             dataForFilter={dataToFilter}
                           />
                         </div>
