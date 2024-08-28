@@ -84,7 +84,23 @@ const DscExpanceReimbursement = ({
         setStatusClass(getStatusClass(dscExpenseStatus));
     }, [dscExpenseStatus]);
 
-    const handleCloseDatePopup = () => {
+    
+    const handleCloseDatePopup = async() => {
+        console.log("expanseDate" , expenseDateNew)
+        if(!expenseDateNew){
+            try {
+                const response = await axios.post(`${secretKey}/rm-services/post-save-reimbursemnt-adminexecutive`, {
+                    companyName,
+                    serviceName,
+                    expenseReimbursementStatus: "Unpaid"
+                });
+                setStatus("Unpaid")
+                refreshData();
+                console.log("Status updated successfully:", response.data);
+            } catch (error) {
+                console.error("Error updating status:", error.message);
+            }
+        }
         setOpenDatePopup(false)
     }
 
@@ -109,13 +125,13 @@ const DscExpanceReimbursement = ({
         <section className="rm_status_dropdown d-flex align-items-center justify-content-around">
 
 
-            {expenseDateNew ?
+            {expenseDate ?
                 (<div>
                     Paid On {stringDateFormat(expenseDateNew)}
                 </div>)
                 : (
                     <select
-                        className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+                        className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
                         //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
                         aria-labelledby="dropdownMenuButton1"
                         onChange={(e) => handleStatusChange(e.target.value)}

@@ -46,7 +46,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 "Aviation & Others",
                 "Others"
             ],
-            "Airport": ["Others"],
+            "Airport Operations": ["Others"],
             "Advertising": [
                 'AdTech',
                 'Online Classified',
@@ -74,9 +74,9 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Others'
             ],
             "Animation": ["Others"],
-            "Virtual Reality": ["Others"],
-            "Architecture": ["Others"],
-            "Art": [
+            "AR/VR (Augmented + Virtual Reality)": ["Others"],
+            "Architecture/Interior Design": ["Others"],
+            "Art & Photography": [
                 'Handicraft',
                 'Art',
                 'Photography',
@@ -96,7 +96,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Diversified Chemicals',
                 'Others'
             ],
-            "Telecommunication": [
+            "Telecommunication & Networking": [
                 'Wireless',
                 'Integrated Communication Services',
                 'Network Technology Solutions',
@@ -111,7 +111,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Homebuilding',
                 'Others'
             ],
-            "Dating": ["Others"],
+            "Dating/Matrimonial": ["Others"],
             "Design": [
                 'Web Design',
                 'Industrial Design',
@@ -171,20 +171,20 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Jewellery',
                 'Others'
             ],
-            "Food": [
+            "Food & Beverages": [
                 'Restaurants',
                 'Food Processing',
                 'Microbrewery',
                 'Food Technology/Food Delivery',
                 'Others'
             ],
-            "Internet": [
+            "Internet of Things": [
                 'Smart Home',
                 'Manufacturing & Warehouse',
                 'Wearables',
                 'Others'
             ],
-            "Finance": [
+            "Finance Technology": [
                 'Crowdfunding',
                 'Mobile Wallets/Payments',
                 'Point of Sales',
@@ -202,7 +202,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Accounting',
                 'Others'
             ],
-            "Hardware": [
+            "Technology Hardware": [
                 'Embedded',
                 'Semiconductor',
                 'Electronics',
@@ -210,7 +210,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Manufacturing',
                 'Others'
             ],
-            "Healthcare": [
+            "Healthcare & Lifesciences": [
                 'Assistance Technology',
                 'Medical Devices/Biomedical',
                 'Health & Wellness',
@@ -250,7 +250,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Market Research',
                 'Others'
             ],
-            "Media and Entertainment": [
+            "Media & Entertainment": [
                 'Digital Media News',
                 'Digital Media Video',
                 'Digital Media Blogging',
@@ -264,7 +264,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
             ],
             "Nano Technology": ["Others"],
             "Pets and Animals": ["Others"],
-            "Commercial Services": [
+            "Professional & Commercial Services": [
                 'Environmental Services & Equipment',
                 'Commercial Printing Services',
                 'Employment Services',
@@ -284,7 +284,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Comparison Shopping',
                 'Others'
             ],
-            "Special Retailers": [
+            "Other Specialty Retailers": [
                 'Auto Vehicles, Parts & Service Retailers',
                 'Home Improvement Products & Services Retailers',
                 'Home Furnishings Retailers',
@@ -306,7 +306,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Public/Citizen Security Solutions',
                 'Others'
             ],
-            "Household Services": [
+            "House-Hold Services": [
                 'Personal Care',
                 'Laundry',
                 'Baby Care',
@@ -324,12 +324,12 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Sports Promotion and Networking',
                 'Others'
             ],
-            "Games": [
+            "Toys And Games": [
                 'Physical Toys and Games',
                 'Virtual Games'
             ],
             "Logistics": ["Others"],
-            "Textiles": [
+            "Textiles & Apparel": [
                 'Leather Textiles Goods',
                 'Non-Leather Textiles Goods',
                 'Apparel & Accessories',
@@ -337,7 +337,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Non-Leather Footwear',
                 'Others'
             ],
-            "Transportation": [
+            "Transportation & Storage": [
                 'Freight & Logistics Services',
                 'Passenger Transportation Services',
                 'Transport Infrastructure',
@@ -345,7 +345,7 @@ const SectorDropdown = ({ companyName, serviceName, refreshData, sectorOptions, 
                 'Others'
             ],
             "Passenger Experience": ["Others"],
-            "Travel": [
+            "Travel & Tourism": [
                 'Holiday Rentals',
                 'Hotel',
                 'Experiential Travel',

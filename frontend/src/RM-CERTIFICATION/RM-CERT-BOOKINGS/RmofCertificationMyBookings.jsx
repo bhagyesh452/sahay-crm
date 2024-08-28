@@ -106,14 +106,52 @@ function RmofCertificationMyBookings() {
         }
     };
 
-    // Fetch data from backend with optional search query
-    const fetchRMServicesData = async (searchQuery = "") => {
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0)
+    const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0)
+    const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0)
+    const [totalDocumentsReadyToSubmit, setTotalDocumentsReadyToSubmit] = useState(0)
+    const [totalDocumentsSubmitted, setTotalDocumentsSubmitted] = useState(0)
+    const [totalDocumentsHold, setTotalDocumentsHold] = useState(0)
+    const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0)
+
+    const fetchRMServicesData = async (searchQuery = "", page = 1) => {
         try {
             setCurrentDataLoading(true);
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-                params: { search: searchQuery }
+                params: { search: searchQuery, page, activeTab: activeTab }
             });
-            setRmServicesData(response.data);
+
+            const { data,
+                totalPages,
+                totalDocumentsGeneral,
+                totalDocumentsProcess,
+                totalDocumentsDefaulter,
+                totalDocumentsReadyToSubmit,
+                totalDocumentsSubmitted,
+                totalDocumentsHold,
+                totalDocumentsApproved,
+
+            } = response.data;
+            console.log("response", response.data)
+
+            // If it's a search query, replace the data; otherwise, append for pagination
+            if (page === 1) {
+                // This is either the first page load or a search operation
+                setRmServicesData(data);
+            } else {
+                // This is a pagination request
+                setRmServicesData(prevData => [...prevData, ...data]);
+            }
+            setTotalDocumentsProcess(totalDocumentsProcess)
+            setTotalDocumentsGeneral(totalDocumentsGeneral)
+            setTotalDocumentsDefaulter(totalDocumentsDefaulter)
+            setTotalDocumentsReadyToSubmit(totalDocumentsReadyToSubmit)
+            setTotalDocumentsSubmitted(totalDocumentsSubmitted)
+            setTotalDocumentsHold(totalDocumentsHold)
+            setTotalDocumentsApproved(totalDocumentsApproved)
+            setTotalPages(totalPages); // Update total pages
         } catch (error) {
             console.error("Error fetching data", error.message);
         } finally {
@@ -121,12 +159,13 @@ function RmofCertificationMyBookings() {
         }
     };
 
+
     useEffect(() => {
-        fetchRMServicesData(); // Fetch data initially
+        fetchRMServicesData("", page); // Fetch data initially
     }, [employeeData]);
 
     useEffect(() => {
-        fetchRMServicesData(search); // Fetch data when search query changes
+        fetchRMServicesData(search , page); // Fetch data when search query changes
     }, [search]);
 
     const handleSearchChange = (event) => {
@@ -167,8 +206,8 @@ function RmofCertificationMyBookings() {
                                             name="bdeName-search"
                                             id="bdeName-search"
                                             value={search}
-                                            onChange={handleSearchChange} 
-                                            />
+                                            onChange={handleSearchChange}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -188,7 +227,8 @@ function RmofCertificationMyBookings() {
                                                         General
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "General").length : 0}
+                                                        {totalDocumentsGeneral}
+                                                        {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "General").length : 0} */}
                                                     </div>
                                                 </div>
                                             </a>
@@ -202,7 +242,8 @@ function RmofCertificationMyBookings() {
                                                         In Process
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0}
+                                                        {totalDocumentsProcess}
+                                                        {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0} */}
 
                                                     </div>
                                                 </div>
@@ -216,8 +257,8 @@ function RmofCertificationMyBookings() {
                                                         Ready To Submit
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0}
-
+                                                        {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0} */}
+                                                        {totalDocumentsReadyToSubmit}
                                                     </div>
                                                 </div>
                                             </a>
@@ -230,35 +271,38 @@ function RmofCertificationMyBookings() {
                                                         Submited
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0}
-
+                                                        {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0} */}
+                                                        {totalDocumentsSubmitted}
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link" data-bs-toggle="tab" href="#Approved"
-                                                onClick={() => setActiveTab("Approved")}>
+                                                onClick={() => setActiveTab("Approved")}
+                                                >
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Approved
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0}
-
+                                                        {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0} */}
+                                                        {totalDocumentsApproved}
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold" onClick={() => setActiveTab("Hold")}>
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold" 
+                                            onClick={() => setActiveTab("Hold")}
+                                            >
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Hold
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0}
-
+                                                        {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0} */}
+                                                        {totalDocumentsHold}
                                                     </div>
                                                 </div>
                                             </a>
@@ -270,8 +314,8 @@ function RmofCertificationMyBookings() {
                                                         Defaulter
                                                     </div>
                                                     <div className="rm_tsn_bdge">
-                                                        {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0}
-
+                                                        {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0} */}
+                                                        {totalDocumentsDefaulter}
                                                     </div>
                                                 </div>
                                             </a>
@@ -280,12 +324,15 @@ function RmofCertificationMyBookings() {
                                 </div>
                                 <div class="tab-content card-body">
                                     <div class="tab-pane active" id="General">
-                                        <RmofCertificationGeneralPanel searchText={search} rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "General")} showFilter={showFilterIcon.General} />
+                                        <RmofCertificationGeneralPanel
+                                            searchText={search}
+                                            activeTab={activeTab}
+                                            showFilter={showFilterIcon.General} />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
                                         <RmofCertificationProcessPanel
                                             searchText={search}
-                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Process")}
+                                            activeTab={activeTab}
                                             showFilter={showFilterIcon.InProcess}
                                             onFilterToggle={() => {
                                                 // Callback to handle filter menu visibility
@@ -298,32 +345,32 @@ function RmofCertificationMyBookings() {
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
                                         <RmofCertificationReadyToSubmitPanel
+                                            activeTab={activeTab}
                                             searchText={search}
-                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Ready To Submit")}
                                             rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit} />
                                     </div>
                                     <div class="tab-pane" id="Submited">
                                         <RmofCertificationSubmittedPanel
                                             searchText={search}
-                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Submitted")}
+                                            activeTab={activeTab}
                                             showFilter={showFilterIcon.Submited} />
                                     </div>
                                     <div class="tab-pane" id="Approved">
                                         <RmofCertificationApprovedPanel
                                             searchText={search}
-                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Approved")}
+                                            activeTab={activeTab}
                                             showFilter={showFilterIcon.Approved} />
                                     </div>
                                     <div class="tab-pane" id="Hold">
                                         <RmofCertificationHoldPanel
                                             searchText={search}
-                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Hold")}
+                                            activeTab={activeTab}
                                             showFilter={showFilterIcon.Hold} />
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
                                         <RmofCertificationDefaulterPanel
                                             searchText={search}
-                                            rmFilteredData={rmServicesData.filter((obj) => obj.mainCategoryStatus === "Defaulter")}
+                                            activeTab={activeTab}
                                             showFilter={showFilterIcon.Defaulter} />
                                     </div>
                                 </div>

@@ -89,7 +89,7 @@ const BrochureDesignerDropdown = ({ mainStatus, designername, subStatus, setNewS
               RonakKumar
             </a>
           </li>
-          <li>
+          {/* <li>
             <a
               className="dropdown-item"
               onClick={() => handleStatusChange("Drashti Thakkar", "e_task_assign")}
@@ -97,7 +97,7 @@ const BrochureDesignerDropdown = ({ mainStatus, designername, subStatus, setNewS
             >
               Drashti Thakkar
             </a>
-          </li>
+          </li> */}
           <li>
             <a
               className="dropdown-item"

@@ -24,17 +24,17 @@ body {
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #eee transparent;
+  scrollbar-color: #bdbdbd transparent;
 }
 
 /* Chrome, Edge, and Safari */
-*::-webkit-scrollbar {
+::-webkit-scrollbar {
   height: 6px;
   width: 6px;
 }
 
-*::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0);
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.404) !important;
 }
 
 *::-webkit-scrollbar-thumb {

@@ -52,7 +52,7 @@
  /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #eee transparent;
+  scrollbar-color: #666666 transparent;
 }
 
 /* Chrome, Edge, and Safari */
@@ -66,14 +66,14 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #989898  !important;
+  background: #747474  !important;
   border-radius: 10px;
   border: 1px solid #ffffff;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #dcdcdc !important;
+  background: #4d4d4d !important;
 }
 
 /* Handle on hover */
