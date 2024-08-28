@@ -135,85 +135,87 @@ function AddAttendance({ year, month, date, employeeData }) {
     //     }));
     // };
 
-    const handleCheckboxChange = (empId, isChecked) => {
-        setIsOnLeave(isChecked);
-        if (isChecked) {
-            console.log("Inside if condition");
-            // When "On Leave" is checked, set values to "00:00" and "Leave"
-            setAttendanceData(prevState => ({
-                ...prevState,
-                [empId]: {
-                    ...prevState[empId],
-                    inTime: "00:00",
-                    outTime: "00:00",
-                    workingHours: "00:00",
-                    status: "Leave"
-                }
-            }));
+    // const handleCheckboxChange = (empId, isChecked) => {
+    //     setIsOnLeave(isChecked);
+    //     if (isChecked) {
+    //         console.log("Inside if condition");
+    //         // When "On Leave" is checked, set values to "00:00" and "Leave"
+    //         setAttendanceData(prevState => ({
+    //             ...prevState,
+    //             [empId]: {
+    //                 ...prevState[empId],
+    //                 inTime: "00:00",
+    //                 outTime: "00:00",
+    //                 workingHours: "00:00",
+    //                 status: "Leave"
+    //             }
+    //         }));
 
-        } else {
-            console.log("Inside else condition");
-            setIsOnLeave(isChecked);
-            setAttendanceData(prevState => ({
-                ...prevState,
-                [empId]: {
-                    ...prevState[empId],
-                    inTime: "",
-                    outTime: "",
-                    workingHours: "",
-                    status: ""
-                }
-            }));
+    //     } else {
+    //         console.log("Inside else condition");
+    //         setIsOnLeave(isChecked);
+    //         setAttendanceData(prevState => ({
+    //             ...prevState,
+    //             [empId]: {
+    //                 ...prevState[empId],
+    //                 inTime: "",
+    //                 outTime: "",
+    //                 workingHours: "",
+    //                 status: ""
+    //             }
+    //         }));
+    //     }
+    // };
+
+
+    const handleCheckboxChange = async (isChecked, id, empId, name, designation, department, branch, date, inTime, outTime, workingHours, status) => {
+        setIsOnLeave(isChecked);
+
+        // Define the new attendance data based on the checkbox state
+        const updatedData = isChecked
+            ? { inTime: "00:00", outTime: "00:00", workingHours: "00:00", status: "Leave" }
+            : { inTime: "", outTime: "", workingHours: "", status: "" };
+
+        // Update the local state
+        setAttendanceData(prevState => ({
+            ...prevState,
+            [empId]: {
+                ...prevState[empId],
+                ...updatedData
+            }
+        }));
+
+        // Prepare the payload for the API request
+        const selectedDate = new Date(date);
+        const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+        const payload = {
+            id: id,
+            employeeId: empId,
+            ename: name,
+            designation: designation,
+            department: department,
+            branchOffice: branch,
+            attendanceDate: date,
+            dayName: dayName,
+            inTime: updatedData.inTime,
+            outTime: updatedData.outTime,
+            workingHours: updatedData.workingHours,
+            status: updatedData.status
+        };
+
+        console.log("Payload is :", payload);
+        try {
+            const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
+            Swal.fire("Success", "Attendance Successfully Added/Updated", "success");
+        } catch (error) {
+            console.log("Error updating attendance record", error);
+            Swal.fire("Error", "Error adding/updating attendance", "error");
         }
+
+        fetchAttendance(); // Refresh the attendance data after updating
     };
 
-
-    // const handleCheckboxChange = async (empId, isChecked, name, designation, department, branch, date, inTime, outTime, workingHours, status) => {
-    //     setIsOnLeave(isChecked);
-    
-    //     // Define the new attendance data based on the checkbox state
-    //     const updatedData = isChecked
-    //         ? { inTime: "00:00", outTime: "00:00", workingHours: "00:00", status: "Leave" }
-    //         : { inTime: "", outTime: "", workingHours: "", status: "" };
-    
-    //     // Update the local state
-    //     setAttendanceData(prevState => ({
-    //         ...prevState,
-    //         [empId]: {
-    //             ...prevState[empId],
-    //             ...updatedData
-    //         }
-    //     }));
-    
-    //     // Prepare the payload for the API request
-    //     const selectedDate = new Date(date);
-    //     const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
-    
-    //     const payload = {
-    //         employeeId: empId,
-    //         ename: name,
-    //         designation: designation,
-    //         department: department,
-    //         branchOffice: branch,
-    //         attendanceDate: date,
-    //         dayName: dayName,
-    //         inTime: updatedData.inTime,
-    //         outTime: updatedData.outTime,
-    //         workingHours: updatedData.workingHours,
-    //         status: updatedData.status
-    //     };
-    
-    //     try {
-    //         const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
-    //         Swal.fire("Success", "Attendance Successfully Updated", "success");
-    //     } catch (error) {
-    //         console.log("Error updating attendance record", error);
-    //         Swal.fire("Error", "Error updating attendance", "error");
-    //     }
-    
-    //     fetchAttendance(); // Refresh the attendance data after updating
-    // };
-    
 
     const handleInputChange = (empId, field, value) => {
         // Parse the year and month from the date input if the field is attendanceDate
@@ -519,19 +521,19 @@ function AddAttendance({ year, month, date, employeeData }) {
                                         </td>
                                         <td>
                                             <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
-                                                {/* <AntSwitch
+                                                <AntSwitch
                                                     checked={onLeave}
-                                                    onClick={(e) => handleCheckboxChange(emp._id, e.target.checked)}
-                                                    inputProps={{ 'aria-label': 'ant design' }} /> */}
-                                                <FormControlLabel
+                                                    onChange={(e) => handleCheckboxChange(e.target.checked,emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}
+                                                    inputProps={{ 'aria-label': 'ant design' }} />
+                                                {/* <FormControlLabel
                                                     control={
                                                         <Switch
                                                             checked={onLeave}
-                                                            onChange={(e) => handleCheckboxChange(emp._id, e.target.checked)}
-                                                            // onChange={(e) => handleCheckboxChange(emp._id, e.target.checked, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}
+                                                            // onChange={(e) => handleCheckboxChange(emp._id, e.target.checked)}
+                                                            onChange={(e) => handleCheckboxChange(e.target.checked,emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}
                                                         />
                                                     }
-                                                />
+                                                /> */}
                                             </Stack>
                                         </td>
                                         <td>
