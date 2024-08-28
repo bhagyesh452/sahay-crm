@@ -78,389 +78,408 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
     const month = date.toLocaleString('en-US', { month: 'long' });
     const year = date.getFullYear();
     return `${day} ${month}, ${year}`;
-}
+  }
 
 
-useEffect(() => {
+  useEffect(() => {
     document.title = `AdminHead-Sahay-CRM`;
-}, []);
+  }, []);
 
-useEffect(() => {
+  useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-        secure: true, // Use HTTPS
-        path: '/socket.io',
-        reconnection: true,
-        transports: ['websocket'],
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
     });
 
     socket.on("rm-general-status-updated", (res) => {
-        fetchData(searchText)
+      fetchData(searchText)
     });
 
     socket.on("rm-industry-enabled", (res) => {
-        if (filteredData && filteredData.length > 0) {
-            fetchData(searchText, 1, true)
-        } else {
-            fetchData(searchText, page, false)
-        }
+      if (filteredData && filteredData.length > 0) {
+        fetchData(searchText, 1, true)
+      } else {
+        fetchData(searchText, page, false)
+      }
     });
 
     socket.on("rm-recievedamount-updated", (res) => {
-        fetchData(searchText)
+      fetchData(searchText)
     });
     socket.on("rm-recievedamount-deleted", (res) => {
-        fetchData(searchText)
+      fetchData(searchText)
     });
     socket.on("booking-deleted", (res) => {
-        fetchData(searchText)
+      fetchData(searchText)
     });
 
     socket.on("booking-updated", (res) => {
-        fetchData(searchText)
+      fetchData(searchText)
     });
-    socket.on("adminexecutive-general-status-updated", (res) => {
-        fetchData(searchText)
-    });
-    socket.on("adminexecutive-letter-updated", (res) => {
-        fetchData(searchText)
-    });
-
+    const updateDocumentInState = (updatedDocument) => {
+      console.log(updatedDocument)
+      setRmServicesData(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+      setcompleteRmData(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+      setdataToFilter(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+  };
+  socket.on("adminexecutive-general-status-updated", (res) => {
+      //console.log("res" , res)
+      if(res.updatedDocument){
+          updateDocumentInState(res.updatedDocument);
+      }
+     
+  });
+  socket.on("adminexecutive-letter-updated", (res) => {
+      //console.log("res" , res)
+      if(res.updatedDocument){
+          updateDocumentInState(res.updatedDocument);
+      }
+     
+  });
     return () => {
-        socket.disconnect();
+      socket.disconnect();
     };
-}, [newStatusDefaulter]);
+  }, [newStatusDefaulter]);
 
 
-const [page, setPage] = useState(1);
-const [totalPages, setTotalPages] = useState(0);
-// Fetch Data Function
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  // Fetch Data Function
 
-// const fetchData = async (searchQuery = "", page = 1) => {
-//     setOpenBacdrop(true);
-//     try {
+  // const fetchData = async (searchQuery = "", page = 1) => {
+  //     setOpenBacdrop(true);
+  //     try {
 
-//         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-//         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-//         setEmployeeData(userData);
+  //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+  //         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+  //         setEmployeeData(userData);
 
-//         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-//             params: { search: searchQuery, page,activeTab:"Defaulter" }
-//         });
-//         const { data, totalPages } = servicesResponse.data;
-//         console.log("response", servicesResponse.data)
+  //         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+  //             params: { search: searchQuery, page,activeTab:"Defaulter" }
+  //         });
+  //         const { data, totalPages } = servicesResponse.data;
+  //         console.log("response", servicesResponse.data)
 
-//         // If it's a search query, replace the data; otherwise, append for pagination
-//         if (page === 1) {
-//             // This is either the first page load or a search operation
-//             setRmServicesData(data);
-//         } else {
-//             // This is a pagination request
-//             setRmServicesData(prevData => [...prevData, ...data]);
-//         }
-//         setTotalPages(totalPages)
+  //         // If it's a search query, replace the data; otherwise, append for pagination
+  //         if (page === 1) {
+  //             // This is either the first page load or a search operation
+  //             setRmServicesData(data);
+  //         } else {
+  //             // This is a pagination request
+  //             setRmServicesData(prevData => [...prevData, ...data]);
+  //         }
+  //         setTotalPages(totalPages)
 
-//     } catch (error) {
-//         console.error("Error fetching data", error.message);
-//     } finally {
-//         setOpenBacdrop(false);
-//     }
-// };
+  //     } catch (error) {
+  //         console.error("Error fetching data", error.message);
+  //     } finally {
+  //         setOpenBacdrop(false);
+  //     }
+  // };
 
-const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
+  const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
     setOpenBacdrop(true);
     try {
-        const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-        const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-        setEmployeeData(userData);
+      const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+      const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+      setEmployeeData(userData);
 
-        let params = { search: searchQuery, page, activeTab: "Defaulter" };
+      let params = { search: searchQuery, page, activeTab: "Defaulter" };
 
-        // If filtering is active, extract companyName and serviceName from filteredData
-        if (isFilter && filteredData && filteredData.length > 0) {
-            console.log("yahan chal rha", isFilter)
-            const companyNames = filteredData.map(item => item["Company Name"]).join(',');
-            const serviceNames = filteredData.map(item => item.serviceName).join(',');
+      // If filtering is active, extract companyName and serviceName from filteredData
+      if (isFilter && filteredData && filteredData.length > 0) {
+        console.log("yahan chal rha", isFilter)
+        const companyNames = filteredData.map(item => item["Company Name"]).join(',');
+        const serviceNames = filteredData.map(item => item.serviceName).join(',');
 
-            // Add filtered company names and service names to the params
-            params.companyNames = companyNames;
-            params.serviceNames = serviceNames;
-        }
+        // Add filtered company names and service names to the params
+        params.companyNames = companyNames;
+        params.serviceNames = serviceNames;
+      }
 
-        const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-            params: params
-        });
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+        params: params
+      });
 
-        const { data, totalPages } = servicesResponse.data;
+      const { data, totalPages } = servicesResponse.data;
 
 
-        if (page === 1) {
-            setRmServicesData(data);
-            setcompleteRmData(data);
-            setdataToFilter(data);
-        } else {
-            setRmServicesData(prevData => [...prevData, ...data]);
-            setcompleteRmData(prevData => [...prevData, ...data]);
-            setdataToFilter(prevData => [...prevData, ...data]);
-        }
+      if (page === 1) {
+        setRmServicesData(data);
+        setcompleteRmData(data);
+        setdataToFilter(data);
+      } else {
+        setRmServicesData(prevData => [...prevData, ...data]);
+        setcompleteRmData(prevData => [...prevData, ...data]);
+        setdataToFilter(prevData => [...prevData, ...data]);
+      }
 
-        setTotalPages(totalPages);
+      setTotalPages(totalPages);
 
     } catch (error) {
-        console.error("Error fetching data", error.message);
+      console.error("Error fetching data", error.message);
     } finally {
-        setOpenBacdrop(false);
+      setOpenBacdrop(false);
     }
-};
+  };
 
-useEffect(() => {
-  const handleScroll = debounce(() => {
+  useEffect(() => {
+    const handleScroll = debounce(() => {
       const tableContainer = document.querySelector('#defaulterTable');
 
       if (tableContainer) {
-          if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
-              if (page < totalPages) {
-                  setPage(prevPage => prevPage + 1); // Load next page
-              }
+        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+          if (page < totalPages) {
+            setPage(prevPage => prevPage + 1); // Load next page
           }
+        }
       }
-  }, 200);
+    }, 200);
 
-  const tableContainer = document.querySelector('#defaulterTable');
-  if (tableContainer) {
+    const tableContainer = document.querySelector('#defaulterTable');
+    if (tableContainer) {
       tableContainer.addEventListener('scroll', handleScroll);
-  }
-
-  return () => {
-      if (tableContainer) {
-          tableContainer.removeEventListener('scroll', handleScroll);
-      }
-  };
-}, [page, totalPages, filteredData]);
-
-
-useEffect(() => {
-    fetchData(searchText, page);
-}, [searchText, page]);
-
-console.log("pagedefaulter", page)
-
-
-const refreshData = () => {
-    if (filteredData && filteredData.length > 0) {
-        fetchData(searchText, 1, true)
-    } else {
-        fetchData(searchText, page, false);
     }
-};
+
+    return () => {
+      if (tableContainer) {
+        tableContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [page, totalPages, filteredData]);
 
 
-function formatDate(dateString) {
+  useEffect(() => {
+    fetchData(searchText, page);
+  }, [searchText, page]);
+
+  console.log("pagedefaulter", page)
+
+
+  const refreshData = () => {
+    if (filteredData && filteredData.length > 0) {
+      fetchData(searchText, 1, true)
+    } else {
+      fetchData(searchText, page, false);
+    }
+  };
+
+
+  function formatDate(dateString) {
     const [year, month, date] = dateString.split('-');
     return `${date}/${month}/${year}`
-}
+  }
 
 
-//console.log("setnewsubstatus", newStatusDefaulter)
+  //console.log("setnewsubstatus", newStatusDefaulter)
 
-//------------------------Remarks Popup Section-----------------------------
-const handleOpenRemarksPopup = async (companyName, serviceName) => {
+  //------------------------Remarks Popup Section-----------------------------
+  const handleOpenRemarksPopup = async (companyName, serviceName) => {
     console.log("RemarksPopup")
-}
-const functionCloseRemarksPopup = () => {
+  }
+  const functionCloseRemarksPopup = () => {
     setChangeRemarks('')
     setError('')
     setOpenRemarksPopUp(false)
-}
-const debouncedSetChangeRemarks = useCallback(
+  }
+  const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
-        setChangeRemarks(value);
+      setChangeRemarks(value);
     }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
     [] // Empty dependency array to ensure the function is memoized
-);
+  );
 
-const handleSubmitRemarks = async () => {
+  const handleSubmitRemarks = async () => {
     //console.log("changeremarks", changeRemarks)
     try {
-        if (changeRemarks) {
-            const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                currentCompanyName,
-                currentServiceName,
-                changeRemarks,
-                updatedOn: new Date()
-            });
-
-            //console.log("response", response.data);
-
-            if (response.status === 200) {
-                if (filteredData && filteredData.length > 0) {
-                    fetchData(searchText, page, true);
-                } else {
-                    fetchData(searchText, page, false);
-                }
-                functionCloseRemarksPopup();
-            }
-        } else {
-            setError('Remarks Cannot Be Empty!')
-        }
-
-    } catch (error) {
-        console.log("Error Submitting Remarks", error.message);
-    }
-};
-
-const handleDeleteRemarks = async (remarks_id) => {
-    try {
-        const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-            data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+      if (changeRemarks) {
+        const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+          currentCompanyName,
+          currentServiceName,
+          changeRemarks,
+          updatedOn: new Date()
         });
+
+        //console.log("response", response.data);
+
         if (response.status === 200) {
-            if (filteredData && filteredData.length > 0) {
-                fetchData(searchText, page, true);
-            } else {
-                fetchData(searchText, page, false);
-            }
-
-            functionCloseRemarksPopup();
+          if (filteredData && filteredData.length > 0) {
+            fetchData(searchText, page, true);
+          } else {
+            fetchData(searchText, page, false);
+          }
+          functionCloseRemarksPopup();
         }
-        // Refresh the list
+      } else {
+        setError('Remarks Cannot Be Empty!')
+      }
+
     } catch (error) {
-        console.error("Error deleting remark:", error);
+      console.log("Error Submitting Remarks", error.message);
     }
-};
+  };
+
+  const handleDeleteRemarks = async (remarks_id) => {
+    try {
+      const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+        data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+      });
+      if (response.status === 200) {
+        if (filteredData && filteredData.length > 0) {
+          fetchData(searchText, page, true);
+        } else {
+          fetchData(searchText, page, false);
+        }
+
+        functionCloseRemarksPopup();
+      }
+      // Refresh the list
+    } catch (error) {
+      console.error("Error deleting remark:", error);
+    }
+  };
 
 
 
 
-const handleIndustryChange = (industry, options) => {
+  const handleIndustryChange = (industry, options) => {
     setSelectedIndustry(industry);
     setSectorOptions(options);
-};
+  };
 
 
-function formatDatePro(inputDate) {
+  function formatDatePro(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = new Date(inputDate).toLocaleDateString(
-        "en-US",
-        options
+      "en-US",
+      options
     );
     return formattedDate;
-};
+  };
 
-const handleCloseBackdrop = () => {
+  const handleCloseBackdrop = () => {
     setOpenBacdrop(false)
-};
+  };
 
-const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
+  const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
     try {
-        // Show confirmation dialog
-        const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you want to revert the company back to the received box?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, revert it!',
-            cancelButtonText: 'No, cancel!',
-            reverseButtons: true
+      // Show confirmation dialog
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to revert the company back to the received box?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, revert it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+      });
+
+      // Check if the user confirmed the action
+      if (result.isConfirmed) {
+        const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
+          companyName,
+          serviceName
         });
 
-        // Check if the user confirmed the action
-        if (result.isConfirmed) {
-            const response = await axios.post(`${secretKey}/rm-services/delete_company_from_taskmanager_and_send_to_recievedbox`, {
-                companyName,
-                serviceName
-            });
-
-            if (response.status === 200) {
-                fetchData(searchText);
-                Swal.fire(
-                    'Company Reverted Back!',
-                    'Company has been sent back to the received box.',
-                    'success'
-                );
-            } else {
-                Swal.fire(
-                    'Error',
-                    'Failed to revert the company back to the received box.',
-                    'error'
-                );
-            }
+        if (response.status === 200) {
+          fetchData(searchText);
+          Swal.fire(
+            'Company Reverted Back!',
+            'Company has been sent back to the received box.',
+            'success'
+          );
         } else {
-            Swal.fire(
-                'Cancelled',
-                'The company has not been reverted.',
-                'info'
-            );
+          Swal.fire(
+            'Error',
+            'Failed to revert the company back to the received box.',
+            'error'
+          );
         }
+      } else {
+        Swal.fire(
+          'Cancelled',
+          'The company has not been reverted.',
+          'info'
+        );
+      }
 
     } catch (error) {
-        console.log("Error Deleting Company from task manager", error.message);
-        Swal.fire(
-            'Error',
-            'An error occurred while processing your request.',
-            'error'
-        );
+      console.log("Error Deleting Company from task manager", error.message);
+      Swal.fire(
+        'Error',
+        'An error occurred while processing your request.',
+        'error'
+      );
     }
-};
+  };
 
-// ------------filter functions----------------------------
-
-
-// useEffect(() => {
-//     setShowFilterMenu(showFilter);
-// }, [showFilter]);
+  // ------------filter functions----------------------------
 
 
-const handleFilter = (newData) => {
+  // useEffect(() => {
+  //     setShowFilterMenu(showFilter);
+  // }, [showFilter]);
+
+
+  const handleFilter = (newData) => {
     console.log("newData", newData)
     setFilteredData(newData)
     setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Defaulter"));
-};
+  };
 
 
-const handleFilterClick = (field) => {
+  const handleFilterClick = (field) => {
     if (activeFilterField === field) {
-        setShowFilterMenu(!showFilterMenu);
-        setIsScrollLocked(!showFilterMenu);
+      setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
     } else {
-        setActiveFilterField(field);
-        setShowFilterMenu(true);
-        setIsScrollLocked(true);
+      setActiveFilterField(field);
+      setShowFilterMenu(true);
+      setIsScrollLocked(true);
 
-        const rect = fieldRefs.current[field].getBoundingClientRect();
-        setFilterPosition({ top: rect.bottom, left: rect.left });
+      const rect = fieldRefs.current[field].getBoundingClientRect();
+      setFilterPosition({ top: rect.bottom, left: rect.left });
     }
 
     // Update the active filter fields array
     setActiveFilterFields(prevFields => {
 
-        // Add the field if it's not active
-        return [...prevFields, field];
+      // Add the field if it's not active
+      return [...prevFields, field];
 
     });
-};
-const isActiveField = (field) => activeFilterFields.includes(field);
+  };
+  const isActiveField = (field) => activeFilterFields.includes(field);
 
-useEffect(() => {
-  if (typeof document !== 'undefined') {
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
       const handleClickOutside = (event) => {
-          if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-              setShowFilterMenu(false);
-              setIsScrollLocked(false);
-          }
+        if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+          setShowFilterMenu(false);
+          setIsScrollLocked(false);
+        }
       };
 
       document.addEventListener('mousedown', handleClickOutside);
 
       return () => {
-          document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('mousedown', handleClickOutside);
       };
-  }
-}, []);
+    }
+  }, []);
 
   return (
     <div>
       <div className="RM-my-booking-lists">
-        <div className="table table-responsive table-style-3 m-0"  id="defaulterTable">
+        <div className="table table-responsive table-style-3 m-0" id="defaulterTable">
           {openBacdrop && (
             <Backdrop
               sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -473,7 +492,7 @@ useEffect(() => {
             <table className="table table-vcenter table-nowrap rm_table_inprocess">
               <thead>
                 <tr className="tr-sticky">
-                <th className="rm-sticky-left-1">Sr.No</th>
+                  <th className="rm-sticky-left-1">Sr.No</th>
                   <th className="rm-sticky-left-2">
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['Company Name'] = el}>
@@ -1048,34 +1067,34 @@ useEffect(() => {
                   </th>
                   <th>
                     <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div>OTP/DSC Verification Status</div>
-                      <div className="RM_filter_icon">
-                        <div className='RM_filter_icon'>
-                          {isActiveField('otpVerificationStatus') ? (
-                            <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
-                          ) : (
-                            <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
-                          )}
-                        </div>
-                        {showFilterMenu && activeFilterField === 'otpVerificationStatus' && (
-                          <div
-                            ref={filterMenuRef}
-                            className="filter-menu"
-                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                          >
-                            <FilterableTable
-                              allFilterFields={setActiveFilterFields}
-                              filteredData={filteredData}
-                              activeTab={"Defaulter"}
-                              data={rmServicesData}
-                              filterField={activeFilterField}
-                              onFilter={handleFilter}
-                              completeData={completeRmData}
-                              dataForFilter={dataToFilter}
-                            />
-                          </div>
+                      <div ref={el => fieldRefs.current['otpVerificationStatus'] = el}>
+                        OTP/DSC Verification Status
+                      </div>
+                      <div className='otpVerificationStatus'>
+                        {isActiveField('otpVerificationStatus') ? (
+                          <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
                         )}
                       </div>
+                      {showFilterMenu && activeFilterField === 'otpVerificationStatus' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Defaulter"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
@@ -1415,19 +1434,19 @@ useEffect(() => {
                             title={
                               obj.Remarks && obj.Remarks.length > 0
                                 ? obj.Remarks.sort(
-                                    (a, b) =>
-                                      new Date(b.updatedOn) -
-                                      new Date(a.updatedOn)
-                                  )[0].remarks
+                                  (a, b) =>
+                                    new Date(b.updatedOn) -
+                                    new Date(a.updatedOn)
+                                )[0].remarks
                                 : "No Remarks"
                             }
                           >
                             {obj.Remarks && obj.Remarks.length > 0
                               ? obj.Remarks.sort(
-                                  (a, b) =>
-                                    new Date(b.updatedOn) -
-                                    new Date(a.updatedOn)
-                                )[0].remarks
+                                (a, b) =>
+                                  new Date(b.updatedOn) -
+                                  new Date(a.updatedOn)
+                              )[0].remarks
                               : "No Remarks"}
                           </div>
                           <button
@@ -1457,8 +1476,8 @@ useEffect(() => {
                             obj.websiteLink
                               ? obj.websiteLink
                               : obj.companyBriefing
-                              ? obj.companyBriefing
-                              : "Enter Website Link"
+                                ? obj.companyBriefing
+                                : "Enter Website Link"
                           }
                           companyBriefing={
                             obj.companyBriefing ? obj.companyBriefing : ""

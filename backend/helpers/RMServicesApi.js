@@ -810,8 +810,73 @@ router.get("/filter-rmofcertification-bookings", async (req, res) => {
 //   }
 // });
 
-router.post(
-  "/postrmselectedservicestobookings/:CompanyName",
+router.post(`/update-substatus-rmofcertification-changegeneral/`, async (req, res) => {
+  const { companyName,
+    serviceName,
+    subCategoryStatus,
+    mainCategoryStatus,
+    previousMainCategoryStatus,
+    previousSubCategoryStatus,
+    dateOfChangingMainStatus,
+    movedFromMainCategoryStatus,
+    movedToMainCategoryStatus } = req.body;
+  const socketIO = req.io;
+
+  //console.log("here" , movedFromMainCategoryStatus,movedToMainCategoryStatus)
+
+  try {
+    const updatedCompany = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName
+      },
+      {
+        subCategoryStatus: subCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus,
+        lastActionDate: new Date(),
+        dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
+        previousMainCategoryStatus: previousMainCategoryStatus,
+        previousSubCategoryStatus: previousSubCategoryStatus
+      },
+      { new: true }
+    );
+
+    // if (!updatedCompany) {
+    //   console.error("Failed to save the updated document");
+    //   return res.status(400).json({ message: "Failed to save the updated document" });
+    // }
+
+    // // Log the updated company document
+    //console.log("Company after update:", updatedCompany);
+
+    const creatingNewCompany = await RMCertificationHistoryModel.create({
+      "Company Name": companyName,
+      serviceName: serviceName,
+      history: [{
+        movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+        movedToMainCategoryStatus: movedToMainCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus,
+        subCategoryStatus: subCategoryStatus,
+        statusChangeDate: new Date()
+      }]
+    });
+
+    //console.log("newhistoryschema" , creatingNewCompany)
+
+
+
+    // Emit socket event if needed
+    //socketIO.emit('update', { companyName, serviceName });
+    socketIO.emit('rm-general-status-updated', { companyName: companyName });
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/postrmselectedservicestobookings/:CompanyName",
   async (req, res) => {
     try {
       const companyName = req.params.CompanyName;
@@ -880,8 +945,7 @@ router.post(
   }
 );
 
-router.post(
-  "/postsdminselectedservicestobooking/:CompanyName",
+router.post("/postsdminselectedservicestobooking/:CompanyName",
   async (req, res) => {
     try {
       const companyName = req.params.CompanyName;
@@ -1031,10 +1095,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         { new: true }
       );
 
-      if (subCategoryStatus === "Approved") {
-        console.log("hello wworld");
-        runTestScript(companyName);
-      }
+      // if (subCategoryStatus === "Approved") {
+      //   console.log("hello wworld");
+      //   runTestScript(companyName);
+      // }
       console.log("updatedcompany", updatedCompany);
       console.log("submittedOn", submittedOn);
 
@@ -1211,7 +1275,7 @@ router.post(`/update-substatus-adminexecutive-changegeneral/`, async (req, res) 
 
     // Emit socket event if needed
     //socketIO.emit('update', { companyName, serviceName });
-    socketIO.emit('adminexecutive-general-status-updated', { companyName: companyName });
+    socketIO.emit('adminexecutive-general-status-updated', { updatedDocument: updateCompanyRm });
     res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
 
   } catch (error) {
@@ -1330,8 +1394,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
 
       // Emit socket event
       socketIO.emit("adminexecutive-general-status-updated", {
-        name: updatedCompany.bdeName,
-        companyName: companyName,
+        updatedDocument:updateCompanyRm
       });
       res.status(200).json({
         message: "Document updated successfully",
@@ -1387,8 +1450,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
 
       // Emit socket event
       socketIO.emit("adminexecutive-general-status-updated", {
-        name: updatedCompany.bdeName,
-        companyName: companyName,
+        updatedDocument:updateCompanyRm
       });
       res.status(200).json({
         message: "Document updated successfully",
@@ -1518,19 +1580,6 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { letterStatus: letterStatus };
 
-    // if (contentStatus === "Approved") {
-    //   if (company.brochureStatus === "Approved") {
-    //     updateFields = {
-    //       ...updateFields,
-    //       mainCategoryStatus: "Ready To Submit",
-    //       subCategoryStatus: "Ready To Submit"
-    //     };
-    //   }
-
-    // }
-
-    console.log("updateFields", updateFields);
-
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
       {
@@ -1560,8 +1609,7 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
 
     // Send the response
     socketIO.emit("adminexecutive-letter-updated", {
-      name: updatedCompany.bdeName,
-      companyName: companyName,
+      updatedDocument: updatedCompanyRm, // send the updated document
     });
     res
       .status(200)
@@ -1592,19 +1640,6 @@ router.post(`/update-dscportal-adminexecutive/`, async (req, res) => {
 
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { dscPortal: dscPortal };
-
-    // if (contentStatus === "Approved") {
-    //   if (company.brochureStatus === "Approved") {
-    //     updateFields = {
-    //       ...updateFields,
-    //       mainCategoryStatus: "Ready To Submit",
-    //       subCategoryStatus: "Ready To Submit"
-    //     };
-    //   }
-
-    // }
-
-    console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1638,7 +1673,8 @@ router.post(`/update-otpstatus-rmcert/`, async (req, res) => {
   const { companyName, serviceName, otpVerificationStatus } = req.body;
   //console.log("contentStatus", contentStatus, companyName, serviceName)
   const socketIO = req.io;
-  console.log("otp", otpVerificationStatus);
+ 
+  
   try {
     // Find the company document
     const company = await RMCertificationModel.findOne({
@@ -1654,8 +1690,6 @@ router.post(`/update-otpstatus-rmcert/`, async (req, res) => {
 
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { otpVerificationStatus: otpVerificationStatus };
-
-    console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
@@ -1810,7 +1844,7 @@ router.post(`/post-save-otpinboxno-adminexecutive/`, async (req, res) => {
       serviceName: serviceName,
     });
 
-    console.log("company" , company)
+    console.log("company", company)
 
     // Check if the company exists
     if (!company) {
@@ -2210,8 +2244,7 @@ router.post(`/post-save-portalcharges-adminexecutive/`, async (req, res) => {
   }
 });
 
-router.post(
-  `/post-save-portalchargespaidvia-adminexecutive/`,
+router.post(`/post-save-portalchargespaidvia-adminexecutive/`,
   async (req, res) => {
     const { companyName, serviceName, chargesPaidV } = req.body;
     //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
@@ -2349,7 +2382,7 @@ router.post(`/post-save-nswsemail/`, async (req, res) => {
 
 router.post(`/post-save-nswspassword/`, async (req, res) => {
   const { companyName, serviceName, password } = req.body;
-  //console.log("dscStatus" ,password , companyName , serviceName)
+  
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -2382,7 +2415,7 @@ router.post(`/post-save-nswspassword/`, async (req, res) => {
 
 router.post(`/post-save-websitelink/`, async (req, res) => {
   const { companyName, serviceName, link, briefing } = req.body;
-  //console.log("dscStatus", serviceName, companyName, link)
+  
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -2422,7 +2455,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
     isIndustryEnabled,
     sector,
   } = req.body;
-  //console.log("dscStatus", serviceName, companyName, industryOption)
+  
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -2490,7 +2523,8 @@ router.post(`/post-enable-industry/`, async (req, res) => {
 router.post(`/post-save-sector/`, async (req, res) => {
   const { companyName, serviceName, sectorOption, isIndustryEnabled } =
     req.body;
-  //.log("dscStatus", serviceName, companyName, sectorOption)
+  
+    
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(

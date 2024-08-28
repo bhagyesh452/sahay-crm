@@ -121,11 +121,31 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
         socket.on("booking-updated", (res) => {
             fetchData(searchText)
         });
+        const updateDocumentInState = (updatedDocument) => {
+            console.log(updatedDocument)
+            setRmServicesData(prevData => prevData.map(item =>
+                item._id === updatedDocument._id ? updatedDocument : item
+            ));
+            setcompleteRmData(prevData => prevData.map(item =>
+                item._id === updatedDocument._id ? updatedDocument : item
+            ));
+            setdataToFilter(prevData => prevData.map(item =>
+                item._id === updatedDocument._id ? updatedDocument : item
+            ));
+        };
         socket.on("adminexecutive-general-status-updated", (res) => {
-            fetchData(searchText)
+            //console.log("res" , res)
+            if(res.updatedDocument){
+                updateDocumentInState(res.updatedDocument);
+            }
+           
         });
         socket.on("adminexecutive-letter-updated", (res) => {
-            fetchData(searchText)
+            //console.log("res" , res)
+            if(res.updatedDocument){
+                updateDocumentInState(res.updatedDocument);
+            }
+           
         });
         return () => {
             socket.disconnect();
@@ -1028,34 +1048,34 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                     </th>
                                     <th>
                                         <div className="d-flex align-items-center justify-content-center position-relative">
-                                            <div>OTP/DSC Verification Status</div>
-                                            <div className="RM_filter_icon">
-                                                <div className='RM_filter_icon'>
-                                                    {isActiveField('otpVerificationStatus') ? (
-                                                        <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
-                                                    ) : (
-                                                        <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
-                                                    )}
-                                                </div>
-                                                {showFilterMenu && activeFilterField === 'nswsPaswsord' && (
-                                                    <div
-                                                        ref={filterMenuRef}
-                                                        className="filter-menu"
-                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                    >
-                                                        <FilterableTable
-                                                            allFilterFields={setActiveFilterFields}
-                                                            filteredData={filteredData}
-                                                            activeTab={"Ready To Submit"}
-                                                            data={rmServicesData}
-                                                            filterField={activeFilterField}
-                                                            onFilter={handleFilter}
-                                                            completeData={completeRmData}
-                                                            dataForFilter={dataToFilter}
-                                                        />
-                                                    </div>
+                                        <div ref={el => fieldRefs.current['otpVerificationStatus'] = el}>
+                                               OTP/DSC Verification Status
+                                            </div>
+                                            <div className='otpVerificationStatus'>
+                                                {isActiveField('otpVerificationStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
                                                 )}
                                             </div>
+                                            {showFilterMenu && activeFilterField === 'otpVerificationStatus' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"Ready To Submit"}
+                                                        data={rmServicesData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </th>
                                     <th>

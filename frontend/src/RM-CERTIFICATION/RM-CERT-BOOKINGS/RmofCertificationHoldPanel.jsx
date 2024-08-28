@@ -42,360 +42,380 @@ import FilterableTable from '../Extra-Components/FilterableTable';
 function RmofCertificationHoldPanel({ searchText, showFilter }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
-    const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [currentDataLoading, setCurrentDataLoading] = useState(false)
-    const [isFilter, setIsFilter] = useState(false)
-    const [rmServicesData, setRmServicesData] = useState([])
-    const [newStatusProcess, setNewStatusProcess] = useState("Process")
-    const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
-    const [currentCompanyName, setCurrentCompanyName] = useState("")
-    const [currentServiceName, setCurrentServiceName] = useState("")
-    const [remarksHistory, setRemarksHistory] = useState([])
-    const [changeRemarks, setChangeRemarks] = useState("");
-    const [historyRemarks, setHistoryRemarks] = useState([]);
-    const [email, setEmail] = useState('');
-    const [openEmailPopup, setOpenEmailPopup] = useState(false);
-    const [selectedIndustry, setSelectedIndustry] = useState("");
-    const [sectorOptions, setSectorOptions] = useState([]);
-    const [error, setError] = useState('')
-    const [openBacdrop, setOpenBacdrop] = useState(false);
-    const [completeRmData, setcompleteRmData] = useState([])
-    const [dataToFilter, setdataToFilter] = useState([])
-    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
-    const [isScrollLocked, setIsScrollLocked] = useState(false);
-    const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [filteredData, setFilteredData] = useState(rmServicesData);
-    const [filterField, setFilterField] = useState("")
-    const filterMenuRef = useRef(null); // Ref for the filter menu container
-    const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const fieldRefs = useRef({});
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const [currentDataLoading, setCurrentDataLoading] = useState(false)
+  const [isFilter, setIsFilter] = useState(false)
+  const [rmServicesData, setRmServicesData] = useState([])
+  const [newStatusProcess, setNewStatusProcess] = useState("Process")
+  const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
+  const [currentCompanyName, setCurrentCompanyName] = useState("")
+  const [currentServiceName, setCurrentServiceName] = useState("")
+  const [remarksHistory, setRemarksHistory] = useState([])
+  const [changeRemarks, setChangeRemarks] = useState("");
+  const [historyRemarks, setHistoryRemarks] = useState([]);
+  const [email, setEmail] = useState('');
+  const [openEmailPopup, setOpenEmailPopup] = useState(false);
+  const [selectedIndustry, setSelectedIndustry] = useState("");
+  const [sectorOptions, setSectorOptions] = useState([]);
+  const [error, setError] = useState('')
+  const [openBacdrop, setOpenBacdrop] = useState(false);
+  const [completeRmData, setcompleteRmData] = useState([])
+  const [dataToFilter, setdataToFilter] = useState([])
+  const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [filteredData, setFilteredData] = useState(rmServicesData);
+  const [filterField, setFilterField] = useState("")
+  const filterMenuRef = useRef(null); // Ref for the filter menu container
+  const [activeFilterField, setActiveFilterField] = useState(null);
+  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+  const fieldRefs = useRef({});
 
 
-    function formatDatePro(inputDate) {
-        const date = new Date(inputDate);
-        const day = date.getDate();
-        const month = date.toLocaleString('en-US', { month: 'long' });
-        const year = date.getFullYear();
-        return `${day} ${month}, ${year}`;
-    }
+  function formatDatePro(inputDate) {
+    const date = new Date(inputDate);
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+  }
 
-    function formatDate(dateString) {
-        dateString = "2024-07-26"
-        const [year, month, date] = dateString.split('-');
-        return `${date}/${month}/${year}`
-    }
+  function formatDate(dateString) {
+    dateString = "2024-07-26"
+    const [year, month, date] = dateString.split('-');
+    return `${date}/${month}/${year}`
+  }
 
-    useEffect(() => {
-        document.title = `AdminHead-Sahay-CRM`;
-    }, []);
-
-    useEffect(() => {
-        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: '/socket.io',
-            reconnection: true,
-            transports: ['websocket'],
-        });
-
-        socket.on("rm-general-status-updated", (res) => {
-             fetchData(searchText)
-        });
-        socket.on("rm-industry-enabled", (res) => {
-            if (filteredData && filteredData.length > 0) {
-                fetchData(searchText, 1, true)
-            } else {
-                fetchData(searchText, page, false)
-            }
-        });
-        socket.on("rm-recievedamount-updated", (res) => {
-             fetchData(searchText)
-        });
-        socket.on("rm-recievedamount-deleted", (res) => {
-             fetchData(searchText)
-        });
-
-        socket.on("booking-deleted", (res) => {
-             fetchData(searchText)
-        });
-
-        socket.on("booking-updated", (res) => {
-             fetchData(searchText)
-        });
-        socket.on("adminexecutive-general-status-updated", (res) => {
-             fetchData(searchText)
-        });
-        socket.on("adminexecutive-letter-updated", (res) => {
-             fetchData(searchText)
-        });
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [newStatusProcess]);
-
-
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    // Fetch Data Function
-
-    // const fetchData = async (searchQuery = "", page = 1) => {
-    //     setOpenBacdrop(true);
-    //     try {
-
-    //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-    //         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-    //         setEmployeeData(userData);
-
-    //         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-    //             params: { search: searchQuery, page,activeTab:"Hold" }
-    //         });
-    //         const { data, totalPages } = servicesResponse.data;
-    //         console.log("response", servicesResponse.data)
-
-    //         // If it's a search query, replace the data; otherwise, append for pagination
-    //         if (page === 1) {
-    //             // This is either the first page load or a search operation
-    //             setRmServicesData(data);
-    //         } else {
-    //             // This is a pagination request
-    //             setRmServicesData(prevData => [...prevData, ...data]);
-    //         }
-    //         setTotalPages(totalPages)
-
-    //     } catch (error) {
-    //         console.error("Error fetching data", error.message);
-    //     } finally {
-    //         setOpenBacdrop(false);
-    //     }
-    // };
-
-    const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
-        setOpenBacdrop(true);
-        try {
-            const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-            const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-            setEmployeeData(userData);
-
-            let params = { search: searchQuery, page, activeTab: "Hold" };
-
-            // If filtering is active, extract companyName and serviceName from filteredData
-            if (isFilter && filteredData && filteredData.length > 0) {
-                console.log("yahan chal rha", isFilter)
-                const companyNames = filteredData.map(item => item["Company Name"]).join(',');
-                const serviceNames = filteredData.map(item => item.serviceName).join(',');
-
-                // Add filtered company names and service names to the params
-                params.companyNames = companyNames;
-                params.serviceNames = serviceNames;
-            }
-
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-                params: params
-            });
-
-            const { data, totalPages } = servicesResponse.data;
-
-
-            if (page === 1) {
-                setRmServicesData(data);
-                setcompleteRmData(data);
-                setdataToFilter(data);
-            } else {
-                setRmServicesData(prevData => [...prevData, ...data]);
-                setcompleteRmData(prevData => [...prevData, ...data]);
-                setdataToFilter(prevData => [...prevData, ...data]);
-            }
-
-            setTotalPages(totalPages);
-
-        } catch (error) {
-            console.error("Error fetching data", error.message);
-        } finally {
-            setOpenBacdrop(false);
-        }
-    };
-
-    useEffect(() => {
-      const handleScroll = debounce(() => {
-          const tableContainer = document.querySelector('#holdTable');
-  
-          if (tableContainer) {
-              if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
-                  if (page < totalPages) {
-                      setPage(prevPage => prevPage + 1); // Load next page
-                  }
-              }
-          }
-      }, 200);
-  
-      const tableContainer = document.querySelector('#holdTable');
-      if (tableContainer) {
-          tableContainer.addEventListener('scroll', handleScroll);
-      }
-  
-      return () => {
-          if (tableContainer) {
-              tableContainer.removeEventListener('scroll', handleScroll);
-          }
-      };
-  }, [page, totalPages, filteredData]);
-  
-
-    useEffect(() => {
-        fetchData(searchText, page);
-    }, [searchText, page]);
-
-
-
-    useEffect(() => {
-         fetchData(searchText);
-    }, [rmCertificationUserId, secretKey]);
-
-
-    const refreshData = () => {
-        if (filteredData && filteredData.length > 0) {
-            fetchData(searchText, 1, true)
-        } else {
-            fetchData(searchText, page, false);
-        }
-    };
-
-    function formatDate(dateString) {
-        const [year, month, date] = dateString.split('-');
-        return `${date}/${month}/${year}`
-    }
-
-    //------------------------Remarks Popup Section-----------------------------
-    const handleOpenRemarksPopup = async (companyName, serviceName) => {
-        console.log("RemarksPopup")
-    }
-    const functionCloseRemarksPopup = () => {
-        setChangeRemarks('')
-        setError('')
-        setOpenRemarksPopUp(false)
-    }
-    const debouncedSetChangeRemarks = useCallback(
-        debounce((value) => {
-            setChangeRemarks(value);
-        }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
-        [] // Empty dependency array to ensure the function is memoized
-    );
-
-    const handleSubmitRemarks = async () => {
-        //console.log("changeremarks", changeRemarks)
-        try {
-            if (changeRemarks) {
-                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                    currentCompanyName,
-                    currentServiceName,
-                    changeRemarks,
-                    updatedOn: new Date()
-                });
-
-                //console.log("response", response.data);
-
-                if (response.status === 200) {
-                    if (filteredData && filteredData.length > 0) {
-                        fetchData(searchText, page, true);
-                    } else {
-                        fetchData(searchText, page, false);
-                    }
-                    functionCloseRemarksPopup();
-                }
-            } else {
-                setError('Remarks Cannot Be Empty!')
-            }
-
-        } catch (error) {
-            console.log("Error Submitting Remarks", error.message);
-        }
-    };
-
-    const handleDeleteRemarks = async (remarks_id) => {
-        try {
-            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-            });
-            if (response.status === 200) {
-                if (filteredData && filteredData.length > 0) {
-                    fetchData(searchText, page, true);
-                } else {
-                    fetchData(searchText, page, false);
-                }
-
-                functionCloseRemarksPopup();
-            }
-            // Refresh the list
-        } catch (error) {
-            console.error("Error deleting remark:", error);
-        }
-    };
-
-
-    const handleIndustryChange = (industry, options) => {
-        setSelectedIndustry(industry);
-        setSectorOptions(options);
-    };
-
-    const handleCloseBackdrop = () => {
-        setOpenBacdrop(false)
-    }
-
-    // ------------filter functions----------------------------
-   
-    // useEffect(() => {
-    //     setShowFilterMenu(showFilter);
-    // }, [showFilter]);
-
-    const handleFilter = (newData) => {
-        console.log("newData", newData)
-        setFilteredData(newData)
-        setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Hold"));
-    };
-    
-
-    const handleFilterClick = (field) => {
-        if (activeFilterField === field) {
-            setShowFilterMenu(!showFilterMenu);
-            setIsScrollLocked(!showFilterMenu);
-        } else {
-            setActiveFilterField(field);
-            setShowFilterMenu(true);
-            setIsScrollLocked(true);
-
-            const rect = fieldRefs.current[field].getBoundingClientRect();
-            setFilterPosition({ top: rect.bottom, left: rect.left });
-        }
-
-        // Update the active filter fields array
-        setActiveFilterFields(prevFields => {
-
-            // Add the field if it's not active
-            return [...prevFields, field];
-
-        });
-    };
-    const isActiveField = (field) => activeFilterFields.includes(field);
-
-    useEffect(() => {
-      if (typeof document !== 'undefined') {
-          const handleClickOutside = (event) => {
-              if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-                  setShowFilterMenu(false);
-                  setIsScrollLocked(false);
-              }
-          };
-  
-          document.addEventListener('mousedown', handleClickOutside);
-  
-          return () => {
-              document.removeEventListener('mousedown', handleClickOutside);
-          };
-      }
+  useEffect(() => {
+    document.title = `AdminHead-Sahay-CRM`;
   }, []);
-  
-  
+
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
+    });
+
+    socket.on("rm-general-status-updated", (res) => {
+      fetchData(searchText)
+    });
+    socket.on("rm-industry-enabled", (res) => {
+      if (filteredData && filteredData.length > 0) {
+        fetchData(searchText, 1, true)
+      } else {
+        fetchData(searchText, page, false)
+      }
+    });
+    socket.on("rm-recievedamount-updated", (res) => {
+      fetchData(searchText)
+    });
+    socket.on("rm-recievedamount-deleted", (res) => {
+      fetchData(searchText)
+    });
+
+    socket.on("booking-deleted", (res) => {
+      fetchData(searchText)
+    });
+
+    socket.on("booking-updated", (res) => {
+      fetchData(searchText)
+    });
+    const updateDocumentInState = (updatedDocument) => {
+      console.log(updatedDocument)
+      setRmServicesData(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+      setcompleteRmData(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+      setdataToFilter(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+  };
+  socket.on("adminexecutive-general-status-updated", (res) => {
+      //console.log("res" , res)
+      if(res.updatedDocument){
+          updateDocumentInState(res.updatedDocument);
+      }
+     
+  });
+  socket.on("adminexecutive-letter-updated", (res) => {
+      //console.log("res" , res)
+      if(res.updatedDocument){
+          updateDocumentInState(res.updatedDocument);
+      }
+     
+  });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [newStatusProcess]);
+
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  // Fetch Data Function
+
+  // const fetchData = async (searchQuery = "", page = 1) => {
+  //     setOpenBacdrop(true);
+  //     try {
+
+  //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+  //         const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+  //         setEmployeeData(userData);
+
+  //         const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+  //             params: { search: searchQuery, page,activeTab:"Hold" }
+  //         });
+  //         const { data, totalPages } = servicesResponse.data;
+  //         console.log("response", servicesResponse.data)
+
+  //         // If it's a search query, replace the data; otherwise, append for pagination
+  //         if (page === 1) {
+  //             // This is either the first page load or a search operation
+  //             setRmServicesData(data);
+  //         } else {
+  //             // This is a pagination request
+  //             setRmServicesData(prevData => [...prevData, ...data]);
+  //         }
+  //         setTotalPages(totalPages)
+
+  //     } catch (error) {
+  //         console.error("Error fetching data", error.message);
+  //     } finally {
+  //         setOpenBacdrop(false);
+  //     }
+  // };
+
+  const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
+    setOpenBacdrop(true);
+    try {
+      const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+      const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+      setEmployeeData(userData);
+
+      let params = { search: searchQuery, page, activeTab: "Hold" };
+
+      // If filtering is active, extract companyName and serviceName from filteredData
+      if (isFilter && filteredData && filteredData.length > 0) {
+        console.log("yahan chal rha", isFilter)
+        const companyNames = filteredData.map(item => item["Company Name"]).join(',');
+        const serviceNames = filteredData.map(item => item.serviceName).join(',');
+
+        // Add filtered company names and service names to the params
+        params.companyNames = companyNames;
+        params.serviceNames = serviceNames;
+      }
+
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
+        params: params
+      });
+
+      const { data, totalPages } = servicesResponse.data;
+
+
+      if (page === 1) {
+        setRmServicesData(data);
+        setcompleteRmData(data);
+        setdataToFilter(data);
+      } else {
+        setRmServicesData(prevData => [...prevData, ...data]);
+        setcompleteRmData(prevData => [...prevData, ...data]);
+        setdataToFilter(prevData => [...prevData, ...data]);
+      }
+
+      setTotalPages(totalPages);
+
+    } catch (error) {
+      console.error("Error fetching data", error.message);
+    } finally {
+      setOpenBacdrop(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = debounce(() => {
+      const tableContainer = document.querySelector('#holdTable');
+
+      if (tableContainer) {
+        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+          if (page < totalPages) {
+            setPage(prevPage => prevPage + 1); // Load next page
+          }
+        }
+      }
+    }, 200);
+
+    const tableContainer = document.querySelector('#holdTable');
+    if (tableContainer) {
+      tableContainer.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (tableContainer) {
+        tableContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [page, totalPages, filteredData]);
+
+
+  useEffect(() => {
+    fetchData(searchText, page);
+  }, [searchText, page]);
+
+
+
+  useEffect(() => {
+    fetchData(searchText);
+  }, [rmCertificationUserId, secretKey]);
+
+
+  const refreshData = () => {
+    if (filteredData && filteredData.length > 0) {
+      fetchData(searchText, 1, true)
+    } else {
+      fetchData(searchText, page, false);
+    }
+  };
+
+  function formatDate(dateString) {
+    const [year, month, date] = dateString.split('-');
+    return `${date}/${month}/${year}`
+  }
+
+  //------------------------Remarks Popup Section-----------------------------
+  const handleOpenRemarksPopup = async (companyName, serviceName) => {
+    console.log("RemarksPopup")
+  }
+  const functionCloseRemarksPopup = () => {
+    setChangeRemarks('')
+    setError('')
+    setOpenRemarksPopUp(false)
+  }
+  const debouncedSetChangeRemarks = useCallback(
+    debounce((value) => {
+      setChangeRemarks(value);
+    }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    [] // Empty dependency array to ensure the function is memoized
+  );
+
+  const handleSubmitRemarks = async () => {
+    //console.log("changeremarks", changeRemarks)
+    try {
+      if (changeRemarks) {
+        const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
+          currentCompanyName,
+          currentServiceName,
+          changeRemarks,
+          updatedOn: new Date()
+        });
+
+        //console.log("response", response.data);
+
+        if (response.status === 200) {
+          if (filteredData && filteredData.length > 0) {
+            fetchData(searchText, page, true);
+          } else {
+            fetchData(searchText, page, false);
+          }
+          functionCloseRemarksPopup();
+        }
+      } else {
+        setError('Remarks Cannot Be Empty!')
+      }
+
+    } catch (error) {
+      console.log("Error Submitting Remarks", error.message);
+    }
+  };
+
+  const handleDeleteRemarks = async (remarks_id) => {
+    try {
+      const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
+        data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
+      });
+      if (response.status === 200) {
+        if (filteredData && filteredData.length > 0) {
+          fetchData(searchText, page, true);
+        } else {
+          fetchData(searchText, page, false);
+        }
+
+        functionCloseRemarksPopup();
+      }
+      // Refresh the list
+    } catch (error) {
+      console.error("Error deleting remark:", error);
+    }
+  };
+
+
+  const handleIndustryChange = (industry, options) => {
+    setSelectedIndustry(industry);
+    setSectorOptions(options);
+  };
+
+  const handleCloseBackdrop = () => {
+    setOpenBacdrop(false)
+  }
+
+  // ------------filter functions----------------------------
+
+  // useEffect(() => {
+  //     setShowFilterMenu(showFilter);
+  // }, [showFilter]);
+
+  const handleFilter = (newData) => {
+    console.log("newData", newData)
+    setFilteredData(newData)
+    setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Hold"));
+  };
+
+
+  const handleFilterClick = (field) => {
+    if (activeFilterField === field) {
+      setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
+    } else {
+      setActiveFilterField(field);
+      setShowFilterMenu(true);
+      setIsScrollLocked(true);
+
+      const rect = fieldRefs.current[field].getBoundingClientRect();
+      setFilterPosition({ top: rect.bottom, left: rect.left });
+    }
+
+    // Update the active filter fields array
+    setActiveFilterFields(prevFields => {
+
+      // Add the field if it's not active
+      return [...prevFields, field];
+
+    });
+  };
+  const isActiveField = (field) => activeFilterFields.includes(field);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const handleClickOutside = (event) => {
+        if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+          setShowFilterMenu(false);
+          setIsScrollLocked(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, []);
+
+
 
   return (
     <div>
@@ -413,7 +433,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter }) {
             <table className="table table-vcenter table-nowrap rm_table_inprocess">
               <thead>
                 <tr className="tr-sticky">
-                <th className="rm-sticky-left-1">Sr.No</th>
+                  <th className="rm-sticky-left-1">Sr.No</th>
                   <th className="rm-sticky-left-2">
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['Company Name'] = el}>
@@ -988,34 +1008,34 @@ function RmofCertificationHoldPanel({ searchText, showFilter }) {
                   </th>
                   <th>
                     <div className="d-flex align-items-center justify-content-center position-relative">
-                      <div>OTP/DSC Verification Status</div>
-                      <div className="RM_filter_icon">
-                        <div className='RM_filter_icon'>
-                          {isActiveField('otpVerificationStatus') ? (
-                            <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
-                          ) : (
-                            <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
-                          )}
-                        </div>
-                        {showFilterMenu && activeFilterField === 'otpVerificationStatus' && (
-                          <div
-                            ref={filterMenuRef}
-                            className="filter-menu"
-                            style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                          >
-                            <FilterableTable
-                              allFilterFields={setActiveFilterFields}
-                              filteredData={filteredData}
-                              activeTab={"Hold"}
-                              data={rmServicesData}
-                              filterField={activeFilterField}
-                              onFilter={handleFilter}
-                              completeData={completeRmData}
-                              dataForFilter={dataToFilter}
-                            />
-                          </div>
+                      <div ref={el => fieldRefs.current['otpVerificationStatus'] = el}>
+                        OTP/DSC Verification Status
+                      </div>
+                      <div className='otpVerificationStatus'>
+                        {isActiveField('otpVerificationStatus') ? (
+                          <FaFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("otpVerificationStatus")} />
                         )}
                       </div>
+                      {showFilterMenu && activeFilterField === 'otpVerificationStatus' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Hold"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
@@ -1357,19 +1377,19 @@ function RmofCertificationHoldPanel({ searchText, showFilter }) {
                             title={
                               obj.Remarks && obj.Remarks.length > 0
                                 ? obj.Remarks.sort(
-                                    (a, b) =>
-                                      new Date(b.updatedOn) -
-                                      new Date(a.updatedOn)
-                                  )[0].remarks
+                                  (a, b) =>
+                                    new Date(b.updatedOn) -
+                                    new Date(a.updatedOn)
+                                )[0].remarks
                                 : "No Remarks"
                             }
                           >
                             {obj.Remarks && obj.Remarks.length > 0
                               ? obj.Remarks.sort(
-                                  (a, b) =>
-                                    new Date(b.updatedOn) -
-                                    new Date(a.updatedOn)
-                                )[0].remarks
+                                (a, b) =>
+                                  new Date(b.updatedOn) -
+                                  new Date(a.updatedOn)
+                              )[0].remarks
                               : "No Remarks"}
                           </div>
                           <button
@@ -1399,8 +1419,8 @@ function RmofCertificationHoldPanel({ searchText, showFilter }) {
                             obj.websiteLink
                               ? obj.websiteLink
                               : obj.companyBriefing
-                              ? obj.companyBriefing
-                              : "Enter Website Link"
+                                ? obj.companyBriefing
+                                : "Enter Website Link"
                           }
                           companyBriefing={
                             obj.companyBriefing ? obj.companyBriefing : ""

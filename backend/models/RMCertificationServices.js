@@ -206,6 +206,7 @@ nswsMobileNo:{
  },
  otpVerificationStatus: {
   type: String,
+  default:"Both Pending"
 },
 })
 
