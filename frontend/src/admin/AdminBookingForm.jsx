@@ -79,9 +79,15 @@ export default function AdminBookingForm({
     type: "",
     validity: ""
   }
+  const defaultDirectorDscType = {
+    serviceID: "",
+    type: "",
+    validity: ""
+  }
   const [isoType, setIsoType] = useState([]);
   const [companyIncoType, setCompanyIncoType] = useState([]);
   const [organizationDscType, setOrganizationDscType] = useState([]);
+  const [directorDscType, setDirectorDscType] = useState([]);
 
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -206,6 +212,7 @@ export default function AdminBookingForm({
           setIsoType(service.isoTypeObject);
           setCompanyIncoType(service.companyIncoTypeObject);
           setOrganizationDscType(service.organizationTypeObject);
+          setDirectorDscType(service.directorDscTypeObject);
 
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
@@ -249,7 +256,7 @@ export default function AdminBookingForm({
               setFourthTempRemarks(prev => [...prev, tempState]);
             }
           }
-         return {
+          return {
             ...service,
             serviceName: service.serviceName.includes("ISO Certificate")
               ? "ISO Certificate"
@@ -257,7 +264,9 @@ export default function AdminBookingForm({
                 ? "Company Incorporation"
                 : service.serviceName.includes("Organization DSC")
                   ? "Organization DSC"
-                  : service.serviceName,
+                  : service.serviceName.includes("Director DSC")
+                    ? "Director DSC"
+                    : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -288,6 +297,7 @@ export default function AdminBookingForm({
           setIsoType(service.isoTypeObject);
           setCompanyIncoType(service.companyIncoTypeObject);
           setOrganizationDscType(service.organizationTypeObject);
+          setDirectorDscType(service.directorDscTypeObject);
 
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
@@ -340,7 +350,9 @@ export default function AdminBookingForm({
                 ? "Company Incorporation"
                 : service.serviceName.includes("Organization DSC")
                   ? "Organization DSC"
-                  : service.serviceName,
+                  : service.serviceName.includes("Director DSC")
+                    ? "Director DSC"
+                    : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -640,6 +652,7 @@ export default function AdminBookingForm({
             const iso = isoType.find(obj => obj.serviceID === index);
             const companyIso = companyIncoType.find(obj => obj.serviceID === index);
             const organizationIso = organizationDscType.find(obj => obj.serviceID === index);
+            const directorIso = directorDscType.find(obj => obj.serviceID === index);
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
@@ -668,7 +681,14 @@ export default function AdminBookingForm({
               } else {
                 updatedServiceName = `${`Organization DSC ${organizationIso.type} ${organizationIso.validity}`}`;
               }
-
+            }else if (service.serviceName === "Director DSC" && directorIso) {
+              if (
+                directorIso.type === ""
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `${`Director DSC ${directorIso.type} ${directorIso.validity}`}`;
+              }
             }
 
             // Update the payment remarks based on specific conditions
@@ -693,7 +713,8 @@ export default function AdminBookingForm({
               fourthPaymentRemarks: fourthRemark,
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
-              organizationTypeObject: organizationDscType
+              organizationTypeObject: organizationDscType,
+              directorDscTypeObject:directorDscType,
             };
           });
 
@@ -795,6 +816,7 @@ export default function AdminBookingForm({
             const isoDetails = isoType.find(obj => obj.serviceID === index);
             const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
             const organsizationDetails = organizationDscType.find(obj => obj.serviceID === index);
+            const directorDscDetails = directorDscType.find(obj => obj.serviceID === index);
 
             return {
               ...service,
@@ -804,6 +826,8 @@ export default function AdminBookingForm({
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
                     ? `Organization DSC ${organsizationDetails.type} ${organsizationDetails.validity}`
+                    : service.serviceName === "Director DSC"
+                    ? `Director DSC ${directorDscDetails.type} ${directorDscDetails.validity}`
                     : service.serviceName,
               secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
@@ -819,7 +843,8 @@ export default function AdminBookingForm({
 
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
-              organizationTypeObject: organizationDscType
+              organizationTypeObject: organizationDscType,
+              directorDscTypeObject:directorDscType
             };
           });
 
@@ -1127,7 +1152,7 @@ export default function AdminBookingForm({
                         });
                         setCompanyIncoType(defaultArray)
                       }
-                    }else if (e.target.value === "Organization DSC") {
+                    } else if (e.target.value === "Organization DSC") {
                       if (!organizationDscType.some(obj => obj.serviceID === i)) {
                         const defaultArray = organizationDscType;
                         defaultArray.push({
@@ -1135,6 +1160,15 @@ export default function AdminBookingForm({
                           serviceID: i
                         });
                         setOrganizationDscType(defaultArray)
+                      }
+                    }else if (e.target.value === "Director DSC") {
+                      if (!organizationDscType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = directorDscType;
+                        defaultArray.push({
+                          ...defaultDirectorDscType,
+                          serviceID: i
+                        });
+                        setDirectorDscType(defaultArray)
                       }
                     }
 
@@ -1265,7 +1299,7 @@ export default function AdminBookingForm({
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}
-                 {/* Company Incorporation  */}
+                {/* Company Incorporation  */}
                 {leadData.services[i].serviceName.includes("Company Incorporation") && <>
                   <select className="form-select mt-1 ml-1"
                     value={companyIncoType.find(obj => obj.serviceID === i).type}
@@ -1288,8 +1322,8 @@ export default function AdminBookingForm({
                     <option value="LLP">LLP</option>
                   </select>
                 </>}
-                 {/* Organisation Dsc  */}
-                 {leadData.services[i].serviceName.includes("Organization DSC") && <>
+                {/* Organisation Dsc  */}
+                {leadData.services[i].serviceName.includes("Organization DSC") && <>
                   <select className="form-select mt-1 ml-1"
                     value={organizationDscType.find(obj => obj.serviceID === i).type}
                     onChange={(e) => {
@@ -1321,6 +1355,47 @@ export default function AdminBookingForm({
                         }
                         remainingObject.push(newCurrentObject);
                         setOrganizationDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Validity</option>
+                    <option value="1 Year">1 Year</option>
+                    <option value="2 Year">2 Year</option>
+                    <option value="3 Year">3 Year</option>
+                  </select>
+                </>}
+                 {/* Director Dsc  */}
+                 {leadData.services[i].serviceName.includes("Director DSC") && <>
+                  <select className="form-select mt-1 ml-1"
+                    value={directorDscType.find(obj => obj.serviceID === i).type}
+                    onChange={(e) => {
+                      const currentObject = directorDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = directorDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          type: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setDirectorDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="Only Signature">Only Signature</option>
+                    <option value="Only Encryption">Only Encryption</option>
+                    <option value="Combo">Combo</option>
+                  </select>
+                  <select className="form-select mt-1 ml-1"
+                    value={directorDscType.find(obj => obj.serviceID === i).validity}
+                    onChange={(e) => {
+                      const currentObject = directorDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = directorDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          validity: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setDirectorDscType(remainingObject);
                       }
                     }}>
                     <option value="" selected disabled>Select Validity</option>
@@ -3635,7 +3710,12 @@ export default function AdminBookingForm({
                                                 const organizationDetails = organizationDscType.find(obj => obj.serviceID === index);
                                                 return `Organization DSC ${organizationDetails.type} ${organizationDetails.validity}`;
                                               })()
-                                            ) : (
+                                            ) : obj.serviceName === "Director DSC" ? (
+                                              (() => {
+                                                const directorDetails = directorDscType.find(obj => obj.serviceID === index);
+                                                return `Director DSC ${directorDetails.type} ${directorDetails.validity}`;
+                                              })()
+                                            ): (
                                               obj.serviceName
                                             )}
                                           </div>

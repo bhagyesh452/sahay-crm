@@ -38,6 +38,17 @@ const organizationDscTypeSchema = new mongoose.Schema({
     type:String
   }
 })
+const directorDscTypeSchema = new mongoose.Schema({
+  serviceID: {
+    type: Number
+  },
+  type: {
+    type: String
+  },
+  validity:{
+    type:String
+  }
+})
 
 const ServiceSchema = new mongoose.Schema({
   serviceName: {
@@ -51,6 +62,7 @@ const ServiceSchema = new mongoose.Schema({
   isoTypeObject: [isoTypeSchema],
   companyIncoTypeObject:[companyIncoTypeSchema],
   organizationTypeObject:[organizationDscTypeSchema],
+  directorDscTypeObject:[directorDscTypeSchema],
   totalPaymentWGST: {
     type: Number,
     required: true,

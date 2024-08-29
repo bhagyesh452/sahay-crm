@@ -21,6 +21,18 @@ const organizationDscTypeSchema = new mongoose.Schema({
   }
 })
 
+const directorDscTypeSchema = new mongoose.Schema({
+  serviceID: {
+    type: Number
+  },
+  type: {
+    type: String
+  },
+  validity:{
+    type:String
+  }
+})
+
 const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
@@ -39,6 +51,7 @@ const ServiceSchema = new mongoose.Schema({
   },
   companyIncoTypeObject: [companyIncoTypeSchema],
   organizationTypeObject:[organizationDscTypeSchema],
+  directorDscTypeObject:[directorDscTypeSchema],
   withGST: {
     type: Boolean
   },

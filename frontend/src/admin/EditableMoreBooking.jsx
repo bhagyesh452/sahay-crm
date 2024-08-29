@@ -117,9 +117,16 @@ export default function EditableMoreBooking({
     type: "",
     validity: ""
   }
+  const defaultDirectorDscType = {
+    serviceID: "",
+    type: "",
+    validity: ""
+  }
   const [isoType, setIsoType] = useState([]);
   const [companyIncoType, setCompanyIncoType] = useState([])
   const [organizationDscType, setOrganizationDscType] = useState([]);
+  const [directorDscType, setDirectorDscType] = useState([]);
+
 
   const fetchDataEmp = async () => {
     try {
@@ -167,6 +174,7 @@ export default function EditableMoreBooking({
       let allIsoTypes = [...isoType]; // Initialize with existing isoType state
       let allCompanyIncoTypes = [...companyIncoType];
       let allOrganizationTypes = [...organizationDscType];
+      let allDirectorTypes = [...directorDscType];
 
       const servicestoSend = newLeadData.services.map((service, index) => {
         const tempDefaultType = {
@@ -179,6 +187,10 @@ export default function EditableMoreBooking({
         };
         const tempDefaultOrganizationDscType = {
           ...defaultOrganizationDscType,
+          serviceID: index
+        };
+        const tempDefaultdirectorDscType = {
+          ...defaultDirectorDscType,
           serviceID: index
         };
 
@@ -224,6 +236,20 @@ export default function EditableMoreBooking({
           // Ensure tempDefaultType is added only if there is no valid isoTypeObject
           if (!service.organizationTypeObject.length || service.organizationTypeObject[0].serviceID === undefined) {
             allOrganizationTypes.push(tempDefaultOrganizationDscType);
+          }
+        }else if (service.serviceName.includes("Director DSC")) {
+          const uniqueIdDirectorDsc = new Set(allDirectorTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
+
+          service.directorDscTypeObject.forEach(isoObj => {
+            if (isoObj.serviceID !== undefined && !uniqueIdDirectorDsc.has(isoObj.serviceID)) {
+              allDirectorTypes.push(isoObj);
+              uniqueIdDirectorDsc.add(isoObj.serviceID); // Add new serviceID to the Set
+            }
+          });
+
+          // Ensure tempDefaultType is added only if there is no valid isoTypeObject
+          if (!service.directorDscTypeObject.length || service.directorDscTypeObject[0].serviceID === undefined) {
+            allDirectorTypes.push(tempDefaultdirectorDscType);
           }
         }
         if (!isNaN(new Date(service.secondPaymentRemarks))) {
@@ -276,6 +302,8 @@ export default function EditableMoreBooking({
               ? "Company Incorporation"
               : service.serviceName.includes("Organization DSC")
                 ? "Organization DSC"
+                : service.serviceName.includes("Director DSC")
+                ? "Director DSC"
                 : service.serviceName,
           paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
           secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
@@ -287,7 +315,8 @@ export default function EditableMoreBooking({
       // Set all isoTypes once after processing all services
       setIsoType(allIsoTypes);
       setCompanyIncoType(allCompanyIncoTypes)
-      setOrganizationDscType(allOrganizationTypes)
+      setOrganizationDscType(allOrganizationTypes);
+      setDirectorDscType(allDirectorTypes)
       const latestLeadData = {
         ...newLeadData,
         services: servicestoSend
@@ -324,6 +353,10 @@ export default function EditableMoreBooking({
             serviceID: index
           };
           const tempDefaultOrganizationDscType = {
+            ...defaultOrganizationDscType,
+            serviceID: index
+          };
+          const tempDefaultdirectorDscType = {
             ...defaultOrganizationDscType,
             serviceID: index
           };
@@ -397,6 +430,10 @@ export default function EditableMoreBooking({
             serviceID: index
           };
           const tempDefaultOrganizationDscType = {
+            ...defaultOrganizationDscType,
+            serviceID: index
+          };
+          const tempDefaultdirectorDscType = {
             ...defaultOrganizationDscType,
             serviceID: index
           };
@@ -671,7 +708,8 @@ export default function EditableMoreBooking({
         const isoDetails = isoType.find(obj => obj.serviceID === index);
         const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
         const organsizationDetails = organizationDscType.find(obj => obj.serviceID === index);
-
+        const directorDetails = directorDscType.find(obj => obj.serviceID === index);
+        
         return {
           ...service,
           serviceName: service.serviceName === "ISO Certificate"
@@ -680,6 +718,8 @@ export default function EditableMoreBooking({
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
                 ? `Organization DSC ${organsizationDetails.type} ${organsizationDetails.validity}`
+                : service.serviceName === "Director DSC"
+                ? `Director DSC ${directorDetails.type} ${directorDetails.validity}`
                 : service.serviceName,
           secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
             ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
@@ -695,7 +735,8 @@ export default function EditableMoreBooking({
 
           isoTypeObject: isoType,
           companyIncoTypeObject: companyIncoType,
-          organizationTypeObject: organizationDscType
+          organizationTypeObject: organizationDscType,
+          directorDscTypeObject:directorDscType
         };
       });
 
@@ -761,6 +802,7 @@ export default function EditableMoreBooking({
         const isoDetails = isoType.find(obj => obj.serviceID === index);
         const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
         const organsizationDetails = organizationDscType.find(obj => obj.serviceID === index);
+        const directorDetails = directorDscType.find(obj => obj.serviceID === index);
 
         return {
           ...service,
@@ -770,6 +812,8 @@ export default function EditableMoreBooking({
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
                 ? `Organization DSC ${organsizationDetails.type} ${organsizationDetails.validity}`
+                : service.serviceName === "Director DSC"
+                ? `Director DSC ${directorDetails.type} ${directorDetails.validity}`
                 : service.serviceName,
           secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
             ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
@@ -785,7 +829,8 @@ export default function EditableMoreBooking({
 
           isoTypeObject: isoType,
           companyIncoTypeObject: companyIncoType,
-          organizationTypeObject: organizationDscType
+          organizationTypeObject: organizationDscType,
+          directorDscTypeObject:directorDscType
         };
       });
       const generatedTotalAmount = leadData.services.reduce(
@@ -850,7 +895,8 @@ export default function EditableMoreBooking({
                 Object.keys(service).forEach((prop) => {
                   if (prop !== "isoTypeObject" ||
                     prop !== "companyIncoTypeObject" ||
-                    prop !== "Organization DSC") {
+                    prop !== "Organization DSC" ||
+                  prop !== "Director DSC") {
                     formData.append(`services[${index}][${prop}]`, service[prop]);
                   }
                 });
@@ -877,6 +923,14 @@ export default function EditableMoreBooking({
                   Object.keys(isoObj).forEach((isoProp) => {
 
                     formData.append(`services[${isoIndex}][organizationTypeObject][${isoProp}]`, isoObj[isoProp]);
+
+                  })
+                })
+              }else if (directorDscType.length !== 0) {
+                directorDscType.forEach((isoObj, isoIndex) => {
+                  Object.keys(isoObj).forEach((isoProp) => {
+
+                    formData.append(`services[${isoIndex}][directorDscTypeObject][${isoProp}]`, isoObj[isoProp]);
 
                   })
                 })
@@ -945,6 +999,14 @@ export default function EditableMoreBooking({
                 Object.keys(isoObj).forEach((isoProp) => {
 
                   formData.append(`services[${isoIndex}][organizationTypeObject][${isoProp}]`, isoObj[isoProp]);
+
+                })
+              })
+            }else if (directorDscType.length !== 0) {
+              directorDscType.forEach((isoObj, isoIndex) => {
+                Object.keys(isoObj).forEach((isoProp) => {
+
+                  formData.append(`services[${isoIndex}][directorDscTypeObject][${isoProp}]`, isoObj[isoProp]);
 
                 })
               })
@@ -1054,6 +1116,8 @@ export default function EditableMoreBooking({
                       setCompanyIncoType([]);
                     } else if (organizationDscType.length !== 0 && e.target.value !== "Organization DSC") {
                       setOrganizationDscType([]);
+                    }else if (directorDscType.length !== 0 && e.target.value !== "Director DSC") {
+                      setDirectorDscType([]);
                     }
                     if (e.target.value === "ISO Certificate") {
                       if (!isoType.some(obj => obj.serviceID === i)) {
@@ -1081,6 +1145,15 @@ export default function EditableMoreBooking({
                           serviceID: i
                         });
                         setOrganizationDscType(defaultArray)
+                      }
+                    }else if (e.target.value === "Director DSC") {
+                      if (!organizationDscType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = directorDscType;
+                        defaultArray.push({
+                          ...defaultDirectorDscType,
+                          serviceID: i
+                        });
+                        setDirectorDscType(defaultArray)
                       }
                     }
 
@@ -1270,6 +1343,47 @@ export default function EditableMoreBooking({
                         }
                         remainingObject.push(newCurrentObject);
                         setOrganizationDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Validity</option>
+                    <option value="1 Year">1 Year</option>
+                    <option value="2 Year">2 Year</option>
+                    <option value="3 Year">3 Year</option>
+                  </select>
+                </>}
+                 {/* Director Dsc  */}
+                 {leadData.services[i].serviceName.includes("Director DSC") && <>
+                  <select className="form-select mt-1 ml-1"
+                    value={directorDscType.find(obj => obj.serviceID === i).type}
+                    onChange={(e) => {
+                      const currentObject = directorDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = directorDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          type: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setDirectorDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="Only Signature">Only Signature</option>
+                    <option value="Only Encryption">Only Encryption</option>
+                    <option value="Combo">Combo</option>
+                  </select>
+                  <select className="form-select mt-1 ml-1"
+                    value={directorDscType.find(obj => obj.serviceID === i).validity}
+                    onChange={(e) => {
+                      const currentObject = directorDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = directorDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          validity: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setDirectorDscType(remainingObject);
                       }
                     }}>
                     <option value="" selected disabled>Select Validity</option>
@@ -3388,7 +3502,12 @@ export default function EditableMoreBooking({
                                                 const organizationDetails = organizationDscType.find(obj => obj.serviceID === index);
                                                 return `Organization DSC ${organizationDetails.type} ${organizationDetails.validity}`;
                                               })()
-                                            ) : (
+                                            ) : obj.serviceName === "Director DSC" ? (
+                                              (() => {
+                                                const directorDetails = directorDscType.find(obj => obj.serviceID === index);
+                                                return `Director DSC ${directorDetails.type} ${directorDetails.validity}`;
+                                              })()
+                                            ): (
                                               obj.serviceName
                                             )}
                                           </div>

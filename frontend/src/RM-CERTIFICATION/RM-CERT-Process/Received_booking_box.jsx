@@ -757,7 +757,9 @@ function Received_booking_box() {
 
                 const response = responses[0];
                 const response2 = responses[1];
-
+                  
+                console.log("response1" , response)
+                console.log("response" , response2)
                 //console.log("response", response2.data);
                 if (response.data.successEntries === 0) {
                     Swal.fire("Please Select Unique Services");

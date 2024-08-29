@@ -123,9 +123,15 @@ export default function RedesignedForm({
     type: "",
     validity: ""
   }
+  const defaultDirectorDscType = {
+    serviceID: "",
+    type: "",
+    validity: ""
+  }
   const [isoType, setIsoType] = useState([]);
   const [companyIncoType, setCompanyIncoType] = useState([]);
   const [organizationDscType, setOrganizationDscType] = useState([]);
+  const [directorDscType, setDirectorDscType] = useState([]);
 
 
 
@@ -214,6 +220,7 @@ export default function RedesignedForm({
           setIsoType(service.isoTypeObject);
           setCompanyIncoType(service.companyIncoTypeObject);
           setOrganizationDscType(service.organizationTypeObject);
+          setDirectorDscType(service.directorDscTypeObject);
 
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
@@ -268,7 +275,9 @@ export default function RedesignedForm({
                 ? "Company Incorporation"
                 : service.serviceName.includes("Organization DSC")
                   ? "Organization DSC"
-                  : service.serviceName,
+                  : service.serviceName.includes("Director DSC")
+                    ? "Director DSC"
+                    : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -298,6 +307,7 @@ export default function RedesignedForm({
           setIsoType(service.isoTypeObject);
           setCompanyIncoType(service.companyIncoTypeObject);
           setOrganizationDscType(service.organizationTypeObject);
+          setDirectorDscType(service.directorDscTypeObject);
 
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
@@ -350,7 +360,9 @@ export default function RedesignedForm({
                 ? "Company Incorporation"
                 : service.serviceName.includes("Organization DSC")
                   ? "Organization DSC"
-                  : service.serviceName,
+                  : service.serviceName.includes("Director DSC")
+                    ? "Director DSC"
+                    : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -617,7 +629,7 @@ export default function RedesignedForm({
             icon: "warning",
           });
         } else {
-          console.log("Active step here:", activeStep)
+          //console.log("Active step here:", activeStep)
           dataToSend = {
             "Company Email": leadData["Company Email"],
             "Company Name": leadData["Company Name"],
@@ -765,6 +777,7 @@ export default function RedesignedForm({
             const iso = isoType.find(obj => obj.serviceID === index);
             const companyIso = companyIncoType.find(obj => obj.serviceID === index);
             const organizationIso = organizationDscType.find(obj => obj.serviceID === index);
+            const directorIso = directorDscType.find(obj => obj.serviceID === index);
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
@@ -793,7 +806,14 @@ export default function RedesignedForm({
               } else {
                 updatedServiceName = `${`Organization DSC ${organizationIso.type} ${organizationIso.validity}`}`;
               }
-
+            }else if (service.serviceName === "Director DSC" && directorIso) {
+              if (
+                directorIso.type === ""
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `${`Director DSC ${directorIso.type} ${directorIso.validity}`}`;
+              }
             }
 
             // Update the payment remarks based on specific conditions
@@ -818,7 +838,8 @@ export default function RedesignedForm({
               fourthPaymentRemarks: fourthRemark,
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
-              organizationTypeObject: organizationDscType
+              organizationTypeObject: organizationDscType,
+              directorDscTypeObject:directorDscType,
             };
           });
 
@@ -918,6 +939,7 @@ export default function RedesignedForm({
             const isoDetails = isoType.find(obj => obj.serviceID === index);
             const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
             const organsizationDetails = organizationDscType.find(obj => obj.serviceID === index);
+            const directorDscDetails = directorDscType.find(obj => obj.serviceID === index);
 
             return {
               ...service,
@@ -927,6 +949,8 @@ export default function RedesignedForm({
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
                     ? `Organization DSC ${organsizationDetails.type} ${organsizationDetails.validity}`
+                    : service.serviceName === "Director DSC"
+                    ? `Director DSC ${directorDscDetails.type} ${directorDscDetails.validity}`
                     : service.serviceName,
               secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
@@ -942,7 +966,8 @@ export default function RedesignedForm({
 
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
-              organizationTypeObject: organizationDscType
+              organizationTypeObject: organizationDscType,
+              directorDscTypeObject:directorDscType
             };
           });
 
@@ -1218,6 +1243,15 @@ export default function RedesignedForm({
                         });
                         setOrganizationDscType(defaultArray)
                       }
+                    }else if (e.target.value === "Director DSC") {
+                      if (!organizationDscType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = directorDscType;
+                        defaultArray.push({
+                          ...defaultDirectorDscType,
+                          serviceID: i
+                        });
+                        setDirectorDscType(defaultArray)
+                      }
                     }
                   }}
                   disabled={completed[activeStep] === true}
@@ -1404,6 +1438,47 @@ export default function RedesignedForm({
                         }
                         remainingObject.push(newCurrentObject);
                         setOrganizationDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Validity</option>
+                    <option value="1 Year">1 Year</option>
+                    <option value="2 Year">2 Year</option>
+                    <option value="3 Year">3 Year</option>
+                  </select>
+                </>}
+                 {/* Director Dsc  */}
+                 {leadData.services[i].serviceName.includes("Director DSC") && <>
+                  <select className="form-select mt-1 ml-1"
+                    value={directorDscType.find(obj => obj.serviceID === i).type}
+                    onChange={(e) => {
+                      const currentObject = directorDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = directorDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          type: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setDirectorDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="Only Signature">Only Signature</option>
+                    <option value="Only Encryption">Only Encryption</option>
+                    <option value="Combo">Combo</option>
+                  </select>
+                  <select className="form-select mt-1 ml-1"
+                    value={directorDscType.find(obj => obj.serviceID === i).validity}
+                    onChange={(e) => {
+                      const currentObject = directorDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = directorDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          validity: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setDirectorDscType(remainingObject);
                       }
                     }}>
                     <option value="" selected disabled>Select Validity</option>
@@ -3542,7 +3617,12 @@ export default function RedesignedForm({
                                                 const organizationDetails = organizationDscType.find(obj => obj.serviceID === index);
                                                 return `Organization DSC ${organizationDetails.type} ${organizationDetails.validity}`;
                                               })()
-                                            ) : (
+                                            ) : obj.serviceName === "Director DSC" ? (
+                                              (() => {
+                                                const directorDetails = directorDscType.find(obj => obj.serviceID === index);
+                                                return `Director DSC ${directorDetails.type} ${directorDetails.validity}`;
+                                              })()
+                                            ): (
                                               obj.serviceName
                                             )}
                                           </div>
