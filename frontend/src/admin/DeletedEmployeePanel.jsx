@@ -259,12 +259,17 @@ function DeletedEmployeePanel({ searchValue }) {
               <th>Designation</th>
               <th>Branch</th>
               <th>Joining Date</th>
+              {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
+                          &&
+                          <>
               {/* <th>Probation Status</th> */}
               <th>Added Date</th>
               <th>Delete Date</th>
               {/* <th>BDM Work</th> */}
               <th>Action</th>
               <th>Revoke Employee</th>
+                </>
+                }
             </tr>
           </thead>
 
@@ -354,8 +359,7 @@ function DeletedEmployeePanel({ searchValue }) {
                                 />
                               </Stack>
                             </td> */}
-                          </>
-                        }
+                     
 
                         {/* <td>₹ {formatSalary(item.salary || 0)}</td> */}
                         <td>
@@ -386,6 +390,8 @@ function DeletedEmployeePanel({ searchValue }) {
                             <TbRestore />
                           </button>
                         </td>
+                        </>
+                        }
                       </tr>
                     );
                   })}
