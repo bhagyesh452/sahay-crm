@@ -16,6 +16,15 @@ const isoTypeSchema = new mongoose.Schema({
   Nontype: {
     type: String
   }
+});
+
+const companyIncoTypeSchema = new mongoose.Schema({
+  serviceID: {
+    type: Number
+  },
+  type: {
+    type: String
+  },
 })
 
 const ServiceSchema = new mongoose.Schema({
@@ -28,6 +37,7 @@ const ServiceSchema = new mongoose.Schema({
     required: true,
   },
   isoTypeObject: [isoTypeSchema],
+  companyIncoTypeObject:[companyIncoTypeSchema],
   totalPaymentWGST: {
     type: Number,
     required: true,

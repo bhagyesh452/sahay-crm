@@ -115,7 +115,12 @@ export default function AddLeadForm({
     IAFtype2: "",
     Nontype: ""
   }
+  const defaultCompanyIncoIsoType = {
+    serviceID: "",
+    type: "",
+  }
   const [isoType, setIsoType] = useState([]);
+  const [companyIncoType, setCompanyIncoType] = useState([])
   const [loader, setLoader] = useState(false);
   const fetchDataEmp = async () => {
     try {
@@ -195,9 +200,10 @@ export default function AddLeadForm({
           console.log("bookings", booking)
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
-            console.log("isotypeobject", service.isoTypeObject)
+           
             setIsoType(service.isoTypeObject);
-            console.log(service.secondPaymentRemarks, "TEST")
+            setCompanyIncoType(service.companyIncoTypeObject);
+            
             if (!isNaN(new Date(service.secondPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
@@ -240,12 +246,13 @@ export default function AddLeadForm({
                 setFourthTempRemarks(prev => [...prev, tempState]);
               }
             }
-
-
-
             return {
               ...service,
-              serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+              serviceName: service.serviceName.includes("ISO Certificate")
+              ? "ISO Certificate"
+              : service.serviceName.includes("Company Incorporation")
+                ? "Company Incorporation"
+                : service.serviceName,
               secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
                 ? service.secondPaymentRemarks
                 : "On Particular Date",
@@ -279,8 +286,6 @@ export default function AddLeadForm({
           setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
           setfetchedService(true);
         } else if (booking.Step4Status === true && booking.Step5Status === false) {
-
-
           const adminName = localStorage.getItem('adminName');
           const managerName = localStorage.getItem('dataManagerName');
           const mainAccess = (adminName || managerName) ? true : false;
@@ -288,13 +293,14 @@ export default function AddLeadForm({
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
             setIsoType(service.isoTypeObject);
+            setCompanyIncoType(service.companyIncoTypeObject);
             if (!isNaN(new Date(service.secondPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
                 value: service.secondPaymentRemarks
               };
               const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
-              console.log(prevState, "2nd Does exists")
+              
               if (prevState) {
                 setSecondTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -309,7 +315,7 @@ export default function AddLeadForm({
                 value: service.thirdPaymentRemarks
               };
               const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
-              console.log(prevState, "3rd Does exists")
+             
               if (prevState) {
                 setThirdTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -335,7 +341,11 @@ export default function AddLeadForm({
 
             return {
               ...service,
-              serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+              serviceName: service.serviceName.includes("ISO Certificate")
+              ? "ISO Certificate"
+              : service.serviceName.includes("Company Incorporation")
+                ? "Company Incorporation"
+                : service.serviceName,
               secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
                 ? service.secondPaymentRemarks
                 : "On Particular Date",
@@ -392,217 +402,13 @@ export default function AddLeadForm({
   };
 
   console.log(secondTempRemarks, thirdTempRemarks, fourthTempRemarks, "This is Temp Remarks");
-  // if (data.Step1Status === true && data.Step2Status === false) {
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     Step1Status: data.Step1Status
-  //   });
-  //   setCompleted({ 0: true });
-  //   setActiveStep(1);
-  // } else if (data.Step2Status === true && data.Step3Status === false) {
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status
-  //   });
-  //   setCompleted({ 0: true, 1: true });
-  //   setActiveStep(2);
-  // } else if (data.Step3Status === true && data.Step4Status === false) {
-  //   console.log(data.services)
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     // services: data.services.map(service => ({
-  //     //   serviceName: service.serviceName,
-  //     //   withDSC: service.serviceName,
-  //     //   totalPaymentWOGST: service.totalPaymentWOGST,
-  //     //   totalPaymentWGST: service.totalPaymentWGST,
-  //     //   withGST: service.withGST,
-  //     //   paymentTerms: service.paymentTerms,
-  //     //   firstPayment: service.firstPayment,
-  //     //   secondPayment: service.secondPayment,
-  //     //   thirdPayment: service.thirdPayment,
-  //     //   fourthPayment: service.fourthPayment,
-  //     //   paymentRemarks: service.paymentRemarks,
-  //     //   paymentCount: service.paymentCount,
-  //     // })),
-  //     services:data.services,
-
-  //     totalAmount: data.services.reduce(
-  //       (total, service) => total + service.totalPaymentWGST,
-  //       0
-  //     ),
-  //     receivedAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + service.totalPaymentWGST
-  //           : total + service.firstPayment,
-  //       0
-  //     ),
-  //     pendingAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + 0
-  //           : total + service.totalPaymentWGST - service.firstPayment,
-  //       0
-  //     ),
-  //     caCase: data.caCase,
-  //     caName: data.caName,
-  //     caEmail: data.caEmail,
-  //     caNumber: data.caNumber,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status,
-  //     Step3Status:data.Step3Status
-  //   });
-  //   setTotalServices(data.services.length);
-  //   setCompleted({ 0: true, 1: true, 2: true });
-  //   setActiveStep(3);
-
-  // } else if (data.Step4Status === true) {
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     services: data.services,
-  //     totalAmount: data.services.reduce(
-  //       (total, service) => total + service.totalPaymentWGST,
-  //       0
-  //     ),
-  //     receivedAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + service.totalPaymentWGST
-  //           : total + service.firstPayment,
-  //       0
-  //     ),
-  //     pendingAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + 0
-  //           : total + service.totalPaymentWGST - service.firstPayment,
-  //       0
-  //     ),
-  //     caCase: data.caCase,
-  //     caName: data.caName,
-  //     caEmail: data.caEmail,
-  //     caNumber: data.caNumber,
-  //     paymentMethod: data.paymentMethod,
-  //     paymentReceipt: data.paymentReceipt,
-  //     extraNotes: data.extraNotes,
-  //     totalAmount: data.totalAmount,
-  //     receivedAmount: data.receivedAmount,
-  //     pendingAmount: data.pendingAmount,
-  //     otherDocs: data.otherDocs,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status,
-  //     Step3Status:data.Step3Status,
-  //     Step4Status:data.Step4Status,
-  //   });
-  //   setTotalServices(data.services.length);
-  //   setCompleted({ 0: true, 1: true, 2: true, 3: true });
-  //   setActiveStep(4);
-  // }else if (data.Step5Status === true){
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     services: data.services,
-  //     totalAmount: data.services.reduce(
-  //       (total, service) => total + service.totalPaymentWGST,
-  //       0
-  //     ),
-  //     receivedAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + service.totalPaymentWGST
-  //           : total + service.firstPayment,
-  //       0
-  //     ),
-  //     pendingAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + 0
-  //           : total + service.totalPaymentWGST - service.firstPayment,
-  //       0
-  //     ),
-  //     caCase: data.caCase,
-  //     caName: data.caName,
-  //     caEmail: data.caEmail,
-  //     caNumber: data.caNumber,
-  //     paymentMethod: data.paymentMethod,
-  //     paymentReceipt: data.paymentReceipt,
-  //     extraNotes: data.extraNotes,
-  //     totalAmount: data.totalAmount,
-  //     receivedAmount: data.receivedAmount,
-  //     pendingAmount: data.pendingAmount,
-  //     otherDocs: data.otherDocs,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status,
-  //     Step3Status:data.Step3Status,
-  //     Step4Status:data.Step4Status,
-  //   });
-  //   setTotalServices(data.services.length);
-  //   setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
-  //   setActiveStep(5);
-  // }
+  
   console.log("Real time data: ", leadData);
   useEffect(() => {
     fetchData();
     fetchDataEmp();
   }, []);
+
   const handleTextAreaChange = (e) => {
     e.target.style.height = '1px';
     e.target.style.height = `${e.target.scrollHeight}px`;
@@ -698,7 +504,7 @@ export default function AddLeadForm({
     return `${year}-${month}-${day}`;
   }
 
-  console.log(activeStep);
+ 
 
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
@@ -880,7 +686,7 @@ export default function AddLeadForm({
           const servicestoSend = leadData.services.map((service, index) => {
             // Find the corresponding isoType object for the current index
             const iso = isoType.find(obj => obj.serviceID === index);
-
+            const companyIso = companyIncoType.find(obj => obj.serviceID === index);
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
@@ -893,8 +699,16 @@ export default function AddLeadForm({
               } else {
                 updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
               }
-            }
+            } else if (service.serviceName === "Company Incorporation" && companyIso) {
+              if (
+                companyIso.type === ""
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `Company Incorporation ${`${companyIso.type}`}`;
+              }
 
+            }
             // Update the payment remarks based on specific conditions
             const secondRemark = service.secondPaymentRemarks === "On Particular Date"
               ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
@@ -915,7 +729,8 @@ export default function AddLeadForm({
               secondPaymentRemarks: secondRemark,
               thirdPaymentRemarks: thirdRemark,
               fourthPaymentRemarks: fourthRemark,
-              isoTypeObject: isoType
+              isoTypeObject: isoType,
+              companyIncoTypeObject: companyIncoType
             };
           });
 
@@ -1021,23 +836,34 @@ export default function AddLeadForm({
 
         try {
           setLoader(true);
-          const servicestoSend = leadData.services.map((service, index) => ({
-            ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
-            secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+          const servicestoSend = leadData.services.map((service, index) => {
+            // Find ISO details and Company Incorporation details only once per service
+            const isoDetails = isoType.find(obj => obj.serviceID === index);
+            const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+
+            return {
+              ...service,
+              serviceName: service.serviceName === "ISO Certificate"
+                ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+                : service.serviceName === "Company Incorporation"
+                  ? `${companyIncoDetails.type} Company Incorporation`
+                  : service.serviceName,
+              secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
                 : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
+
+              thirdPaymentRemarks: service.thirdPaymentRemarks === "On Particular Date"
+                ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
                 : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
+
+              fourthPaymentRemarks: service.fourthPaymentRemarks === "On Particular Date"
+                ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject: isoType
-          }));
+
+              isoTypeObject: isoType,
+              companyIncoTypeObject: companyIncoType
+            };
+          });
           const tempLeadData = {
             ...leadData,
             services: servicestoSend
@@ -1244,7 +1070,7 @@ export default function AddLeadForm({
       console.error("Error resetting draft:", error.message);
     }
   };
-
+  console.log("companyIncoType", companyIncoType)
 
   const renderServices = () => {
     const services = [];
@@ -1286,8 +1112,16 @@ export default function AddLeadForm({
                         });
                         setIsoType(defaultArray)
                       }
+                    }else if (e.target.value === "Company Incorporation") {
+                      if (!companyIncoType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = companyIncoType;
+                        defaultArray.push({
+                          ...defaultCompanyIncoIsoType,
+                          serviceID: i
+                        });
+                        setCompanyIncoType(defaultArray)
+                      }
                     }
-
                   }}
                   disabled={completed[activeStep] === true}
                 >
@@ -1425,6 +1259,29 @@ export default function AddLeadForm({
                       <option value="GMO">GMO</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
+                </>}
+                 {/* Company Incorporation  */}
+                 {leadData.services[i].serviceName.includes("Company Incorporation") && <>
+                  <select className="form-select mt-1 ml-1"
+                    value={companyIncoType.find(obj => obj.serviceID === i).type}
+                    onChange={(e) => {
+                      const currentObject = companyIncoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = companyIncoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          type: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setCompanyIncoType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="Private Limited">Private Limited</option>
+                    <option value="OPC Private Limited">OPC Private Limited</option>
+                    <option value="LLP">LLP</option>
+                  </select>
                 </>}
               </div>
               {leadData.services[i].serviceName ===
@@ -3581,7 +3438,19 @@ export default function AddLeadForm({
                                         </div>
                                         {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj => obj.serviceID === index).type + " " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : isoType.find(obj => obj.serviceID === index).Nontype) : obj.serviceName}
+                                            {obj.serviceName === "ISO Certificate" ? (
+                                              (() => {
+                                                const isoDetails = isoType.find(obj => obj.serviceID === index);
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : isoDetails.Nontype}`;
+                                              })()
+                                            ) : obj.serviceName === "Company Incorporation" ? (
+                                              (() => {
+                                                const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+                                                return `${companyIncoDetails.type} Company Incorporation`;
+                                              })()
+                                            ) : (
+                                              obj.serviceName
+                                            )}
                                           </div>
                                         </div>}
                                       </div>
