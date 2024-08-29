@@ -6,7 +6,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 //import { GiInfo } from "react-icons/gi";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import { GiInfo } from "react-icons/gi";
+import { BsInfoCircle } from "react-icons/bs";
 
 const WebsiteLink = ({ companyName, serviceName, onlyLink,websiteLink, refreshData, companyBriefing }) => {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -89,9 +89,9 @@ const WebsiteLink = ({ companyName, serviceName, onlyLink,websiteLink, refreshDa
                 </div>
                 <button className='td_add_remarks_btn' onClick={() => setOpenWebsitePopup(true)}>
                     {websiteLink || companyBriefing ? (
-                        <GiInfo />
+                        <BsInfoCircle className='b-info'/>
                     ) : (
-                        <FaPencilAlt />
+                        <FaPencilAlt  />
                     )}
                 </button>
 

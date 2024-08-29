@@ -369,7 +369,7 @@ const FilterableTable = ({
         <div>
             <div className="inco-filter">
                 <div
-                    className="inco-subFilter"
+                    className="inco-subFilter p-2"
                     onClick={(e) => handleSort("oldest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
@@ -382,7 +382,7 @@ const FilterableTable = ({
                 </div>
 
                 <div
-                    className="inco-subFilter"
+                    className="inco-subFilter p-2"
                     onClick={(e) => handleSort("newest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
@@ -393,14 +393,14 @@ const FilterableTable = ({
                         filterField === "receivedPayment" ||
                         filterField === "pendingPayment" ? "Descending" : "Sort Z TO A"}
                 </div>
-                <div className="inco-subFilter"
-                    onClick={(e) => handleSort("none")}>
-                    <SwapVertIcon style={{ height: "16px" }} />
-                    None
-                </div>
-                <div className='d-flex'>
-                    <div className="inco-subFilter d-flex">
-                        <div style={{ marginRight: "5px" }} onClick={handleSelectAll}>
+                    {/* <div className="inco-subFilter p-2"
+                        onClick={(e) => handleSort("none")}>
+                        <SwapVertIcon style={{ height: "16px" }} />
+                        None
+                    </div> */}
+                <div className='w-100'>
+                    <div className="inco-subFilter d-flex align-items-center">
+                        <div className='filter-check' onClick={handleSelectAll}>
                             <input
                                 type="checkbox"
                                 checked={selectedFilters.length === columnValues.length}
@@ -408,15 +408,15 @@ const FilterableTable = ({
                                 id='Select_All'
                             />
                         </div>
-                        <label className="filter-val" for="Select_All">
+                        <label className="filter-val p-2" for="Select_All" onClick={handleSelectAll}>
                             Select All
                         </label>
                     </div>
                 </div>
                 <div className="inco_inner">
                     {columnValues.map(value => (
-                        <div key={value} className="inco-subFilter d-flex">
-                            <div style={{ marginRight: "5px" }}>
+                        <div key={value} className="inco-subFilter d-flex align-items-center">
+                            <div className='filter-check'>
                                 <input
                                     type="checkbox"
                                     value={value}
@@ -425,10 +425,9 @@ const FilterableTable = ({
                                     id={value}
                                 />
                             </div>
-                            <label className="filter-val" for={value}>
+                            <label className="filter-val p-2" for={value}>
                                 {value}
                             </label>
-                            
                         </div>
                     ))}
                 </div>

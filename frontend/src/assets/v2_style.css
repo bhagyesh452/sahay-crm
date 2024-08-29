@@ -1704,7 +1704,23 @@ th.th-day {
     opacity: 0.5;
     border: 1px solid #dadfe5;
 }
-
+.b-info
+{
+    font-size: 16px;
+}
+.filter-check
+{
+    margin-top: 4px;
+    width: 20px;
+    height: fit-content;
+    margin-left: 15px;
+    cursor: pointer;
+}
+.filter-val
+{
+    width: calc(100% - 35px);
+    cursor: pointer;
+}
 /* Sweep To Right */
 /* .sweep-to-right {
     -webkit-transform: perspective(1px) translateZ(0);
