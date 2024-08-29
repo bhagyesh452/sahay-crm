@@ -888,6 +888,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
+      console.log("document" , document)
 
       if (!document) {
         console.error("Document not found");
@@ -901,6 +902,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
           ...rmServicesMainBooking,
         ])
       );
+      console.log("uniquemainservices" , uniqueMainServices)
       document.servicesTakenByRmOfCertification = uniqueMainServices;
 
       // Iterate through moreBookings and update only relevant objects
@@ -923,15 +925,17 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
         }
       });
 
+
       // Save the updated document
       const updatedDocument = await document.save();
+      console.log("updateddocument" , updatedDocument)
 
-      if (!updatedDocument) {
-        console.error("Failed to save the updated document");
-        return res
-          .status(500)
-          .json({ message: "Failed to save the updated document" });
-      }
+      // if (!updatedDocument) {
+      //   console.error("Failed to save the updated document");
+      //   return res
+      //     .status(500)
+      //     .json({ message: "Failed to save the updated document" });
+      // }
 
       // Emit socket event
       res.status(200).json({
