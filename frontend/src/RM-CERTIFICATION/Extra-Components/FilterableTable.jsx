@@ -323,11 +323,18 @@ const FilterableTable = ({
     };
 
     const handleSelectAll = () => {
-        setSelectedFilters(prevFilters => ({
-            ...prevFilters,
-            [filterField]: [...columnValues]
-        }));
+        setSelectedFilters(prevFilters => {
+            const isAllSelected = prevFilters[filterField]?.length === columnValues.length;
+    
+            return {
+                ...prevFilters,
+                [filterField]: isAllSelected ? [] : [...columnValues]  // Deselect all if already selected, otherwise select all
+            };
+        });
     };
+    
+    // Example of logging the length of the selected filters for a specific field
+    console.log(selectedFilters[filterField]?.length, columnValues.length);
 
     // const handleClearAll = async() => {
     //     setSelectedFilters(prevFilters => ({
@@ -404,7 +411,7 @@ const FilterableTable = ({
                         <div className='filter-check' onClick={handleSelectAll}>
                             <input
                                 type="checkbox"
-                                checked={selectedFilters.length === columnValues.length}
+                                checked={selectedFilters[filterField]?.length === columnValues.length}
                                 readOnly
                                 id='Select_All'
                             />
