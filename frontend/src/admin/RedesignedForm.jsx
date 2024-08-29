@@ -1201,7 +1201,7 @@ export default function RedesignedForm({
                 </select>
                 {/* IAF and Non IAF */}
                 {leadData.services[i].serviceName.includes("ISO Certificate") && <>
-                  <select className="form-select mt-1 ml-1" style={{ width: '120px' }} value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
+                  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).type} onChange={(e) => {
                     const currentObject = isoType.find(obj => obj.serviceID === i);
 
                     if (currentObject) {
