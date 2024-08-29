@@ -1085,10 +1085,16 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
               <th>Branch</th>
               <th>Joining Date</th>
               {/* <th>Probation Status</th> */}
-              <th>Added Date</th>
+              {
+                (adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && (
+                  <>
+                             <th>Added Date</th>
               <th>Status</th>
               {/* <th>BDM Work</th> */}
               <th>Action</th>
+                </>
+              )}
+   
             </tr>
           </thead>
           {isLoading ? (
@@ -1463,7 +1469,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         <td>{formattedDate(item.jdate)}</td>
                         <td>{item.newDesignation === "Business Development Executive" && "BDE" || item.newDesignation === "Business Development Manager" && "BDM" || item.newDesignation || ""}</td>
                         <td>{item.branchOffice}</td>
-                        {(adminName === "Nimesh" || adminName === "nisarg" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
+                        {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan")
                           &&
 
                           <>
@@ -1580,7 +1586,9 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                   </Link>
                                 </div>
                               </div>
-                            </td></>}
+                            </td>
+                          </>
+                        }
                       </tr>
                     ))}
                   </tbody>
