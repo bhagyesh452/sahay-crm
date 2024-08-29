@@ -431,14 +431,6 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                             <CircularProgress color="inherit" />
                         </Backdrop>
                     )}
-                   
-                                    <div className="selection-data">
-                                        Result : <b>
-                                            {noOfAvailableData}
-                                          
-                                        </b>
-                                    </div>
-                                
                     {rmServicesData.length > 0 ? (
                         <table className="table table-vcenter table-nowrap rm_table">
                             <thead>
