@@ -804,7 +804,7 @@ export default function RedesignedForm({
               ) {
                 updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
               } else {
-                updatedServiceName = `${`Organization DSC ${organizationIso.type} ${organizationIso.validity}`}`;
+                updatedServiceName = `${`Organization DSC ${organizationIso.type} With ${organizationIso.validity}`}`;
               }
             }else if (service.serviceName === "Director DSC" && directorIso) {
               if (
@@ -812,7 +812,7 @@ export default function RedesignedForm({
               ) {
                 updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
               } else {
-                updatedServiceName = `${`Director DSC ${directorIso.type} ${directorIso.validity}`}`;
+                updatedServiceName = `${`Director DSC ${directorIso.type} With ${directorIso.validity}`}`;
               }
             }
 
@@ -948,9 +948,9 @@ export default function RedesignedForm({
                 : service.serviceName === "Company Incorporation"
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
-                    ? `Organization DSC ${organsizationDetails.type} ${organsizationDetails.validity}`
+                    ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity}`
                     : service.serviceName === "Director DSC"
-                    ? `Director DSC ${directorDscDetails.type} ${directorDscDetails.validity}`
+                    ? `Director DSC ${directorDscDetails.type} With ${directorDscDetails.validity}`
                     : service.serviceName,
               secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
@@ -3615,12 +3615,12 @@ export default function RedesignedForm({
                                             ) : obj.serviceName === "Organization DSC" ? (
                                               (() => {
                                                 const organizationDetails = organizationDscType.find(obj => obj.serviceID === index);
-                                                return `Organization DSC ${organizationDetails.type} ${organizationDetails.validity}`;
+                                                return `Organization DSC ${organizationDetails.type} With ${organizationDetails.validity}`;
                                               })()
                                             ) : obj.serviceName === "Director DSC" ? (
                                               (() => {
                                                 const directorDetails = directorDscType.find(obj => obj.serviceID === index);
-                                                return `Director DSC ${directorDetails.type} ${directorDetails.validity}`;
+                                                return `Director DSC ${directorDetails.type} With ${directorDetails.validity}`;
                                               })()
                                             ): (
                                               obj.serviceName
