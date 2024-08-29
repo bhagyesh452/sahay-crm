@@ -74,8 +74,14 @@ export default function AdminBookingForm({
     serviceID: "",
     type: "",
   }
+  const defaultOrganizationDscType = {
+    serviceID: "",
+    type: "",
+    validity: ""
+  }
   const [isoType, setIsoType] = useState([]);
   const [companyIncoType, setCompanyIncoType] = useState([]);
+  const [organizationDscType, setOrganizationDscType] = useState([]);
 
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -199,6 +205,8 @@ export default function AdminBookingForm({
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
           setCompanyIncoType(service.companyIncoTypeObject);
+          setOrganizationDscType(service.organizationTypeObject);
+
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
               serviceID: index,
@@ -241,13 +249,15 @@ export default function AdminBookingForm({
               setFourthTempRemarks(prev => [...prev, tempState]);
             }
           }
-          return {
+         return {
             ...service,
             serviceName: service.serviceName.includes("ISO Certificate")
               ? "ISO Certificate"
               : service.serviceName.includes("Company Incorporation")
                 ? "Company Incorporation"
-                : service.serviceName,
+                : service.serviceName.includes("Organization DSC")
+                  ? "Organization DSC"
+                  : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -277,6 +287,7 @@ export default function AdminBookingForm({
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
           setCompanyIncoType(service.companyIncoTypeObject);
+          setOrganizationDscType(service.organizationTypeObject);
 
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
@@ -327,7 +338,9 @@ export default function AdminBookingForm({
               ? "ISO Certificate"
               : service.serviceName.includes("Company Incorporation")
                 ? "Company Incorporation"
-                : service.serviceName,
+                : service.serviceName.includes("Organization DSC")
+                  ? "Organization DSC"
+                  : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -626,6 +639,7 @@ export default function AdminBookingForm({
             // Find the corresponding isoType object for the current index
             const iso = isoType.find(obj => obj.serviceID === index);
             const companyIso = companyIncoType.find(obj => obj.serviceID === index);
+            const organizationIso = organizationDscType.find(obj => obj.serviceID === index);
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
@@ -645,6 +659,14 @@ export default function AdminBookingForm({
                 updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
               } else {
                 updatedServiceName = `${`${companyIso.type} Company Incorporation`}`;
+              }
+            } else if (service.serviceName === "Organization DSC" && organizationIso) {
+              if (
+                organizationIso.type === ""
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `${`Organization DSC ${organizationIso.type} ${organizationIso.validity}`}`;
               }
 
             }
@@ -670,7 +692,8 @@ export default function AdminBookingForm({
               thirdPaymentRemarks: thirdRemark,
               fourthPaymentRemarks: fourthRemark,
               isoTypeObject: isoType,
-              companyIncoTypeObject: companyIncoType
+              companyIncoTypeObject: companyIncoType,
+              organizationTypeObject: organizationDscType
             };
           });
 
@@ -771,6 +794,7 @@ export default function AdminBookingForm({
             // Find ISO details and Company Incorporation details only once per service
             const isoDetails = isoType.find(obj => obj.serviceID === index);
             const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+            const organsizationDetails = organizationDscType.find(obj => obj.serviceID === index);
 
             return {
               ...service,
@@ -778,7 +802,9 @@ export default function AdminBookingForm({
                 ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
                 : service.serviceName === "Company Incorporation"
                   ? `${companyIncoDetails.type} Company Incorporation`
-                  : service.serviceName,
+                  : service.serviceName === "Organization DSC"
+                    ? `Organization DSC ${organsizationDetails.type} ${organsizationDetails.validity}`
+                    : service.serviceName,
               secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
                 : service.secondPaymentRemarks,
@@ -792,7 +818,8 @@ export default function AdminBookingForm({
                 : service.fourthPaymentRemarks,
 
               isoTypeObject: isoType,
-              companyIncoTypeObject: companyIncoType
+              companyIncoTypeObject: companyIncoType,
+              organizationTypeObject: organizationDscType
             };
           });
 
@@ -1100,7 +1127,15 @@ export default function AdminBookingForm({
                         });
                         setCompanyIncoType(defaultArray)
                       }
-
+                    }else if (e.target.value === "Organization DSC") {
+                      if (!organizationDscType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = organizationDscType;
+                        defaultArray.push({
+                          ...defaultOrganizationDscType,
+                          serviceID: i
+                        });
+                        setOrganizationDscType(defaultArray)
+                      }
                     }
 
                   }}
@@ -1230,6 +1265,7 @@ export default function AdminBookingForm({
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}
+                 {/* Company Incorporation  */}
                 {leadData.services[i].serviceName.includes("Company Incorporation") && <>
                   <select className="form-select mt-1 ml-1"
                     value={companyIncoType.find(obj => obj.serviceID === i).type}
@@ -1250,6 +1286,47 @@ export default function AdminBookingForm({
                     <option value="Private Limited">Private Limited</option>
                     <option value="OPC Private Limited">OPC Private Limited</option>
                     <option value="LLP">LLP</option>
+                  </select>
+                </>}
+                 {/* Organisation Dsc  */}
+                 {leadData.services[i].serviceName.includes("Organization DSC") && <>
+                  <select className="form-select mt-1 ml-1"
+                    value={organizationDscType.find(obj => obj.serviceID === i).type}
+                    onChange={(e) => {
+                      const currentObject = organizationDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = organizationDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          type: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setOrganizationDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="Only Signature">Only Signature</option>
+                    <option value="Only Encryption">Only Encryption</option>
+                    <option value="Combo">Combo</option>
+                  </select>
+                  <select className="form-select mt-1 ml-1"
+                    value={organizationDscType.find(obj => obj.serviceID === i).validity}
+                    onChange={(e) => {
+                      const currentObject = organizationDscType.find(obj => obj.serviceID === i);
+                      if (currentObject) {
+                        const remainingObject = organizationDscType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          validity: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setOrganizationDscType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Validity</option>
+                    <option value="1 Year">1 Year</option>
+                    <option value="2 Year">2 Year</option>
+                    <option value="3 Year">3 Year</option>
                   </select>
                 </>}
               </div>
@@ -3552,6 +3629,11 @@ export default function AdminBookingForm({
                                               (() => {
                                                 const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
                                                 return `${companyIncoDetails.type} Company Incorporation`;
+                                              })()
+                                            ) : obj.serviceName === "Organization DSC" ? (
+                                              (() => {
+                                                const organizationDetails = organizationDscType.find(obj => obj.serviceID === index);
+                                                return `Organization DSC ${organizationDetails.type} ${organizationDetails.validity}`;
                                               })()
                                             ) : (
                                               obj.serviceName

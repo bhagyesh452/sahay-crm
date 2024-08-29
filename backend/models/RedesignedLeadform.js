@@ -27,6 +27,18 @@ const companyIncoTypeSchema = new mongoose.Schema({
   },
 })
 
+const organizationDscTypeSchema = new mongoose.Schema({
+  serviceID: {
+    type: Number
+  },
+  type: {
+    type: String
+  },
+  validity:{
+    type:String
+  }
+})
+
 const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
@@ -38,6 +50,7 @@ const ServiceSchema = new mongoose.Schema({
   },
   isoTypeObject: [isoTypeSchema],
   companyIncoTypeObject:[companyIncoTypeSchema],
+  organizationTypeObject:[organizationDscTypeSchema],
   totalPaymentWGST: {
     type: Number,
     required: true,
