@@ -425,14 +425,15 @@ function RmofCertificationReadyToSubmitPanel({
 
     useEffect(() => {
         if (noOfAvailableData) {
-            showingFilterIcon(true)
-            totalFilteredData(noOfAvailableData)
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
         } else {
-            showingFilterIcon(false)
-            totalFilteredData(0)
+          showingFilterIcon(false)
+          totalFilteredData(0)
         }
+    
+      }, [noOfAvailableData, activeTab])
 
-    }, [noOfAvailableData , activeTab])
 
 
     const handleFilterClick = (field) => {
@@ -521,7 +522,9 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
+                                    
                                                     />
                                                 </div>
                                             )}
@@ -556,6 +559,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -591,6 +595,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -626,6 +631,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -662,6 +668,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -697,6 +704,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -733,6 +741,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -768,6 +777,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -803,6 +813,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -838,6 +849,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -873,6 +885,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -907,6 +920,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -941,6 +955,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -975,6 +990,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1007,6 +1023,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1041,6 +1058,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1075,6 +1093,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1108,6 +1127,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1142,6 +1162,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1176,6 +1197,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1226,6 +1248,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1261,6 +1284,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1295,6 +1319,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1330,6 +1355,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1365,6 +1391,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1728,6 +1755,7 @@ function RmofCertificationReadyToSubmitPanel({
                         filterField={filterField}
                         onFilter={handleFilter}
                         completeData={completeRmData}
+                        showingMenu={setShowFilterMenu}
                         dataForFilter={dataToFilter}
                     />
                 </div>

@@ -493,15 +493,14 @@ function RmofCertificationProcessPanel({
 
     useEffect(() => {
         if (noOfAvailableData) {
-            showingFilterIcon(true)
-            totalFilteredData(noOfAvailableData)
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
         } else {
-            showingFilterIcon(false)
-            totalFilteredData(0)
+          showingFilterIcon(false)
+          totalFilteredData(0)
         }
-
-    }, [noOfAvailableData , activeTab])
-
+    
+      }, [noOfAvailableData, activeTab])
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -543,10 +542,10 @@ function RmofCertificationProcessPanel({
         }
     }, []);
 
-    console.log("activeTab", activeTab)
-    console.log("filteredData", filteredData)
-    console.log("noofavaibaledataprocess" , noOfAvailableData)
-    console.log("rmservicesdataprocess" , rmServicesData)
+    //console.log("activeTab", activeTab)
+    //console.log("filteredData", filteredData)
+    console.log("noofavaibaledataprocess", noOfAvailableData)
+    //console.log("rmservicesdataprocess", rmServicesData)
 
     return (
         <div>
@@ -586,7 +585,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -594,6 +593,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -621,7 +622,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -629,6 +630,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -656,7 +659,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -664,6 +667,7 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -698,6 +702,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -725,7 +731,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -733,6 +739,7 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -760,7 +767,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -768,6 +775,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -796,7 +805,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -804,6 +813,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -831,7 +842,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -839,6 +850,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -866,7 +879,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -874,6 +887,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -901,7 +916,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -909,6 +924,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -942,6 +959,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -968,7 +987,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -976,6 +995,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1011,6 +1032,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1044,6 +1067,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1071,7 +1096,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1079,6 +1104,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1105,7 +1132,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1113,6 +1140,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1139,7 +1168,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1147,6 +1176,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1179,6 +1210,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1205,7 +1238,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1213,6 +1246,7 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1239,7 +1273,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1247,6 +1281,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1257,10 +1293,9 @@ function RmofCertificationProcessPanel({
                                         <div
                                             className='d-flex align-items-center justify-content-center position-relative'
                                         >
-                                            <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                                            <div ref={(el) => (fieldRefs.current["bookingDate"] = el)}>
                                                 Booking Date
                                             </div>
-
                                             <div className='RM_filter_icon'>
                                                 {isActiveField('bookingDate') ? (
                                                     <FaFilter onClick={() => handleFilterClick("bookingDate")} />
@@ -1275,7 +1310,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1283,11 +1318,13 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
-                                        </div></th>
+                                        </div>
+                                    </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['bdeName'] = el}>
@@ -1301,7 +1338,6 @@ function RmofCertificationProcessPanel({
                                                     <BsFilter onClick={() => handleFilterClick("bdeName")} />
                                                 )}
                                             </div>
-                                            {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
                                                     ref={filterMenuRef}
@@ -1309,7 +1345,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1317,6 +1353,7 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1344,7 +1381,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1352,6 +1389,7 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1379,7 +1417,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1387,6 +1425,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1414,7 +1454,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1422,6 +1462,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1449,7 +1491,7 @@ function RmofCertificationProcessPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Process"}
@@ -1457,6 +1499,8 @@ function RmofCertificationProcessPanel({
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1933,6 +1977,8 @@ function RmofCertificationProcessPanel({
                         filterField={filterField}
                         onFilter={handleFilter}
                         completeData={completeRmData}
+                        
+                        showingMenu={setShowFilterMenu}
                         dataForFilter={dataToFilter}
                     />
                 </div>

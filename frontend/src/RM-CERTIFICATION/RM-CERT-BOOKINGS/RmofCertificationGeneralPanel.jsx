@@ -362,14 +362,14 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
 
     useEffect(() => {
         if (noOfAvailableData) {
-            showingFilterIcon(true)
-            totalFilteredData(noOfAvailableData)
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
         } else {
-            showingFilterIcon(false)
-            totalFilteredData(0)
+          showingFilterIcon(false)
+          totalFilteredData(0)
         }
-
-    }, [noOfAvailableData, activeTab])
+    
+      }, [noOfAvailableData, activeTab])
 
 
     const handleFilterClick = (field) => {
@@ -414,8 +414,8 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     //     setPage(1); // Reset the page to 1 when a new search or filter is applied
     // }, [searchText, activeFilterField]);
 
-    console.log("filteredData", filteredData)
-    console.log("activeTab", activeTab)
+    //console.log("filteredData", filteredData)
+    //console.log("activeTab", activeTab)
     console.log("noofavaibaledatageneral" , noOfAvailableData)
     console.log("rmservicesdatageneral" , rmServicesData)
 
@@ -472,6 +472,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -508,6 +509,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -543,6 +545,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -578,6 +581,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -613,6 +617,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -648,6 +653,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -683,6 +689,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -719,6 +726,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -754,6 +762,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -789,6 +798,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -824,7 +834,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -859,7 +869,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -894,7 +904,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -1081,7 +1091,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                         filterField={filterField}
                         onFilter={handleFilter}
                         completeData={completeRmData}
-                        dataForFilter={dataToFilter}
+                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                     />
                 </div>
             )} */}

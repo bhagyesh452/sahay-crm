@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+const companyIncoTypeSchema = new mongoose.Schema({
+  serviceID: {
+    type: Number
+  },
+  type: {
+    type: String
+  },
+})
+
 const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
@@ -16,6 +25,7 @@ const ServiceSchema = new mongoose.Schema({
   isoTypeObject: {
     type: Array,
   },
+  companyIncoTypeObject: [companyIncoTypeSchema],
   withGST: {
     type: Boolean
   },

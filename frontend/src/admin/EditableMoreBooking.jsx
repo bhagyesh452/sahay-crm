@@ -107,7 +107,12 @@ export default function EditableMoreBooking({
     IAFtype2: "",
     Nontype: ""
   }
+  const defaultCompanyIncoIsoType = {
+    serviceID: "",
+    type: "",
+  }
   const [isoType, setIsoType] = useState([]);
+  const [companyIncoType, setCompanyIncoType] = useState([])
 
   const fetchDataEmp = async () => {
     try {
@@ -118,7 +123,7 @@ export default function EditableMoreBooking({
       const filteredData = tempData.filter(employee =>
         employee.designation === "Sales Executive" ||
         employee.designation === "Sales Manager")
-      console.log("filteredData" , filteredData);
+      console.log("filteredData", filteredData);
       setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -153,15 +158,21 @@ export default function EditableMoreBooking({
       } = data;
 
       let allIsoTypes = [...isoType]; // Initialize with existing isoType state
+      let allCompanyIncoTypes = [...companyIncoType]
 
       const servicestoSend = newLeadData.services.map((service, index) => {
         const tempDefaultType = {
           ...defaultISOtypes,
           serviceID: index
         };
+        const tempDefaultCompanyIncoType = {
+          ...defaultCompanyIncoIsoType,
+          serviceID: index
+        };
 
         if (service.serviceName.includes("ISO Certificate")) {
           const uniqueServiceIDs = new Set(allIsoTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
+
 
           service.isoTypeObject.forEach(isoObj => {
             if (isoObj.serviceID !== undefined && !uniqueServiceIDs.has(isoObj.serviceID)) {
@@ -174,7 +185,23 @@ export default function EditableMoreBooking({
           if (!service.isoTypeObject.length || service.isoTypeObject[0].serviceID === undefined) {
             allIsoTypes.push(tempDefaultType);
           }
+        } else if (service.serviceName.includes("Company Incorporation")) {
+          const uniqueIdFosCompanyInco = new Set(allCompanyIncoTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
+
+          service.companyIncoTypeObject.forEach(isoObj => {
+            if (isoObj.serviceID !== undefined && !uniqueIdFosCompanyInco.has(isoObj.serviceID)) {
+              allCompanyIncoTypes.push(isoObj);
+              uniqueIdFosCompanyInco.add(isoObj.serviceID); // Add new serviceID to the Set
+            }
+          });
+
+          // Ensure tempDefaultType is added only if there is no valid isoTypeObject
+          if (!service.companyIncoTypeObject.length || service.companyIncoTypeObject[0].serviceID === undefined) {
+            allCompanyIncoTypes.push(tempDefaultCompanyIncoType);
+          }
         }
+
+
         if (!isNaN(new Date(service.secondPaymentRemarks))) {
           const tempState = {
             serviceID: index,
@@ -222,7 +249,11 @@ export default function EditableMoreBooking({
 
         return {
           ...service,
-          serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+          serviceName: service.serviceName.includes("ISO Certificate")
+            ? "ISO Certificate"
+            : service.serviceName.includes("Company Incorporation")
+              ? "Company Incorporation"
+              : service.serviceName,
           paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
           secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
           thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
@@ -232,6 +263,7 @@ export default function EditableMoreBooking({
 
       // Set all isoTypes once after processing all services
       setIsoType(allIsoTypes);
+      setCompanyIncoType(allCompanyIncoTypes)
 
       const latestLeadData = {
         ...newLeadData,
@@ -262,6 +294,10 @@ export default function EditableMoreBooking({
         const servicestoSend = newLeadData.services.map((service, index) => {
           const tempDefaultType = {
             ...defaultISOtypes,
+            serviceID: index
+          };
+          const tempDefaultCompanyIncoType = {
+            ...defaultCompanyIncoIsoType,
             serviceID: index
           };
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
@@ -327,6 +363,10 @@ export default function EditableMoreBooking({
         const servicestoSend = newLeadData.services.map((service, index) => {
           const tempDefaultType = {
             ...defaultISOtypes,
+            serviceID: index
+          };
+          const tempDefaultCompanyIncoType = {
+            ...defaultCompanyIncoIsoType,
             serviceID: index
           };
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
@@ -408,212 +448,7 @@ export default function EditableMoreBooking({
     e.target.style.height = '1px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
-  // if (data.Step1Status === true && data.Step2Status === false) {
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     Step1Status: data.Step1Status
-  //   });
-  //   setCompleted({ 0: true });
-  //   setActiveStep(1);
-  // } else if (data.Step2Status === true && data.Step3Status === false) {
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status
-  //   });
-  //   setCompleted({ 0: true, 1: true });
-  //   setActiveStep(2);
-  // } else if (data.Step3Status === true && data.Step4Status === false) {
-  //   console.log(data.services)
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     // services: data.services.map(service => ({
-  //     //   serviceName: service.serviceName,
-  //     //   withDSC: service.serviceName,
-  //     //   totalPaymentWOGST: service.totalPaymentWOGST,
-  //     //   totalPaymentWGST: service.totalPaymentWGST,
-  //     //   withGST: service.withGST,
-  //     //   paymentTerms: service.paymentTerms,
-  //     //   firstPayment: service.firstPayment,
-  //     //   secondPayment: service.secondPayment,
-  //     //   thirdPayment: service.thirdPayment,
-  //     //   fourthPayment: service.fourthPayment,
-  //     //   paymentRemarks: service.paymentRemarks,
-  //     //   paymentCount: service.paymentCount,
-  //     // })),
-  //     services:data.services,
 
-  //     totalAmount: data.services.reduce(
-  //       (total, service) => total + service.totalPaymentWGST,
-  //       0
-  //     ),
-  //     receivedAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + service.totalPaymentWGST
-  //           : total + service.firstPayment,
-  //       0
-  //     ),
-  //     pendingAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + 0
-  //           : total + service.totalPaymentWGST - service.firstPayment,
-  //       0
-  //     ),
-  //     caCase: data.caCase,
-  //     caName: data.caName,
-  //     caEmail: data.caEmail,
-  //     caNumber: data.caNumber,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status,
-  //     Step3Status:data.Step3Status
-  //   });
-  //   setTotalServices(data.services.length);
-  //   setCompleted({ 0: true, 1: true, 2: true });
-  //   setActiveStep(3);
-
-  // } else if (data.Step4Status === true) {
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     services: data.services,
-  //     totalAmount: data.services.reduce(
-  //       (total, service) => total + service.totalPaymentWGST,
-  //       0
-  //     ),
-  //     receivedAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + service.totalPaymentWGST
-  //           : total + service.firstPayment,
-  //       0
-  //     ),
-  //     pendingAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + 0
-  //           : total + service.totalPaymentWGST - service.firstPayment,
-  //       0
-  //     ),
-  //     caCase: data.caCase,
-  //     caName: data.caName,
-  //     caEmail: data.caEmail,
-  //     caNumber: data.caNumber,
-  //     paymentMethod: data.paymentMethod,
-  //     paymentReceipt: data.paymentReceipt,
-  //     extraNotes: data.extraNotes,
-  //     totalAmount: data.totalAmount,
-  //     receivedAmount: data.receivedAmount,
-  //     pendingAmount: data.pendingAmount,
-  //     otherDocs: data.otherDocs,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status,
-  //     Step3Status:data.Step3Status,
-  //     Step4Status:data.Step4Status,
-  //   });
-  //   setTotalServices(data.services.length);
-  //   setCompleted({ 0: true, 1: true, 2: true, 3: true });
-  //   setActiveStep(4);
-  // }else if (data.Step5Status === true){
-  //   setSelectedValues(data.bookingSource);
-  //   setLeadData({
-  //     ...leadData,
-  //     "Company Name": data["Company Name"],
-  //     "Company Email": data["Company Email"],
-  //     "Company Number": data["Company Number"],
-  //     incoDate: data.incoDate,
-  //     panNumber: data.panNumber,
-  //     gstNumber: data.gstNumber,
-  //     bdeName: data.bdeName,
-  //     bdeEmail: data.bdeEmail,
-  //     bdmName: data.bdmName,
-  //     bdmEmail: data.bdmEmail,
-  //     bookingDate: data.bookingDate,
-  //     bookingSource: data.bookingSource,
-  //     services: data.services,
-  //     totalAmount: data.services.reduce(
-  //       (total, service) => total + service.totalPaymentWGST,
-  //       0
-  //     ),
-  //     receivedAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + service.totalPaymentWGST
-  //           : total + service.firstPayment,
-  //       0
-  //     ),
-  //     pendingAmount: data.services.reduce(
-  //       (total, service) =>
-  //         service.paymentTerms === "Full Advanced"
-  //           ? total + 0
-  //           : total + service.totalPaymentWGST - service.firstPayment,
-  //       0
-  //     ),
-  //     caCase: data.caCase,
-  //     caName: data.caName,
-  //     caEmail: data.caEmail,
-  //     caNumber: data.caNumber,
-  //     paymentMethod: data.paymentMethod,
-  //     paymentReceipt: data.paymentReceipt,
-  //     extraNotes: data.extraNotes,
-  //     totalAmount: data.totalAmount,
-  //     receivedAmount: data.receivedAmount,
-  //     pendingAmount: data.pendingAmount,
-  //     otherDocs: data.otherDocs,
-  //     Step1Status: data.Step1Status,
-  //     Step2Status: data.Step2Status,
-  //     Step3Status:data.Step3Status,
-  //     Step4Status:data.Step4Status,
-  //   });
-  //   setTotalServices(data.services.length);
-  //   setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
-  //   setActiveStep(5);
-  // }
   console.log("Real time data: ", leadData);
   useEffect(() => {
     fetchData();
@@ -810,31 +645,43 @@ export default function EditableMoreBooking({
           : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
       }, 0);
 
-      const servicestoSend = leadData.services.map((service, index) => ({
-        ...service,
-        serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
-        secondPaymentRemarks:
-          service.secondPaymentRemarks === "On Particular Date"
-            ? secondTempRemarks.find(obj => obj.serviceID === index).value
+      const servicestoSend = leadData.services.map((service, index) => {
+        // Find ISO details and Company Incorporation details only once per service
+        const isoDetails = isoType.find(obj => obj.serviceID === index);
+        const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+
+        return {
+          ...service,
+          serviceName: service.serviceName === "ISO Certificate"
+            ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+            : service.serviceName === "Company Incorporation"
+              ? `${companyIncoDetails.type} Company Incorporation`
+              : service.serviceName,
+          secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
+            ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
             : service.secondPaymentRemarks,
-        thirdPaymentRemarks:
-          service.thirdPaymentRemarks === "On Particular Date"
-            ? thirdTempRemarks.find(obj => obj.serviceID === index).value
+
+          thirdPaymentRemarks: service.thirdPaymentRemarks === "On Particular Date"
+            ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
             : service.thirdPaymentRemarks,
-        fourthPaymentRemarks:
-          service.fourthPaymentRemarks === "On Particular Date"
-            ? fourthTempRemarks.find(obj => obj.serviceID === index).value
+
+          fourthPaymentRemarks: service.fourthPaymentRemarks === "On Particular Date"
+            ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
             : service.fourthPaymentRemarks,
-        isoTypeObject: isoType
-      }));
+
+          isoTypeObject: isoType,
+          companyIncoTypeObject: companyIncoType
+        };
+      });
+
 
       const dataToSend = {
-        ...leadData, 
-        services: servicestoSend, 
-        requestBy: employeeName, 
-        bookingSource: selectedValues, 
-        generatedTotalAmount: generatedTotalAmount, 
-        generatedReceivedAmount: generatedReceivedAmount, 
+        ...leadData,
+        services: servicestoSend,
+        requestBy: employeeName,
+        bookingSource: selectedValues,
+        generatedTotalAmount: generatedTotalAmount,
+        generatedReceivedAmount: generatedReceivedAmount,
         receivedAmount: parseInt(leadData.services
           .reduce(
             (total, service) =>
@@ -885,26 +732,36 @@ export default function EditableMoreBooking({
     } else if (activeStep === 4 && isAdmin) {
       const defaultDate = new Date(1970, 0, 1);
 
-      const servicestoSend = leadData.services.map((service, index) => ({
-        ...service,
-        serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
-        secondPaymentRemarks:
-          service.secondPaymentRemarks === "On Particular Date"
-            ? secondTempRemarks.find(obj => obj.serviceID === index).value
-            : service.secondPaymentRemarks,
-        thirdPaymentRemarks:
-          service.thirdPaymentRemarks === "On Particular Date"
-            ? secondTempRemarks.find(obj => obj.serviceID === index).value
-            : service.thirdPaymentRemarks,
-        fourthPaymentRemarks:
-          service.fourthPaymentRemarks === "On Particular Date"
-            ? secondTempRemarks.find(obj => obj.serviceID === index).value
-            : service.fourthPaymentRemarks,
-        isoTypeObject: isoType,
-        expanse: service.expanse ? service.expanse : 0,
-        expanseDate: service.expanseDate ? service.expanseDate : defaultDate
+      const servicestoSend = leadData.services.map((service, index) => {
+        const isoDetails = isoType.find(obj => obj.serviceID === index);
+        const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+        return {
+          ...service,
+          serviceName: service.serviceName === "ISO Certificate"
+                ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+                : service.serviceName === "Company Incorporation"
+                  ? `${companyIncoDetails.type} Company Incorporation`
+                  : service.serviceName,
+          secondPaymentRemarks:
+            service.secondPaymentRemarks === "On Particular Date"
+              ? secondTempRemarks.find(obj => obj.serviceID === index).value
+              : service.secondPaymentRemarks,
+          thirdPaymentRemarks:
+            service.thirdPaymentRemarks === "On Particular Date"
+              ? secondTempRemarks.find(obj => obj.serviceID === index).value
+              : service.thirdPaymentRemarks,
+          fourthPaymentRemarks:
+            service.fourthPaymentRemarks === "On Particular Date"
+              ? secondTempRemarks.find(obj => obj.serviceID === index).value
+              : service.fourthPaymentRemarks,
+          isoTypeObject: isoType,
+          companyIncoTypeObject: companyIncoType,
+          expanse: service.expanse ? service.expanse : 0,
+          expanseDate: service.expanseDate ? service.expanseDate : defaultDate
 
-      }));
+        }
+
+      });
       const generatedTotalAmount = leadData.services.reduce(
         (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
         0
@@ -915,12 +772,12 @@ export default function EditableMoreBooking({
           : curr.withGST ? acc + parseInt(curr.firstPayment) / 1.18 : acc + parseInt(curr.firstPayment)
       }, 0);
       const dataToSend = {
-        ...leadData, 
-        generatedTotalAmount: generatedTotalAmount, 
-        services: servicestoSend, 
-        generatedReceivedAmount: generatedReceivedAmount, 
-        bookingSource: selectedValues, 
-        step4changed: step4changed, 
+        ...leadData,
+        generatedTotalAmount: generatedTotalAmount,
+        services: servicestoSend,
+        generatedReceivedAmount: generatedReceivedAmount,
+        bookingSource: selectedValues,
+        step4changed: step4changed,
         receivedAmount: parseInt(leadData.services
           .reduce(
             (total, service) =>
@@ -965,7 +822,7 @@ export default function EditableMoreBooking({
               // Handle services separately as it's an array
               dataToSend.services.forEach((service, index) => {
                 Object.keys(service).forEach((prop) => {
-                  if (prop !== "isoTypeObject") {
+                  if (prop !== "isoTypeObject" || prop !== "companyIncoTypeObject" ) {
                     formData.append(`services[${index}][${prop}]`, service[prop]);
                   }
                 });
@@ -976,6 +833,14 @@ export default function EditableMoreBooking({
                   Object.keys(isoObj).forEach((isoProp) => {
 
                     formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]`, isoObj[isoProp]);
+
+                  })
+                })
+              }else if(companyIncoType.length !== 0){
+                companyIncoType.forEach((isoObj, isoIndex) => {
+                  Object.keys(isoObj).forEach((isoProp) => {
+
+                    formData.append(`services[${isoIndex}][companyIncoTypeObject][${isoProp}]`, isoObj[isoProp]);
 
                   })
                 })
@@ -993,9 +858,9 @@ export default function EditableMoreBooking({
             }
           });
           // console.log(activeStep, dataToSend);
-          
-          console.log("dataToSend" , dataToSend)
-          console.log("formData" , formData)
+
+          console.log("dataToSend", dataToSend)
+          console.log("formData", formData)
           const response = await axios.post(`${secretKey}/bookings/update-redesigned-final-form/${companysName}`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
@@ -1015,7 +880,7 @@ export default function EditableMoreBooking({
             // Handle services separately as it's an array
             dataToSend.services.forEach((service, index) => {
               Object.keys(service).forEach((prop) => {
-                if (prop !== "isoTypeObject") {
+                if (prop !== "isoTypeObject" || prop !== "companyIncoTypeObject") {
                   formData.append(`services[${index}][${prop}]`, service[prop]);
                 }
               });
@@ -1026,6 +891,14 @@ export default function EditableMoreBooking({
                 Object.keys(isoObj).forEach((isoProp) => {
 
                   formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]`, isoObj[isoProp]);
+
+                })
+              })
+            }else if(companyIncoType.length !== 0){
+              companyIncoType.forEach((isoObj, isoIndex) => {
+                Object.keys(isoObj).forEach((isoProp) => {
+
+                  formData.append(`services[${isoIndex}][companyIncoTypeObject][${isoProp}]`, isoObj[isoProp]);
 
                 })
               })
@@ -1131,6 +1004,8 @@ export default function EditableMoreBooking({
                     }));
                     if (isoType.length !== 0 && e.target.value !== "ISO Certificate") {
                       setIsoType([]);
+                    }else if(companyIncoType.length !== 0 &&  e.target.value !== "Company Incorporation"){
+                      setCompanyIncoType([]);
                     }
 
                     if (e.target.value === "ISO Certificate") {
@@ -1142,6 +1017,16 @@ export default function EditableMoreBooking({
                         });
                         setIsoType(defaultArray)
                       }
+                    }else if (e.target.value === "Company Incorporation") {
+                      if (!companyIncoType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = companyIncoType;
+                        defaultArray.push({
+                          ...defaultCompanyIncoIsoType,
+                          serviceID: i
+                        });
+                        setCompanyIncoType(defaultArray)
+                      }
+
                     }
 
                   }}
@@ -1157,22 +1042,22 @@ export default function EditableMoreBooking({
                   ))}
                 </select>
                 {/* IAF and Non IAF */}
-                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select 
-                className="form-select mt-1 ml-1" style={{ width: '120px' }} disabled={completed[activeStep] === true} 
-                value={isoType && isoType.find(obj => obj.serviceID === i).type} 
-                onChange={(e) => {
-                  const currentObject = isoType.find(obj => obj.serviceID === i);
+                {leadData.services[i].serviceName.includes("ISO Certificate") && <> <select
+                  className="form-select mt-1 ml-1" disabled={completed[activeStep] === true}
+                  value={isoType && isoType.find(obj => obj.serviceID === i).type}
+                  onChange={(e) => {
+                    const currentObject = isoType.find(obj => obj.serviceID === i);
 
-                  if (currentObject) {
-                    const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                    const newCurrentObject = {
-                      ...currentObject,
-                      type: e.target.value
+                    if (currentObject) {
+                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                      const newCurrentObject = {
+                        ...currentObject,
+                        type: e.target.value
+                      }
+                      remainingObject.push(newCurrentObject);
+                      setIsoType(remainingObject);
                     }
-                    remainingObject.push(newCurrentObject);
-                    setIsoType(remainingObject);
-                  }
-                }}>
+                  }}>
                   <option value="" selected>Select IAF Body</option>
                   <option value="IAF">IAF</option>
                   <option value="Non IAF">Non IAF</option>
@@ -1273,6 +1158,28 @@ export default function EditableMoreBooking({
                       <option value="GMO">GMO</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
+                </>}
+                {leadData.services[i].serviceName.includes("Company Incorporation") && <>
+                  <select className="form-select mt-1 ml-1"
+                    value={companyIncoType.find(obj => obj.serviceID === i).type}
+                    onChange={(e) => {
+                      const currentObject = companyIncoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = companyIncoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          type: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setCompanyIncoType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="Private Limited">Private Limited</option>
+                    <option value="OPC Private Limited">OPC Private Limited</option>
+                    <option value="LLP">LLP</option>
+                  </select>
                 </>}
               </div>
               {leadData.services[i].serviceName ===
@@ -3369,7 +3276,19 @@ export default function EditableMoreBooking({
                                         </div>
                                         {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj => obj.serviceID === index).type + " " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : isoType.find(obj => obj.serviceID === index).Nontype) : obj.serviceName}
+                                            {obj.serviceName === "ISO Certificate" ? (
+                                              (() => {
+                                                const isoDetails = isoType.find(obj => obj.serviceID === index);
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : isoDetails.Nontype}`;
+                                              })()
+                                            ) : obj.serviceName === "Company Incorporation" ? (
+                                              (() => {
+                                                const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+                                                return `${companyIncoDetails.type} Company Incorporation`;
+                                              })()
+                                            ) : (
+                                              obj.serviceName
+                                            )}
                                           </div>
                                         </div>}
                                       </div>
@@ -3580,59 +3499,59 @@ export default function EditableMoreBooking({
                                     </div>
                                   ))}
                                   <div className="row m-0">
-                                        <div className="col-sm-3 p-0">
-                                          <div className="form-label-name">
-                                            <b>CA Case</b>
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-9 p-0">
-                                          <div className="form-label-data">
-                                            {leadData.caCase
-                                            }
-                                          </div>
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>CA Case</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        {leadData.caCase
+                                        }
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {leadData.caCase && <>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Number</b>
                                         </div>
                                       </div>
-                                      {leadData.caCase && <>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Number</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caNumber
-                                              }
-                                            </div>
-                                          </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caNumber
+                                          }
                                         </div>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Email</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caEmail
-                                              }
-                                            </div>
-                                          </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Email</b>
                                         </div>
-                                        <div className="row m-0">
-                                          <div className="col-sm-3 p-0">
-                                            <div className="form-label-name">
-                                              <b>CA Commission</b>
-                                            </div>
-                                          </div>
-                                          <div className="col-sm-9 p-0">
-                                            <div className="form-label-data">
-                                              {leadData.caCommission
-                                              }
-                                            </div>
-                                          </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caEmail
+                                          }
                                         </div>
-                                      </>}
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>CA Commission</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          {leadData.caCommission
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>}
 
                                   {/* total amount */}
                                 </div>

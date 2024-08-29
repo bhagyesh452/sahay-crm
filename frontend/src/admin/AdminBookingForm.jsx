@@ -70,7 +70,12 @@ export default function AdminBookingForm({
     IAFtype2: "",
     Nontype: ""
   }
+  const defaultCompanyIncoIsoType = {
+    serviceID: "",
+    type: "",
+  }
   const [isoType, setIsoType] = useState([]);
+  const [companyIncoType, setCompanyIncoType] = useState([]);
 
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -193,7 +198,7 @@ export default function AdminBookingForm({
         const servicestoSend = newLeadData.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
-
+          setCompanyIncoType(service.companyIncoTypeObject);
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
               serviceID: index,
@@ -236,12 +241,13 @@ export default function AdminBookingForm({
               setFourthTempRemarks(prev => [...prev, tempState]);
             }
           }
-
-
-
           return {
             ...service,
-            serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+            serviceName: service.serviceName.includes("ISO Certificate")
+              ? "ISO Certificate"
+              : service.serviceName.includes("Company Incorporation")
+                ? "Company Incorporation"
+                : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -270,7 +276,7 @@ export default function AdminBookingForm({
         const servicestoSend = newLeadData.services.map((service, index) => {
           // Call setIsoType for each service's isoTypeObject
           setIsoType(service.isoTypeObject);
-
+          setCompanyIncoType(service.companyIncoTypeObject);
 
           if (!isNaN(new Date(service.secondPaymentRemarks))) {
             const tempState = {
@@ -317,7 +323,11 @@ export default function AdminBookingForm({
 
           return {
             ...service,
-            serviceName: service.serviceName.includes("ISO Certificate") ? "ISO Certificate" : service.serviceName,
+            serviceName: service.serviceName.includes("ISO Certificate")
+              ? "ISO Certificate"
+              : service.serviceName.includes("Company Incorporation")
+                ? "Company Incorporation"
+                : service.serviceName,
             secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
               ? service.secondPaymentRemarks
               : "On Particular Date",
@@ -615,7 +625,7 @@ export default function AdminBookingForm({
           const servicestoSend = leadData.services.map((service, index) => {
             // Find the corresponding isoType object for the current index
             const iso = isoType.find(obj => obj.serviceID === index);
-
+            const companyIso = companyIncoType.find(obj => obj.serviceID === index);
             // Determine the updated serviceName based on the conditions
             let updatedServiceName = service.serviceName;
             if (service.serviceName === "ISO Certificate" && iso) {
@@ -628,6 +638,15 @@ export default function AdminBookingForm({
               } else {
                 updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
               }
+            } else if (service.serviceName === "Company Incorporation" && companyIso) {
+              if (
+                companyIso.type === ""
+              ) {
+                updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
+              } else {
+                updatedServiceName = `${`${companyIso.type} Company Incorporation`}`;
+              }
+
             }
 
             // Update the payment remarks based on specific conditions
@@ -650,7 +669,8 @@ export default function AdminBookingForm({
               secondPaymentRemarks: secondRemark,
               thirdPaymentRemarks: thirdRemark,
               fourthPaymentRemarks: fourthRemark,
-              isoTypeObject: isoType
+              isoTypeObject: isoType,
+              companyIncoTypeObject: companyIncoType
             };
           });
 
@@ -747,23 +767,35 @@ export default function AdminBookingForm({
       if (activeStep === 4) {
         try {
           setLoader(true);
-          const servicestoSend = leadData.services.map((service, index) => ({
-            ...service,
-            serviceName: service.serviceName === "ISO Certificate" ? "ISO Certificate " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? "IAF " + isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : "Non IAF " + isoType.find(obj => obj.serviceID === index).Nontype) : service.serviceName,
-            secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks.find(obj => obj.serviceID === index).value
+          const servicestoSend = leadData.services.map((service, index) => {
+            // Find ISO details and Company Incorporation details only once per service
+            const isoDetails = isoType.find(obj => obj.serviceID === index);
+            const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+
+            return {
+              ...service,
+              serviceName: service.serviceName === "ISO Certificate"
+                ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+                : service.serviceName === "Company Incorporation"
+                  ? `${companyIncoDetails.type} Company Incorporation`
+                  : service.serviceName,
+              secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
+                ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
                 : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks.find(obj => obj.serviceID === index).value
+
+              thirdPaymentRemarks: service.thirdPaymentRemarks === "On Particular Date"
+                ? thirdTempRemarks.find(obj => obj.serviceID === index)?.value || service.thirdPaymentRemarks
                 : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks.find(obj => obj.serviceID === index).value
+
+              fourthPaymentRemarks: service.fourthPaymentRemarks === "On Particular Date"
+                ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
                 : service.fourthPaymentRemarks,
-            isoTypeObject: isoType
-          }));
+
+              isoTypeObject: isoType,
+              companyIncoTypeObject: companyIncoType
+            };
+          });
+
           const tempLeadData = {
             ...leadData,
             services: servicestoSend
@@ -1059,6 +1091,16 @@ export default function AdminBookingForm({
                         });
                         setIsoType(defaultArray)
                       }
+                    } else if (e.target.value === "Company Incorporation") {
+                      if (!companyIncoType.some(obj => obj.serviceID === i)) {
+                        const defaultArray = companyIncoType;
+                        defaultArray.push({
+                          ...defaultCompanyIncoIsoType,
+                          serviceID: i
+                        });
+                        setCompanyIncoType(defaultArray)
+                      }
+
                     }
 
                   }}
@@ -1187,6 +1229,28 @@ export default function AdminBookingForm({
                       <option value="GMO">GMO</option>
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
+                </>}
+                {leadData.services[i].serviceName.includes("Company Incorporation") && <>
+                  <select className="form-select mt-1 ml-1"
+                    value={companyIncoType.find(obj => obj.serviceID === i).type}
+                    onChange={(e) => {
+                      const currentObject = companyIncoType.find(obj => obj.serviceID === i);
+
+                      if (currentObject) {
+                        const remainingObject = companyIncoType.filter(obj => obj.serviceID !== i);
+                        const newCurrentObject = {
+                          ...currentObject,
+                          type: e.target.value
+                        }
+                        remainingObject.push(newCurrentObject);
+                        setCompanyIncoType(remainingObject);
+                      }
+                    }}>
+                    <option value="" selected disabled>Select Type</option>
+                    <option value="Private Limited">Private Limited</option>
+                    <option value="OPC Private Limited">OPC Private Limited</option>
+                    <option value="LLP">LLP</option>
+                  </select>
                 </>}
               </div>
               {leadData.services[i].serviceName ===
@@ -3479,7 +3543,19 @@ export default function AdminBookingForm({
                                         </div>
                                         {<div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.serviceName === "ISO Certificate" ? "ISO Certificate" + " " + isoType.find(obj => obj.serviceID === index).type + " " + (isoType.find(obj => obj.serviceID === index).type === "IAF" ? isoType.find(obj => obj.serviceID === index).IAFtype1 + " " + isoType.find(obj => obj.serviceID === index).IAFtype2 : isoType.find(obj => obj.serviceID === index).Nontype) : obj.serviceName}
+                                            {obj.serviceName === "ISO Certificate" ? (
+                                              (() => {
+                                                const isoDetails = isoType.find(obj => obj.serviceID === index);
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : isoDetails.Nontype}`;
+                                              })()
+                                            ) : obj.serviceName === "Company Incorporation" ? (
+                                              (() => {
+                                                const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
+                                                return `${companyIncoDetails.type} Company Incorporation`;
+                                              })()
+                                            ) : (
+                                              obj.serviceName
+                                            )}
                                           </div>
                                         </div>}
                                       </div>

@@ -41,7 +41,7 @@ import FilterableTable from '../Extra-Components/FilterableTable';
 
 
 
-function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredData, showingFilterIcon ,activeTab }) {
+function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -481,7 +481,8 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
       totalFilteredData(0)
     }
 
-  }, [noOfAvailableData, activeTab]);
+  }, [noOfAvailableData, activeTab])
+
 
   const isActiveField = (field) => activeFilterFields.includes(field);
 
@@ -538,7 +539,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -546,6 +547,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -573,7 +575,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -581,6 +583,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -608,7 +611,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -616,6 +619,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -643,7 +647,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -651,6 +655,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -679,7 +684,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -687,6 +692,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -714,7 +720,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -722,6 +728,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -750,7 +757,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -758,6 +765,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -785,7 +793,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -793,6 +801,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -820,7 +829,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -828,6 +837,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -855,7 +865,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -863,6 +873,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -890,7 +901,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -898,6 +909,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -924,7 +936,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -932,6 +944,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -958,7 +971,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -966,6 +979,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -992,7 +1006,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1000,6 +1014,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1024,7 +1039,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1032,6 +1047,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1058,7 +1074,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1066,6 +1082,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1092,7 +1109,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1100,6 +1117,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1125,7 +1143,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1133,6 +1151,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1159,7 +1178,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1167,6 +1186,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1193,7 +1213,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1201,6 +1221,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1218,28 +1239,33 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                       </div>
 
                       <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() =>
-                            handleFilterClick("lastAttemptSubmitted")
-                          }
-                        />
+                      {isActiveField('lastAttemptSubmitted') ? (
+                          <FaFilter onClick={() => handleFilterClick("lastAttemptSubmitted")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("lastAttemptSubmitted")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'lastAttemptSubmitted' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'lastAttemptSubmitted' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
@@ -1251,26 +1277,33 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                       </div>
 
                       <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("submittedOn")}
-                        />
+                      {isActiveField('submittedOn') ? (
+                          <FaFilter onClick={() => handleFilterClick("submittedOn")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("submittedOn")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'submittedOn' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'submittedOn' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
@@ -1282,36 +1315,42 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                       </div>
 
                       <div className="RM_filter_icon">
-                        <BsFilter
-                          onClick={() => handleFilterClick("submittedBy")}
-                        />
+                      {isActiveField('submittedBy') ? (
+                          <FaFilter onClick={() => handleFilterClick("submittedBy")} />
+                        ) : (
+                          <BsFilter onClick={() => handleFilterClick("submittedBy")} />
+                        )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {/* {showFilterMenu && activeFilterField === 'submittedBy' && (
-                                                <div
-                                                ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        data={rmServicesData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
+                      {showFilterMenu && activeFilterField === 'submittedBy' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
                     </div>
                   </th>
                   <th>
                     <div
                       className='d-flex align-items-center justify-content-center position-relative'
                     >
-                      <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                      <div ref={(el) => (fieldRefs.current["bookingDate"] = el)}>
                         Booking Date
                       </div>
-
                       <div className='RM_filter_icon'>
                         {isActiveField('bookingDate') ? (
                           <FaFilter onClick={() => handleFilterClick("bookingDate")} />
@@ -1319,7 +1358,28 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           <BsFilter onClick={() => handleFilterClick("bookingDate")} />
                         )}
                       </div>
-                    </div></th>
+                      {showFilterMenu && activeFilterField === 'bookingDate' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Submitted"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
+                            dataForFilter={dataToFilter}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    </th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['bdeName'] = el}>
@@ -1333,14 +1393,14 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           <BsFilter onClick={() => handleFilterClick("bdeName")} />
                         )}
                       </div>
-                      {showFilterMenu && activeFilterField === 'bookingDate' && (
+                      {showFilterMenu && activeFilterField === 'bdeName' && (
                         <div
                           ref={filterMenuRef}
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1348,6 +1408,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1368,14 +1429,14 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                         )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {showFilterMenu && activeFilterField === 'bdeName' && (
+                      {showFilterMenu && activeFilterField === 'bdmName' && (
                         <div
                           ref={filterMenuRef}
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1383,6 +1444,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1409,7 +1471,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1417,6 +1479,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1444,7 +1507,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1452,6 +1515,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1479,7 +1543,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Submitted"}
@@ -1487,6 +1551,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -2018,6 +2083,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter,totalFilteredD
                         filterField={filterField}
                         onFilter={handleFilter}
                         completeData={completeRmData}
+                        showingMenu={setShowFilterMenu}
                         dataForFilter={dataToFilter}
                     />
                 </div>
