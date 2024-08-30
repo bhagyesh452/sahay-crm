@@ -1304,7 +1304,7 @@ export default function EditableMoreBooking({
                         setCompanyIncoType(remainingObject);
                       }
                     }}>
-                    <option value="" selected disabled>Select Type</option>
+                    <option value="" selected disabled>Select Company Type</option>
                     <option value="Private Limited">Private Limited</option>
                     <option value="OPC Private Limited">OPC Private Limited</option>
                     <option value="LLP">LLP</option>
@@ -1326,7 +1326,7 @@ export default function EditableMoreBooking({
                         setOrganizationDscType(remainingObject);
                       }
                     }}>
-                    <option value="" selected disabled>Select Type</option>
+                    <option value="" selected disabled>Select DSC Type</option>
                     <option value="Only Signature">Only Signature</option>
                     <option value="Only Encryption">Only Encryption</option>
                     <option value="Combo">Combo</option>
@@ -1345,7 +1345,7 @@ export default function EditableMoreBooking({
                         setOrganizationDscType(remainingObject);
                       }
                     }}>
-                    <option value="" selected disabled>Select Validity</option>
+                    <option value="" selected disabled>Select DSC Validity</option>
                     <option value="1 Year">1 Year</option>
                     <option value="2 Year">2 Year</option>
                     <option value="3 Year">3 Year</option>
@@ -1367,7 +1367,7 @@ export default function EditableMoreBooking({
                         setDirectorDscType(remainingObject);
                       }
                     }}>
-                    <option value="" selected disabled>Select Type</option>
+                    <option value="" selected disabled>Select DSC Type</option>
                     <option value="Only Signature">Only Signature</option>
                     <option value="Only Encryption">Only Encryption</option>
                     <option value="Combo">Combo</option>
@@ -1386,7 +1386,7 @@ export default function EditableMoreBooking({
                         setDirectorDscType(remainingObject);
                       }
                     }}>
-                    <option value="" selected disabled>Select Validity</option>
+                    <option value="" selected disabled>Select DSC Validity</option>
                     <option value="1 Year">1 Year</option>
                     <option value="2 Year">2 Year</option>
                     <option value="3 Year">3 Year</option>

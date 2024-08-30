@@ -923,7 +923,7 @@ table.table.top_5_table tbody tr.myself td {
 
 .emply_e_card
 {
-    width: 350px;
+    width: 30%;
 }
 .hr_emply_info_inner
 {
@@ -933,13 +933,12 @@ table.table.top_5_table tbody tr.myself td {
 }
 .hr_employee_information
 {
-    width: calc(100% - 350px);
+    width: calc(100% - 30%);
     padding-left: 15px;
 }
 .emply_e_card_profile
 {
     display: flex;
-    flex-direction: column;
     align-items: center;
     padding: 20px;
 }
@@ -1019,7 +1018,8 @@ table.table.top_5_table tbody tr.myself td {
 }
 .emply_e_card_profile_name
 {
-    text-align: center;
+    padding-left: 15px;
+    width: calc(100% - 124px);
 }
 .emply_e_card_profile_inner_lbl:hover .emply_e_card_profile_update
 {
