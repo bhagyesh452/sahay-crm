@@ -661,12 +661,12 @@ function Received_booking_box() {
             ...moreBookings.flatMap((item) => item.remainingPayments || [])
         ];
 
-        console.log("Remaining Payment Object", combinedRemainingpaymentsForServices)
-
+        console.log("primaryservices", primaryServices)
+        
 
         // Combine services from selectedCompanyData.moreBookings
         const moreBookingServices = moreBookings.flatMap((item) => item.services || []);
-
+        console.log("combinesservices", moreBookingServices)
         // Filter services based on certificationLabels
         const filteredPrimaryServices = primaryServices.filter((service) =>
             selectedServices.includes(service.serviceName)
@@ -679,6 +679,8 @@ function Received_booking_box() {
         const primaryServiceNames = filteredPrimaryServices.map((service) => service.serviceName);
         const moreBookingServiceNames = filteredMoreBookingServices.map((service) => service.serviceName);
 
+        console.log("primaryservicesnames", primaryServiceNames)
+        console.log("combinesservicenames", moreBookingServiceNames)
         // Initialize an array to store objects for each selected service
         const dataToSend = [];
 
@@ -740,6 +742,7 @@ function Received_booking_box() {
             }
         });
         console.log("dataToSend", dataToSend)
+        console.log("selectedcompany" , selectedCompanyData)
 
         if (dataToSend.length !== 0) {
             setOpenBacdrop(true)
@@ -757,9 +760,9 @@ function Received_booking_box() {
 
                 const response = responses[0];
                 const response2 = responses[1];
-                  
-                console.log("response1" , response)
-                console.log("response" , response2)
+
+                console.log("response1", response)
+                console.log("response", response2.data)
                 //console.log("response", response2.data);
                 if (response.data.successEntries === 0) {
                     Swal.fire("Please Select Unique Services");
