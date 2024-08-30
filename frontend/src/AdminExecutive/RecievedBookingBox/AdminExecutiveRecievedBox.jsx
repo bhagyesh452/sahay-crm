@@ -483,16 +483,33 @@ function AdminExecutiveRecievedBox() {
     //     "GeM"
     // ];
 
+    const dscSubtypes = ["Only Signature", "Only Encryption", "Combo"];
+    const validityPeriods = ["1 Year", "2 Year", "3 Year"];
+
+    // 2. Generate all combinations for Organization DSC and Director DSC
+    const organizationDSCCombinations = dscSubtypes.flatMap(subtype =>
+        validityPeriods.map(validity => `Organization DSC ${subtype} With ${validity} Validity`)
+    );
+
+    const directorDSCCombinations = dscSubtypes.flatMap(subtype =>
+        validityPeriods.map(validity => `Director DSC ${subtype} With ${validity} Validity`)
+    );
+
     const certificationLabels = [
         "Start-Up India Certificate",
         "Organization DSC",
         "Director DSC",
+        ...organizationDSCCombinations,
+        ...directorDSCCombinations
     ];
 
+    // 3. Merge with existing certifications
     const certificationLabelsNew = [
         "Start-Up India Certificate",
         "Organization DSC",
         "Director DSC",
+        ...organizationDSCCombinations,
+        ...directorDSCCombinations
     ];
 
     // Filter certification options
@@ -1011,7 +1028,7 @@ function AdminExecutiveRecievedBox() {
                                     </div>
                                 </div>
                                 <div className="col-6 d-flex justify-content-end">
-                                     <button className='btn btn-primary mr-1'
+                                    <button className='btn btn-primary mr-1'
                                         onClick={() => setOpenTrashBoxPanel(true)}
                                     >
                                         <TiTrash
@@ -1022,12 +1039,12 @@ function AdminExecutiveRecievedBox() {
                                                 marginLeft: "-4px"
                                             }} />
                                         Trash
-                                    </button> 
-                                     <button className='btn btn-primary'
+                                    </button>
+                                    <button className='btn btn-primary'
                                         onClick={() => setOpenAllBooking(true)}
                                     >
                                         All Booking
-                                    </button> 
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1092,9 +1109,9 @@ function AdminExecutiveRecievedBox() {
 
                                                                     serviceBookingDate.setHours(0, 0, 0, 0); // Normalize to start of the day
 
-                                                                    return certificationLabels.some(label => service.serviceName.includes(label)) && 
-                                                                    serviceBookingDate >= today &&
-                                                                    service.withDSC;
+                                                                    return certificationLabels.some(label => service.serviceName.includes(label)) &&
+                                                                        serviceBookingDate >= today &&
+                                                                        service.withDSC;
                                                                 });
                                                                 return (
                                                                     <>
@@ -1178,9 +1195,9 @@ function AdminExecutiveRecievedBox() {
                                                                 // Determine the className based on conditions
                                                                 const className = isInMainServices || isInMoreBookingServices
                                                                     ? 'clr-bg-light-f3f3dd bdr-l-clr-c5c51f clr-f3f3dd'
-                                                                    : certificationLabels.some(label => service.serviceName.includes(label) 
-                                                                    && bookingDate >= today 
-                                                                    && service.withDSC)
+                                                                    : certificationLabels.some(label => service.serviceName.includes(label)
+                                                                        && bookingDate >= today
+                                                                        && service.withDSC)
                                                                         ? 'clr-bg-light-4299e1 bdr-l-clr-4299e1 clr-4299e1'
                                                                         : 'clr-bg-light-a0b1ad bdr-l-clr-a0b1ad clr-a0b1ad';
 
@@ -3437,7 +3454,7 @@ function AdminExecutiveRecievedBox() {
                 <CircularProgress color="inherit" />
             </Backdrop>)}
 
-             {openAllBooking && (
+            {openAllBooking && (
                 <RmofCertificationAllBookings
                     setOpenAllBookingPanel={setOpenAllBooking}
                     completeData={completeRedesignedData}

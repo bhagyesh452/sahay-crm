@@ -36,14 +36,6 @@ function AdminExecutiveMyBookings() {
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
   const [isFilter, setIsFilter] = useState(false);
   const [rmServicesData, setRmServicesData] = useState([]);
-  const [showFilterIconGeneral, setShowFilterIconGeneral] = useState(false);
-  const [showFilterIconProcess, setShowFilterIconProcess] = useState(false);
-  const [showFilterIconReadyToSubmit, setShowFilterIconReadyToSubmit] =
-    useState(false);
-  const [showFilterIconSubmitted, setShowFilterIconSubmitted] = useState(false);
-  const [showFilterIconDefaulter, setShowFilterIconDefaulter] = useState(false);
-  const [showFilterIconHold, setShowFilterIconHold] = useState(false);
-  const [showFilterIconApproved, setShowFilterIconApproved] = useState(false);
   const [search, setSearch] = useState("");
   //const [showFilterIcon, setShowFilterIcon] = useState(false)
   const [activeTab, setActiveTab] = useState("General");
@@ -56,6 +48,16 @@ function AdminExecutiveMyBookings() {
     Hold: false,
     Defaulter: false,
   });
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
+  const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0);
+  const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
+  const [totalDocumentsHold, setTotalDocumentsHold] = useState(0);
+  const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0);
+  const [noOfFilteredData, setnoOfFilteredData] = useState(0);
+  const [showNoOfFilteredData, setShowNoOfFilteredData] = useState(true);
+  const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false);
 
   useEffect(() => {
     document.title = `AdminExecutive-Sahay-CRM`;
@@ -66,11 +68,11 @@ function AdminExecutiveMyBookings() {
       secretKey === "http://localhost:3001/api"
         ? io("http://localhost:3001")
         : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: "/socket.io",
-            reconnection: true,
-            transports: ["websocket"],
-          });
+          secure: true, // Use HTTPS
+          path: "/socket.io",
+          reconnection: true,
+          transports: ["websocket"],
+        });
 
     socket.on("adminexecutive-general-status-updated", (res) => {
       console.log("socketChala");
@@ -113,17 +115,59 @@ function AdminExecutiveMyBookings() {
     }
   };
 
-  const fetchRMServicesData = async (searchQuery = "") => {
+  // const fetchRMServicesData = async (searchQuery = "") => {
+  //   try {
+  //     setCurrentDataLoading(true);
+  //     const response = await axios.get(
+  //       `${secretKey}/rm-services/adminexecutivedata`,
+  //       {
+  //         params: { search: searchQuery },
+  //       }
+  //     );
+  //     setRmServicesData(response.data);
+  //     //console.log(response.data)
+  //   } catch (error) {
+  //     console.error("Error fetching data", error.message);
+  //   } finally {
+  //     setCurrentDataLoading(false);
+  //   }
+  // };
+
+  const fetchRMServicesData = async (searchQuery = "", page = 1) => {
     try {
       setCurrentDataLoading(true);
-      const response = await axios.get(
-        `${secretKey}/rm-services/adminexecutivedata`,
-        {
-          params: { search: searchQuery },
-        }
-      );
-      setRmServicesData(response.data);
-      //console.log(response.data)
+      const response = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
+        params: { search: searchQuery, page, activeTab: activeTab }
+      });
+
+      const {
+        data,
+        totalPages,
+        totalDocumentsGeneral,
+        totalDocumentsProcess,
+        totalDocumentsDefaulter,
+        totalDocumentsReadyToSubmit,
+        totalDocumentsSubmitted,
+        totalDocumentsHold,
+        totalDocumentsApproved,
+
+      } = response.data;
+      console.log("response", response.data)
+
+      // If it's a search query, replace the data; otherwise, append for pagination
+      if (page === 1) {
+        // This is either the first page load or a search operation
+        setRmServicesData(data);
+      } else {
+        // This is a pagination request
+        setRmServicesData(prevData => [...prevData, ...data]);
+      }
+      setTotalDocumentsProcess(totalDocumentsProcess)
+      setTotalDocumentsGeneral(totalDocumentsGeneral)
+      setTotalDocumentsDefaulter(totalDocumentsDefaulter)
+      setTotalDocumentsHold(totalDocumentsHold)
+      setTotalDocumentsApproved(totalDocumentsApproved)
+      setTotalPages(totalPages); // Update total pages
     } catch (error) {
       console.error("Error fetching data", error.message);
     } finally {
@@ -131,106 +175,30 @@ function AdminExecutiveMyBookings() {
     }
   };
 
+
   useEffect(() => {
     fetchData();
   }, []);
 
   useEffect(() => {
-    fetchRMServicesData(search); // Fetch data when search query changes
-  }, [search]);
+    fetchRMServicesData("", page); // Fetch data initially
+  }, [employeeData]);
+
 
   useEffect(() => {
     fetchRMServicesData();
   }, [employeeData]);
-
-  const handleDeleteRmBooking = async (companyName, serviceName) => {
-    // Display confirmation dialog using SweetAlert
-    const confirmDelete = await Swal.fire({
-      title: "Are you sure?",
-      text: `Do you want to delete ${serviceName} for ${companyName}?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
-
-    // Proceed with deletion if user confirms
-    if (confirmDelete.isConfirmed) {
-      try {
-        // Send delete request to backend
-        const response = await axios.delete(
-          `${secretKey}/rm-services/delete-rm-services`,
-          {
-            data: { companyName, serviceName },
-          }
-        );
-
-        //console.log(response.data);
-        Swal.fire("Deleted!", "The record has been deleted.", "success");
-        fetchData();
-        // Handle UI updates or further actions after deletion
-      } catch (error) {
-        console.error("Error Deleting Company", error.message);
-        Swal.fire("Error!", "Failed to delete the record.", "error");
-        // Handle error scenario, e.g., show an error message or handle error state
-      }
-    } else {
-      // Handle cancel or dismiss scenario if needed
-      Swal.fire("Cancelled", "Delete operation cancelled.", "info");
-    }
-  };
-
-  //console.log("servicesdata", rmServicesData)
-
-  //---------date format------------------------
-
-  function formatDatePro(inputDate) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(inputDate).toLocaleDateString(
-      "en-US",
-      options
-    );
-    return formattedDate;
-  }
-
-  function formatDate(dateString) {
-    dateString = "2024-07-26";
-    const [year, month, date] = dateString.split("-");
-    return `${date}/${month}/${year}`;
-  }
-
-  const handleTabClick = (tab) => {
-    if (activeTab === tab) {
-      // Double-click detected
-      setShowFilterIcon((prevState) => ({
-        ...prevState,
-        [tab]: !prevState[tab], // Toggle the filter icon state
-      }));
-    } else {
-      // Single-click detected
-      setActiveTab(tab);
-      setShowFilterIcon({
-        General: tab === "General",
-        InProcess: tab === "InProcess",
-        ReadyToSubmit: tab === "ReadyToSubmit",
-        Submitted: tab === "Submited",
-        Approved: tab === "Approved",
-        Hold: tab === "Hold",
-        Defaulter: tab === "Defaulter",
-      });
-    }
-  };
-
-  //console.log("showFilter", showFilterIcon)
+  useEffect(() => {
+    fetchRMServicesData(search, page); // Fetch data when search query changes
+  }, [search]);
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value); // Update search query state
   };
-
-  const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
-  const [openCompanyTaskComponent, setOpenCompanyTaskComponent] =
-    useState(false);
+  const setNoOfData = (number) => {
+    console.log("number", number)
+    setnoOfFilteredData(number)
+  }
 
   return (
     <div>
@@ -252,19 +220,7 @@ function AdminExecutiveMyBookings() {
           <div className="page-header rm_Filter m-0">
             <div className="container-xl">
               <div className="d-flex aling-items-center justify-content-between">
-                {/* <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className="btn mybtn"
-                                        onClick={() => handleTabClick(activeTab)}
-                                    >
-                                        <IoFilterOutline className='mr-1' /> Filter
-                                    </button>
-                                </div> */}
                 <div className="d-flex align-items-center">
-                  {/* {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
-                                    </div>
-                                )} */}
                   <div class="input-icon ml-1">
                     <span class="input-icon-addon">
                       <svg
@@ -299,6 +255,24 @@ function AdminExecutiveMyBookings() {
                     />
                   </div>
                 </div>
+                {noOfFilteredData > 0 && (
+                  <div className="selection-data">
+                    Result : <b>
+                      {noOfFilteredData} /
+                      {activeTab === "General"
+                        ? totalDocumentsGeneral
+                        : activeTab === "InProcess"
+                          ? totalDocumentsProcess
+                          : activeTab === "Approved"
+                            ? totalDocumentsApproved
+                            : activeTab === "Hold"
+                              ? totalDocumentsHold
+                              : activeTab === "Defaulter"
+                                ? totalDocumentsDefaulter
+                                : 0}
+                    </b>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -320,12 +294,13 @@ function AdminExecutiveMyBookings() {
                         <div className="d-flex align-items-center justify-content-between w-100">
                           <div className="rm_txt_tsn">General</div>
                           <div className="rm_tsn_bdge">
-                            {rmServicesData
+                            {totalDocumentsGeneral}
+                            {/* {rmServicesData
                               ? rmServicesData.filter(
-                                  (item) =>
-                                    item.mainCategoryStatus === "General"
-                                ).length
-                              : 0}
+                                (item) =>
+                                  item.mainCategoryStatus === "General"
+                              ).length
+                              : 0} */}
                           </div>
                         </div>
                       </a>
@@ -335,45 +310,57 @@ function AdminExecutiveMyBookings() {
                         class="nav-link"
                         data-bs-toggle="tab"
                         href="#InProcess"
+                        onClick={() => setActiveTab("InProcess")}
                       >
                         <div className="d-flex align-items-center justify-content-between w-100">
                           <div className="rm_txt_tsn">In Process</div>
                           <div className="rm_tsn_bdge">
-                            {rmServicesData
+                            {totalDocumentsProcess}
+                            {/* {rmServicesData
                               ? rmServicesData.filter(
-                                  (item) =>
-                                    item.mainCategoryStatus === "Process"
-                                ).length
-                              : 0}
+                                (item) =>
+                                  item.mainCategoryStatus === "Process"
+                              ).length
+                              : 0} */}
                           </div>
                         </div>
                       </a>
                     </li>
                     <li class="nav-item rm_task_section_navitem">
-                      <a class="nav-link" data-bs-toggle="tab" href="#Approved">
+                      <a class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#Approved"
+                        onClick={() => setActiveTab("Approved")}
+                      >
                         <div className="d-flex align-items-center justify-content-between w-100">
                           <div className="rm_txt_tsn">Approved</div>
                           <div className="rm_tsn_bdge">
-                            {rmServicesData
+                            {totalDocumentsApproved}
+                            {/* {rmServicesData
                               ? rmServicesData.filter(
-                                  (item) =>
-                                    item.mainCategoryStatus === "Approved"
-                                ).length
-                              : 0}
+                                (item) =>
+                                  item.mainCategoryStatus === "Approved"
+                              ).length
+                              : 0} */}
                           </div>
                         </div>
                       </a>
                     </li>
                     <li class="nav-item rm_task_section_navitem">
-                      <a class="nav-link" data-bs-toggle="tab" href="#Hold">
+                      <a class="nav-link" 
+                      data-bs-toggle="tab" 
+                      href="#Hold"
+                      onClick={() => setActiveTab("Hold")}
+                      >
                         <div className="d-flex align-items-center justify-content-between w-100">
                           <div className="rm_txt_tsn">Hold</div>
                           <div className="rm_tsn_bdge">
-                            {rmServicesData
+                            {totalDocumentsHold}
+                            {/* {rmServicesData
                               ? rmServicesData.filter(
-                                  (item) => item.mainCategoryStatus === "Hold"
-                                ).length
-                              : 0}
+                                (item) => item.mainCategoryStatus === "Hold"
+                              ).length
+                              : 0} */}
                           </div>
                         </div>
                       </a>
@@ -383,16 +370,18 @@ function AdminExecutiveMyBookings() {
                         class="nav-link"
                         data-bs-toggle="tab"
                         href="#Defaulter"
+                        onClick={() => setActiveTab("Defaulter")}
                       >
                         <div className="d-flex align-items-center justify-content-between w-100">
                           <div className="rm_txt_tsn">Defaulter</div>
                           <div className="rm_tsn_bdge">
-                            {rmServicesData
+                            {totalDocumentsDefaulter}
+                            {/* {rmServicesData
                               ? rmServicesData.filter(
-                                  (item) =>
-                                    item.mainCategoryStatus === "Defaulter"
-                                ).length
-                              : 0}
+                                (item) =>
+                                  item.mainCategoryStatus === "Defaulter"
+                              ).length
+                              : 0} */}
                           </div>
                         </div>
                       </a>
@@ -402,22 +391,48 @@ function AdminExecutiveMyBookings() {
                 <div class="tab-content card-body">
                   <div class="tab-pane active" id="General">
                     <AdminExecutiveGeneralPanel
+                      showingFilterIcon={setShowNoOfFilteredData}
+                      totalFilteredData={activeTab === "General" ? setNoOfData : () => { }}
                       searchText={search}
-                      rmServicesData={rmServicesData}
+                      activeTab={activeTab}
                       showFilter={showFilterIcon.General}
                     />
                   </div>
                   <div class="tab-pane" id="InProcess">
-                    <AdminExecutiveProcessPanel searchText={search} />
+                    <AdminExecutiveProcessPanel
+                      showingFilterIcon={setShowNoOfFilteredData}
+                      totalFilteredData={activeTab === "InProcess" ? setNoOfData : () => { }}
+                      searchText={search}
+                      activeTab={activeTab}
+                      showFilter={showFilterIcon.InProcess}
+                    />
                   </div>
                   <div class="tab-pane" id="Approved">
-                    <AdminExecutiveApprovedPanel searchText={search} />
+                    <AdminExecutiveApprovedPanel
+                      showingFilterIcon={setShowNoOfFilteredData}
+                      totalFilteredData={activeTab === "Approved" ? setNoOfData : () => { }}
+                      searchText={search}
+                      activeTab={activeTab}
+                      showFilter={showFilterIcon.Approved}
+                    />
                   </div>
                   <div class="tab-pane" id="Hold">
-                    <AdminExecutiveHoldPanel searchText={search} />
+                    <AdminExecutiveHoldPanel
+                      showingFilterIcon={setShowNoOfFilteredData}
+                      totalFilteredData={activeTab === "Hold" ? setNoOfData : () => { }}
+                      searchText={search}
+                      activeTab={activeTab}
+                      showFilter={showFilterIcon.Hold}
+                    />
                   </div>
                   <div class="tab-pane" id="Defaulter">
-                    <AdminExecutiveDefaulterPanel searchText={search} />
+                    <AdminExecutiveDefaulterPanel
+                      showingFilterIcon={setShowNoOfFilteredData}
+                      totalFilteredData={activeTab === "Defaulter" ? setNoOfData : () => { }}
+                      searchText={search}
+                      activeTab={activeTab}
+                      showFilter={showFilterIcon.Defaulter}
+                    />
                   </div>
                 </div>
               </div>

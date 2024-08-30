@@ -552,10 +552,43 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
 
 
 
-router.get("/adminexecutivedata", async (req, res) => {
-  try {
-    const { search } = req.query; // Extract search query from request
+// router.get("/adminexecutivedata", async (req, res) => {
+//   try {
+//     const { search } = req.query; // Extract search query from request
 
+//     // Build query object
+//     let query = {};
+//     if (search) {
+//       const regex = new RegExp(search, 'i'); // Case-insensitive search
+//       const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+//       query = {
+//         $or: [
+//           { "Company Name": regex }, // Match companyName field
+//           { serviceName: regex },
+//           { "Company Email": regex },
+//           { bdeName: regex },
+//           { bdmName: regex },
+//           // Only include the number fields if numberSearch is a valid number
+//           ...(isNaN(numberSearch) ? [] : [
+//             { "Company Number": numberSearch }, // Match companyNumber field
+//             { caNumber: numberSearch } // Match caNumber field
+//           ])
+//         ]
+//       };
+//     }
+//     // Fetch data from the database with an optional query filter
+//     const response = await AdminExecutiveModel.find(query);
+//     res.status(200).json(response);
+//   } catch (error) {
+//     console.log("Error fetching data", error);
+//     res.status(500).send({ message: "Internal Server Error" });
+//   }
+// });
+router.get('/adminexecutive-complete', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+    //console.log("search", search)
     // Build query object
     let query = {};
     if (search) {
@@ -577,15 +610,132 @@ router.get("/adminexecutivedata", async (req, res) => {
         ]
       };
     }
-    // Fetch data from the database with an optional query filter
-    const response = await AdminExecutiveModel.find(query);
-    res.status(200).json(response);
+    //console.log("query", query)
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ addedOn: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
+
+    //console.log("response" , response)
+
+    const totalDocuments = await AdminExecutiveModel.countDocuments(query);
+
+    const totalDocumentsGeneral = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsProcess = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+    const totalDocumentsDefaulter = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+    const totalDocumentsReadyToSubmit = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
+    const totalDocumentsSubmitted = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
+    const totalDocumentsHold = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+    const totalDocumentsApproved = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsProcess,
+      totalDocumentsDefaulter,
+      totalDocumentsReadyToSubmit,
+      totalDocumentsSubmitted,
+      totalDocumentsHold,
+      totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
   } catch (error) {
     console.log("Error fetching data", error);
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
 
+router.get('/adminexecutivedata', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 50, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+
+    // Build query object
+    let query = {};
+
+    if (search) {
+      const regex = new RegExp(search, 'i'); // Case-insensitive search
+      const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+      query = {
+        $or: [
+          { "Company Name": regex }, // Match companyName field
+          { serviceName: regex },
+          { "Company Email": regex },
+          { bdeName: regex },
+          { bdmName: regex },
+          // Only include the number fields if numberSearch is a valid number
+          ...(isNaN(numberSearch) ? [] : [
+            { "Company Number": numberSearch }, // Match companyNumber field
+            { caNumber: numberSearch } // Match caNumber field
+          ])
+        ]
+      };
+    }
+
+    // Add filtering based on companyNames and serviceNames if provided
+    if (companyNames) {
+      const companyNamesArray = companyNames.split(','); // Convert to array
+      query["Company Name"] = { $in: companyNamesArray };
+    }
+
+    if (serviceNames) {
+      const serviceNamesArray = serviceNames.split(','); // Convert to array
+      query.serviceName = { $in: serviceNamesArray };
+    }
+
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ addedOn: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
+    //console.log(activeTab)
+    //console.log(response)
+    const totalDocuments = await AdminExecutiveModel.countDocuments(query);
+    const totalDocumentsGeneral = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsProcess = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+    const totalDocumentsDefaulter = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+    const totalDocumentsHold = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+    const totalDocumentsApproved = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsProcess,
+      totalDocumentsDefaulter,
+      totalDocumentsHold,
+      totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
 router.delete(`/delete-rm-services`, async (req, res) => {
   const { companyName, serviceName } = req.body;
   try {

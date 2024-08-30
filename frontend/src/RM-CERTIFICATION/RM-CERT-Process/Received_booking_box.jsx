@@ -368,6 +368,9 @@ function Received_booking_box() {
     const certificationLabels = [
         "Start-Up India Certificate",
         "Company Incorporation",
+        "Private Limited Company Incorporation",
+        "OPC Private Limited Company Incorporation",
+        "LLP Company Incorporation",
         "Self Certification",
         "GeM"
     ];
@@ -375,6 +378,9 @@ function Received_booking_box() {
     const certificationLabelsNew = [
         "Start-Up India Certificate",
         "Company Incorporation",
+        "Private Limited Company Incorporation",
+        "OPC Private Limited Company Incorporation",
+        "LLP Company Incorporation",
         "Self Certification",
         "GeM"
     ];
@@ -662,7 +668,7 @@ function Received_booking_box() {
         ];
 
         console.log("primaryservices", primaryServices)
-        
+
 
         // Combine services from selectedCompanyData.moreBookings
         const moreBookingServices = moreBookings.flatMap((item) => item.services || []);
@@ -742,7 +748,7 @@ function Received_booking_box() {
             }
         });
         console.log("dataToSend", dataToSend)
-        console.log("selectedcompany" , selectedCompanyData)
+        console.log("selectedcompany", selectedCompanyData)
 
         if (dataToSend.length !== 0) {
             setOpenBacdrop(true)
