@@ -408,41 +408,8 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
           <table className="table table-vcenter table-nowrap adminEx_table">
             <thead>
               <tr className="tr-sticky">
-                <th className="G_rm-sticky-left-1">Sr.No</th>
-                <th className="G_rm-sticky-left-2">
-                  <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div ref={el => fieldRefs.current['bookingDate'] = el}>Booking Date</div>
-                    <div className="RM_filter_icon">
-                      {isActiveField('bookingDate') ? (
-                        <FaFilter onClick={() => handleFilterClick("bookingDate")} />
-                      ) : (
-                        <BsFilter onClick={() => handleFilterClick("bookingDate")} />
-                      )}
-                    </div>
-                    {/* {/* ---------------------filter component--------------------------- */}
-                    {showFilterMenu && activeFilterField === 'bookingDate' && (
-                      <div
-                        ref={filterMenuRef}
-                        className="filter-menu"
-                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                      >
-                        <FilterableTableAdminExecutive
-                          noofItems={setnoOfAvailableData}
-                          allFilterFields={setActiveFilterFields}
-                          filteredData={filteredData}
-                          activeTab={"Approved"}
-                          data={rmServicesData}
-                          filterField={activeFilterField}
-                          onFilter={handleFilter}
-                          completeData={completeRmData}
-                          showingMenu={setShowFilterMenu}
-                          dataForFilter={dataToFilter}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </th>
-                <th className="G_rm-sticky-left-3">
+                <th className="rm-sticky-left-1">Sr.No</th>
+                <th className="rm-sticky-left-2">
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['Company Name'] = el}>Company Name</div>
                     <div className="RM_filter_icon">
@@ -609,11 +576,6 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div ref={el => fieldRefs.current['remarks'] = el}>Remarks</div>
-                  </div>
-                </th>
-                <th>
-                  <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['letterStatus'] = el}>Letter Status</div>
                     <div className="RM_filter_icon">
                       {isActiveField('letterStatus') ? (
@@ -676,6 +638,11 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                         />
                       </div>
                     )}
+                  </div>
+                </th>
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div ref={el => fieldRefs.current['remarks'] = el}>Remarks</div>
                   </div>
                 </th>
                 <th>
@@ -944,6 +911,47 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div>Token In Box No</div>
+                    <div className="RM_filter_icon">
+                      <BsFilter />
+                    </div>
+                  </div>
+                </th>
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div ref={el => fieldRefs.current['bookingDate'] = el}>Booking Date</div>
+                    <div className="RM_filter_icon">
+                      {isActiveField('bookingDate') ? (
+                        <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                      )}
+                    </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'bookingDate' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['bdeName'] = el}>BDE</div>
                     <div className="RM_filter_icon">
                       {isActiveField('bdeName') ? (
@@ -1016,13 +1024,10 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                 rmServicesData.length !== 0 &&
                 rmServicesData.map((obj, index) => (
                   <tr key={index}>
-                    <td className="G_rm-sticky-left-1">
+                    <td className="rm-sticky-left-1">
                       <div className="rm_sr_no">{index + 1}</div>
                     </td>
-                    <td className="G_rm-sticky-left-2">
-                      {formatDatePro(obj.bookingDate)}
-                    </td>
-                    <td className="G_rm-sticky-left-3">
+                    <td className="rm-sticky-left-2">
                       <b>{obj["Company Name"]}</b>
                     </td>
                     <td>
@@ -1063,15 +1068,6 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                     </td>
                     <td>{obj.serviceName}</td>
                     <td>
-                      <DscRemarks
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        historyRemarks={obj.Remarks}
-                      />
-                    </td>
-                    <td>
                       <div>
                         {obj.mainCategoryStatus && obj.subCategoryStatus && (
                           <DscLetterStatusDropdown
@@ -1094,6 +1090,15 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                           obj.subCategoryStatus &&
                           obj.subCategoryStatus}
                       </div>
+                    </td>
+                    <td>
+                      <DscRemarks
+                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                        companyName={obj["Company Name"]}
+                        serviceName={obj.serviceName}
+                        refreshData={refreshData}
+                        historyRemarks={obj.Remarks}
+                      />
                     </td>
                     <td>
                       <div>
@@ -1203,6 +1208,9 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                         refreshData={refreshData}
                         otpInboxNo={obj.otpInboxNo ? obj.otpInboxNo : ""}
                         mainStatus={obj.mainCategoryStatus} />
+                    </td>
+                    <td>
+                      {formatDatePro(obj.bookingDate)}
                     </td>
                     <td>{obj.bdeName}</td>
                     <td>{obj.bdmName}</td>
