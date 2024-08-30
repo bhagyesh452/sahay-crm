@@ -378,14 +378,16 @@ function EmployeeView() {
                   <div className="my-card-body-style-2">
                     <div className="emply_e_card_dtl">
                       <div className="emply_e_info_head">
-                        Full Name
-                      </div>
-                      <div className="emply_e_info_data d-flex align-items-center justify-content-between">
                         <div className="d-flex align-item-center">
                           <div className="ee_info_i"><FcManager /></div>
-                          <div className="emply_e_info_data_name">
-                            Vishunu Maheshbhai Suthar
+                          <div>
+                            Full Name
                           </div>
+                        </div>
+                      </div>
+                      <div className="emply_e_info_data d-flex align-items-center justify-content-between">
+                        <div className="emply_e_info_data_name">
+                            Vishunu Maheshbhai Suthar
                         </div>
                         <div class="employee_active">Active</div>
                       </div>
@@ -462,7 +464,24 @@ function EmployeeView() {
                       <div className="col">
                         <div className="emply_e_card_dtl">
                           <div className="emply_e_info_head">
-                            Address
+                            Current Address
+                          </div>
+                          <div className="emply_e_info_data">
+                            <div className="d-flex aling-items-center">
+                              <div className="ee_info_i" style={{ color: "#fbba1c" }}><FaLocationDot /></div>
+                              <div className="emply_e_info_data_name">
+                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row mt-2">
+                      <div className="col">
+                        <div className="emply_e_card_dtl">
+                          <div className="emply_e_info_head">
+                            Permanent Address
                           </div>
                           <div className="emply_e_info_data">
                             <div className="d-flex aling-items-center">
