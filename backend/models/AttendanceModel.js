@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const attendanceSchema = new mongoose.Schema({
     employeeId: {
         type: String,
-        unique: true,
+        //unique: true,
     },
     employeeName: {
         type: String

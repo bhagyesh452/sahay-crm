@@ -1141,15 +1141,29 @@ table.table.top_5_table tbody tr.myself td {
 }
 .l-leave
 {
-    height: 20px;
-    width: 20px;
+    height: 24px;
+    width: 27px;
     text-align: center;
     line-height: 20px;
     border-radius: 100px;
-    background: #ffc8c8;
+    background: #dfc482;
     font-weight: 600;
     color: #9d0b0b;
-    border: 1px solid #ff8686;
+    border: 1px solid #f6dddd;
+    margin: 0 auto;
+    cursor: pointer;
+}
+.l-lc
+{
+    height: 24px;
+    width: 27px;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 100px;
+    background: #e9f7bf;
+    font-weight: 600;
+    color: #dc890d;
+    border: 1px solid #8c7000;
     margin: 0 auto;
     cursor: pointer;
 }
@@ -1160,10 +1174,10 @@ table.table.top_5_table tbody tr.myself td {
     text-align: center;
     line-height: 20px;
     border-radius: 100px;
-    background: #b5cdf0;
+    background: #c4c4c4;
     font-weight: 600;
-    color: #0025f5;
-    border: 1px solid #b5cdf0;
+    color: #eaedff;
+    border: 1px solid #f7f7f7;
     margin: 0 auto;
 }
 .p-add
