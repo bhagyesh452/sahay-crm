@@ -167,20 +167,20 @@ function EmpNav({ userId, bdmWork }) {
                   </a>
 
                 </Link>
-                {/* <Link style={{ textDecoration: "none", color: "black" }}
+                <Link style={{ textDecoration: "none", color: "black" }}
                   className={
-                    location.pathname === `/employee-assets/${userId}` ? "nav-item active" : "nav-item"
+                    location.pathname === `/employee-assets/${userId}` ? "nav-item active-d-none" : "nav-item d-none"
                   }
                   to={`/employee-assets/${userId}`}
                 >
-                  <a className="nav-link" href="#">
+                  <a className="nav-link d-none" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                       <IoNewspaperOutline style={{ height: "24px", width: "19px" }} />
                     </span>
                     <span className="nav-link-title">Assets</span>
                   </a>
 
-                </Link> */}
+                </Link>
               </ul>
 
             </div>

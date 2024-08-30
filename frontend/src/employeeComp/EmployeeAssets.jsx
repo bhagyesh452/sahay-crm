@@ -79,269 +79,314 @@ import EmployeeAssetDetails from "./EmployeeNotificationComponents/EmployeeAsset
 
 
 function EmployeeAssets() {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+
     const { userId } = useParams();
     const [data, setData] = useState([]);
     const [socketID, setSocketID] = useState("");
     const [requestData, setRequestData] = useState(null);
+    const [departmentName, setDepartmentName] = useState("");
+    const [serviceName, setServiceName] = useState("");
+
+    const [businessRegistrationServices, setBusinessRegistrationServices] = useState([]);
+    const [certificationServices, setCertificationServices] = useState([]);
+    const [documentationServices, setDocumentationServices] = useState([]);
+    const [fundRaisingServices, setFundRaisingServices] = useState([]);
+    const [itServices, setItServices] = useState([]);
+    const [digitalMarketingServices, setDigitalMarketingServices] = useState([]);
+    const [isoServices, setIsoServices] = useState([]);
 
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
-      }, [data.ename]);
-    
-      const playNotificationSound = () => {
+    }, [data.ename]);
+
+    const playNotificationSound = () => {
         const audio = new Audio(notificationSound);
         audio.play();
-      };
-    
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-          secure: true, // Use HTTPS
-          path: '/socket.io',
-          reconnection: true,
-          transports: ['websocket'],
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
         });
         socket.on("connect", () => {
-          //console.log("Socket connected with ID:", socket.id);
-          console.log('Connection Successful to socket io')
-          setSocketID(socket.id);
+            //console.log("Socket connected with ID:", socket.id);
+            console.log('Connection Successful to socket io')
+            setSocketID(socket.id);
         });
-    
+
         socket.on("request-seen", () => {
-          // Call fetchRequestDetails function to update request details
-          fetchRequestDetails();
+            // Call fetchRequestDetails function to update request details
+            fetchRequestDetails();
         });
-    
+
         socket.on("data-sent", () => {
-          fetchRequestDetails();
+            fetchRequestDetails();
         });
-    
+
         // Clean up the socket connection when the component unmounts
         return () => {
-          socket.disconnect();
+            socket.disconnect();
         };
-      }, []);
+    }, []);
 
-      const fetchData = async () => {
+    const fetchData = async () => {
         try {
-          const response = await axios.get(`${secretKey}/employee/einfo`);
-    
-    
-          // Set the retrieved data in the state
-          const tempData = response.data;
-          const userData = tempData.find((item) => item._id === userId);
-         
-          setData(userData);
-    
-        } catch (error) {
-          console.error("Error fetching data:", error.message);
-        }
-      };
+            const response = await axios.get(`${secretKey}/employee/einfo`);
 
-      useEffect(() => {
+
+            // Set the retrieved data in the state
+            const tempData = response.data;
+            const userData = tempData.find((item) => item._id === userId);
+
+            setData(userData);
+
+        } catch (error) {
+            console.error("Error fetching data:", error.message);
+        }
+    };
+
+    const fetchServices = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/department/fetchDepartments`);
+            const data = res.data.data;
+            // console.log("Fetched services are :", data);
+            setBusinessRegistrationServices(data.filter((item) => item.departmentName === "Business Registration" && item.hideService === false))
+            setCertificationServices(data.filter((item) => item.departmentName === "Certification Services" && item.hideService === false))
+            setDocumentationServices(data.filter((item) => item.departmentName === "Documentations Services" && item.hideService === false))
+            setFundRaisingServices(data.filter((item) => item.departmentName === "Fund Raising Services" && item.hideService === false))
+            setItServices(data.filter((item) => item.departmentName === "IT Services" && item.hideService === false))
+            setDigitalMarketingServices(data.filter((item) => item.departmentName === "Digital Marketing" && item.hideService === false))
+            setIsoServices(data.filter((item) => item.departmentName === "ISO Services" && item.hideService === false))
+        } catch (error) {
+            console.log("Error fetching services :", error);
+        }
+    }
+
+    useEffect(() => {
         fetchData();
-      }, [userId]);
+    }, [userId]);
 
-      const fetchRequestDetails = async () => {
+    useEffect(() => {
+        fetchServices();
+    }, []);
+
+    const handleBack = () => {
+        setServiceName("");
+    };
+
+    // console.log("Business registration services :", businessRegistrationServices);
+    // console.log("Certification services :", certificationServices);
+    // console.log("Documentation services :", documentationServices);
+    // console.log("Fund raising services :", fundRaisingServices);
+    // console.log("IT services :", itServices);
+    // console.log("Digital marketing services :", digitalMarketingServices);
+    // console.log("ISO services :", isoServices);
+
+    const fetchRequestDetails = async () => {
         try {
-          const response = await axios.get(`${secretKey}/requests/requestgData`);
-          const sortedData = response.data.sort((a, b) => {
-            // Assuming 'timestamp' is the field indicating the time of creation or update
-            return new Date(b.date) - new Date(a.date);
-          });
-    
-          // Find the latest data object with Assignread property as false
-          const latestData = sortedData.find((data) => data.AssignRead === false);
-    
-          // Set the latest data as an object
-          setRequestData(latestData);
+            const response = await axios.get(`${secretKey}/requests/requestgData`);
+            const sortedData = response.data.sort((a, b) => {
+                // Assuming 'timestamp' is the field indicating the time of creation or update
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            // Find the latest data object with Assignread property as false
+            const latestData = sortedData.find((data) => data.AssignRead === false);
+
+            // Set the latest data as an object
+            setRequestData(latestData);
         } catch (error) {
-          console.error("Error fetching data:", error.message);
+            console.error("Error fetching data:", error.message);
         }
-      };
+    };
 
-      // Shows today's projection pop-up :
-  const [shouldShowCollection, setShouldShowCollection] = useState(false);
-  const [currentDate, setCurrentDate] = useState(getCurrentDate());
-  useEffect(() => {
-    const checkAndShowCollection = () => {
-      const designation = localStorage.getItem('designation');
-      const loginTime = new Date(localStorage.getItem('loginTime'));
-      const loginDate = localStorage.getItem('loginDate');
+    // Shows today's projection pop-up :
+    const [shouldShowCollection, setShouldShowCollection] = useState(false);
+    const [currentDate, setCurrentDate] = useState(getCurrentDate());
+    useEffect(() => {
+        const checkAndShowCollection = () => {
+            const designation = localStorage.getItem('designation');
+            const loginTime = new Date(localStorage.getItem('loginTime'));
+            const loginDate = localStorage.getItem('loginDate');
 
-      const currentDateTime = new Date(); // Current date and time in local time
+            const currentDateTime = new Date(); // Current date and time in local time
 
-      // Extract current hour and minute
-      const currentHour = currentDateTime.getHours();
-      // console.log("Current hour is :", currentHour);
+            // Extract current hour and minute
+            const currentHour = currentDateTime.getHours();
+            // console.log("Current hour is :", currentHour);
 
-      // Get current date in YYYY-MM-DD format
-      const newCurrentDate = getCurrentDate();
+            // Get current date in YYYY-MM-DD format
+            const newCurrentDate = getCurrentDate();
 
-      // Check if there is an old collectionShown flag and remove it if the date has passed
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith(`${userId}_`) && key.endsWith('_collectionShown')) {
-          const storedDate = key.split('_')[1];
-          if (storedDate !== newCurrentDate) {
-            localStorage.removeItem(key);
-          }
+            // Check if there is an old collectionShown flag and remove it if the date has passed
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(`${userId}_`) && key.endsWith('_collectionShown')) {
+                    const storedDate = key.split('_')[1];
+                    if (storedDate !== newCurrentDate) {
+                        localStorage.removeItem(key);
+                    }
+                }
+            }
+
+            // Check conditions to show the collection pop-up
+            if (
+                designation === 'Sales Executive' &&
+                loginDate === newCurrentDate && // Check if it's the same login date
+                currentHour >= 10 &&
+                !localStorage.getItem(`${userId}_${newCurrentDate}_collectionShown`)
+            ) {
+                setShouldShowCollection(true);
+                localStorage.setItem(`${userId}_${newCurrentDate}_collectionShown`, 'true'); // Set the flag to prevent showing again for this userId on this date
+            }
+        };
+
+        const updateDateAndCheckCollection = () => {
+            const newCurrentDate = getCurrentDate();
+            if (newCurrentDate !== currentDate) {
+                setCurrentDate(newCurrentDate);
+            }
+            checkAndShowCollection();
+        };
+
+        checkAndShowCollection(); // Call the function initially
+
+        // Set an interval to check every minute
+        const intervalId = setInterval(updateDateAndCheckCollection, 60000); // 60000 ms = 1 minute
+
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, [userId, currentDate]); // Trigger when userId or currentDate changes
+
+    // Function to get current date in YYYY-MM-DD format
+    function getCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, "0");
+        const day = now.getDate().toString().padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+
+    // Shows today's projection pop-up when button is clicked :
+    const [noOfCompany, setNoOfCompany] = useState("");
+    const [noOfServiceOffered, setNoOfServiceOffered] = useState("");
+    const [offeredPrice, setOffferedPrice] = useState("");
+    const [expectedCollection, setExpectedCollection] = useState("");
+    const [openTodaysColection, setOpenTodaysCollection] = useState(false);
+
+    const [errors, setErrors] = useState({
+        noOfCompany: "",
+        noOfServiceOffered: "",
+        offeredPrice: "",
+        expectedCollection: ""
+    });
+
+    const closePopup = () => {
+        setOpenTodaysCollection(false);
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'backdropClick') {
+            return;
         }
-      }
-
-      // Check conditions to show the collection pop-up
-      if (
-        designation === 'Sales Executive' &&
-        loginDate === newCurrentDate && // Check if it's the same login date
-        currentHour >= 10 &&
-        !localStorage.getItem(`${userId}_${newCurrentDate}_collectionShown`)
-      ) {
-        setShouldShowCollection(true);
-        localStorage.setItem(`${userId}_${newCurrentDate}_collectionShown`, 'true'); // Set the flag to prevent showing again for this userId on this date
-      }
+        closePopup();
     };
 
-    const updateDateAndCheckCollection = () => {
-      const newCurrentDate = getCurrentDate();
-      if (newCurrentDate !== currentDate) {
-        setCurrentDate(newCurrentDate);
-      }
-      checkAndShowCollection();
-    };
+    const date = new Date();
+    const todayDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const currentTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 
-    checkAndShowCollection(); // Call the function initially
+    const handleSubmitTodaysCollection = async () => {
+        let formErrors = {
+            noOfCompany: noOfCompany === "" ? "No. of Company is required" : "",
+            noOfServiceOffered: noOfServiceOffered === "" ? "No. of Service Offered is required" : "",
+            offeredPrice: offeredPrice === "" ? "Total Offered Price is required" : "",
+            expectedCollection: expectedCollection === "" ? "Total Collection Expected is required" : ""
+        };
+        setErrors(formErrors);
+        if (Object.values(formErrors).some(error => error !== "")) {
+            return;
+        }
 
-    // Set an interval to check every minute
-    const intervalId = setInterval(updateDateAndCheckCollection, 60000); // 60000 ms = 1 minute
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [userId, currentDate]); // Trigger when userId or currentDate changes
-
-  // Function to get current date in YYYY-MM-DD format
-  function getCurrentDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
-
-  // Shows today's projection pop-up when button is clicked :
-  const [noOfCompany, setNoOfCompany] = useState("");
-  const [noOfServiceOffered, setNoOfServiceOffered] = useState("");
-  const [offeredPrice, setOffferedPrice] = useState("");
-  const [expectedCollection, setExpectedCollection] = useState("");
-  const [openTodaysColection, setOpenTodaysCollection] = useState(false);
-
-  const [errors, setErrors] = useState({
-    noOfCompany: "",
-    noOfServiceOffered: "",
-    offeredPrice: "",
-    expectedCollection: ""
-  });
-
-  const closePopup = () => {
-    setOpenTodaysCollection(false);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === 'backdropClick') {
-      return;
-    }
-    closePopup();
-  };
-
-  const date = new Date();
-  const todayDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-  const currentTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-
-  const handleSubmitTodaysCollection = async () => {
-    let formErrors = {
-      noOfCompany: noOfCompany === "" ? "No. of Company is required" : "",
-      noOfServiceOffered: noOfServiceOffered === "" ? "No. of Service Offered is required" : "",
-      offeredPrice: offeredPrice === "" ? "Total Offered Price is required" : "",
-      expectedCollection: expectedCollection === "" ? "Total Collection Expected is required" : ""
-    };
-    setErrors(formErrors);
-    if (Object.values(formErrors).some(error => error !== "")) {
-      return;
-    }
-
-    const payload = {
-      empId: userId,
-      noOfCompany: noOfCompany,
-      noOfServiceOffered: noOfServiceOffered,
-      totalOfferedPrice: offeredPrice,
-      totalCollectionExpected: expectedCollection,
-      date: todayDate,
-      time: currentTime
-    };
+        const payload = {
+            empId: userId,
+            noOfCompany: noOfCompany,
+            noOfServiceOffered: noOfServiceOffered,
+            totalOfferedPrice: offeredPrice,
+            totalCollectionExpected: expectedCollection,
+            date: todayDate,
+            time: currentTime
+        };
 
 
-    try {
-      const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
-      console.log("Data successfully added :", response);
-      Swal.fire("Success!", "Data Successfully Added!", "success");
-      setNoOfCompany("");
-      setNoOfServiceOffered("");
-      setOffferedPrice("");
-      setExpectedCollection("");
-      closePopup();
-    } catch (error) {
-      console.log("Error to send today's collection", error);
-      Swal.fire("Error!", "Error to send today's collection!", "error");
-    }
-  };
-
-  // Auto logout functionality :
-  useEffect(() => {
-    // Function to check token expiry and initiate logout if expired
-    const checkTokenExpiry = () => {
-      const token = localStorage.getItem("newtoken");
-      if (token) {
         try {
-          const decoded = jwtDecode(token);
-          const currentTime = Date.now() / 1000; // Get current time in seconds
-          if (decoded.exp < currentTime) {
-            // console.log("Decode Expirary :", decoded.exp);
-            // Token expired, perform logout actions
-            // console.log("Logout called");
-            handleLogout();
-          } else {
-            // Token not expired, continue session
-            const timeToExpire = decoded.exp - currentTime;
-            console.log(`Token expires in ${timeToExpire} seconds`);
-          }
+            const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
+            console.log("Data successfully added :", response);
+            Swal.fire("Success!", "Data Successfully Added!", "success");
+            setNoOfCompany("");
+            setNoOfServiceOffered("");
+            setOffferedPrice("");
+            setExpectedCollection("");
+            closePopup();
         } catch (error) {
-          console.error("Error decoding token:", error);
-          // console.log("Logout called");
-          handleLogout(); // Handle invalid token or decoding errors
+            console.log("Error to send today's collection", error);
+            Swal.fire("Error!", "Error to send today's collection!", "error");
         }
-      }
     };
 
-    // Initial check on component mount
-    checkTokenExpiry();
+    // Auto logout functionality :
+    useEffect(() => {
+        // Function to check token expiry and initiate logout if expired
+        const checkTokenExpiry = () => {
+            const token = localStorage.getItem("newtoken");
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    const currentTime = Date.now() / 1000; // Get current time in seconds
+                    if (decoded.exp < currentTime) {
+                        // console.log("Decode Expirary :", decoded.exp);
+                        // Token expired, perform logout actions
+                        // console.log("Logout called");
+                        handleLogout();
+                    } else {
+                        // Token not expired, continue session
+                        const timeToExpire = decoded.exp - currentTime;
+                        console.log(`Token expires in ${timeToExpire} seconds`);
+                    }
+                } catch (error) {
+                    console.error("Error decoding token:", error);
+                    // console.log("Logout called");
+                    handleLogout(); // Handle invalid token or decoding errors
+                }
+            }
+        };
 
-    // Periodically check token expiry (e.g., every minute)
-    const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
+        // Initial check on component mount
+        checkTokenExpiry();
 
-    return () => clearInterval(interval); // Cleanup interval on unmount
-  }, []);
+        // Periodically check token expiry (e.g., every minute)
+        const interval = setInterval(checkTokenExpiry, 60000); // 60 seconds
 
-  const handleLogout = () => {
-    // Clear local storage and redirect to login page
-    localStorage.removeItem("newtoken");
-    localStorage.removeItem("userId");
-    // localStorage.removeItem("designation");
-    // localStorage.removeItem("loginTime");
-    // localStorage.removeItem("loginDate");
-    window.location.replace("/"); // Redirect to login page
-  };
+        return () => clearInterval(interval); // Cleanup interval on unmount
+    }, []);
 
-  //----------------routing page for details page open-------------------------
-  const [openDetailsPage, setOpenDeatilsPage] = useState(false)
+    const handleLogout = () => {
+        // Clear local storage and redirect to login page
+        localStorage.removeItem("newtoken");
+        localStorage.removeItem("userId");
+        // localStorage.removeItem("designation");
+        // localStorage.removeItem("loginTime");
+        // localStorage.removeItem("loginDate");
+        window.location.replace("/"); // Redirect to login page
+    };
+
+    //----------------routing page for details page open-------------------------
+    const [openDetailsPage, setOpenDeatilsPage] = useState(false)
 
     return (
         <div>
@@ -381,10 +426,12 @@ function EmployeeAssets() {
                         </div>
                     </div>
                 </div>
+
                 <div className="page-body rm_Dtl_box m-0">
                     <div className="container-xl">
                         <div className="my-card">
                             <div className="row m-0 E_assets_main">
+
                                 <div className="col-lg-2 p-0">
                                     <div className="employee-assets-left">
                                         <ul class="nav flex-column">
@@ -412,14 +459,39 @@ function EmployeeAssets() {
                                         </ul>
                                     </div>
                                 </div>
+
                                 <div className="col-lg-10 p-0">
                                     <div className="employee-assets-right">
                                         <div class="tab-content">
+
                                             <div class="tab-pane container active" id="Business_Registration">
                                                 <div className="E_Start-Up_Assets_inner">
-
                                                     <div className="ESAI_data row">
-                                                        <div className="col-sm-4">
+
+                                                        {businessRegistrationServices.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                    setOpenDeatilsPage(true);
+                                                                                    setServiceName(department.serviceName);
+                                                                                    setDepartmentName(department.departmentName);
+                                                                                }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Private Limited Registration
@@ -428,12 +500,12 @@ function EmployeeAssets() {
                                                                     Structure with limited liability, suitable for startups and medium to large businesses.
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn" 
-                                                                    onClick={
-                                                                          ()=>{
-                                                                            setOpenDeatilsPage(true)
-                                                                          }
-                                                                    }>
+                                                                    <button className="btn ESAI_data_card_F-btn"
+                                                                        onClick={
+                                                                            () => {
+                                                                                setOpenDeatilsPage(true)
+                                                                            }
+                                                                        }>
                                                                         Know More
                                                                     </button>
                                                                 </div>
@@ -536,7 +608,7 @@ function EmployeeAssets() {
                                                                     Producer Company Registration
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
+                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -544,15 +616,39 @@ function EmployeeAssets() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="tab-pane container fade" id="Certification_Services">
                                                 <div className="E_Start-Up_Assets_inner">
-
                                                     <div className="ESAI_data row">
-                                                        <div className="col-sm-4">
+
+                                                        {certificationServices.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Start-Up India Certificate
@@ -619,7 +715,6 @@ function EmployeeAssets() {
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Large entity raising capital through public shares, suitable for large-scale businesses.
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -661,10 +756,10 @@ function EmployeeAssets() {
                                                         <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
-                                                                    GST Certificate
+                                                                    GST Certificate
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
+                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -672,15 +767,39 @@ function EmployeeAssets() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="tab-pane container fade" id="Documentations_Services">
                                                 <div className="E_Start-Up_Assets_inner">
-
                                                     <div className="ESAI_data row">
-                                                        <div className="col-sm-4">
+
+                                                        {documentationServices.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Pitch Deck Development
@@ -699,7 +818,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Financial Modeling
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Hybrid structure offering limited liability and flexibility for small to medium businesses.
@@ -715,7 +833,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     DPR Development
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Application for Issue of Phytosanitary Certificate for Export of Agriculture Commodit...
@@ -731,7 +848,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     CMA Report Development
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Single-owner company with limited liability, ideal for solo entrepreneurs.
@@ -747,11 +863,9 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Company Profile
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Large entity raising capital through public shares, suitable for large-scale businesses.
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -796,7 +910,7 @@ function EmployeeAssets() {
                                                                     Company Brochure
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
+                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -811,7 +925,7 @@ function EmployeeAssets() {
                                                                     Product Catalog
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
+                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -819,15 +933,39 @@ function EmployeeAssets() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="tab-pane container fade" id="Fund_Raising_Services">
                                                 <div className="E_Start-Up_Assets_inner">
-
                                                     <div className="ESAI_data row">
-                                                        <div className="col-sm-4">
+
+                                                        {fundRaisingServices.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Seed Funding Support
@@ -861,8 +999,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     DBS Funding
-
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Application for Issue of Phytosanitary Certificate for Export of Agriculture Commodit...
@@ -878,8 +1014,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Angel Funding Support
-
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Single-owner company with limited liability, ideal for solo entrepreneurs.
@@ -895,12 +1029,9 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     VC Funding Support
-
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Large entity raising capital through public shares, suitable for large-scale businesses.
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -913,7 +1044,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Crowd Funding Support
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     NBFC promoting savings and lending among members, with limited liability.
@@ -928,7 +1058,7 @@ function EmployeeAssets() {
                                                         <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
-                                                                    Government Funding Support
+                                                                    Government Funding Support
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Simple structure with complete control, ideal for individual-owned businesses.
@@ -939,19 +1069,42 @@ function EmployeeAssets() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="tab-pane container fade" id="IT">
                                                 <div className="E_Start-Up_Assets_inner">
-
                                                     <div className="ESAI_data row">
-                                                        <div className="col-sm-4">
+
+                                                        {itServices.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Website Development
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Structure with limited liability, suitable for startups and medium to large businesses.
@@ -967,7 +1120,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     App Design & Development
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Hybrid structure offering limited liability and flexibility for small to medium businesses.
@@ -998,7 +1150,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Software Development
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Single-owner company with limited liability, ideal for solo entrepreneurs.
@@ -1014,12 +1165,9 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     E-Commerce Website
-
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Large entity raising capital through public shares, suitable for large-scale businesses.
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_F">
                                                                     <button className="btn ESAI_data_card_F-btn">
@@ -1032,8 +1180,6 @@ function EmployeeAssets() {
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Product Development
-
-
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     NBFC promoting savings and lending among members, with limited liability.
@@ -1048,7 +1194,7 @@ function EmployeeAssets() {
                                                         <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
-                                                                    CRM Development
+                                                                    CRM Development
                                                                 </div>
                                                                 <div className="ESAI_data_card_b">
                                                                     Simple structure with complete control, ideal for individual-owned businesses.
@@ -1059,25 +1205,83 @@ function EmployeeAssets() {
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane container fade" id="DigitalMarketing">...</div>
-                                            <div class="tab-pane container fade" id="ISO">...</div>
+
+                                            <div class="tab-pane container fade" id="DigitalMarketing">
+                                                <div className="E_Start-Up_Assets_inner">
+                                                    <div className="ESAI_data row">
+
+                                                        {digitalMarketingServices.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane container fade" id="ISO">
+                                                <div className="E_Start-Up_Assets_inner">
+                                                    <div className="ESAI_data row">
+
+                                                        {isoServices.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>)}
 
-            {openDetailsPage && (
-                <EmployeeAssetDetails
-                DetailsPage={setOpenDeatilsPage}/>
-            )}
+            {openDetailsPage &&<EmployeeAssetDetails DetailsPage={setOpenDeatilsPage} serviceName={serviceName} departmentName={departmentName} back={handleBack} />}
         </div>
     )
 }
