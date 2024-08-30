@@ -268,19 +268,7 @@ function AddAttendance({ year, month, date, employeeData }) {
             Swal.fire("error", "Error adding/updating attendance", "error");
         }
         fetchAttendance();
-        // console.log("Employee id :", empId);
-        // console.log("Employee name :", name);
-        // console.log("Employee designation :", designation);
-        // console.log("Employee department :", department);
-        // console.log("Employee branch :", branch);
-        // console.log("Attendance date :", date);
-        // console.log("Attendance day is :", dayName);
-        // console.log("In time is :", inTime);
-        // console.log("Out time is :", outTime);
-        // console.log("Working hours :", workingHours);
-        // console.log("Attendance status is :", status);
-
-        // console.log("Data to be send :", payload);
+        console.log("Data to be send :", payload);
     };
 
     const calculateWorkingHours = (inTime, outTime) => {
@@ -436,9 +424,16 @@ function AddAttendance({ year, month, date, employeeData }) {
                                     workingHours: "",
                                     status: ""
                                 };
-
+                                const convertToMinutes = (timeString) => {
+                                    const [hours, minutes] = timeString.split(':').map(Number);
+                                    return hours * 60 + minutes;
+                                };
                                 const inTime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
                                 const outTime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+                                const inTimeMinutes = convertToMinutes(inTime);
+                                const outTimeMinutes = convertToMinutes(outTime);
+                                const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
+                                const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
 
                                 // console.log("Emp attendance details :", attendanceDetails);
 
@@ -450,15 +445,20 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 // Determine the status
                                 let status;
                                 const workingMinutes = (inTime && outTime) ? workingHours.split(':').reduce((acc, time) => (60 * acc) + +time) : 0;
-                                if (workingMinutes >= 435) {
+                                console.log("intimeminutes", inTimeMinutes)
+                               
+                                if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
+                                    status = "LC";
+                                } else if (workingMinutes >= 429) { // 7 hours 15 minutes in minutes
                                     status = "Present";
-                                } else if (workingMinutes >= 218) {
+                                } else if (workingMinutes >= 210) { // 7 hours 15 minutes / 2 in minutes
                                     status = "Half Day";
-                                } else if (workingMinutes <= 120) {
+                                } else if (workingMinutes <= 120) { // 2 hours in minutes
                                     status = "Leave";
                                 } else {
                                     status = "";
                                 }
+                                console.log("status", status)
 
                                 return (
                                     <tr key={index}>
@@ -523,7 +523,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                             <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                                                 <AntSwitch
                                                     checked={onLeave}
-                                                    onChange={(e) => handleCheckboxChange(e.target.checked,emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}
+                                                    onChange={(e) => handleCheckboxChange(e.target.checked, emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}
                                                     inputProps={{ 'aria-label': 'ant design' }} />
                                                 {/* <FormControlLabel
                                                     control={
@@ -542,7 +542,8 @@ function AddAttendance({ year, month, date, employeeData }) {
                                         <td>
                                             <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
                                                 (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
-                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : ""
+                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : "badge-half-day"
+                                                    
                                                 }`}>
                                                 {attendanceDetails.status || status}
                                             </span>

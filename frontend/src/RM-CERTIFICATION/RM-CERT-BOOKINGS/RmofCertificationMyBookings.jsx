@@ -31,15 +31,7 @@ function RmofCertificationMyBookings() {
     const [employeeData, setEmployeeData] = useState([])
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
-    const [isFilter, setIsFilter] = useState(false)
     const [rmServicesData, setRmServicesData] = useState([]);
-    const [showFilterIconGeneral, setShowFilterIconGeneral] = useState(false)
-    const [showFilterIconProcess, setShowFilterIconProcess] = useState(false)
-    const [showFilterIconReadyToSubmit, setShowFilterIconReadyToSubmit] = useState(false)
-    const [showFilterIconSubmitted, setShowFilterIconSubmitted] = useState(false)
-    const [showFilterIconDefaulter, setShowFilterIconDefaulter] = useState(false)
-    const [showFilterIconHold, setShowFilterIconHold] = useState(false)
-    const [showFilterIconApproved, setShowFilterIconApproved] = useState(false);
     const [search, setSearch] = useState("");
     //const [showFilterIcon, setShowFilterIcon] = useState(false)
     const [activeTab, setActiveTab] = useState("General");
@@ -52,6 +44,18 @@ function RmofCertificationMyBookings() {
         Hold: false,
         Defaulter: false
     });
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
+    const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0);
+    const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
+    const [totalDocumentsReadyToSubmit, setTotalDocumentsReadyToSubmit] = useState(0);
+    const [totalDocumentsSubmitted, setTotalDocumentsSubmitted] = useState(0);
+    const [totalDocumentsHold, setTotalDocumentsHold] = useState(0);
+    const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0);
+    const [noOfFilteredData, setnoOfFilteredData] = useState(0);
+    const [showNoOfFilteredData, setShowNoOfFilteredData] = useState(true);
+    const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
 
 
     useEffect(() => {
@@ -105,17 +109,6 @@ function RmofCertificationMyBookings() {
             console.error("Error fetching data:", error.message);
         }
     };
-
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0)
-    const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0)
-    const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0)
-    const [totalDocumentsReadyToSubmit, setTotalDocumentsReadyToSubmit] = useState(0)
-    const [totalDocumentsSubmitted, setTotalDocumentsSubmitted] = useState(0)
-    const [totalDocumentsHold, setTotalDocumentsHold] = useState(0)
-    const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0)
-
     const fetchRMServicesData = async (searchQuery = "", page = 1) => {
         try {
             setCurrentDataLoading(true);
@@ -123,7 +116,8 @@ function RmofCertificationMyBookings() {
                 params: { search: searchQuery, page, activeTab: activeTab }
             });
 
-            const { data,
+            const {
+                data,
                 totalPages,
                 totalDocumentsGeneral,
                 totalDocumentsProcess,
@@ -165,7 +159,7 @@ function RmofCertificationMyBookings() {
     }, [employeeData]);
 
     useEffect(() => {
-        fetchRMServicesData(search , page); // Fetch data when search query changes
+        fetchRMServicesData(search, page); // Fetch data when search query changes
     }, [search]);
 
     const handleSearchChange = (event) => {
@@ -176,9 +170,14 @@ function RmofCertificationMyBookings() {
         fetchData();
     }, []);
 
+    const setNoOfData = (number) => {
+        console.log("number", number)
+        setnoOfFilteredData(number)
+    }
 
-    console.log("searcg", search)
-    const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
+    //console.log("showiconfilter", showNoOfFilteredData)
+    console.log("nooffilterdata", noOfFilteredData)
+
 
     return (
         <div>
@@ -210,6 +209,29 @@ function RmofCertificationMyBookings() {
                                         />
                                     </div>
                                 </div>
+                                {noOfFilteredData > 0 && (
+                                    <div className="selection-data">
+                                        Result : <b>
+                                            {noOfFilteredData} /
+                                            {activeTab === "General"
+                                                ? totalDocumentsGeneral
+                                                : activeTab === "InProcess"
+                                                    ? totalDocumentsProcess
+                                                    : activeTab === "ReadyToSubmit"
+                                                        ? totalDocumentsReadyToSubmit
+                                                        : activeTab === "Submited"
+                                                            ? totalDocumentsSubmitted
+                                                            : activeTab === "Approved"
+                                                                ? totalDocumentsApproved
+                                                                : activeTab === "Hold"
+                                                                    ? totalDocumentsHold
+                                                                    : activeTab === "Defaulter"
+                                                                        ? totalDocumentsDefaulter
+                                                                        : 0}
+                                        </b>
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     </div>
@@ -220,7 +242,9 @@ function RmofCertificationMyBookings() {
                                     <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link active" data-bs-toggle="tab" href="#General"
-                                                onClick={() => setActiveTab("General")}
+                                                onClick={() =>
+                                                    setActiveTab("General")
+                                                }
                                             >
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
@@ -236,7 +260,8 @@ function RmofCertificationMyBookings() {
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link" data-bs-toggle="tab" href="#InProcess">
                                                 <div className="d-flex align-items-center justify-content-between w-100"
-                                                    onClick={() => setActiveTab("InProcess")}
+                                                    onClick={() =>
+                                                        setActiveTab("InProcess")}
                                                 >
                                                     <div className="rm_txt_tsn">
                                                         In Process
@@ -280,7 +305,7 @@ function RmofCertificationMyBookings() {
                                         <li class="nav-item rm_task_section_navitem">
                                             <a class="nav-link" data-bs-toggle="tab" href="#Approved"
                                                 onClick={() => setActiveTab("Approved")}
-                                                >
+                                            >
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
                                                         Approved
@@ -293,8 +318,8 @@ function RmofCertificationMyBookings() {
                                             </a>
                                         </li>
                                         <li class="nav-item rm_task_section_navitem">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold" 
-                                            onClick={() => setActiveTab("Hold")}
+                                            <a class="nav-link" data-bs-toggle="tab" href="#Hold"
+                                                onClick={() => setActiveTab("Hold")}
                                             >
                                                 <div className="d-flex align-items-center justify-content-between w-100">
                                                     <div className="rm_txt_tsn">
@@ -325,50 +350,60 @@ function RmofCertificationMyBookings() {
                                 <div class="tab-content card-body">
                                     <div class="tab-pane active" id="General">
                                         <RmofCertificationGeneralPanel
+                                            showingFilterIcon={setShowNoOfFilteredData}
+                                            totalFilteredData={activeTab === "General" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.General} />
+                                            showFilter={showFilterIcon.General} 
+                                            />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
                                         <RmofCertificationProcessPanel
+                                            showingFilterIcon={setShowNoOfFilteredData}
+                                            totalFilteredData={activeTab === "InProcess" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.InProcess}
-                                            onFilterToggle={() => {
-                                                // Callback to handle filter menu visibility
-                                                setShowFilterIcon(prev => ({
-                                                    ...prev,
-                                                    InProcess: !prev.InProcess
-                                                }));
-                                            }}
                                         />
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
                                         <RmofCertificationReadyToSubmitPanel
+                                            showingFilterIcon={setShowNoOfFilteredData}
+                                            totalFilteredData={activeTab === "ReadyToSubmit" ? setNoOfData : () => { }}
                                             activeTab={activeTab}
                                             searchText={search}
                                             rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit} />
                                     </div>
                                     <div class="tab-pane" id="Submited">
                                         <RmofCertificationSubmittedPanel
+                                            showingFilterIcon={setShowNoOfFilteredData}
+                                            totalFilteredData={activeTab === "Submited" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.Submited} />
                                     </div>
                                     <div class="tab-pane" id="Approved">
                                         <RmofCertificationApprovedPanel
+                                            showingFilterIcon={setShowNoOfFilteredData}
+                                            totalFilteredData={activeTab === "Approved" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.Approved} />
+                                            showFilter={showFilterIcon.Approved} 
+                                            />
                                     </div>
                                     <div class="tab-pane" id="Hold">
                                         <RmofCertificationHoldPanel
+                                            showingFilterIcon={setShowNoOfFilteredData}
+                                            totalFilteredData={activeTab === "Hold" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.Hold} />
+                                            showFilter={showFilterIcon.Hold} 
+                                            />
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
                                         <RmofCertificationDefaulterPanel
+                                            showingFilterIcon={setShowNoOfFilteredData}
+                                            totalFilteredData={activeTab === "Defaulter" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.Defaulter} />

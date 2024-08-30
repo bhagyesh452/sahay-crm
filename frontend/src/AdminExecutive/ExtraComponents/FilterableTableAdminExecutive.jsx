@@ -4,7 +4,7 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
 
-const FilterableTable = ({ 
+const FilterableTableAdminExecutive = ({ 
     activeTab, 
     filteredData, 
     data, 
@@ -334,7 +334,7 @@ const FilterableTable = ({
     };
     
     // Example of logging the length of the selected filters for a specific field
-    console.log(selectedFilters[filterField]?.length, columnValues.length);
+    //console.log(selectedFilters[filterField]?.length, columnValues.length);
 
     // const handleClearAll = async() => {
     //     setSelectedFilters(prevFilters => ({
@@ -353,7 +353,7 @@ const FilterableTable = ({
         
         try {
             // Fetch the complete dataset from the API
-            const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
+            const response = await axios.get(`${secretKey}/rm-services/adminexecutive-complete`, {
                 params: {
                     search: "",           // Clear search query
                     page: 1,              // Reset to first page
@@ -465,5 +465,5 @@ const FilterableTable = ({
     );
 };
 
-export default FilterableTable;
+export default FilterableTableAdminExecutive;
 

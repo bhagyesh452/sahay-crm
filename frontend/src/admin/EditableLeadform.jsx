@@ -106,7 +106,7 @@ export default function EditableLeadform({
       const filteredData = tempData.filter(employee =>
         employee.designation === "Sales Executive" ||
         employee.designation === "Sales Manager")
-      console.log("filteredData" , filteredData);
+      //console.log("filteredData" , filteredData);
       setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -138,7 +138,7 @@ export default function EditableLeadform({
         Step5Status,
         ...newLeadData
       } = data;
-      console.log("Fetched Data" , newLeadData);
+      //console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
       if (Step1Status === true && Step2Status === false) {
         setCompleted({ 0: true });
@@ -423,10 +423,12 @@ export default function EditableLeadform({
   //   setActiveStep(5);
   // }
   console.log("Real time data: ", leadData);
+
+
   useEffect(() => {
     fetchData();
     fetchDataEmp();
-    console.log("Fetch After Component Mount", leadData);
+    //console.log("Fetch After Component Mount", leadData);
   }, []);
   useEffect(() => {
     // Create new services array based on totalServices

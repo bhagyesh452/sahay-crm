@@ -24,11 +24,6 @@ function ShowAttendanceForParticularDate({ selectedDate, close }) {
         return `${year}-${month}-${day}`;
     };
 
-    // console.log("Current day is :", currentDay);
-    // console.log("Current month is :", currentMonth);
-    // console.log("Current year is :", currentYear);
-
-
     const [isLoading, setIsLoading] = useState(false);
     const [attendanceData, setAttendanceData] = useState([]);
 

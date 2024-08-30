@@ -187,7 +187,7 @@ const StatusDropdown = ({
             }).then(() => {
               // Reset status and class only if conditions are met
               setStatus(subStatus);
-              setStatusClass(statusClass);
+              setStatusClass(getStatusClass(mainStatus, subStatus));
               setNewSubStatus(subStatus);
             });
           } else {

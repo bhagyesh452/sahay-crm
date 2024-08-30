@@ -906,13 +906,12 @@ th.th-sticky1::after {
 }
 
 .inco-subFilter {
-  padding: 10px;
   color: #555;
-  border-radius: 8px;
   font-family: Arial, sans-serif; 
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 1;
+  width: 100%;
 }
 
 .inco-subFilter:hover {
@@ -3220,8 +3219,8 @@ td input {
 .td_add_remarks_btn
 {
   border: none;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   text-align: center;
   line-height: 19px;
   border-radius: 100px;
@@ -3260,7 +3259,6 @@ td input {
   width: 100%;
   background-position: right 7px center;
   background-size: 8px 11px;
-  
   border: none !important;
   color: #414141;
 }

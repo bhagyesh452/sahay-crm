@@ -33,7 +33,13 @@ import NSWSMobileNo from '../Extra-Components/NSWSMobileNo';
 import OtpVerificationStatus from '../Extra-Components/OtpVerificationStatus';
 
 
-function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab }) {
+function RmofCertificationReadyToSubmitPanel({ 
+    searchText, 
+    showFilter, 
+    activeTab , 
+    totalFilteredData,
+    showingFilterIcon,
+     }) {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
@@ -67,6 +73,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
     const [activeFilterField, setActiveFilterField] = useState(null);
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0)
 
 
     function formatDatePro(inputDate) {
@@ -135,17 +142,17 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
         };
         socket.on("adminexecutive-general-status-updated", (res) => {
             //console.log("res" , res)
-            if(res.updatedDocument){
+            if (res.updatedDocument) {
                 updateDocumentInState(res.updatedDocument);
             }
-           
+
         });
         socket.on("adminexecutive-letter-updated", (res) => {
             //console.log("res" , res)
-            if(res.updatedDocument){
+            if (res.updatedDocument) {
                 updateDocumentInState(res.updatedDocument);
             }
-           
+
         });
         return () => {
             socket.disconnect();
@@ -416,6 +423,18 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
         setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Ready To Submit"));
     };
 
+    useEffect(() => {
+        if (noOfAvailableData) {
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
+        } else {
+          showingFilterIcon(false)
+          totalFilteredData(0)
+        }
+    
+      }, [noOfAvailableData, activeTab])
+
+
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -430,13 +449,13 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
 
-        // Update the active filter fields array
-        setActiveFilterFields(prevFields => {
+        // // Update the active filter fields array
+        // setActiveFilterFields(prevFields => {
 
-            // Add the field if it's not active
-            return [...prevFields, field];
+        //     // Add the field if it's not active
+        //     return [...prevFields, field];
 
-        });
+        // });
     };
     const isActiveField = (field) => activeFilterFields.includes(field);
 
@@ -495,6 +514,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -502,7 +522,9 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
+                                    
                                                     />
                                                 </div>
                                             )}
@@ -529,6 +551,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -536,6 +559,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -563,6 +587,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -570,6 +595,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -597,6 +623,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -604,6 +631,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -632,6 +660,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -639,6 +668,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -666,6 +696,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -673,6 +704,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -701,6 +733,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -708,6 +741,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -735,6 +769,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -742,6 +777,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -769,6 +805,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -776,6 +813,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -803,6 +841,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -810,6 +849,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -837,6 +877,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -844,6 +885,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -870,6 +912,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -877,6 +920,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -903,6 +947,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -910,6 +955,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -936,6 +982,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -943,6 +990,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -967,6 +1015,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -974,6 +1023,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1000,6 +1050,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1007,6 +1058,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1033,6 +1085,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1040,6 +1093,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1048,8 +1102,8 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                     </th>
                                     <th>
                                         <div className="d-flex align-items-center justify-content-center position-relative">
-                                        <div ref={el => fieldRefs.current['otpVerificationStatus'] = el}>
-                                               OTP/DSC Verification Status
+                                            <div ref={el => fieldRefs.current['otpVerificationStatus'] = el}>
+                                                OTP/DSC Verification Status
                                             </div>
                                             <div className='otpVerificationStatus'>
                                                 {isActiveField('otpVerificationStatus') ? (
@@ -1065,6 +1119,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1072,6 +1127,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1098,6 +1154,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1105,6 +1162,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1131,6 +1189,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1138,6 +1197,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1180,6 +1240,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1187,6 +1248,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1214,6 +1276,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1221,6 +1284,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1247,6 +1311,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1254,6 +1319,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1281,6 +1347,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1288,6 +1355,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1315,6 +1383,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                     noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1322,6 +1391,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -1410,13 +1480,23 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                                                 </button>
                                             </div>
                                         </td>
-                                        <td className='td_of_weblink'>
+                                        <td className="td_of_weblink">
                                             <WebsiteLink
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                                                 companyName={obj["Company Name"]}
                                                 serviceName={obj.serviceName}
                                                 refreshData={refreshData}
-                                                websiteLink={obj.websiteLink ? obj.websiteLink : obj.companyBriefing ? obj.companyBriefing : "Enter Website Link"}
-                                                companyBriefing={obj.companyBriefing ? obj.companyBriefing : ""}
+                                                onlyLink={obj.websiteLink ? obj.websiteLink : ""}
+                                                websiteLink={
+                                                    obj.websiteLink
+                                                        ? obj.websiteLink
+                                                        : obj.companyBriefing
+                                                            ? obj.companyBriefing
+                                                            : ""
+                                                }
+                                                companyBriefing={
+                                                    obj.companyBriefing ? obj.companyBriefing : ""
+                                                }
                                             />
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
@@ -1675,6 +1755,7 @@ function RmofCertificationReadyToSubmitPanel({ searchText, showFilter, activeTab
                         filterField={filterField}
                         onFilter={handleFilter}
                         completeData={completeRmData}
+                        showingMenu={setShowFilterMenu}
                         dataForFilter={dataToFilter}
                     />
                 </div>

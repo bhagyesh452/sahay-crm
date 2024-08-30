@@ -3,10 +3,14 @@ import axios from 'axios';
 import { Button, Dialog, DialogContent, DialogTitle, DialogActions, FormHelperText } from "@mui/material";
 import Swal from "sweetalert2";
 import { FaPencilAlt } from "react-icons/fa";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+//import { GiInfo } from "react-icons/gi";
+import { AiOutlineInfoCircle } from "react-icons/ai";
+import { BsInfoCircle } from "react-icons/bs";
 
-const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , companyBriefing }) => {
+const WebsiteLink = ({ companyName, serviceName, onlyLink,websiteLink, refreshData, companyBriefing }) => {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [link, setLink] = useState("");
+    const [link, setLink] = useState(onlyLink);
     const [error, setError] = useState('');
     const [openWebsiteLinkPopup, setOpenWebsitePopup] = useState(false);
     const [briefing, setBriefing] = useState(companyBriefing);
@@ -81,11 +85,16 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , comp
         <div>
             <div className='d-flex align-items-center justify-content-between'>
                 <div className="My_Text_Wrap" title={websiteLink}>
-                    {link ? link  : companyBriefing ? companyBriefing :  "Enter Website Link"}
+                    {link ? link : companyBriefing ? companyBriefing : "Enter Website Link"}
                 </div>
                 <button className='td_add_remarks_btn' onClick={() => setOpenWebsitePopup(true)}>
-                    <FaPencilAlt />
+                    {websiteLink || companyBriefing ? (
+                        <BsInfoCircle className='b-info'/>
+                    ) : (
+                        <FaPencilAlt  />
+                    )}
                 </button>
+
             </div>
 
             <Dialog
@@ -105,7 +114,7 @@ const WebsiteLink = ({ companyName, serviceName, websiteLink, refreshData , comp
                                 type='text'
                                 placeholder="Enter Website link"
                                 className="form-control"
-                                value={""? "Enter Website Link" : link}
+                                value={"" ? "Enter Website Link" : link}
                                 onChange={(e) => setLink(e.target.value)}
                             />
                         </div>

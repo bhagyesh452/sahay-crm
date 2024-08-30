@@ -21,7 +21,7 @@ import { FaFilter } from "react-icons/fa";
 
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
-function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
+function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -42,7 +42,13 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
     const [isScrollLocked, setIsScrollLocked] = useState(false);
     const [filteredData, setFilteredData] = useState([]);
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
-    const [error, setError] = useState('')
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0);
+    const [filterField, setFilterField] = useState("")
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
     // Fetch Data Function
 
     // const fetchData = async (searchQuery = "", page = 1, activeTab = "General") => {
@@ -188,7 +194,6 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
         } else {
             fetchData(searchText, page, false);
         }
-
     };
 
     // useEffect to fetch data on component mount
@@ -347,16 +352,22 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
 
     //-------------------filter method-------------------------------
 
-    const [filterField, setFilterField] = useState("")
-    const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const fieldRefs = useRef({});
-    const filterMenuRef = useRef(null); // Ref for the filter menu container
-
     const handleFilter = (newData) => {
         setFilteredData(newData)
         setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "General"));
+
     };
+
+    useEffect(() => {
+        if (noOfAvailableData) {
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
+        } else {
+          showingFilterIcon(false)
+          totalFilteredData(0)
+        }
+    
+      }, [noOfAvailableData, activeTab])
 
 
     const handleFilterClick = (field) => {
@@ -371,14 +382,6 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
             const rect = fieldRefs.current[field].getBoundingClientRect();
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
-
-        // Update the active filter fields array
-        setActiveFilterFields(prevFields => {
-
-            // Add the field if it's not active
-            return [...prevFields, field];
-
-        });
     };
     const isActiveField = (field) => activeFilterFields.includes(field);
 
@@ -397,12 +400,9 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
         };
     }, []);
 
-    // useEffect(() => {
-    //     setPage(1); // Reset the page to 1 when a new search or filter is applied
-    // }, [searchText, activeFilterField]);
-
-
-
+    
+    console.log("noofavaibaledatageneral" , noOfAvailableData)
+    console.log("rmservicesdatageneral" , rmServicesData)
 
     return (
         <div>
@@ -449,6 +449,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -456,6 +457,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -484,6 +486,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -491,6 +494,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -518,6 +522,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -525,6 +530,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -552,6 +558,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -559,6 +566,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -586,6 +594,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -593,6 +602,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -620,6 +630,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -627,6 +638,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -654,6 +666,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -661,6 +674,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -689,6 +703,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -696,6 +711,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -709,7 +725,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                {isActiveField('withDSC') ? (
+                                                {isActiveField('bdeName') ? (
                                                     <FaFilter onClick={() => handleFilterClick("bdeName")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("bdeName")} />
@@ -723,6 +739,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -730,6 +747,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -757,6 +775,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -764,6 +783,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
@@ -791,6 +811,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -798,7 +819,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -825,6 +846,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -832,7 +854,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -859,6 +881,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"General"}
@@ -866,7 +889,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -1053,7 +1076,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab }) {
                         filterField={filterField}
                         onFilter={handleFilter}
                         completeData={completeRmData}
-                        dataForFilter={dataToFilter}
+                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
                     />
                 </div>
             )} */}

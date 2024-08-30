@@ -83,53 +83,6 @@ const DscPortalDropdown = ({
 
   return (
     <section className="rm_status_dropdown">
-      {/* <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
-        <button
-          className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
-          type="button"
-          id="dropdownMenuButton1"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {!status ? "Select Portal" : status}
-        </button>
-        <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li>
-            <span className="dropdown-item disabled" style={{ cursor: 'not-allowed' }}>
-              Select Portal
-            </span>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('PANTASIGN', 'untouched_status')} href="#"
-            >
-              PANTASIGN
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('CARE4SIGN', 'cdbp-status')} href="#">
-              CARE4SIGN
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('CAPRICORN', 'clnt_no_repond_status')} href="#">
-              CAPRICORN
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('EXTRATRUST', 'support-status')} href="#">
-              EXTRATRUST
-            </a>
-          </li>
-        </ul>
-      </div> */}
       <select
         className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
@@ -142,6 +95,7 @@ const DscPortalDropdown = ({
         <option value="CARE4SIGN">CARE4SIGN</option>
         <option value="CAPRICORN">CAPRICORN</option>
         <option value="EXTRATRUST">EXTRATRUST</option>
+        <option value="Vsign">Vsign</option>
       </select>
     </section>
   );

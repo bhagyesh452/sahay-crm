@@ -40,7 +40,7 @@ import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
 
 
-function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
+function RmofCertificationDefaulterPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -71,6 +71,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
   const [activeFilterField, setActiveFilterField] = useState(null);
   const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
   const fieldRefs = useRef({});
+  const [noOfAvailableData, setnoOfAvailableData] = useState(0)
 
   function formatDatePro(inputDate) {
     const date = new Date(inputDate);
@@ -121,29 +122,29 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
     const updateDocumentInState = (updatedDocument) => {
       console.log(updatedDocument)
       setRmServicesData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setcompleteRmData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setdataToFilter(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
-  };
-  socket.on("adminexecutive-general-status-updated", (res) => {
+    };
+    socket.on("adminexecutive-general-status-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
-  socket.on("adminexecutive-letter-updated", (res) => {
+
+    });
+    socket.on("adminexecutive-letter-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
+
+    });
     return () => {
       socket.disconnect();
     };
@@ -449,14 +450,27 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
       setFilterPosition({ top: rect.bottom, left: rect.left });
     }
 
-    // Update the active filter fields array
-    setActiveFilterFields(prevFields => {
+    // // Update the active filter fields array
+    // setActiveFilterFields(prevFields => {
 
-      // Add the field if it's not active
-      return [...prevFields, field];
+    //   // Add the field if it's not active
+    //   return [...prevFields, field];
 
-    });
+    // });
   };
+
+  useEffect(() => {
+    if (noOfAvailableData) {
+      showingFilterIcon(true)
+      totalFilteredData(noOfAvailableData)
+    } else {
+      showingFilterIcon(false)
+      totalFilteredData(0)
+    }
+
+  }, [noOfAvailableData, activeTab])
+
+
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   useEffect(() => {
@@ -514,6 +528,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -521,6 +536,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -548,6 +564,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -555,6 +572,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -582,6 +600,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -589,6 +608,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -616,6 +636,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -623,6 +644,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -651,6 +673,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -658,6 +681,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -685,6 +709,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -692,6 +717,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -720,6 +746,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -727,6 +754,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -754,6 +782,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -761,6 +790,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -788,6 +818,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -795,6 +826,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -822,6 +854,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -829,6 +862,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -856,6 +890,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -863,6 +898,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -889,6 +925,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -896,6 +933,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -922,6 +960,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -929,6 +968,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -955,6 +995,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -962,6 +1003,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -986,6 +1028,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -993,6 +1036,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1019,6 +1063,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1026,6 +1071,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1052,6 +1098,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1059,6 +1106,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1084,6 +1132,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1091,6 +1140,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1117,6 +1167,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1124,6 +1175,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1150,6 +1202,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1157,6 +1210,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1167,10 +1221,9 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                     <div
                       className='d-flex align-items-center justify-content-center position-relative'
                     >
-                      <div ref={el => fieldRefs.current['bookingDate'] = el}>
+                      <div ref={(el) => (fieldRefs.current["bookingDate"] = el)}>
                         Booking Date
                       </div>
-
                       <div className='RM_filter_icon'>
                         {isActiveField('bookingDate') ? (
                           <FaFilter onClick={() => handleFilterClick("bookingDate")} />
@@ -1178,7 +1231,28 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           <BsFilter onClick={() => handleFilterClick("bookingDate")} />
                         )}
                       </div>
-                    </div></th>
+                      {showFilterMenu && activeFilterField === 'bookingDate' && (
+                        <div
+                          ref={filterMenuRef}
+                          className="filter-menu"
+                          style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                        >
+                          <FilterableTable
+                            noofItems={setnoOfAvailableData}
+                            allFilterFields={setActiveFilterFields}
+                            filteredData={filteredData}
+                            activeTab={"Defaulter"}
+                            data={rmServicesData}
+                            filterField={activeFilterField}
+                            onFilter={handleFilter}
+                            completeData={completeRmData}
+                            dataForFilter={dataToFilter}
+                            showingMenu={setShowFilterMenu}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    </th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['bdeName'] = el}>
@@ -1192,13 +1266,14 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           <BsFilter onClick={() => handleFilterClick("bdeName")} />
                         )}
                       </div>
-                      {showFilterMenu && activeFilterField === 'bookingDate' && (
+                      {showFilterMenu && activeFilterField === 'bdeName' && (
                         <div
                           ref={filterMenuRef}
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1207,6 +1282,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             onFilter={handleFilter}
                             completeData={completeRmData}
                             dataForFilter={dataToFilter}
+                            showingMenu={setShowFilterMenu}
                           />
                         </div>
                       )}
@@ -1226,13 +1302,14 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                         )}
                       </div>
                       {/* ---------------------filter component--------------------------- */}
-                      {showFilterMenu && activeFilterField === 'bdeName' && (
+                      {showFilterMenu && activeFilterField === 'bdmName' && (
                         <div
                           ref={filterMenuRef}
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1241,6 +1318,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             onFilter={handleFilter}
                             completeData={completeRmData}
                             dataForFilter={dataToFilter}
+                            showingMenu={setShowFilterMenu}
                           />
                         </div>
                       )}
@@ -1266,6 +1344,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1273,6 +1352,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1300,6 +1380,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1307,6 +1388,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1334,6 +1416,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Defaulter"}
@@ -1341,6 +1424,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                             filterField={activeFilterField}
                             onFilter={handleFilter}
                             completeData={completeRmData}
+                            showingMenu={setShowFilterMenu}
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1472,12 +1556,13 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter }) {
                           companyName={obj["Company Name"]}
                           serviceName={obj.serviceName}
                           refreshData={refreshData}
+                          onlyLink={obj.websiteLink ? obj.websiteLink : ""}
                           websiteLink={
                             obj.websiteLink
                               ? obj.websiteLink
                               : obj.companyBriefing
                                 ? obj.companyBriefing
-                                : "Enter Website Link"
+                                : ""
                           }
                           companyBriefing={
                             obj.companyBriefing ? obj.companyBriefing : ""

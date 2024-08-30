@@ -235,15 +235,15 @@ router.post("/post-rmservices-from-listview", async (req, res) => {
   }
 });
 
-// router.get("/rm-sevicesgetrequest", async (req, res) => {
-//   try {
-//     const response = await RMCertificationModel.find();
-//     res.status(200).json(response);
-//   } catch (error) {
-//     console.log("Error fetching data", error);
-//     res.status(500).send({ message: "Internal Server Error" });
-//   }
-// });
+router.get("/rm-sevicesgetrequest/justfortest", async (req, res) => {
+  try {
+    const response = await RMCertificationModel.find();
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
 
 // router.get('/rm-sevicesgetrequest', async (req, res) => {
 //   try {
@@ -517,8 +517,8 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
         .skip(skip)
         .limit(parseInt(limit));
     }
-    console.log(activeTab)
-    console.log(response)
+    //console.log(activeTab)
+    //console.log(response)
     const totalDocuments = await RMCertificationModel.countDocuments(query);
 
     const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
@@ -552,10 +552,43 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
 
 
 
-router.get("/adminexecutivedata", async (req, res) => {
-  try {
-    const { search } = req.query; // Extract search query from request
+// router.get("/adminexecutivedata", async (req, res) => {
+//   try {
+//     const { search } = req.query; // Extract search query from request
 
+//     // Build query object
+//     let query = {};
+//     if (search) {
+//       const regex = new RegExp(search, 'i'); // Case-insensitive search
+//       const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+//       query = {
+//         $or: [
+//           { "Company Name": regex }, // Match companyName field
+//           { serviceName: regex },
+//           { "Company Email": regex },
+//           { bdeName: regex },
+//           { bdmName: regex },
+//           // Only include the number fields if numberSearch is a valid number
+//           ...(isNaN(numberSearch) ? [] : [
+//             { "Company Number": numberSearch }, // Match companyNumber field
+//             { caNumber: numberSearch } // Match caNumber field
+//           ])
+//         ]
+//       };
+//     }
+//     // Fetch data from the database with an optional query filter
+//     const response = await AdminExecutiveModel.find(query);
+//     res.status(200).json(response);
+//   } catch (error) {
+//     console.log("Error fetching data", error);
+//     res.status(500).send({ message: "Internal Server Error" });
+//   }
+// });
+router.get('/adminexecutive-complete', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+    //console.log("search", search)
     // Build query object
     let query = {};
     if (search) {
@@ -577,15 +610,132 @@ router.get("/adminexecutivedata", async (req, res) => {
         ]
       };
     }
-    // Fetch data from the database with an optional query filter
-    const response = await AdminExecutiveModel.find(query);
-    res.status(200).json(response);
+    //console.log("query", query)
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ addedOn: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
+
+    //console.log("response" , response)
+
+    const totalDocuments = await AdminExecutiveModel.countDocuments(query);
+
+    const totalDocumentsGeneral = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsProcess = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+    const totalDocumentsDefaulter = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+    const totalDocumentsReadyToSubmit = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
+    const totalDocumentsSubmitted = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
+    const totalDocumentsHold = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+    const totalDocumentsApproved = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsProcess,
+      totalDocumentsDefaulter,
+      totalDocumentsReadyToSubmit,
+      totalDocumentsSubmitted,
+      totalDocumentsHold,
+      totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
   } catch (error) {
     console.log("Error fetching data", error);
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
 
+router.get('/adminexecutivedata', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 50, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+
+    // Build query object
+    let query = {};
+
+    if (search) {
+      const regex = new RegExp(search, 'i'); // Case-insensitive search
+      const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+      query = {
+        $or: [
+          { "Company Name": regex }, // Match companyName field
+          { serviceName: regex },
+          { "Company Email": regex },
+          { bdeName: regex },
+          { bdmName: regex },
+          // Only include the number fields if numberSearch is a valid number
+          ...(isNaN(numberSearch) ? [] : [
+            { "Company Number": numberSearch }, // Match companyNumber field
+            { caNumber: numberSearch } // Match caNumber field
+          ])
+        ]
+      };
+    }
+
+    // Add filtering based on companyNames and serviceNames if provided
+    if (companyNames) {
+      const companyNamesArray = companyNames.split(','); // Convert to array
+      query["Company Name"] = { $in: companyNamesArray };
+    }
+
+    if (serviceNames) {
+      const serviceNamesArray = serviceNames.split(','); // Convert to array
+      query.serviceName = { $in: serviceNamesArray };
+    }
+
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ addedOn: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await AdminExecutiveModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
+    //console.log(activeTab)
+    //console.log(response)
+    const totalDocuments = await AdminExecutiveModel.countDocuments(query);
+    const totalDocumentsGeneral = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsProcess = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+    const totalDocumentsDefaulter = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+    const totalDocumentsHold = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+    const totalDocumentsApproved = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsProcess,
+      totalDocumentsDefaulter,
+      totalDocumentsHold,
+      totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
 router.delete(`/delete-rm-services`, async (req, res) => {
   const { companyName, serviceName } = req.body;
   try {
@@ -751,8 +901,8 @@ router.get("/filter-rmofcertification-bookings", async (req, res) => {
       .limit(limit)
       .lean();
     const dataCount = await RedesignedLeadformModel.countDocuments(baseQuery);
-    console.log(baseQuery);
-    console.log("data", data.length, dataCount);
+    //console.log(baseQuery);
+    //console.log("data", data.length, dataCount);
     res.status(200).json({
       data: data,
       currentPage: page,
@@ -882,12 +1032,13 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
       const companyName = req.params.CompanyName;
       const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
       const socketIO = req.io;
-      console.log("rmservicesmainbooking", rmServicesMainBooking);
-      console.log("rmservicesmorebooking", rmServicesMoreBooking);
+      //console.log("rmservicesmainbooking", rmServicesMainBooking);
+      //console.log("rmservicesmorebooking", rmServicesMoreBooking);
       // Fetch the document
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
+      console.log("document" , document)
 
       if (!document) {
         console.error("Document not found");
@@ -901,6 +1052,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
           ...rmServicesMainBooking,
         ])
       );
+      console.log("uniquemainservices" , uniqueMainServices)
       document.servicesTakenByRmOfCertification = uniqueMainServices;
 
       // Iterate through moreBookings and update only relevant objects
@@ -908,7 +1060,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
         const relevantServices = booking.services.filter((service) =>
           rmServicesMoreBooking.includes(service.serviceName)
         );
-        console.log("relevantservices", relevantServices);
+        //console.log("relevantservices", relevantServices);
         if (relevantServices.length > 0) {
           const currentServices =
             booking.servicesTakenByRmOfCertification || [];
@@ -923,15 +1075,17 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
         }
       });
 
+
       // Save the updated document
       const updatedDocument = await document.save();
+      console.log("updateddocument" , updatedDocument)
 
-      if (!updatedDocument) {
-        console.error("Failed to save the updated document");
-        return res
-          .status(500)
-          .json({ message: "Failed to save the updated document" });
-      }
+      // if (!updatedDocument) {
+      //   console.error("Failed to save the updated document");
+      //   return res
+      //     .status(500)
+      //     .json({ message: "Failed to save the updated document" });
+      // }
 
       // Emit socket event
       res.status(200).json({
@@ -951,8 +1105,8 @@ router.post("/postsdminselectedservicestobooking/:CompanyName",
       const companyName = req.params.CompanyName;
       const { adminServicesMainBooking, adminServicesMoreBooking } = req.body;
       const socketIO = req.io;
-      console.log("rmservicesmainbooking", adminServicesMainBooking);
-      console.log("rmservicesmorebooking", adminServicesMoreBooking);
+      //console.log("rmservicesmainbooking", adminServicesMainBooking);
+      //console.log("rmservicesmorebooking", adminServicesMoreBooking);
       // Fetch the document
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
@@ -977,7 +1131,7 @@ router.post("/postsdminselectedservicestobooking/:CompanyName",
         const relevantServices = booking.services.filter((service) =>
           adminServicesMoreBooking.includes(service.serviceName)
         );
-        console.log("relevantservices", relevantServices);
+        //console.log("relevantservices", relevantServices);
         if (relevantServices.length > 0) {
           const currentServices = booking.servicesTakenByAdminExecutive || [];
           const uniqueMoreBookingServices = Array.from(
@@ -1099,8 +1253,8 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       //   console.log("hello wworld");
       //   runTestScript(companyName);
       // }
-      console.log("updatedcompany", updatedCompany);
-      console.log("submittedOn", submittedOn);
+      //console.log("updatedcompany", updatedCompany);
+      //console.log("submittedOn", submittedOn);
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");
@@ -1354,7 +1508,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
       //   console.log("hello wworld")
       //   runTestScript(companyName);
       // }
-      console.log("updatedcompany", updateCompanyRm);
+      //console.log("updatedcompany", updateCompanyRm);
 
       // if (!updatedCompany) {
       //   console.error("Failed to save the updated document");
@@ -1529,7 +1683,7 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
@@ -1751,7 +1905,7 @@ router.post(`/post-save-phoneno-adminexecutive/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1802,7 +1956,7 @@ router.post(`/post-save-dscemailid-adminexecutive/`, async (req, res) => {
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { dscEmailId: charges };
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1844,7 +1998,7 @@ router.post(`/post-save-otpinboxno-adminexecutive/`, async (req, res) => {
       serviceName: serviceName,
     });
 
-    console.log("company", company)
+    //console.log("company", company)
 
     // Check if the company exists
     if (!company) {
@@ -1855,7 +2009,7 @@ router.post(`/post-save-otpinboxno-adminexecutive/`, async (req, res) => {
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { otpInboxNo: charges };
 
-    console.log("updateFields", updateFields);
+    //("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1917,7 +2071,7 @@ router.post(`/update-dscType-adminexecutive/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -1979,7 +2133,7 @@ router.post(`/update-dscValidity-adminexecutive/`, async (req, res) => {
 
     // }
 
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
 
     // Perform the update
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
@@ -2110,7 +2264,7 @@ router.post(`/update-brochure-rmofcertification/`, async (req, res) => {
     //   }
 
     // }
-    console.log("updateFields", updateFields);
+    //console.log("updateFields", updateFields);
     // Perform the update
     const updatedCompany = await RMCertificationModel.findOneAndUpdate(
       {
@@ -2316,7 +2470,7 @@ router.post(`/post-save-reimbursemnt-adminexecutive/`, async (req, res) => {
 
 router.post(`/post-save-reimbursemntdate-adminexecutive/`, async (req, res) => {
   const { cname, sname, value } = req.body;
-  console.log("date", value);
+  //console.log("date", value);
   //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
   try {
@@ -2520,6 +2674,38 @@ router.post(`/post-enable-industry/`, async (req, res) => {
   }
 });
 
+router.post(`/post-disasble-industry/`, async (req, res) => {
+  const { companyName, serviceName, isIndustryEnabled } = req.body;
+  console.log("industry", serviceName, companyName, industryOption)
+  const socketIO = req.io;
+  try {
+    const company = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName,
+      },
+      {
+        isIndustryEnabled: isIndustryEnabled,
+      },
+      { new: true }
+    );
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+    // Emit socket event
+    //console.log("Emitting event: rm-general-status-updated", { name: company.bdeName, companyName: companyName });
+    //socketIO.emit('rm-industry-enabled')
+    res.status(200).json({ message: "Document updated successfully", data: company });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 router.post(`/post-save-sector/`, async (req, res) => {
   const { companyName, serviceName, sectorOption, isIndustryEnabled } =
     req.body;
@@ -2655,7 +2841,7 @@ router.post(
     const { companyName } = req.params;
     const { displayOfDateForRmCert } = req.body;
     const socketIO = req.io;
-    console.log("date", displayOfDateForRmCert);
+    //console.log("date", displayOfDateForRmCert);
 
     try {
       const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
@@ -2690,7 +2876,7 @@ router.post(
     const { companyName } = req.params;
     const { displayOfDateForAdminExecutive } = req.body;
     const socketIO = req.io;
-    console.log("date", displayOfDateForAdminExecutive);
+    //console.log("date", displayOfDateForAdminExecutive);
 
     try {
       const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
@@ -3173,7 +3359,7 @@ router.post("/rmcertification-update-remainingpayments", async (req, res) => {
       { new: true }
     );
 
-    console.log("updatedcompany", updatedCompany);
+    //console.log("updatedcompany", updatedCompany);
     if (!updatedCompany) {
       return res
         .status(400)
@@ -3231,7 +3417,7 @@ router.post("/adminexecutive-update-remainingpayments", async (req, res) => {
       },
       { new: true }
     );
-    console.log("adminupdated", updatedCompany);
+    //console.log("adminupdated", updatedCompany);
 
     if (!updatedCompany) {
       return res

@@ -288,19 +288,21 @@ router.post("/update-redesigned-final-form/:CompanyName",
       ...boom, remainingPayments: []
     }
     const findCompany = await RedesignedLeadformModel.findOne({
-      "Company Name" : companyName
+      "Company Name": companyName
     })
     const goingToUpdate =
       step4changed === "true" ? updatedDocWithoutId : updatedDocs;
     const tempDateToday = new Date();
 
-    const newGoingToUpdate = { ...goingToUpdate, 
-      lastActionDate: tempDateToday, 
-      servicesTakenByRmOfCertification:findCompany.servicesTakenByRmOfCertification,
-      servicesTakenByAdminExecutive:findCompany.servicesTakenByAdminExecutive}
+    const newGoingToUpdate = {
+      ...goingToUpdate,
+      lastActionDate: tempDateToday,
+      servicesTakenByRmOfCertification: findCompany.servicesTakenByRmOfCertification,
+      servicesTakenByAdminExecutive: findCompany.servicesTakenByAdminExecutive
+    }
     //console.log("newgoingtoupdate" , newGoingToUpdate)
-    console.log("boom" , boom)
-    console.log("findCompany" , findCompany)
+    console.log("boom", boom)
+    console.log("findCompany", findCompany)
 
     try {
       const companyData = await RedesignedLeadformModel.findOne({ "Company Name": companyName })
@@ -313,14 +315,34 @@ router.post("/update-redesigned-final-form/:CompanyName",
         // Set all properties except "moreBookings"
         { new: true } // Return the updated document
       );
-      
-      console.log("updateddocument" , newGoingToUpdate)
-      
-      // if (!updatedDocument) {
-      //   return res.status(404).json({ error: "Document not found" });
-      // }
+
+      if (boom["Company Number"] !== findCompany["Company Number"] ||
+        boom["Company Email"] !== findCompany["Company Email"] ||
+        boom.panNumber !== findCompany.panNumber) {
+        await RMCertificationModel.updateMany(
+          { "Company Name": companyName },
+          {
+            $set: {
+              "Company Number": boom["Company Number"],
+              "Company Email": boom["Company Email"],
+              panNumber: boom.panNumber
+            }
+          }
+        );
+        await AdminExecutiveModel.updateMany(
+          { "Company Name": companyName },
+          {
+            $set: {
+              "Company Number": boom["Company Number"],
+              "Company Email": boom["Company Email"],
+              panNumber: boom.panNumber
+            }
+          }
+        );
+      }
+      console.log("updateddocument", newGoingToUpdate)
       const serviceNames = companyData.services.map(service => service.serviceName);
-     
+
       // Update RMCertificationModel
       for (const serviceName of serviceNames) {
         const existingRmCertData = await RMCertificationModel.findOne({
@@ -334,7 +356,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
             service.serviceName === serviceName);
 
           if (serviceData) {
-           
+
             // Create updatedFields object to merge existing data with newGoingToUpdate
             const updatedFields = {
               ...existingRmCertData.toObject(), // Copy existing fields
@@ -364,7 +386,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
               lastActionDate: tempDateToday, // Update lastActionDate
             };
 
-            console.log("updatedfields" , updatedFields)
+            console.log("updatedfields", updatedFields)
 
             await RMCertificationModel.findOneAndUpdate(
               {
@@ -406,7 +428,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
             service.serviceName === serviceName);
 
           if (serviceData) {
-           
+
             // Create updatedFields object to merge existing data with newGoingToUpdate
             const updatedFields = {
               ...existingRmCertData.toObject(), // Copy existing fields
@@ -616,7 +638,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
-              paymentTerms:serviceData.paymentTerms,
+              paymentTerms: serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
@@ -692,7 +714,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               totalPaymentWGST: serviceData.totalPaymentWGST, // Update totalPaymentWGST
               withGST: serviceData.withGST, // Update withGST
               withDSC: serviceData.withDSC, // Update withDSC
-              paymentTerms:serviceData.paymentTerms,
+              paymentTerms: serviceData.paymentTerms,
               firstPayment: serviceData.firstPayment === 0 ? serviceData.totalPaymentWGST : serviceData.firstPayment, // Update firstPayment
               secondPayment: serviceData.secondPayment, // Update secondPayment
               thirdPayment: serviceData.thirdPayment, // Update thirdPayment
@@ -3153,6 +3175,8 @@ router.post(
                           <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                           <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                           <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                    <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
+
                          ${draftHtml}
                           <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                           
@@ -5252,6 +5276,7 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
                     <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                     <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                     <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                    <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
                     ${draftHtml}
                     <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
                     <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
@@ -5372,7 +5397,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     if (updateMainBooking && updateMainBooking.bdmAcceptStatus === "Accept") {
       const deleteTeamBooking = await TeamLeadsModel.findByIdAndDelete(companyId);
     }
-    
+
     socketIO.emit('booking-deleted');
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
@@ -5828,7 +5853,7 @@ router.post(
         const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
         const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) / 1.18 : parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount);
         findObject.remainingPayments.$push
-        
+
         const totalPaymentWithGST = parseInt(findService.totalPaymentWGST) || 0;
         const firstPaymentNew = parseInt(findService.firstPayment) || 0;
         const receivedAmountExisting = (parseInt(findService.pendingRecievedAmount)) ?
@@ -5887,8 +5912,7 @@ router.post(
 );
 
 
-router.post(
-  "/redesigned-update-morePayments/:CompanyName",
+router.post("/redesigned-update-morePayments/:CompanyName",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },

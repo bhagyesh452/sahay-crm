@@ -17,11 +17,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import io from 'socket.io-client';
 import { BsFilter } from "react-icons/bs";
 import DscStatusDropdown from '../ExtraComponents/DscStatusDropdown';
+import FilterableTableAdminExecutive from '../ExtraComponents/FilterableTableAdminExecutive';
+import { FaFilter } from "react-icons/fa";
 
 //import FilterableTable from '../Extra-Components/FilterableTable';
 import StatusDropdownAdminExecutive from "../AdminExecutiveExtraComponents/StatusDropdownAdminExecutive"
 
-function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
+function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon }) {
     const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -37,36 +39,96 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [completeRmData, setcompleteRmData] = useState([])
     const [dataToFilter, setdataToFilter] = useState([])
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [isScrollLocked, setIsScrollLocked] = useState(false);
+    const [filteredData, setFilteredData] = useState([]);
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [error, setError] = useState('');
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0)
+    const [filterField, setFilterField] = useState("")
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const filterMenuRef = useRef(null); // Ref for the filter menu containe
     // Fetch Data Function
-    const fetchData = async (searchQuery = "") => {
+    
+    
+    // const fetchData = async (searchQuery = "") => {
+    //     setOpenBacdrop(true);
+    //     try {
+
+    //         const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+    //         const userData = employeeResponse.data.find((item) => item._id === adminExecutiveUserId);
+    //         setEmployeeData(userData);
+
+    //         const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`,{
+    //             params: { search: searchQuery }
+    //         });
+    //         const servicesData = servicesResponse.data;
+
+    //         if (Array.isArray(servicesData)) {
+    //             const filteredData = servicesData
+    //                 .filter(item => item.mainCategoryStatus === "General")
+    //                 .sort((a, b) => {
+    //                     const dateA = new Date(a.addedOn);
+    //                     const dateB = new Date(b.addedOn);
+    //                     return dateB - dateA; // Sort in descending order
+    //                 });
+    //             setRmServicesData(filteredData);
+    //             setcompleteRmData(filteredData)
+    //             setdataToFilter(filteredData)
+    //         } else {
+    //             console.error("Expected an array for services data, but got:", servicesData);
+    //         }
+
+    //         //setRmServicesData(filteredData);
+    //     } catch (error) {
+    //         console.error("Error fetching data", error.message);
+    //     } finally {
+    //         setOpenBacdrop(false);
+    //     }
+    // };
+
+    const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
         setOpenBacdrop(true);
         try {
-
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === adminExecutiveUserId);
             setEmployeeData(userData);
 
-            const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`,{
-                params: { search: searchQuery }
-            });
-            const servicesData = servicesResponse.data;
+            let params = { search: searchQuery, page, activeTab: "General" };
 
-            if (Array.isArray(servicesData)) {
-                const filteredData = servicesData
-                    .filter(item => item.mainCategoryStatus === "General")
-                    .sort((a, b) => {
-                        const dateA = new Date(a.addedOn);
-                        const dateB = new Date(b.addedOn);
-                        return dateB - dateA; // Sort in descending order
-                    });
-                setRmServicesData(filteredData);
-                setcompleteRmData(filteredData)
-                setdataToFilter(filteredData)
-            } else {
-                console.error("Expected an array for services data, but got:", servicesData);
+            // If filtering is active, extract companyName and serviceName from filteredData
+            if (isFilter && filteredData && filteredData.length > 0) {
+                console.log("yahan chal rha", isFilter)
+                const companyNames = filteredData.map(item => item["Company Name"]).join(',');
+                const serviceNames = filteredData.map(item => item.serviceName).join(',');
+
+                // Add filtered company names and service names to the params
+                params.companyNames = companyNames;
+                params.serviceNames = serviceNames;
             }
 
-            //setRmServicesData(filteredData);
+            const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
+                params: params
+            });
+
+            const { data, totalPages } = servicesResponse.data;
+
+
+            if (page === 1) {
+                setRmServicesData(data);
+                setcompleteRmData(data);
+                setdataToFilter(data);
+            } else {
+                setRmServicesData(prevData => [...prevData, ...data]);
+                setcompleteRmData(prevData => [...prevData, ...data]);
+                setdataToFilter(prevData => [...prevData, ...data]);
+            }
+
+            setTotalPages(totalPages);
+
         } catch (error) {
             console.error("Error fetching data", error.message);
         } finally {
@@ -74,8 +136,23 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
         }
     };
     useEffect(() => {
-        fetchData(searchText)
-   }, [searchText]);
+        const tableContainer = document.querySelector('#generalTable');
+
+        const handleScroll = debounce(() => {
+            if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+                if (page < totalPages) {
+                    setPage(prevPage => prevPage + 1); // Load next page
+                }
+            }
+        }, 200);
+
+        tableContainer.addEventListener('scroll', handleScroll);
+        return () => tableContainer.removeEventListener('scroll', handleScroll);
+    }, [page, totalPages, filteredData]);
+
+    useEffect(() => {
+        fetchData(searchText, page);
+    }, [searchText, page]);
 
 
     useEffect(() => {
@@ -115,8 +192,11 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
 
 
     const refreshData = () => {
-
-        fetchData(searchText);
+        if (filteredData && filteredData.length > 0) {
+            fetchData(searchText, 1, true)
+        } else {
+            fetchData(searchText, page, false);
+        }
     };
 
     // useEffect to fetch data on component mount
@@ -135,22 +215,6 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
     const formatDate = (dateString) => {
         const [year, month, date] = dateString.split('-');
         return `${date}/${month}/${year}`;
-    };
-
-    // Remarks Popup Section
-    const handleOpenRemarksPopup = async (companyName, serviceName) => {
-        setCurrentCompanyName(companyName);
-        setCurrentServiceName(serviceName);
-        setOpenRemarksPopUp(true);
-
-        try {
-            const response = await axios.get(`${secretKey}/rm-services/get-remarks`, {
-                params: { companyName, serviceName }
-            });
-            setRemarksHistory(response.data);
-        } catch (error) {
-            console.error("Error fetching remarks", error.message);
-        }
     };
 
     const functionCloseRemarksPopup = () => {
@@ -241,40 +305,43 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
     };
 
     //-------------------filter method-------------------------------
-    const [filteredData, setFilteredData] = useState(rmServicesData);
-    const [filterField, setFilterField] = useState("")
-    const [activeFilterField, setActiveFilterField] = useState(null);
-    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-    const fieldRefs = useRef({});
-    const filterMenuRef = useRef(null); // Ref for the filter menu container
-
     const handleFilter = (newData) => {
-        setRmServicesData(newData);
-    };
-   
+        setFilteredData(newData)
+        setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "General"));
 
-    const handleFilterClick = (field) => {
-        if (activeFilterField === field) {
-            // Toggle off if the same field is clicked again
-            setShowFilterMenu(!showFilterMenu);
+    };
+    useEffect(() => {
+        if (noOfAvailableData) {
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
         } else {
-            // Set the active field and show filter menu
+          showingFilterIcon(false)
+          totalFilteredData(0)
+        }
+    
+      }, [noOfAvailableData, activeTab])
+
+      const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+            setIsScrollLocked(!showFilterMenu);
+        } else {
             setActiveFilterField(field);
             setShowFilterMenu(true);
+            setIsScrollLocked(true);
 
-            // Get the position of the clicked filter icon
             const rect = fieldRefs.current[field].getBoundingClientRect();
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
     };
 
-    console.log("rmservicesdata" , rmServicesData)
+    const isActiveField = (field) => activeFilterFields.includes(field);
 
-    // Effect to handle clicks outside the filter menu
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
                 setShowFilterMenu(false);
+                setIsScrollLocked(false);
             }
         };
 
@@ -284,7 +351,6 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
     
   
 
@@ -292,7 +358,7 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
     return (
         <div>
             <div className="RM-my-booking-lists">
-                <div className="table table-responsive table-style-3 m-0">
+                <div className="table table-responsive table-style-3 m-0" id='generalTable'>
                     {openBacdrop && (
                         <Backdrop
                             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -319,25 +385,34 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                          
                                             <div className='RM_filter_icon'>
-                                                <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                            {isActiveField('bookingDate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                )}
                                             </div>
                                             
-                                            {/* ---------------------filter component---------------------------
-                                            {showFilterMenu && activeFilterField === 'bookingDate' && (
+                                            {/* {/* ---------------------filter component--------------------------- */}
+                                           {showFilterMenu && activeFilterField === 'bookingDate' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th className="G_rm-sticky-left-3">
@@ -347,25 +422,34 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                             
                                             <div className='RM_filter_icon'>
-                                                <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                            {isActiveField('Company Name') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                                )}
                                             </div>
                                             
-                                            {/* ---------------------filter component---------------------------
+                                            {/* {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Name' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -375,26 +459,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                             
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Number")}
-                                                    />
+                                                {isActiveField('Company Number') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component---------------------------
-                                            {showFilterMenu && activeFilterField === "Company Number" && (
+                                            {/* {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'Company Number' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -404,26 +495,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                            
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("Company Email")}
-                                                    />
+                                                {isActiveField('Company Email') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component---------------------------
+                                            {/* {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -433,26 +531,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div >
                                            
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("caNumber")}
-                                                    />
+                                                {isActiveField('caNumber') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("caNumber")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("caNumber")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component---------------------------
+                                            {/* {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'caNumber' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -462,26 +567,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                            
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("serviceName")}
-                                                    />
+                                                {isActiveField('serviceName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("servicesName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("serviceName")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component---------------------------
-                                            {showFilterMenu && activeFilterField === 'serviceName' && (
+                                           {/* {/* ---------------------filter component--------------------------- */}
+                                           {showFilterMenu && activeFilterField === 'serviceName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -491,26 +603,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                           
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("subCategoryStatus")}
-                                                    />
+                                                {isActiveField('subCategoryStatus') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component---------------------------
-                                            {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                                             {/* {/* ---------------------filter component--------------------------- */}
+                                           {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     {/* <th>Remark</th> */}
@@ -521,26 +640,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                           
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("withDSC")}
-                                                    />
+                                                {isActiveField('withDSC') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("withDSC")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("withDSC")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component---------------------------
+                                            {/* {/* ---------------------filter component--------------------------- */}
                                             {showFilterMenu && activeFilterField === 'withDSC' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -550,26 +676,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                            
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bdeName")}
-                                                    />
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component---------------------------
-                                            {showFilterMenu && activeFilterField === 'bdeName' && (
+                                             {/* {/* ---------------------filter component--------------------------- */}
+                                             {showFilterMenu && activeFilterField === 'bdeName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        dataForFilter={rmServicesData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -579,26 +712,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                           
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("bdmName")}
-                                                    />
+                                                {isActiveField('bdmName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdmName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdmName")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'bdmName' && (
+                                             {/* {/* ---------------------filter component--------------------------- */}
+                                             {showFilterMenu && activeFilterField === 'bdmName' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -608,26 +748,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                            
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("totalPaymentWGST")}
-                                                    />
+                                                {isActiveField('totalPaymentWGST') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("totalPaymentWGST")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
+                                            {/* {/* ---------------------filter component--------------------------- */}
+                                            {showFilterMenu && activeFilterField === 'totalPaymentWGST' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -637,26 +784,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                            
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("receivedPayment")}
-                                                    />
+                                                {isActiveField('receivedPayment') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("receivedPayment")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("receivedPayment")} />
+                                                )}
                                                 </div>
-                                          {/* ---------------------filter component--------------------------- */}
-                                          {/* {showFilterMenu && activeFilterField === 'receivedPayment' && (
+                                           {/* {/* ---------------------filter component--------------------------- */}
+                                           {showFilterMenu && activeFilterField === 'receivedPayment' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -666,27 +820,33 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                                             </div>
                                             
                                                 <div className='RM_filter_icon'>
-                                                    <BsFilter
-                                                        onClick={() => handleFilterClick("pendingPayment")}
-
-                                                    />
+                                                {isActiveField('pendingPayment') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("pendingPayment")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("pendingPayment")} />
+                                                )}
                                                 </div>
-                                            {/* ---------------------filter component--------------------------- */}
-                                          {/* {showFilterMenu && activeFilterField === 'pendingPayment' && (
+                                             {/* {/* ---------------------filter component--------------------------- */}
+                                           {showFilterMenu && activeFilterField === 'pendingPayment' && (
                                                 <div
-                                                ref={filterMenuRef}
+                                                    ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <FilterableTableAdminExecutive
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
                                                         data={rmServicesData}
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th className="rm-sticky-action">
@@ -858,22 +1018,6 @@ function AdminExecutiveGeneralPanel({ searchText , showFilter }) {
                     </div>
                 </DialogContent>
             </Dialog>
-
-            {/* ---------------------filter component---------------------------
-            {showFilterMenu && (
-                <div
-                    className="filter-menu"
-                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                >
-                    <FilterableTable
-                        data={rmServicesData}
-                        filterField={filterField}
-                        onFilter={handleFilter}
-                        completeData={completeRmData}
-                        dataForFilter={dataToFilter}
-                    />
-                </div>
-            )} */}
         </div>
     );
 }

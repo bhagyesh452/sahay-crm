@@ -293,6 +293,8 @@ const DscStatusDropdown = ({
             return "support-status";
           case "Undo":
             return "need_to_call";
+            case "Application Pending":
+            return "untouched_status";
           default:
             return "";
         }
@@ -439,6 +441,15 @@ const DscStatusDropdown = ({
                 href="#"
               >
                 Need To Call
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Application Pending", "untouched_status")}
+                href="#"
+              >
+                Application Pending
               </a>
             </li>
             <li>

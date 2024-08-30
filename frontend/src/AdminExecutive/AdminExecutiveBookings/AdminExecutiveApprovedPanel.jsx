@@ -33,8 +33,10 @@ import DscEmailId from "../ExtraComponents/DscEmailId";
 import DscRemarks from "../ExtraComponents/DscRemarks";
 import OtpVerificationStatus from "../ExtraComponents/OtpVerificationStatus";
 import OtpInboxNo from "../ExtraComponents/OtpInboxNo";
+import FilterableTableAdminExecutive from '../ExtraComponents/FilterableTableAdminExecutive';
+import { FaFilter } from "react-icons/fa";
 
-function AdminExecutiveApprovedPanel({ searchText }) {
+function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon }) {
   const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
   const [employeeData, setEmployeeData] = useState([]);
   const [rmServicesData, setRmServicesData] = useState([]);
@@ -45,54 +47,131 @@ function AdminExecutiveApprovedPanel({ searchText }) {
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [changeRemarks, setChangeRemarks] = useState("");
   const [openBacdrop, setOpenBacdrop] = useState(false);
-  const [newStatusApproved, setNewStatusApproved] = useState("Process");
+  const [newStatusApproved, setNewStatusApproved] = useState("Approved");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [completeRmData, setcompleteRmData] = useState([]);
-  const [dataToFilter, setdataToFilter] = useState([]);
+  const [completeRmData, setcompleteRmData] = useState([])
+  const [dataToFilter, setdataToFilter] = useState([])
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const [filteredData, setFilteredData] = useState([]);
+  const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+  const [error, setError] = useState('');
+  const [noOfAvailableData, setnoOfAvailableData] = useState(0)
+  const [filterField, setFilterField] = useState("")
+  const [activeFilterField, setActiveFilterField] = useState(null);
+  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+  const fieldRefs = useRef({});
+  const filterMenuRef = useRef(null); // Ref for the filter menu containe
   // Fetch Data Function
-  const fetchData = async (searchQuery = "") => {
+  // const fetchData = async (searchQuery = "") => {
+  //   setOpenBacdrop(true);
+  //   try {
+  //     const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
+  //     const userData = employeeResponse.data.find(
+  //       (item) => item._id === adminExecutiveUserId
+  //     );
+  //     setEmployeeData(userData);
+
+  //     const servicesResponse = await axios.get(
+  //       `${secretKey}/rm-services/adminexecutivedata`,
+  //       {
+  //         params: { search: searchQuery },
+  //       }
+  //     );
+  //     const servicesData = servicesResponse.data;
+
+  //     if (Array.isArray(servicesData)) {
+  //       const filteredData = servicesData
+  //         .filter((item) => item.mainCategoryStatus === "Approved")
+  //         .sort((a, b) => {
+  //           const dateA = new Date(a.dateOfChangingMainStatus);
+  //           const dateB = new Date(b.dateOfChangingMainStatus);
+  //           return dateB - dateA; // Sort in descending order
+  //         });
+  //       setRmServicesData(filteredData);
+  //       setcompleteRmData(filteredData);
+  //       setdataToFilter(filteredData);
+  //     } else {
+  //       console.error(
+  //         "Expected an array for services data, but got:",
+  //         servicesData
+  //       );
+  //     }
+
+  //     //setRmServicesData(filteredData);
+  //   } catch (error) {
+  //     console.error("Error fetching data", error.message);
+  //   } finally {
+  //     setOpenBacdrop(false);
+  //   }
+  // };
+
+  const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
     setOpenBacdrop(true);
     try {
       const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
-      const userData = employeeResponse.data.find(
-        (item) => item._id === adminExecutiveUserId
-      );
+      const userData = employeeResponse.data.find((item) => item._id === adminExecutiveUserId);
       setEmployeeData(userData);
 
-      const servicesResponse = await axios.get(
-        `${secretKey}/rm-services/adminexecutivedata`,
-        {
-          params: { search: searchQuery },
-        }
-      );
-      const servicesData = servicesResponse.data;
+      let params = { search: searchQuery, page, activeTab: "Approved" };
 
-      if (Array.isArray(servicesData)) {
-        const filteredData = servicesData
-          .filter((item) => item.mainCategoryStatus === "Approved")
-          .sort((a, b) => {
-            const dateA = new Date(a.dateOfChangingMainStatus);
-            const dateB = new Date(b.dateOfChangingMainStatus);
-            return dateB - dateA; // Sort in descending order
-          });
-        setRmServicesData(filteredData);
-        setcompleteRmData(filteredData);
-        setdataToFilter(filteredData);
-      } else {
-        console.error(
-          "Expected an array for services data, but got:",
-          servicesData
-        );
+      // If filtering is active, extract companyName and serviceName from filteredData
+      if (isFilter && filteredData && filteredData.length > 0) {
+        console.log("yahan chal rha", isFilter)
+        const companyNames = filteredData.map(item => item["Company Name"]).join(',');
+        const serviceNames = filteredData.map(item => item.serviceName).join(',');
+
+        // Add filtered company names and service names to the params
+        params.companyNames = companyNames;
+        params.serviceNames = serviceNames;
       }
 
-      //setRmServicesData(filteredData);
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
+        params: params
+      });
+
+      const { data, totalPages } = servicesResponse.data;
+
+
+      if (page === 1) {
+        setRmServicesData(data);
+        setcompleteRmData(data);
+        setdataToFilter(data);
+      } else {
+        setRmServicesData(prevData => [...prevData, ...data]);
+        setcompleteRmData(prevData => [...prevData, ...data]);
+        setdataToFilter(prevData => [...prevData, ...data]);
+      }
+
+      setTotalPages(totalPages);
+
     } catch (error) {
       console.error("Error fetching data", error.message);
     } finally {
       setOpenBacdrop(false);
     }
   };
+
+  useEffect(() => {
+    const tableContainer = document.querySelector('#approvedTable');
+
+    const handleScroll = debounce(() => {
+      if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+        if (page < totalPages) {
+          setPage(prevPage => prevPage + 1); // Load next page
+        }
+      }
+    }, 200);
+
+    tableContainer.addEventListener('scroll', handleScroll);
+    return () => tableContainer.removeEventListener('scroll', handleScroll);
+  }, [page, totalPages, filteredData]);
+
+  useEffect(() => {
+    fetchData(searchText, page);
+  }, [searchText, page]);
 
   useEffect(() => {
     fetchData(searchText);
@@ -103,11 +182,11 @@ function AdminExecutiveApprovedPanel({ searchText }) {
       secretKey === "http://localhost:3001/api"
         ? io("http://localhost:3001")
         : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: "/socket.io",
-            reconnection: true,
-            transports: ["websocket"],
-          });
+          secure: true, // Use HTTPS
+          path: "/socket.io",
+          reconnection: true,
+          transports: ["websocket"],
+        });
 
     socket.on("adminexecutive-general-status-updated", (res) => {
       fetchData(searchText);
@@ -135,7 +214,11 @@ function AdminExecutiveApprovedPanel({ searchText }) {
   }, [newStatusApproved]);
 
   const refreshData = () => {
-    fetchData(searchText);
+    if (filteredData && filteredData.length > 0) {
+      fetchData(searchText, 1, true)
+    } else {
+      fetchData(searchText, page, false);
+    }
   };
 
   // useEffect to fetch data on component mount
@@ -261,55 +344,58 @@ function AdminExecutiveApprovedPanel({ searchText }) {
   };
 
   //-------------------filter method-------------------------------
-  const [filteredData, setFilteredData] = useState(rmServicesData);
-  const [filterField, setFilterField] = useState("");
-  const [activeFilterField, setActiveFilterField] = useState(null);
-  const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
-  const fieldRefs = useRef({});
-  const filterMenuRef = useRef(null); // Ref for the filter menu container
-
   const handleFilter = (newData) => {
-    setRmServicesData(newData);
+    setFilteredData(newData)
+    setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Approved"));
+
   };
+
+  useEffect(() => {
+    if (noOfAvailableData) {
+      showingFilterIcon(true)
+      totalFilteredData(noOfAvailableData)
+    } else {
+      showingFilterIcon(false)
+      totalFilteredData(0)
+    }
+
+  }, [noOfAvailableData, activeTab])
 
   const handleFilterClick = (field) => {
     if (activeFilterField === field) {
-      // Toggle off if the same field is clicked again
       setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
     } else {
-      // Set the active field and show filter menu
       setActiveFilterField(field);
       setShowFilterMenu(true);
+      setIsScrollLocked(true);
 
-      // Get the position of the clicked filter icon
       const rect = fieldRefs.current[field].getBoundingClientRect();
       setFilterPosition({ top: rect.bottom, left: rect.left });
     }
   };
 
-  console.log("rmservicesdata", rmServicesData);
+  const isActiveField = (field) => activeFilterFields.includes(field);
 
-  // Effect to handle clicks outside the filter menu
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        filterMenuRef.current &&
-        !filterMenuRef.current.contains(event.target)
-      ) {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
         setShowFilterMenu(false);
+        setIsScrollLocked(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
+
   return (
     <div>
-      <div className="table table-responsive table-style-3 m-0">
+      <div className="table table-responsive table-style-3 m-0" id="approvedTable">
         {openBacdrop && (
           <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -322,141 +408,505 @@ function AdminExecutiveApprovedPanel({ searchText }) {
           <table className="table table-vcenter table-nowrap adminEx_table">
             <thead>
               <tr className="tr-sticky">
-                <th className="G_rm-sticky-left-1">Sr.No</th>
-                <th className="G_rm-sticky-left-2">
+                <th className="rm-sticky-left-1">Sr.No</th>
+                <th className="rm-sticky-left-2">
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Booking Date</div>
+                    <div ref={el => fieldRefs.current['Company Name'] = el}>Company Name</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('Company Name') ? (
+                        <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                      )}
                     </div>
-                  </div>
-                </th>
-                <th className="G_rm-sticky-left-3">
-                  <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Company Name</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
-                  </div>
-                </th>
-                <th>
-                  <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Company Number</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
-                  </div>
-                </th>
-                <th>
-                  <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Company Email</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
-                  </div>
-                </th>
-                <th>
-                  <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>CA Number</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'Company Name' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Services Name</div>
+                    <div ref={el => fieldRefs.current['Company Number'] = el}>Company Number</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('Company Number') ? (
+                        <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'Company Number' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Remarks</div>
+                    <div ref={el => fieldRefs.current['Company Email'] = el}>Company Email</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('Company Email') ? (
+                        <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'Company Email' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Letter Status</div>
+                    <div ref={el => fieldRefs.current['caNumber'] = el}>CA Number</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('caNumber') ? (
+                        <FaFilter onClick={() => handleFilterClick("caNumber")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("caNumber")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'caNumber' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>DSC Status</div>
+                    <div ref={el => fieldRefs.current['serviceName'] = el}>Services Name</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('serviceName') ? (
+                        <FaFilter onClick={() => handleFilterClick("serviceName")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("serviceName")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'serviceName' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>DSC Portal</div>
+                    <div ref={el => fieldRefs.current['letterStatus'] = el}>Letter Status</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('letterStatus') ? (
+                        <FaFilter onClick={() => handleFilterClick("letterStatus")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("letterStatus")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'letterStatus' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>DSC Type</div>
+                    <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>DSC Status</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('subCategoryStatus') ? (
+                        <FaFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("subCategoryStatus")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>DSC Validity</div>
-                    <div className="RM_filter_icon">
-                      <BsFilter />
-                    </div>
+                    <div ref={el => fieldRefs.current['remarks'] = el}>Remarks</div>
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>DSC Phone No</div>
+                    <div ref={el => fieldRefs.current['dscPortal'] = el}>DSC Portal</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('dscPortal') ? (
+                        <FaFilter onClick={() => handleFilterClick("dscPortal")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("dscPortal")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'dscPortal' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>DSC Email Id</div>
+                    <div ref={el => fieldRefs.current['dscType'] = el}>DSC Type</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('dscType') ? (
+                        <FaFilter onClick={() => handleFilterClick("dscType")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("dscType")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'dscType' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Portal Charges</div>
+                    <div ref={el => fieldRefs.current['dscValidity'] = el}>DSC Validity</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('dscValidity') ? (
+                        <FaFilter onClick={() => handleFilterClick("dscValidity")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("dscValidity")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'dscValidity' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Charges Paid Via</div>
+                    <div ref={el => fieldRefs.current['dscPhoneNo'] = el}>DSC Phone No</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('dscPhoneNo') ? (
+                        <FaFilter onClick={() => handleFilterClick("dscPhoneNo")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("dscPhoneNo")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'dscPhoneNo' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>Reimbursement Status</div>
+                    <div ref={el => fieldRefs.current['dscEmailId'] = el}>DSC Email Id</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('dscEmailId') ? (
+                        <FaFilter onClick={() => handleFilterClick("dscEmailId")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("dscEmailId")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'dscEmailId' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div ref={el => fieldRefs.current['portalCharges'] = el}>Portal Charges</div>
+                    <div className="RM_filter_icon">
+                      {isActiveField('portalCharges') ? (
+                        <FaFilter onClick={() => handleFilterClick("portalCharges")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("portalCharges")} />
+                      )}
+                    </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'portalCharges' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div ref={el => fieldRefs.current['chargesPaidVia'] = el}>Charges Paid Via</div>
+                    <div className="RM_filter_icon">
+                      {isActiveField('chargesPaidVia') ? (
+                        <FaFilter onClick={() => handleFilterClick("chargesPaidVia")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("chargesPaidVia")} />
+                      )}
+                    </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'chargesPaidVia' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div ref={el => fieldRefs.current['expenseReimbursementStatus'] = el}>Reimbursement Status</div>
+                    <div className="RM_filter_icon">
+                      {isActiveField('expenseReimbursementStatus') ? (
+                        <FaFilter onClick={() => handleFilterClick("expenseReimbursementStatus")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("expenseReimbursementStatus")} />
+                      )}
+                    </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'expenseReimbursementStatus' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
@@ -469,48 +919,103 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>BDE</div>
+                    <div ref={el => fieldRefs.current['bookingDate'] = el}>Booking Date</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('bookingDate') ? (
+                        <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'bookingDate' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
-                    <div>BDM</div>
+                    <div ref={el => fieldRefs.current['bdeName'] = el}>BDE</div>
                     <div className="RM_filter_icon">
-                      <BsFilter />
+                      {isActiveField('bdeName') ? (
+                        <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                      )}
                     </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'bdeName' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
-                {/* <th>
-                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                            <div>Total Payment </div>
-                            <div className='RM_filter_icon'>
-                                <BsFilter  />
-                            </div>
-                        </div>
-                    </th>
-                    <th>
-                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                            <div>
-                                Pending Payment
-                            </div> 
-                            <div className='RM_filter_icon'>
-                                <BsFilter  />
-                            </div>
-                        </div>
-                    </th>
-                    <th>
-                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                            <div> 
-                                Received Payment
-                            </div> 
-                            <div className='RM_filter_icon'>
-                                <BsFilter  />
-                            </div>
-                        </div>
-                    </th> */}
+                <th>
+                  <div className="d-flex align-items-center justify-content-center position-relative">
+                    <div ref={el => fieldRefs.current['bdmName'] = el}>BDM</div>
+                    <div className="RM_filter_icon">
+                      {isActiveField('bdmName') ? (
+                        <FaFilter onClick={() => handleFilterClick("bdmName")} />
+                      ) : (
+                        <BsFilter onClick={() => handleFilterClick("bdmName")} />
+                      )}
+                    </div>
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'bdmName' && (
+                      <div
+                        ref={filterMenuRef}
+                        className="filter-menu"
+                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                      >
+                        <FilterableTableAdminExecutive
+                          noofItems={setnoOfAvailableData}
+                          allFilterFields={setActiveFilterFields}
+                          filteredData={filteredData}
+                          activeTab={"Approved"}
+                          data={rmServicesData}
+                          filterField={activeFilterField}
+                          onFilter={handleFilter}
+                          completeData={completeRmData}
+                          showingMenu={setShowFilterMenu}
+                          dataForFilter={dataToFilter}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th className="rm-sticky-action">Action</th>
               </tr>
             </thead>
@@ -519,13 +1024,10 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                 rmServicesData.length !== 0 &&
                 rmServicesData.map((obj, index) => (
                   <tr key={index}>
-                    <td className="G_rm-sticky-left-1">
+                    <td className="rm-sticky-left-1">
                       <div className="rm_sr_no">{index + 1}</div>
                     </td>
-                    <td className="G_rm-sticky-left-2">
-                      {formatDatePro(obj.bookingDate)}
-                    </td>
-                    <td className="G_rm-sticky-left-3">
+                    <td className="rm-sticky-left-2">
                       <b>{obj["Company Name"]}</b>
                     </td>
                     <td>
@@ -566,15 +1068,6 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                     </td>
                     <td>{obj.serviceName}</td>
                     <td>
-                      <DscRemarks
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        historyRemarks={obj.Remarks}
-                      />
-                    </td>
-                    <td>
                       <div>
                         {obj.mainCategoryStatus && obj.subCategoryStatus && (
                           <DscLetterStatusDropdown
@@ -597,6 +1090,15 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                           obj.subCategoryStatus &&
                           obj.subCategoryStatus}
                       </div>
+                    </td>
+                    <td>
+                      <DscRemarks
+                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                        companyName={obj["Company Name"]}
+                        serviceName={obj.serviceName}
+                        refreshData={refreshData}
+                        historyRemarks={obj.Remarks}
+                      />
                     </td>
                     <td>
                       <div>
@@ -700,12 +1202,15 @@ function AdminExecutiveApprovedPanel({ searchText }) {
                     <td>
                       {/* Token In Box Number */}
                       <OtpInboxNo
-                      key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                      companyName={obj["Company Name"]}
-                      serviceName={obj.serviceName}
-                      refreshData={refreshData}
-                      otpInboxNo={obj.otpInboxNo ? obj.otpInboxNo : ""}
-                      mainStatus={obj.mainCategoryStatus}/>
+                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                        companyName={obj["Company Name"]}
+                        serviceName={obj.serviceName}
+                        refreshData={refreshData}
+                        otpInboxNo={obj.otpInboxNo ? obj.otpInboxNo : ""}
+                        mainStatus={obj.mainCategoryStatus} />
+                    </td>
+                    <td>
+                      {formatDatePro(obj.bookingDate)}
                     </td>
                     <td>{obj.bdeName}</td>
                     <td>{obj.bdmName}</td>
