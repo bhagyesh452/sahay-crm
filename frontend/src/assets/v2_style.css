@@ -940,7 +940,6 @@ table.table.top_5_table tbody tr.myself td {
 {
     display: flex;
     align-items: center;
-    padding: 20px;
 }
 .emply_e_card_profile_inner_lbl
 {
@@ -1018,26 +1017,12 @@ table.table.top_5_table tbody tr.myself td {
 }
 .emply_e_card_profile_name
 {
-    padding-left: 15px;
     width: calc(100% - 124px);
 }
 .emply_e_card_profile_inner_lbl:hover .emply_e_card_profile_update
 {
     opacity: 1;
     transition: 0.5s;
-}
-.emply_e_card_profile_name p
-{
-    font-size: 18px;
-    font-weight: 500;
-    margin-top: 18px     !important;
-}
-.emply_e_card_profile_name label
-{
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 4px !important;
-    color: #a8a8a8;
 }
 .my-card-style-2
 {

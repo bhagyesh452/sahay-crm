@@ -2305,7 +2305,7 @@ td input {
 }
 .EP_Name
 {
-  padding: 10px 20px 10px 20px;
+  padding: 10px 10px 10px 10px;
   border-bottom: 1px solid #eee;
 }
 .profile-pic-upload {
@@ -2370,7 +2370,6 @@ td input {
   height: 18px;
   color: #474747;
   width: 18px;
-  margin-left: 10px;
 }
 .ep_info_h
 {
