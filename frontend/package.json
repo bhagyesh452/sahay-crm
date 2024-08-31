@@ -59,6 +59,7 @@
     "react-pdf": "^7.7.0",
     "react-pdf-to-image": "^1.0.2",
     "react-pivottable": "^0.11.0",
+    "react-quill": "^2.0.0",
     "react-resizable": "^3.0.5",
     "react-router-dom": "^6.22.0",
     "react-scripts": "^5.0.1",

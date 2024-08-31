@@ -66,6 +66,9 @@ const ClientAPI = require("./helpers/ClientAPI.js");
 const EmployeeDraftAPI = require("./helpers/EmployeeDraftApi.js");
 const AttendanceAPI = require("./helpers/AttendanceApi.js");
 const LastEmployeeIdAPI = require("./helpers/LastEmployeeIdChanger.js");
+const DepartmentAPI = require("./helpers/DepartmentApi.js");
+const ServicesDraftAPI = require("./helpers/ServicesDraftApi.js");
+const ServicesAPI = require("./helpers/ServicesApi.js");
 const TeamsAPI = require("./helpers/TeamsAPI.js");
 const userModel = require("./models/CompanyBusinessInput.js");
 const processAttachments = require("./helpers/sendMail3.js");
@@ -123,7 +126,9 @@ app.use('/api/customer', CustomerAPI)
 app.use('/api/employeeDraft', EmployeeDraftAPI);
 app.use('/api/attendance', AttendanceAPI);
 app.use('/api/lastEmployeeId', LastEmployeeIdAPI);
-
+app.use('/api/department', DepartmentAPI);
+app.use('/api/serviceDraft', ServicesDraftAPI);
+app.use('/api/services', ServicesAPI);
 
 
 // app.use(session({

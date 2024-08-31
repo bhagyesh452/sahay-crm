@@ -9,6 +9,7 @@ import { GrDocumentStore } from "react-icons/gr";
 import { BsFillPersonVcardFill } from "react-icons/bs";
 import { BiBookContent } from "react-icons/bi";
 import { AiOutlineTeam } from "react-icons/ai";
+import { MdMedicalServices } from "react-icons/md";
 
 
 function Navbar() {
@@ -94,20 +95,20 @@ function Navbar() {
                     </a>
                   </Link>
                 </li> */}
-               {(adminName === "Nimesh" || adminName==="Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <li
+                {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <li
                   className={
                     location.pathname === "/admin/leads"
                       ? "nav-item active"
                       : "nav-item"
                   }
-                 >
+                >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
                     to="/admin/leads"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
-                        <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
+                        <GrDocumentStore style={{ height: "22px", width: "15px" }} />
                       </span>
                       <span className="nav-link-title"> Leads</span>
                     </a>
@@ -119,14 +120,14 @@ function Navbar() {
                       ? "nav-item active"
                       : "nav-item"
                   }
-                 >
+                >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
                     to="/admin/bookings"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <BiBookContent style={{ height: "24px", width: "19px" }} />
+                        <BiBookContent style={{ height: "24px", width: "19px" }} />
                       </span>
                       <span className="nav-link-title">Bookings</span>
                     </a>
@@ -151,8 +152,28 @@ function Navbar() {
                     </a>
                   </Link>
                 </li> */}
+
+                <li
+                  className={
+                    location.pathname === "/admin/servicesandschemes"
+                      ? "nav-item active"
+                      : "nav-item"
+                  }
+                >
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    to="/admin/servicesandschemes"
+                  >
+                    <a className="nav-link" href="./">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                      <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                      </span>
+                      <span className="nav-link-title">Schemes & Services</span>
+                    </a>
+                  </Link>
+                </li>
               </ul>
-              
+
             </div>
           </div>
         </div>

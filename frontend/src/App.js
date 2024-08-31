@@ -42,6 +42,7 @@ import CompanyParticular_Datamanager from "./DataManager/Dashboard/ManageLeads/C
 //import CompanyDetails from "./Processing/CompanyDetails.jsx";
 import Team from './admin/Team.js'
 import NewEmployee from "./admin/NewEmployee.js";
+import Services from "./admin/ServicesandSchemes/Services.jsx";
 import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
 import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
 import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings.jsx";
@@ -225,6 +226,7 @@ function App() {
                 element={<ShowNotification />}
               />
               <Route path="/admin/bookings/Addbookings" element={<RedesignedForm />} />
+              <Route path="/admin/servicesandschemes" element={<Services />} />\
 
             </>
           ) : (
