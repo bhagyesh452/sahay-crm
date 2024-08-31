@@ -849,6 +849,7 @@ router.post("/fetch-by-ids", async (req, res) => {
 const mongoose = require('mongoose');
 const RemarksHistory = require('../models/RemarksHistory.js');
 const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
+const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 
 router.post("/postAssignData", async (req, res) => {
   const { employeeSelection, selectedObjects, title, date, time } = req.body;
@@ -906,6 +907,13 @@ router.post("/postAssignData", async (req, res) => {
     }
   }));
 
+  // Bulk operations for LeadHistoryModel
+  const bulkOperationsLeadHistory = selectedObjects.map((obj) => ({
+    deleteOne: {
+      filter: {"Company Name": obj["Company Name"] }
+    }
+  }));
+
   // Bulk operations for RedesignedLeadformModel
   const bulkOperationsRedesignedModel = selectedObjects.map((obj) => ({
     updateOne: {
@@ -924,11 +932,14 @@ router.post("/postAssignData", async (req, res) => {
     }
   }));
 
+  console.log("yeapichali")
+
   try {
     // Perform bulk operations in parallel
     await Promise.all([
       executeBulkOperations(CompanyModel, bulkOperationsCompany),
       executeBulkOperations(TeamLeadsModel, bulkOperationsTeamLeads),
+      executeBulkOperations(LeadHistoryForInterestedandFollowModel, bulkOperationsLeadHistory),
       executeBulkOperations(FollowUpModel, bulkOperationsProjection),
       executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel),
       executeBulkOperations(RemarksHistory, bulkOperationsRemarksHistory)
@@ -941,27 +952,6 @@ router.post("/postAssignData", async (req, res) => {
       time
     });
     await newUpdate.save();
-
-    // if (employeeSelection !== "Not Alloted" || employeeSelection !== 'Extracted') {
-    //   const requestCreate = {
-    //     ename: employeeSelection,
-    //     requestType: "Lead Upload",
-    //     requestTime: new Date(),
-    //     designation: "SE",
-    //     status: "Unread",
-    //     employee_status: "Unread",
-    //     companyName: "Approved Bulk Leads",
-    //     employeeRequestType: "Leads Are Assigned",
-    //   };
-
-    //   console.log("requestcreate", requestCreate)
-    //   const addRequest = new NotiModel(requestCreate);
-    //   await addRequest.save();
-    //   socketIO.emit('new-leads-assigned', employeeSelection);
-    // }
-
-
-
     res.json({ message: "Data posted successfully" });
   } catch (error) {
     console.error("Error posting assign data:", error);
