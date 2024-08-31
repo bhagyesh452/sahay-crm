@@ -144,6 +144,13 @@ th {
   box-shadow: none !important;
 }
 
+.multivalue-input {
+  border: 1px solid #dadfe5 !important;
+  border-radius: 5px;
+  padding: 5px;
+  height: 35px;
+}
+
 .form-control {
   /* border: 1px solid #ffb900 !important; */
   border: 1px solid #dadfe5 !important;
@@ -2181,7 +2188,7 @@ th.th-sticky1::after {
 
 .tbl-scroll {
   max-height: calc(100vh - 306px);
-  overflow-y: scroll;
+  overflow-y: auto;
   border-radius: 10px;
 }
 
@@ -2305,7 +2312,7 @@ td input {
 }
 .EP_Name
 {
-  padding: 10px 20px 10px 20px;
+  padding: 10px 10px 10px 10px;
   border-bottom: 1px solid #eee;
 }
 .profile-pic-upload {
@@ -2370,7 +2377,6 @@ td input {
   height: 18px;
   color: #474747;
   width: 18px;
-  margin-left: 10px;
 }
 .ep_info_h
 {

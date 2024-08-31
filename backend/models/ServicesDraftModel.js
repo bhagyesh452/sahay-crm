@@ -47,7 +47,7 @@ const ServicesDraftSchema = new mongoose.Schema({
         headNames: [String]        // Array of head names
     },
     portfolio: {
-        type: String
+        type: [String]
     },
     documents: {
         type: [fileSchema]

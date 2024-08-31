@@ -66,9 +66,10 @@ function Services() {
     const [services, setServices] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showAddDepartment, setShowAddDepartment] = useState(false);
-    const [showAddServices, setShowAddService] = useState(false);
-    const [showDepartments, setShowDepartments] = useState(false);
+    const [showAddService, setShowAddService] = useState(false);
+    const [showAddServiceDetails, setShowAddServiceDetails] = useState(false);
     const [departments, setDepartments] = useState([]);
+    const [id, setID] = useState("");
     const [departmentName, setDepartmentName] = useState("");
     const [serviceName, setServiceName] = useState("");
     const [serviceDescription, setServiceDescription] = useState("");
@@ -76,9 +77,16 @@ function Services() {
     const [sericeErrorMessage, setServiceErrorMessage] = useState("");
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
 
-    const handleClose = () => {
+    const handleCloseAddDepartment = () => {
         setShowAddDepartment(false);
-        setShowDepartments(false);
+        setDepartmentErrorMessage("");
+        setServiceErrorMessage("");
+        setDescriptionErrorMessage("");
+        setDepartmentName("");
+    };
+
+    const handleCloseAddService = () => {
+        setShowAddService(false);
         setDepartmentErrorMessage("");
         setServiceErrorMessage("");
         setDescriptionErrorMessage("");
@@ -87,8 +95,10 @@ function Services() {
         setServiceDescription("");
     };
 
-    const handleCloseShowAddService = () => {
-        setShowAddService(false);
+    const handleCloseShowAddServiceDetails = () => {
+        setShowAddServiceDetails(false);
+        setDepartmentName("");
+        setServiceName("");
     }
 
     const fetchServices = async () => {
@@ -124,53 +134,65 @@ function Services() {
     const handleSubmit = async () => {
         try {
             let hasError = false;
-
-            // Check if department name is empty
-            if (departmentName.trim().length === 0) {
-                setDepartmentErrorMessage("Please enter department name");
+    
+            // Validate department name
+            if ((showAddDepartment || showAddService) && departmentName.trim().length === 0) {
+                showAddDepartment ? setDepartmentErrorMessage("Please enter department name") : setDepartmentErrorMessage("Please select department name");
                 hasError = true;
             } else {
                 setDepartmentErrorMessage("");
             }
-
-            // Check if service name is empty
-            if (serviceName.trim().length === 0) {
+    
+            // Validate service name and description only if adding a service
+            if (showAddService && serviceName.trim().length === 0) {
                 setServiceErrorMessage("Please enter service name");
                 hasError = true;
             } else {
                 setServiceErrorMessage("");
             }
-
-            // Check if service description is empty
-            if (serviceDescription.trim().length === 0) {
+    
+            if (showAddService && serviceDescription.trim().length === 0) {
                 setDescriptionErrorMessage("Please enter service description");
                 hasError = true;
             } else {
                 setDescriptionErrorMessage("");
             }
-
+    
             // If any errors were found, do not proceed
             if (hasError) return;
-
-            const res = await axios.post(`${secretKey}/department/addDepartment`, {
+    
+            const payload = {
                 departmentName: departmentName,
-                serviceName: serviceName,
-                serviceDescription: serviceDescription
-            });
+                serviceName: showAddService ? serviceName : "",  // Set empty if only adding department
+                serviceDescription: showAddService ? serviceDescription : "" // Set empty if only adding department
+            };
+    
+            const res = await axios.post(`${secretKey}/department/addDepartment`, payload);
             // console.log("Department successfully created :", res.data.data);
-            Swal.fire("success", "Department Successfully Created", "success");
+
+            if (showAddDepartment) {
+                Swal.fire("success", "Department Successfully Created", "success");
+            } else {
+                Swal.fire("success", "Service Successfully Created", "success");
+            }
+    
             setShowAddDepartment(false);
-            setShowDepartments(false);
+            setShowAddService(false);
             setDepartmentName("");
             setServiceName("");
             setServiceDescription("");
             fetchServices();
         } catch (error) {
-            Swal.fire("error", "Error creating department", "error");
-            console.log("Error creating department :", error);
+            if (showAddDepartment) {
+                Swal.fire("error", "Error creating department", "error");
+            } else {
+                Swal.fire("error", "Error creating service", "error");
+            }
+            console.log("Error creating department:", error);
         }
     };
 
+    
     const handleToggleChange = async (serviceName) => {
         try {
             // Fetch the current status of hideService for the selected service
@@ -185,10 +207,10 @@ function Services() {
                 hideService: updatedHideService,
             });
             fetchServices();
-            if(updatedHideService) {
-                Swal.fire("success","Service successfully hidden","success");
+            if (updatedHideService) {
+                Swal.fire("success", "Service successfully hidden", "success");
             } else {
-                Swal.fire("success","Service successfully shown","success");
+                Swal.fire("success", "Service successfully shown", "success");
             }
 
             if (updateRes.data.result) {
@@ -197,7 +219,7 @@ function Services() {
             }
         } catch (error) {
             console.error("Error updating hideService status:", error);
-            Swal.fire("Error","Error hiding services","error");
+            Swal.fire("Error", "Error hiding services", "error");
         }
     };
 
@@ -206,195 +228,247 @@ function Services() {
     }, []);
 
     useEffect(() => {
-        if (showDepartments) {
+        if (showAddService) {
             fetchDepartments(); // Fetch departments only when the checkbox is checked
         }
-    }, [showDepartments]);
+    }, [showAddService]);
     return (
-        <>
+        <div>
             <Header />
             <Navbar />
 
-            {!showAddServices && <div className="card">
-                <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
-                    <div className="dashboard-title pl-1"  >
-                        <h2 className="my-1 ms-3">
-                            Services and Schemes
-                        </h2>
-                    </div>
-                    <div className="d-flex align-items-center pr-1">
-                        <div className="filter-booking mr-1 d-flex align-items-center">
+
+            {!showAddServiceDetails &&
+                <div className="page-wrapper">
+
+                    <div className="page-header">
+                        <div className="container-xl">
                             <div className='d-flex align-items-center justify-content-between'>
-                                <div className='form-group ml-1 me-2 my-1'>
-                                    <button
-                                        className="btn btn-info d-none d-sm-inline-block"
-                                        onClick={() => setShowAddDepartment(true)}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="icon"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="2"
-                                            stroke="currentColor"
-                                            fill="none"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M12 5l0 14" />
-                                            <path d="M5 12l14 0" />
-                                        </svg>
-                                        Add Department
-                                    </button>
+                                <div className="dashboard-title"  >
+                                    <h2 className="m-0">
+                                        Services and Schemes
+                                    </h2>
                                 </div>
-                                <div className='form-group ml-1 me-2 my-1'>
-                                    <button
-                                        className="btn btn-primary d-none d-sm-inline-block"
-                                        onClick={() => setShowAddService(true)}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="icon"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="2"
-                                            stroke="currentColor"
-                                            fill="none"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M12 5l0 14" />
-                                            <path d="M5 12l14 0" />
-                                        </svg>
-                                        Add Service
-                                    </button>
+                                <div className="d-flex align-items-center">
+                                    <div className="filter-booking mr-1 d-flex align-items-center">
+                                        <div className='d-flex align-items-center justify-content-between'>
+                                            <div className='form-group'>
+                                                <button
+                                                    className="btn action-btn-primary"
+                                                    onClick={() => setShowAddDepartment(true)}
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="icon"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="2"
+                                                        stroke="currentColor"
+                                                        fill="none"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                    >
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                        <path d="M12 5l0 14" />
+                                                        <path d="M5 12l14 0" />
+                                                    </svg>
+                                                    Add Department
+                                                </button>
+                                            </div>
+
+                                            <div className='form-group ml-1'>
+                                                <button
+                                                    className="btn action-btn-alert"
+                                                    onClick={() => setShowAddService(true)}
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="icon"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="2"
+                                                        stroke="currentColor"
+                                                        fill="none"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                    >
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                        <path d="M12 5l0 14" />
+                                                        <path d="M5 12l14 0" />
+                                                    </svg>
+                                                    Add Service
+                                                </button>
+                                            </div>
+                                            
+                                            <div className='form-group ml-1'>
+                                                <button
+                                                    className="btn action-btn-success"
+                                                    onClick={() => setShowAddServiceDetails(true)}
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="icon"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="2"
+                                                        stroke="currentColor"
+                                                        fill="none"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                    >
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                        <path d="M12 5l0 14" />
+                                                        <path d="M5 12l14 0" />
+                                                    </svg>
+                                                    Add Service Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="page-body">
+                        <div className="container-xl">
+                            <div className='my-card mt-2'>
+                                <div className="card-body">
+                                    <div id="table-default" className="table-responsive tbl-scroll">
+                                        <table className="table-vcenter tbl-collps table-nowrap admin-dash-tbl w-100"  >
+
+                                            <thead className="admin-dash-tbl-thead">
+                                                <tr>
+                                                    <th>Sr. No</th>
+                                                    <th>Department Name</th>
+                                                    <th>Services Name</th>
+                                                    <th>Hide Service</th>
+                                                    {/* <th>Add Service Details</th> */}
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+
+                                            {isLoading ? (
+                                                <tbody>
+                                                    <tr>
+                                                        <td colSpan="5" >
+                                                            <div className="LoaderTDSatyle w-100" >
+                                                                <ClipLoader
+                                                                    color="lightgrey"
+                                                                    currentDataLoading
+                                                                    size={30}
+                                                                    aria-label="Loading Spinner"
+                                                                    data-testid="loader"
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            ) : services.length !== 0 ? (
+                                                <>
+
+                                                    <tbody>
+                                                        {services.map((service, index) => (
+                                                            <tr key={index}>
+                                                                <td>{index + 1}</td>
+                                                                <td>{service.departmentName}</td>
+                                                                <td>{service.serviceName}</td>
+                                                                <td>
+                                                                    <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                                                                        <AntSwitch
+                                                                            checked={service.hideService}
+                                                                            onChange={(e) => handleToggleChange(service.serviceName)}
+                                                                            inputProps={{ 'aria-label': 'ant design' }} />
+                                                                    </Stack>
+                                                                </td>
+                                                                {/* <td>
+                                                                    <button className='btn btn-sm btnaction-btn action-btn-primary' onClick={() => {
+                                                                        setShowAddServiceDetails(true);
+                                                                        setID(service._id);
+                                                                        setDepartmentName(service.departmentName);
+                                                                        setServiceName(service.serviceName);
+                                                                        }}>
+                                                                        Add
+                                                                    </button>
+                                                                </td> */}
+                                                                <td>
+                                                                    <div className="d-flex justify-content-center align-items-center">
+                                                                        <div className="icons-btn">
+                                                                            <IconButton>
+                                                                                {" "}
+                                                                                <IconEye
+                                                                                    style={{
+                                                                                        width: "14px",
+                                                                                        height: "14px",
+                                                                                        color: "#d6a10c",
+                                                                                    }}
+                                                                                />
+                                                                            </IconButton>
+                                                                        </div>
+
+                                                                        <div className="icons-btn">
+                                                                            <IconButton>
+                                                                                <ModeEditIcon
+                                                                                    style={{
+                                                                                        cursor: "pointer",
+                                                                                        color: "#a29d9d",
+                                                                                        width: "14px",
+                                                                                        height: "14px",
+                                                                                    }}
+                                                                                />
+                                                                            </IconButton>
+                                                                        </div>
+
+                                                                        <div className="icons-btn">
+                                                                            <IconButton>
+                                                                                <IconTrash
+                                                                                    style={{
+                                                                                        cursor: "pointer",
+                                                                                        color: "red",
+                                                                                        width: "14px",
+                                                                                        height: "14px",
+                                                                                    }}
+                                                                                />
+                                                                            </IconButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+
+                                                    <tfoot className="admin-dash-tbl-tfoot">
+                                                        {/* <tr style={{ fontWeight: 500 }}>
+                                                        <td>Total</td>
+                                                        <td>{serviceAnalysisData.length}</td>
+                                                        <td>{totalTimesSold}</td>
+                                                        <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
+                                                        <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
+                                                        <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
+                                                        <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
+                                                    </tr> */}
+                                                    </tfoot>
+                                                </>
+                                            ) : (
+                                                <tbody>
+                                                    <tr>
+                                                        <td colSpan="5" className="text-center"><Nodata /></td>
+                                                    </tr>
+                                                </tbody>
+                                            )}
+
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            }
 
-                <div className="card-body">
-                    <div id="table-default" className="row tbl-scroll">
-                        <table className="table-vcenter table-nowrap admin-dash-tbl"  >
-
-                            <thead className="admin-dash-tbl-thead">
-                                <tr>
-                                    <th>Sr. No</th>
-                                    <th>Department Name</th>
-                                    <th>Services Name</th>
-                                    <th>Hide Service</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-
-                            {isLoading ? (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="11" >
-                                            <div className="LoaderTDSatyle w-100" >
-                                                <ClipLoader
-                                                    color="lightgrey"
-                                                    currentDataLoading
-                                                    size={30}
-                                                    aria-label="Loading Spinner"
-                                                    data-testid="loader"
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            ) : services.length !== 0 ? (
-                                <>
-
-                                    <tbody>
-                                        {services.map((service, index) => (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{service.departmentName}</td>
-                                                <td>{service.serviceName}</td>
-                                                <td>
-                                                    <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
-                                                        <AntSwitch
-                                                            checked={service.hideService}
-                                                            onChange={(e) => handleToggleChange(service.serviceName)}
-                                                            inputProps={{ 'aria-label': 'ant design' }} />
-                                                    </Stack>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex justify-content-center align-items-center">
-                                                        <div className="icons-btn">
-                                                            <IconButton>
-                                                                {" "}
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                    }}
-                                                                />
-                                                            </IconButton>
-                                                        </div>
-
-                                                        <div className="icons-btn">
-                                                            <IconButton>
-                                                                <ModeEditIcon
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        color: "#a29d9d",
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                    }}
-                                                                />
-                                                            </IconButton>
-                                                        </div>
-
-                                                        <div className="icons-btn">
-                                                            <IconButton>
-                                                                <IconTrash
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        color: "red",
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                    }}
-                                                                />
-                                                            </IconButton>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-
-                                    <tfoot className="admin-dash-tbl-tfoot">
-                                        {/* <tr style={{ fontWeight: 500 }}>
-                                            <td>Total</td>
-                                            <td>{serviceAnalysisData.length}</td>
-                                            <td>{totalTimesSold}</td>
-                                            <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
-                                        </tr> */}
-                                    </tfoot>
-                                </>
-                            ) : (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="4" className="text-center"><Nodata /></td>
-                                    </tr>
-                                </tbody>
-                            )}
-
-                        </table>
-                    </div>
-                </div>
-            </div>}
 
             {/* Dialog box to add department */}
             <Dialog
@@ -405,7 +479,59 @@ function Services() {
             >
                 <DialogTitle>
                     Add Department{" "}
-                    <IconButton onClick={handleClose} style={{ float: "right" }}>
+                    <IconButton onClick={handleCloseAddDepartment} style={{ float: "right" }}>
+                        <CloseIcon color="primary" />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="modal-dialog modal-lg" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <div className="row">
+                                    <div className='d-flex'>
+                                        <div className="mb-3 col-12">
+                                            <div className="d-flex">
+                                                <label className="form-label">Department Name</label>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={departmentName}
+                                                className="form-control"
+                                                placeholder="Enter Department Name"
+                                                required
+                                                onChange={(e) => {
+                                                    setDepartmentName(e.target.value);
+                                                    setDepartmentErrorMessage("");
+                                                }}
+                                            />
+                                            {departmentErrorMessage && <p className="text-danger">{departmentErrorMessage}</p>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+                <Button
+                    className="btn btn-primary bdr-radius-none"
+                    onClick={handleSubmit}
+                    variant="contained"
+                >
+                    Submit
+                </Button>
+            </Dialog>
+
+
+            {/* Dialog box to add service */}
+            <Dialog
+                className='My_Mat_Dialog'
+                open={showAddService}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    Add Service{" "}
+                    <IconButton onClick={handleCloseAddService} style={{ float: "right" }}>
                         <CloseIcon color="primary" />
                     </IconButton>
                 </DialogTitle>
@@ -418,37 +544,22 @@ function Services() {
                                         <div className="mb-3 col-6">
                                             <div className="d-flex">
                                                 <label className="form-label">Department Name</label>
-                                                <input type="checkbox" className="ms-2 mb-2" name="selectDepartment" onChange={() => setShowDepartments(!showDepartments)} /><label className="form-label">Select Department</label>
                                             </div>
-                                            {!showDepartments ? (
-                                                <input
-                                                    type="text"
-                                                    value={departmentName}
-                                                    className="form-control"
-                                                    placeholder="Enter Department Name"
-                                                    required
-                                                    onChange={(e) => {
-                                                        setDepartmentName(e.target.value);
-                                                        setDepartmentErrorMessage("");
-                                                    }}
-                                                />
-                                            ) : (
-                                                <select
-                                                    className="form-select"
-                                                    value={departmentName}
-                                                    onChange={(e) => {
-                                                        setDepartmentName(e.target.value);
-                                                        setDepartmentErrorMessage("");
-                                                    }}
-                                                >
-                                                    <option value="" disabled>Select Department</option>
-                                                    {departments.map((dept, index) => (
-                                                        <option key={index} value={dept}>
-                                                            {dept}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            )}
+                                            <select
+                                                className="form-select"
+                                                value={departmentName}
+                                                onChange={(e) => {
+                                                    setDepartmentName(e.target.value);
+                                                    setDepartmentErrorMessage("");
+                                                }}
+                                            >
+                                                <option value="" disabled>Select Department</option>
+                                                {departments.map((dept, index) => (
+                                                    <option key={index} value={dept}>
+                                                        {dept}
+                                                    </option>
+                                                ))}
+                                            </select>
                                             {departmentErrorMessage && <p className="text-danger">{departmentErrorMessage}</p>}
                                         </div>
 
@@ -499,8 +610,8 @@ function Services() {
                 </Button>
             </Dialog>
 
-            {showAddServices && <AddServices close={handleCloseShowAddService} fetchServices={fetchServices} />}
-        </>
+            {showAddServiceDetails && <AddServices close={handleCloseShowAddServiceDetails} fetchServices={fetchServices} />}
+        </div>
     )
 }
 

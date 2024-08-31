@@ -7,6 +7,7 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 //import { DateRangePicker } from "react-date-range";
 import EmpImg1 from "../../static/EmployeeImg/Emp1.jpeg"
 import EmpImg2 from "../../static/EmployeeImg/Emp2.jpeg"
+import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 import MaleEmployee from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import { MdOutlineCameraAlt } from "react-icons/md";
@@ -42,6 +43,9 @@ import { FcIphone } from "react-icons/fc";
 import { FaLocationDot } from "react-icons/fa6";
 import { FcFeedback } from "react-icons/fc";
 import { color } from "@mui/system";
+import { FcBriefcase } from "react-icons/fc";
+import { IoCall } from "react-icons/io5";
+
 
 function EmployeeView() {
 
@@ -351,23 +355,106 @@ function EmployeeView() {
               <div className="emply_e_card">
                 <div className="my-card">
                   <div className="emply_e_card_profile">
-                    <label className="emply_e_card_profile_inner_lbl">
-                      <div className="emply_e_card_profile_div">
-                        {data.profilePhoto?.length !== 0 ? <img src={`${secretKey}/employee/fetchProfilePhoto/${data._id}/${encodeURIComponent(data.profilePhoto?.[0]?.filename)}`} />
-                          : <img src={data.gender === "Male" ? MaleEmployee : FemaleEmployee} />
-                        }
-                        {/* <img src={MaleEmployee}></img> */}
+                    <div className="p-3">
+                      <label className="emply_e_card_profile_inner_lbl">
+                        <div className="emply_e_card_profile_div">
+                          {data.profilePhoto?.length !== 0 ? <img src={`${secretKey}/employee/fetchProfilePhoto/${data._id}/${encodeURIComponent(data.profilePhoto?.[0]?.filename)}`} />
+                            : <img src={data.gender === "Male" ? MaleEmployee : FemaleEmployee} />
+                          }
+                          {/* <img src={MaleEmployee}></img> */}
+                        </div>
+                        <div className="emply_e_card_profile_update">
+                          <div className="emply_e_card_profile_update_inner">
+                            <MdOutlineCameraAlt className="emply_e_card_profile_update_icon" />
+                            <p className="m-0 emply_e_card_profile_update_text">Upload</p>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                    <div className="emply_e_card_profile_name bdr-left-eee">
+                      <div className="EP_Name d-flex justify-content-between align-items-center">
+                        <h3 className="m-0">
+                          <span className="clr-ffb900">{data.ename}</span>
+                          <div className="EP_Designation">Sales Executive</div>
+                        </h3>
+                        <div className="employee_active">Active</div>
                       </div>
-                      <div className="emply_e_card_profile_update">
-                        <div className="emply_e_card_profile_update_inner">
-                          <MdOutlineCameraAlt className="emply_e_card_profile_update_icon" />
-                          <p className="m-0 emply_e_card_profile_update_text">Upload</p>
+                      <div className="row m-0 aling-items-start">
+                        <div className="col p-0">
+                          <div className="EP_Other_info">
+                            <div className="EP_Other_info_body">
+                              <div className="row m-0 bdr-btm-eee">
+                                <div className="col-5  pt-1 pb-1">
+                                  <div className="d-flex align-items-center">
+                                    <div className="ep_info_icon clr-ffb900">
+                                      <FaRegCircleUser />
+                                    </div>
+                                    <div className="ep_info_h">
+                                      Employee Id :
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-7  pt-1 pb-1 bdr-left-eee">
+                                  <div className="">
+                                    <div className="ep_info_t">SSPL001</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="row m-0 bdr-btm-eee">
+                                <div className="col-5  pt-1 pb-1">
+                                  <div className="d-flex align-items-center">
+                                    <div className="ep_info_icon clr-ffb900">
+                                      <MdOutlineEmail />
+                                    </div>
+                                    <div className="ep_info_h">Email :</div>
+                                  </div>
+                                </div>
+                                <div className="col-7  pt-1 pb-1 bdr-left-eee">
+                                  <div className="">
+                                    <div className="ep_info_t">
+                                      {data.email}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="row m-0 bdr-btm-eee">
+                                <div className="col-5  pt-1 pb-1">
+                                  <div className="d-flex align-items-center">
+                                    <div className="ep_info_icon clr-ffb900">
+                                      <TbPhoneCall />
+                                    </div>
+                                    <div className="ep_info_h">Phone No :</div>
+                                  </div>
+                                </div>
+                                <div className="col-7 pt-1 pb-1 bdr-left-eee">
+                                  <div className="">
+                                    <div className="ep_info_t">
+                                      {data.number}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="row m-0">
+                                <div className="col-5  pt-1 pb-1">
+                                  <div className="d-flex align-items-center">
+                                    <div className="ep_info_icon clr-ffb900">
+                                      <MdOutlineCalendarMonth />
+                                    </div>
+                                    <div className="ep_info_h">
+                                      Joining Date:
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-7  pt-1 pb-1 bdr-left-eee">
+                                  <div className="">
+                                    <div className="ep_info_t">{formatDateNew(data.jdate)}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </label>
-                    <div className="emply_e_card_profile_name">
-                      <p className="m-0">{data.ename}</p>
-                      <label className="m-0">{data.newDesignation}</label>
                     </div>
                   </div>
                 </div>
@@ -385,11 +472,10 @@ function EmployeeView() {
                           </div>
                         </div>
                       </div>
-                      <div className="emply_e_info_data d-flex align-items-center justify-content-between">
+                      <div className="emply_e_info_data">
                         <div className="emply_e_info_data_name">
                             Vishunu Maheshbhai Suthar
                         </div>
-                        <div class="employee_active">Active</div>
                       </div>
                     </div>
                     <div className="row mt-2">

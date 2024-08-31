@@ -4,7 +4,8 @@ import { GrFormNext } from "react-icons/gr";
 import pdfimg from "../../static/my-images/pdf.png";
 import { FaWhatsapp } from "react-icons/fa";
 import axios from 'axios';
-
+import EmpDfaullt from "../../static/EmployeeImg/office-man.png"
+import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 
 function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }) {
 
@@ -28,6 +29,7 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
       console.log("Service description is :", res2.data.data.serviceDescription);
       setService(res.data.data);
       setServiceDescription(res2.data.data.serviceDescription);
+      fetchEmployees();
     } catch (error) {
       console.log("Error fetching service :", error);
     }
@@ -37,57 +39,61 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
     try {
       const res = await axios.get(`${secretKey}/employee/einfo`);
       const data = res.data;
-      console.log("Employee data:", data);
+      // console.log("Employees data:", data);
       setEmployees(data); // Save fetched employees in the state
     } catch (error) {
       console.log("Error fetching employees", error);
     }
   };
 
-  // const findEmployeeDetails = () => {
-  //   // Find employees in employeeNames
-  //   const foundEmployees = employees.filter((employee) =>
-  //     service.concernTeam.employeeNames.includes(employee.empFullName)
-  //   );
+  const findEmployeeDetails = () => {
+    // Find employees in employeeNames
+    const foundEmployees = employees.filter((employee) =>
+      service?.concernTeam.employeeNames.includes(employee.empFullName)
+    );
 
-  //   // Find heads in headNames
-  //   const foundHeads = employees.filter((employee) =>
-  //     service.concernTeam.headNames.includes(employee.empFullName)
-  //   );
+    // Find heads in headNames
+    const foundHeads = employees.filter((employee) =>
+      service?.concernTeam.headNames.includes(employee.empFullName)
+    );
 
-  //   // Set state for employees
-  //   if (foundEmployees.length > 0) {
-  //     setEmpName(foundEmployees.map((emp) => emp.name).join(", "));
-  //     setDesignation(foundEmployees.map((emp) => emp.designation).join(", "));
-  //     setBranchOffice(foundEmployees.map((emp) => emp.branchOffice).join(", "));
-  //     setOfficialNo(foundEmployees.map((emp) => emp.officialNo).join(", "));
-  //   }
+    // Set state for employees
+    if (foundEmployees.length > 0) {
+      // console.log("Found employees are in if condition :", foundEmployees);
+      setEmpName(foundEmployees.map((emp) => emp.empFullName).join(", "));
+      setDesignation(foundEmployees.map((emp) => emp.newDesignation).join(", "));
+      setBranchOffice(foundEmployees.map((emp) => emp.branchOffice).join(", "));
+      setOfficialNo(foundEmployees.map((emp) => emp.number).join(", "));
+    }
 
-  //   // You can also handle heads in a similar manner if needed
-  //   if (foundHeads.length > 0) {
-  //     console.log("Heads found:", foundHeads);
-  //     setEmpName(foundHeads.map((emp) => emp.name).join(", "));
-  //     setDesignation(foundHeads.map((emp) => emp.designation).join(", "));
-  //     setBranchOffice(foundHeads.map((emp) => emp.branchOffice).join(", "));
-  //     setOfficialNo(foundHeads.map((emp) => emp.officialNo).join(", "));
-  //     // Set head state variables as needed
-  //   }
+    if (foundHeads.length > 0) {
+      // console.log("Found heads are in if condition :", headNames);
+      setEmpName(foundHeads.map((emp) => emp.empFullName).join(", "));
+      setDesignation(foundHeads.map((emp) => emp.newDesignation).join(", "));
+      setBranchOffice(foundHeads.map((emp) => emp.branchOffice).join(", "));
+      setOfficialNo(foundHeads.map((emp) => emp.number).join(", "));
+    }
 
-  //   setEmployeeNames(foundEmployees);
-  //   setHeadNames(foundHeads);
-  // };
+    setEmployeeNames(foundEmployees);
+    setHeadNames(foundHeads);
+  };
+
+  const openDocument = (filename) => {
+    const id = service._id; // Assuming service contains the ID of the current service
+    const url = `${secretKey}/services/fetchDocuments/${id}/${filename}`;
+    window.open(url, "_blank"); // Open document in a new tab
+  };
 
   useEffect(() => {
     fetchService();
-    fetchEmployees();
   }, []);
 
   // Filter employee details after fetching data
-  // useEffect(() => {
-  //   if (employees.length > 0) {
-  //     findEmployeeDetails();
-  //   }
-  // }, [employees]);
+  useEffect(() => {
+    if (employees.length > 0) {
+      findEmployeeDetails();
+    }
+  }, [employees]);
 
   return (
     <div className='page-wrapper'>
@@ -314,39 +320,47 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
 
                     <div className='esadir_docs_depart_name mt-2' >
                       <h4 className='m-0'>For sales and marketing related</h4>
-
-                      {/* {employeeNames.length > 0 ? (
-                        employeeNames.map((employee, index) => (
-                          <div key={index} className="ConcerneddepartPerson mt-1">
-                            <p>{employee.ename}</p>
-                            <div className="d-flex align-items-center justify-content-between">
-                              <label>
-                                {employee.newDesignation === "Business Development Executive" && "BDE" ||
-                                  employee.newDesignation === "Business Development Manager" && "BDM" ||
-                                  employee.newDesignation},
-                                {employee.branchOffice === "Sindhu Bhawan" && "SBR" || employee.branchOffice}
-                              </label>
-                              <label className="d-flex align-items-center justify-content-between">
-                                <div className="mr-1">
-                                  <a
-                                    target="_blank"
-                                    className="text-decoration-none text-dark"
-                                    href={`https://wa.me/91${employee.number}`}
-                                  >
-                                    {employee.number}
-                                  </a>
-                                </div>
-                                <div className="wp-icon">
-                                  <FaWhatsapp />
-                                </div>
-                              </label>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p>No concerned employees found.</p>
-                      )} */}
                       <div className='ConcerneddepartPerson mt-1'>
+
+                        {employeeNames.length > 0 ? (
+                          employeeNames.map((employee, index) => (
+                            <div key={index} className="ConcerneddepartPerson mt-1">
+                              <div className='d-flex'>
+                                <img src={employee.profilePhoto?.length !== 0
+                                  ? `${secretKey}/employee/fetchProfilePhoto/${employee._id}/${employee.profilePhoto?.[0]?.filename}`
+                                  : employee.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{height: "35px", width: "35px", borderRadius: "50%"}} />
+                                <p className="ms-2 mt-2">{employee.ename}</p>
+                              </div>
+                              <div className="d-flex align-items-center justify-content-between">
+                                <label>
+                                  {employee.newDesignation === "Business Development Executive" && "BDE" ||
+                                    employee.newDesignation === "Business Development Manager" && "BDM" ||
+                                    employee.newDesignation},{" "}
+                                  {employee.branchOffice === "Sindhu Bhawan" && "SBR" || employee.branchOffice} Branch
+                                </label>
+                                <label className="d-flex align-items-center justify-content-between">
+                                  <div className="mr-1">
+                                    <a
+                                      target="_blank"
+                                      className="text-decoration-none text-dark"
+                                      href={`https://wa.me/91${employee.number}`}
+                                    >
+                                      {employee.number}
+                                    </a>
+                                  </div>
+                                  <div className="wp-icon">
+                                    <FaWhatsapp />
+                                  </div>
+                                </label>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No concerned employees found.</p>
+                        )}
+                      </div>
+
+                      {/* <div className='ConcerneddepartPerson mt-1'>
                         <p>Vaibhav Acharya</p>
                         <div className='d-flex align-items-center justify-content-between'>
                           <label>Floor Manager, Gota Branch</label>
@@ -373,24 +387,30 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
                             </div>
                           </label>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className='esadir_docs_depart_name mt-2' >
                       <h4 className='m-0'>For Backend Process Related</h4>
                       <div className='ConcerneddepartPerson mt-1'>
 
-                        {/* {headNames.length > 0 ? (
+                        {headNames.length > 0 ? (
                           headNames.map((head, index) => (
                             <div key={index} className="ConcerneddepartPerson mt-1">
+                              <div className='d-flex'>
+                                <img src={head.profilePhoto?.length !== 0
+                                  ? `${secretKey}/employee/fetchProfilePhoto/${head._id}/${head.profilePhoto?.[0]?.filename}`
+                                  : head.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{height: "35px", width: "35px", borderRadius: "50%"}} />
+                                <p className="ms-2 mt-2">{head.ename}</p>
+                              </div>
                               <p>{head.ename}</p>
                               <div className="d-flex align-items-center justify-content-between">
                                 <label>
                                   <label>
                                     {head.newDesignation === "Business Development Executive" && "BDE" ||
                                       head.newDesignation === "Business Development Manager" && "BDM" ||
-                                      head.newDesignation},
-                                    {head.branchOffice === "Sindhu Bhawan" && "SBR" || head.branchOffice}
+                                      head.newDesignation},{" "}
+                                    {head.branchOffice === "Sindhu Bhawan" && "SBR" || head.branchOffice} Branch
                                   </label>
                                 </label>
                                 <label className="d-flex align-items-center justify-content-between">
@@ -412,8 +432,8 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
                           ))
                         ) : (
                           <p>No concerned employees found.</p>
-                        )} */}
-                        <p>RonakKumar</p>
+                        )}
+                        {/* <p>RonakKumar</p>
                         <div className='d-flex align-items-center justify-content-between'>
                           <label>MD</label>
                           <label className='d-flex align-items-center justify-content-between'>
@@ -424,33 +444,61 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
                               <FaWhatsapp />
                             </div>
                           </label>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
+
                   <div className='esadir_docs bdr-btm-eee'>
                     <h3 className='m-0 esadir_docs_depart'>Portfolio</h3>
                     <div className='esadir_docs_depart_name'>
                       {/* <a className='link_wrap'>https://drive.google.com/drive/u/1/folders/1XJlCdsbgw_2_7gwT6EKANPxPZ5MN9Kbg</a>, */}
-                      <a className='link_wrap' target="_blank" href={service?.portfolio}>{service?.portfolio}</a>
+                      {service?.portfolio?.map((portfolio, index) => {
+                        return <div key={index}>
+                          <a className='link_wrap'
+                            target="_blank"
+                            href={portfolio}
+                            rel="noopener noreferrer"
+                          >
+                            {portfolio}
+                          </a>
+                        </div>
+                      })}
                     </div>
                   </div>
+
                   <div className='esadir_docs '>
                     <h3>Documents</h3>
                     <div className='row'>
-                      <div className='col'>
-                        <div className="booking-docs-preview">
-                          <div className="booking-docs-preview-img" >
-                            <img src={pdfimg}></img>
+                      {service?.documents?.map((doc, index) => {
+                        // Extract the file extension
+                        const fileExtension = doc.filename.split('.').pop().toLowerCase();
+
+                        // Check if the file is an image (jpg, jpeg, png)
+                        const isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
+
+                        return (
+                          <div className='col' key={index}>
+                            <div className="booking-docs-preview" onClick={() => openDocument(doc.filename)}>
+                              <div className="booking-docs-preview-img">
+                                {isImage ? (
+                                  <img src={`${secretKey}/services/fetchDocuments/${service._id}/${doc.filename}`} alt={doc.originalname} />
+                                ) : (
+                                  <img src={pdfimg} alt="Document Preview" />
+                                )}
+                              </div>
+                              <div className="booking-docs-preview-text">
+                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0">
+                                  {doc.originalname}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <div className="booking-docs-preview-text">
-                            <p className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0">
-                              hi
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className='col'>
+                        );
+                      })}
+
+
+                      {/* <div className='col'>
                         <div className="booking-docs-preview">
                           <div className="booking-docs-preview-img" >
                             <img src={pdfimg}   ></img>
@@ -473,9 +521,10 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
