@@ -66,7 +66,8 @@ function Services() {
     const [services, setServices] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showAddDepartment, setShowAddDepartment] = useState(false);
-    const [showAddServices, setShowAddService] = useState(false);
+    const [showAddService, setShowAddService] = useState(false);
+    const [showAddServiceDetails, setShowAddServiceDetails] = useState(false);
     const [showDepartments, setShowDepartments] = useState(false);
     const [departments, setDepartments] = useState([]);
     const [departmentName, setDepartmentName] = useState("");
@@ -76,7 +77,7 @@ function Services() {
     const [sericeErrorMessage, setServiceErrorMessage] = useState("");
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
 
-    const handleClose = () => {
+    const handleCloseAddService = () => {
         setShowAddDepartment(false);
         setShowDepartments(false);
         setDepartmentErrorMessage("");
@@ -87,8 +88,8 @@ function Services() {
         setServiceDescription("");
     };
 
-    const handleCloseShowAddService = () => {
-        setShowAddService(false);
+    const handleCloseShowAddServiceDetails = () => {
+        setShowAddServiceDetails(false);
     }
 
     const fetchServices = async () => {
@@ -216,7 +217,7 @@ function Services() {
             <Navbar />
 
             
-            {!showAddServices && 
+            {!showAddServiceDetails && 
             <div className="page-wrapper">
 
                 <div className="page-header">
@@ -337,7 +338,7 @@ function Services() {
                                                                 </Stack>
                                                             </td>
                                                             <td>
-                                                                <button className='btn btn-sm btnaction-btn action-btn-primary' onClick={() => setShowAddService(true)}>
+                                                                <button className='btn btn-sm btnaction-btn action-btn-primary' onClick={() => setShowAddServiceDetails(true)}>
                                                                     Add
                                                                 </button>
                                                             </td>
@@ -427,7 +428,7 @@ function Services() {
             >
                 <DialogTitle>
                     Add Department{" "}
-                    <IconButton onClick={handleClose} style={{ float: "right" }}>
+                    <IconButton onClick={handleCloseAddService} style={{ float: "right" }}>
                         <CloseIcon color="primary" />
                     </IconButton>
                 </DialogTitle>
@@ -521,7 +522,7 @@ function Services() {
                 </Button>
             </Dialog>
 
-            {showAddServices && <AddServices close={handleCloseShowAddService} fetchServices={fetchServices} />}
+            {showAddServiceDetails && <AddServices close={handleCloseShowAddServiceDetails} fetchServices={fetchServices} />}
         </div>
     )
 }
