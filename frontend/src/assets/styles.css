@@ -2188,7 +2188,7 @@ th.th-sticky1::after {
 
 .tbl-scroll {
   max-height: calc(100vh - 306px);
-  overflow-y: scroll;
+  overflow-y: auto;
   border-radius: 10px;
 }
 

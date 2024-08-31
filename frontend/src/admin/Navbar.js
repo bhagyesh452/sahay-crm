@@ -9,7 +9,7 @@ import { GrDocumentStore } from "react-icons/gr";
 import { BsFillPersonVcardFill } from "react-icons/bs";
 import { BiBookContent } from "react-icons/bi";
 import { AiOutlineTeam } from "react-icons/ai";
-import { MdMedicalServices } from "react-icons/md";
+import { MdOutlineMedicalServices } from "react-icons/md";
 
 
 function Navbar() {
@@ -166,7 +166,7 @@ function Navbar() {
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                        <MdOutlineMedicalServices  style={{ height: "24px", width: "19px", marginRight: "5px" }} />
                       </span>
                       <span className="nav-link-title">Schemes & Services</span>
                     </a>

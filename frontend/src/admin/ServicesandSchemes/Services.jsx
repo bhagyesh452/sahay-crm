@@ -289,8 +289,8 @@ function Services() {
                     <div className="container-xl">
                         <div className='my-card mt-2'>
                             <div className="card-body">
-                                <div id="table-default" className="row tbl-scroll">
-                                    <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+                                <div id="table-default" className="table-responsive tbl-scroll">
+                                    <table className="table-vcenter tbl-collps table-nowrap admin-dash-tbl w-100"  >
 
                                         <thead className="admin-dash-tbl-thead">
                                             <tr>
