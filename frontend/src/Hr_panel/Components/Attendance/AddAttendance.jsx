@@ -451,12 +451,10 @@ function AddAttendance({ year, month, date, employeeData }) {
                                     status = "LC";
                                 } else if (workingMinutes >= 429) { // 7 hours 15 minutes in minutes
                                     status = "Present";
-                                } else if (workingMinutes >= 210) { // 7 hours 15 minutes / 2 in minutes
+                                } else if (workingMinutes > 120 && workingMinutes < 210) { // 7 hours 15 minutes / 2 in minutes
                                     status = "Half Day";
-                                } else if (workingMinutes <= 120) { // 2 hours in minutes
-                                    status = "Leave";
                                 } else {
-                                    status = "";
+                                    status = "Leave";
                                 }
                                 console.log("status", status)
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 const ServicesModel = require("../models/ServicesModel");
@@ -99,20 +100,40 @@ router.post("/addServices/:id", upload.fields([
 router.get("/fetchServices", async (req, res) => {
     try {
         const services = await ServicesModel.find();
-        res.status(200).json({result: true, message: "Services successfully fetched", data: services});
+        res.status(200).json({ result: true, message: "Services successfully fetched", data: services });
     } catch (error) {
-        res.status(500).json({result: false, message: "Error fetching services", error: error});
+        res.status(500).json({ result: false, message: "Error fetching services", error: error });
     }
 });
 
 router.get("/fetchServiceFromServiceName/:serviceName", async (req, res) => {
-    const {serviceName} = req.params;
+    const { serviceName } = req.params;
     try {
-        const service = await ServicesModel.findOne({serviceName: serviceName});
-        res.status(200).json({result: true, message: "Service successfully fetched", data: service});
+        const service = await ServicesModel.findOne({ serviceName: serviceName });
+        res.status(200).json({ result: true, message: "Service successfully fetched", data: service });
     } catch (error) {
-        res.status(500).json({result: false, message: "Error fetching service", error: error});
+        res.status(500).json({ result: false, message: "Error fetching service", error: error });
     }
+});
+
+// Fetching documents from services
+router.get("/fetchDocuments/:id/:filename", (req, res) => {
+    const { id, filename } = req.params;
+    const pdfPath = path.join(
+        __dirname,
+        `../ServicesDocs/${id}/${filename}`
+    );
+
+    // Check if the file exists
+    fs.access(pdfPath, fs.constants.F_OK, (err) => {
+        if (err) {
+            // console.error(err);
+            return res.status(404).json({ error: "File not found" });
+        }
+
+        // If the file exists, send it
+        res.sendFile(pdfPath);
+    });
 });
 
 module.exports = router;

@@ -177,6 +177,7 @@ function EmployeeAssets() {
 
     const handleBack = () => {
         setServiceName("");
+        setDepartmentName("");
     };
 
     // console.log("Business registration services :", businessRegistrationServices);
@@ -418,7 +419,6 @@ function EmployeeAssets() {
                                             type="text"
                                             name="bdeName-search"
                                             id="bdeName-search"
-
                                         />
                                     </div>
                                 </div>
