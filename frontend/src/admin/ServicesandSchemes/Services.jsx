@@ -211,190 +211,212 @@ function Services() {
         }
     }, [showDepartments]);
     return (
-        <>
+        <div>
             <Header />
             <Navbar />
 
-            {!showAddServices && <div className="card">
-                <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
-                    <div className="dashboard-title pl-1"  >
-                        <h2 className="my-1 ms-3">
-                            Services and Schemes
-                        </h2>
-                    </div>
-                    <div className="d-flex align-items-center pr-1">
-                        <div className="filter-booking mr-1 d-flex align-items-center">
-                            <div className='d-flex align-items-center justify-content-between'>
-                                <div className='form-group ml-1 me-2 my-1'>
-                                    <button
-                                        className="btn btn-info d-none d-sm-inline-block"
-                                        onClick={() => setShowAddDepartment(true)}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="icon"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="2"
-                                            stroke="currentColor"
-                                            fill="none"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M12 5l0 14" />
-                                            <path d="M5 12l14 0" />
-                                        </svg>
-                                        Add Department
-                                    </button>
-                                </div>
-                                <div className='form-group ml-1 me-2 my-1'>
-                                    <button
-                                        className="btn btn-primary d-none d-sm-inline-block"
-                                        onClick={() => setShowAddService(true)}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="icon"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="2"
-                                            stroke="currentColor"
-                                            fill="none"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M12 5l0 14" />
-                                            <path d="M5 12l14 0" />
-                                        </svg>
-                                        Add Service
-                                    </button>
+            
+            {!showAddServices && 
+            <div className="page-wrapper">
+
+                <div className="page-header">
+                    <div className="container-xl">
+                        <div className='d-flex align-items-center justify-content-between'>
+                            <div className="dashboard-title"  >
+                                <h2 className="m-0">
+                                    Services and Schemes
+                                </h2>
+                            </div>
+                            <div className="d-flex align-items-center">
+                                <div className="filter-booking mr-1 d-flex align-items-center">
+                                    <div className='d-flex align-items-center justify-content-between'>
+                                        <div className='form-group'>
+                                            <button
+                                                className="btn action-btn-primary"
+                                                onClick={() => setShowAddDepartment(true)}
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="icon"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    stroke-width="2"
+                                                    stroke="currentColor"
+                                                    fill="none"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                >
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                    <path d="M12 5l0 14" />
+                                                    <path d="M5 12l14 0" />
+                                                </svg>
+                                                Add Department
+                                            </button>
+                                        </div>
+                                        <div className='form-group ml-1'>
+                                            <button
+                                                className="btn action-btn-alert"
+                                                onClick={() => setShowAddService(true)}
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="icon"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    stroke-width="2"
+                                                    stroke="currentColor"
+                                                    fill="none"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                >
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                    <path d="M12 5l0 14" />
+                                                    <path d="M5 12l14 0" />
+                                                </svg>
+                                                Add Service
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="card-body">
-                    <div id="table-default" className="row tbl-scroll">
-                        <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+                <div className="page-body">
+                    <div className="container-xl">
+                        <div className='my-card mt-2'>
+                            <div className="card-body">
+                                <div id="table-default" className="row tbl-scroll">
+                                    <table className="table-vcenter table-nowrap admin-dash-tbl"  >
 
-                            <thead className="admin-dash-tbl-thead">
-                                <tr>
-                                    <th>Sr. No</th>
-                                    <th>Department Name</th>
-                                    <th>Services Name</th>
-                                    <th>Hide Service</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-
-                            {isLoading ? (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="11" >
-                                            <div className="LoaderTDSatyle w-100" >
-                                                <ClipLoader
-                                                    color="lightgrey"
-                                                    currentDataLoading
-                                                    size={30}
-                                                    aria-label="Loading Spinner"
-                                                    data-testid="loader"
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            ) : services.length !== 0 ? (
-                                <>
-
-                                    <tbody>
-                                        {services.map((service, index) => (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{service.departmentName}</td>
-                                                <td>{service.serviceName}</td>
-                                                <td>
-                                                    <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
-                                                        <AntSwitch
-                                                            checked={service.hideService}
-                                                            onChange={(e) => handleToggleChange(service.serviceName)}
-                                                            inputProps={{ 'aria-label': 'ant design' }} />
-                                                    </Stack>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex justify-content-center align-items-center">
-                                                        <div className="icons-btn">
-                                                            <IconButton>
-                                                                {" "}
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                    }}
-                                                                />
-                                                            </IconButton>
-                                                        </div>
-
-                                                        <div className="icons-btn">
-                                                            <IconButton>
-                                                                <ModeEditIcon
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        color: "#a29d9d",
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                    }}
-                                                                />
-                                                            </IconButton>
-                                                        </div>
-
-                                                        <div className="icons-btn">
-                                                            <IconButton>
-                                                                <IconTrash
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        color: "red",
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                    }}
-                                                                />
-                                                            </IconButton>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                        <thead className="admin-dash-tbl-thead">
+                                            <tr>
+                                                <th>Sr. No</th>
+                                                <th>Department Name</th>
+                                                <th>Services Name</th>
+                                                <th>Hide Service</th>
+                                                <th>Add Service Details</th>
+                                                <th>Action</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
+                                        </thead>
 
-                                    <tfoot className="admin-dash-tbl-tfoot">
-                                        {/* <tr style={{ fontWeight: 500 }}>
-                                            <td>Total</td>
-                                            <td>{serviceAnalysisData.length}</td>
-                                            <td>{totalTimesSold}</td>
-                                            <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
-                                        </tr> */}
-                                    </tfoot>
-                                </>
-                            ) : (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="4" className="text-center"><Nodata /></td>
-                                    </tr>
-                                </tbody>
-                            )}
+                                        {isLoading ? (
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan="5" >
+                                                        <div className="LoaderTDSatyle w-100" >
+                                                            <ClipLoader
+                                                                color="lightgrey"
+                                                                currentDataLoading
+                                                                size={30}
+                                                                aria-label="Loading Spinner"
+                                                                data-testid="loader"
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        ) : services.length !== 0 ? (
+                                            <>
 
-                        </table>
+                                                <tbody>
+                                                    {services.map((service, index) => (
+                                                        <tr key={index}>
+                                                            <td>{index + 1}</td>
+                                                            <td>{service.departmentName}</td>
+                                                            <td>{service.serviceName}</td>
+                                                            <td>
+                                                                <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+                                                                    <AntSwitch
+                                                                        checked={service.hideService}
+                                                                        onChange={(e) => handleToggleChange(service.serviceName)}
+                                                                        inputProps={{ 'aria-label': 'ant design' }} />
+                                                                </Stack>
+                                                            </td>
+                                                            <td>
+                                                                <button className='btn btn-sm btnaction-btn action-btn-primary' onClick={() => setShowAddService(true)}>
+                                                                    Add
+                                                                </button>
+                                                            </td>
+                                                            <td>
+                                                                <div className="d-flex justify-content-center align-items-center">
+                                                                    <div className="icons-btn">
+                                                                        <IconButton>
+                                                                            {" "}
+                                                                            <IconEye
+                                                                                style={{
+                                                                                    width: "14px",
+                                                                                    height: "14px",
+                                                                                    color: "#d6a10c",
+                                                                                }}
+                                                                            />
+                                                                        </IconButton>
+                                                                    </div>
+
+                                                                    <div className="icons-btn">
+                                                                        <IconButton>
+                                                                            <ModeEditIcon
+                                                                                style={{
+                                                                                    cursor: "pointer",
+                                                                                    color: "#a29d9d",
+                                                                                    width: "14px",
+                                                                                    height: "14px",
+                                                                                }}
+                                                                            />
+                                                                        </IconButton>
+                                                                    </div>
+
+                                                                    <div className="icons-btn">
+                                                                        <IconButton>
+                                                                            <IconTrash
+                                                                                style={{
+                                                                                    cursor: "pointer",
+                                                                                    color: "red",
+                                                                                    width: "14px",
+                                                                                    height: "14px",
+                                                                                }}
+                                                                            />
+                                                                        </IconButton>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+
+                                                <tfoot className="admin-dash-tbl-tfoot">
+                                                    {/* <tr style={{ fontWeight: 500 }}>
+                                                        <td>Total</td>
+                                                        <td>{serviceAnalysisData.length}</td>
+                                                        <td>{totalTimesSold}</td>
+                                                        <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
+                                                        <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
+                                                        <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
+                                                        <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
+                                                    </tr> */}
+                                                </tfoot>
+                                            </>
+                                        ) : (
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan="5" className="text-center"><Nodata /></td>
+                                                </tr>
+                                            </tbody>
+                                        )}
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>}
+
+            </div>
+            }
+            
 
             {/* Dialog box to add department */}
             <Dialog
@@ -500,7 +522,7 @@ function Services() {
             </Dialog>
 
             {showAddServices && <AddServices close={handleCloseShowAddService} fetchServices={fetchServices} />}
-        </>
+        </div>
     )
 }
 
