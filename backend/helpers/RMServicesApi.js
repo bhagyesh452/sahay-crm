@@ -244,6 +244,15 @@ router.get("/rm-sevicesgetrequest/justfortest", async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
+router.get("/adminexecutivedata/justfortest", async (req, res) => {
+  try {
+    const response = await AdminExecutiveModel.find();
+    res.status(200).json(response);
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
 
 // router.get('/rm-sevicesgetrequest', async (req, res) => {
 //   try {

@@ -179,10 +179,10 @@ function ManagerBookings() {
     try {
 
       const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest/justfortest`);
-      const ExecutiveDataResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`);
+      const ExecutiveDataResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata/justfortest`);
       const servicedata = servicesResponse.data;
       const newservicesdata = ExecutiveDataResponse.data;
-      console.log("rmdata" , servicedata)
+      console.log("rmdata" , newservicesdata)
       setRmServicesData(servicedata)
       setAdminExecutiveData(newservicesdata)
 

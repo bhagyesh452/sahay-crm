@@ -286,10 +286,8 @@ function ViewAttendance({ year, month, date }) {
                 status = "LC";
             } else if (workingMinutes >= 429) { // 7 hours 15 minutes in minutes
                 status = "Present";
-            } else if (workingMinutes >= 210) { // 7 hours 15 minutes / 2 in minutes
+            } else if (workingMinutes > 120 && workingMinutes < 210) { // 7 hours 15 minutes / 2 in minutes
                 status = "Half Day";
-            } else if (workingMinutes <= 120) { // 2 hours in minutes
-                status = "Leave";
             } else {
                 status = "Leave";
             }
@@ -568,30 +566,74 @@ function ViewAttendance({ year, month, date }) {
                                                                     }
                                                                 </div>
                                                                 {!status && (
+                                                                    // <div>
+                                                                    //     {selectedDate < joiningDate ? (
+                                                                    //         <div className='before-joining-icon'><FcCancel /></div>
+                                                                    //     ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
+                                                                    //         // Check if the previous day (Saturday) or the next day (Monday) has "Leave" status
+                                                                    //         attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
+                                                                    //             attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status === "Leave" ? (
+                                                                    //             <>
+                                                                    //                 <div className="l-leave">L</div>    {/* Fill Sunday with "L" if adjacent days have "Leave" */}
+                                                                    //                 <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if adjacent days have Leave */}
+                                                                    //             </>
+                                                                    //         ) : (
+                                                                    //             <div className="s-sunday">S</div> // Otherwise, fill with "S"
+                                                                    //         )
+                                                                    //     ) : (
+                                                                    //         <button
+                                                                    //             className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
+                                                                    //             onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                    //             disabled={isFutureDate} // Disable button for future dates
+                                                                    //         >
+                                                                    //             {day <= daysInMonth && <FaPlus />}
+                                                                    //         </button>
+                                                                    //     )}
+                                                                    // </div>
                                                                     <div>
-                                                                        {selectedDate < joiningDate ? (
-                                                                            <div className='before-joining-icon'><FcCancel /></div>
-                                                                        ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
-                                                                            // Check if the previous day (Saturday) or the next day (Monday) has "Leave" status
-                                                                            attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status === "Leave" ||
-                                                                                attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status === "Leave" ? (
-                                                                                <>
-                                                                                    <div className="l-leave">L</div>    {/* Fill Sunday with "L" if adjacent days have "Leave" */}
-                                                                                    <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if adjacent days have Leave */}
-                                                                                </>
-                                                                            ) : (
-                                                                                <div className="s-sunday">S</div> // Otherwise, fill with "S"
-                                                                            )
-                                                                        ) : (
-                                                                            <button
-                                                                                className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
-                                                                                onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
-                                                                                disabled={isFutureDate} // Disable button for future dates
-                                                                            >
-                                                                                {day <= daysInMonth && <FaPlus />}
-                                                                            </button>
-                                                                        )}
-                                                                    </div>
+                                                                    {selectedDate < joiningDate ? (
+                                                                        <div className='before-joining-icon'><FcCancel /></div>
+                                                                    ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
+                                                                        // Get the status of the previous day (Saturday) and the next day (Monday)
+                                                                        (() => {
+                                                                            const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status;
+                                                                            const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
+
+                                                                            if (
+                                                                                (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                                                                                (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                                                                                (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                                                                            ) {
+                                                                                return (
+                                                                                    <>
+                                                                                        <div className="sl-sunday">SL</div>    {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
+                                                                                        <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if conditions are met */}
+                                                                                    </>
+                                                                                );
+                                                                            } else if (
+                                                                                (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
+                                                                            ) {
+                                                                                return (
+                                                                                    <>
+                                                                                        <div className="sh-sunday">SH</div>    {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                        <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday if conditions are met */}
+                                                                                    </>
+                                                                                );
+                                                                            } else {
+                                                                                return <div className="s-sunday">S</div>; // Otherwise, fill with "S"
+                                                                            }
+                                                                        })()
+                                                                    ) : (
+                                                                        <button
+                                                                            className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
+                                                                            onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                            disabled={isFutureDate} // Disable button for future dates
+                                                                        >
+                                                                            {day <= daysInMonth && <FaPlus />}
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+
                                                                 )}
 
                                                             </td>
@@ -831,9 +873,7 @@ function ViewAttendance({ year, month, date }) {
                                                                             </button>
                                                                         )}
                                                                     </div>
-
                                                                 )}
-
                                                             </td>
                                                         );
                                                     })}
