@@ -144,6 +144,13 @@ th {
   box-shadow: none !important;
 }
 
+.multivalue-input {
+  border: 1px solid #dadfe5 !important;
+  border-radius: 5px;
+  padding: 5px;
+  height: 35px;
+}
+
 .form-control {
   /* border: 1px solid #ffb900 !important; */
   border: 1px solid #dadfe5 !important;

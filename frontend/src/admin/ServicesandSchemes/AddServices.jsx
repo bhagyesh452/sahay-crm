@@ -10,6 +10,9 @@ import Swal from "sweetalert2";
 import Select from "react-select";
 import 'quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
+import TagsInput from "react-tagsinput";
+import "react-tagsinput/react-tagsinput.css"; // Import default styles
+import { height } from '@mui/system';
 
 function AddServices({ close, fetchServices }) {
 
@@ -116,7 +119,7 @@ function AddServices({ close, fetchServices }) {
     const [teamInfo, setTeamInfo] = useState({
         employeeName: [],
         headName: [],
-        portfolio: "",
+        portfolio: [],
         document: []
     });
     const [documentArray, setDocumentArray] = useState([]);
@@ -193,7 +196,30 @@ function AddServices({ close, fetchServices }) {
             [name]: value
         }));
 
-        setTeamInfo(prevState => ({
+        // setTeamInfo(prevState => ({
+        //     ...prevState,
+        //     [name]: value
+        // }));
+
+        // Clear error for this field
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: ""
+        }));
+    };
+
+    const handleTextEditorChange = (name, value) => {
+        setObjectivesInfo(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+
+        setRequirementsInfo(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+
+        setProcessInfo(prevState => ({
             ...prevState,
             [name]: value
         }));
@@ -221,26 +247,16 @@ function AddServices({ close, fetchServices }) {
         }));
     };
 
-    const handleTextEditorChange = (name, value) => {
-        setObjectivesInfo(prevState => ({
+    const handlePortfolioChange = (tags) => {
+        setTeamInfo(prevState => ({
             ...prevState,
-            [name]: value
+            portfolio: tags  // Update portfolio as an array of tags
         }));
 
-        setRequirementsInfo(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-
-        setProcessInfo(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-
-        // Clear error for this field
+        // Clear error for portfolio
         setErrors((prevErrors) => ({
             ...prevErrors,
-            [name]: ""
+            portfolio: ""
         }));
     };
 
@@ -799,7 +815,7 @@ function AddServices({ close, fetchServices }) {
                                                                 </div>
 
                                                                 <div className="row">
-                                                                    <div className="col-sm-6">
+                                                                    {/* <div className="col-sm-6">
                                                                         <div className="form-group">
                                                                             <label for="portfolio">Portfolio<span style={{ color: "red" }}> * </span></label>
                                                                             <input
@@ -810,6 +826,21 @@ function AddServices({ close, fetchServices }) {
                                                                                 placeholder="Enter portfolio link"
                                                                                 value={teamInfo.portfolio}
                                                                                 onChange={(e) => handleInputChange(e)}
+                                                                            />
+                                                                            {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>}
+                                                                        </div>
+                                                                    </div> */}
+
+                                                                    <div className="col-sm-6">
+                                                                        <div className="form-group">
+                                                                            <label htmlFor="portfolio">Portfolio<span style={{ color: "red" }}> * </span></label>
+                                                                            <TagsInput
+                                                                                className="multivalue-input mt-1"
+                                                                                value={teamInfo.portfolio || []}
+                                                                                onChange={handlePortfolioChange}
+                                                                                inputProps={{
+                                                                                    placeholder: "Enter links"
+                                                                                }}
                                                                             />
                                                                             {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>}
                                                                         </div>
