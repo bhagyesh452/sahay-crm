@@ -5,14 +5,26 @@ const router = express.Router();
 router.post("/addDepartment", async (req, res) => {
     try {
         const { departmentName, serviceName, serviceDescription } = req.body;
-        const newDepartment = new DepartmentModel({
-            departmentName: departmentName,
-            serviceName: serviceName,
-            serviceDescription: serviceDescription
-        });
 
-        // Save the department to the database
-        const data = await newDepartment.save();
+        // Check if department already exists
+        const existingDepartment = await DepartmentModel.findOne({ departmentName });
+
+        let data;
+        if (existingDepartment && !existingDepartment.serviceName) {
+            // If department exists but with default values, update it with new service details
+            existingDepartment.serviceName = serviceName;
+            existingDepartment.serviceDescription = serviceDescription;
+            data = await existingDepartment.save();
+        } else {
+            // Otherwise, create a new department
+            const newDepartment = new DepartmentModel({
+                departmentName: departmentName,
+                serviceName: serviceName || "",
+                serviceDescription: serviceDescription || "",
+            });
+            data = await newDepartment.save();
+        }
+
         res.status(200).json({ result: true, message: "Department Successfully Added", data: data });
     } catch (error) {
         res.status(500).json({ result: false, message: "Error adding department", error: error });

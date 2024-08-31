@@ -4,7 +4,8 @@ import { GrFormNext } from "react-icons/gr";
 import pdfimg from "../../static/my-images/pdf.png";
 import { FaWhatsapp } from "react-icons/fa";
 import axios from 'axios';
-
+import EmpDfaullt from "../../static/EmployeeImg/office-man.png"
+import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 
 function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }) {
 
@@ -324,7 +325,12 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
                         {employeeNames.length > 0 ? (
                           employeeNames.map((employee, index) => (
                             <div key={index} className="ConcerneddepartPerson mt-1">
-                              <p>{employee.ename}</p>
+                              <div className='d-flex'>
+                                <img src={employee.profilePhoto?.length !== 0
+                                  ? `${secretKey}/employee/fetchProfilePhoto/${employee._id}/${employee.profilePhoto?.[0]?.filename}`
+                                  : employee.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{height: "35px", width: "35px", borderRadius: "50%"}} />
+                                <p className="ms-2 mt-2">{employee.ename}</p>
+                              </div>
                               <div className="d-flex align-items-center justify-content-between">
                                 <label>
                                   {employee.newDesignation === "Business Development Executive" && "BDE" ||
@@ -391,6 +397,12 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
                         {headNames.length > 0 ? (
                           headNames.map((head, index) => (
                             <div key={index} className="ConcerneddepartPerson mt-1">
+                              <div className='d-flex'>
+                                <img src={head.profilePhoto?.length !== 0
+                                  ? `${secretKey}/employee/fetchProfilePhoto/${head._id}/${head.profilePhoto?.[0]?.filename}`
+                                  : head.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{height: "35px", width: "35px", borderRadius: "50%"}} />
+                                <p className="ms-2 mt-2">{head.ename}</p>
+                              </div>
                               <p>{head.ename}</p>
                               <div className="d-flex align-items-center justify-content-between">
                                 <label>

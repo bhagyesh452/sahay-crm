@@ -58,6 +58,13 @@ function AddServices({ close, fetchServices }) {
         departmentName: "",
         serviceName: "",
     });
+    // useEffect(() => {
+    //     setDepartmentInfo({
+    //         departmentName: departmentName || "",
+    //         serviceName: serviceName || "",
+    //     });
+    // }, [departmentName, serviceName]);
+
     const validateDepartmentInfo = () => {
         const newErrors = {};
         const { departmentName, serviceName } = departmentInfo;
@@ -583,6 +590,14 @@ function AddServices({ close, fetchServices }) {
                                                                                     <option key={index} value={department}>{department}</option>
                                                                                 ))}
                                                                             </select>
+                                                                            {/* <input
+                                                                                type="text"
+                                                                                value={departmentInfo.departmentName}
+                                                                                className="form-control"
+                                                                                placeholder="Enter Department Name"
+                                                                                required
+                                                                                onChange={(e) => handleInputChange(e)}
+                                                                            /> */}
                                                                             {errors.departmentName && <p style={{ color: "red" }}>{errors.departmentName}</p>}
                                                                         </div>
                                                                     </div>
@@ -603,6 +618,14 @@ function AddServices({ close, fetchServices }) {
                                                                                     <option key={index} value={service.serviceName}>{service.serviceName}</option>
                                                                                 ))}
                                                                             </select>
+                                                                            {/* <input
+                                                                                type="text"
+                                                                                value={departmentInfo.serviceName}
+                                                                                className="form-control"
+                                                                                placeholder="Enter Service Name"
+                                                                                required
+                                                                                onChange={(e) => handleInputChange(e)}
+                                                                            /> */}
                                                                             {errors.serviceName && <p style={{ color: "red" }}>{errors.serviceName}</p>}
                                                                         </div>
                                                                     </div>
