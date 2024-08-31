@@ -182,7 +182,7 @@ function ManagerBookings() {
       const ExecutiveDataResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata/justfortest`);
       const servicedata = servicesResponse.data;
       const newservicesdata = ExecutiveDataResponse.data;
-      console.log("rmdata" , servicedata)
+      console.log("rmdata" , newservicesdata)
       setRmServicesData(servicedata)
       setAdminExecutiveData(newservicesdata)
 
