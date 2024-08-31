@@ -65,6 +65,7 @@ import { MdOutlineDeleteSweep } from "react-icons/md";
 import { IoIosClose } from "react-icons/io";
 import { RiShareForwardFill } from "react-icons/ri";
 import { Country, State, City } from 'country-state-city';
+import { format, parseISO } from 'date-fns';
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -135,10 +136,71 @@ function EmployeeParticular() {
   const [newData, setNewData] = useState([]);
   const [branchName, setBranchName] = useState("");
   const [bdmName, setBdmName] = useState("Not Alloted");
+  const [leadHistoryData, setLeadHistoryData] = useState([])
 
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
+
+
+
+
+  const formatDateLeadHistory = (dateInput) => {
+    console.log(dateInput)
+    // Create a Date object if input is a string
+    const date = new Date(dateInput);
+
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date:', dateInput);
+      return '';
+    }
+
+    // Get day, month, and year
+    const day = date.getDate().toString().padStart(2, '0'); // Ensure two digits
+    const month = date.toLocaleString('default', { month: 'long' }); // e.g., "August"
+    const year = date.getFullYear();
+
+    return `${day} ${month}, ${year}`;
+  };
+
+  function formatTime(timeString) {
+    // Assuming timeString is in "3:23:14 PM" format
+    const [time, period] = timeString.split(' ');
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+
+    // Convert 24-hour format to 12-hour format
+    const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const formattedTime = `${formattedHours}:${formattedMinutes} ${period}`;
+
+    return formattedTime;
+  }
+
+  // Function to calculate and format the time difference
+  function timePassedSince(dateTimeString) {
+    const entryTime = new Date(dateTimeString);
+    const now = new Date();
+
+    // Calculate difference in milliseconds
+    const diffMs = now - entryTime;
+
+    // Convert milliseconds to minutes and hours
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    // Format the difference
+    if (diffDays > 0) {
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    } else if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    } else {
+      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    }
+  }
+
+
+
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -353,12 +415,15 @@ function EmployeeParticular() {
       const response = await axios.get(
         `${secretKey}/company-data/employees/${employeeName}`
       );
-
+      const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested/${employeeName}`);
+      const leadHistory = response2.data
+      //console.log("response", response2.data)
       // Sort the data by AssignDate property
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
+      setLeadHistoryData(leadHistory)
       setExtraData(sortedData)
       setNewData(sortedData)
       setmoreEmpData(sortedData)
@@ -383,6 +448,8 @@ function EmployeeParticular() {
       setLoading(false);
     }
   };
+
+  console.log("leadHistr", leadHistoryData)
 
   console.log(moreEmpData.filter(
     (obj) =>
@@ -1135,8 +1202,8 @@ function EmployeeParticular() {
           Swal.showLoading();
         }
       });
- 
-      
+
+
 
       const response = await axios.post(`${secretKey}/company-data/assign-new`, {
         ename: selectedOption === "extractedData" ? "Extracted" : newemployeeSelection,
@@ -1170,7 +1237,7 @@ function EmployeeParticular() {
   };
 
   console.log("employeeData", employeeData)
-  console.log("selectedoption" , selectedOption)
+  console.log("selectedoption", selectedOption)
 
 
 
@@ -2779,15 +2846,20 @@ function EmployeeParticular() {
                             />
                           </th>
                           {/* {(dataStatus === "Matured" && <th>Action</th>) || */}
-                          {(dataStatus === "FollowUp" && (
+                          {(dataStatus === "FollowUp" && (<>
                             <th>View Projection</th>
-                          )) ||
-                            (dataStatus === "Interested" && (
+                            <th>Status Modification Date</th>
+                            <th>Age</th>
+                          </>)) ||
+                            (dataStatus === "Interested" && (<>
                               <th>View Projection</th>
-                            ))}
+                              <th>Status Modification Date</th>
+                              <th>Age</th>
+                            </>))}
                           {dataStatus === "Forwarded" && (<>
                             <th>BDM Name</th>
                             <th>Forwarded Date</th>
+                            <th>Age</th>
                           </>)}
 
                           {dataStatus === "Forwarded" &&
@@ -2824,205 +2896,137 @@ function EmployeeParticular() {
                       ) : (
                         <>
                           {/* {console.log("Current Data :", currentData)} */}
-                          {currentData.length !== 0 && (
+                          {currentData.length !== 0 &&
                             <tbody>
-                              {currentData.map((company, index) => (
-                                <tr
-                                  key={index}
-                                  className={
-                                    selectedRows.includes(company._id)
-                                      ? "selected"
-                                      : ""
-                                  }
-                                  style={{ border: "1px solid #ddd" }}
-                                >
-                                  <td
-                                    style={{
-                                      position: "sticky",
-                                      left: 0,
-                                      zIndex: 1,
-                                      background: "white",
-                                    }}>
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedRows.includes(
-                                        company._id
-                                      )}
-                                      onChange={(e) =>
-                                        handleCheckboxChange(company._id, e)
-                                      }
-                                      onMouseDown={() =>
-                                        handleMouseDown(company._id)
-
-                                      }
-                                      onMouseEnter={() =>
-                                        handleMouseEnter(company._id)
-                                      }
-                                      onMouseUp={handleMouseUp}
-                                    />
-                                  </td>
-
-                                  <td className="td-sticky">
-                                    {startIndex + index + 1}
-                                  </td>
-                                  <td className="td-sticky1">
-                                    {company["Company Name"]}
-                                  </td>
-                                  <td>{company["Company Number"]}</td>
-                                  <td>
-                                    <span>{company["Status"]}</span>
-                                  </td>
-                                  <td>
-                                    <div
-                                      key={company._id}
+                              {currentData.map((company, index) => {
+                                let matchingLeadHistory
+                                if (Array.isArray(leadHistoryData)) {
+                                  matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
+                                  // Do something with matchingLeadHistory
+                                } else {
+                                  console.error("leadHistoryData is not an array");
+                                }
+                                
+                                return (
+                                  <tr
+                                    key={index}
+                                    className={
+                                      selectedRows.includes(company._id)
+                                        ? "selected"
+                                        : ""
+                                    }
+                                    style={{ border: "1px solid #ddd" }}
+                                  >
+                                    <td
                                       style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                      }}
-                                    >
-                                      <p
-                                        className="rematkText text-wrap m-0"
-                                        title={company.Remarks}
-                                      >
-                                        {company.Remarks}
-                                      </p>
-                                      <span>
-                                        <IconButton
-                                          onClick={() => {
-                                            functionopenpopupremarks(
-                                              company._id,
-                                              company.Status,
-                                              company.ename
-                                            );
-                                          }}
-                                        >
-                                          <HiOutlineEye
-                                            style={{
-                                              fontSize: "14px",
-                                              color: "#fbb900",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </span>
-                                    </div>
-                                  </td>
-                                  {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
-                                  {dataStatus === "Forwarded" && (
-                                    <td>
-                                      {company.Status === "Interested" && (
-                                        <span>Interested</span>
-                                      )}
-                                      {company.Status === "FollowUp" && (
-                                        <span>FollowUp</span>
-                                      )}
+                                        position: "sticky",
+                                        left: 0,
+                                        zIndex: 1,
+                                        background: "white",
+                                      }}>
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedRows.includes(
+                                          company._id
+                                        )}
+                                        onChange={(e) =>
+                                          handleCheckboxChange(company._id, e)
+                                        }
+                                        onMouseDown={() =>
+                                          handleMouseDown(company._id)
+
+                                        }
+                                        onMouseEnter={() =>
+                                          handleMouseEnter(company._id)
+                                        }
+                                        onMouseUp={handleMouseUp}
+                                      />
                                     </td>
-                                  )}
-                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+
+                                    <td className="td-sticky">
+                                      {startIndex + index + 1}
+                                    </td>
+                                    <td className="td-sticky1">
+                                      {company["Company Name"]}
+                                    </td>
+                                    <td>{company["Company Number"]}</td>
                                     <td>
-                                      <div key={company._id}
+                                      <span>{company["Status"]}</span>
+                                    </td>
+                                    <td>
+                                      <div
+                                        key={company._id}
                                         style={{
                                           display: "flex",
                                           alignItems: "center",
                                           justifyContent: "space-between",
-                                          width: "100px",
-                                        }}>
+                                        }}
+                                      >
                                         <p
                                           className="rematkText text-wrap m-0"
-                                          title={company.bdmRemarks}
+                                          title={company.Remarks}
                                         >
-                                          {!company.bdmRemarks
-                                            ? "No Remarks"
-                                            : company.bdmRemarks}
+                                          {company.Remarks}
                                         </p>
-                                        <IconButton
-                                          onClick={() => {
-                                            functionopenpopupremarksBdm(
-                                              company._id,
-                                              company.Status,
-                                              company["Company Name"],
-                                              company.bdmName
-                                            );
-                                            //setOpenPopupByBdm(true);
-                                            //setCurrentRemarks(company.Remarks);
-                                            //setCompanyId(company._id);
-                                          }}
-                                        >
-                                          <IconEye
-                                            style={{
-                                              width: "14px",
-                                              height: "14px",
-                                              color: "#d6a10c",
-                                              cursor: "pointer",
+                                        <span>
+                                          <IconButton
+                                            onClick={() => {
+                                              functionopenpopupremarks(
+                                                company._id,
+                                                company.Status,
+                                                company.ename
+                                              );
                                             }}
-                                          />
-                                        </IconButton>
+                                          >
+                                            <HiOutlineEye
+                                              style={{
+                                                fontSize: "14px",
+                                                color: "#fbb900",
+                                              }}
+                                            />
+                                          </IconButton>
+                                        </span>
                                       </div>
                                     </td>
-
-                                  )}
-                                  <td>
-                                    {formatDateNew(
-                                      company["Company Incorporation Date  "]
-                                    )}
-                                  </td>
-                                  <td>{company["City"]}</td>
-                                  <td>{company["State"]}</td>
-                                  <td>{company["Company Email"]}</td>
-                                  <td>{formatDateNew(company["AssignDate"])}</td>
-                                  {(dataStatus === "FollowUp" ||
-                                    dataStatus === "Interested") && (
+                                    {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
+                                    {dataStatus === "Forwarded" && (
                                       <td>
-                                        {company &&
-                                          projectionData &&
-                                          projectionData.some(
-                                            (item) =>
-                                              item.companyName ===
-                                              company["Company Name"]
-                                          ) ? (
-                                          <IconButton>
-                                            <HiOutlineEye
-                                              onClick={() => {
-                                                functionopenprojection(
-                                                  company["Company Name"]
-                                                );
-                                              }}
-                                              style={{
-                                                cursor: "pointer",
-                                                width: "17px",
-                                                height: "17px",
-                                                color: "fbb900",
-                                              }}
-                                            />
-                                          </IconButton>
-                                        ) : (
-                                          <IconButton>
-                                            <HiOutlineEye
-                                              style={{
-                                                cursor: "pointer",
-                                                width: "17px",
-                                                height: "17px",
-                                              }}
-                                              color="lightgrey"
-                                            />
-                                          </IconButton>
+                                        {company.Status === "Interested" && (
+                                          <span>Interested</span>
+                                        )}
+                                        {company.Status === "FollowUp" && (
+                                          <span>FollowUp</span>
                                         )}
                                       </td>
                                     )}
-                                  {dataStatus === "Forwarded" && (<>
-                                    {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
-                                    <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                  </>)}
-
-                                  {/* {dataStatus === "Matured" && (
-                                    <>
+                                    {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
                                       <td>
-                                        <div className="d-flex">
-                                          <div
-                                            style={{ marginRight: "5px" }}
+                                        <div key={company._id}
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            width: "100px",
+                                          }}>
+                                          <p
+                                            className="rematkText text-wrap m-0"
+                                            title={company.bdmRemarks}
+                                          >
+                                            {!company.bdmRemarks
+                                              ? "No Remarks"
+                                              : company.bdmRemarks}
+                                          </p>
+                                          <IconButton
                                             onClick={() => {
-                                              setMaturedID(company._id);
-                                              functionopenAnchor();
+                                              functionopenpopupremarksBdm(
+                                                company._id,
+                                                company.Status,
+                                                company["Company Name"],
+                                                company.bdmName
+                                              );
+                                              //setOpenPopupByBdm(true);
+                                              //setCurrentRemarks(company.Remarks);
+                                              //setCompanyId(company._id);
                                             }}
                                           >
                                             <IconEye
@@ -3033,100 +3037,137 @@ function EmployeeParticular() {
                                                 cursor: "pointer",
                                               }}
                                             />
-                                          </div>
-                                          <div
-                                            onClick={() => {
-                                              handleDeleteBooking(company._id);
-                                            }}
-                                            className="delete-booking"
-                                            style={{ cursor: "pointer", marginRight: "5px" }}
-                                          >
-                                            <DeleteIcon
-                                              style={{
-                                                cursor: "pointer",
-                                                color: "#f70000",
-                                                width: "14px",
-                                                height: "14px",
-                                              }}
-                                            />
-                                          </div>
-                                          <div onClick={() => {
-                                            setCompanyName(company["Company Name"])
-                                            setAddForm(true)
-                                          }} >
-                                            <AddCircleIcon style={{
-                                              cursor: "pointer",
-                                              color: "#4f5b74",
-                                              width: "14px",
-                                              height: "14px",
-                                            }} />
-                                          </div>
+                                          </IconButton>
                                         </div>
                                       </td>
-                                    </>
-                                  )} */}
-                                  {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
-                                    (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
-                                      <td>
-                                        <IconButton onClick={() => {
-                                          handleViewFeedback(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.feedbackRemarks,
-                                            company.feedbackPoints
-                                          )
-                                        }}>
-                                          <RiInformationLine style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }} color="#fbb900" />
-                                        </IconButton>
-                                      </td>
-                                    ) : (
-                                      <td>
-                                        <IconButton onClick={() => {
-                                          handleViewFeedback(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.feedbackRemarks,
-                                            company.feedbackPoints
-                                          )
-                                        }}>
-                                          <RiInformationLine style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }} color="lightgrey" />
-                                        </IconButton>
-                                      </td>
-                                    )
-                                  ) : null}
-                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+
+                                    )}
                                     <td>
-                                      <MdDeleteOutline
-                                        onClick={() => {
-                                          handleReverseAssign(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.bdmAcceptStatus,
-                                            company.Status,
-                                            company.bdmName
-                                          )
-                                        }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="#f70000"
-                                      />
+                                      {formatDateNew(
+                                        company["Company Incorporation Date  "]
+                                      )}
                                     </td>
-                                  )}
-                                </tr>
-                              ))}
+                                    <td>{company["City"]}</td>
+                                    <td>{company["State"]}</td>
+                                    <td>{company["Company Email"]}</td>
+                                    <td>{formatDateNew(company["AssignDate"])}</td>
+                                    {(dataStatus === "FollowUp" ||
+                                      dataStatus === "Interested") && (
+                                        <td>
+                                          {company &&
+                                            projectionData &&
+                                            projectionData.some(
+                                              (item) =>
+                                                item.companyName ===
+                                                company["Company Name"]
+                                            ) ? (
+                                            <IconButton>
+                                              <HiOutlineEye
+                                                onClick={() => {
+                                                  functionopenprojection(
+                                                    company["Company Name"]
+                                                  );
+                                                }}
+                                                style={{
+                                                  cursor: "pointer",
+                                                  width: "17px",
+                                                  height: "17px",
+                                                  color: "fbb900",
+                                                }}
+                                              />
+                                            </IconButton>
+                                          ) : (
+                                            <IconButton>
+                                              <HiOutlineEye
+                                                style={{
+                                                  cursor: "pointer",
+                                                  width: "17px",
+                                                  height: "17px",
+                                                }}
+                                                color="lightgrey"
+                                              />
+                                            </IconButton>
+                                          )}
+                                        </td>
+                                      )}
+                                    {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                      <>
+                                        <td>
+                                          {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
+                                        </td>
+                                        <td>
+                                          {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
+                                        </td>
+
+                                      </>
+                                    )}
+                                    {dataStatus === "Forwarded" && (<>
+                                      {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
+                                      <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                    </>)}
+                                    {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
+                                      (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
+                                        <td>
+                                          <IconButton onClick={() => {
+                                            handleViewFeedback(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.feedbackRemarks,
+                                              company.feedbackPoints
+                                            )
+                                          }}>
+                                            <RiInformationLine style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }} color="#fbb900" />
+                                          </IconButton>
+                                        </td>
+                                      ) : (
+                                        <td>
+                                          <IconButton onClick={() => {
+                                            handleViewFeedback(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.feedbackRemarks,
+                                              company.feedbackPoints
+                                            )
+                                          }}>
+                                            <RiInformationLine style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }} color="lightgrey" />
+                                          </IconButton>
+                                        </td>
+                                      )
+                                    ) : null}
+                                    {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                      <td>
+                                        <MdDeleteOutline
+                                          onClick={() => {
+                                            handleReverseAssign(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.bdmAcceptStatus,
+                                              company.Status,
+                                              company.bdmName
+                                            )
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="#f70000"
+                                        />
+                                      </td>
+                                    )}
+                                  </tr>
+                                )
+                              })}
                             </tbody>
-                          )}
+                          }
                         </>
                       )}
                       {companiesLoading ? (

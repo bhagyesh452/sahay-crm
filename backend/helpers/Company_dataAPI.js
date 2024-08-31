@@ -14,6 +14,8 @@ const jwt = require('jsonwebtoken');
 const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
+const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
+
 
 
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
@@ -53,13 +55,74 @@ router.get("/leads", async (req, res) => {
   }
 });
 
+// router.post("/update-status/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { newStatus, title, date, time,oldStatus } = req.body; // Destructure the required properties from req.body
+
+//   try {
+//     // Update the status field in the database based on the employee id
+//     await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
+
+//     // Create and save a new document in the RecentUpdatesModel collection
+//     const newUpdate = new RecentUpdatesModel({
+//       title: title,
+//       date: date,
+//       time: time,
+//     });
+//     await newUpdate.save();
+
+    
+
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating status:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
-  const { newStatus, title, date, time } = req.body; // Destructure the required properties from req.body
+  const { newStatus, title, date, time, oldStatus } = req.body;
 
   try {
-    // Update the status field in the database based on the employee id
+    // Find the company by ID in the CompanyModel to get the company details
+    const company = await CompanyModel.findById(id);
+    if (!company) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+
+    // Update the status field in the CompanyModel
     await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
+
+    // Check if newStatus is either "FollowUp" or "Interested"
+    if (newStatus === "FollowUp" || newStatus === "Interested") {
+      // Find the company in LeadHistoryForInterestedandFollowModel
+      let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+        "Company Name": company["Company Name"],
+      });
+
+      if (leadHistory) {
+        // If the record exists, update old status, new status, date, and time
+        leadHistory.oldStatus = oldStatus;
+        leadHistory.newStatus = newStatus;
+        leadHistory.Count = 2
+      } else {
+        // If the record does not exist, create a new one with the company name, ename, and statuses
+        leadHistory = new LeadHistoryForInterestedandFollowModel({
+          _id: id,
+          "Company Name": company["Company Name"],
+          ename: company.ename,
+          oldStatus: oldStatus,
+          newStatus: newStatus,
+          date: new Date(),  // Convert the date string to a Date object
+          time: time,
+          Count:1
+        });
+      }
+
+      // Save the lead history update
+      await leadHistory.save();
+    }
 
     // Create and save a new document in the RecentUpdatesModel collection
     const newUpdate = new RecentUpdatesModel({
@@ -75,6 +138,22 @@ router.post("/update-status/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
+  const { ename } = req.params;
+  try {
+    const lead = await LeadHistoryForInterestedandFollowModel.find({ ename: ename });
+    
+    console.log("Lead Data:", lead);
+    res.status(200).send(lead);
+  } catch (error) {
+    console.error("Error Fetching:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 
 router.get("/specific-ename-status/:ename/:status", async (req, res) => {
   const ename = req.params.ename;
@@ -1098,6 +1177,7 @@ router.post("/assign-new", async (req, res) => {
         await TeamLeadsModel.findByIdAndDelete(employee._id);
         await FollowUpModel.findOneAndDelete({ companyName: employee["Company Name"] });
         await RemarksHistory.deleteOne({ companyID: employee._id });
+        await LeadHistoryForInterestedandFollowModel.findOneAndDelete({ "Company Name": employee["Company Name"] })
         await RedesignedLeadformModel.findOneAndUpdate(
           { "Company Name": employee["Company Name"] },  // Filter criteria
           { $set: { isDeletedEmployeeCompany: true } }  // Update operation

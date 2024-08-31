@@ -158,7 +158,7 @@ function EmployeeLeads() {
     const [openBacdrop, setOpenBacdrop] = useState(false);
     const [companyIncoDate, setCompanyIncoDate] = useState(null);
     const [monthIndex, setMonthIndex] = useState(0);
-
+    const [leadHistoryData, setLeadHistoryData] = useState([])
     const currentYear = new Date().getFullYear();
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -166,6 +166,60 @@ function EmployeeLeads() {
     ];
 
     const years = Array.from({ length: currentYear - 1990 }, (_, index) => currentYear - index);
+
+    const formatDateLeadHistory = (dateInput) => {
+        console.log(dateInput)
+        // Create a Date object if input is a string
+        const date = new Date(dateInput);
+
+        if (isNaN(date.getTime())) {
+            console.error('Invalid date:', dateInput);
+            return '';
+        }
+
+        // Get day, month, and year
+        const day = date.getDate().toString().padStart(2, '0'); // Ensure two digits
+        const month = date.toLocaleString('default', { month: 'long' }); // e.g., "August"
+        const year = date.getFullYear();
+
+        return `${day} ${month}, ${year}`;
+    };
+
+    function formatTime(timeString) {
+        // Assuming timeString is in "3:23:14 PM" format
+        const [time, period] = timeString.split(' ');
+        const [hours, minutes, seconds] = time.split(':').map(Number);
+
+        // Convert 24-hour format to 12-hour format
+        const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+        const formattedTime = `${formattedHours}:${formattedMinutes} ${period}`;
+
+        return formattedTime;
+    }
+
+    // Function to calculate and format the time difference
+    function timePassedSince(dateTimeString) {
+        const entryTime = new Date(dateTimeString);
+        const now = new Date();
+
+        // Calculate difference in milliseconds
+        const diffMs = now - entryTime;
+
+        // Convert milliseconds to minutes and hours
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        // Format the difference
+        if (diffDays > 0) {
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        } else if (diffHours > 0) {
+            return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        } else {
+            return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+        }
+    }
 
     useEffect(() => {
         document.title = `Dataanalyst-Sahay-CRM`;
@@ -225,10 +279,10 @@ function EmployeeLeads() {
             if ((selectedEmployee && salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) ||
                 (selectedEmployee2 && salesExecutivesIds2.length > 0 && salesExecutivesIds2[0] === selectedEmployee2._id)) {
                 // If either selectedEmployee matches the condition or selectedEmployee2 matches the condition, set the visibility of the back button to false
-                //console.log("false")
+                console.log("false")
                 setBackButton(false); // assuming backButton is your back button element
             } else {
-                //console.log("true condition")
+                console.log("true condition")
                 // Otherwise, set the visibility to true
                 setBackButton(true); // or any other appropriate display style
             }
@@ -329,12 +383,15 @@ function EmployeeLeads() {
 
             setLoading(true);
             const response = await axios.get(`${secretKey}/company-data/employees/${employeeName}`);
+            const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested/${employeeName}`);
+            const leadHistory = response2.data
 
             // Sort the data by AssignDate property
             const sortedData = response.data.sort((a, b) => {
                 // Assuming AssignDate is a string representation of a date
                 return new Date(b.AssignDate) - new Date(a.AssignDate);
             });
+            setLeadHistoryData(leadHistory)
             setExtraData(sortedData);
             setNewData(sortedData);
             setmoreEmpData(sortedData);
@@ -1923,6 +1980,21 @@ function EmployeeLeads() {
                                                             }}
                                                         />
                                                     </th>
+                                                    {(dataStatus === "FollowUp" && (<>
+                                                       
+                                                        <th>Status Modification Date</th>
+                                                        <th>Age</th>
+                                                    </>)) ||
+                                                        (dataStatus === "Interested" && (<>
+                                                            
+                                                            <th>Status Modification Date</th>
+                                                            <th>Age</th>
+                                                        </>))}
+                                                    {dataStatus === "Forwarded" && (<>
+                                                        <th>BDM Name</th>
+                                                        <th>Forwarded Date</th>
+                                                        <th>Age</th>
+                                                    </>)}
                                                     {dataStatus === "Forwarded" && (
                                                         <th>Action</th>
                                                     )}
@@ -1953,60 +2025,68 @@ function EmployeeLeads() {
                                                 <>
                                                     {currentData.length !== 0 && (
                                                         <tbody>
-                                                            {currentData.map((company, index) => (
-                                                                <tr
-                                                                    key={index}
-                                                                    className={
-                                                                        selectedRows.includes(company._id)
-                                                                            ? "selected"
-                                                                            : ""
-                                                                    }
-                                                                    style={{ border: "1px solid #ddd" }}
-                                                                >
-                                                                    <td
-                                                                        style={{
-                                                                            position: "sticky",
-                                                                            left: 0,
-                                                                            zIndex: 1,
-                                                                            background: "white",
-                                                                        }}
+                                                            {currentData.map((company, index) => {
+                                                                let matchingLeadHistory
+                                                                if (Array.isArray(leadHistoryData)) {
+                                                                    matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
+                                                                    // Do something with matchingLeadHistory
+                                                                } else {
+                                                                    console.error("leadHistoryData is not an array");
+                                                                }
+                                                                return (
+                                                                    <tr
+                                                                        key={index}
+                                                                        className={
+                                                                            selectedRows.includes(company._id)
+                                                                                ? "selected"
+                                                                                : ""
+                                                                        }
+                                                                        style={{ border: "1px solid #ddd" }}
                                                                     >
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={selectedRows.includes(company._id)}
-                                                                            onChange={(e) =>
-                                                                                handleCheckboxChange(company._id, e)
-                                                                            }
-                                                                            onMouseDown={() =>
-                                                                                handleMouseDown(company._id)
-                                                                            }
-                                                                            onMouseEnter={() =>
-                                                                                handleMouseEnter(company._id)
-                                                                            }
-                                                                            onMouseUp={handleMouseUp}
-                                                                        />
-                                                                    </td>
+                                                                        <td
+                                                                            style={{
+                                                                                position: "sticky",
+                                                                                left: 0,
+                                                                                zIndex: 1,
+                                                                                background: "white",
+                                                                            }}
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedRows.includes(company._id)}
+                                                                                onChange={(e) =>
+                                                                                    handleCheckboxChange(company._id, e)
+                                                                                }
+                                                                                onMouseDown={() =>
+                                                                                    handleMouseDown(company._id)
+                                                                                }
+                                                                                onMouseEnter={() =>
+                                                                                    handleMouseEnter(company._id)
+                                                                                }
+                                                                                onMouseUp={handleMouseUp}
+                                                                            />
+                                                                        </td>
 
-                                                                    <td className="td-sticky">
-                                                                        {startIndex + index + 1}
-                                                                    </td>
-                                                                    <td className="td-sticky1">
-                                                                        {company["Company Name"]}
-                                                                    </td>
-                                                                    <td>{company["Company Number"]}</td>
-                                                                    <td>
-                                                                        <span>{company["Status"]}</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        {formatDate(
-                                                                            company["Company Incorporation Date  "]
-                                                                        )}
-                                                                    </td>
-                                                                    <td>{company["City"]}</td>
-                                                                    <td>{company["State"]}</td>
-                                                                    <td>{company["Company Email"]}</td>
-                                                                    <td>{formatDate(company["AssignDate"])}</td>
-                                                                    {/* {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                                                        <td className="td-sticky">
+                                                                            {startIndex + index + 1}
+                                                                        </td>
+                                                                        <td className="td-sticky1">
+                                                                            {company["Company Name"]}
+                                                                        </td>
+                                                                        <td>{company["Company Number"]}</td>
+                                                                        <td>
+                                                                            <span>{company["Status"]}</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            {formatDate(
+                                                                                company["Company Incorporation Date  "]
+                                                                            )}
+                                                                        </td>
+                                                                        <td>{company["City"]}</td>
+                                                                        <td>{company["State"]}</td>
+                                                                        <td>{company["Company Email"]}</td>
+                                                                        <td>{formatDate(company["AssignDate"])}</td>
+                                                                        {/* {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
                                                                         <td>
                                                                             {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
                                                                                 <IconButton>
@@ -2027,29 +2107,41 @@ function EmployeeLeads() {
                                                                             )}
                                                                         </td>
                                                                     )} */}
-                                                                    {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
-                                                                        <td>
-                                                                            <MdDeleteOutline
-                                                                                onClick={() => {
-                                                                                    handleReverseAssign(
-                                                                                        company._id,
-                                                                                        company["Company Name"],
-                                                                                        company.bdmAcceptStatus,
-                                                                                        company.Status,
-                                                                                        company.bdmName
-                                                                                    )
-                                                                                }}
-                                                                                style={{
-                                                                                    cursor: "pointer",
-                                                                                    width: "17px",
-                                                                                    height: "17px",
-                                                                                }}
-                                                                                color="#f70000"
-                                                                            />
-                                                                        </td>
-                                                                    )}
-                                                                </tr>
-                                                            ))}
+                                                                        {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                                                            <>
+                                                                                <td>
+                                                                                    {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
+                                                                                </td>
+                                                                                <td>
+                                                                                    {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
+                                                                                </td>
+
+                                                                            </>
+                                                                        )}
+                                                                        {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                                                            <td>
+                                                                                <MdDeleteOutline
+                                                                                    onClick={() => {
+                                                                                        handleReverseAssign(
+                                                                                            company._id,
+                                                                                            company["Company Name"],
+                                                                                            company.bdmAcceptStatus,
+                                                                                            company.Status,
+                                                                                            company.bdmName
+                                                                                        )
+                                                                                    }}
+                                                                                    style={{
+                                                                                        cursor: "pointer",
+                                                                                        width: "17px",
+                                                                                        height: "17px",
+                                                                                    }}
+                                                                                    color="#f70000"
+                                                                                />
+                                                                            </td>
+                                                                        )}
+                                                                    </tr>
+                                                                )
+                                                            })}
                                                         </tbody>
                                                     )}
                                                 </>

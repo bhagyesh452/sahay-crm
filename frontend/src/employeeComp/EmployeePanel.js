@@ -1149,6 +1149,7 @@ function EmployeePanel() {
               title,
               date,
               time,
+              oldStatus,
             }
           );
 
@@ -1164,6 +1165,7 @@ function EmployeePanel() {
             title,
             date,
             time,
+            oldStatus,
           }
         );
       }
