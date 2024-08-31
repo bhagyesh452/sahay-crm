@@ -89,6 +89,9 @@ function EmployeeAssets() {
     const [departmentName, setDepartmentName] = useState("");
     const [serviceName, setServiceName] = useState("");
 
+    const [departments, setDepartments] = useState([]);
+    const [services, setServices] = useState([]);
+    const [activeDepartment, setActiveDepartment] = useState("");
     const [businessRegistrationServices, setBusinessRegistrationServices] = useState([]);
     const [certificationServices, setCertificationServices] = useState([]);
     const [documentationServices, setDocumentationServices] = useState([]);
@@ -150,30 +153,51 @@ function EmployeeAssets() {
         }
     };
 
-    const fetchServices = async () => {
+    const fetchDepartments = async () => {
         try {
             const res = await axios.get(`${secretKey}/department/fetchDepartments`);
             const data = res.data.data;
-            // console.log("Fetched services are :", data);
-            setBusinessRegistrationServices(data.filter((item) => item.departmentName === "Business Registration" && item.hideService === false))
-            setCertificationServices(data.filter((item) => item.departmentName === "Certification Services" && item.hideService === false))
-            setDocumentationServices(data.filter((item) => item.departmentName === "Documentations Services" && item.hideService === false))
-            setFundRaisingServices(data.filter((item) => item.departmentName === "Fund Raising Services" && item.hideService === false))
-            setItServices(data.filter((item) => item.departmentName === "IT Services" && item.hideService === false))
-            setDigitalMarketingServices(data.filter((item) => item.departmentName === "Digital Marketing" && item.hideService === false))
-            setIsoServices(data.filter((item) => item.departmentName === "ISO Services" && item.hideService === false))
+            const uniqueDepartments = [...new Set(data.map((item) => item.departmentName))];
+            setDepartments(uniqueDepartments);
+            if (uniqueDepartments.length > 0) {
+                setActiveDepartment(uniqueDepartments[0]);
+            }
+            // console.log("Fetched departments are :", uniqueDepartments);
+        } catch (error) {
+            console.log("Error fetching departments :", error);
+        }
+    };
+
+    const fetchServices = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment/${activeDepartment}`);
+            const data = res.data.data;
+            setServices(data);
+            console.log("Fetched services are :", data);
+            // setBusinessRegistrationServices(data.filter((item) => item.departmentName === "Business Registration" && item.hideService === false))
+            // setCertificationServices(data.filter((item) => item.departmentName === "Certification Services" && item.hideService === false))
+            // setDocumentationServices(data.filter((item) => item.departmentName === "Documentations Services" && item.hideService === false))
+            // setFundRaisingServices(data.filter((item) => item.departmentName === "Fund Raising Services" && item.hideService === false))
+            // setItServices(data.filter((item) => item.departmentName === "IT Services" && item.hideService === false))
+            // setDigitalMarketingServices(data.filter((item) => item.departmentName === "Digital Marketing" && item.hideService === false))
+            // setIsoServices(data.filter((item) => item.departmentName === "ISO Services" && item.hideService === false))
         } catch (error) {
             console.log("Error fetching services :", error);
         }
-    }
+    };
 
     useEffect(() => {
         fetchData();
     }, [userId]);
 
     useEffect(() => {
+        fetchDepartments();
         fetchServices();
     }, []);
+
+    useEffect(() => {
+        fetchServices();
+    }, [activeDepartment]);
 
     const handleBack = () => {
         setServiceName("");
@@ -187,6 +211,8 @@ function EmployeeAssets() {
     // console.log("IT services :", itServices);
     // console.log("Digital marketing services :", digitalMarketingServices);
     // console.log("ISO services :", isoServices);
+    console.log("Current active department :", activeDepartment);
+    console.log("Current active department id is :", activeDepartment.replace(/\s+/g, '_'));
 
     const fetchRequestDetails = async () => {
         try {
@@ -435,7 +461,20 @@ function EmployeeAssets() {
                                 <div className="col-lg-2 p-0">
                                     <div className="employee-assets-left">
                                         <ul class="nav flex-column">
-                                            <li class="nav-item">
+                                            {departments.map((department, index) => {
+                                                console.log("Department link is :", department.replace(/\s+/g, '_'));
+                                                return <li class="nav-item">
+                                                    <a
+                                                        className={`nav-link sweep-to-right ${activeDepartment === department ? 'active' : ''}`}
+                                                        data-bs-toggle="tab"
+                                                        href={`#${department.replace(/\s+/g, '_')}`}  // Assuming href refers to a tab with an ID corresponding to the department name
+                                                        onClick={() => setActiveDepartment(department)}
+                                                    >
+                                                        {department}
+                                                    </a>
+                                                </li>
+                                            })}
+                                            {/* <li class="nav-item">
                                                 <a class="nav-link sweep-to-right active" data-bs-toggle="tab" href="#Business_Registration">Business Registration</a>
                                             </li>
                                             <li class="nav-item">
@@ -455,7 +494,7 @@ function EmployeeAssets() {
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link sweep-to-right" data-bs-toggle="tab" href="#ISO">ISO Services</a>
-                                            </li>
+                                            </li> */}
                                         </ul>
                                     </div>
                                 </div>
@@ -464,11 +503,11 @@ function EmployeeAssets() {
                                     <div className="employee-assets-right">
                                         <div class="tab-content">
 
-                                            <div class="tab-pane container active" id="Business_Registration">
+                                            {/* <div class="tab-pane container active" id={activeDepartment.replace(/\s+/g, '_')}>
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
-                                                        {businessRegistrationServices.map((department) => (
+                                                        {services.map((department) => (
                                                             <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
@@ -480,10 +519,40 @@ function EmployeeAssets() {
                                                                     <div className="ESAI_data_card_F">
                                                                         <button className="btn ESAI_data_card_F-btn"
                                                                             onClick={() => {
-                                                                                    setOpenDeatilsPage(true);
-                                                                                    setServiceName(department.serviceName);
-                                                                                    setDepartmentName(department.departmentName);
-                                                                                }}>
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
+                                                                            Know More
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div> */}
+                                            
+                                            <div class="tab-pane container active" id="Business_Registration">
+                                                <div className="E_Start-Up_Assets_inner">
+                                                    <div className="ESAI_data row">
+
+                                                        {services.map((department) => (
+                                                            <div className="col-sm-4">
+                                                                <div className="ESAI_data_card mt-3">
+                                                                    <div className="ESAI_data_card_h">
+                                                                        {department.serviceName}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_b">
+                                                                        {department.serviceDescription}
+                                                                    </div>
+                                                                    <div className="ESAI_data_card_F">
+                                                                        <button className="btn ESAI_data_card_F-btn"
+                                                                            onClick={() => {
+                                                                                setOpenDeatilsPage(true);
+                                                                                setServiceName(department.serviceName);
+                                                                                setDepartmentName(department.departmentName);
+                                                                            }}>
                                                                             Know More
                                                                         </button>
                                                                     </div>
@@ -491,7 +560,7 @@ function EmployeeAssets() {
                                                             </div>
                                                         ))}
 
-                                                        {/* <div className="col-sm-4">
+                                            {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Private Limited Registration
@@ -617,7 +686,7 @@ function EmployeeAssets() {
                                                                 </div>
                                                             </div>
                                                         </div> */}
-                                                    </div>
+                                            </div>
                                                 </div>
                                             </div>
 
@@ -625,7 +694,7 @@ function EmployeeAssets() {
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
-                                                        {certificationServices.map((department) => (
+                                                        {services.map((department) => (
                                                             <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
@@ -776,7 +845,7 @@ function EmployeeAssets() {
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
-                                                        {documentationServices.map((department) => (
+                                                        {services.map((department) => (
                                                             <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
@@ -942,7 +1011,7 @@ function EmployeeAssets() {
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
-                                                        {fundRaisingServices.map((department) => (
+                                                        {services.map((department) => (
                                                             <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
@@ -1074,11 +1143,11 @@ function EmployeeAssets() {
                                                 </div>
                                             </div>
 
-                                            <div class="tab-pane container fade" id="IT">
+                                            <div class="tab-pane container fade" id="IT_Services">
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
-                                                        {itServices.map((department) => (
+                                                        {services.map((department) => (
                                                             <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
@@ -1210,11 +1279,11 @@ function EmployeeAssets() {
                                                 </div>
                                             </div>
 
-                                            <div class="tab-pane container fade" id="DigitalMarketing">
+                                            <div class="tab-pane container fade" id="Digital_Marketing">
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
-                                                        {digitalMarketingServices.map((department) => (
+                                                        {services.map((department) => (
                                                             <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
@@ -1240,11 +1309,11 @@ function EmployeeAssets() {
                                                 </div>
                                             </div>
 
-                                            <div class="tab-pane container fade" id="ISO">
+                                            <div class="tab-pane container fade" id="ISO_Services">
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
-                                                        {isoServices.map((department) => (
+                                                        {services.map((department) => (
                                                             <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
@@ -1281,7 +1350,7 @@ function EmployeeAssets() {
                 </div>
             </div>)}
 
-            {openDetailsPage &&<EmployeeAssetDetails DetailsPage={setOpenDeatilsPage} serviceName={serviceName} departmentName={departmentName} back={handleBack} />}
+            {openDetailsPage && <EmployeeAssetDetails DetailsPage={setOpenDeatilsPage} serviceName={serviceName} departmentName={departmentName} back={handleBack} />}
         </div>
     )
 }
