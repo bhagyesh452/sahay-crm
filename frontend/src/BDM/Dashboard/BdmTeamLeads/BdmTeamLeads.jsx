@@ -115,8 +115,7 @@ function BdmTeamLeads() {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"));
   const [selectedNewCity, setSelectedNewCity] = useState("");
-  const [leadHistoryData, setLeadHistoryData] = useState([])
-
+  
   //  States for selecting assigned date.
   const [selectedBdeForwardDate, setSelectedBdeForwardDate] = useState(null);
 
@@ -128,6 +127,8 @@ function BdmTeamLeads() {
   const [selectedDate, setSelectedDate] = useState(0);
   const [monthIndex, setMonthIndex] = useState(0);
   const [daysInMonth, setDaysInMonth] = useState([]);
+  const [leadHistoryData, setLeadHistoryData] = useState([])
+
 
   const formatDateLeadHistory = (dateInput) => {
     console.log(dateInput)
@@ -2143,12 +2144,10 @@ function BdmTeamLeads() {
                           <th>Add Projection</th>
                           <th>Add Feedback</th>
                           {(bdmNewStatus === "FollowUp" && (<>
-
                             <th>Status Modification Date</th>
                             <th>Age</th>
                           </>)) ||
                             (bdmNewStatus === "Interested" && (<>
-
                               <th>Status Modification Date</th>
                               <th>Age</th>
                             </>))}

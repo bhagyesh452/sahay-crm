@@ -84,6 +84,7 @@ import { Country, State, City } from 'country-state-city';
 
 
 
+
 function DatamanagerEmployeeTeamLeads() {
     const { id } = useParams();
     const [data, setData] = useState([]);
@@ -123,7 +124,7 @@ function DatamanagerEmployeeTeamLeads() {
     const [selectedEmployee, setSelectedEmployee] = useState();
     const [selectedEmployee2, setSelectedEmployee2] = useState();
     const [openBacdrop, setOpenBacdrop] = useState(false);
-
+    const [leadHistoryData, setLeadHistoryData] = useState([])
 
         // States for filtered and searching data :
         const stateList = State.getStatesOfCountry("IN");
@@ -166,7 +167,59 @@ function DatamanagerEmployeeTeamLeads() {
         const [selectedDate, setSelectedDate] = useState(0);
         const [monthIndex, setMonthIndex] = useState(0);
         const [daysInMonth, setDaysInMonth] = useState([]);
+        const formatDateLeadHistory = (dateInput) => {
+            console.log(dateInput)
+            // Create a Date object if input is a string
+            const date = new Date(dateInput);
     
+            if (isNaN(date.getTime())) {
+                console.error('Invalid date:', dateInput);
+                return '';
+            }
+    
+            // Get day, month, and year
+            const day = date.getDate().toString().padStart(2, '0'); // Ensure two digits
+            const month = date.toLocaleString('default', { month: 'long' }); // e.g., "August"
+            const year = date.getFullYear();
+    
+            return `${day} ${month}, ${year}`;
+        };
+    
+        function formatTime(timeString) {
+            // Assuming timeString is in "3:23:14 PM" format
+            const [time, period] = timeString.split(' ');
+            const [hours, minutes, seconds] = time.split(':').map(Number);
+    
+            // Convert 24-hour format to 12-hour format
+            const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+            const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+            const formattedTime = `${formattedHours}:${formattedMinutes} ${period}`;
+    
+            return formattedTime;
+        }
+    
+        // Function to calculate and format the time difference
+        function timePassedSince(dateTimeString) {
+            const entryTime = new Date(dateTimeString);
+            const now = new Date();
+    
+            // Calculate difference in milliseconds
+            const diffMs = now - entryTime;
+    
+            // Convert milliseconds to minutes and hours
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+    
+            // Format the difference
+            if (diffDays > 0) {
+                return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            } else if (diffHours > 0) {
+                return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            } else {
+                return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+            }
+        }
         useEffect(() => {
             let monthIndex;
             if (selectedYear && selectedMonth) {
@@ -287,8 +340,11 @@ function DatamanagerEmployeeTeamLeads() {
         const bdmName = data.ename
         try {
             const response = await axios.get(`${secretKey}/bdm-data/forwardedbybdedata/${bdmName}`)
+            const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
+            const leadHistory = response2.data
             setTeamData(response.data);
             setExtraData(response.data);
+            setLeadHistoryData(leadHistory)
 
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
@@ -2285,12 +2341,28 @@ function DatamanagerEmployeeTeamLeads() {
                                                     <th>View Feedback</th>
                                                 </>)}
                                                 <td>Action</td>
+                                                {(bdmNewStatus === "FollowUp" && (<>
+                                                    <th>Status Modification Date</th>
+                                                    <th>Age</th>
+                                                </>)) ||
+                                                    (bdmNewStatus === "Interested" && (<>
+                                                        <th>Status Modification Date</th>
+                                                        <th>Age</th>
+                                                    </>))}
                                             </tr>
                                         </thead>
 
                                         <tbody>
-                                            {teamleadsData.map((company, index) => (
-                                                <tr
+                                            {teamleadsData.map((company, index) => {
+                                                 let matchingLeadHistory
+                                                 if (Array.isArray(leadHistoryData)) {
+                                                     matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
+                                                     // Do something with matchingLeadHistory
+                                                 } else {
+                                                     console.error("leadHistoryData is not an array");
+                                                 }
+                                                return(
+                                               <tr
                                                     key={index}
                                                     className={
                                                         selectedRows.includes(company._id)
@@ -2531,6 +2603,17 @@ function DatamanagerEmployeeTeamLeads() {
                                                                 </IconButton>
                                                             )}
                                                         </td>
+                                                        {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (
+                                                            <>
+                                                                <td>
+                                                                    {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
+                                                                </td>
+                                                                <td>
+                                                                    {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
+                                                                </td>
+
+                                                            </>
+                                                        )}
                                                     </>)}
                                                     <td>
                                                         <button className='tbl-action-btn'
@@ -2552,7 +2635,8 @@ function DatamanagerEmployeeTeamLeads() {
                                                         </button>
                                                     </td>
                                                 </tr>
-                                            ))}
+                                                
+                                            )})}
                                         </tbody>
                                         {teamleadsData.length === 0 && (
                                             <tbody>

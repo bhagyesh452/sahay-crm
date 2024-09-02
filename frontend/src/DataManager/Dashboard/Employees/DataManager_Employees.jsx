@@ -50,7 +50,10 @@ function Employees({ onEyeButtonClick, searchValue }) {
   const updateActiveStatus = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      const filterresponse = response.data.filter((employee) => employee.newDesignation === "Business Development Executive" || employee.newDesignation === "Business Development Manager");
+      const filterresponse = response.data.filter((employee) => 
+        employee.newDesignation === "Business Development Executive" || 
+      employee.newDesignation === "Business Development Manager" ||
+    employee.newDesignation === "Floor Manager");
       setData(filterresponse);
       setFilteredData(filterresponse);
     } catch (error) {

@@ -26,7 +26,7 @@ const DscStatusDropdown = ({
   letterStatus
 }) => {
 
-
+console.log("letterStatus" , letterStatus , companyName , subStatus)
 
 
 
@@ -378,7 +378,7 @@ const DscStatusDropdown = ({
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          {status}
+          {subStatus}
         </button>
         {mainStatus === "General" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">

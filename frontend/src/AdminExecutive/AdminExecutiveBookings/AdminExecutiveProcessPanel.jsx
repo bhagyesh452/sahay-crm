@@ -120,7 +120,6 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
 
       // If filtering is active, extract companyName and serviceName from filteredData
       if (isFilter && filteredData && filteredData.length > 0) {
-        console.log("yahan chal rha", isFilter)
         const companyNames = filteredData.map(item => item["Company Name"]).join(',');
         const serviceNames = filteredData.map(item => item.serviceName).join(',');
 
@@ -203,6 +202,10 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
     });
 
     socket.on("booking-updated", (res) => {
+      fetchData(searchText);
+    });
+
+    socket.on("adminexecutive-letter-updated", (res) => {
       fetchData(searchText);
     });
 
