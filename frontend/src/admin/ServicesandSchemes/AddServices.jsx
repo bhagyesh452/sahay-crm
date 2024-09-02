@@ -445,7 +445,7 @@ function AddServices({ close, fetchServices }) {
                 }
             });
             // console.log("Created service is :", res1.data);
-            Swal.fire("success", "Service created successfully!", "success");
+            Swal.fire("success", "Service details created successfully!", "success");
             close();
             fetchServices();
 
@@ -455,8 +455,8 @@ function AddServices({ close, fetchServices }) {
                 // console.log("Service successfully deleted from draft model :", res2.data);
             }
         } catch (error) {
-            console.log("Error creating employee:", error);
-            Swal.fire("error", "Error creating service", "error");
+            console.log("Error creating service details:", error);
+            Swal.fire("error", "Error creating service service details", "error");
         }
     };
 

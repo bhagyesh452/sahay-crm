@@ -7,7 +7,7 @@ import axios from 'axios';
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png"
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 
-function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }) {
+function EmployeeAssetDetails({ serviceName, departmentName, back }) {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -103,7 +103,6 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
           <div className='container-xl'>
             <div className='emply_S_assets_dtl_head_back'>
               <button className='btn_style_1 btn_style_1_primary' onClick={() => {
-                DetailsPage(false);
                 back();
               }}>
                 <div className='d-flex align-items-center justify-content-center'>
@@ -138,27 +137,27 @@ function EmployeeAssetDetails({ DetailsPage, serviceName, departmentName, back }
                 <div className='emply_S_assets_dtl_inner_left'>
                   <div>
                     <ul class="nav nav-tabs">
-                      <li class="nav-item">
+                      {service?.objectives?.length !== 0 && <li class="nav-item">
                         <a class="nav-link active" data-bs-toggle="tab" href="#Objective">Objective</a>
-                      </li>
-                      <li class="nav-item">
+                      </li>}
+                      {service?.benefits?.length !== 0 && <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#Benefits">Benefits</a>
-                      </li>
-                      <li class="nav-item">
+                      </li>}
+                      {service?.requiredDocuments?.length !== 0 && <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#Documents">Required Documents</a>
-                      </li>
-                      <li class="nav-item">
+                      </li>}
+                      {service?.eligibilityRequirements?.length !== 0 && <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#Eligibility">Eligibility Requirements</a>
-                      </li>
-                      <li class="nav-item">
+                      </li>}
+                      {service?.process?.length !== 0 && <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#Process">Process</a>
-                      </li>
-                      <li class="nav-item">
+                      </li>}
+                      {service?.deliverables?.length !== 0 && <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#Deliverables">Deliverables</a>
-                      </li>
-                      <li class="nav-item">
+                      </li>}
+                      {service?.timeline?.length !== 0 && <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#Timeline">Timeline</a>
-                      </li>
+                      </li>}
                     </ul>
 
                     <div class="tab-content">
