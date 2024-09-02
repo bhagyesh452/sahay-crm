@@ -152,6 +152,19 @@ router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   }
 });
 
+router.get("/leadDataHistoryInterested" , async(req,res)=>{
+  try{
+    const findAllLeads = await LeadHistoryForInterestedandFollowModel.find({})
+    if(findAllLeads){
+      res.status(200).send(findAllLeads)
+    }
+   
+  }catch(error){
+    console.error("Errorfetchingleads" , error)
+    res.status(500).json({error: "Internal Server Error"})
+
+  }
+})
 
 
 
