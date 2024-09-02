@@ -58,7 +58,7 @@ router.get("/fetchServicesByDepartment", async (req, res) => {
 
 router.get("/fetchServicesByDepartment/:activeDepartment", async (req, res) => {
     const { activeDepartment } = req.params; // Use query instead of params
-    console.log("Department name is :", activeDepartment);
+    // console.log("Department name is :", activeDepartment);
     try {
         const data = await DepartmentModel.find({ departmentName: activeDepartment });
 

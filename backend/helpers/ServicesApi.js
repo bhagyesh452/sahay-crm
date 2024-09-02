@@ -30,6 +30,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// Create new service :
 router.post("/addServices/:id", upload.fields([
     { name: "document", maxCount: 20 },
 ]), async (req, res) => {
@@ -97,6 +98,7 @@ router.post("/addServices/:id", upload.fields([
     }
 });
 
+// Fetch all the services :
 router.get("/fetchServices", async (req, res) => {
     try {
         const services = await ServicesModel.find();
@@ -106,6 +108,7 @@ router.get("/fetchServices", async (req, res) => {
     }
 });
 
+// Fetch service from service name :
 router.get("/fetchServiceFromServiceName/:serviceName", async (req, res) => {
     const { serviceName } = req.params;
     try {
@@ -134,6 +137,76 @@ router.get("/fetchDocuments/:id/:filename", (req, res) => {
         // If the file exists, send it
         res.sendFile(pdfPath);
     });
+});
+
+// Updating service from serviceName
+router.put("/updateService/:serviceName", upload.fields([
+    { name: "document", maxCount: 20 },
+]), async (req, res) => {
+    try {
+        const { serviceName } = req.params;
+
+        const {departmentName, objectives, benefits, requiredDocuments, eligibilityRequirements, process, deliverables, timeline, employeeName, headName, portfolio} = req.body;
+        if (!serviceName) {
+            return res.status(400).json({ result: false, message: "Service name is required to update the service" });
+        }
+
+        // Helper function to get file details
+        const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
+            fieldname: file.fieldname,
+            originalname: file.originalname,
+            encoding: file.encoding,
+            mimetype: file.mimetype,
+            destination: file.destination,
+            filename: file.filename,
+            path: file.path,
+            size: file.size
+        })) : [];
+
+        // Retrieve document details from uploaded files
+        // const documentDetails = getFileDetails(req.files ? req.files["document"] : []);
+        const documentDetails = getFileDetails(req.files?.document);
+
+        // Prepare the service data to be updated
+        const updatedServiceData = {
+            ...req.body,
+
+            ...(departmentName && {departmentName: departmentName}),
+            ...(serviceName && {serviceName: serviceName}),
+
+            ...(objectives && {objectives: objectives}),
+            ...(benefits && {benefits: benefits}),
+
+            ...(requiredDocuments && {requiredDocuments: requiredDocuments}),
+            ...(eligibilityRequirements && {eligibilityRequirements: eligibilityRequirements}),
+
+            ...(process && {process: process}),
+            ...(deliverables && {deliverables: deliverables}),
+            ...(timeline && {timeline: timeline}),
+
+            concernTeam: {
+                ...(employeeName && {employeeNames: Array.isArray(employeeName) ? employeeName : [employeeName]}),
+                ...(headName && {headNames: Array.isArray(headName) ? headName : [headName]})
+            },
+            ...(portfolio && {portfolio: portfolio}),
+            ...(documentDetails.length > 0 && {documents: documentDetails})
+        };
+
+        // Find the service by serviceName and update it
+        const updatedService = await ServicesModel.findOneAndUpdate(
+            { serviceName: serviceName }, // Find by serviceName
+            updatedServiceData, // Update with this data
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedService) {
+            return res.status(404).json({ result: false, message: "Service not found" });
+        }
+
+        res.status(200).json({ result: true, message: "Service successfully updated", data: updatedService });
+    } catch (error) {
+        res.status(500).json({ result: false, message: "Error updating service", error: error.message });
+    }
 });
 
 module.exports = router;
