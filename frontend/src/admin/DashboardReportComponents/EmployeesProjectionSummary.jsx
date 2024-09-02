@@ -1608,7 +1608,7 @@ function EmployeesProjectionSummary() {
                   }}
                 >
                   <tr style={{ fontWeight: 500 }}>
-                    <td style={{ lineHeight: "32px" }} colSpan="2">
+                    <td style={{ lineHeight: "32px" }} colSpan="3">
                       Total
                     </td>
                     <td>{projectedDataToday.length}</td>

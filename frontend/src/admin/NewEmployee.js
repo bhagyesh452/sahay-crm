@@ -42,7 +42,8 @@ function NewEmployee() {
     const [searchValue, setSearchValue] = useState("");
     const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
     const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
-
+    const adminName = localStorage.getItem("adminName")
+    
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
     }, []);
@@ -50,7 +51,11 @@ function NewEmployee() {
     const fetchEmployee = async () => {
         try {
             const res = await axios.get(`${secretKey}/employee/einfo`);
-            setEmployee(res.data);
+            if(adminName === "Saurav" || adminName === "Krunal Pithadia"){
+                setEmployee(res.data.filter(obj=>obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));                              
+              }else{
+                setEmployee(res.data)              
+              }
             // console.log("Fetched Employees are:", employeeData);
             const result = res.data.filter((emp) => {
                 return (
@@ -62,7 +67,11 @@ function NewEmployee() {
                 );
             });
             // console.log("Search result from employee list is :", result);
-            setEmployeeSearchResult(result);
+            if(adminName === "Saurav" || adminName === "Krunal Pithadia"){
+                setEmployeeSearchResult(result.filter(obj=>obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));                              
+              }else{
+                setEmployeeSearchResult(result)              
+              }
         } catch (error) {
             console.log("Error fetching employees data:", error);
         }
@@ -93,6 +102,8 @@ function NewEmployee() {
         fetchEmployee();
         fetchDeletedEmployee();
     }, [searchValue]);
+
+   
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;

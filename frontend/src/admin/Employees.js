@@ -237,8 +237,15 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const updateActiveStatus = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      setData(response.data);
-      setFilteredData(response.data);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+        setData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        setFilteredData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+
+      } else {
+        setData(response.data)
+        setFilteredData(response.data)
+      }
+
     } catch (error) {
       console.error('Error fetching employee info:', error);
     }
@@ -256,7 +263,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       transports: ['websocket'],
     });
     socket.on("employee-entered", () => {
-      
+
       setTimeout(() => {
         updateActiveStatus(); // Don't fetch instead, just change that particular active status
       }, 5000);
@@ -271,7 +278,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     };
   }, []);
 
-  // app.get('/api/achieved-details/:ename', async (req, res) => {
+
   //   const { ename } = req.params;
 
   //   try {
@@ -349,7 +356,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, cancel!',
     }).then(async (result) => {
-     
+
       if (result.isConfirmed) {
         try {
           const saveResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
@@ -439,8 +446,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       // console.log("Fetched employees are :", response.data);
       // Set the retrieved data in the state
 
-      setFilteredData(response.data);
-      setData(response.data);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+        setData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        setFilteredData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+
+      } else {
+        setData(response.data)
+        setFilteredData(response.data)
+      }
       setEmail("");
       setEname("");
       setNumber(0);
@@ -450,12 +463,12 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       setBranchOffice("");
 
       const result = response.data.filter((emp) => {
-        const mappedDesignation = searchValue.toLowerCase() === "bde" 
-          ? "business development executive" 
+        const mappedDesignation = searchValue.toLowerCase() === "bde"
+          ? "business development executive"
           : searchValue.toLowerCase() === "bdm"
-          ? "business development manager"
-          : searchValue.toLowerCase();
-  
+            ? "business development manager"
+            : searchValue.toLowerCase();
+
         return (
           emp.ename?.toLowerCase().includes(searchValue.toLowerCase()) ||
           emp.number?.toString().includes(searchValue) ||
@@ -465,9 +478,16 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
           emp.department?.toLowerCase().includes(searchValue.toLowerCase())
         );
       });
-      
+
       // console.log("Search result from employee list is :", result);
-      setSearchResult(result);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+       
+        setSearchResult(result.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+
+      } else {
+       
+        setSearchResult(result.data)
+      }
     } catch (error) {
       console.error("Error fetching data:", error.message);
     } finally {
@@ -487,7 +507,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       item.branchOffice.toLowerCase().includes(query.toLowerCase())
     );
 
-    setFilteredData(filtered);
+    if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+      setFilteredData(filtered.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+
+    } else {
+     
+      setFilteredData(filtered)
+    }
   };
 
   const handleUpdateClick = (id, echangename) => {
@@ -564,7 +591,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
   useEffect(() => {
     // Fetch data from the Node.js server
-    setFilteredData(data);
+    if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+      setFilteredData(data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+
+    } else {
+     
+      setFilteredData(data)
+    }
     // Call the fetchData function
     fetchData();
     fetchCData();
@@ -779,8 +813,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         } else {
           const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
           // Adds data in performance report:
-          
-          
+
+
           closeAddEmployeePopup();
           Swal.fire({
             title: "Data Added!",
@@ -868,7 +902,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       const sortedData = [...filteredData].sort((a, b) =>
         a.ename.localeCompare(b.ename)
       );
-      setFilteredData(sortedData);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+        setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+  
+      } else {
+       
+        setFilteredData(sortedData)
+      }
     } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
@@ -878,7 +919,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       const sortedData = [...filteredData].sort((a, b) =>
         b.ename.localeCompare(a.ename)
       );
-      setFilteredData(sortedData);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+        setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+  
+      } else {
+       
+        setFilteredData(sortedData)
+      }
     }
   };
   const adminName = localStorage.getItem("adminName")
@@ -892,7 +940,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       const sortedData = [...filteredData].sort((a, b) =>
         a.AddedOn.localeCompare(b.AddedOn)
       );
-      setFilteredData(sortedData);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+        setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+  
+      } else {
+       
+        setFilteredData(sortedData)
+      }
     } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
@@ -902,7 +957,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       const sortedData = [...filteredData].sort((a, b) =>
         b.AddedOn.localeCompare(a.AddedOn)
       );
-      setFilteredData(sortedData);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+        setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+  
+      } else {
+       
+        setFilteredData(sortedData)
+      }
     }
   };
   const sortDataByJoiningDate = () => {
@@ -915,7 +977,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       const sortedData = [...filteredData].sort(
         (a, b) => new Date(a.jdate) - new Date(b.jdate)
       );
-      setFilteredData(sortedData);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+        setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+  
+      } else {
+       
+        setFilteredData(sortedData)
+      }
     } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
@@ -925,7 +994,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       const sortedData = [...filteredData].sort(
         (a, b) => new Date(b.jdate) - new Date(a.jdate)
       );
-      setFilteredData(sortedData);
+      if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+     
+        setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+  
+      } else {
+       
+        setFilteredData(sortedData)
+      }
     }
   };
 
@@ -1071,6 +1147,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     }
   };
 
+
+
   return (
 
     <div>
@@ -1087,15 +1165,18 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
               <th>Joining Date</th>
               {/* <th>Probation Status</th> */}
               {
-                (adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "shivangi" || adminName === "Karan") && (
+                (adminName === "Nimesh" ||
+                  adminName === "Ronak Kumar" ||
+                  adminName === "shivangi" ||
+                  adminName === "Karan") && (
                   <>
-                             <th>Added Date</th>
-              <th>Status</th>
-              {/* <th>BDM Work</th> */}
-              <th>Action</th>
-                </>
-              )}
-   
+                    <th>Added Date</th>
+                    <th>Status</th>
+                    {/* <th>BDM Work</th> */}
+                    <th>Action</th>
+                  </>
+                )}
+
             </tr>
           </thead>
           {isLoading ? (
@@ -1455,7 +1536,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                           // Split the item.ename string into an array of words based on spaces
                           const names = (item.ename || "").trim().split(/\s+/);
 
-                         
+
 
                           // Check if there's only one name or multiple names
                           if (names.length === 1) {
@@ -1599,342 +1680,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
           </div>
         </div>
       </div>
-
-      {/* add Employee Popup */}
-      {/* <Dialog className='My_Mat_Dialog' open={open} fullWidth maxWidth="sm" onClose={() => {
-        closepopup();
-        // closeAddEmployeePopup()
-      }}
-      >
-        <DialogTitle>
-          Employee Info{" "}
-          <IconButton style={{ float: "right" }} onClick={() => {
-            closepopup();
-            // closeAddEmployeePopup();
-          }}
-          >
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
-        </DialogTitle>
-        <DialogContent>
-          <div className="modal-dialog modal-lg" role="document">
-            <div className="modal-content">
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Employee Name</label>
-                  <div className="d-flex">
-
-                    <div className="col-4 me-1">
-                      <input
-                        type="text"
-                        name="firstName"
-                        className="form-control mt-1"
-                        placeholder="First name"
-                        value={firstName?.trim()}
-                        onChange={(e) => handleInputChange("firstName", e.target.value)}
-                      />
-                      {errors.firstName && <p style={{ color: 'red' }}>{errors.firstName}</p>}
-                    </div>
-
-                    <div className="col-4 me-1">
-                      <input
-                        type="text"
-                        name="middleName"
-                        className="form-control mt-1"
-                        placeholder="Middle name"
-                        value={middleName?.trim()}
-                        onChange={(e) => handleInputChange("middleName", e.target.value)}
-                      />
-                      {errors.middleName && <p style={{ color: 'red' }}>{errors.middleName}</p>}
-                    </div>
-
-                    <div className="col-4">
-                      <input
-                        type="text"
-                        name="lastName"
-                        className="form-control mt-1"
-                        placeholder="Last name"
-                        value={lastName?.trim()}
-                        onChange={(e) => handleInputChange("lastName", e.target.value)}
-                      />
-                      {errors.lastName && <p style={{ color: 'red' }}>{errors.lastName}</p>}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Email Address</label>
-                  <input
-                    value={email}
-                    type="email"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Email"
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                  />
-                  {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Password</label>
-                  <div className="input-group">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Password"
-                      required
-                      onChange={(e) => handleInputChange("password", e.target.value)}
-                    />
-                    <button
-                      className="btn btn-outline-secondary"
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? "Hide" : "Show"}
-                    </button>
-                  </div>
-                  {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
-                </div>
-
-                <div className="row">
-
-                  <div className="col-lg-6 mb-3">
-                    <label className="form-label">Department</label>
-                    <div >
-                      <select
-                        className="form-select"
-                        value={department}
-                        required
-                        onChange={(e) => {
-                          handleInputChange("department", e.target.value);
-                          setIsDepartmentSelected(e.target.value !== "Select Department");
-                        }}
-                      >
-                        <option value="Select Department" selected> Select Department</option>
-                        <option value="Start-Up">Start-Up</option>
-                        <option value="HR">HR</option>
-                        <option value="Operation">Operation</option>
-                        <option value="IT">IT</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Others">Others</option>
-                      </select>
-                    </div>
-                    {errors.department && <p style={{ color: 'red' }}>{errors.department}</p>}
-                  </div>
-
-                  <div className="col-lg-6 mb-3">
-                    <label className="form-label">Designation/Job Title</label>
-                    <div>
-                      <select className="form-select"
-                        name="newDesignation"
-                        id="newDesignation"
-                        value={newDesignation}
-                        onChange={(e) => handleInputChange("newDesignation", e.target.value)}
-                        disabled={!isDepartmentSelected}
-                      >
-                        <option value="Select Designation">Select Designation</option>
-                        {renderDesignationOptions()}
-                      </select>
-                    </div>
-                    {errors.newDesignation && <p style={{ color: 'red' }}>{errors.newDesignation}</p>}
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-lg-6 mb-3">
-                    <label className="form-label">Branch Office</label>
-                    <div>
-                      <select
-                        className="form-select"
-                        value={branchOffice}
-                        required
-                        onChange={(e) => handleInputChange("branchOffice", e.target.value)}
-                      >
-                        <option value="" selected>Select Branch Office</option>
-                        <option value="Gota">Gota</option>
-                        <option value="Sindhu Bhawan">Sindhu Bhawan</option>
-                      </select>
-                    </div>
-                    {errors.branchOffice && <p style={{ color: 'red' }}>{errors.branchOffice}</p>}
-                  </div>
-
-                  <div className="col-lg-6 mb-3">
-                    <label className="form-label">Manager</label>
-                    <div>
-                      <select className="form-select"
-                        name="reportingManager"
-                        id="reportingManager"
-                        value={reportingManager}
-                        onChange={(e) => handleInputChange("reportingManager", e.target.value)}
-                        disabled={!isDepartmentSelected}
-                      >
-                        <option value="Select Designation">Select Manager</option>
-                        {department === "Sales" && newDesignation === "Floor Manager"
-                          ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option> : <>{renderManagerOptions()}</>
-                        }
-                      </select>
-                    </div>
-                    {errors.reportingManager && <p style={{ color: 'red' }}>{errors.reportingManager}</p>}
-                  </div>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-lg-6">
-                  <div className="mb-3">
-                    <label className="form-label">Phone No.</label>
-                    <input
-                      value={number}
-                      type="number"
-                      className="form-control"
-                      onChange={(e) => handleInputChange("number", e.target.value)}
-                    />
-                    {errors.number && <p style={{ color: 'red' }}>{errors.number}</p>}
-                  </div>
-                </div>
-                <div className="col-lg-6">
-                  <div className="mb-3">
-                    <label className="form-label">Joining Date</label>
-                    <input
-                      value={jdate}
-                      type="date"
-                      onChange={(e) => handleInputChange("jdate", e.target.value)}
-                      className="form-control"
-                    />
-                    {errors.jdate && <p style={{ color: 'red' }}>{errors.jdate}</p>}
-                  </div>
-                </div>
-              </div>
-
-              <label className="form-label">ADD Target</label>
-              {targetObjects.map((obj, index) => (
-                <div className="row">
-                  <div className="col-lg-3">
-                    <div className="mb-3">
-                      <div>
-                        <select className="form-select"
-                          value={obj.year}
-                          onChange={(e) => {
-                            setTargetObjects(prevState => {
-                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                              updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
-                              return updatedTargets; // Set the updated array as the new state
-                            });
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Year
-                          </option>
-                          <option value="2024">2024</option>
-                          <option value="2023">2023</option>
-                          <option value="2022">2022</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="mb-3">
-                      <div>
-                        <select className="form-select"
-                          value={obj.month}
-                          onChange={(e) => {
-                            setTargetObjects(prevState => {
-                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                              updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
-                              return updatedTargets; // Set the updated array as the new state
-                            });
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Month
-                          </option>
-                          <option value="January">January</option>
-                          <option value="February">February</option>
-                          <option value="March">March</option>
-                          <option value="April">April</option>
-                          <option value="May">May</option>
-                          <option value="June">June</option>
-                          <option value="July">July</option>
-                          <option value="August">August</option>
-                          <option value="September">September</option>
-                          <option value="October">October</option>
-                          <option value="November">November</option>
-                          <option value="December">December</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="mb-3">
-                      <input
-                        placeholder="ADD Target value"
-                        type="number"
-                        className="form-control"
-                        value={obj.amount}
-                        onChange={(e) => {
-                          setTargetObjects(prevState => {
-                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
-                            return updatedTargets; // Set the updated array as the new state
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="mb-3">
-                      <input
-                        placeholder="ADD achieved amount"
-                        type="number"
-                        className="form-control"
-                        value={obj.achievedAmount}
-                        onChange={(e) => {
-                          setTargetObjects(prevState => {
-                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], achievedAmount: e.target.value }; // Update the specific object at the given index
-                            return updatedTargets; // Set the updated array as the new state
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-1">
-                    <div className="mb-3 d-flex">
-                      <IconButton style={{ float: "right" }} onClick={handleAddTarget}>
-                        <MdOutlineAddCircle
-                          color="primary"
-                          style={{
-                            float: "right",
-                            width: "14px",
-                            height: "14px",
-                          }}
-
-                        ></MdOutlineAddCircle>
-                      </IconButton>
-                      <IconButton style={{ float: "right" }} onClick={handleRemoveTarget}>
-                        <MdDelete
-                          color="primary"
-                          style={{
-                            float: "right",
-                            width: "14px",
-                            height: "14px",
-                          }}
-                        />
-                      </IconButton>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-            </div>
-          </div>
-        </DialogContent>
-        <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
-          Submit
-        </Button>
-      </Dialog> */}
       <AddEmployeeDialog
         empId={empId}
         openForAdd={openAddEmployeePopup}
