@@ -932,8 +932,7 @@ router.post("/postAssignData", async (req, res) => {
     }
   }));
 
-  console.log("yeapichali")
-
+  
   try {
     // Perform bulk operations in parallel
     await Promise.all([
@@ -945,13 +944,26 @@ router.post("/postAssignData", async (req, res) => {
       executeBulkOperations(RemarksHistory, bulkOperationsRemarksHistory)
     ]);
     //socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
-    // Add the recent update to the RecentUpdatesModel
-    const newUpdate = new RecentUpdatesModel({
-      title,
-      date,
-      time
+    // Create a new entry in RecentUpdatesModel for each selected object
+    const updatePromises = selectedObjects.map(async (obj) => {
+      const existingUpdate = await RecentUpdatesModel.findOne({ "Company Name": obj["Company Name"] });
+      if (!existingUpdate) {
+        const newUpdate = new RecentUpdatesModel({
+          _id:obj._id,
+          title,
+          "Company Name": obj["Company Name"],
+          ename: employeeSelection,
+          oldStatus:"Untouched",
+          newStatus:"Untouched",
+          properDate:new Date(),
+          date,
+          time
+        });
+        await newUpdate.save();
+      }
     });
-    await newUpdate.save();
+
+    await Promise.all(updatePromises);
     res.json({ message: "Data posted successfully" });
   } catch (error) {
     console.error("Error posting assign data:", error);
@@ -1037,13 +1049,37 @@ router.post("/postExtractedData", async (req, res) => {
       executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel)
     ]);
     //socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
-    // Add the recent update to the RecentUpdatesModel
-    const newUpdate = new RecentUpdatesModel({
-      title,
-      date,
-      time
-    });
-    await newUpdate.save();
+   // Process each selectedObject to check and update/create entries in RecentUpdatesModel
+   for (const obj of selectedObjects) {
+    const existingUpdate = await RecentUpdatesModel.findOne({ "Company Name": obj["Company Name"] });
+
+    if (existingUpdate) {
+      // Update the title if the company already exists
+      await RecentUpdatesModel.updateOne(
+        { "Company Name": obj["Company Name"] },
+        { $set: 
+          { 
+          title, 
+          date, 
+          time 
+        } }
+      );
+    } else {
+      // Create a new entry if the company doesn't exist
+      const newUpdate = new RecentUpdatesModel({
+        "Company Name": obj["Company Name"],
+        _id:obj._id,
+        title,
+        ename: obj.ename,
+        oldStatus:obj.Status,
+        newStatus:obj.Status,
+        properDate:new Date(),
+        date,
+        time
+      });
+      await newUpdate.save();
+    }
+  }
 
     res.json({ message: "Data posted successfully" });
   } catch (error) {

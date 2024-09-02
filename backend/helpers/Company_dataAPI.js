@@ -125,12 +125,12 @@ router.post("/update-status/:id", async (req, res) => {
     }
 
     // Create and save a new document in the RecentUpdatesModel collection
-    const newUpdate = new RecentUpdatesModel({
-      title: title,
-      date: date,
-      time: time,
-    });
-    await newUpdate.save();
+    // const newUpdate = new RecentUpdatesModel({
+    //   title: title,
+    //   date: date,
+    //   time: time,
+    // });
+    // await newUpdate.save();
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -152,6 +152,19 @@ router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   }
 });
 
+router.get("/leadDataHistoryInterested" , async(req,res)=>{
+  try{
+    const findAllLeads = await LeadHistoryForInterestedandFollowModel.find({})
+    if(findAllLeads){
+      res.status(200).send(findAllLeads)
+    }
+   
+  }catch(error){
+    console.error("Errorfetchingleads" , error)
+    res.status(500).json({error: "Internal Server Error"})
+
+  }
+})
 
 
 

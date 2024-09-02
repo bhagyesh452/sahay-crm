@@ -122,7 +122,7 @@ function EmployeeLeads() {
     const [bdmName, setBdmName] = useState("Not Alloted");
     const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
     const [branchName, setBranchName] = useState("");
-
+    const userId = localStorage.getItem("dataManagerUserId");
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -1309,7 +1309,7 @@ function EmployeeLeads() {
 
     const fetchPersonalInfo = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${id}`);
+            const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
             // console.log("Personal Info :", res.data.data);
             setMyInfo(res.data.data);
         } catch (error) {

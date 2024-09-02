@@ -1240,7 +1240,7 @@ function TestLeads() {
     };
 
     const handleExtractData = async () => {
-        const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
+        const title = `${selectedRows.length} data extracted to ${employeeSelection}`;
         const DT = new Date();
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();

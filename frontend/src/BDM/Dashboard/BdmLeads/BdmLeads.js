@@ -3584,9 +3584,10 @@ function BdmLeads() {
                                           )
                                         }
                                       >
-                                        <option value="Not Picked Up">
-                                          Not Picked Up
-                                        </option>
+                                        {(dataStatus !== "Interested" && dataStatus !== "FollowUp" )&& 
+                                            <option value="Not Picked Up">
+                                              Not Picked Up
+                                            </option>}
                                         <option value="Busy">Busy </option>
                                         <option value="Junk">Junk</option>
                                         <option value="Not Interested">
@@ -3607,12 +3608,12 @@ function BdmLeads() {
 
                                         {dataStatus === "Interested" && (
                                           <>
-                                            <option value="Interested">
+                                            {/* <option value="Interested">
                                               Interested
                                             </option>
                                             <option value="FollowUp">
                                               Follow Up{" "}
-                                            </option>
+                                            </option> */}
                                             <option value="Matured">
                                               Matured
                                             </option>
@@ -3621,9 +3622,9 @@ function BdmLeads() {
 
                                         {dataStatus === "FollowUp" && (
                                           <>
-                                            <option value="FollowUp">
+                                            {/* <option value="FollowUp">
                                               Follow Up{" "}
-                                            </option>
+                                            </option> */}
                                             <option value="Matured">
                                               Matured
                                             </option>
