@@ -20,9 +20,6 @@ const LeadHistorySchema = new mongoose.Schema({
       time:{
         type:String
       },
-      Count:{
-        type:Number
-      }
 })
 
 const LeadHistoryForInterestedandFollowModel = mongoose.model("leadHistoryForInterestedandFollow" ,LeadHistorySchema )

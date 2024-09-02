@@ -909,7 +909,8 @@ function Employees({ onEyeButtonClick, searchValue }) {
                           <Link
                             style={{ color: "black", color: 'inherit' }}
                             to={`/dataanalyst/employeeLeads/${item._id}`}
-                          ><FaRegEye />
+                          >
+                            <FaRegEye />
                           </Link>
                         </button>
                       </td>
@@ -1210,7 +1211,8 @@ function Employees({ onEyeButtonClick, searchValue }) {
                                 <Link
                                   style={{ color: "black" }}
                                   to={`/datamanager/employeeLeads/${item._id}`}
-                                ><IconButton >
+                                >
+                                  <IconButton >
                                     <IconEye
                                       style={{
                                         width: "14px",

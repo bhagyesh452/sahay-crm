@@ -5,6 +5,21 @@ const yourSchema = new mongoose.Schema({
   title: {
     type: String,
   },
+  "Company Name": {
+    type: String,
+  },
+  ename:{
+    type:String
+  },
+  oldStatus:{
+    type:String
+  },
+  newStatus:{
+    type:String
+  },
+  properDate: {
+    type: Date,
+  },
   date: {
     type: String,
   },
