@@ -16,6 +16,7 @@ import Switch from '@mui/material/Switch';
 import axios from 'axios';
 import AddServices from './AddServices';
 import EditService from './EditService';
+import EmployeeAssetDetails from '../../employeeComp/EmployeeNotificationComponents/EmployeeAssetDetails';
 
 
 function Services() {
@@ -66,49 +67,82 @@ function Services() {
 
     const [services, setServices] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
     const [showAddDepartment, setShowAddDepartment] = useState(false);
+    const [showEditDepartment, setShowEditDepartment] = useState(false);
+
     const [showAddService, setShowAddService] = useState(false);
+    const [showEditService, setShowEditService] = useState(false);
+
+    const [showUpdationOptions, setShowUpdateOptions] = useState(false);
+
     const [showAddServiceDetails, setShowAddServiceDetails] = useState(false);
     const [showEditServiceDetails, setShowEditServiceDetails] = useState(false);
-    const [showViewServiceDetails, setShowViewServiceDetails] = useState(false);
+    const [showServiceDetails, setShowServiceDetails] = useState(false);
 
     const [departments, setDepartments] = useState([]);
-    const [id, setID] = useState("");
+
     const [departmentName, setDepartmentName] = useState("");
+    const [updatedDepartmentName, setUpdatedDepartmentName] = useState("");
+
     const [serviceName, setServiceName] = useState("");
+    const [updatedServiceName, setUpdatedServiceName] = useState("");
+
     const [serviceDescription, setServiceDescription] = useState("");
+    const [updatedServiceDescription, setUpdatedServiceDescription] = useState("");
+
     const [departmentErrorMessage, setDepartmentErrorMessage] = useState("");
     const [sericeErrorMessage, setServiceErrorMessage] = useState("");
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
 
     const handleCloseAddDepartment = () => {
         setShowAddDepartment(false);
+        setShowEditDepartment(false);
         setDepartmentErrorMessage("");
         setServiceErrorMessage("");
         setDescriptionErrorMessage("");
         setDepartmentName("");
+        setUpdatedDepartmentName(departmentName);
     };
 
     const handleCloseAddService = () => {
         setShowAddService(false);
+        setShowEditService(false);
         setDepartmentErrorMessage("");
         setServiceErrorMessage("");
         setDescriptionErrorMessage("");
         setDepartmentName("");
+        setUpdatedDepartmentName(departmentName);
         setServiceName("");
+        setUpdatedServiceName(serviceName);
         setServiceDescription("");
+        setUpdatedServiceDescription(serviceDescription);
+    };
+
+    const handleCloseUpdateOptions = () => {
+        setShowUpdateOptions(false);
     };
 
     const handleCloseShowAddServiceDetails = () => {
         setShowAddServiceDetails(false);
         setDepartmentName("");
         setServiceName("");
+        setServiceDescription("");
     };
 
     const handleCloseShowEditServiceDetails = () => {
         setShowEditServiceDetails(false);
+        setDepartmentName("");
         setServiceName("");
+        setServiceDescription("");
     };
+
+    const handleCloseShowServiceDetails = () => {
+        setShowServiceDetails(false);
+        setDepartmentName("");
+        setServiceName("");
+        setServiceDescription("");
+    }
 
     const fetchServices = async () => {
         try {
@@ -143,7 +177,7 @@ function Services() {
     const handleSubmit = async () => {
         try {
             let hasError = false;
-    
+
             // Validate department name
             if ((showAddDepartment || showAddService) && departmentName.trim().length === 0) {
                 showAddDepartment ? setDepartmentErrorMessage("Please enter department name") : setDepartmentErrorMessage("Please select department name");
@@ -151,7 +185,7 @@ function Services() {
             } else {
                 setDepartmentErrorMessage("");
             }
-    
+
             // Validate service name and description only if adding a service
             if (showAddService && serviceName.trim().length === 0) {
                 setServiceErrorMessage("Please enter service name");
@@ -159,23 +193,23 @@ function Services() {
             } else {
                 setServiceErrorMessage("");
             }
-    
+
             if (showAddService && serviceDescription.trim().length === 0) {
                 setDescriptionErrorMessage("Please enter service description");
                 hasError = true;
             } else {
                 setDescriptionErrorMessage("");
             }
-    
+
             // If any errors were found, do not proceed
             if (hasError) return;
-    
+
             const payload = {
                 departmentName: departmentName,
                 serviceName: showAddService ? serviceName : "",  // Set empty if only adding department
                 serviceDescription: showAddService ? serviceDescription : "" // Set empty if only adding department
             };
-    
+
             const res = await axios.post(`${secretKey}/department/addDepartment`, payload);
             // console.log("Department successfully created :", res.data.data);
 
@@ -184,7 +218,7 @@ function Services() {
             } else {
                 Swal.fire("success", "Service Successfully Created", "success");
             }
-    
+
             setShowAddDepartment(false);
             setShowAddService(false);
             setDepartmentName("");
@@ -201,7 +235,75 @@ function Services() {
         }
     };
 
-    
+    const handleUpdateDepartment = async () => {
+        try {
+            const res = await axios.put(`${secretKey}/department/updateDepartmentInDepartmentModel/${departmentName}`, {
+                updatedDepartmentName: updatedDepartmentName
+            });
+            const res2 = await axios.put(`${secretKey}/services/updateDepartmentInServiceModel/${departmentName}`, {
+                updatedDepartmentName: updatedDepartmentName
+            });
+            // console.log("Department updated in department model :", res.data);
+            // console.log("Department updated in service model :", res2.data);
+            Swal.fire("success", "Department Successfully Updated", "success");
+            fetchServices();
+            setShowAddDepartment(false);
+        } catch (error) {
+            console.log("Error updating department :", error);
+            Swal.fire("error", "Error updating department", "error");
+        }
+    };
+
+    const handleUpdateService = async () => {
+        try {
+            const res = await axios.put(`${secretKey}/department/updateServiceInDepartmentModel/${serviceName}`, {
+                updatedDepartmentName: updatedDepartmentName,
+                updatedServiceName: updatedServiceName,
+                updatedServiceDescription: updatedServiceDescription
+            });
+            const res2 = await axios.put(`${secretKey}/services/updateServiceInServiceModel/${serviceName}`, {
+                updatedDepartmentName: updatedDepartmentName,
+                updatedServiceName: updatedServiceName
+            });
+            // console.log("Service updated in department model :", res.data);
+            // console.log("Service updated in service model :", res2.data);
+            Swal.fire("success", "Service Successfully Updated", "success");
+            fetchServices();
+            setShowAddService(false);
+        } catch (error) {
+            console.log("Error updating service :", error);
+            Swal.fire("error", "Error updating service", "error");
+        }
+    };
+
+    const handleDeleteService = async (serviceName) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to delete this service",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.delete(`${secretKey}/department/deleteServiceFromDepartmentModel/${serviceName}`);
+                    const res2 = await axios.delete(`${secretKey}/services/deleteServiceFromServiceModel/${serviceName}`);
+                    // console.log("Service successfully deleted from department model :", res.data.data);
+                    // console.log("Service successfully deleted from service model :", res2.data.data);
+                    Swal.fire("success", "Service Successfully Deleted", "success");
+                    fetchServices();
+                } catch (error) {
+                    console.log("Error deleting service:", error);
+                    Swal.fire("error", "Error deleting service", "error");
+                }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire("Cancelled","Service data is safe :)","error");
+            }
+        });
+    };
+
     const handleToggleChange = async (serviceName) => {
         try {
             // Fetch the current status of hideService for the selected service
@@ -241,13 +343,13 @@ function Services() {
             fetchDepartments(); // Fetch departments only when the checkbox is checked
         }
     }, [showAddService]);
+
     return (
         <div>
             <Header />
             <Navbar />
 
-
-            {!showAddServiceDetails && !showEditServiceDetails &&
+            {!showAddServiceDetails && !showEditServiceDetails && !showServiceDetails &&
                 <div className="page-wrapper">
 
                     <div className="page-header">
@@ -310,7 +412,7 @@ function Services() {
                                                     Add Service
                                                 </button>
                                             </div>
-                                            
+
                                             <div className='form-group ml-1'>
                                                 <button
                                                     className="btn action-btn-success"
@@ -406,7 +508,11 @@ function Services() {
                                                                 <td>
                                                                     <div className="d-flex justify-content-center align-items-center">
                                                                         <div className="icons-btn">
-                                                                            <IconButton>
+                                                                            <IconButton onClick={() => {
+                                                                                setShowServiceDetails(true);
+                                                                                setDepartmentName(service.departmentName);
+                                                                                setServiceName(service.serviceName);
+                                                                            }}>
                                                                                 {" "}
                                                                                 <IconEye
                                                                                     style={{
@@ -420,8 +526,13 @@ function Services() {
 
                                                                         <div className="icons-btn">
                                                                             <IconButton onClick={() => {
-                                                                                setShowEditServiceDetails(true);
+                                                                                setShowUpdateOptions(true);
+                                                                                setDepartmentName(service.departmentName);
+                                                                                setUpdatedDepartmentName(service.departmentName);
                                                                                 setServiceName(service.serviceName);
+                                                                                setUpdatedServiceName(service.serviceName);
+                                                                                setServiceDescription(service.serviceDescription);
+                                                                                setUpdatedServiceDescription(service.serviceDescription);
                                                                             }}>
                                                                                 <ModeEditIcon
                                                                                     style={{
@@ -435,7 +546,7 @@ function Services() {
                                                                         </div>
 
                                                                         <div className="icons-btn">
-                                                                            <IconButton>
+                                                                            <IconButton onClick={() => handleDeleteService(service.serviceName)}>
                                                                                 <IconTrash
                                                                                     style={{
                                                                                         cursor: "pointer",
@@ -481,7 +592,6 @@ function Services() {
                 </div>
             }
 
-
             {/* Dialog box to add department */}
             <Dialog
                 className='My_Mat_Dialog'
@@ -490,7 +600,7 @@ function Services() {
                 maxWidth="sm"
             >
                 <DialogTitle>
-                    Add Department{" "}
+                    {showEditDepartment ? "Edit Department" : "Add Department"}
                     <IconButton onClick={handleCloseAddDepartment} style={{ float: "right" }}>
                         <CloseIcon color="primary" />
                     </IconButton>
@@ -507,13 +617,18 @@ function Services() {
                                             </div>
                                             <input
                                                 type="text"
-                                                value={departmentName}
+                                                value={showEditDepartment ? updatedDepartmentName : departmentName}
                                                 className="form-control"
                                                 placeholder="Enter Department Name"
                                                 required
                                                 onChange={(e) => {
-                                                    setDepartmentName(e.target.value);
-                                                    setDepartmentErrorMessage("");
+                                                    if (showEditDepartment) {
+                                                        setUpdatedDepartmentName(e.target.value);
+                                                        setDepartmentErrorMessage("");
+                                                    } else {
+                                                        setDepartmentName(e.target.value);
+                                                        setDepartmentErrorMessage("");
+                                                    }
                                                 }}
                                             />
                                             {departmentErrorMessage && <p className="text-danger">{departmentErrorMessage}</p>}
@@ -526,13 +641,12 @@ function Services() {
                 </DialogContent>
                 <Button
                     className="btn btn-primary bdr-radius-none"
-                    onClick={handleSubmit}
+                    onClick={showEditDepartment ? handleUpdateDepartment : handleSubmit}
                     variant="contained"
                 >
-                    Submit
+                    {showEditDepartment ? "Update" : "Submit"}
                 </Button>
             </Dialog>
-
 
             {/* Dialog box to add service */}
             <Dialog
@@ -542,7 +656,7 @@ function Services() {
                 maxWidth="sm"
             >
                 <DialogTitle>
-                    Add Service{" "}
+                    {showEditService ? "Edit Service" : "Add Service"}
                     <IconButton onClick={handleCloseAddService} style={{ float: "right" }}>
                         <CloseIcon color="primary" />
                     </IconButton>
@@ -559,10 +673,15 @@ function Services() {
                                             </div>
                                             <select
                                                 className="form-select"
-                                                value={departmentName}
+                                                value={showEditService ? updatedDepartmentName : departmentName}
                                                 onChange={(e) => {
-                                                    setDepartmentName(e.target.value);
-                                                    setDepartmentErrorMessage("");
+                                                    if (showEditService) {
+                                                        setUpdatedDepartmentName(e.target.value);
+                                                        setDepartmentErrorMessage("");
+                                                    } else {
+                                                        setDepartmentName(e.target.value);
+                                                        setDepartmentErrorMessage("");
+                                                    }
                                                 }}
                                             >
                                                 <option value="" disabled>Select Department</option>
@@ -579,13 +698,18 @@ function Services() {
                                             <label className="form-label">Service Name</label>
                                             <input
                                                 type="text"
-                                                value={serviceName}
+                                                value={showEditService ? updatedServiceName : serviceName}
                                                 className="form-control"
                                                 placeholder="Enter Service Name"
                                                 required
                                                 onChange={(e) => {
-                                                    setServiceName(e.target.value);
-                                                    setServiceErrorMessage("");
+                                                    if (showEditService) {
+                                                        setUpdatedServiceName(e.target.value);
+                                                        setServiceErrorMessage("");
+                                                    } else {
+                                                        setServiceName(e.target.value);
+                                                        setServiceErrorMessage("");
+                                                    }
                                                 }}
                                             />
                                             {sericeErrorMessage && <p className="text-danger">{sericeErrorMessage}</p>}
@@ -597,12 +721,17 @@ function Services() {
                                             <label className="form-label">Service Description</label>
                                             <textarea
                                                 name="serviceDescription"
-                                                value={serviceDescription}
+                                                value={showEditService ? updatedServiceDescription : serviceDescription}
                                                 className="form-control"
                                                 required
                                                 onChange={(e) => {
-                                                    setServiceDescription(e.target.value);
-                                                    setDescriptionErrorMessage("");
+                                                    if (showEditService) {
+                                                        setUpdatedServiceDescription(e.target.value);
+                                                        setDescriptionErrorMessage("");
+                                                    } else {
+                                                        setServiceDescription(e.target.value);
+                                                        setDescriptionErrorMessage("");
+                                                    }
                                                 }}
                                             />
                                             {descriptionErrorMessage && <p className="text-danger">{descriptionErrorMessage}</p>}
@@ -615,15 +744,119 @@ function Services() {
                 </DialogContent>
                 <Button
                     className="btn btn-primary bdr-radius-none"
-                    onClick={handleSubmit}
+                    onClick={showEditDepartment ? handleUpdateService : handleSubmit}
                     variant="contained"
                 >
-                    Submit
+                    {showEditService ? "Update" : "Submit"}
                 </Button>
             </Dialog>
 
+            {/* Dialog box to show edit options */}
+            <Dialog
+                className='My_Mat_Dialog'
+                open={showUpdationOptions}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    What do you want to edit?
+                    <IconButton onClick={handleCloseUpdateOptions} style={{ float: "right" }}>
+                        <CloseIcon color="primary" />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="modal-dialog modal-lg" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <div className="row">
+                                    <div className='d-flex'>
+                                        <div className="mb-3 col-4">
+                                            <div className="d-flex">
+                                                <div>
+                                                    <button
+                                                        className="btn action-btn-primary"
+                                                        onClick={() => {
+                                                            setShowAddDepartment(true);
+                                                            setShowEditDepartment(true);
+                                                            setShowUpdateOptions(false);
+                                                        }}
+                                                    >
+                                                        <IconButton>
+                                                            <ModeEditIcon
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    color: "orange",
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                    marginTop: "2px"
+                                                                }}
+                                                            />
+                                                        </IconButton>
+                                                        Edit Department
+                                                    </button>
+                                                </div>
+
+                                                <div className="ms-5">
+                                                    <button
+                                                        className="btn action-btn-alert"
+                                                        onClick={() => {
+                                                            setShowAddService(true);
+                                                            setShowEditService(true);
+                                                            setShowUpdateOptions(false);
+                                                        }}
+                                                    >
+                                                        <IconButton>
+                                                            <ModeEditIcon
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    color: "blue",
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                    marginTop: "2px"
+                                                                }}
+                                                            />
+                                                        </IconButton>
+                                                        Edit Service
+                                                    </button>
+                                                </div>
+
+                                                <div className="ms-5">
+                                                    <div className="d-flex">
+                                                        <button
+                                                            className="btn action-btn-success"
+                                                            onClick={() => {
+                                                                setShowEditServiceDetails(true);
+                                                                setShowUpdateOptions(false);
+                                                            }}
+                                                        >
+                                                            <IconButton>
+                                                                <ModeEditIcon
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                        color: "green",
+                                                                        width: "14px",
+                                                                        height: "14px",
+                                                                        marginTop: "2px"
+                                                                    }}
+                                                                />
+                                                            </IconButton>
+                                                            Edit Service Details
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {showAddServiceDetails && <AddServices close={handleCloseShowAddServiceDetails} fetchServices={fetchServices} />}
-            {showEditServiceDetails && <EditService close={handleCloseShowEditServiceDetails} fetchService={fetchServices} serviceName={serviceName} />}
+            {showEditServiceDetails && <EditService close={handleCloseShowEditServiceDetails} serviceName={serviceName} />}
+            {showServiceDetails && <EmployeeAssetDetails back={handleCloseShowServiceDetails} serviceName={serviceName} departmentName={departmentName} />}
         </div>
     )
 }

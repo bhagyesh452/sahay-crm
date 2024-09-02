@@ -386,46 +386,46 @@ function EditService({ close, serviceName }) {
             try {
 
                 const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, departmentInfo);
-                console.log("Service updated successfully at step-0 :", res.data.data);
+                // console.log("Service details updated successfully at step-0 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
                     [activeStep]: true
                 }));
             } catch (error) {
-                console.log("Error updating service at step-0 :", error);
+                console.log("Error updating service details at step-0 :", error);
             }
         } else if (activeStep === 1) {
             try {
                 const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, objectivesInfo);
-                console.log("Service updated successfully at step-1 :", res.data.data);
+                // console.log("Service details updated successfully at step-1 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
                     [activeStep]: true
                 }));
             } catch (error) {
-                console.log("Error updating service at step-1 :", error);
+                console.log("Error updating service details at step-1 :", error);
             }
         } else if (activeStep === 2) {
             try {
                 const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, requirementsInfo);
-                console.log("Service updated successfully at step-2 :", res.data.data);
+                // console.log("Service details updated successfully at step-2 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
                     [activeStep]: true
                 }));
             } catch (error) {
-                console.log("Error updating service at step-2 :", error);
+                console.log("Error updating service details at step-2 :", error);
             }
         } else if (activeStep === 3) {
             try {
                 const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, processInfo);
-                console.log("Service updated successfully at step-3 :", res.data.data);
+                // console.log("Service details updated successfully at step-3 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
                     [activeStep]: true
                 }));
             } catch (error) {
-                console.log("Error updating service at step-3 :", error);
+                console.log("Error updating service details at step-3 :", error);
             }
         }
     };
@@ -438,16 +438,16 @@ function EditService({ close, serviceName }) {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                // console.log("Service updated successfully at step-4 :", res.data.data);
+                // console.log("Service details updated successfully at step-4 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
                     [activeStep]: true
                 }));
-                Swal.fire("success", "Service updated successfully!", "success");
+                Swal.fire("success", "Service details updated successfully!", "success");
                 close();
             } catch (error) {
-                console.log("Error updating service at step-4 :", error);
-                Swal.fire("error", "Error updating service", "error");
+                console.log("Error updating service details at step-4 :", error);
+                Swal.fire("error", "Error updating service details", "error");
             }
         }
     };

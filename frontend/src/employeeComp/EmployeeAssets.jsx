@@ -201,6 +201,7 @@ function EmployeeAssets() {
     const handleBack = () => {
         setServiceName("");
         setDepartmentName("");
+        setOpenDeatilsPage(false);
     };
 
     // console.log("Business registration services :", businessRegistrationServices);
@@ -473,6 +474,7 @@ function EmployeeAssets() {
                                                     </a>
                                                 </li>
                                             })}
+                                            
                                             {/* <li class="nav-item">
                                                 <a class="nav-link sweep-to-right active" data-bs-toggle="tab" href="#Business_Registration">Business Registration</a>
                                             </li>
@@ -1349,7 +1351,7 @@ function EmployeeAssets() {
                 </div>
             </div>)}
 
-            {openDetailsPage && <EmployeeAssetDetails DetailsPage={setOpenDeatilsPage} serviceName={serviceName} departmentName={departmentName} back={handleBack} />}
+            {openDetailsPage && <EmployeeAssetDetails serviceName={serviceName} departmentName={departmentName} back={handleBack} />}
         </div>
     )
 }

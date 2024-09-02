@@ -109,4 +109,53 @@ router.put("/updateServiceHideStatus/:serviceName", async (req, res) => {
     }
 });
 
+router.put("/updateDepartmentInDepartmentModel/:departmentName", async (req, res) => {
+    const {departmentName} = req.params;
+    const {updatedDepartmentName} = req.body;
+
+    // console.log("Old department name in department model :", departmentName);
+    // console.log("UPdated department name in department model :", updatedDepartmentName);
+
+    try {
+        const updateDepartment = await DepartmentModel.updateMany(
+            { departmentName: departmentName },
+            { $set: { departmentName: updatedDepartmentName } }
+        );
+        res.status(200).json({result: true, message: "Department name updated successfully", data: updateDepartment});
+    } catch (error) {
+        res.status(500).json({result: false, message: "Error updating department name", error: error});
+    }
+});
+
+router.put("/updateServiceInDepartmentModel/:serviceName", async (req, res) => {
+    const {serviceName} = req.params;
+    const {updatedDepartmentName, updatedServiceName, updatedServiceDescription} = req.body;
+
+    // console.log("Old service name in department model :", serviceName);
+    // console.log("Updated department name in department model :", updatedDepartmentName);
+    // console.log("Updated service name in department model :", updatedServiceName);
+    // console.log("Updated service description in department model :", updatedServiceDescription);
+
+    try {
+        const updateService = await DepartmentModel.findOneAndUpdate(
+            { serviceName: serviceName },
+            { $set: { departmentName: updatedDepartmentName, serviceName: updatedServiceName, serviceDescription: updatedServiceDescription } }
+        );
+        res.status(200).json({result: true, message: "Service name updated successfully", data: updateService});
+    } catch (error) {
+        res.status(500).json({result: false, message: "Error updating service name", error: error});
+    }
+});
+
+router.delete("/deleteServiceFromDepartmentModel/:serviceName", async (req, res) => {
+    const {serviceName} = req.params;
+    try {
+        const deletedService = await DepartmentModel.findOneAndDelete(
+            { serviceName: serviceName });
+        res.status(200).json({result: true, message: "Service successfully deleted", data: deletedService});
+    } catch (error) {
+        res.status(500).json({result: false, message: "Error deleting service", error: error});
+    }
+});
+
 module.exports = router;

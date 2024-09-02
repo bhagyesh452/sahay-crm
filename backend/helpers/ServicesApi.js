@@ -209,4 +209,52 @@ router.put("/updateService/:serviceName", upload.fields([
     }
 });
 
+router.put("/updateDepartmentInServiceModel/:departmentName", async (req, res) => {
+    const {departmentName} = req.params;
+    const {updatedDepartmentName} = req.body;
+    
+    // console.log("Old department name in service model :", departmentName);
+    // console.log("UPdated department name in service model :", updatedDepartmentName);
+
+    try {
+        const updateDepartment = await ServicesModel.updateMany(
+            { departmentName: departmentName },
+            { $set: { departmentName: updatedDepartmentName } }
+        );
+        res.status(200).json({result: true, message: "Department name updated successfully", data: updateDepartment});
+    } catch (error) {
+        res.status(500).json({result: false, message: "Error updating department name", error: error});
+    }
+});
+
+router.put("/updateServiceInServiceModel/:serviceName", async (req, res) => {
+    const {serviceName} = req.params;
+    const {updatedDepartmentName, updatedServiceName} = req.body;
+
+    // console.log("Old service name in department model :", serviceName);
+    // console.log("Updated department name in department model :", updatedDepartmentName);
+    // console.log("Updated service name in department model :", updatedServiceName);
+
+    try {
+        const updateService = await ServicesModel.findOneAndUpdate(
+            { serviceName: serviceName },
+            { $set: { departmentName: updatedDepartmentName, serviceName: updatedServiceName } }
+        );
+        res.status(200).json({result: true, message: "Service name updated successfully", data: updateService});
+    } catch (error) {
+        res.status(500).json({result: false, message: "Error updating service name", error: error});
+    }
+});
+
+router.delete("/deleteServiceFromServiceModel/:serviceName", async (req, res) => {
+    const {serviceName} = req.params;
+    try {
+        const deletedService = await ServicesModel.findOneAndDelete(
+            { serviceName: serviceName });
+        res.status(200).json({result: true, message: "Service successfully deleted", data: deletedService});
+    } catch (error) {
+        res.status(500).json({result: false, message: "Error deleting service", error: error});
+    }
+});
+
 module.exports = router;
