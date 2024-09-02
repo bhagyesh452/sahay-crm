@@ -236,6 +236,7 @@ function Services() {
     };
 
     const handleUpdateDepartment = async () => {
+        console.log("Updating department");
         try {
             const res = await axios.put(`${secretKey}/department/updateDepartmentInDepartmentModel/${departmentName}`, {
                 updatedDepartmentName: updatedDepartmentName
@@ -255,6 +256,7 @@ function Services() {
     };
 
     const handleUpdateService = async () => {
+        console.log("Updating service");
         try {
             const res = await axios.put(`${secretKey}/department/updateServiceInDepartmentModel/${serviceName}`, {
                 updatedDepartmentName: updatedDepartmentName,
@@ -527,6 +529,8 @@ function Services() {
                                                                         <div className="icons-btn">
                                                                             <IconButton onClick={() => {
                                                                                 setShowUpdateOptions(true);
+                                                                                setShowEditDepartment(true);
+                                                                                setShowEditService(true);
                                                                                 setDepartmentName(service.departmentName);
                                                                                 setUpdatedDepartmentName(service.departmentName);
                                                                                 setServiceName(service.serviceName);
