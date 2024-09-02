@@ -1524,6 +1524,7 @@ function EmployeesProjectionSummary() {
                     Sr. No
                   </th>
                   <th>BDE Name</th>
+                  <th>BDM Name</th>
                   <th>Company Name</th>
                   <th>Offered Services</th>
                   <th>Total Offered Price</th>
@@ -1545,7 +1546,8 @@ function EmployeesProjectionSummary() {
                     <tr key={`sub-row-${Index}`}>
                       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
                       {/* Render other employee data */}
-                      <td>{obj.ename}</td>
+                      <td>{obj.caseType === "Recieved" ? obj.bdeName || obj.ename: obj.ename}</td>
+                      <td>{obj.caseType === "Recieved" ? obj.bdmName || obj.bdeName : obj.ename}</td>
                       <td>{obj.companyName}</td>
                       <td>{obj.offeredServices.join(",")}</td>
                       <td>

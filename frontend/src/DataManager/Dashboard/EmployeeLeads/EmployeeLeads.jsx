@@ -1052,7 +1052,7 @@ function EmployeeLeads() {
 
             // Get the nextId from the eData array
             const nextId = eData[nextIndex];
-            window.location.replace(`/datamanager/employeeLeads/${nextId}`);
+            window.location.replace(`/dataanalyst/employeeLeads/${nextId}`);
             //setBackButton(nextId !== 0);
         } else {
             console.log("Current ID not found in eData array.");
@@ -1114,13 +1114,13 @@ function EmployeeLeads() {
             if (currentIndex === 0) {
 
                 // If it's the first page, navigate to the employees page
-                window.location.replace(`/datamanager/newEmployees`);
+                window.location.replace(`/dataanalyst/newEmployees`);
                 //setBackButton(false)
             } else {
                 // Get the previousId from the eData array
 
                 const prevId = eData[prevIndex];
-                window.location.replace(`/datamanager/employeeLeads/${prevId}`);
+                window.location.replace(`/dataanalyst/employeeLeads/${prevId}`);
             }
             //setBackButton(prevIndex !== 0);
         } else {
@@ -1167,7 +1167,7 @@ function EmployeeLeads() {
         };
     }
     const location = useLocation();
-    const [value, setValue] = React.useState(location.pathname === `/datamanager/employeeLeads/${id}` ? 0 : 1);
+    const [value, setValue] = React.useState(location.pathname === `/dataanalyst/employeeLeads/${id}` ? 0 : 1);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -1492,7 +1492,7 @@ function EmployeeLeads() {
                                     </div> */}
 
                                     {backButton && <div><Link
-                                        to={`/datamanager/newEmployees`}
+                                        to={`/dataanalyst/newEmployees`}
                                         style={{ marginLeft: "10px" }}>
                                         <button className="btn btn-primary d-none d-sm-inline-block">
                                             <span><FaArrowLeft style={{ marginRight: "10px", marginBottom: "3px" }} /></span>
@@ -1513,7 +1513,7 @@ function EmployeeLeads() {
                                 href="#tabs-home-5"
                                 onClick={() => {
                                     setCurrentTab("Leads")
-                                    window.location.pathname = `/datamanager/employeeLeads/${id}`
+                                    window.location.pathname = `/dataanalyst/employeeLeads/${id}`
                                 }}
                                 className={
                                     currentTab === "Leads"
