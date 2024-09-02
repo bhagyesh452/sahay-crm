@@ -256,7 +256,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       transports: ['websocket'],
     });
     socket.on("employee-entered", () => {
-      console.log("One user Entered");
+      
       setTimeout(() => {
         updateActiveStatus(); // Don't fetch instead, just change that particular active status
       }, 5000);
@@ -349,7 +349,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, cancel!',
     }).then(async (result) => {
-      console.log("Deleted data is :", dataToDelete);
+     
       if (result.isConfirmed) {
         try {
           const saveResponse = await axios.put(`${secretKey}/employee/savedeletedemployee`, {
@@ -779,7 +779,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         } else {
           const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
           // Adds data in performance report:
-          console.log("Created employee is :", response.data);
+          
+          
           closeAddEmployeePopup();
           Swal.fire({
             title: "Data Added!",
@@ -1454,7 +1455,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                           // Split the item.ename string into an array of words based on spaces
                           const names = (item.ename || "").trim().split(/\s+/);
 
-                          console.log("names", names);
+                         
 
                           // Check if there's only one name or multiple names
                           if (names.length === 1) {

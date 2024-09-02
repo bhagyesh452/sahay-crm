@@ -89,8 +89,12 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
         if (email && !emailPattern.test(email)) newErrors.email = "Invalid email";
 
         // Phone number validation (Indian phone number)
-        const phonePattern = /^(?:\+91|91)?[789]\d{9}$/;
-        if (number && !phonePattern.test(number)) newErrors.number = "Invalid phone number";
+        // const phonePattern = /^(?:\+91|91)?[789]\d{9}$/;
+        // if (number && !phonePattern.test(number)) newErrors.number = "Invalid phone number";
+        const phonePattern = /^\d{10}$/;
+        if (number && !phonePattern.test(number)) {
+            newErrors.number = "Invalid phone number";
+        }
 
         return newErrors;
     };
@@ -181,14 +185,14 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
 
     const fetchAllEmployee = async () => {
         try {
-          const res = await axios.get(`${secretKey}/employee/einfo`);
-          const employeeData = res.data;
-          setEmployeeData(employeeData);
-          console.log("Fetched Employees are:", res.data)
+            const res = await axios.get(`${secretKey}/employee/einfo`);
+            const employeeData = res.data;
+            setEmployeeData(employeeData);
+            console.log("Fetched Employees are:", res.data)
         } catch (error) {
-          console.log("Error fetching employees data:")
+            console.log("Error fetching employees data:")
         }
-      };
+    };
 
     const fetchLastEmployeeId = async () => {
         try {
@@ -420,8 +424,10 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                         `${secretKey}/employee/einfo/${empId}`,
                         dataToSendUpdated
                     );
+                    console.log("response", response.data)
+                    console.log("dataTosendupdated", dataToSendUpdated)
                     closeForEdit();
-                    console.log("Close edit popup", openForEdit);
+
                     // console.log("Updated employee is :", dataToSendUpdated);
 
                     Swal.fire({

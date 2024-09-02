@@ -128,60 +128,6 @@ function AdminEmployeeTeamLeads() {
     const [selectedEmployee2, setSelectedEmployee2] = useState()
     const [openBacdrop, setOpenBacdrop] = useState(false);
     // const [isFilter, setIsFilter] = useState(false);
-
-    const formatDateLeadHistory = (dateInput) => {
-        console.log(dateInput)
-        // Create a Date object if input is a string
-        const date = new Date(dateInput);
-    
-        if (isNaN(date.getTime())) {
-          console.error('Invalid date:', dateInput);
-          return '';
-        }
-    
-        // Get day, month, and year
-        const day = date.getDate().toString().padStart(2, '0'); // Ensure two digits
-        const month = date.toLocaleString('default', { month: 'long' }); // e.g., "August"
-        const year = date.getFullYear();
-    
-        return `${day} ${month}, ${year}`;
-      };
-    
-      function formatTime(timeString) {
-        // Assuming timeString is in "3:23:14 PM" format
-        const [time, period] = timeString.split(' ');
-        const [hours, minutes, seconds] = time.split(':').map(Number);
-    
-        // Convert 24-hour format to 12-hour format
-        const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
-        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-        const formattedTime = `${formattedHours}:${formattedMinutes} ${period}`;
-    
-        return formattedTime;
-      }
-    
-      // Function to calculate and format the time difference
-      function timePassedSince(dateTimeString) {
-        const entryTime = new Date(dateTimeString);
-        const now = new Date();
-    
-        // Calculate difference in milliseconds
-        const diffMs = now - entryTime;
-    
-        // Convert milliseconds to minutes and hours
-        const diffMinutes = Math.floor(diffMs / (1000 * 60));
-        const diffHours = Math.floor(diffMinutes / 60);
-        const diffDays = Math.floor(diffHours / 24);
-    
-        // Format the difference
-        if (diffDays > 0) {
-          return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-        } else if (diffHours > 0) {
-          return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        } else {
-          return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
-        }
-      }
     // States for filtered and searching data :
     const stateList = State.getStatesOfCountry("IN");
     const cityList = City.getCitiesOfCountry("IN");
@@ -225,7 +171,59 @@ function AdminEmployeeTeamLeads() {
     const [daysInMonth, setDaysInMonth] = useState([]);
     const [leadHistoryData, setLeadHistoryData] = useState([])
 
+    const formatDateLeadHistory = (dateInput) => {
+        console.log(dateInput)
+        // Create a Date object if input is a string
+        const date = new Date(dateInput);
 
+        if (isNaN(date.getTime())) {
+            console.error('Invalid date:', dateInput);
+            return '';
+        }
+
+        // Get day, month, and year
+        const day = date.getDate().toString().padStart(2, '0'); // Ensure two digits
+        const month = date.toLocaleString('default', { month: 'long' }); // e.g., "August"
+        const year = date.getFullYear();
+
+        return `${day} ${month}, ${year}`;
+    };
+
+    function formatTime(timeString) {
+        // Assuming timeString is in "3:23:14 PM" format
+        const [time, period] = timeString.split(' ');
+        const [hours, minutes, seconds] = time.split(':').map(Number);
+
+        // Convert 24-hour format to 12-hour format
+        const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+        const formattedTime = `${formattedHours}:${formattedMinutes} ${period}`;
+
+        return formattedTime;
+    }
+
+    // Function to calculate and format the time difference
+    function timePassedSince(dateTimeString) {
+        const entryTime = new Date(dateTimeString);
+        const now = new Date();
+
+        // Calculate difference in milliseconds
+        const diffMs = now - entryTime;
+
+        // Convert milliseconds to minutes and hours
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        // Format the difference
+        if (diffDays > 0) {
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        } else if (diffHours > 0) {
+            return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        } else {
+            return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+        }
+    }
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
     }, []);
@@ -349,7 +347,7 @@ function AdminEmployeeTeamLeads() {
             const leadHistory = response2.data
             setTeamData(response.data);
             setExtraData(response.data);
-setLeadHistoryData(leadHistory)
+            setLeadHistoryData(leadHistory)
             if (bdmNewStatus === "Untouched") {
                 setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
                 setBdmNewStatus("Untouched")
@@ -2652,25 +2650,25 @@ setLeadHistoryData(leadHistory)
                                                 </>)}
                                                 <td>Action</td>
                                                 {(bdmNewStatus === "FollowUp" && (<>
+                                                    <th>Status Modification Date</th>
+                                                    <th>Age</th>
+                                                </>)) ||
+                                                    (bdmNewStatus === "Interested" && (<>
                                                         <th>Status Modification Date</th>
                                                         <th>Age</th>
-                                                    </>)) ||
-                                                        (bdmNewStatus === "Interested" && (<>
-                                                            <th>Status Modification Date</th>
-                                                            <th>Age</th>
-                                                        </>))}
+                                                    </>))}
                                             </tr>
                                         </thead>
 
                                         <tbody>
                                             {teamleadsData.map((company, index) => {
-                                                 let matchingLeadHistory
-                                                 if (Array.isArray(leadHistoryData)) {
-                                                   matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
-                                                   // Do something with matchingLeadHistory
-                                                 } else {
-                                                   console.error("leadHistoryData is not an array");
-                                                 }
+                                                let matchingLeadHistory
+                                                if (Array.isArray(leadHistoryData)) {
+                                                    matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
+                                                    // Do something with matchingLeadHistory
+                                                } else {
+                                                    console.error("leadHistoryData is not an array");
+                                                }
                                                 return (
                                                     <tr
                                                         key={index}

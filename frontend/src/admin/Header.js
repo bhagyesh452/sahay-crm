@@ -60,7 +60,8 @@ function Header({ name, designation }) {
     });
 
     socket.on("newRequest", (res) => {
-      console.log("res", res)
+    
+      
       enqueueSnackbar(`${res.name} Is Asking For Data`, {
         variant: 'reportComplete',
         persist: true
