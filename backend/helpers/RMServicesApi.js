@@ -1722,13 +1722,73 @@ router.post(`/update-content-rmofcertification/`, async (req, res) => {
   }
 });
 
+// router.post(`/update-letter-adminexecutive/`, async (req, res) => {
+//   const { companyName, serviceName, letterStatus } = req.body;
+//   //console.log("contentStatus", contentStatus, companyName, serviceName)
+//   const socketIO = req.io;
+
+//   try {
+//     // Find the company document
+//     const company = await AdminExecutiveModel.findOne({
+//       ["Company Name"]: companyName,
+//       serviceName: serviceName,
+//     });
+
+//     // Check if the company exists
+//     if (!company) {
+//       console.error("Company not found");
+//       return res.status(404).json({ message: "Company not found" });
+//     }
+
+//     // Determine the update values based on the contentStatus and brochureStatus
+//     let updateFields = { letterStatus: letterStatus };
+
+//     // Perform the update
+//     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
+//       {
+//         ["Company Name"]: companyName,
+//         serviceName: serviceName,
+//       },
+//       updateFields,
+//       { new: true }
+//     );
+
+//     const updatedCompanyRm = await RMCertificationModel.findOneAndUpdate(
+//       {
+//         ["Company Name"]: companyName,
+//         serviceName: serviceName,
+//       },
+//       updateFields,
+//       { new: true }
+//     );
+
+//     // Check if the update was successful
+//     if (!updatedCompany) {
+//       console.error("Failed to save the updated document");
+//       return res
+//         .status(400)
+//         .json({ message: "Failed to save the updated document" });
+//     }
+
+//     // Send the response
+//     socketIO.emit("adminexecutive-letter-updated", {
+//       updatedDocument: updatedCompanyRm, // send the updated document
+//     });
+//     res
+//       .status(200)
+//       .json({ message: "Document updated successfully", data: updatedCompany });
+//   } catch (error) {
+//     console.error("Error updating document:", error.message);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
+
 router.post(`/update-letter-adminexecutive/`, async (req, res) => {
   const { companyName, serviceName, letterStatus } = req.body;
-  //console.log("contentStatus", contentStatus, companyName, serviceName)
   const socketIO = req.io;
 
   try {
-    // Find the company document
+    // Find the company document in AdminExecutiveModel
     const company = await AdminExecutiveModel.findOne({
       ["Company Name"]: companyName,
       serviceName: serviceName,
@@ -1740,10 +1800,15 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
       return res.status(404).json({ message: "Company not found" });
     }
 
-    // Determine the update values based on the contentStatus and brochureStatus
+    // Determine the update values based on letterStatus
     let updateFields = { letterStatus: letterStatus };
 
-    // Perform the update
+    if (letterStatus === "Letter Received") {
+      // Update additional fields if letterStatus is "Letter Received"
+      updateFields.subCategoryStatus = "KYC Pending";
+    }
+
+    // Perform the update in AdminExecutiveModel
     const updatedCompany = await AdminExecutiveModel.findOneAndUpdate(
       {
         ["Company Name"]: companyName,
@@ -1753,12 +1818,21 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
       { new: true }
     );
 
+    // Prepare update for RMCertificationModel
+    let updateFieldsRm = { letterStatus: letterStatus };
+
+    if (letterStatus === "Letter Received") {
+      // Update dscStatus field if letterStatus is "Letter Received"
+      updateFieldsRm.dscStatus = "KYC Pending";
+    }
+
+    // Perform the update in RMCertificationModel
     const updatedCompanyRm = await RMCertificationModel.findOneAndUpdate(
       {
         ["Company Name"]: companyName,
         serviceName: serviceName,
       },
-      updateFields,
+      updateFieldsRm,
       { new: true }
     );
 
@@ -1770,9 +1844,9 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
         .json({ message: "Failed to save the updated document" });
     }
 
-    // Send the response
+    // Send the response and emit the update event
     socketIO.emit("adminexecutive-letter-updated", {
-      updatedDocument: updatedCompanyRm, // send the updated document
+      updatedDocument: updatedCompanyRm, // send the updated document from RMCertificationModel
     });
     res
       .status(200)
@@ -1782,6 +1856,7 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 router.post(`/update-dscportal-adminexecutive/`, async (req, res) => {
   const { companyName, serviceName, dscPortal } = req.body;

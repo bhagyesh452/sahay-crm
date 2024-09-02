@@ -90,9 +90,6 @@ function EmployeesProjectionSummary() {
       setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
       setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
       setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-      //setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-      //setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-      //setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
       setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
       // setEmployeeDataFilter(data.filter)
 
@@ -316,8 +313,8 @@ function EmployeesProjectionSummary() {
   const theme = useTheme();
 
   const handleSelectProjectionSummary = (selectedEmployeeNames) => {
-    const filteredProjectionData = followData.filter((company) => selectedEmployeeNames.includes(company.ename))
-    const filteredEmployees = employeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename))
+    const filteredProjectionData = followData.filter((company) => selectedEmployeeNames.includes((company.ename || company.bdeName) && (company.ename || company.bdmName)))
+    const filteredEmployees = employeeDataFilter.filter((company) => selectedEmployeeNames.includes((company.ename || company.bdeName) && (company.ename || company.bdmName)))
     //console.log(filteredProjectionData, "projectiondata")
     //console.log(filteredEmployees, "employees")
     if (filteredProjectionData.length > 0 || filteredEmployees.length > 0) {
@@ -331,7 +328,13 @@ function EmployeesProjectionSummary() {
 
 
   // -------------------------------------sorting projection summary-------------------------------------------
-  const uniqueEnames = [...new Set(followDataToday.map((item) => item.ename))];
+  const uniqueEnames = [
+    ...new Set(
+      followDataToday.flatMap((item) => [item.ename, item.bdmName, item.bdeName].filter(Boolean))
+    ),
+  ];
+
+  console.log("uniqueEnames", uniqueEnames)
 
   const [sortTypeProjection, setSortTypeProjection] = useState({
     totalCompanies: "ascending",
@@ -492,13 +495,13 @@ function EmployeesProjectionSummary() {
     setProjectionEname(ename);
     //console.log("Ename:", ename)
     setopenProjectionTable(true);
-    const projectedData = followData.filter((obj) => obj.ename === ename);
+    const projectedData = followData.filter((obj) => obj.ename === ename || obj.bdeName === ename || obj.bdmName === ename);
     //console.log("projected", projectedData);
     const projectedDataDateRange = followDataToday.filter(
-      (obj) => obj.ename === ename
+      (obj) => obj.ename === ename || obj.bdeName === ename || obj.bdmName === ename
     );
     const projectedDataToday = followDataToday.filter(
-      (obj) => obj.ename === ename
+      (obj) => obj.ename === ename || obj.bdeName === ename || obj.bdmName === ename
     );
     //console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
@@ -676,48 +679,51 @@ function EmployeesProjectionSummary() {
     }
   };
 
-// Deleting today's projection :
-const handleDeleteTodaysProjection = async (id) => {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: `Do you really want to remove this item?`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes',
-    cancelButtonText: 'No',
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const response = await axios.delete(`${secretKey}/employee/deleteTodaysProjection/${id}`)
-        console.log("Data successfully deleted :", response.data.data);
-        Swal.fire("Success!", "Data Successfully Deleted!", "success");
-        fetchTodaysProjection();
-      } catch (error) {
-        console.error("Error deleting today's projection :", error);
-        Swal.fire("Error!", "Error deleting today's projection!", "error");
+  // Deleting today's projection :
+  const handleDeleteTodaysProjection = async (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you really want to remove this item?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`${secretKey}/employee/deleteTodaysProjection/${id}`)
+          console.log("Data successfully deleted :", response.data.data);
+          Swal.fire("Success!", "Data Successfully Deleted!", "success");
+          fetchTodaysProjection();
+        } catch (error) {
+          console.error("Error deleting today's projection :", error);
+          Swal.fire("Error!", "Error deleting today's projection!", "error");
+        }
       }
-    }
-  })
-};
+    })
+  };
 
-// Fetch data on component mount
-useEffect(() => {
-  fetchTodaysProjection();
-}, []);
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchTodaysProjection();
+  }, []);
 
-// Sort the data when todaysProjection changes
-useEffect(() => {
-  const sortedData = [...todaysProjection].sort((a, b) => {
-    const [dayA, monthA, yearA] = a.date.split('/');
-    const [dayB, monthB, yearB] = b.date.split('/');
-    const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
-    const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
-    return dateB - dateA;
-  });
-  setSortedTodaysProjection(sortedData);
-}, [todaysProjection]);
+  // Sort the data when todaysProjection changes
+  useEffect(() => {
+    const sortedData = [...todaysProjection].sort((a, b) => {
+      const [dayA, monthA, yearA] = a.date.split('/');
+      const [dayB, monthB, yearB] = b.date.split('/');
+      const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
+      const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
+      return dateB - dateA;
+    });
+    setSortedTodaysProjection(sortedData);
+  }, [todaysProjection]);
+
+  console.log("sortedData", sortedData)
+  console.log("followDataToday", followDataToday)
 
 
   return (
@@ -966,13 +972,30 @@ useEffect(() => {
                             <td>{obj}</td>
                             <td>
                               {
-                                followDataToday.filter(
-                                  (partObj) => partObj.ename === obj
-                                ).length
+                                followDataToday.filter((partObj) =>
+                                  partObj.ename === obj ||
+                                  partObj.bdeName === obj ||
+                                  partObj.bdmName === obj
+                                ).reduce((count, partObj) => {
+                                  if (partObj.caseType === "Recieved") {
+                                    return count + 0.5;  // Increment by 0.5 to effectively halve the count for "Recieved"
+                                  }
+                                  return count + 1;  // Increment by 1 for other cases
+                                }, 0)
                               }
                               <FcDatabase
                                 onClick={() => {
-                                  functionOpenProjectionTable(obj);
+                                  // Check if obj exists in any of the fields before calling the function
+                                  const isObjInData = followDataToday.some(
+                                    (partObj) =>
+                                      partObj.ename === obj ||
+                                      partObj.bdeName === obj ||
+                                      partObj.bdmName === obj
+                                  );
+
+                                  if (isObjInData) {
+                                    functionOpenProjectionTable(obj);
+                                  }
                                 }}
                                 style={{
                                   cursor: "pointer",
@@ -982,31 +1005,54 @@ useEffect(() => {
                               />
                             </td>
                             <td>
-                              {followDataToday.reduce(
-                                (totalServices, partObj) => {
-                                  if (partObj.ename === obj) {
-                                    totalServices += partObj.offeredServices.length;
+                              {followDataToday.reduce((totalServices, partObj) => {
+                                if (
+                                  partObj.ename === obj ||
+                                  partObj.bdeName === obj ||
+                                  partObj.bdmName === obj
+                                ) {
+                                  let sumServices = partObj.offeredServices.length;
+                                  if(partObj.caseType === "Recieved"){                                   
+                                    sumServices /= 2
                                   }
-                                  return totalServices;
-                                },
-                                0
-                              )}
+                                  totalServices += sumServices;
+                                }
+                                return totalServices;
+                              }, 0)}
                             </td>
                             <td>
                               {followDataToday
                                 .reduce((totalOfferedPrize, partObj) => {
-                                  if (partObj.ename === obj) {
-                                    totalOfferedPrize += partObj.offeredPrize;
+                                  if (partObj.ename === obj ||
+                                    partObj.bdeName === obj ||
+                                    partObj.bdmName === obj
+                                  ) {
+                                    let prize = partObj.offeredPrize;
+
+                                    // If caseType is "Recieved", divide the prize by 2
+                                    if (partObj.caseType === "Recieved") {
+                                      prize /= 2;
+                                    }
+
+                                    totalOfferedPrize += prize;
                                   }
                                   return totalOfferedPrize;
                                 }, 0)
                                 .toLocaleString("en-IN", numberFormatOptions)}
                             </td>
+
                             <td>
                               {followDataToday
                                 .reduce((totalPaymentSum, partObj) => {
-                                  if (partObj.ename === obj) {
-                                    totalPaymentSum += partObj.totalPayment;
+                                  if (partObj.ename === obj ||
+                                    partObj.bdeName === obj ||
+                                    partObj.bdmName === obj
+                                  ) {
+                                    let prize = partObj.totalPayment;
+                                    if (partObj.caseType === "Recieved") {
+                                      prize /= 2
+                                    }
+                                    totalPaymentSum += prize;
                                   }
                                   return totalPaymentSum;
                                 }, 0)
@@ -1135,51 +1181,6 @@ useEffect(() => {
               </h2>
             </div>
             <div className="d-flex align-items-center pr-1">
-              {/* <div className="filter-booking mr-1 d-flex align-items-center">
-                <div className="filter-title mr-1">
-                  <h2 className="m-0">
-                    Filter Branch :
-                  </h2>
-                </div>
-                <div className="filter-main">
-                  <select
-                    className="form-select"
-                    id={`branch-filter`}
-                    onChange={(e) => {
-                      handleFilterBranchOffice(e.target.value)
-                    }}
-                  >
-                    <option value="" disabled selected>
-                      Select Branch
-                    </option>
-
-                    <option value={"Gota"}>Gota</option>
-                    <option value={"Sindhu Bhawan"}>
-                      Sindhu Bhawan
-                    </option>
-                    <option value={"none"}>None</option>
-                  </select>
-                </div>
-              </div> */}
-              {/* <div class="input-icon mr-1">
-                <span class="input-icon-addon">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                    <path d="M21 21l-6 -6"></path>
-                  </svg>
-                </span>
-                <input
-                  value={searchTermProjection}
-                  onChange={(e) =>
-                    debouncedFilterSearchProjection(e.target.value)
-                  }
-                  className="form-control"
-                  placeholder="Enter BDE Name..."
-                  type="text"
-                  name="bdeName-search"
-                  id="bdeName-search" />
-              </div> */}
               <div className="date-filter">
                 <LocalizationProvider dateAdapter={AdapterDayjs}  >
                   <DemoContainer components={["SingleInputDateRangeField"]} sx={{
@@ -1423,16 +1424,6 @@ useEffect(() => {
                       {
                         todaysProjection.filter((partObj) => partObj.empName).length
                       }
-                      {/* <FcDatabase
-                        onClick={() => {
-                          functionCompleteProjectionTable();
-                        }}
-                        style={{
-                          cursor: "pointer",
-                          marginRight: "-71px",
-                          marginLeft: "55px",
-                        }}
-                      /> */}
                     </td>
                     <td>
                       {todaysProjection.reduce(
@@ -1541,28 +1532,14 @@ useEffect(() => {
                   <th>Last Follow Up Date</th>
                   <th>Remarks</th>
                   <th>View History</th>
+                  <th>BDM Forwarded Case</th>
                 </tr>
               </thead>
               <tbody>
 
                 {/* Map through uniqueEnames array to render rows */}
                 {projectedDataToday && projectedDataToday.length > 0
-                  ? //   projectedDataDateRange.map((obj, Index) => (
-                  //     <tr key={`sub-row-${Index}`}>
-                  //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                  //       {/* Render other employee data */}
-                  //       <td>{obj.ename}</td>
-                  //       <td>{obj.companyName}</td>
-                  //       <td>{obj.offeredServices.join(",")}</td>
-                  //       <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                  //       <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                  //       <td>{obj.estPaymentDate}</td>
-                  //       <td>{obj.lastFollowUpdate}</td>
-                  //       <td>{obj.remarks}</td>
-                  //       <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
-                  //     </tr>
-                  //   ))
-                  // ) :
+                  ?
 
                   projectedDataToday.map((obj, Index) => (
                     <tr key={`sub-row-${Index}`}>
@@ -1572,16 +1549,30 @@ useEffect(() => {
                       <td>{obj.companyName}</td>
                       <td>{obj.offeredServices.join(",")}</td>
                       <td>
-                        {obj.offeredPrize.toLocaleString(
-                          "en-IN",
-                          numberFormatOptions
-                        )}
+                        {obj.caseType === "Recieved" ?
+                          ((obj.offeredPrize) / 2).toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          ) :
+                          obj.offeredPrize.toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          )}
                       </td>
                       <td>
-                        {obj.totalPayment.toLocaleString(
+                        {/* {obj.totalPayment.toLocaleString(
                           "en-IN",
                           numberFormatOptions
-                        )}
+                        )} */}
+                        {obj.caseType === "Recieved" ?
+                          ((obj.totalPayment) / 2).toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          ) :
+                          obj.totalPayment.toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          )}
                       </td>
                       <td>{formatDateFinal(obj.estPaymentDate)}</td>
                       <td>{formatDateFinal(obj.lastFollowUpdate)}</td>
@@ -1598,6 +1589,7 @@ useEffect(() => {
                           }
                         />
                       </td>
+                      <td>{obj.caseType === "Recieved" ? "Yes" : "No"}</td>
                     </tr>
                   ))
                   : null}
@@ -1617,15 +1609,7 @@ useEffect(() => {
                     <td style={{ lineHeight: "32px" }} colSpan="2">
                       Total
                     </td>
-                    {/* <td>{projectedEmployee.length}</td> 
-                        <td>
-                          {projectedDataDateRange && projectedDataDateRange.length > 0 ? (projectedDataDateRange.length) : (projectedDataToday.length)}
-                        </td>*/}
                     <td>{projectedDataToday.length}</td>
-                    {/* <td>{offeredServicesPopup.length}
-                    </td> 
-                        <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
-                        <td>{(offeredServicesPopupToday.length)}</td>*/}
                     <td>
                       {projectedDataToday.reduce(
                         (totalServices, partObj) => {
@@ -1635,29 +1619,18 @@ useEffect(() => {
                         0
                       )}
                     </td>
-                    {/* <td>{totalPaymentSumPopup.toLocaleString()}
-                    </td> 
-                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
-                        <td>
-                          &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (totalPaymentSumPopupDateRange.toLocaleString()) : (totalPaymentSumPopupToday.toLocaleString())}
-                        </td>
-                        {/* <td>{offeredPaymentSumPopup.toLocaleString()}
-                    </td> 
-                        <td>   &#8377;{(offeredPaymentSumPopupToday.toLocaleString())}</td>
-                         <td>
-                          &#8377;{(totalPaymentSumPopupToday.toLocaleString())}
-                        </td>*/}
-
                     <td>
                       &#8377;
-                      {projectedDataToday.reduce(
-                        (totalOfferedPrice, partObj) => {
-                          return totalOfferedPrice + partObj.offeredPrize;
-                        },
-                        0
-                      )}
+
+                      {projectedDataToday.reduce((totalTotalPayment, partObj) => {
+                        // Check if caseType is "Received" and halve the totalPayment if true
+                        const payment = partObj.caseType === "Recieved" ? partObj.offeredPrize / 2 : partObj.offeredPrize;
+
+                        // Add the payment to the total
+                        return totalTotalPayment + payment;
+                      }, 0)}
                     </td>
-                    <td>
+                    {/* <td>
                       &#8377;
                       {projectedDataToday.reduce(
                         (totalTotalPayment, partObj) => {
@@ -1665,7 +1638,20 @@ useEffect(() => {
                         },
                         0
                       )}
+                     
+                    </td> */}
+                    <td>
+                      &#8377;
+                      {projectedDataToday.reduce((totalTotalPayment, partObj) => {
+                        // Check if caseType is "Received" and halve the totalPayment if true
+                        const payment = partObj.caseType === "Recieved" ? partObj.totalPayment / 2 : partObj.totalPayment;
+
+                        // Add the payment to the total
+                        return totalTotalPayment + payment;
+                      }, 0)}
                     </td>
+
+                    <td>-</td>
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>

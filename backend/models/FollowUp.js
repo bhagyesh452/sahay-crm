@@ -54,7 +54,7 @@ const CompanySchema = new mongoose.Schema({
   },
   caseType:{
     type:String,
-    deafult:"NotForwarded"
+    default:"NotForwarded"
   },
   history: [{
     modifiedAt: { type: String, default: Date.now() },
