@@ -192,7 +192,6 @@ function EmployeeAssets() {
 
     useEffect(() => {
         fetchDepartments();
-        fetchServices();
     }, []);
 
     useEffect(() => {
@@ -538,7 +537,7 @@ function EmployeeAssets() {
                                                     <div className="ESAI_data row">
 
                                                         {services.map((department) => (
-                                                            <div className="col-sm-4">
+                                                            department.hideService === false && <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
                                                                         {department.serviceName}
@@ -695,7 +694,7 @@ function EmployeeAssets() {
                                                     <div className="ESAI_data row">
 
                                                         {services.map((department) => (
-                                                            <div className="col-sm-4">
+                                                            department.hideService === false && <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
                                                                         {department.serviceName}
@@ -846,7 +845,7 @@ function EmployeeAssets() {
                                                     <div className="ESAI_data row">
 
                                                         {services.map((department) => (
-                                                            <div className="col-sm-4">
+                                                            department.hideService === false && <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
                                                                         {department.serviceName}
@@ -1012,7 +1011,7 @@ function EmployeeAssets() {
                                                     <div className="ESAI_data row">
 
                                                         {services.map((department) => (
-                                                            <div className="col-sm-4">
+                                                            department.hideService === false && <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
                                                                         {department.serviceName}
@@ -1148,7 +1147,7 @@ function EmployeeAssets() {
                                                     <div className="ESAI_data row">
 
                                                         {services.map((department) => (
-                                                            <div className="col-sm-4">
+                                                            department.hideService === false && <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
                                                                         {department.serviceName}
@@ -1284,7 +1283,7 @@ function EmployeeAssets() {
                                                     <div className="ESAI_data row">
 
                                                         {services.map((department) => (
-                                                            <div className="col-sm-4">
+                                                            department.hideService === false && <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
                                                                         {department.serviceName}
@@ -1314,7 +1313,7 @@ function EmployeeAssets() {
                                                     <div className="ESAI_data row">
 
                                                         {services.map((department) => (
-                                                            <div className="col-sm-4">
+                                                            department.hideService === false && <div className="col-sm-4">
                                                                 <div className="ESAI_data_card mt-3">
                                                                     <div className="ESAI_data_card_h">
                                                                         {department.serviceName}

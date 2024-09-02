@@ -12,11 +12,11 @@ import 'quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css"; // Import default styles
-import { height } from '@mui/system';
-
-function AddServices({ close, fetchServices }) {
+function EditService({ close, serviceName }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+    // console.log("Service name is :", serviceName);
 
     const steps = ['Step-1', 'Step-2', 'Step-3', 'Step-4', ' Step-5'];
 
@@ -48,23 +48,16 @@ function AddServices({ close, fetchServices }) {
     const [completed, setCompleted] = useState({});
     const [errors, setErrors] = useState({});
 
-    const [departments, setDepartments] = useState([]);
-    const [services, setServices] = useState([]);
-    const [isServiceDisabled, setIsServiceDisabled] = useState(true);
+    // const [departments, setDepartments] = useState([]);
+    // const [services, setServices] = useState([]);
+    // const [isServiceDisabled, setIsServiceDisabled] = useState(true);
     const [employees, setEmployees] = useState([]);
-    const [id, setId] = useState("");
+    // const [id, setId] = useState("");
 
     const [departmentInfo, setDepartmentInfo] = useState({
         departmentName: "",
         serviceName: "",
     });
-    // useEffect(() => {
-    //     setDepartmentInfo({
-    //         departmentName: departmentName || "",
-    //         serviceName: serviceName || "",
-    //     });
-    // }, [departmentName, serviceName]);
-
     const validateDepartmentInfo = () => {
         const newErrors = {};
         const { departmentName, serviceName } = departmentInfo;
@@ -144,43 +137,47 @@ function AddServices({ close, fetchServices }) {
         return Object.keys(newErrors).length === 0;
     };
 
-    const fetchDepartments = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/department/fetchDepartments`);
-            const data = res.data.data;
-            const uniqueDepartments = [...new Set(data.map((item) => item.departmentName))];
-            setDepartments(uniqueDepartments);
-            // console.log("Fetched departments are :", uniqueDepartments);
-        } catch (error) {
-            console.log("Error fetching departments :", error);
-        }
-    };
+    // const fetchDepartments = async () => {
+    //     try {
+    //         const res = await axios.get(`${secretKey}/department/fetchDepartments`);
+    //         const data = res.data.data;
+    //         const uniqueDepartments = [...new Set(data.map((item) => item.departmentName))];
+    //         setDepartments(uniqueDepartments);
+    //         // console.log("Fetched departments are :", uniqueDepartments);
+    //     } catch (error) {
+    //         console.log("Error fetching departments :", error);
+    //     }
+    // };
 
-    // Fetch services based on selected department
-    const fetchServicesByDepartment = async (departmentName) => {
-        try {
-            const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment`, {
-                params: { departmentName }
-            });
-            // console.log("Fetched services are :", res.data.data);
-            setServices(res.data.data);
-            setIsServiceDisabled(false); // Enable the service dropdown
-        } catch (error) {
-            console.log("Error fetching services:", error);
-        }
-    };
+    // // Fetch services based on selected department
+    // const fetchServicesByDepartment = async (departmentName) => {
+    //     try {
+    //         const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment`, {
+    //             params: { departmentName }
+    //         });
+    //         // console.log("Fetched services are :", res.data.data);
+    //         setServices(res.data.data);
+    //         setIsServiceDisabled(false); // Enable the service dropdown
+    //     } catch (error) {
+    //         console.log("Error fetching services:", error);
+    //     }
+    // };
 
-    // Handle department selection
-    const handleDepartmentChange = (e) => {
-        const selectedDepartment = e.target.value;
-        handleInputChange(e); // Update department in state
-        if (selectedDepartment !== "Select Department") {
-            fetchServicesByDepartment(selectedDepartment); // Fetch services for the selected department
-        } else {
-            setIsServiceDisabled(true); // Disable the service dropdown if no department is selected
-            setServices([]); // Clear services when no department is selected
-        }
-    };
+    // // Handle department selection
+    // const handleDepartmentChange = (e) => {
+    //     const selectedDepartment = e.target.value;
+    //     setDepartmentInfo((prev) => ({
+    //         ...prev,
+    //         departmentName: selectedDepartment,
+    //         serviceName: "", // Reset serviceName when department changes
+    //     }));
+    //     if (selectedDepartment !== "Select Department") {
+    //         fetchServicesByDepartment(selectedDepartment); // Fetch services for the selected department
+    //     } else {
+    //         setIsServiceDisabled(true); // Disable the service dropdown if no department is selected
+    //         setServices([]); // Clear services when no department is selected
+    //     }
+    // };
 
     const fetchEmployees = async () => {
         try {
@@ -193,6 +190,46 @@ function AddServices({ close, fetchServices }) {
             setEmployees(formattedEmployees);
         } catch (error) {
             console.log("Error fetching employees :", error);
+        }
+    };
+
+    const fetchService = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${serviceName}`);
+            const data = res.data.data;
+            // console.log("Fetched service is :", data);
+
+            setDepartmentInfo({
+                departmentName: data.departmentName || "",
+                serviceName: data.serviceName || ""
+            });
+
+            setObjectivesInfo({
+                objectives: data.objectives || "",
+                benefits: data.benefits || ""
+            });
+
+            setRequirementsInfo({
+                requiredDocuments: data.requiredDocuments || "",
+                eligibilityRequirements: data.eligibilityRequirements || ""
+            });
+
+            setProcessInfo({
+                process: data.process || "",
+                deliverables: data.deliverables || "",
+                timeline: data.timeline || ""
+            });
+
+            setTeamInfo({
+                employeeName: data.concernTeam.employeeNames,
+                headName: data.concernTeam.headNames,
+                portfolio: data.portfolio,
+                document: data.documents
+            });
+
+            setDocumentArray(data.documents ? data.documents : []);
+        } catch (error) {
+            console.log("Error fetching employee", error);
         }
     };
 
@@ -342,173 +379,85 @@ function AddServices({ close, fetchServices }) {
 
     const handleReset = () => {
         setActiveStep(0);
-
-        setDepartmentInfo({
-            departmentName: "",
-            serviceName: "",
-        });
-
-        setObjectivesInfo({
-            objectives: "",
-            benefits: "",
-        });
-
-        setRequirementsInfo({
-            requiredDocuments: "",
-            eligibilityRequirements: ""
-        });
-
-        setProcessInfo({
-            process: "",
-            deliverables: "",
-            timeline: ""
-        });
-
-        setTeamInfo({
-            employeeName: [],
-            headName: [],
-            portfolio: [],
-            document: []
-        });
     };
 
     const saveDraft = async () => {
-        let res;
+        if (activeStep === 0) {
+            try {
 
-        const requestBody = {
-            ...(
-                activeStep === 0 ? departmentInfo :
-                    activeStep === 1 ? objectivesInfo :
-                        activeStep === 2 ? requirementsInfo :
-                            activeStep === 3 ? processInfo :
-                                teamInfo
-            ),
-            activeStep
-        };
-
-        const url = `${secretKey}/serviceDraft/${!id ? 'saveServiceDraft' : `updateServiceDraft/${id}`}`;
-
-        try {
-            if (!id) {
-                res = await axios.post(url, requestBody);
-                // console.log(`Service created successfully at step-${activeStep}:`, res.data);
-            } else {
-                res = await axios.put(url, requestBody, {
-                    headers: activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
-                });
-                // console.log(`Services updated successfully at step-${activeStep}:`, res.data);
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, departmentInfo);
+                console.log("Service updated successfully at step-0 :", res.data.data);
+                setCompleted((prevCompleted) => ({
+                    ...prevCompleted,
+                    [activeStep]: true
+                }));
+            } catch (error) {
+                console.log("Error updating service at step-0 :", error);
             }
-
-            // console.log(`Service ${!id ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
-
-            setCompleted((prevCompleted) => ({
-                ...prevCompleted,
-                [activeStep]: true
-            }));
-        } catch (error) {
-            console.log(`Error ${!id ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
+        } else if (activeStep === 1) {
+            try {
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, objectivesInfo);
+                console.log("Service updated successfully at step-1 :", res.data.data);
+                setCompleted((prevCompleted) => ({
+                    ...prevCompleted,
+                    [activeStep]: true
+                }));
+            } catch (error) {
+                console.log("Error updating service at step-1 :", error);
+            }
+        } else if (activeStep === 2) {
+            try {
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, requirementsInfo);
+                console.log("Service updated successfully at step-2 :", res.data.data);
+                setCompleted((prevCompleted) => ({
+                    ...prevCompleted,
+                    [activeStep]: true
+                }));
+            } catch (error) {
+                console.log("Error updating service at step-2 :", error);
+            }
+        } else if (activeStep === 3) {
+            try {
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, processInfo);
+                console.log("Service updated successfully at step-3 :", res.data.data);
+                setCompleted((prevCompleted) => ({
+                    ...prevCompleted,
+                    [activeStep]: true
+                }));
+            } catch (error) {
+                console.log("Error updating service at step-3 :", error);
+            }
         }
     };
 
     const handleComplete = async () => {
-        // console.log("Department info before sending :", departmentInfo);
-        // console.log("Objectives info before sending :", objectivesInfo);
-        // console.log("Requirements info before sending :", requirementsInfo);
-        // console.log("Process info before sending :", processInfo);
-        // console.log("Team info before sending :", teamInfo);
-
-        try {
-            // Create a FormData object
-            const formData = new FormData();
-
-            // Append text data to FormData
-            formData.append('departmentInfo', JSON.stringify(departmentInfo));
-            formData.append('objectivesInfo', JSON.stringify(objectivesInfo));
-            formData.append('requirementsInfo', JSON.stringify(requirementsInfo));
-            formData.append('processInfo', JSON.stringify(processInfo));
-            formData.append('teamInfo', JSON.stringify(teamInfo));
-            formData.append('id', id);
-
-            // Append files (assuming file inputs are available in the document)
-            const documentInput = document.getElementById('document');
-            if (documentInput && documentInput.files) {
-                const files = documentInput.files;
-                for (let i = 0; i < files.length; i++) {
-                    formData.append('document', files[i]);
-                }
+        if (departmentInfo && objectivesInfo && requirementsInfo && processInfo && activeStep === 4) {
+            try {
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, teamInfo, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                // console.log("Service updated successfully at step-4 :", res.data.data);
+                setCompleted((prevCompleted) => ({
+                    ...prevCompleted,
+                    [activeStep]: true
+                }));
+                Swal.fire("success", "Service updated successfully!", "success");
+                close();
+            } catch (error) {
+                console.log("Error updating service at step-4 :", error);
+                Swal.fire("error", "Error updating service", "error");
             }
-
-            // Make the POST request with FormData
-            const res1 = await axios.post(`${secretKey}/services/addServices/${id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            // console.log("Created service is :", res1.data);
-            Swal.fire("success", "Service created successfully!", "success");
-            close();
-            fetchServices();
-
-            // If creation is successful, delete from draft
-            if (res1.status === 200) {
-                const res2 = await axios.delete(`${secretKey}/serviceDraft/deleteServiceDraft/${id}`);
-                // console.log("Service successfully deleted from draft model :", res2.data);
-            }
-        } catch (error) {
-            console.log("Error creating employee:", error);
-            Swal.fire("error", "Error creating service", "error");
-        }
-    };
-
-
-    const fetchService = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/serviceDraft/fetchServiceDraft`);
-            const data = res.data.data[0];
-            // console.log("Fetched service is :", data);
-            setId(data._id);
-
-            setDepartmentInfo({
-                departmentName: data.departmentName || "",
-                serviceName: data.serviceName || ""
-            });
-
-            setObjectivesInfo({
-                objectives: data.objectives || "",
-                benefits: data.benefits || ""
-            });
-
-            setRequirementsInfo({
-                requiredDocuments: data.requiredDocuments || "",
-                eligibilityRequirements: data.eligibilityRequirements || ""
-            });
-
-            setProcessInfo({
-                process: data.process || "",
-                deliverables: data.deliverables || "",
-                timeline: data.timeline || ""
-            });
-
-            setTeamInfo({
-                employeeName: [],
-                headName: [],
-                portfolio: data.portfolio,
-                document: data.documents
-            });
-
-            setDocumentArray(data.documents ? data.documents : []);
-            // console.log("Document is :", data.documents);
-        } catch (error) {
-            console.log("Error fetching employee", error);
         }
     };
 
     useEffect(() => {
         fetchService();
-    }, [activeStep]);
+    }, []);
 
     useEffect(() => {
-        fetchDepartments();
+        // fetchDepartments();
         fetchEmployees();
     }, []);
 
@@ -573,7 +522,7 @@ function AddServices({ close, fetchServices }) {
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-2 mb-2">
                                                                             <label for="departmentName">Select Department<span style={{ color: "red" }}> * </span></label>
-                                                                            <select
+                                                                            {/* <select
                                                                                 className="form-select mt-1"
                                                                                 name="departmentName"
                                                                                 id="departmentName"
@@ -584,15 +533,16 @@ function AddServices({ close, fetchServices }) {
                                                                                 {departments.map((department, index) => (
                                                                                     <option key={index} value={department}>{department}</option>
                                                                                 ))}
-                                                                            </select>
-                                                                            {/* <input
+                                                                            </select> */}
+                                                                            <input
                                                                                 type="text"
                                                                                 value={departmentInfo.departmentName}
                                                                                 className="form-control"
                                                                                 placeholder="Enter Department Name"
                                                                                 required
                                                                                 onChange={(e) => handleInputChange(e)}
-                                                                            /> */}
+                                                                                disabled
+                                                                            />
                                                                             {errors.departmentName && <p style={{ color: "red" }}>{errors.departmentName}</p>}
                                                                         </div>
                                                                     </div>
@@ -600,7 +550,7 @@ function AddServices({ close, fetchServices }) {
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-2 mb-2">
                                                                             <label for="serviceName">Select Service<span style={{ color: "red" }}> * </span></label>
-                                                                            <select
+                                                                            {/* <select
                                                                                 className="form-select mt-1"
                                                                                 name="serviceName"
                                                                                 id="serviceName"
@@ -612,15 +562,16 @@ function AddServices({ close, fetchServices }) {
                                                                                 {services.map((service, index) => (
                                                                                     <option key={index} value={service.serviceName}>{service.serviceName}</option>
                                                                                 ))}
-                                                                            </select>
-                                                                            {/* <input
+                                                                            </select> */}
+                                                                            <input
                                                                                 type="text"
                                                                                 value={departmentInfo.serviceName}
                                                                                 className="form-control"
                                                                                 placeholder="Enter Service Name"
                                                                                 required
                                                                                 onChange={(e) => handleInputChange(e)}
-                                                                            /> */}
+                                                                                disabled
+                                                                            />
                                                                             {errors.serviceName && <p style={{ color: "red" }}>{errors.serviceName}</p>}
                                                                         </div>
                                                                     </div>
@@ -877,19 +828,11 @@ function AddServices({ close, fetchServices }) {
                                                                             />
                                                                             {errors.document && <p style={{ color: "red" }}>{errors.document}</p>}
                                                                         </div>
-                                                                        {/* {documentArray.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                                                            <div class="uploaded-fileItem d-flex align-items-center">
-                                                                                <p class="m-0">{documentArray[0]?.originalname}</p>
-                                                                                <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
-                                                                                    <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>} */}
                                                                         {teamInfo.document.length > 0 && (
                                                                             <div className="uploaded-filename-main d-flex flex-wrap">
                                                                                 {teamInfo.document.map((file, index) => (
                                                                                     <div key={index} className="uploaded-fileItem d-flex align-items-center">
-                                                                                        <p className="m-0">{file.name}</p> {/* Display the selected file name */}
+                                                                                        <p className="m-0">{file.originalname}</p> {/* Display the selected file name */}
                                                                                         <button
                                                                                             onClick={(e) => {
                                                                                                 e.preventDefault(); // Prevent default form submission
@@ -1238,4 +1181,4 @@ function AddServices({ close, fetchServices }) {
     )
 }
 
-export default AddServices
+export default EditService

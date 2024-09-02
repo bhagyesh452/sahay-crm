@@ -15,6 +15,7 @@ import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import axios from 'axios';
 import AddServices from './AddServices';
+import EditService from './EditService';
 
 
 function Services() {
@@ -68,6 +69,9 @@ function Services() {
     const [showAddDepartment, setShowAddDepartment] = useState(false);
     const [showAddService, setShowAddService] = useState(false);
     const [showAddServiceDetails, setShowAddServiceDetails] = useState(false);
+    const [showEditServiceDetails, setShowEditServiceDetails] = useState(false);
+    const [showViewServiceDetails, setShowViewServiceDetails] = useState(false);
+
     const [departments, setDepartments] = useState([]);
     const [id, setID] = useState("");
     const [departmentName, setDepartmentName] = useState("");
@@ -99,7 +103,12 @@ function Services() {
         setShowAddServiceDetails(false);
         setDepartmentName("");
         setServiceName("");
-    }
+    };
+
+    const handleCloseShowEditServiceDetails = () => {
+        setShowEditServiceDetails(false);
+        setServiceName("");
+    };
 
     const fetchServices = async () => {
         try {
@@ -238,7 +247,7 @@ function Services() {
             <Navbar />
 
 
-            {!showAddServiceDetails &&
+            {!showAddServiceDetails && !showEditServiceDetails &&
                 <div className="page-wrapper">
 
                     <div className="page-header">
@@ -410,7 +419,10 @@ function Services() {
                                                                         </div>
 
                                                                         <div className="icons-btn">
-                                                                            <IconButton>
+                                                                            <IconButton onClick={() => {
+                                                                                setShowEditServiceDetails(true);
+                                                                                setServiceName(service.serviceName);
+                                                                            }}>
                                                                                 <ModeEditIcon
                                                                                     style={{
                                                                                         cursor: "pointer",
@@ -611,6 +623,7 @@ function Services() {
             </Dialog>
 
             {showAddServiceDetails && <AddServices close={handleCloseShowAddServiceDetails} fetchServices={fetchServices} />}
+            {showEditServiceDetails && <EditService close={handleCloseShowEditServiceDetails} fetchService={fetchServices} serviceName={serviceName} />}
         </div>
     )
 }
