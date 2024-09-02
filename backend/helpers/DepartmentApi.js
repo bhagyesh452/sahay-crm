@@ -56,6 +56,22 @@ router.get("/fetchServicesByDepartment", async (req, res) => {
     }
 });
 
+router.get("/fetchServicesByDepartment/:activeDepartment", async (req, res) => {
+    const { activeDepartment } = req.params; // Use query instead of params
+    console.log("Department name is :", activeDepartment);
+    try {
+        const data = await DepartmentModel.find({ departmentName: activeDepartment });
+
+        if (!data) {
+            return res.status(404).json({ result: false, message: "Department not found" });
+        }
+
+        res.status(200).json({ result: true, message: "Services successfully fetched", data: data });
+    } catch (error) {
+        res.status(500).json({ result: false, message: "Error fetching services", error: error.message });
+    }
+});
+
 router.get("/fetchService/:serviceName", async (req, res) => {
     const { serviceName } = req.params; // Use query instead of params
     // console.log("Service name is :", serviceName);
