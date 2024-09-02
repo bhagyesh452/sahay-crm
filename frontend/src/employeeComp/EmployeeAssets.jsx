@@ -92,13 +92,6 @@ function EmployeeAssets() {
     const [departments, setDepartments] = useState([]);
     const [services, setServices] = useState([]);
     const [activeDepartment, setActiveDepartment] = useState("");
-    const [businessRegistrationServices, setBusinessRegistrationServices] = useState([]);
-    const [certificationServices, setCertificationServices] = useState([]);
-    const [documentationServices, setDocumentationServices] = useState([]);
-    const [fundRaisingServices, setFundRaisingServices] = useState([]);
-    const [itServices, setItServices] = useState([]);
-    const [digitalMarketingServices, setDigitalMarketingServices] = useState([]);
-    const [isoServices, setIsoServices] = useState([]);
 
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
@@ -161,6 +154,7 @@ function EmployeeAssets() {
             setDepartments(uniqueDepartments);
             if (uniqueDepartments.length > 0) {
                 setActiveDepartment(uniqueDepartments[0]);
+                fetchServices(uniqueDepartments[0]);
             }
             // console.log("Fetched departments are :", uniqueDepartments);
         } catch (error) {
@@ -168,21 +162,14 @@ function EmployeeAssets() {
         }
     };
 
-    const fetchServices = async () => {
+    const fetchServices = async (departmentName) => {
         try {
-            const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment/${activeDepartment}`);
+            const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment/${departmentName}`);
             const data = res.data.data;
             setServices(data);
-            console.log("Fetched services are :", data);
-            // setBusinessRegistrationServices(data.filter((item) => item.departmentName === "Business Registration" && item.hideService === false))
-            // setCertificationServices(data.filter((item) => item.departmentName === "Certification Services" && item.hideService === false))
-            // setDocumentationServices(data.filter((item) => item.departmentName === "Documentations Services" && item.hideService === false))
-            // setFundRaisingServices(data.filter((item) => item.departmentName === "Fund Raising Services" && item.hideService === false))
-            // setItServices(data.filter((item) => item.departmentName === "IT Services" && item.hideService === false))
-            // setDigitalMarketingServices(data.filter((item) => item.departmentName === "Digital Marketing" && item.hideService === false))
-            // setIsoServices(data.filter((item) => item.departmentName === "ISO Services" && item.hideService === false))
+            // console.log(`Fetched services for ${departmentName}:`, data);
         } catch (error) {
-            console.log("Error fetching services :", error);
+            console.log(`Error fetching services for ${departmentName}:`, error);
         }
     };
 
@@ -194,9 +181,9 @@ function EmployeeAssets() {
         fetchDepartments();
     }, []);
 
-    useEffect(() => {
-        fetchServices();
-    }, [activeDepartment]);
+    // useEffect(() => {
+    //     fetchServices();
+    // }, [activeDepartment]);
 
     const handleBack = () => {
         setServiceName("");
@@ -204,15 +191,8 @@ function EmployeeAssets() {
         setOpenDeatilsPage(false);
     };
 
-    // console.log("Business registration services :", businessRegistrationServices);
-    // console.log("Certification services :", certificationServices);
-    // console.log("Documentation services :", documentationServices);
-    // console.log("Fund raising services :", fundRaisingServices);
-    // console.log("IT services :", itServices);
-    // console.log("Digital marketing services :", digitalMarketingServices);
-    // console.log("ISO services :", isoServices);
-    console.log("Current active department :", activeDepartment);
-    console.log("Current active department id is :", activeDepartment.replace(/\s+/g, '_'));
+    // console.log("Current active department :", activeDepartment);
+    // console.log("Current active department id is :", activeDepartment.replace(/\s+/g, '_'));
 
     const fetchRequestDetails = async () => {
         try {
@@ -462,19 +442,23 @@ function EmployeeAssets() {
                                     <div className="employee-assets-left">
                                         <ul class="nav flex-column">
                                             {departments.map((department, index) => {
-                                                console.log("Department link is :", department.replace(/\s+/g, '_'));
+                                                // console.log("Department link is :", department.replace(/\s+/g, '_'));
                                                 return <li class="nav-item">
                                                     <a
                                                         className={`nav-link sweep-to-right ${activeDepartment === department ? 'active' : ''}`}
                                                         data-bs-toggle="tab"
                                                         href={`#${department.replace(/\s+/g, '_')}`}  // Assuming href refers to a tab with an ID corresponding to the department name
-                                                        onClick={() => setActiveDepartment(department)}
+                                                        // onClick={() => setActiveDepartment(department) }
+                                                        onClick={() => {
+                                                            setActiveDepartment(department);
+                                                            fetchServices(department);  // Fetch services for the selected department
+                                                        }}
                                                     >
                                                         {department}
                                                     </a>
                                                 </li>
                                             })}
-                                            
+
                                             {/* <li class="nav-item">
                                                 <a class="nav-link sweep-to-right active" data-bs-toggle="tab" href="#Business_Registration">Business Registration</a>
                                             </li>
@@ -504,37 +488,50 @@ function EmployeeAssets() {
                                     <div className="employee-assets-right">
                                         <div class="tab-content">
 
-                                            {/* <div class="tab-pane container active" id={activeDepartment.replace(/\s+/g, '_')}>
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
-
-                                                        {services.map((department) => (
-                                                            <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
+                                            <div className="tab-content">
+                                                {departments.map((department, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className={`tab-pane container ${activeDepartment === department ? 'active' : 'fade'}`}
+                                                        id={department.replace(/\s+/g, '_')}
+                                                    >
+                                                        <div className="E_Start-Up_Assets_inner">
+                                                            <div className="ESAI_data row">
+                                                                {services
+                                                                    .filter(service => service.departmentName === department)
+                                                                    .map((service, serviceIndex) => (
+                                                                        service.hideService === false && (
+                                                                            <div className="col-sm-4" key={serviceIndex}>
+                                                                                <div className="ESAI_data_card mt-3">
+                                                                                    <div className="ESAI_data_card_h">
+                                                                                        {service.serviceName}
+                                                                                    </div>
+                                                                                    <div className="ESAI_data_card_b">
+                                                                                        {service.serviceDescription}
+                                                                                    </div>
+                                                                                    <div className="ESAI_data_card_F">
+                                                                                        <button
+                                                                                            className="btn ESAI_data_card_F-btn"
+                                                                                            onClick={() => {
+                                                                                                setOpenDeatilsPage(true);
+                                                                                                setServiceName(service.serviceName);
+                                                                                                setDepartmentName(service.departmentName);
+                                                                                            }}
+                                                                                        >
+                                                                                            Know More
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        )
+                                                                    ))}
                                                             </div>
-                                                        ))}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div> */}
-                                            
-                                            <div class="tab-pane container active" id="Business_Registration">
+                                                ))}
+                                            </div>
+
+                                            {/* <div class="tab-pane container active" id="Business_Registration">
                                                 <div className="E_Start-Up_Assets_inner">
                                                     <div className="ESAI_data row">
 
@@ -559,7 +556,7 @@ function EmployeeAssets() {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        ))}
+                                                        ))} */}
 
                                             {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
@@ -687,38 +684,38 @@ function EmployeeAssets() {
                                                                 </div>
                                                             </div>
                                                         </div> */}
-                                            </div>
+                                            {/* </div>
+                                    </div>
+                                </div> */}
+
+                                            {/* <div class="tab-pane container fade" id="Certification_Services">
+                                    <div className="E_Start-Up_Assets_inner">
+                                        <div className="ESAI_data row">
+
+                                            {services.map((department) => (
+                                                department.hideService === false && <div className="col-sm-4">
+                                                    <div className="ESAI_data_card mt-3">
+                                                        <div className="ESAI_data_card_h">
+                                                            {department.serviceName}
+                                                        </div>
+                                                        <div className="ESAI_data_card_b">
+                                                            {department.serviceDescription}
+                                                        </div>
+                                                        <div className="ESAI_data_card_F">
+                                                            <button className="btn ESAI_data_card_F-btn"
+                                                                onClick={() => {
+                                                                    setOpenDeatilsPage(true);
+                                                                    setServiceName(department.serviceName);
+                                                                    setDepartmentName(department.departmentName);
+                                                                }}>
+                                                                Know More
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            ))} */}
 
-                                            <div class="tab-pane container fade" id="Certification_Services">
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
-
-                                                        {services.map((department) => (
-                                                            department.hideService === false && <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-
-                                                        {/* <div className="col-sm-4">
+                                            {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Start-Up India Certificate
@@ -838,38 +835,38 @@ function EmployeeAssets() {
                                                                 </div>
                                                             </div>
                                                         </div> */}
+                                            {/* </div>
+                                    </div>
+                                </div> */}
+
+                                            {/* <div class="tab-pane container fade" id="Documentations_Services">
+                                    <div className="E_Start-Up_Assets_inner">
+                                        <div className="ESAI_data row">
+
+                                            {services.map((department) => (
+                                                department.hideService === false && <div className="col-sm-4">
+                                                    <div className="ESAI_data_card mt-3">
+                                                        <div className="ESAI_data_card_h">
+                                                            {department.serviceName}
+                                                        </div>
+                                                        <div className="ESAI_data_card_b">
+                                                            {department.serviceDescription}
+                                                        </div>
+                                                        <div className="ESAI_data_card_F">
+                                                            <button className="btn ESAI_data_card_F-btn"
+                                                                onClick={() => {
+                                                                    setOpenDeatilsPage(true);
+                                                                    setServiceName(department.serviceName);
+                                                                    setDepartmentName(department.departmentName);
+                                                                }}>
+                                                                Know More
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))} */}
 
-                                            <div class="tab-pane container fade" id="Documentations_Services">
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
-
-                                                        {services.map((department) => (
-                                                            department.hideService === false && <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-
-                                                        {/* <div className="col-sm-4">
+                                            {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Pitch Deck Development
@@ -1004,38 +1001,38 @@ function EmployeeAssets() {
                                                                 </div>
                                                             </div>
                                                         </div> */}
+                                            {/* </div>
+                                    </div>
+                                </div> */}
+
+                                            {/* <div class="tab-pane container fade" id="Fund_Raising_Services">
+                                    <div className="E_Start-Up_Assets_inner">
+                                        <div className="ESAI_data row">
+
+                                            {services.map((department) => (
+                                                department.hideService === false && <div className="col-sm-4">
+                                                    <div className="ESAI_data_card mt-3">
+                                                        <div className="ESAI_data_card_h">
+                                                            {department.serviceName}
+                                                        </div>
+                                                        <div className="ESAI_data_card_b">
+                                                            {department.serviceDescription}
+                                                        </div>
+                                                        <div className="ESAI_data_card_F">
+                                                            <button className="btn ESAI_data_card_F-btn"
+                                                                onClick={() => {
+                                                                    setOpenDeatilsPage(true);
+                                                                    setServiceName(department.serviceName);
+                                                                    setDepartmentName(department.departmentName);
+                                                                }}>
+                                                                Know More
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))} */}
 
-                                            <div class="tab-pane container fade" id="Fund_Raising_Services">
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
-
-                                                        {services.map((department) => (
-                                                            department.hideService === false && <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-
-                                                        {/* <div className="col-sm-4">
+                                            {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Seed Funding Support
@@ -1140,38 +1137,38 @@ function EmployeeAssets() {
                                                                 </div>
                                                             </div>
                                                         </div> */}
+                                            {/* </div>
+                                    </div>
+                                </div> */}
+
+                                            {/* <div class="tab-pane container fade" id="IT_Services">
+                                    <div className="E_Start-Up_Assets_inner">
+                                        <div className="ESAI_data row">
+
+                                            {services.map((department) => (
+                                                department.hideService === false && <div className="col-sm-4">
+                                                    <div className="ESAI_data_card mt-3">
+                                                        <div className="ESAI_data_card_h">
+                                                            {department.serviceName}
+                                                        </div>
+                                                        <div className="ESAI_data_card_b">
+                                                            {department.serviceDescription}
+                                                        </div>
+                                                        <div className="ESAI_data_card_F">
+                                                            <button className="btn ESAI_data_card_F-btn"
+                                                                onClick={() => {
+                                                                    setOpenDeatilsPage(true);
+                                                                    setServiceName(department.serviceName);
+                                                                    setDepartmentName(department.departmentName);
+                                                                }}>
+                                                                Know More
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))} */}
 
-                                            <div class="tab-pane container fade" id="IT_Services">
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
-
-                                                        {services.map((department) => (
-                                                            department.hideService === false && <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-
-                                                        {/* <div className="col-sm-4">
+                                            {/* <div className="col-sm-4">
                                                             <div className="ESAI_data_card mt-3">
                                                                 <div className="ESAI_data_card_h">
                                                                     Website Development
@@ -1276,70 +1273,70 @@ function EmployeeAssets() {
                                                                 </div>
                                                             </div>
                                                         </div> */}
+                                            {/* </div>
+                                    </div>
+                                </div> */}
+
+                                            {/* <div class="tab-pane container fade" id="Digital_Marketing">
+                                    <div className="E_Start-Up_Assets_inner">
+                                        <div className="ESAI_data row">
+
+                                            {services.map((department) => (
+                                                department.hideService === false && <div className="col-sm-4">
+                                                    <div className="ESAI_data_card mt-3">
+                                                        <div className="ESAI_data_card_h">
+                                                            {department.serviceName}
+                                                        </div>
+                                                        <div className="ESAI_data_card_b">
+                                                            {department.serviceDescription}
+                                                        </div>
+                                                        <div className="ESAI_data_card_F">
+                                                            <button className="btn ESAI_data_card_F-btn"
+                                                                onClick={() => {
+                                                                    setOpenDeatilsPage(true);
+                                                                    setServiceName(department.serviceName);
+                                                                    setDepartmentName(department.departmentName);
+                                                                }}>
+                                                                Know More
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
 
-                                            <div class="tab-pane container fade" id="Digital_Marketing">
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
+                                <div class="tab-pane container fade" id="ISO_Services">
+                                    <div className="E_Start-Up_Assets_inner">
+                                        <div className="ESAI_data row">
 
-                                                        {services.map((department) => (
-                                                            department.hideService === false && <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                            {services.map((department) => (
+                                                department.hideService === false && <div className="col-sm-4">
+                                                    <div className="ESAI_data_card mt-3">
+                                                        <div className="ESAI_data_card_h">
+                                                            {department.serviceName}
+                                                        </div>
+                                                        <div className="ESAI_data_card_b">
+                                                            {department.serviceDescription}
+                                                        </div>
+                                                        <div className="ESAI_data_card_F">
+                                                            <button className="btn ESAI_data_card_F-btn"
+                                                                onClick={() => {
+                                                                    setOpenDeatilsPage(true);
+                                                                    setServiceName(department.serviceName);
+                                                                    setDepartmentName(department.departmentName);
+                                                                }}>
+                                                                Know More
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))}
 
-                                            <div class="tab-pane container fade" id="ISO_Services">
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
-
-                                                        {services.map((department) => (
-                                                            department.hideService === false && <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        </div>
+                                    </div>
+                                </div> */}
 
                                         </div>
                                     </div>
@@ -1348,11 +1345,12 @@ function EmployeeAssets() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>)}
+                </div >
+            </div >)
+            }
 
             {openDetailsPage && <EmployeeAssetDetails serviceName={serviceName} departmentName={departmentName} back={handleBack} />}
-        </div>
+        </div >
     )
 }
 
