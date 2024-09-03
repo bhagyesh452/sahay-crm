@@ -49,9 +49,12 @@ import { RiSendToBack } from 'react-icons/ri';
 import { dateCalendarClasses } from '@mui/x-date-pickers/DateCalendar/dateCalendarClasses';
 import { LiaPagerSolid } from "react-icons/lia";
 import { TbArrowBackUp } from "react-icons/tb";
+import { RiShareForwardFill } from "react-icons/ri";
 
 function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
+    const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
+    const [bdmName, setBdmName] = useState("Not Alloted");
     const [data, setData] = useState([])
     const [mainData, setmainData] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
@@ -104,7 +107,6 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     //     }, [token]);
 
     const formatDateLeadHistory = (dateInput) => {
-        console.log(dateInput)
         // Create a Date object if input is a string
         const date = new Date(dateInput);
 
@@ -157,10 +159,6 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         }
     }
 
-    useEffect(() => {
-        document.title = `Admin-Sahay-CRM`;
-    }, []);
-
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
@@ -171,7 +169,16 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         try {
             setCurrentDataLoading(true)
             //console.log("dataStatus", dataStatus)
-            const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
+            const response = await axios.get(`${secretKey}/company-data/new-leads/interested-followup`, {
+                params: {
+                    page,
+                    limit: itemsPerPage,
+                    dataStatus: "Assigned",  // This will automatically include dataStatus: "Assigned"
+                    sort: sortType,
+                    sortPattern: sortPattern,
+                }
+            });
+            console.log("response" , response.data)
             const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
             const leadHistory = response2.data
             //console.log("data", response.data.data)
@@ -179,11 +186,9 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             //console.log(response.data.unAssignedCount)
             //console.log(response.data)
             setLeadHistoryData(leadHistory)
-            setData(response.data.data.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"));
+            setData(response.data.data);
             setTotalCount(response.data.totalPages)
-            setTotalCompaniesUnaasigned(response.data.unAssignedCount)
             setTotalCompaniesAssigned(response.data.assignedCount)
-            setTotalExtractedCount(response.data.extractedCount)
             setmainData(response.data.data.filter((item) => item.ename === "Not Alloted"));
             //console.log("mainData", mainData)
             //setDataStatus("Unassigned")
@@ -198,14 +203,17 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             setCurrentDataLoading(false)
         }
     };
+    console.log("data" , data)
     //--------------------function to fetch employee data ------------------------------
     const [newEmpData, setNewEmpData] = useState([])
+    const [bdmNames, setbdmNames] = useState([])
 
     const fetchEmployeesData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/einfo`)
             setEmpData(response.data)
             setNewEmpData(response.data.filter(obj => obj.designation === 'Sales Executive' || obj.designation === 'Sales Manager'))
+            setbdmNames(response.data.filter(obj => obj.designation === 'Sales Manager' || obj.bdmWork === true))
         } catch (error) {
             console.log("Error fetching data", error.message)
         }
@@ -286,6 +294,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                             selectedYear,
                             monthIndex,
                             selectedCompanyIncoDate,
+                            selectedBdmName,
+                            selectedBdeForwardDate,
+                            selectedFowradedStatus,
+                            selectedStatusModificationDate,
                             page,
                             limit
                         }
@@ -356,11 +368,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 setIsSearching(false);
                 fetchData(1, latestSortCount)
             } else {
-                setAssignedData(response.data.assigned)
+                setAssignedData(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"))
                 setExtractedData(response.data.extracted)
                 setTotalExtractedCount(response.data.extractedDataCount)
                 setunAssignedData(response.data.unassigned)
-                setTotalCompaniesAssigned(response.data.totalAssigned)
+                setTotalCompaniesAssigned(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                 setTotalCount(response.data.totalPages)
                 setCurrentPage(1)
@@ -504,7 +516,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 })
                 .then((response) => {
                     //console.log("response", response);
-                    console.log("Data sent Successfully");
+
                     Swal.fire({
                         title: "Data Added!",
                         text: "Successfully added new Data!",
@@ -669,11 +681,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         try {
             let response;
             if (selectedOption === "someoneElse") {
-                console.log("updatedcsvdata", updatedCsvdata)
+
                 response = await axios.post(`${secretKey}/company-data/leads`, updatedCsvdata);
                 await axios.post(`${secretKey}/employee/employee-history`, newArray);
             } else {
-                console.log("updatedcsvdata2", updatedCsvData2)
+
                 response = await axios.post(`${secretKey}/company-data/leads`, updatedCsvData2);
             }
 
@@ -766,6 +778,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                         selectedYear,
                         monthIndex,
                         selectedCompanyIncoDate,
+                        selectedBdmName,
+                        selectedBdeForwardDate,
+                        selectedFowradedStatus,
+                        selectedStatusModificationDate,
                         isFilter,
                         isSearching,
                         searchText
@@ -783,7 +799,8 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             }
             // Process response
             const { data } = response;
-            console.log(data)
+
+
             // Handle response data as needed
             setAllIds(data.allIds);
             setSelectedRows((prevSelectedRows) =>
@@ -877,6 +894,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     selectedYear,
                     monthIndex,
                     selectedCompanyIncoDate,
+                    selectedBdmName,
+                    selectedBdeForwardDate,
+                    selectedFowradedStatus,
+                    selectedStatusModificationDate,
                     isSearching,
                     searchText,
                 }
@@ -964,7 +985,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus
-        console.log("currentDataStatus", currentDataStatus)
+
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
         try {
@@ -1025,7 +1046,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         //const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
-        console.log("length", dataToSend.length)
+
         try {
             setOpenBacdrop(true)
             setOpenAssignLeadsDialog(false)
@@ -1383,6 +1404,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
     const [openBacdrop, setOpenBacdrop] = useState(false)
     const [monthIndex, setMonthIndex] = useState(0)
+    const [selectedBdmName, setSelectedBdmName] = useState("")
+    const [selectedStatusModificationDate, setSelectedStatusModificationDate] = useState(null)
+    const [selectedBdeForwardDate, setSelectedBdeForwardDate] = useState(null)
+    const [selectedFowradedStatus, setSelectedFowradedStatus] = useState("")
 
     const currentYear = new Date().getFullYear();
     const months = [
@@ -1403,7 +1428,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         }
     }, [selectedYear, selectedMonth]);
 
-    console.log(selectedYear)
+
 
 
     useEffect(() => {
@@ -1416,7 +1441,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         }
     }, [selectedYear, selectedMonth, selectedDate]);
 
-    console.log("inco date", selectedCompanyIncoDate)
+
 
 
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
@@ -1436,6 +1461,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     selectedYear,
                     monthIndex,
                     selectedCompanyIncoDate,
+                    selectedBdmName,
+                    selectedBdeForwardDate,
+                    selectedFowradedStatus,
+                    selectedStatusModificationDate,
                     page,  // Start from the first page
                     limit
                 }
@@ -1449,32 +1478,22 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 !selectedExtractedDate &&
                 !selectedAdminName &&
                 !selectedYear &&
-                !selectedCompanyIncoDate) {
+                !selectedCompanyIncoDate &&
+                !selectedBdmName &&
+                !selectedBdeForwardDate &&
+                !selectedFowradedStatus &&
+                !selectedStatusModificationDate) {
                 // If search query is empty, reset data to mainData
                 setIsFilter(false);
                 fetchData(1, latestSortCount);
                 setOpenBacdrop(false)
             } else {
-                console.log("selectedUploadDate", selectedUploadedDate)
+                console.log("response", response.data)
                 setOpenBacdrop(false)
-                setTotalCompaniesAssigned(response.data.totalAssigned)
-                setTotalCompaniesUnaasigned(response.data.totalUnassigned)
-                setExtractedData(response.data.extracted)
-                setTotalExtractedCount(response.data.extractedDataCount)
-                setAssignedData(response.data.assigned)
-                setunAssignedData(response.data.unassigned)
+                setTotalCompaniesAssigned(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
+                setAssignedData(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"))
                 setTotalCount(response.data.totalPages);  // Ensure your backend provides the total page count
-
-                //setData(response.data);  // Optionally set all data
                 setCurrentPage(response.data.currentPage);  // Reset to the first page
-                //setData(response.data.assigned);
-                // if (response.data.assigned.length > 0 || response.data.unassigned.length > 0) {
-                //     if (response.data.unassigned.length > 0 && response.data.unassigned[0].ename === 'Not Alloted') {
-                //         setDataStatus('Unassigned');
-                //     } else {
-                //         setDataStatus('Assigned');
-                //     }
-                // }
                 setOpenFilterDrawer(false);
             }
         } catch (error) {
@@ -1500,6 +1519,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setCompanyIncoDate(null)
         setSelectedCompanyIncoDate(null)
         setSelectedRows([])
+        setSelectedBdmName("")
+        setSelectedBdeForwardDate(null)
+        setSelectedStatusModificationDate(null)
+        setSelectedFowradedStatus("")
         fetchData(1, latestSortCount)
     }
     const functionCloseFilterDrawer = () => {
@@ -1510,7 +1533,41 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setOpenBacdrop(false)
     }
 
-    console.log("dataStatus", dataStatus)
+//------- function forward to bdm---------------------
+
+const handleCloseForwardBdmPopup = () => {
+    setOpenAssignToBdm(false);
+  };
+
+  const handleForwardDataToBDM = async (bdmName) => {
+    //const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
+    // console.log("data is:", data);
+    if (selectedRows.length === 0) {
+      Swal.fire("Please Select the Company to Forward", "", "Error");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      return;
+    }
+    // if (data.length === 0) {
+    //   Swal.fire("Can Not Forward Untouched Company", "", "Error");
+    //   setBdmName("Not Alloted");
+    //   handleCloseForwardBdmPopup();
+    //   return;
+    // }
+    try {
+      const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+        data: data,
+        name: bdmName
+      });
+      fetchData(1, latestSortCount)
+      Swal.fire("Company Forwarded", "", "success");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      console.log("response data is:", response);
+    } catch (error) {
+      console.log("error fetching data", error.message);
+    }
+  };
 
 
     return (
@@ -1540,6 +1597,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                 <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                     <MdOutlinePostAdd className='mr-1' />Assign Leads
                                 </button>
+                                {/* <button type="button" className="btn mybtn"
+                                    onClick={() => setOpenAssignToBdm(true)}
+                                >
+                                    <RiShareForwardFill className='mr-1' /> Forward to BDM
+                                </button> */}
                                 {/* <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
                                     <MdOutlineDeleteSweep className='mr-1' />Delete Leads
                                 </button> */}
@@ -1584,45 +1646,6 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                             class="nav nav-tabs card-header-tabs nav-fill p-0"
                             data-bs-toggle="tabs"
                         >
-                            {/* <li class="nav-item data-heading">
-                                <a
-                                    href="#tabs-home-5"
-                                    className={
-                                        dataStatus === "Unassigned"
-                                            ? "nav-link active item-act"
-                                            : "nav-link"
-                                    }
-                                    data-bs-toggle="tab"
-                                    onClick={() => {
-                                        setDataStatus("Unassigned")
-                                        setCurrentPage(1)
-                                    }}
-                                >
-                                    UnAssigned
-                                    <span className="no_badge">
-                                        {totalCompaniesUnassigned}
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a
-                                    href="#tabs-home-5"
-                                    className={
-                                        dataStatus === "Extracted"
-                                            ? "nav-link active item-act"
-                                            : "nav-link"
-                                    }
-                                    data-bs-toggle="tab"
-                                    onClick={() => {
-                                        setDataStatus("Extracted")
-                                        setCurrentPage(1)
-                                    }}>
-                                    Extracted Data
-                                    <span className="no_badge">
-                                        {totalExtractedCount}
-                                    </span>
-                                </a>
-                            </li> */}
                             <li class="nav-item">
                                 <a
                                     href="#tabs-home-5"
@@ -1638,7 +1661,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                     }}>
                                     Interested-FollowUp Leads
                                     <span className="no_badge">
-                                        {data ? data.length : "-"}
+                                        {totalCompaniesAssigned}
                                     </span>
                                 </a>
                             </li>
@@ -1738,7 +1761,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                             </th>)}
                                             <th>Status Modificate Date</th>
                                             <th>Age</th>
-                                            <th>Is Lead Forwarded</th>
+                                            <th>BDM Forwarded</th>
                                             <th>BDM Name</th>
                                             <th>Forwarded Date</th>
                                             <th>Forwarded Age</th>
@@ -1748,7 +1771,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                     {currentDataLoading ? (
                                         <tbody>
                                             <tr>
-                                                <td colSpan="14" >
+                                                <td colSpan="16" >
                                                     <div className="LoaderTDSatyle">
                                                         <ClipLoader
                                                             color="lightgrey"
@@ -1763,54 +1786,85 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                         </tbody>
                                     ) : (
                                         <tbody>
-                                            {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
-                                                <tr
-                                                    key={index}
-                                                    className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                    style={{ border: "1px solid #ddd" }}>
-                                                    <td>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedRows.includes(company._id)}
-                                                            onChange={() => handleCheckboxChange(company._id)}
-                                                            onMouseDown={() => handleMouseDown(company._id)}
-                                                            onMouseEnter={() => handleMouseEnter(company._id)}
-                                                            onMouseUp={handleMouseUp}
-                                                        />
-                                                    </td>
-                                                    <td>{startIndex - 500 + index + 1}</td>
-                                                    <td>{company["Company Name"]}</td>
-                                                    <td>{company["Company Email"]}</td>
-                                                    {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                    {(dataStatus === "Assigned") && <td>
-                                                        <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                            <p className="rematkText text-wrap m-0">
-                                                                {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                            </p>
-                                                            <div
-                                                                onClick={() => {
-                                                                    functionopenpopupremarks(company._id, company.Status);
-                                                                }}
-                                                                style={{ cursor: "pointer" }}>
-                                                                <IconEye
-
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                        marginLeft: "4px",
-                                                                    }}
+                                            {(isFilter || isSearching) && dataStatus === 'Assigned'
+                                                &&
+                                                assignedData.map((company, index) => {
+                                                    let matchingLeadHistory
+                                                    if (Array.isArray(leadHistoryData)) {
+                                                        matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
+                                                        // Do something with matchingLeadHistory
+                                                    } else {
+                                                        console.error("leadHistoryData is not an array");
+                                                    }
+                                                    return (
+                                                        <tr
+                                                            key={index}
+                                                            className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                            style={{ border: "1px solid #ddd" }}>
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedRows.includes(company._id)}
+                                                                    onChange={() => handleCheckboxChange(company._id)}
+                                                                    onMouseDown={() => handleMouseDown(company._id)}
+                                                                    onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                    onMouseUp={handleMouseUp}
                                                                 />
-                                                            </div>
-                                                        </div>
-                                                    </td>}
-                                                    <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                    <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                    {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                    {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                </tr>
-                                            ))}
+                                                            </td>
+                                                            <td>{startIndex - 500 + index + 1}</td>
+                                                            <td>{company["Company Name"]}</td>
+                                                            <td>{company["Company Number"]}</td>
+                                                            {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>
+                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                    <p className="rematkText text-wrap m-0">
+                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                    </p>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            functionopenpopupremarks(company._id, company.Status);
+                                                                        }}
+                                                                        style={{ cursor: "pointer" }}>
+                                                                        <IconEye
+
+                                                                            style={{
+                                                                                width: "14px",
+                                                                                height: "14px",
+                                                                                color: "#d6a10c",
+                                                                                cursor: "pointer",
+                                                                                marginLeft: "4px",
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </td>}
+                                                            <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                            <td>{formatDateFinal(company["UploadDate"])}</td>
+                                                            {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                            <td>
+                                                                {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
+                                                            </td>
+                                                            <td>
+                                                                {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
+                                                            </td>
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                                "Yes" : "No"
+                                                            }</td>
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                                company.bdmName : "-"
+                                                            }</td>
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                                `${formatDateLeadHistory(company.bdeForwardDate)}`
+                                                                : "-"
+                                                            }</td>
+                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                                `${timePassedSince(company.bdeForwardDate)}`
+                                                                : "-"
+                                                            }</td>
+                                                        </tr>
+                                                    )
+                                                })}
 
                                             {(!isFilter && !isSearching) && data.map((company, index) => {
                                                 let matchingLeadHistory
@@ -1837,7 +1891,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                         </td>
                                                         <td>{startIndex - 500 + index + 1}</td>
                                                         <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Email"]}</td>
+                                                        <td>{company["Company Number"]}</td>
                                                         {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
                                                         {(dataStatus === "Assigned") && <td>
                                                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
@@ -1872,19 +1926,19 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                                         <td>
                                                             {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
                                                         </td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ? 
-                                                        "Yes" : "No"
+                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            "Yes" : "No"
                                                         }</td>
-                                                       <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ? 
-                                                        company.bdmName : "-"
+                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            company.bdmName : "-"
                                                         }</td>
-                                                       <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ? 
-                                                        `${formatDateLeadHistory(company.bdeForwardDate)}`
-                                                         : "-"
+                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            `${formatDateLeadHistory(company.bdeForwardDate)}`
+                                                            : "-"
                                                         }</td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ? 
-                                                        `${timePassedSince(company.bdeForwardDate)}`
-                                                         : "-"
+                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            `${timePassedSince(company.bdeForwardDate)}`
+                                                            : "-"
                                                         }</td>
                                                     </tr>
                                                 )
@@ -1905,31 +1959,6 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                 </tbody>
                             </table>
                         )}
-
-                        {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0 && !currentDataLoading && (
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="13" className="p-2 particular">
-                                            <Nodata />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        )}
-
-                        {(isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length === 0 && !currentDataLoading && (
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="13" className="p-2 particular">
-                                            <Nodata />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        )}
-
                         {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0 && !currentDataLoading && (
                             <table>
                                 <tbody>
@@ -1941,32 +1970,15 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                 </tbody>
                             </table>
                         )}
-
-                        {/* {data.length !== 0 && (
-                <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                    <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
-                        <IconChevronLeft />
-                    </button>
-                    <span>Page {currentPage} /{totalCount}</span>
-                    <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={data.length < itemsPerPage}>
-                        <IconChevronRight />
-                    </button>
-                </div>
-            )} */}
-
                         {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0 || extractedData.length !== 0))) && (
                             <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                 <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                     <IconChevronLeft />
                                 </button>
                                 {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
-                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
-                                {(isFilter || isSearching) && dataStatus === 'Extracted' && <span>Page {currentPage} / {Math.ceil(totalExtractedCount / 500)}</span>}
                                 {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
                                 <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
                                     ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
-                                    ((isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||
-                                    ((isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length < itemsPerPage) ||
                                     ((!isFilter || !isSearching) && data.length < itemsPerPage)
                                 }>
                                     <IconChevronRight />
@@ -1976,8 +1988,8 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     </div>
                 </div>
             </div>
-             {/* --------------------------dialog to assign leads--------------------------------------------------------------- */}
-             <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
+            {/* --------------------------dialog to assign leads--------------------------------------------------------------- */}
+            <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Assign Data
                     <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
@@ -2358,7 +2370,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                         </select>
                                     </div>
                                 </div>
-                                <div className='col-sm-12 mt-2'>
+                                <div className='col-sm-12 mt-2 d-none'>
                                     <div className='d-flex align-items-center justify-content-between'>
                                         <div className='form-group w-50 mr-1'>
                                             <label for="exampleFormControlInput1" class="form-label">State</label>
@@ -2401,6 +2413,34 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                             }}>
                                             <option value=''>Select BDE</option>
                                             {newEmpData && newEmpData.map((item) => (
+                                                <option value={item.ename}>{item.ename}</option>))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Bdm Forwarded</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedFowradedStatus}
+                                            onChange={(e) => {
+                                                setSelectedFowradedStatus(e.target.value)
+                                            }}>
+                                            <option value=''>Select BDE</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="exampleFormControlInput1" class="form-label">Select Bdm</label>
+                                        <select class="form-select form-select-md" aria-label="Default select example"
+                                            value={selectedBdmName}
+                                            onChange={(e) => {
+                                                setSelectedBdmName(e.target.value)
+                                            }}>
+                                            <option value=''>Select BDE</option>
+                                            {bdmNames && bdmNames.map((item) => (
                                                 <option value={item.ename}>{item.ename}</option>))}
                                         </select>
                                     </div>
@@ -2476,7 +2516,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                             onChange={(e) => setSelectedUploadedDate(e.target.value)} />
                                     </div>
                                 </div>
-                                <div className='col-sm-12 mt-2'>
+                                <div className='col-sm-12 mt-2 d-none'>
                                     <div className='form-group'>
                                         <label for="Uploadon" class="form-label">Extracted On</label>
                                         <input type="date" class="form-control" id="Uploadon"
@@ -2484,6 +2524,26 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                             defaultValue={null}
                                             placeholder="dd-mm-yyyy"
                                             onChange={(e) => setSelectedExtractedDate(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadon" class="form-label">Status Modification Date</label>
+                                        <input type="date" class="form-control" id="Uploadon"
+                                            value={selectedStatusModificationDate}
+                                            defaultValue={null}
+                                            placeholder="dd-mm-yyyy"
+                                            onChange={(e) => setSelectedStatusModificationDate(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className='col-sm-12 mt-2'>
+                                    <div className='form-group'>
+                                        <label for="Uploadon" class="form-label">Bde Forward Date</label>
+                                        <input type="date" class="form-control" id="Uploadon"
+                                            value={selectedBdeForwardDate}
+                                            defaultValue={null}
+                                            placeholder="dd-mm-yyyy"
+                                            onChange={(e) => setSelectedBdeForwardDate(e.target.value)} />
                                     </div>
                                 </div>
                             </div>
@@ -2495,9 +2555,62 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     </div>
                 </div>
             </Drawer>
-        </div> 
+
+            {/* ------------------------------- Forward to BDM -------------------------- */}
+      <Dialog
+        open={openAssignToBdm}
+        onClose={handleCloseForwardBdmPopup}
+        fullWidth
+        maxWidth="sm">
+        <DialogTitle>
+          Forward to BDM{" "}
+          <IconButton onClick={handleCloseForwardBdmPopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            {newEmpData.length !== 0 ? (
+              <>
+                <div className="dialogAssign">
+                  <label>Forward to BDM</label>
+                  <div className="form-control">
+                    <select
+                      style={{
+                        width: "inherit",
+                        border: "none",
+                        outline: "none",
+                      }}
+                      value={bdmName}
+                      onChange={(e) => setBdmName(e.target.value)}
+                    >
+                      <option value="Not Alloted" disabled>
+                        Select a BDM
+                      </option>
+                      {newEmpData.filter((item) =>
+                        (item.bdmWork || item.designation === "Sales Manager")
+                      ).map((item) => (
+                        <option value={item.ename}>{item.ename}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>
+                <h1>No Employees Found</h1>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+        <button onClick={() => handleForwardDataToBDM(bdmName)} className="btn btn-primary">
+          Submit
+        </button>
+      </Dialog>
+
+        </div>
     )
-    
+
 }
 
 

@@ -38,9 +38,10 @@ import NSWSMobileNo from "../Extra-Components/NSWSMobileNo";
 import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus";
 import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
+import DscLetterStatusAdHead from "../Extra-Components/DscLetterStatusAdHead";
 
 
-function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, showingFilterIcon ,activeTab }) {
+function RmofCertificationHoldPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -127,29 +128,29 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
     const updateDocumentInState = (updatedDocument) => {
       console.log(updatedDocument)
       setRmServicesData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setcompleteRmData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setdataToFilter(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
-  };
-  socket.on("adminexecutive-general-status-updated", (res) => {
+    };
+    socket.on("adminexecutive-general-status-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
-  socket.on("adminexecutive-letter-updated", (res) => {
+
+    });
+    socket.on("adminexecutive-letter-updated", (res) => {
       //console.log("res" , res)
-      if(res.updatedDocument){
-          updateDocumentInState(res.updatedDocument);
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
       }
-     
-  });
+
+    });
 
     return () => {
       socket.disconnect();
@@ -469,7 +470,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -505,7 +506,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -541,7 +542,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -577,7 +578,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -614,7 +615,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -650,7 +651,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -687,7 +688,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -723,7 +724,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -759,7 +760,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -795,7 +796,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -831,7 +832,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -866,7 +867,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -901,7 +902,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -936,7 +937,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -969,7 +970,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1004,7 +1005,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1072,7 +1073,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1107,7 +1108,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1142,7 +1143,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1192,7 +1193,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                         </div>
                       )}
                     </div>
-                    </th>
+                  </th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['bdeName'] = el}>
@@ -1284,7 +1285,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1320,7 +1321,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1356,7 +1357,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
                           <FilterableTable
-                          noofItems={setnoOfAvailableData}
+                            noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
                             activeTab={"Hold"}
@@ -1512,7 +1513,14 @@ function RmofCertificationHoldPanel({ searchText, showFilter,totalFilteredData, 
                       </td>
                       <td>{obj.withDSC ? "Yes" : "No"}</td>
                       <td>
-                        {obj.withDSC ? obj.letterStatus : "Not Applicable"}
+                        {obj.withDSC ? (<DscLetterStatusAdHead
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          mainStatus={obj.mainCategoryStatus}
+                          letterStatus={obj.letterStatus}
+                          refreshData={refreshData}
+                        />) : "Not Applicable"}
                       </td>
                       <td>
                         <div>

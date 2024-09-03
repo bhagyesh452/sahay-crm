@@ -206,6 +206,25 @@ function AdminExecutiveHoldPanel({ searchText, showFilter, activeTab, totalFilte
     socket.on("booking-updated", (res) => {
       fetchData(searchText);
     });
+    const updateDocumentInState = (updatedDocument) => {
+      console.log(updatedDocument)
+      setRmServicesData(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+      setcompleteRmData(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+      setdataToFilter(prevData => prevData.map(item =>
+          item._id === updatedDocument._id ? updatedDocument : item
+      ));
+  };
+
+    socket.on("adminexecutive-letter-updated", (res) => {
+      //console.log("res" , res)
+      if (res.updatedDocumentAdmin) {
+          updateDocumentInState(res.updatedDocumentAdmin);
+      }
+  });
 
     return () => {
       socket.disconnect();

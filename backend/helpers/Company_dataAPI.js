@@ -71,7 +71,7 @@ router.get("/leads", async (req, res) => {
 //     });
 //     await newUpdate.save();
 
-    
+
 
 //     res.status(200).json({ message: "Status updated successfully" });
 //   } catch (error) {
@@ -116,7 +116,7 @@ router.post("/update-status/:id", async (req, res) => {
           newStatus: newStatus,
           date: new Date(),  // Convert the date string to a Date object
           time: time,
-          Count:1
+          Count: 1
         });
       }
 
@@ -143,7 +143,7 @@ router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   const { ename } = req.params;
   try {
     const lead = await LeadHistoryForInterestedandFollowModel.find({ ename: ename });
-    
+
     console.log("Lead Data:", lead);
     res.status(200).send(lead);
   } catch (error) {
@@ -152,16 +152,16 @@ router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   }
 });
 
-router.get("/leadDataHistoryInterested" , async(req,res)=>{
-  try{
+router.get("/leadDataHistoryInterested", async (req, res) => {
+  try {
     const findAllLeads = await LeadHistoryForInterestedandFollowModel.find({})
-    if(findAllLeads){
+    if (findAllLeads) {
       res.status(200).send(findAllLeads)
     }
-   
-  }catch(error){
-    console.error("Errorfetchingleads" , error)
-    res.status(500).json({error: "Internal Server Error"})
+
+  } catch (error) {
+    console.error("Errorfetchingleads", error)
+    res.status(500).json({ error: "Internal Server Error" })
 
   }
 })
@@ -247,15 +247,15 @@ router.delete("/leads/:id", async (req, res) => {
     if (!deletedData) {
       return res.status(404).json({ error: "Data not found" });
     }
-   
-      // Create a new entry in DeletedLeadsModel with the deleted data
-      const deletedLead = {
-        ...deletedData.toObject(), // Convert Mongoose document to a plain JavaScript object
-        deletedAt: new Date(), // Add timestamp of deletion
-      };
-  
-      // Insert the deleted lead into DeletedLeadsModel
-      await DeletedLeadsModel.create(deletedLead);
+
+    // Create a new entry in DeletedLeadsModel with the deleted data
+    const deletedLead = {
+      ...deletedData.toObject(), // Convert Mongoose document to a plain JavaScript object
+      deletedAt: new Date(), // Add timestamp of deletion
+    };
+
+    // Insert the deleted lead into DeletedLeadsModel
+    await DeletedLeadsModel.create(deletedLead);
 
     res.json({ message: "Data deleted successfully", deletedData });
   } catch (error) {
@@ -572,6 +572,84 @@ router.get('/new-leads', async (req, res) => {
   }
 });
 
+router.get('/new-leads/interested-followup', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Items per page
+    const skip = (page - 1) * limit; // Number of documents to skip
+    const { dataStatus, sort, sortPattern } = req.query;
+    //console.log(sort)
+    // Query the database to get paginated data
+    let query = {};
+
+    if (dataStatus === "Unassigned") {
+      query = { ename: "Not Alloted" };
+    } else if (dataStatus === "Assigned") {
+      query = {
+        $and: [{ ename: { $ne: "Not Alloted" } },
+        { ename: { $ne: "Extracted" } },
+        { Status: { $in: ["Interested", "FollowUp"] } }]
+      };
+    } else if (dataStatus === "Extracted") {
+      query = { ename: "Extracted" };
+    }
+
+    let sortQuery = {};
+    if (sort && sortPattern === 'IncoDate' && (sort === 'ascending' || sort === 'descending')) {
+      if (sort === 'ascending') {
+        sortQuery = { "Company Incorporation Date  ": 1 }; // Sort in ascending order by Company Incorporation Date
+      } else {
+        sortQuery = { "Company Incorporation Date  ": -1 }; // Sort in descending order by Company Incorporation Date
+      }
+    } else if (sort && sortPattern === 'AssignDate' && (sort === 'ascending' || sort === 'descending')) {
+      if (sort === 'ascending') {
+        sortQuery = { AssignDate: 1 }; // Sort in ascending order by Company Incorporation Date
+      } else {
+        sortQuery = { AssignDate: -1 }; // Sort in descending order by Company Incorporation Date
+      }
+    }
+
+    let employees;
+    if (Object.keys(sortQuery).length !== 0) {
+      employees = await CompanyModel.find(query)
+        .sort(sortQuery)
+        .skip(skip)
+        .limit(limit).lean();
+    } else {
+      employees = await CompanyModel.find(query)
+        .sort({ AssignDate: -1 }) // Default sorting in descending order by AssignDate
+        .skip(skip)
+        .limit(limit).lean();
+    }
+
+    // Get total count of documents for pagination
+    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
+    const assignedCount = await CompanyModel.countDocuments({
+      $and: [{ ename: { $ne: "Not Alloted" } }, 
+        { ename: { $ne: "Extracted" } },
+        { Status: { $in: ["Interested", "FollowUp"] } }]
+    });
+    const extractedCount = await CompanyModel.countDocuments({ ename: "Extracted" });
+    const totalCount = await CompanyModel.countDocuments(query);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Return paginated data along with pagination metadata
+    res.json({
+      data: employees,
+      currentPage: page,
+      totalPages: totalPages,
+      unAssignedCount: unAssignedCount,
+      assignedCount: assignedCount,
+      extractedCount: extractedCount
+    });
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 //-------------------api to filter leads-----------------------------------
 // router.get('/filter-leads', async (req, res) => {
 //   const {
@@ -655,6 +733,176 @@ router.get('/new-leads', async (req, res) => {
 //   }
 // });
 
+// router.get('/filter-leads', async (req, res) => {
+//   const {
+//     selectedStatus,
+//     selectedState,
+//     selectedNewCity,
+//     selectedBDEName,
+//     selectedAssignDate,
+//     selectedUploadedDate,
+//     selectedExtractedDate,
+//     selectedAdminName,
+//     selectedYear,
+//     monthIndex,
+//     selectedCompanyIncoDate,
+//     selectedBdmName,
+//     selectedBdeForwardDate,
+//     selectedFowradedStatus,
+//     selectedStatusModificationDate,
+//   } = req.query;
+
+//   //console.log(selectedYear)
+
+//   const page = parseInt(req.query.page) || 1; // Page number
+//   const limit = parseInt(req.query.limit) || 500; // Items per page
+//   const skip = (page - 1) * limit; // Number of documents to skip
+
+//   try {
+//     let baseQuery = {};
+
+//     // Construct query object based on filters
+//     if (selectedStatus) baseQuery.Status = selectedStatus;
+//     if (selectedState) baseQuery.State = selectedState;
+//     if (selectedNewCity) baseQuery.City = selectedNewCity;
+//     if (selectedBdmName) baseQuery.bdmName = selectedBdmName;
+
+//     if (selectedFowradedStatus === "Yes") {
+//       baseQuery.bdmAcceptStatus = {
+//         $in: ["Pending", "Accept"]
+//       };
+//     } else if (selectedFowradedStatus === "No") {
+//       baseQuery.bdmAcceptStatus = "NotForwarded";
+//     }
+
+//     if (selectedAssignDate) {
+//       baseQuery.AssignDate = {
+//         $gte: new Date(selectedAssignDate).toISOString(),
+//         $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+//       };
+//     }
+//     if (selectedAdminName && selectedAdminName.trim() !== '') {
+//       baseQuery.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
+//     }
+
+//     if (selectedUploadedDate) {
+//       baseQuery.UploadDate = {
+//         $gte: new Date(selectedUploadedDate).toISOString(),
+//         $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString()
+//       };
+//     }
+
+//     if (selectedExtractedDate) {
+//       baseQuery.extractedDate = {
+//         $gte: new Date(selectedExtractedDate).toISOString(),
+//         $lt: new Date(new Date(selectedExtractedDate).setDate(new Date(selectedExtractedDate).getDate() + 1)).toISOString()
+//       };
+//     }
+//     console.log("selectedbdeforwaddate", selectedBdeForwardDate)
+//     if (selectedBdeForwardDate) {
+//       // Parse the selected date and add 1 day to correctly adjust for local time
+//       const startOfDay = new Date(selectedBdeForwardDate);
+//       startOfDay.setDate(startOfDay.getDate() + 1);
+//       startOfDay.setHours(0, 0, 0, 0); // Start of the adjusted day (00:00:00.000)
+
+//       // Create the end of the adjusted day (23:59:59.999)
+//       const endOfDay = new Date(startOfDay);
+//       endOfDay.setHours(23, 59, 59, 999);
+
+//       console.log("start", startOfDay.toISOString()); // Debugging: Logs start of the adjusted day in UTC
+//       console.log("end", endOfDay.toISOString()); // Debugging: Logs end of the adjusted day in UTC
+
+//       baseQuery.bdeForwardDate = {
+//         $gte: startOfDay.toISOString(),
+//         $lt: endOfDay.toISOString()
+//       };
+//     }
+
+//     if (selectedYear) {
+//       if (monthIndex !== '0') {
+//         const year = parseInt(selectedYear);
+//         console.log("year", year)
+//         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
+//         const monthStartDate = new Date(year, month, 1);
+//         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+//         baseQuery["Company Incorporation Date  "] = {
+//           $gte: monthStartDate,
+//           $lt: monthEndDate
+//         };
+//       } else {
+//         const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+//         const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+//         baseQuery["Company Incorporation Date  "] = {
+//           $gte: yearStartDate,
+//           $lt: yearEndDate
+//         };
+//       }
+//     }
+
+//     if (selectedCompanyIncoDate) {
+//       const selectedDate = new Date(selectedCompanyIncoDate);
+//       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+//       if (isEpochDate) {
+//         // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
+//         baseQuery["Company Incorporation Date  "] = null;
+//       } else {
+//         // Otherwise, use the selected date to find documents within that day
+//         baseQuery["Company Incorporation Date  "] = {
+//           $gte: new Date(selectedDate).toISOString(),
+//           $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString()
+//         };
+//       }
+//     }
+
+//     console.log(baseQuery);
+
+//     let extractedData = [];
+//     let extractedDataCount = 0;
+//     if (!selectedBDEName || selectedBDEName.trim() === '') {
+//       let extractedQuery = { ...baseQuery, ename: "Extracted" }
+//       extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
+//       extractedData = await CompanyModel.find(extractedQuery).skip(skip).limit(limit).lean();
+//     }
+
+//     // Fetch assigned data
+//     let assignedQuery = { ...baseQuery, ename: { $nin: ['Not Alloted', 'Extracted'] } };
+//     if (selectedBDEName && selectedBDEName.trim() !== '') {
+//       assignedQuery.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+//     }
+
+//     const assignedCount = await CompanyModel.countDocuments(assignedQuery);
+//     const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
+
+//     // Fetch unassigned data only if selectedBDEName is not specified
+//     let unassignedData = [];
+//     let unassignedCount = 0;
+//     if (!selectedBDEName || selectedBDEName.trim() === '') {
+//       let unassignedQuery = { ...baseQuery, ename: 'Not Alloted' };
+//       unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+//       unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+//     }
+
+//     console.log("assignedquery", assignedQuery)
+//     console.log("assgineddata", assignedData)
+//     console.log("totalAssigned", assignedCount)
+
+//     res.status(200).json({
+//       assigned: assignedData,
+//       unassigned: unassignedData,
+//       extracted: extractedData,
+//       extractedDataCount: extractedDataCount,
+//       totalAssigned: assignedCount,
+//       totalUnassigned: unassignedCount,
+//       totalPages: Math.ceil((assignedCount + unassignedCount) / limit),  // Calculate total pages
+//       currentPage: page  // Current page number
+//     });
+
+//   } catch (error) {
+//     console.error('Error searching leads:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
 router.get('/filter-leads', async (req, res) => {
   const {
     selectedStatus,
@@ -668,9 +916,11 @@ router.get('/filter-leads', async (req, res) => {
     selectedYear,
     monthIndex,
     selectedCompanyIncoDate,
+    selectedBdmName,
+    selectedBdeForwardDate,
+    selectedFowradedStatus,
+    selectedStatusModificationDate,
   } = req.query;
-
-  //console.log(selectedYear)
 
   const page = parseInt(req.query.page) || 1; // Page number
   const limit = parseInt(req.query.limit) || 500; // Items per page
@@ -683,6 +933,16 @@ router.get('/filter-leads', async (req, res) => {
     if (selectedStatus) baseQuery.Status = selectedStatus;
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
+    if (selectedBdmName) baseQuery.bdmName = selectedBdmName;
+
+    if (selectedFowradedStatus === "Yes") {
+      baseQuery.bdmAcceptStatus = {
+        $in: ["Forwarded", "Accept"]
+      };
+    } else if (selectedFowradedStatus === "No") {
+      baseQuery.bdmAcceptStatus = "NotForwarded";
+    }
+
     if (selectedAssignDate) {
       baseQuery.AssignDate = {
         $gte: new Date(selectedAssignDate).toISOString(),
@@ -692,8 +952,7 @@ router.get('/filter-leads', async (req, res) => {
     if (selectedAdminName && selectedAdminName.trim() !== '') {
       baseQuery.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
     }
-    console.log("oploadDate", selectedUploadedDate)
-    
+
     if (selectedUploadedDate) {
       baseQuery.UploadDate = {
         $gte: new Date(selectedUploadedDate).toISOString(),
@@ -705,6 +964,26 @@ router.get('/filter-leads', async (req, res) => {
       baseQuery.extractedDate = {
         $gte: new Date(selectedExtractedDate).toISOString(),
         $lt: new Date(new Date(selectedExtractedDate).setDate(new Date(selectedExtractedDate).getDate() + 1)).toISOString()
+      };
+    }
+
+    console.log("selectedbdeforwaddate", selectedBdeForwardDate)
+    if (selectedBdeForwardDate) {
+      // Parse the selected date and add 1 day to correctly adjust for local time
+      const startOfDay = new Date(selectedBdeForwardDate);
+      startOfDay.setDate(startOfDay.getDate() + 1);
+      startOfDay.setHours(0, 0, 0, 0); // Start of the adjusted day (00:00:00.000)
+
+      // Create the end of the adjusted day (23:59:59.999)
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      console.log("start", startOfDay.toISOString()); // Debugging: Logs start of the adjusted day in UTC
+      console.log("end", endOfDay.toISOString()); // Debugging: Logs end of the adjusted day in UTC
+
+      baseQuery.bdeForwardDate = {
+        $gte: startOfDay.toISOString(),
+        $lt: endOfDay.toISOString()
       };
     }
 
@@ -729,14 +1008,10 @@ router.get('/filter-leads', async (req, res) => {
       }
     }
 
-
     if (selectedCompanyIncoDate) {
-
       const selectedDate = new Date(selectedCompanyIncoDate);
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
-
       if (isEpochDate) {
-        console.log("good")
         // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
         baseQuery["Company Incorporation Date  "] = null;
       } else {
@@ -748,10 +1023,35 @@ router.get('/filter-leads', async (req, res) => {
       }
     }
 
-    console.log(baseQuery);
+    // If selectedStatusModificationDate is provided, query LeadHistoryModel and find corresponding companies
+    if (selectedStatusModificationDate) {
+      const matchingLeadHistory = await LeadHistoryForInterestedandFollowModel.find({
+        date: {
+          $gte: new Date(new Date(selectedStatusModificationDate).setHours(0, 0, 0, 0)).toISOString(),
+          $lt: new Date(new Date(selectedStatusModificationDate).setHours(23, 59, 59, 999)).toISOString()
+        }
+      });
+      console.log("matching", matchingLeadHistory)
+      const companyNames = matchingLeadHistory.map(lead => lead["Company Name"]);
 
+      if (companyNames.length > 0) {
+        baseQuery["Company Name"] = { $in: companyNames };
+      } else {
+        // If no matching companies, return an empty response
+        return res.status(200).json({
+          assigned: [],
+          unassigned: [],
+          extracted: [],
+          extractedDataCount: 0,
+          totalAssigned: 0,
+          totalUnassigned: 0,
+          totalPages: 0,
+          currentPage: page
+        });
+      }
+    }
 
-
+    // Now, perform the query on CompanyModel
     let extractedData = [];
     let extractedDataCount = 0;
     if (!selectedBDEName || selectedBDEName.trim() === '') {
@@ -777,6 +1077,10 @@ router.get('/filter-leads', async (req, res) => {
       unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
       unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
     }
+
+    console.log("assignedquery", assignedQuery)
+    console.log("assgineddata", assignedData)
+    console.log("totalAssigned", assignedCount)
 
     res.status(200).json({
       assigned: assignedData,
@@ -864,7 +1168,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     }
 
     console.log(baseQuery);
-  
+
 
     const data = await CompanyModel.find(baseQuery).lean();
 
@@ -964,7 +1268,7 @@ router.get('/search-leads', async (req, res) => {
           };
         }
       }
-    
+
       let extractedQuery = { ...query, ename: "Extracted" }
       extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
       extractedData = await CompanyModel.find(extractedQuery).skip(skip).limit(limit).lean();
@@ -1171,7 +1475,7 @@ router.post("/assign-new", async (req, res) => {
               bdmStatusChangeTime: "",
               bdmRemarks: "",
               RevertBackAcceptedCompanyRequest: "",
-              Remarks:""
+              Remarks: ""
             },
           },
         },

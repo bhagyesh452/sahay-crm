@@ -102,10 +102,6 @@ function TestLeads() {
             setCurrentDataLoading(true)
             //console.log("dataStatus", dataStatus)
             const response = await axios.get(`${secretKey}/company-data/new-leads?page=${page}&limit=${itemsPerPage}&dataStatus=${dataStatus}&sort=${sortType}&sortPattern=${sortPattern}`);
-            //console.log("data", response.data.data)
-            // Set the retrieved data in the state
-            //console.log(response.data.unAssignedCount)
-            //console.log(response.data)
             setData(response.data.data);
             setTotalCount(response.data.totalPages)
             setTotalCompaniesUnaasigned(response.data.unAssignedCount)
