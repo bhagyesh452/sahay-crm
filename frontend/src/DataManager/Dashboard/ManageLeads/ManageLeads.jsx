@@ -44,6 +44,9 @@ import { Drawer, colors } from "@mui/material";
 import { Country, State, City } from 'country-state-city';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import InterestedFollowUpLeads from '../../../admin/InterestedFollowUpLeads.jsx';
+import { LiaPagerSolid } from "react-icons/lia";
+
 
 function ManageLeads() {
 
@@ -82,6 +85,7 @@ function ManageLeads() {
     const [searchTerm, setSearchTerm] = useState("");
     const [totalExtractedCount, setTotalExtractedCount] = useState(0);
     const [extractedData, setExtractedData] = useState([]);
+    const [openInterestFollowPage, setOpenInterestFollowPage] = useState(false)
 
 
     useEffect(() => {
@@ -1424,7 +1428,7 @@ function ManageLeads() {
         <div>
             <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar name={dataManagerName} />
-            <div className='page-wrapper'>
+           {!openInterestFollowPage && (<div className='page-wrapper'>
                 <div className="page-header d-print-none">
                     <div className="container-xl">
                         <div className="d-flex align-items-center justify-content-between">
@@ -1445,6 +1449,9 @@ function ManageLeads() {
                                         </span>
                                         Assign Leads
                                     </button>
+                                    <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
+                                            <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
+                                        </button>
                                 </div>
                             </div>
                             <div className="d-flex align-items-center">
@@ -2191,8 +2198,8 @@ function ManageLeads() {
                         </div>
                     </div>
                 </div>
-            </div>
-
+            </div>)
+}
             {/* -------------------- dialog to add leads---------------------------- */}
             <Dialog className='My_Mat_Dialog' open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
                 <DialogTitle>
@@ -3754,6 +3761,15 @@ function ManageLeads() {
                     </div>
                 </div>
             </Drawer>
+
+            {/* ---------Interested-FollowUp Leads---------------------------------- */}
+
+            {
+                openInterestFollowPage && (
+                    <InterestedFollowUpLeads
+                        closeOpenInterestedLeads={setOpenInterestFollowPage} />
+                )
+            }
 
             {/* --------------------------------backedrop------------------------- */}
             <Backdrop
