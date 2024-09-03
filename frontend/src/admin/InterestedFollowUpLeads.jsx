@@ -61,7 +61,7 @@ function InterestedFollowUpLeads({closeOpenInterestedLeads}) {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const [searchText, setSearchText] = useState("")
-    const [dataStatus, setDataStatus] = useState("Unassigned");
+    const [dataStatus, setDataStatus] = useState("Assigned");
     const [totalCompaniesUnassigned, setTotalCompaniesUnaasigned] = useState(0)
     const [totalCompaniesAssigned, setTotalCompaniesAssigned] = useState(0)
     const [empData, setEmpData] = useState([])
@@ -1470,21 +1470,21 @@ function InterestedFollowUpLeads({closeOpenInterestedLeads}) {
                                 <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
                                     <IoFilterOutline className='mr-1' /> Filter
                                 </button>
-                                <button type="button" className="btn mybtn" onClick={() => {
+                                {/* <button type="button" className="btn mybtn" onClick={() => {
                                     setOpenBulkLeadsCSVPopup(true)
                                     setCsvData([])
                                 }}>
                                     <TbFileImport className='mr-1' /> Import Leads
-                                </button>
-                                <button type="button" className="btn mybtn" onClick={() => exportData()}>
+                                </button> */}
+                                {/* <button type="button" className="btn mybtn" onClick={() => exportData()}>
                                     <TbFileExport className='mr-1' /> Export Leads
-                                </button>
+                                </button> */}
                                 <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                     <MdOutlinePostAdd className='mr-1' />Assign Leads
                                 </button>
-                                <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
+                                {/* <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
                                     <MdOutlineDeleteSweep className='mr-1' />Delete Leads
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                         <div className="d-flex align-items-center">
@@ -1617,62 +1617,6 @@ function InterestedFollowUpLeads({closeOpenInterestedLeads}) {
                                             </th>
                                             <th>Sr.No</th>
                                             <th>Company Name</th>
-                                            <th>Company Number</th>
-                                            <th style={{ cursor: "pointer" }}    >
-                                                <div className="d-flex align-items-center justify-content-between">
-                                                    <div>Incorporation Date</div>
-                                                    <div className="short-arrow-div">
-                                                        <ArrowDropUpIcon
-                                                            className="up-short-arrow"
-                                                            style={{
-                                                                color: newSortType.incoDate === "descending" ? "black" : "#9d8f8f",
-                                                            }}
-                                                            onClick={() => {
-                                                                let updatedSortType;
-                                                                if (newSortType.incoDate === "ascending") {
-                                                                    updatedSortType = "descending";
-                                                                } else if (newSortType.incoDate === "descending") {
-                                                                    updatedSortType = "none";
-                                                                } else {
-                                                                    updatedSortType = "ascending";
-                                                                }
-                                                                setNewSortType((prevData) => ({
-                                                                    ...prevData,
-                                                                    incoDate: updatedSortType,
-                                                                }));
-                                                                setSortPattern("IncoDate")
-                                                                fetchData(1, updatedSortType);
-                                                            }}
-                                                        />
-                                                        <ArrowDropDownIcon className="down-short-arrow"
-                                                            style={{
-                                                                color:
-                                                                    newSortType.incoDate === "ascending"
-                                                                        ? "black"
-                                                                        : "#9d8f8f",
-                                                            }}
-                                                            onClick={() => {
-                                                                let updatedSortType;
-                                                                if (newSortType.incoDate === "ascending") {
-                                                                    updatedSortType = "descending";
-                                                                } else if (newSortType.incoDate === "descending") {
-                                                                    updatedSortType = "none";
-                                                                } else {
-                                                                    updatedSortType = "ascending";
-                                                                }
-                                                                setNewSortType((prevData) => ({
-                                                                    ...prevData,
-                                                                    incoDate: updatedSortType,
-                                                                }));
-                                                                setSortPattern("IncoDate")
-                                                                fetchData(1, updatedSortType);
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </th>
-                                            <th>City</th>
-                                            <th>State</th>
                                             <th>Company Email</th>
                                             {(dataStatus === "Assigned") && <th>Status</th>}
                                             {(dataStatus === "Assigned") && <th>Remarks</th>}
@@ -1736,9 +1680,6 @@ function InterestedFollowUpLeads({closeOpenInterestedLeads}) {
                                                 </div>
 
                                             </th>)}
-
-
-                                            {/* <th>Assigned On</th> */}
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -1777,10 +1718,6 @@ function InterestedFollowUpLeads({closeOpenInterestedLeads}) {
                                                     </td>
                                                     <td>{startIndex - 500 + index + 1}</td>
                                                     <td>{company["Company Name"]}</td>
-                                                    <td>{company["Company Number"]}</td>
-                                                    <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                    <td>{company["City"]}</td>
-                                                    <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
 
                                                     {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
@@ -1874,10 +1811,6 @@ function InterestedFollowUpLeads({closeOpenInterestedLeads}) {
                                                     </td>
                                                     <td>{startIndex - 500 + index + 1}</td>
                                                     <td>{company["Company Name"]}</td>
-                                                    <td>{company["Company Number"]}</td>
-                                                    <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                    <td>{company["City"]}</td>
-                                                    <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
                                                     {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
                                                     {(dataStatus === "Assigned") && <td>
@@ -1970,12 +1903,7 @@ function InterestedFollowUpLeads({closeOpenInterestedLeads}) {
                                                     </td>
                                                     <td>{startIndex - 500 + index + 1}</td>
                                                     <td>{company["Company Name"]}</td>
-                                                    <td>{company["Company Number"]}</td>
-                                                    <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                    <td>{company["City"]}</td>
-                                                    <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
-
                                                     {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
                                                     {(dataStatus === "Assigned") && <td>
                                                         <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">

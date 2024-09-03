@@ -86,21 +86,6 @@ function TestLeads() {
     const [openInterestFollowPage, setOpenInterestFollowPage] = useState(false)
 
     //--------------------function to fetch Total Leads ------------------------------
-    // const setAuthToken = (token) => {
-    //     if (token) {
-    //       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    //     } else {
-    //       delete axios.defaults.headers.common['Authorization'];
-    //     }
-    //   };
-
-
-    //     const token = localStorage.getItem('token');
-
-    //     useEffect(() => {
-    //       // Set the token in the headers
-    //       setAuthToken(token);
-    //     }, [token]);
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
@@ -1862,13 +1847,13 @@ function TestLeads() {
                                         <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
                                             <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
                                         </button>
-                                        <div>
+                                        {/* <div>
                                             <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
                                             <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
                                                 <LiaPagerSolid className="mr-1" />
                                                 Update Leads
                                             </button>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">
