@@ -44,6 +44,17 @@ function EditService({ close, serviceName }) {
         "link", "image", "align", "size",
     ];
 
+    const [isDepartmentInfoNext, setIsDepartmentInfoNext] = useState(true);
+    const [isObjectivesInfoNext, setIsObjectivesInfoNext] = useState(true);
+    const [isRequirementsInfoNext, setIsRequirementsInfoNext] = useState(true);
+    const [isProcessInfoNext, setIsProcessInfoNext] = useState(true);
+    const [isTeamInfoNext, setIsTeamInfoNext] = useState(true);
+
+    const [isObjectivesInfoEditable, setIsObjectivesInfoEditable] = useState(true);
+    const [isRequirementsInfoEditable, setIsRequirementsInfoEditable] = useState(true);
+    const [isProcessInfoEditable, setIsProcessInfoEditable] = useState(true);
+    const [isTeamInfoEditable, setIsTeamInfoEditable] = useState(false);
+
     const [activeStep, setActiveStep] = useState(0);
     const [completed, setCompleted] = useState({});
     const [errors, setErrors] = useState({});
@@ -354,14 +365,35 @@ function EditService({ close, serviceName }) {
     const handleNext = async () => {
         if (activeStep === 0 && validateDepartmentInfo()) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsDepartmentInfoNext(true);
         } else if (activeStep === 1) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsObjectivesInfoNext(true);
         } else if (activeStep === 2) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsRequirementsInfoNext(true);
         } else if (activeStep === 3) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsProcessInfoNext(true);
         } else if (activeStep === 4 && validateTeamInfo()) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsTeamInfoNext(true);
+        }
+    };
+
+    const handleEdit = () => {
+        if (activeStep === 1) {
+            setIsObjectivesInfoEditable(false);
+            setIsObjectivesInfoNext(false);
+        } else if (activeStep === 2) {
+            setIsRequirementsInfoEditable(false);
+            setIsRequirementsInfoNext(false);
+        } else if (activeStep === 3) {
+            setIsProcessInfoEditable(false);
+            setIsProcessInfoNext(false);
+        } else if (activeStep === 4) {
+            setIsTeamInfoEditable(true);
+            setIsTeamInfoNext(false);
         }
     };
 
@@ -391,6 +423,7 @@ function EditService({ close, serviceName }) {
                     ...prevCompleted,
                     [activeStep]: true
                 }));
+                setIsDepartmentInfoNext(true);
             } catch (error) {
                 console.log("Error updating service details at step-0 :", error);
             }
@@ -402,6 +435,8 @@ function EditService({ close, serviceName }) {
                     ...prevCompleted,
                     [activeStep]: true
                 }));
+                setIsObjectivesInfoEditable(true);
+                setIsObjectivesInfoNext(true);
             } catch (error) {
                 console.log("Error updating service details at step-1 :", error);
             }
@@ -413,6 +448,8 @@ function EditService({ close, serviceName }) {
                     ...prevCompleted,
                     [activeStep]: true
                 }));
+                setIsRequirementsInfoEditable(true);
+                setIsRequirementsInfoNext(true);
             } catch (error) {
                 console.log("Error updating service details at step-2 :", error);
             }
@@ -424,6 +461,8 @@ function EditService({ close, serviceName }) {
                     ...prevCompleted,
                     [activeStep]: true
                 }));
+                setIsProcessInfoEditable(true);
+                setIsProcessInfoNext(true);
             } catch (error) {
                 console.log("Error updating service details at step-3 :", error);
             }
@@ -443,6 +482,7 @@ function EditService({ close, serviceName }) {
                     ...prevCompleted,
                     [activeStep]: true
                 }));
+                setIsTeamInfoEditable(false);
                 Swal.fire("success", "Service details updated successfully!", "success");
                 close();
             } catch (error) {
@@ -460,6 +500,30 @@ function EditService({ close, serviceName }) {
         // fetchDepartments();
         fetchEmployees();
     }, []);
+
+    useEffect(() => {
+        if (activeStep === 0 && departmentInfo) {
+          setCompleted((prevCompleted) => ({
+            ...prevCompleted,
+            [activeStep]: true
+          }));
+        } else if (activeStep === 1 && isObjectivesInfoEditable && objectivesInfo) {
+          setCompleted((prevCompleted) => ({
+            ...prevCompleted,
+            [activeStep]: true
+          }));
+        } else if (activeStep === 2 && isRequirementsInfoEditable && requirementsInfo) {
+          setCompleted((prevCompleted) => ({
+            ...prevCompleted,
+            [activeStep]: true
+          }));
+        } else if (activeStep === 3 && isProcessInfoEditable && processInfo) {
+          setCompleted((prevCompleted) => ({
+            ...prevCompleted,
+            [activeStep]: true
+          }));
+        }
+      }, [activeStep]);
 
     return (
         <>
@@ -602,6 +666,7 @@ function EditService({ close, serviceName }) {
                                                                                 value={objectivesInfo.objectives}
                                                                                 onChange={(value) => handleTextEditorChange("objectives", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isObjectivesInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -618,6 +683,7 @@ function EditService({ close, serviceName }) {
                                                                                 value={objectivesInfo.benefits}
                                                                                 onChange={(value) => handleTextEditorChange("benefits", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isObjectivesInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -649,6 +715,7 @@ function EditService({ close, serviceName }) {
                                                                                 value={requirementsInfo.requiredDocuments}
                                                                                 onChange={(value) => handleTextEditorChange("requiredDocuments", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isRequirementsInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -665,6 +732,7 @@ function EditService({ close, serviceName }) {
                                                                                 value={requirementsInfo.eligibilityRequirements}
                                                                                 onChange={(value) => handleTextEditorChange("eligibilityRequirements", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isRequirementsInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -696,6 +764,7 @@ function EditService({ close, serviceName }) {
                                                                                 value={processInfo.process}
                                                                                 onChange={(value) => handleTextEditorChange("process", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isProcessInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -712,6 +781,7 @@ function EditService({ close, serviceName }) {
                                                                                 value={processInfo.deliverables}
                                                                                 onChange={(value) => handleTextEditorChange("deliverables", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isProcessInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -728,6 +798,7 @@ function EditService({ close, serviceName }) {
                                                                                 value={processInfo.timeline}
                                                                                 onChange={(value) => handleTextEditorChange("timeline", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isProcessInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -760,6 +831,7 @@ function EditService({ close, serviceName }) {
                                                                                 placeholder="Select Concern Person for Sales and Marketing"
                                                                                 value={employees.filter(employee => teamInfo.employeeName.includes(employee.value))} // Filter based on selected values
                                                                                 onChange={handleSelectChange}
+                                                                                isDisabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.employeeName && <p style={{ color: "red" }}>{errors.employeeName}</p>}
                                                                         </div>
@@ -777,6 +849,7 @@ function EditService({ close, serviceName }) {
                                                                                 placeholder="Select Concern Person for Backend Process"
                                                                                 value={employees.filter(employee => teamInfo.headName.includes(employee.value))} // Filter based on selected values
                                                                                 onChange={handleSelectChange}
+                                                                                isDisabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.headName && <p style={{ color: "red" }}>{errors.headName}</p>}
                                                                         </div>
@@ -810,6 +883,7 @@ function EditService({ close, serviceName }) {
                                                                                 inputProps={{
                                                                                     placeholder: "Enter links"
                                                                                 }}
+                                                                                disabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>}
                                                                         </div>
@@ -825,6 +899,7 @@ function EditService({ close, serviceName }) {
                                                                                 id="document"
                                                                                 onChange={handleFileChange}
                                                                                 multiple // Allow multiple file selection
+                                                                                disabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.document && <p style={{ color: "red" }}>{errors.document}</p>}
                                                                         </div>
@@ -1142,11 +1217,10 @@ function EditService({ close, serviceName }) {
                                                 </Button>
 
                                                 <Box sx={{ flex: "1 1 auto" }} />
-                                                {completed[activeStep] && activeStep !== totalSteps() - 1 && (
-                                                    <Button variant="contained" sx={{ mr: 1, background: "#ffba00 " }}>
-                                                        Edit
-                                                    </Button>
-                                                )}
+                                                {activeStep !== 0 && <Button variant="contained" sx={{ mr: 1, background: "#ffba00 " }}
+                                                    onClick={() => handleEdit()}>
+                                                    Edit
+                                                </Button>}
 
                                                 {/* Show "Save Draft" on all steps except the last one */}
                                                 {!isLastStep() && (
@@ -1164,7 +1238,14 @@ function EditService({ close, serviceName }) {
 
                                                 {/* Show "Next" button if not on the last step */}
                                                 {!isLastStep() && (
-                                                    <Button onClick={handleNext} variant="contained" sx={{ mr: 1 }}>
+                                                    <Button onClick={handleNext} variant="contained" sx={{ mr: 1 }}
+                                                        disabled={(
+                                                            (activeStep === 0 && !isDepartmentInfoNext) ||
+                                                            (activeStep === 1 && !isObjectivesInfoNext) ||
+                                                            (activeStep === 2 && !isRequirementsInfoNext) ||
+                                                            (activeStep === 3 && !isProcessInfoNext)
+                                                        )}
+                                                    >
                                                         Next
                                                     </Button>
                                                 )}

@@ -1726,6 +1726,11 @@ th.th-day {
     width: calc(100% - 35px);
     cursor: pointer;
 }
+.ES_assetsdtl_Linner
+{
+    min-height: calc(100vh - 420px);
+    overflow: auto;
+}
 /* Sweep To Right */
 /* .sweep-to-right {
     -webkit-transform: perspective(1px) translateZ(0);

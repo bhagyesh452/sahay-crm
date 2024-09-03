@@ -543,56 +543,61 @@ export default function HorizontalNonLinearStepper() {
   const saveDraft = async () => {
     let res;
 
-    const requestBody = {
-      ...(
-        activeStep === 0 ? personalInfo :
-          activeStep === 1 ? employeementInfo :
-            activeStep === 2 ? payrollInfo :
-              activeStep === 3 ? emergencyInfo :
-                empDocumentInfo
-      ),
-      activeStep, employeeID
-    };
+    if ((personalInfo.firstName && personalInfo.middleName && personalInfo.lastName && personalInfo.dob && personalInfo.gender && personalInfo.personalPhoneNo
+      && personalInfo.personalEmail && personalInfo.currentAddress && personalInfo.permanentAddress) === "") {
+      Swal.fire("error", "Please Fill Personal Information before Saving", "error");
+    } else {
+      const requestBody = {
+        ...(
+          activeStep === 0 ? personalInfo :
+            activeStep === 1 ? employeementInfo :
+              activeStep === 2 ? payrollInfo :
+                activeStep === 3 ? emergencyInfo :
+                  empDocumentInfo
+        ),
+        activeStep, employeeID
+      };
 
-    console.log("Employeement Info before saving is :", employeementInfo)
-    const url = `${secretKey}/employeeDraft/${!empId ? 'saveEmployeeDraft' : `updateEmployeeDraft/${empId}`}`;
+      console.log("Employeement Info before saving is :", employeementInfo)
+      const url = `${secretKey}/employeeDraft/${!empId ? 'saveEmployeeDraft' : `updateEmployeeDraft/${empId}`}`;
 
-    try {
-      if (!empId) {
-        res = await axios.post(url, requestBody);
-        console.log(`Employee created successfully at step-${activeStep}:`, res.data);
-      } else {
-        res = await axios.put(url, requestBody, {
-          headers: activeStep === 2 || activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
-        });
-        console.log(`Employee updated successfully at step-${activeStep}:`, res.data);
+      try {
+        if (!empId) {
+          res = await axios.post(url, requestBody);
+          console.log(`Employee created successfully at step-${activeStep}:`, res.data);
+        } else {
+          res = await axios.put(url, requestBody, {
+            headers: activeStep === 2 || activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
+          });
+          console.log(`Employee updated successfully at step-${activeStep}:`, res.data);
+        }
+
+        console.log(`Employee ${!empId ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
+
+        setCompleted((prevCompleted) => ({
+          ...prevCompleted,
+          [activeStep]: true
+        }));
+
+        if (activeStep === 0) {
+          setIsPersonalInfoEditable(false);
+          setIsPersonalInfoNext(true);
+        } else if (activeStep === 1) {
+          setIsEmployeementInfoEditable(false);
+          setIsEmployeementInfoNext(true);
+        } else if (activeStep === 2) {
+          setIsPayrollInfoEditable(false);
+          setIsPayrollInfoNext(true);
+        } else if (activeStep === 3) {
+          setIsEmergencyInfoEditable(false);
+          setIsEmergencyInfoNext(true);
+        } else if (activeStep === 4) {
+          setIsEmployeeDocsInfoEditable(false);
+          setIsDocumentInfoNext(true);
+        }
+      } catch (error) {
+        console.log(`Error ${!empId ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
       }
-
-      console.log(`Employee ${!empId ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
-
-      setCompleted((prevCompleted) => ({
-        ...prevCompleted,
-        [activeStep]: true
-      }));
-
-      if (activeStep === 0) {
-        setIsPersonalInfoEditable(false);
-        setIsPersonalInfoNext(true);
-      } else if (activeStep === 1) {
-        setIsEmployeementInfoEditable(false);
-        setIsEmployeementInfoNext(true);
-      } else if (activeStep === 2) {
-        setIsPayrollInfoEditable(false);
-        setIsPayrollInfoNext(true);
-      } else if (activeStep === 3) {
-        setIsEmergencyInfoEditable(false);
-        setIsEmergencyInfoNext(true);
-      } else if (activeStep === 4) {
-        setIsEmployeeDocsInfoEditable(false);
-        setIsDocumentInfoNext(true);
-      }
-    } catch (error) {
-      console.log(`Error ${!empId ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
     }
   };
 
