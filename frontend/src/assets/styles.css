@@ -4038,3 +4038,7 @@ border: 1px solid #ffefc6 !important;
 .filter-container input {
   width: 300px;
 }
+
+div#table-default td {
+  height: 28px !important;
+}
