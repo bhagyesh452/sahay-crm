@@ -394,6 +394,11 @@ function AddServices({ close, fetchServices }) {
                 const res = await axios.delete(`${secretKey}/serviceDraft/deleteServiceDraft/${id}`);
                 // console.log("Service successfully deleted", res.data.data);
                 setId("");
+                setIsDepartmentInfoEditable(true);
+                setIsObjectivesInfoEditable(false);
+                setIsRequirementsInfoEditable(false);
+                setIsProcessInfoEditable(false);
+                setIsTeamInfoEditable(true);
             } catch (error) {
                 console.log("Error deleting services :", error);
             }
@@ -629,7 +634,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 id="departmentName"
                                                                                 value={departmentInfo.departmentName}
                                                                                 onChange={handleDepartmentChange}
-                                                                            // disabled={!isDepartmentInfoEditable}
+                                                                            disabled={!isDepartmentInfoEditable}
                                                                             >
                                                                                 <option value="Select Service Category" selected> Select Service Category</option>
                                                                                 {departments.map((department, index) => (
@@ -657,7 +662,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 id="serviceName"
                                                                                 value={departmentInfo.serviceName}
                                                                                 onChange={(e) => handleInputChange(e)}
-                                                                                disabled={isServiceDisabled}
+                                                                                disabled={isServiceDisabled || !isDepartmentInfoEditable}
                                                                             >
                                                                                 <option value="">Select Service</option>
                                                                                 {services.map((service, index) => (
