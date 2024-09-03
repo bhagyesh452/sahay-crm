@@ -128,6 +128,28 @@ router.get('/', async function (req, res) {
 //   }
 // });
 
+router.post('/update-ename', async (req, res) => {
+  const data = req.body;
+
+  try {
+      const updates = data.map(async (item) => {
+          const { 'Company Name': companyName, ename } = item;
+          await CompanyModel.updateOne(
+              { "Company Name": companyName },
+              { $set: { ename: ename } }
+          );
+      });
+
+      await Promise.all(updates);
+
+      res.status(200).json({ message: 'Ename updated successfully' });
+  } catch (error) {
+      console.error('Error updating ename:', error);
+      res.status(500).json({ error: 'Failed to update ename' });
+  }
+});
+
+
 function formatDateFinal(timestamp) {
   const date = new Date(timestamp);
   const day = date.getDate().toString().padStart(2, "0");
