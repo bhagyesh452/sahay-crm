@@ -247,8 +247,12 @@ function Services() {
             // console.log("Department updated in department model :", res.data);
             // console.log("Department updated in service model :", res2.data);
             Swal.fire("success", "Department Successfully Updated", "success");
+            setUpdatedDepartmentName("");
+            setDepartmentName("");
             fetchServices();
             setShowAddDepartment(false);
+            setShowEditDepartment(false);
+            setShowEditService(false);
         } catch (error) {
             console.log("Error updating department :", error);
             Swal.fire("error", "Error updating department", "error");
@@ -270,8 +274,16 @@ function Services() {
             // console.log("Service updated in department model :", res.data);
             // console.log("Service updated in service model :", res2.data);
             Swal.fire("success", "Service Successfully Updated", "success");
+            setUpdatedDepartmentName("");
+            setDepartmentName("");
+            setUpdatedServiceName("");
+            setServiceName("");
+            setUpdatedServiceDescription("");
+            setServiceDescription("");
             fetchServices();
             setShowAddService(false);
+            setShowEditService(false);
+            setShowEditDepartment(false);
         } catch (error) {
             console.log("Error updating service :", error);
             Swal.fire("error", "Error updating service", "error");
@@ -488,7 +500,7 @@ function Services() {
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
                                                                 <td>{service.departmentName}</td>
-                                                                <td>{service.serviceName}</td>
+                                                                <td>{service.serviceName || "Need to Add Service"}</td>
                                                                 <td>
                                                                     <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                                                                         <AntSwitch
