@@ -47,6 +47,8 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { RiSendToBack } from 'react-icons/ri';
 import { dateCalendarClasses } from '@mui/x-date-pickers/DateCalendar/dateCalendarClasses';
+import { LiaPagerSolid } from "react-icons/lia";
+import InterestedFollowUpLeads from './InterestedFollowUpLeads';
 
 function TestLeads() {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
@@ -81,27 +83,13 @@ function TestLeads() {
     const [searchTerm, setSearchTerm] = useState("")
     const [totalExtractedCount, setTotalExtractedCount] = useState(0)
     const [extractedData, setExtractedData] = useState([])
+    const [openInterestFollowPage, setOpenInterestFollowPage] = useState(false)
 
     //--------------------function to fetch Total Leads ------------------------------
-    // const setAuthToken = (token) => {
-    //     if (token) {
-    //       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    //     } else {
-    //       delete axios.defaults.headers.common['Authorization'];
-    //     }
-    //   };
-
-
-    //     const token = localStorage.getItem('token');
-
-    //     useEffect(() => {
-    //       // Set the token in the headers
-    //       setAuthToken(token);
-    //     }, [token]);
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
-      }, []);
+    }, []);
 
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
@@ -1032,7 +1020,7 @@ function TestLeads() {
     };
 
     //console.log(data)
-    
+
 
     const handleMouseEnter = (id) => {
         // Update selected rows during drag selection
@@ -1283,11 +1271,11 @@ function TestLeads() {
     function formatDateproper(inputDate) {
         const options = { month: "long", day: "numeric", year: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
-          "en-US",
-          options
+            "en-US",
+            options
         );
         return formattedDate;
-      }
+    }
 
     const handleAssignData = async () => {
         const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
@@ -1791,755 +1779,797 @@ function TestLeads() {
         setOpenBacdrop(false)
     }
 
-    console.log("dataStatus", dataStatus)
+
+// -----------------update-leads-button-function-for emergency-use-only------------
+    const handleFileUploadForChange = async (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const binaryStr = event.target.result;
+                const workbook = XLSX.read(binaryStr, { type: 'binary' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const data = XLSX.utils.sheet_to_json(worksheet);
+
+                try {
+                    // Send the data to the backend to update the ename
+                    const response = await axios.post(`${secretKey}/admin-leads/update-ename`, data);
+                    if (response.status === 200) {
+                        alert('Leads updated successfully!');
+                    } else {
+                        alert('Failed to update leads.');
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    alert('An error occurred while uploading the file.');
+                }
+            };
+
+            reader.readAsBinaryString(file);
+        }
+    };
 
 
     return (
         <div>
             <Header />
             <Navbar />
-            <div className="page-wrapper">
-                <div className="page-header d-print-none">
-                    <div className="container-xl">
-                        <div className="d-flex align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                                <div className="btn-group mr-2">
-                                    <button type="button" className="btn mybtn" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
-                                        <TiUserAddOutline className='mr-1' /> Add Leads
-                                    </button>
-                                </div>
-                                <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
-                                        <IoFilterOutline className='mr-1' /> Filter
-                                    </button>
-                                    <button type="button" className="btn mybtn" onClick={() => {
-                                        setOpenBulkLeadsCSVPopup(true)
-                                        setCsvData([])
-                                    }}>
-                                        <TbFileImport className='mr-1' /> Import Leads
-                                    </button>
-                                    <button type="button" className="btn mybtn" onClick={() => exportData()}>
-                                        <TbFileExport className='mr-1' /> Export Leads
-                                    </button>
-                                    <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
-                                        <MdOutlinePostAdd className='mr-1' />Assign Leads
-                                    </button>
-                                    <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
-                                        <MdOutlineDeleteSweep className='mr-1' />Delete Leads
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="d-flex align-items-center">
-                                {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
+            {!openInterestFollowPage && (
+                <div className="page-wrapper">
+                    <div className="page-header d-print-none">
+                        <div className="container-xl">
+                            <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center">
+                                    <div className="btn-group mr-2">
+                                        <button type="button" className="btn mybtn" onClick={data.length === '0' ? Swal.fire('Please import some data first !') : () => setOpenAddLeadsDialog(true)}>
+                                            <TiUserAddOutline className='mr-1' /> Add Leads
+                                        </button>
                                     </div>
-                                )}
-                                <div class="input-icon ml-1">
-                                    <span class="input-icon-addon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                            <path d="M21 21l-6 -6"></path>
-                                        </svg>
-                                    </span>
-                                    <input
-                                        value={searchText}
-                                        onChange={(e) => {
-                                            setSearchText(e.target.value);
-                                            handleFilterSearch(e.target.value)
-                                            //setCurrentPage(0);
-                                        }}
-                                        className="form-control search-cantrol mybtn"
-                                        placeholder="Search…"
-                                        type="text"
-                                        name="bdeName-search"
-                                        id="bdeName-search" />
+                                    <div className="btn-group" role="group" aria-label="Basic example">
+                                        <button type="button" className={isFilter ? 'btn mybtn active' : 'btn mybtn'} onClick={() => setOpenFilterDrawer(true)}>
+                                            <IoFilterOutline className='mr-1' /> Filter
+                                        </button>
+                                        <button type="button" className="btn mybtn" onClick={() => {
+                                            setOpenBulkLeadsCSVPopup(true)
+                                            setCsvData([])
+                                        }}>
+                                            <TbFileImport className='mr-1' /> Import Leads
+                                        </button>
+                                        <button type="button" className="btn mybtn" onClick={() => exportData()}>
+                                            <TbFileExport className='mr-1' /> Export Leads
+                                        </button>
+                                        <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
+                                            <MdOutlinePostAdd className='mr-1' />Assign Leads
+                                        </button>
+                                        <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
+                                            <MdOutlineDeleteSweep className='mr-1' />Delete Leads
+                                        </button>
+                                        <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
+                                            <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
+                                        </button>
+                                        {/* <div>
+                                            <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
+                                            <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
+                                                <LiaPagerSolid className="mr-1" />
+                                                Update Leads
+                                            </button>
+                                        </div> */}
+                                    </div>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                    {selectedRows.length !== 0 && (
+                                        <div className="selection-data" >
+                                            Total Data Selected : <b>{selectedRows.length}</b>
+                                        </div>
+                                    )}
+                                    <div class="input-icon ml-1">
+                                        <span class="input-icon-addon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                <path d="M21 21l-6 -6"></path>
+                                            </svg>
+                                        </span>
+                                        <input
+                                            value={searchText}
+                                            onChange={(e) => {
+                                                setSearchText(e.target.value);
+                                                handleFilterSearch(e.target.value)
+                                                //setCurrentPage(0);
+                                            }}
+                                            className="form-control search-cantrol mybtn"
+                                            placeholder="Search…"
+                                            type="text"
+                                            name="bdeName-search"
+                                            id="bdeName-search" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="page-body">
-                    <div className="container-xl">
+                    <div className="page-body">
+                        <div className="container-xl">
 
-                        <div class="card-header  my-tab">
-                            <ul
-                                class="nav nav-tabs card-header-tabs nav-fill p-0"
-                                data-bs-toggle="tabs"
-                            >
-                                <li class="nav-item data-heading">
-                                    <a
-                                        href="#tabs-home-5"
-                                        className={
-                                            dataStatus === "Unassigned"
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                        onClick={() => {
-                                            setDataStatus("Unassigned")
-                                            setCurrentPage(1)
-                                        }}
-                                    >
-                                        UnAssigned
-                                        <span className="no_badge">
-                                            {totalCompaniesUnassigned}
-                                        </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="#tabs-home-5"
-                                        className={
-                                            dataStatus === "Extracted"
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                        onClick={() => {
-                                            setDataStatus("Extracted")
-                                            setCurrentPage(1)
-                                        }}>
-                                        Extracted Data
-                                        <span className="no_badge">
-                                            {totalExtractedCount}
-                                        </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="#tabs-home-5"
-                                        className={
-                                            dataStatus === "Assigned"
-                                                ? "nav-link active item-act"
-                                                : "nav-link"
-                                        }
-                                        data-bs-toggle="tab"
-                                        onClick={() => {
-                                            setDataStatus("Assigned")
-                                            setCurrentPage(1)
-                                        }}>
-                                        Assigned
-                                        <span className="no_badge">
-                                            {totalCompaniesAssigned}
-                                        </span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div className="card">
-                            <div className="card-body p-0">
-                                <div
-                                    id="table-default"
-                                    style={{
-                                        overflowX: "auto",
-                                        overflowY: "auto",
-                                        maxHeight: "60vh",
-                                    }}
+                            <div class="card-header  my-tab">
+                                <ul
+                                    class="nav nav-tabs card-header-tabs nav-fill p-0"
+                                    data-bs-toggle="tabs"
                                 >
-                                    <table
-                                        style={{
-                                            width: "100%",
-                                            borderCollapse: "collapse",
-                                            border: "1px solid #ddd",
-                                        }}
-                                        className="table-vcenter table-nowrap "
-                                    >
-                                        <thead>
-                                            <tr className="tr-sticky">
-                                                <th>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRows.length === allIds.length && selectedRows.length !== 0}
-                                                        onChange={() => handleCheckboxChange("all")}
-                                                        defaultChecked={false}
-                                                    />
-                                                </th>
-                                                <th>Sr.No</th>
-                                                <th>Company Name</th>
-                                                <th>Company Number</th>
-                                                <th style={{ cursor: "pointer" }}    >
-                                                    <div className="d-flex align-items-center justify-content-between">
-                                                        <div>Incorporation Date</div>
-                                                        <div className="short-arrow-div">
-                                                            <ArrowDropUpIcon
-                                                                className="up-short-arrow"
-                                                                style={{
-                                                                    color: newSortType.incoDate === "descending" ? "black" : "#9d8f8f",
-                                                                }}
-                                                                onClick={() => {
-                                                                    let updatedSortType;
-                                                                    if (newSortType.incoDate === "ascending") {
-                                                                        updatedSortType = "descending";
-                                                                    } else if (newSortType.incoDate === "descending") {
-                                                                        updatedSortType = "none";
-                                                                    } else {
-                                                                        updatedSortType = "ascending";
-                                                                    }
-                                                                    setNewSortType((prevData) => ({
-                                                                        ...prevData,
-                                                                        incoDate: updatedSortType,
-                                                                    }));
-                                                                    setSortPattern("IncoDate")
-                                                                    fetchData(1, updatedSortType);
-                                                                }}
-                                                            />
-                                                            <ArrowDropDownIcon className="down-short-arrow"
-                                                                style={{
-                                                                    color:
-                                                                        newSortType.incoDate === "ascending"
-                                                                            ? "black"
-                                                                            : "#9d8f8f",
-                                                                }}
-                                                                onClick={() => {
-                                                                    let updatedSortType;
-                                                                    if (newSortType.incoDate === "ascending") {
-                                                                        updatedSortType = "descending";
-                                                                    } else if (newSortType.incoDate === "descending") {
-                                                                        updatedSortType = "none";
-                                                                    } else {
-                                                                        updatedSortType = "ascending";
-                                                                    }
-                                                                    setNewSortType((prevData) => ({
-                                                                        ...prevData,
-                                                                        incoDate: updatedSortType,
-                                                                    }));
-                                                                    setSortPattern("IncoDate")
-                                                                    fetchData(1, updatedSortType);
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th>City</th>
-                                                <th>State</th>
-                                                <th>Company Email</th>
-                                                {(dataStatus === "Assigned") && <th>Status</th>}
-                                                {(dataStatus === "Assigned") && <th>Remarks</th>}
-                                                <th>Uploaded By</th>
-                                                <th>Uploaded On</th>
-                                                {dataStatus === 'Extracted' && <th>Last Assigned To</th>}
-                                                {dataStatus === "Extracted" && <th>Extracted Date</th>}
-                                                {dataStatus === "Assigned" && <th>Assigned to</th>}
-                                                {dataStatus === "Assigned" && (<th style={{ cursor: "pointer" }}>
-                                                    <div className="d-flex align-items-center justify-content-between">
-                                                        {/* <div>{dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}</div> */}
-                                                        <div>Assigned On</div>
-                                                        <div className="short-arrow-div">
-                                                            <ArrowDropUpIcon
-                                                                className="up-short-arrow"
-                                                                style={{
-                                                                    color: newSortType.assignDate === "descending" ? "black" : "#9d8f8f",
-                                                                }}
-                                                                onClick={() => {
-                                                                    let updatedSortType;
-                                                                    if (newSortType.assignDate === "ascending") {
-                                                                        updatedSortType = "descending";
-                                                                    } else if (newSortType.assignDate === "descending") {
-                                                                        updatedSortType = "none";
-                                                                    } else {
-                                                                        updatedSortType = "ascending";
-                                                                    }
-                                                                    setNewSortType((prevData) => ({
-                                                                        ...prevData,
-                                                                        assignDate: updatedSortType,
-                                                                    }));
-                                                                    setSortPattern("AssignDate")
-                                                                    fetchData(1, updatedSortType);
-                                                                }}
-                                                            />
-                                                            <ArrowDropDownIcon className="down-short-arrow"
-                                                                style={{
-                                                                    color:
-                                                                        newSortType.assignDate === "ascending"
-                                                                            ? "black"
-                                                                            : "#9d8f8f",
-                                                                }}
-                                                                onClick={() => {
-                                                                    let updatedSortType;
-                                                                    if (newSortType.assignDate === "ascending") {
-                                                                        updatedSortType = "descending";
-                                                                    } else if (newSortType.assignDate === "descending") {
-                                                                        updatedSortType = "none";
-                                                                    } else {
-                                                                        updatedSortType = "ascending";
-                                                                    }
-                                                                    setNewSortType((prevData) => ({
-                                                                        ...prevData,
-                                                                        assignDate: updatedSortType,
-                                                                    }));
-                                                                    setSortPattern("AssignDate")
-                                                                    fetchData(1, updatedSortType);
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                </th>)}
-
-
-                                                {/* <th>Assigned On</th> */}
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        {currentDataLoading ? (
-                                            <tbody>
-                                                <tr>
-                                                    <td colSpan="14" >
-                                                        <div className="LoaderTDSatyle">
-                                                            <ClipLoader
-                                                                color="lightgrey"
-                                                                loading
-                                                                size={30}
-                                                                aria-label="Loading Spinner"
-                                                                data-testid="loader"
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        ) : (
-                                            <tbody>
-                                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-
-                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
-
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </td>}
-
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                        {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
-                                                        {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
-                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                        <td>
-                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                                <MdDeleteOutline
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#bf0b0b",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                            <button className='tbl-action-btn' onClick={
-                                                                data.length === "0"
-                                                                    ? Swal.fire("Please Import Some data first")
-                                                                    : () => {
-                                                                        setOpenLeadsModifyPopUp(true);
-                                                                        handleUpdateClick(company._id);
-                                                                    }
-                                                            }>
-                                                                < MdOutlineEdit
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-
-                                                {(isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.map((company, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
-
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </td>}
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        <td>{formatDateFinal(company["UploadDate"])}</td>
-
-                                                        {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
-                                                        {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
-                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                        <td>
-                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                                <MdDeleteOutline
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#bf0b0b",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                            <button className='tbl-action-btn' onClick={
-                                                                data.length === "0"
-                                                                    ? Swal.fire("Please Import Some data first")
-                                                                    : () => {
-                                                                        setOpenLeadsModifyPopUp(true);
-                                                                        handleUpdateClick(company._id);
-                                                                    }
-                                                            }>
-                                                                < MdOutlineEdit
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-
-                                                {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-
-                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
-
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </td>}
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                        {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
-                                                        {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
-                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                        <td>
-                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                                <MdDeleteOutline
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#bf0b0b",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                            <button className='tbl-action-btn' onClick={
-                                                                data.length === "0"
-                                                                    ? Swal.fire("Please Import Some data first")
-                                                                    : () => {
-                                                                        setOpenLeadsModifyPopUp(true);
-                                                                        handleUpdateClick(company._id);
-                                                                    }
-                                                            }>
-                                                                < MdOutlineEdit
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-
-                                                {(!isFilter && !isSearching) && data.map((company, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                        style={{ border: "1px solid #ddd" }}>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedRows.includes(company._id)}
-                                                                onChange={() => handleCheckboxChange(company._id)}
-                                                                onMouseDown={() => handleMouseDown(company._id)}
-                                                                onMouseEnter={() => handleMouseEnter(company._id)}
-                                                                onMouseUp={handleMouseUp}
-                                                            />
-                                                        </td>
-                                                        <td>{startIndex - 500 + index + 1}</td>
-                                                        <td>{company["Company Name"]}</td>
-                                                        <td>{company["Company Number"]}</td>
-                                                        <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
-                                                        <td>{company["City"]}</td>
-                                                        <td>{company["State"]}</td>
-                                                        <td>{company["Company Email"]}</td>
-                                                        {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>
-                                                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
-                                                                <p className="rematkText text-wrap m-0">
-                                                                    {company["Remarks"] ? company.Remarks : "No Remarks Added"}
-                                                                </p>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        functionopenpopupremarks(company._id, company.Status);
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}>
-                                                                    <IconEye
-
-                                                                        style={{
-                                                                            width: "14px",
-                                                                            height: "14px",
-                                                                            color: "#d6a10c",
-                                                                            cursor: "pointer",
-                                                                            marginLeft: "4px",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </td>}
-                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                        <td>{formatDateFinal(company["UploadDate"])}</td>
-                                                        {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
-                                                        {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
-                                                        {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
-                                                        {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
-                                                        <td>
-                                                            <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
-                                                                <MdDeleteOutline
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#bf0b0b",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                            <button className='tbl-action-btn' onClick={
-                                                                data.length === "0"
-                                                                    ? Swal.fire("Please Import Some data first")
-                                                                    : () => {
-                                                                        setOpenLeadsModifyPopUp(true);
-                                                                        handleUpdateClick(company._id);
-                                                                    }
-                                                            }>
-                                                                < MdOutlineEdit
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "grey",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
-                                                                <IconEye
-                                                                    style={{
-                                                                        width: "14px",
-                                                                        height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        )}
-                                    </table>
-                                </div>
+                                    <li class="nav-item data-heading">
+                                        <a
+                                            href="#tabs-home-5"
+                                            className={
+                                                dataStatus === "Unassigned"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                            onClick={() => {
+                                                setDataStatus("Unassigned")
+                                                setCurrentPage(1)
+                                            }}
+                                        >
+                                            UnAssigned
+                                            <span className="no_badge">
+                                                {totalCompaniesUnassigned}
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a
+                                            href="#tabs-home-5"
+                                            className={
+                                                dataStatus === "Extracted"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                            onClick={() => {
+                                                setDataStatus("Extracted")
+                                                setCurrentPage(1)
+                                            }}>
+                                            Extracted Data
+                                            <span className="no_badge">
+                                                {totalExtractedCount}
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a
+                                            href="#tabs-home-5"
+                                            className={
+                                                dataStatus === "Assigned"
+                                                    ? "nav-link active item-act"
+                                                    : "nav-link"
+                                            }
+                                            data-bs-toggle="tab"
+                                            onClick={() => {
+                                                setDataStatus("Assigned")
+                                                setCurrentPage(1)
+                                            }}
+                                            >
+                                            Assigned
+                                            <span className="no_badge">
+                                                {totalCompaniesAssigned}
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
 
-                            {(!isFilter || !isSearching) && data.length === 0 && !currentDataLoading && (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
+                            <div className="card">
+                                <div className="card-body p-0">
+                                    <div
+                                        id="table-default"
+                                        style={{
+                                            overflowX: "auto",
+                                            overflowY: "auto",
+                                            maxHeight: "60vh",
+                                        }}
+                                    >
+                                        <table
+                                            style={{
+                                                width: "100%",
+                                                borderCollapse: "collapse",
+                                                border: "1px solid #ddd",
+                                            }}
+                                            className="table-vcenter table-nowrap "
+                                        >
+                                            <thead>
+                                                <tr className="tr-sticky">
+                                                    <th>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedRows.length === allIds.length && selectedRows.length !== 0}
+                                                            onChange={() => handleCheckboxChange("all")}
+                                                            defaultChecked={false}
+                                                        />
+                                                    </th>
+                                                    <th>Sr.No</th>
+                                                    <th>Company Name</th>
+                                                    <th>Company Number</th>
+                                                    <th style={{ cursor: "pointer" }}    >
+                                                        <div className="d-flex align-items-center justify-content-between">
+                                                            <div>Incorporation Date</div>
+                                                            <div className="short-arrow-div">
+                                                                <ArrowDropUpIcon
+                                                                    className="up-short-arrow"
+                                                                    style={{
+                                                                        color: newSortType.incoDate === "descending" ? "black" : "#9d8f8f",
+                                                                    }}
+                                                                    onClick={() => {
+                                                                        let updatedSortType;
+                                                                        if (newSortType.incoDate === "ascending") {
+                                                                            updatedSortType = "descending";
+                                                                        } else if (newSortType.incoDate === "descending") {
+                                                                            updatedSortType = "none";
+                                                                        } else {
+                                                                            updatedSortType = "ascending";
+                                                                        }
+                                                                        setNewSortType((prevData) => ({
+                                                                            ...prevData,
+                                                                            incoDate: updatedSortType,
+                                                                        }));
+                                                                        setSortPattern("IncoDate")
+                                                                        fetchData(1, updatedSortType);
+                                                                    }}
+                                                                />
+                                                                <ArrowDropDownIcon className="down-short-arrow"
+                                                                    style={{
+                                                                        color:
+                                                                            newSortType.incoDate === "ascending"
+                                                                                ? "black"
+                                                                                : "#9d8f8f",
+                                                                    }}
+                                                                    onClick={() => {
+                                                                        let updatedSortType;
+                                                                        if (newSortType.incoDate === "ascending") {
+                                                                            updatedSortType = "descending";
+                                                                        } else if (newSortType.incoDate === "descending") {
+                                                                            updatedSortType = "none";
+                                                                        } else {
+                                                                            updatedSortType = "ascending";
+                                                                        }
+                                                                        setNewSortType((prevData) => ({
+                                                                            ...prevData,
+                                                                            incoDate: updatedSortType,
+                                                                        }));
+                                                                        setSortPattern("IncoDate")
+                                                                        fetchData(1, updatedSortType);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th>City</th>
+                                                    <th>State</th>
+                                                    <th>Company Email</th>
+                                                    {(dataStatus === "Assigned") && <th>Status</th>}
+                                                    {(dataStatus === "Assigned") && <th>Remarks</th>}
+                                                    <th>Uploaded By</th>
+                                                    <th>Uploaded On</th>
+                                                    {dataStatus === 'Extracted' && <th>Last Assigned To</th>}
+                                                    {dataStatus === "Extracted" && <th>Extracted Date</th>}
+                                                    {dataStatus === "Assigned" && <th>Assigned to</th>}
+                                                    {dataStatus === "Assigned" && (<th style={{ cursor: "pointer" }}>
+                                                        <div className="d-flex align-items-center justify-content-between">
+                                                            {/* <div>{dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}</div> */}
+                                                            <div>Assigned On</div>
+                                                            <div className="short-arrow-div">
+                                                                <ArrowDropUpIcon
+                                                                    className="up-short-arrow"
+                                                                    style={{
+                                                                        color: newSortType.assignDate === "descending" ? "black" : "#9d8f8f",
+                                                                    }}
+                                                                    onClick={() => {
+                                                                        let updatedSortType;
+                                                                        if (newSortType.assignDate === "ascending") {
+                                                                            updatedSortType = "descending";
+                                                                        } else if (newSortType.assignDate === "descending") {
+                                                                            updatedSortType = "none";
+                                                                        } else {
+                                                                            updatedSortType = "ascending";
+                                                                        }
+                                                                        setNewSortType((prevData) => ({
+                                                                            ...prevData,
+                                                                            assignDate: updatedSortType,
+                                                                        }));
+                                                                        setSortPattern("AssignDate")
+                                                                        fetchData(1, updatedSortType);
+                                                                    }}
+                                                                />
+                                                                <ArrowDropDownIcon className="down-short-arrow"
+                                                                    style={{
+                                                                        color:
+                                                                            newSortType.assignDate === "ascending"
+                                                                                ? "black"
+                                                                                : "#9d8f8f",
+                                                                    }}
+                                                                    onClick={() => {
+                                                                        let updatedSortType;
+                                                                        if (newSortType.assignDate === "ascending") {
+                                                                            updatedSortType = "descending";
+                                                                        } else if (newSortType.assignDate === "descending") {
+                                                                            updatedSortType = "none";
+                                                                        } else {
+                                                                            updatedSortType = "ascending";
+                                                                        }
+                                                                        setNewSortType((prevData) => ({
+                                                                            ...prevData,
+                                                                            assignDate: updatedSortType,
+                                                                        }));
+                                                                        setSortPattern("AssignDate")
+                                                                        fetchData(1, updatedSortType);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
 
-                            {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0 && !currentDataLoading && (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
+                                                    </th>)}
 
-                            {(isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length === 0 && !currentDataLoading && (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
 
-                            {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0 && !currentDataLoading && (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
+                                                    {/* <th>Assigned On</th> */}
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            {currentDataLoading ? (
+                                                <tbody>
+                                                    <tr>
+                                                        <td colSpan="14" >
+                                                            <div className="LoaderTDSatyle">
+                                                                <ClipLoader
+                                                                    color="lightgrey"
+                                                                    loading
+                                                                    size={30}
+                                                                    aria-label="Loading Spinner"
+                                                                    data-testid="loader"
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            ) : (
+                                                <tbody>
+                                                    {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.map((company, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                            style={{ border: "1px solid #ddd" }}>
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedRows.includes(company._id)}
+                                                                    onChange={() => handleCheckboxChange(company._id)}
+                                                                    onMouseDown={() => handleMouseDown(company._id)}
+                                                                    onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                    onMouseUp={handleMouseUp}
+                                                                />
+                                                            </td>
+                                                            <td>{startIndex - 500 + index + 1}</td>
+                                                            <td>{company["Company Name"]}</td>
+                                                            <td>{company["Company Number"]}</td>
+                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                            <td>{company["City"]}</td>
+                                                            <td>{company["State"]}</td>
+                                                            <td>{company["Company Email"]}</td>
 
-                            {/* {data.length !== 0 && (
+                                                            {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>
+                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                    <p className="rematkText text-wrap m-0">
+                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                    </p>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            functionopenpopupremarks(company._id, company.Status);
+                                                                        }}
+                                                                        style={{ cursor: "pointer" }}>
+                                                                        <IconEye
+
+                                                                            style={{
+                                                                                width: "14px",
+                                                                                height: "14px",
+                                                                                color: "#d6a10c",
+                                                                                cursor: "pointer",
+                                                                                marginLeft: "4px",
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </td>}
+
+                                                            <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                            <td>{formatDateFinal(company["UploadDate"])}</td>
+                                                            {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
+                                                            {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                            <td>
+                                                                <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                    <MdDeleteOutline
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#bf0b0b",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                                <button className='tbl-action-btn' onClick={
+                                                                    data.length === "0"
+                                                                        ? Swal.fire("Please Import Some data first")
+                                                                        : () => {
+                                                                            setOpenLeadsModifyPopUp(true);
+                                                                            handleUpdateClick(company._id);
+                                                                        }
+                                                                }>
+                                                                    < MdOutlineEdit
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "grey",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+
+                                                                <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+
+                                                    {(isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.map((company, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                            style={{ border: "1px solid #ddd" }}>
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedRows.includes(company._id)}
+                                                                    onChange={() => handleCheckboxChange(company._id)}
+                                                                    onMouseDown={() => handleMouseDown(company._id)}
+                                                                    onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                    onMouseUp={handleMouseUp}
+                                                                />
+                                                            </td>
+                                                            <td>{startIndex - 500 + index + 1}</td>
+                                                            <td>{company["Company Name"]}</td>
+                                                            <td>{company["Company Number"]}</td>
+                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                            <td>{company["City"]}</td>
+                                                            <td>{company["State"]}</td>
+                                                            <td>{company["Company Email"]}</td>
+                                                            {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>
+                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                    <p className="rematkText text-wrap m-0">
+                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                    </p>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            functionopenpopupremarks(company._id, company.Status);
+                                                                        }}
+                                                                        style={{ cursor: "pointer" }}>
+                                                                        <IconEye
+
+                                                                            style={{
+                                                                                width: "14px",
+                                                                                height: "14px",
+                                                                                color: "#d6a10c",
+                                                                                cursor: "pointer",
+                                                                                marginLeft: "4px",
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </td>}
+                                                            <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                            <td>{formatDateFinal(company["UploadDate"])}</td>
+
+                                                            {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
+                                                            {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                            <td>
+                                                                <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                    <MdDeleteOutline
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#bf0b0b",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                                <button className='tbl-action-btn' onClick={
+                                                                    data.length === "0"
+                                                                        ? Swal.fire("Please Import Some data first")
+                                                                        : () => {
+                                                                            setOpenLeadsModifyPopUp(true);
+                                                                            handleUpdateClick(company._id);
+                                                                        }
+                                                                }>
+                                                                    < MdOutlineEdit
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "grey",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+
+                                                                <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+
+                                                    {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.map((company, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                            style={{ border: "1px solid #ddd" }}>
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedRows.includes(company._id)}
+                                                                    onChange={() => handleCheckboxChange(company._id)}
+                                                                    onMouseDown={() => handleMouseDown(company._id)}
+                                                                    onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                    onMouseUp={handleMouseUp}
+                                                                />
+                                                            </td>
+                                                            <td>{startIndex - 500 + index + 1}</td>
+                                                            <td>{company["Company Name"]}</td>
+                                                            <td>{company["Company Number"]}</td>
+                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                            <td>{company["City"]}</td>
+                                                            <td>{company["State"]}</td>
+                                                            <td>{company["Company Email"]}</td>
+
+                                                            {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>
+                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                    <p className="rematkText text-wrap m-0">
+                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                    </p>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            functionopenpopupremarks(company._id, company.Status);
+                                                                        }}
+                                                                        style={{ cursor: "pointer" }}>
+                                                                        <IconEye
+
+                                                                            style={{
+                                                                                width: "14px",
+                                                                                height: "14px",
+                                                                                color: "#d6a10c",
+                                                                                cursor: "pointer",
+                                                                                marginLeft: "4px",
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </td>}
+                                                            <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                            <td>{formatDateFinal(company["UploadDate"])}</td>
+                                                            {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
+                                                            {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                            <td>
+                                                                <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                    <MdDeleteOutline
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#bf0b0b",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                                <button className='tbl-action-btn' onClick={
+                                                                    data.length === "0"
+                                                                        ? Swal.fire("Please Import Some data first")
+                                                                        : () => {
+                                                                            setOpenLeadsModifyPopUp(true);
+                                                                            handleUpdateClick(company._id);
+                                                                        }
+                                                                }>
+                                                                    < MdOutlineEdit
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "grey",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+
+                                                                <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+
+                                                    {(!isFilter && !isSearching) && data.map((company, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                            style={{ border: "1px solid #ddd" }}>
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedRows.includes(company._id)}
+                                                                    onChange={() => handleCheckboxChange(company._id)}
+                                                                    onMouseDown={() => handleMouseDown(company._id)}
+                                                                    onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                    onMouseUp={handleMouseUp}
+                                                                />
+                                                            </td>
+                                                            <td>{startIndex - 500 + index + 1}</td>
+                                                            <td>{company["Company Name"]}</td>
+                                                            <td>{company["Company Number"]}</td>
+                                                            <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
+                                                            <td>{company["City"]}</td>
+                                                            <td>{company["State"]}</td>
+                                                            <td>{company["Company Email"]}</td>
+                                                            {(dataStatus === "Assigned") && <td>{company["Status"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>
+                                                                <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                                                                    <p className="rematkText text-wrap m-0">
+                                                                        {company["Remarks"] ? company.Remarks : "No Remarks Added"}
+                                                                    </p>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            functionopenpopupremarks(company._id, company.Status);
+                                                                        }}
+                                                                        style={{ cursor: "pointer" }}>
+                                                                        <IconEye
+
+                                                                            style={{
+                                                                                width: "14px",
+                                                                                height: "14px",
+                                                                                color: "#d6a10c",
+                                                                                cursor: "pointer",
+                                                                                marginLeft: "4px",
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </td>}
+                                                            <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                            <td>{formatDateFinal(company["UploadDate"])}</td>
+                                                            {dataStatus === "Extracted" && <td>{company.lastAssignedEmployee}</td>}
+                                                            {dataStatus === "Extracted" && <td>{formatDateFinal(company["extractedDate"])}</td>}
+                                                            {dataStatus === "Assigned" && <td>{company["ename"]}</td>}
+                                                            {(dataStatus === "Assigned") && <td>{formatDateFinal(company["AssignDate"])}</td>}
+                                                            <td>
+                                                                <button className='tbl-action-btn' onClick={() => handleDeleteClick(company._id)}  >
+                                                                    <MdDeleteOutline
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#bf0b0b",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                                <button className='tbl-action-btn' onClick={
+                                                                    data.length === "0"
+                                                                        ? Swal.fire("Please Import Some data first")
+                                                                        : () => {
+                                                                            setOpenLeadsModifyPopUp(true);
+                                                                            handleUpdateClick(company._id);
+                                                                        }
+                                                                }>
+                                                                    < MdOutlineEdit
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "grey",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+
+                                                                <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            )}
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {(!isFilter || !isSearching) && data.length === 0 && !currentDataLoading && (
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="13" className="p-2 particular">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length === 0 && !currentDataLoading && (
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="13" className="p-2 particular">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {(isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length === 0 && !currentDataLoading && (
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="13" className="p-2 particular">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {(isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length === 0 && !currentDataLoading && (
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="13" className="p-2 particular">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                )}
+
+                                {/* {data.length !== 0 && (
                                 <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
                                     <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
                                         <IconChevronLeft />
@@ -2551,29 +2581,40 @@ function TestLeads() {
                                 </div>
                             )} */}
 
-                            {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0 || extractedData.length !== 0))) && (
-                                <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
-                                        <IconChevronLeft />
-                                    </button>
-                                    {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
-                                    {(isFilter || isSearching) && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
-                                    {(isFilter || isSearching) && dataStatus === 'Extracted' && <span>Page {currentPage} / {Math.ceil(totalExtractedCount / 500)}</span>}
-                                    {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
-                                    <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
-                                        ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
-                                        ((isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||
-                                        ((isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length < itemsPerPage) ||
-                                        ((!isFilter || !isSearching) && data.length < itemsPerPage)
-                                    }>
-                                        <IconChevronRight />
-                                    </button>
-                                </div>
-                            )}
+                                {(data.length !== 0 || ((isFilter || isSearching) && (assignedData.length !== 0 || unAssignedData.length !== 0 || extractedData.length !== 0))) && (
+                                    <div style={{ display: "flex", justifyContent: "space-between", margin: "10px" }} className="pagination">
+                                        <button style={{ background: "none", border: "0px transparent" }} onClick={handlePreviousPage} disabled={currentPage === 1}>
+                                            <IconChevronLeft />
+                                        </button>
+                                        {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
+                                        {(isFilter || isSearching) && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
+                                        {(isFilter || isSearching) && dataStatus === 'Extracted' && <span>Page {currentPage} / {Math.ceil(totalExtractedCount / 500)}</span>}
+                                        {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
+                                        <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
+                                            ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
+                                            ((isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||
+                                            ((isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length < itemsPerPage) ||
+                                            ((!isFilter || !isSearching) && data.length < itemsPerPage)
+                                        }>
+                                            <IconChevronRight />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
+
+
+            {/* ---------Interested-FollowUp Leads---------------------------------- */}
+
+            {
+                openInterestFollowPage && (
+                    <InterestedFollowUpLeads
+                        closeOpenInterestedLeads={setOpenInterestFollowPage} />
+                )
+            }
 
             {/* -------------------- dialog to add leads---------------------------- */}
             <Dialog className='My_Mat_Dialog' open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
@@ -3089,62 +3130,6 @@ function TestLeads() {
                 </button>
             </Dialog>
 
-            {/* ----------------------- dialog to assign leads to employees ----------------------------- */}
-            {/* <Dialog open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">
-                <DialogTitle>
-                    Assign Data{" "}
-                    <button style={{ background: "none", border: "0px transparent", float: "right" }} onClick={closeAssignLeadsDialog}>
-                        <IoIosClose style={{
-                            height: "36px",
-                            width: "32px",
-                            color: "grey"
-                        }} />
-                    </button>
-                </DialogTitle>
-                <DialogContent>
-                    <div>
-                        {empData.length !== 0 ? (
-                            <>
-                                <div className="dialogAssign">
-                                    <div className="selector form-control">
-                                        <select
-                                            style={{
-                                                width: "inherit",
-                                                border: "none",
-                                                outline: "none",
-                                            }}
-                                            value={employeeSelection}
-                                            onChange={(e) => {
-                                                setEmployeeSelection(e.target.value);
-                                            }}
-                                        >
-                                            <option value="Not Alloted" disabled>
-                                                Select employee
-                                            </option>
-                                            {empData.map((item) => (
-                                                <option value={item.ename}>{item.ename}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <div>
-                                <h1>No Employees Found</h1>
-                            </div>
-                        )}
-                    </div>
-                </DialogContent>
-                <div className="btn-list">
-                    <button
-                        style={{ width: "100vw", borderRadius: "0px" }}
-                        onClick={handleconfirmAssign}
-                        className="btn btn-primary ms-auto"
-                    >
-                        Assign Data
-                    </button>
-                </div>
-            </Dialog> */}
 
             {/* --------------------------dialog to assign leads--------------------------------------------------------------- */}
             <Dialog className='My_Mat_Dialog' open={openAssignLeadsDialog} onClose={closeAssignLeadsDialog} fullWidth maxWidth="sm">

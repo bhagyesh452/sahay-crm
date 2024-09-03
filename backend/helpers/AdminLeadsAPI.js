@@ -128,6 +128,29 @@ router.get('/', async function (req, res) {
 //   }
 // });
 
+// -----------------update-leads-button-function-for emergency-use-only------------
+router.post('/update-ename', async (req, res) => {
+  const data = req.body;
+
+  try {
+      const updates = data.map(async (item) => {
+          const { 'Company Name': companyName, ename } = item;
+          await CompanyModel.updateOne(
+              { "Company Name": companyName },
+              { $set: { AssignDate : new Date() } }
+          );
+      });
+
+      await Promise.all(updates);
+
+      res.status(200).json({ message: 'Ename updated successfully' });
+  } catch (error) {
+      console.error('Error updating ename:', error);
+      res.status(500).json({ error: 'Failed to update ename' });
+  }
+});
+
+
 function formatDateFinal(timestamp) {
   const date = new Date(timestamp);
   const day = date.getDate().toString().padStart(2, "0");
@@ -670,7 +693,7 @@ router.get('/getIds', async (req, res) => {
 //       selectedStatus,
 //       selectedState,
 //       selectedNewCity,
-//       selectedBDEName,
+//       selectedBDEName,<th?
 //       selectedAssignDate,
 //       selectedUploadedDate,
 //       selectedAdminName,
