@@ -5,7 +5,7 @@ import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
-const DscLetterStatusDropdown = ({
+const DscLetterStatusAdHead = ({
   companyName,
   serviceName,
   mainStatus,
@@ -26,19 +26,19 @@ const DscLetterStatusDropdown = ({
     try {
       let response;
       if (mainStatus === "Process") {
-        response = await axios.post(`${secretKey}/rm-services/update-letter-adminexecutive`, {
+        response = await axios.post(`${secretKey}/rm-services/update-letter-rmcert`, {
           companyName,
           serviceName,
           letterStatus: newStatus
         });
       } else if (mainStatus === "Defaulter") {
-        response = await axios.post(`${secretKey}/rm-services/update-letter-adminexecutive`, {
+        response = await axios.post(`${secretKey}/rm-services/update-letter-update-letter-rmcert`, {
           companyName,
           serviceName,
           letterStatus: newStatus
         });
       } else if (mainStatus === "Approved") {
-        response = await axios.post(`${secretKey}/rm-services/update-letter-adminexecutive`, {
+        response = await axios.post(`${secretKey}/rm-services/update-letter-update-letter-rmcert`, {
           companyName,
           serviceName,
           letterStatus: newStatus
@@ -83,53 +83,6 @@ const DscLetterStatusDropdown = ({
 
   return (
     <section className="rm_status_dropdown">
-      {/* <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
-        <button
-          className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
-          type="button"
-          id="dropdownMenuButton1"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {status === "Not Started" ? "Select Status" : status}
-        </button>
-        <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li>
-            <span className="dropdown-item disabled" style={{ cursor: 'not-allowed' }}>
-              Select Status
-            </span>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('Draft Pending', 'untouched_status')} href="#"
-            >
-              Draft Pending
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('Draft Sent', 'cdbp-status')} href="#">
-              Draft Sent
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('Letter Received', 'clnt_no_repond_status')} href="#">
-              Letter Received
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('Draft Done - Not Sent', 'support-status')} href="#">
-              Draft Done - Not Sent
-            </a>
-          </li>
-        </ul>
-      </div> */}
        <select
         className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
@@ -147,4 +100,4 @@ const DscLetterStatusDropdown = ({
   );
 };
 
-export default DscLetterStatusDropdown;
+export default DscLetterStatusAdHead;

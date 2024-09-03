@@ -38,6 +38,7 @@ import NSWSMobileNo from "../Extra-Components/NSWSMobileNo";
 import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus";
 import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
+import DscLetterStatusAdHead from "../Extra-Components/DscLetterStatusAdHead";
 
 
 
@@ -1239,7 +1240,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                       </div>
 
                       <div className="RM_filter_icon">
-                      {isActiveField('lastAttemptSubmitted') ? (
+                        {isActiveField('lastAttemptSubmitted') ? (
                           <FaFilter onClick={() => handleFilterClick("lastAttemptSubmitted")} />
                         ) : (
                           <BsFilter onClick={() => handleFilterClick("lastAttemptSubmitted")} />
@@ -1252,7 +1253,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
-                           <FilterableTable
+                          <FilterableTable
                             noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
@@ -1277,7 +1278,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                       </div>
 
                       <div className="RM_filter_icon">
-                      {isActiveField('submittedOn') ? (
+                        {isActiveField('submittedOn') ? (
                           <FaFilter onClick={() => handleFilterClick("submittedOn")} />
                         ) : (
                           <BsFilter onClick={() => handleFilterClick("submittedOn")} />
@@ -1290,7 +1291,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
-                           <FilterableTable
+                          <FilterableTable
                             noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
@@ -1315,7 +1316,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                       </div>
 
                       <div className="RM_filter_icon">
-                      {isActiveField('submittedBy') ? (
+                        {isActiveField('submittedBy') ? (
                           <FaFilter onClick={() => handleFilterClick("submittedBy")} />
                         ) : (
                           <BsFilter onClick={() => handleFilterClick("submittedBy")} />
@@ -1379,7 +1380,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                         </div>
                       )}
                     </div>
-                    </th>
+                  </th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['bdeName'] = el}>
@@ -1701,7 +1702,14 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                       </td>
                       <td>{obj.withDSC ? "Yes" : "No"}</td>
                       <td>
-                        {obj.withDSC ? obj.letterStatus : "Not Applicable"}
+                        {obj.withDSC ? (<DscLetterStatusAdHead
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          mainStatus={obj.mainCategoryStatus}
+                          letterStatus={obj.letterStatus}
+                          refreshData={refreshData}
+                        />) : "Not Applicable"}
                       </td>
                       <td>
                         <div>

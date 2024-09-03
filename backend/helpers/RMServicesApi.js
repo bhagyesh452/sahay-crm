@@ -162,37 +162,56 @@ router.post("/post-adminexecutivedata", async (req, res) => {
     let successEntries = 0;
     let failedEntries = 0;
 
-    //console.log("dataToSend" , dataToSend)
-
     for (const item of dataToSend) {
       try {
-        // Check if the record already exists
+        // Check if the record already exists in AdminExecutiveModel
         const existingRecord = await AdminExecutiveModel.findOne({
           "Company Name": item["Company Name"],
           serviceName: item.serviceName,
         });
 
+        // Check if the record exists in RMCertificationModel
+        const existingRecordofRmCert = await RMCertificationModel.findOne({
+          "Company Name": item["Company Name"],
+          serviceName: item.serviceName,
+        });
+
         if (!existingRecord) {
-          const data = {
-            ...item,
-            bookingPublishDate: publishDate,
-          };
-          //console.log("createdData" , data)
-          const newRecord = await AdminExecutiveModel.create(data);
-          //console.log("newRecord" , newRecord)
-          createData.push(newRecord);
+          if (existingRecordofRmCert) {
+            // If record exists in RMCertificationModel, create a new record in RMCertificationModel
+            const data = {
+              ...item,
+              bookingPublishDate: publishDate,
+              letterStatus: existingRecordofRmCert.letterStatus,
+              subCategoryStatus: existingRecordofRmCert.dscStatus,
+            };
+            const newRecord = await AdminExecutiveModel.create(data);
+            createData.push(newRecord);
+          } else {
+            // If record does not exist in both, create a new record in AdminExecutiveModel
+            const data = {
+              ...item,
+              bookingPublishDate: publishDate,
+            };
+            const newRecord = await AdminExecutiveModel.create(data);
+            createData.push(newRecord);
+          }
           successEntries++;
         } else {
+          // If record already exists, add to existingRecords array
           existingRecords.push(existingRecord);
           failedEntries++;
         }
       } catch (error) {
-        console.error("Error saving record:", error.message);
+        console.error("Error processing record:", error.message);
         failedEntries++;
       }
     }
-    // Respond with success message and created data
+
+    // Emit event to notify the client that the operation is complete
     socketIO.emit("adminexecutive-services-added");
+
+    // Respond with success message and created data
     res.status(200).json({
       message: "Details added to RM services",
       data: createData,
@@ -205,6 +224,7 @@ router.post("/post-adminexecutivedata", async (req, res) => {
     res.status(500).send("Error creating/updating data");
   }
 });
+
 
 router.post("/post-rmservices-from-listview", async (req, res) => {
   const { dataToSend } = req.body;
@@ -1851,6 +1871,81 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
     res
       .status(200)
       .json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(`/update-letter-rmcert/`, async (req, res) => {
+  const { companyName, serviceName, letterStatus } = req.body;
+  const socketIO = req.io;
+
+  try {
+    // Find the company document in AdminExecutiveModel
+    const company = await RMCertificationModel.findOne({
+      ["Company Name"]: companyName,
+      serviceName: serviceName,
+    });
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on letterStatus
+    let updateFields = { letterStatus: letterStatus };
+
+    if (letterStatus === "Letter Received") {
+      // Update additional fields if letterStatus is "Letter Received"
+      updateFields.dscStatus = "KYC Pending";
+    }
+
+    // Perform the update in AdminExecutiveModel
+    const updatedCompanyRm = await RMCertificationModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName,
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Prepare update for RMCertificationModel
+    let updateFieldsAdmin = { letterStatus: letterStatus };
+
+    if (letterStatus === "Letter Received") {
+      // Update dscStatus field if letterStatus is "Letter Received"
+      updateFieldsAdmin.subCategoryStatus = "KYC Pending";
+    }
+
+    // Perform the update in RMCertificationModel
+    const updatedCompanyAdmin = await AdminExecutiveModel.findOneAndUpdate(
+      {
+        ["Company Name"]: companyName,
+        serviceName: serviceName,
+      },
+      updateFieldsAdmin,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompanyRm) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response and emit the update event
+    socketIO.emit("adminexecutive-letter-updated", {
+      updatedDocument: updatedCompanyRm,
+      updatedDocumentAdmin:updatedCompanyAdmin // send the updated document from RMCertificationModel
+    });
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", data: updatedCompanyRm });
   } catch (error) {
     console.error("Error updating document:", error.message);
     res.status(500).json({ message: "Internal server error" });

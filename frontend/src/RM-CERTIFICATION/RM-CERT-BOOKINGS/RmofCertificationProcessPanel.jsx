@@ -36,6 +36,7 @@ import { BsFilter } from "react-icons/bs";
 import NSWSMobileNo from "../Extra-Components/NSWSMobileNo";
 import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus";
 import { FaFilter } from "react-icons/fa";
+import DscLetterStatusAdHead from "../Extra-Components/DscLetterStatusAdHead";
 
 function RmofCertificationProcessPanel({
     searchText,
@@ -1652,9 +1653,19 @@ function RmofCertificationProcessPanel({
                                                 />
                                             </td>
                                             <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                            <td>
+                                            {/* <td>
                                                 {obj.withDSC ? obj.letterStatus : "Not Applicable"}
-                                            </td>
+                                            </td> */}
+                                           <td>
+                                            {obj.withDSC ? (<DscLetterStatusAdHead
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                letterStatus={obj.letterStatus}
+                                                refreshData={refreshData}
+                                            />) : "Not Applicable"}
+                                        </td>
                                             <td>
                                                 <div>
                                                     {obj.withDSC ? obj.dscStatus : "Not Applicable"}

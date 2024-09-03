@@ -31,15 +31,16 @@ import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
 import NSWSMobileNo from '../Extra-Components/NSWSMobileNo';
 import OtpVerificationStatus from '../Extra-Components/OtpVerificationStatus';
+import DscLetterStatusAdHead from '../Extra-Components/DscLetterStatusAdHead';
 
 
-function RmofCertificationReadyToSubmitPanel({ 
-    searchText, 
-    showFilter, 
-    activeTab , 
+function RmofCertificationReadyToSubmitPanel({
+    searchText,
+    showFilter,
+    activeTab,
     totalFilteredData,
     showingFilterIcon,
-     }) {
+}) {
 
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
     const [employeeData, setEmployeeData] = useState([])
@@ -425,14 +426,14 @@ function RmofCertificationReadyToSubmitPanel({
 
     useEffect(() => {
         if (noOfAvailableData) {
-          showingFilterIcon(true)
-          totalFilteredData(noOfAvailableData)
+            showingFilterIcon(true)
+            totalFilteredData(noOfAvailableData)
         } else {
-          showingFilterIcon(false)
-          totalFilteredData(0)
+            showingFilterIcon(false)
+            totalFilteredData(0)
         }
-    
-      }, [noOfAvailableData, activeTab])
+
+    }, [noOfAvailableData, activeTab])
 
 
 
@@ -514,7 +515,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -524,7 +525,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                         completeData={completeRmData}
                                                         showingMenu={setShowFilterMenu}
                                                         dataForFilter={dataToFilter}
-                                    
+
                                                     />
                                                 </div>
                                             )}
@@ -551,7 +552,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -587,7 +588,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -623,7 +624,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -660,7 +661,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -696,7 +697,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -733,7 +734,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -769,7 +770,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -805,7 +806,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -841,7 +842,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -877,7 +878,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -912,7 +913,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -947,7 +948,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -982,7 +983,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1015,7 +1016,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1050,7 +1051,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1085,7 +1086,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1119,7 +1120,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1154,7 +1155,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1189,7 +1190,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1240,7 +1241,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1276,7 +1277,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1311,7 +1312,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1347,7 +1348,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1383,7 +1384,7 @@ function RmofCertificationReadyToSubmitPanel({
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
                                                     <FilterableTable
-                                                     noofItems={setnoOfAvailableData}
+                                                        noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
                                                         activeTab={"Ready To Submit"}
@@ -1500,7 +1501,16 @@ function RmofCertificationReadyToSubmitPanel({
                                             />
                                         </td>
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
-                                        <td>{obj.withDSC ? obj.letterStatus : "Not Applicable"}</td>
+                                        <td>
+                                            {obj.withDSC ? (<DscLetterStatusAdHead
+                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                companyName={obj["Company Name"]}
+                                                serviceName={obj.serviceName}
+                                                mainStatus={obj.mainCategoryStatus}
+                                                letterStatus={obj.letterStatus}
+                                                refreshData={refreshData}
+                                            />) : "Not Applicable"}
+                                        </td>
                                         <td>
                                             <div>{obj.withDSC ? (
                                                 obj.dscStatus

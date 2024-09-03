@@ -49,9 +49,12 @@ import { RiSendToBack } from 'react-icons/ri';
 import { dateCalendarClasses } from '@mui/x-date-pickers/DateCalendar/dateCalendarClasses';
 import { LiaPagerSolid } from "react-icons/lia";
 import { TbArrowBackUp } from "react-icons/tb";
+import { RiShareForwardFill } from "react-icons/ri";
 
 function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
+    const [openAssignToBdm, setOpenAssignToBdm] = useState(false);
+    const [bdmName, setBdmName] = useState("Not Alloted");
     const [data, setData] = useState([])
     const [mainData, setmainData] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
@@ -156,10 +159,6 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         }
     }
 
-    useEffect(() => {
-        document.title = `Admin-Sahay-CRM`;
-    }, []);
-
     const fetchTotalLeads = async () => {
         const response = await axios.get(`${secretKey}/company-data/leads`)
         setCompleteLeads(response.data)
@@ -172,13 +171,13 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             //console.log("dataStatus", dataStatus)
             const response = await axios.get(`${secretKey}/company-data/new-leads`, {
                 params: {
-                  page,
-                  limit: itemsPerPage,
-                  dataStatus : "Assigned",  // This will automatically include dataStatus: "Assigned"
-                  sort: sortType,
-                  sortPattern: sortPattern
+                    page,
+                    limit: itemsPerPage,
+                    dataStatus: "Assigned",  // This will automatically include dataStatus: "Assigned"
+                    sort: sortType,
+                    sortPattern: sortPattern
                 }
-              });
+            });
             const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
             const leadHistory = response2.data
             //console.log("data", response.data.data)
@@ -188,9 +187,9 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             setLeadHistoryData(leadHistory)
             setData(response.data.data.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"));
             setTotalCount(response.data.data.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
-            
+
             setTotalCompaniesAssigned(response.data.data.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
-            
+
             setmainData(response.data.data.filter((item) => item.ename === "Not Alloted"));
             //console.log("mainData", mainData)
             //setDataStatus("Unassigned")
@@ -214,7 +213,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             const response = await axios.get(`${secretKey}/employee/einfo`)
             setEmpData(response.data)
             setNewEmpData(response.data.filter(obj => obj.designation === 'Sales Executive' || obj.designation === 'Sales Manager'))
-            setbdmNames(response.data.filter(obj =>obj.designation === 'Sales Manager' || obj.bdmWork === true))
+            setbdmNames(response.data.filter(obj => obj.designation === 'Sales Manager' || obj.bdmWork === true))
         } catch (error) {
             console.log("Error fetching data", error.message)
         }
@@ -369,11 +368,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 setIsSearching(false);
                 fetchData(1, latestSortCount)
             } else {
-                setAssignedData(response.data.assigned.filter((obj)=>obj.Status === "Interested" || obj.Status === "FollowUp"))
+                setAssignedData(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"))
                 setExtractedData(response.data.extracted)
                 setTotalExtractedCount(response.data.extractedDataCount)
                 setunAssignedData(response.data.unassigned)
-                setTotalCompaniesAssigned(response.data.assigned.filter((obj)=>obj.Status === "Interested" || obj.Status === "FollowUp").length)
+                setTotalCompaniesAssigned(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
                 setTotalCompaniesUnaasigned(response.data.totalUnassigned)
                 setTotalCount(response.data.totalPages)
                 setCurrentPage(1)
@@ -517,7 +516,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 })
                 .then((response) => {
                     //console.log("response", response);
-               
+
                     Swal.fire({
                         title: "Data Added!",
                         text: "Successfully added new Data!",
@@ -682,11 +681,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         try {
             let response;
             if (selectedOption === "someoneElse") {
-              
+
                 response = await axios.post(`${secretKey}/company-data/leads`, updatedCsvdata);
                 await axios.post(`${secretKey}/employee/employee-history`, newArray);
             } else {
-               
+
                 response = await axios.post(`${secretKey}/company-data/leads`, updatedCsvData2);
             }
 
@@ -800,8 +799,8 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             }
             // Process response
             const { data } = response;
-         
-            
+
+
             // Handle response data as needed
             setAllIds(data.allIds);
             setSelectedRows((prevSelectedRows) =>
@@ -986,7 +985,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus
-      
+
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
         try {
@@ -1047,7 +1046,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         //const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
-       
+
         try {
             setOpenBacdrop(true)
             setOpenAssignLeadsDialog(false)
@@ -1429,7 +1428,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         }
     }, [selectedYear, selectedMonth]);
 
-  
+
 
 
     useEffect(() => {
@@ -1442,7 +1441,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         }
     }, [selectedYear, selectedMonth, selectedDate]);
 
-   
+
 
 
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
@@ -1489,10 +1488,10 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 fetchData(1, latestSortCount);
                 setOpenBacdrop(false)
             } else {
-                console.log("response" , response.data)
+                console.log("response", response.data)
                 setOpenBacdrop(false)
                 setTotalCompaniesAssigned(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
-                setAssignedData(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"))               
+                setAssignedData(response.data.assigned.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"))
                 setTotalCount(response.data.totalPages);  // Ensure your backend provides the total page count
                 setCurrentPage(response.data.currentPage);  // Reset to the first page
                 setOpenFilterDrawer(false);
@@ -1534,7 +1533,41 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         setOpenBacdrop(false)
     }
 
-    console.log("dataStatus", dataStatus)
+//------- function forward to bdm---------------------
+
+const handleCloseForwardBdmPopup = () => {
+    setOpenAssignToBdm(false);
+  };
+
+  const handleForwardDataToBDM = async (bdmName) => {
+    //const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
+    // console.log("data is:", data);
+    if (selectedRows.length === 0) {
+      Swal.fire("Please Select the Company to Forward", "", "Error");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      return;
+    }
+    // if (data.length === 0) {
+    //   Swal.fire("Can Not Forward Untouched Company", "", "Error");
+    //   setBdmName("Not Alloted");
+    //   handleCloseForwardBdmPopup();
+    //   return;
+    // }
+    try {
+      const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
+        data: data,
+        name: bdmName
+      });
+      fetchData(1, latestSortCount)
+      Swal.fire("Company Forwarded", "", "success");
+      setBdmName("Not Alloted");
+      handleCloseForwardBdmPopup();
+      console.log("response data is:", response);
+    } catch (error) {
+      console.log("error fetching data", error.message);
+    }
+  };
 
 
     return (
@@ -1564,6 +1597,11 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                                 <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                     <MdOutlinePostAdd className='mr-1' />Assign Leads
                                 </button>
+                                {/* <button type="button" className="btn mybtn"
+                                    onClick={() => setOpenAssignToBdm(true)}
+                                >
+                                    <RiShareForwardFill className='mr-1' /> Forward to BDM
+                                </button> */}
                                 {/* <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
                                     <MdOutlineDeleteSweep className='mr-1' />Delete Leads
                                 </button> */}
@@ -2521,6 +2559,59 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     </div>
                 </div>
             </Drawer>
+
+            {/* ------------------------------- Forward to BDM -------------------------- */}
+      <Dialog
+        open={openAssignToBdm}
+        onClose={handleCloseForwardBdmPopup}
+        fullWidth
+        maxWidth="sm">
+        <DialogTitle>
+          Forward to BDM{" "}
+          <IconButton onClick={handleCloseForwardBdmPopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            {newEmpData.length !== 0 ? (
+              <>
+                <div className="dialogAssign">
+                  <label>Forward to BDM</label>
+                  <div className="form-control">
+                    <select
+                      style={{
+                        width: "inherit",
+                        border: "none",
+                        outline: "none",
+                      }}
+                      value={bdmName}
+                      onChange={(e) => setBdmName(e.target.value)}
+                    >
+                      <option value="Not Alloted" disabled>
+                        Select a BDM
+                      </option>
+                      {newEmpData.filter((item) =>
+                        (item.bdmWork || item.designation === "Sales Manager")
+                      ).map((item) => (
+                        <option value={item.ename}>{item.ename}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>
+                <h1>No Employees Found</h1>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+        <button onClick={() => handleForwardDataToBDM(bdmName)} className="btn btn-primary">
+          Submit
+        </button>
+      </Dialog>
+
         </div>
     )
 

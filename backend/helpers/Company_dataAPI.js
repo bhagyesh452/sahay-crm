@@ -859,7 +859,7 @@ router.get('/filter-leads', async (req, res) => {
 
     if (selectedFowradedStatus === "Yes") {
       baseQuery.bdmAcceptStatus = {
-        $in: ["Pending", "Accept"]
+        $in: ["Forwarded", "Accept"]
       };
     } else if (selectedFowradedStatus === "No") {
       baseQuery.bdmAcceptStatus = "NotForwarded";

@@ -38,6 +38,7 @@ import NSWSMobileNo from "../Extra-Components/NSWSMobileNo";
 import OtpVerificationStatus from "../Extra-Components/OtpVerificationStatus";
 import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
+import DscLetterStatusAdHead from "../Extra-Components/DscLetterStatusAdHead";
 
 
 function RmofCertificationDefaulterPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab }) {
@@ -1252,7 +1253,7 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter, totalFiltered
                         </div>
                       )}
                     </div>
-                    </th>
+                  </th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['bdeName'] = el}>
@@ -1571,7 +1572,14 @@ function RmofCertificationDefaulterPanel({ searchText, showFilter, totalFiltered
                       </td>
                       <td>{obj.withDSC ? "Yes" : "No"}</td>
                       <td>
-                        {obj.withDSC ? obj.letterStatus : "Not Applicable"}
+                        {obj.withDSC ? (<DscLetterStatusAdHead
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          mainStatus={obj.mainCategoryStatus}
+                          letterStatus={obj.letterStatus}
+                          refreshData={refreshData}
+                        />) : "Not Applicable"}
                       </td>
                       <td>
                         <div>
