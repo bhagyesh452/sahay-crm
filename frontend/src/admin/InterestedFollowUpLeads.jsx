@@ -165,6 +165,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
     }
 
     //--------------------function to fetch Data ------------------------------
+  const [employeeData, setEmployeeData] = useState([])
     const fetchData = async (page, sortType) => {
         try {
             setCurrentDataLoading(true)
@@ -187,6 +188,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             //console.log(response.data)
             setLeadHistoryData(leadHistory)
             setData(response.data.data);
+            setEmployeeData(response.data.data);
             setTotalCount(response.data.totalPages)
             setTotalCompaniesAssigned(response.data.assignedCount)
             setmainData(response.data.data.filter((item) => item.ename === "Not Alloted"));
@@ -1540,8 +1542,8 @@ const handleCloseForwardBdmPopup = () => {
   };
 
   const handleForwardDataToBDM = async (bdmName) => {
-    //const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
-    // console.log("data is:", data);
+    const data = employeeData.filter((employee) => selectedRows.includes(employee._id) && employee.Status !== "Untouched" && employee.Status !== "Busy" && employee.Status !== "Not Picked");
+    console.log("data is:", data);
     if (selectedRows.length === 0) {
       Swal.fire("Please Select the Company to Forward", "", "Error");
       setBdmName("Not Alloted");
@@ -1554,6 +1556,7 @@ const handleCloseForwardBdmPopup = () => {
     //   handleCloseForwardBdmPopup();
     //   return;
     // }
+    
     try {
       const response = await axios.post(`${secretKey}/bdm-data/leadsforwardedbyadmintobdm`, {
         data: data,
@@ -1597,11 +1600,11 @@ const handleCloseForwardBdmPopup = () => {
                                 <button type="button" className="btn mybtn" onClick={() => setOpenAssignLeadsDialog(true)}>
                                     <MdOutlinePostAdd className='mr-1' />Assign Leads
                                 </button>
-                                {/* <button type="button" className="btn mybtn"
+                                <button type="button" className="btn mybtn"
                                     onClick={() => setOpenAssignToBdm(true)}
                                 >
                                     <RiShareForwardFill className='mr-1' /> Forward to BDM
-                                </button> */}
+                                </button>
                                 {/* <button type="button" className="btn mybtn" onClick={() => handleDeleteSelection()}>
                                     <MdOutlineDeleteSweep className='mr-1' />Delete Leads
                                 </button> */}
@@ -1848,17 +1851,17 @@ const handleCloseForwardBdmPopup = () => {
                                                             <td>
                                                                 {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
                                                             </td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded"|| company.bdmAcceptStatus === "Accept") ?
                                                                 "Yes" : "No"
                                                             }</td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                                 company.bdmName : "-"
                                                             }</td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                                 `${formatDateLeadHistory(company.bdeForwardDate)}`
                                                                 : "-"
                                                             }</td>
-                                                            <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                            <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                                 `${timePassedSince(company.bdeForwardDate)}`
                                                                 : "-"
                                                             }</td>
@@ -1926,17 +1929,17 @@ const handleCloseForwardBdmPopup = () => {
                                                         <td>
                                                             {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
                                                         </td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                             "Yes" : "No"
                                                         }</td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded"|| company.bdmAcceptStatus === "Accept") ?
                                                             company.bdmName : "-"
                                                         }</td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                             `${formatDateLeadHistory(company.bdeForwardDate)}`
                                                             : "-"
                                                         }</td>
-                                                        <td>{(company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept") ?
+                                                        <td>{(company.bdmAcceptStatus === "Pending" ||company.bdmAcceptStatus === "Forwarded" || company.bdmAcceptStatus === "Accept") ?
                                                             `${timePassedSince(company.bdeForwardDate)}`
                                                             : "-"
                                                         }</td>
@@ -2455,7 +2458,7 @@ const handleCloseForwardBdmPopup = () => {
                                             onChange={(e) => setSelectedAssignDate(e.target.value)} />
                                     </div>
                                 </div>
-                                <div className='col-sm-12 mt-2'>
+                                <div className='col-sm-12 mt-2 d-none'>
                                     <label class="form-label">Incorporation Date</label>
                                     <div className='row align-items-center justify-content-between'>
                                         <div className='col form-group mr-1'>
