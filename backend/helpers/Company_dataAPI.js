@@ -572,6 +572,84 @@ router.get('/new-leads', async (req, res) => {
   }
 });
 
+router.get('/new-leads/interested-followup', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Page number
+    const limit = parseInt(req.query.limit) || 500; // Items per page
+    const skip = (page - 1) * limit; // Number of documents to skip
+    const { dataStatus, sort, sortPattern } = req.query;
+    //console.log(sort)
+    // Query the database to get paginated data
+    let query = {};
+
+    if (dataStatus === "Unassigned") {
+      query = { ename: "Not Alloted" };
+    } else if (dataStatus === "Assigned") {
+      query = {
+        $and: [{ ename: { $ne: "Not Alloted" } },
+        { ename: { $ne: "Extracted" } },
+        { Status: { $in: ["Interested", "FollowUp"] } }]
+      };
+    } else if (dataStatus === "Extracted") {
+      query = { ename: "Extracted" };
+    }
+
+    let sortQuery = {};
+    if (sort && sortPattern === 'IncoDate' && (sort === 'ascending' || sort === 'descending')) {
+      if (sort === 'ascending') {
+        sortQuery = { "Company Incorporation Date  ": 1 }; // Sort in ascending order by Company Incorporation Date
+      } else {
+        sortQuery = { "Company Incorporation Date  ": -1 }; // Sort in descending order by Company Incorporation Date
+      }
+    } else if (sort && sortPattern === 'AssignDate' && (sort === 'ascending' || sort === 'descending')) {
+      if (sort === 'ascending') {
+        sortQuery = { AssignDate: 1 }; // Sort in ascending order by Company Incorporation Date
+      } else {
+        sortQuery = { AssignDate: -1 }; // Sort in descending order by Company Incorporation Date
+      }
+    }
+
+    let employees;
+    if (Object.keys(sortQuery).length !== 0) {
+      employees = await CompanyModel.find(query)
+        .sort(sortQuery)
+        .skip(skip)
+        .limit(limit).lean();
+    } else {
+      employees = await CompanyModel.find(query)
+        .sort({ AssignDate: -1 }) // Default sorting in descending order by AssignDate
+        .skip(skip)
+        .limit(limit).lean();
+    }
+
+    // Get total count of documents for pagination
+    const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
+    const assignedCount = await CompanyModel.countDocuments({
+      $and: [{ ename: { $ne: "Not Alloted" } }, 
+        { ename: { $ne: "Extracted" } },
+        { Status: { $in: ["Interested", "FollowUp"] } }]
+    });
+    const extractedCount = await CompanyModel.countDocuments({ ename: "Extracted" });
+    const totalCount = await CompanyModel.countDocuments(query);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Return paginated data along with pagination metadata
+    res.json({
+      data: employees,
+      currentPage: page,
+      totalPages: totalPages,
+      unAssignedCount: unAssignedCount,
+      assignedCount: assignedCount,
+      extractedCount: extractedCount
+    });
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 //-------------------api to filter leads-----------------------------------
 // router.get('/filter-leads', async (req, res) => {
 //   const {
@@ -953,7 +1031,7 @@ router.get('/filter-leads', async (req, res) => {
           $lt: new Date(new Date(selectedStatusModificationDate).setHours(23, 59, 59, 999)).toISOString()
         }
       });
-      console.log("matching" , matchingLeadHistory)
+      console.log("matching", matchingLeadHistory)
       const companyNames = matchingLeadHistory.map(lead => lead["Company Name"]);
 
       if (companyNames.length > 0) {

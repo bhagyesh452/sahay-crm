@@ -169,15 +169,16 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         try {
             setCurrentDataLoading(true)
             //console.log("dataStatus", dataStatus)
-            const response = await axios.get(`${secretKey}/company-data/new-leads`, {
+            const response = await axios.get(`${secretKey}/company-data/new-leads/interested-followup`, {
                 params: {
                     page,
                     limit: itemsPerPage,
                     dataStatus: "Assigned",  // This will automatically include dataStatus: "Assigned"
                     sort: sortType,
-                    sortPattern: sortPattern
+                    sortPattern: sortPattern,
                 }
             });
+            console.log("response" , response.data)
             const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
             const leadHistory = response2.data
             //console.log("data", response.data.data)
@@ -185,11 +186,9 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             //console.log(response.data.unAssignedCount)
             //console.log(response.data)
             setLeadHistoryData(leadHistory)
-            setData(response.data.data.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp"));
-            setTotalCount(response.data.data.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
-
-            setTotalCompaniesAssigned(response.data.data.filter((obj) => obj.Status === "Interested" || obj.Status === "FollowUp").length)
-
+            setData(response.data.data);
+            setTotalCount(response.data.totalPages)
+            setTotalCompaniesAssigned(response.data.assignedCount)
             setmainData(response.data.data.filter((item) => item.ename === "Not Alloted"));
             //console.log("mainData", mainData)
             //setDataStatus("Unassigned")
@@ -204,6 +203,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
             setCurrentDataLoading(false)
         }
     };
+    console.log("data" , data)
     //--------------------function to fetch employee data ------------------------------
     const [newEmpData, setNewEmpData] = useState([])
     const [bdmNames, setbdmNames] = useState([])
@@ -1771,7 +1771,7 @@ const handleCloseForwardBdmPopup = () => {
                                     {currentDataLoading ? (
                                         <tbody>
                                             <tr>
-                                                <td colSpan="14" >
+                                                <td colSpan="16" >
                                                     <div className="LoaderTDSatyle">
                                                         <ClipLoader
                                                             color="lightgrey"
@@ -1976,13 +1976,9 @@ const handleCloseForwardBdmPopup = () => {
                                     <IconChevronLeft />
                                 </button>
                                 {(isFilter || isSearching) && dataStatus === 'Assigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesAssigned / 500)}</span>}
-                                {(isFilter || isSearching) && dataStatus === 'Unassigned' && <span>Page {currentPage} / {Math.ceil(totalCompaniesUnassigned / 500)}</span>}
-                                {(isFilter || isSearching) && dataStatus === 'Extracted' && <span>Page {currentPage} / {Math.ceil(totalExtractedCount / 500)}</span>}
                                 {(!isFilter && !isSearching) && <span>Page {currentPage} / {totalCount}</span>}
                                 <button style={{ background: "none", border: "0px transparent" }} onClick={handleNextPage} disabled={
                                     ((isFilter || isSearching) && dataStatus === 'Assigned' && assignedData.length < itemsPerPage) ||
-                                    ((isFilter || isSearching) && dataStatus === 'Unassigned' && unAssignedData.length < itemsPerPage) ||
-                                    ((isFilter || isSearching) && dataStatus === 'Extracted' && extractedData.length < itemsPerPage) ||
                                     ((!isFilter || !isSearching) && data.length < itemsPerPage)
                                 }>
                                     <IconChevronRight />

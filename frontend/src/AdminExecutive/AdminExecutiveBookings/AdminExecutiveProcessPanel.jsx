@@ -222,7 +222,6 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
       if (res.updatedDocumentAdmin) {
           updateDocumentInState(res.updatedDocumentAdmin);
       }
-
   });
 
     return () => {
