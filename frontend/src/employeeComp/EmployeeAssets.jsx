@@ -89,6 +89,7 @@ function EmployeeAssets() {
     const [departmentName, setDepartmentName] = useState("");
     const [serviceName, setServiceName] = useState("");
 
+    const [isLoading, setIsLoading] = useState(false);
     const [departments, setDepartments] = useState([]);
     const [services, setServices] = useState([]);
     const [activeDepartment, setActiveDepartment] = useState("");
@@ -164,12 +165,15 @@ function EmployeeAssets() {
 
     const fetchServices = async (departmentName) => {
         try {
+            setIsLoading(true);
             const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment/${departmentName}`);
             const data = res.data.data;
             setServices(data);
             // console.log(`Fetched services for ${departmentName}:`, data);
         } catch (error) {
             console.log(`Error fetching services for ${departmentName}:`, error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -441,6 +445,7 @@ function EmployeeAssets() {
                                 <div className="col-lg-2 p-0">
                                     <div className="employee-assets-left">
                                         <ul class="nav flex-column">
+                                            {/* Shows departments fetched from backend */}
                                             {departments.map((department, index) => {
                                                 // console.log("Department link is :", department.replace(/\s+/g, '_'));
                                                 return <li class="nav-item">
@@ -458,28 +463,6 @@ function EmployeeAssets() {
                                                     </a>
                                                 </li>
                                             })}
-
-                                            {/* <li class="nav-item">
-                                                <a class="nav-link sweep-to-right active" data-bs-toggle="tab" href="#Business_Registration">Business Registration</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link sweep-to-right" data-bs-toggle="tab" href="#Certification_Services">Certification Services</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link sweep-to-right" data-bs-toggle="tab" href="#Documentations_Services">Documentations Services</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link sweep-to-right" data-bs-toggle="tab" href="#Fund_Raising_Services">Fund Raising Services</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link sweep-to-right" data-bs-toggle="tab" href="#IT">IT Services</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link sweep-to-right" data-bs-toggle="tab" href="#DigitalMarketing">Digital Marketing</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link sweep-to-right" data-bs-toggle="tab" href="#ISO">ISO Services</a>
-                                            </li> */}
                                         </ul>
                                     </div>
                                 </div>
@@ -488,855 +471,62 @@ function EmployeeAssets() {
                                     <div className="employee-assets-right">
                                         <div class="tab-content">
 
-                                            <div className="tab-content">
-                                                {departments.map((department, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`tab-pane container ${activeDepartment === department ? 'active' : 'fade'}`}
-                                                        id={department.replace(/\s+/g, '_')}
-                                                    >
-                                                        <div className="E_Start-Up_Assets_inner">
-                                                            <div className="ESAI_data row">
-                                                                {services
-                                                                    .filter(service => service.departmentName === department)
-                                                                    .map((service, serviceIndex) => (
-                                                                        service.hideService === false && (
-                                                                            <div className="col-sm-4" key={serviceIndex}>
-                                                                                <div className="ESAI_data_card mt-3">
-                                                                                    <div className="ESAI_data_card_h">
-                                                                                        {service.serviceName}
-                                                                                    </div>
-                                                                                    <div className="ESAI_data_card_b">
-                                                                                        {service.serviceDescription}
-                                                                                    </div>
-                                                                                    <div className="ESAI_data_card_F">
-                                                                                        <button
-                                                                                            className="btn ESAI_data_card_F-btn"
-                                                                                            onClick={() => {
-                                                                                                setOpenDeatilsPage(true);
-                                                                                                setServiceName(service.serviceName);
-                                                                                                setDepartmentName(service.departmentName);
-                                                                                            }}
-                                                                                        >
-                                                                                            Know More
-                                                                                        </button>
+                                            {/* Shows services for selected department */}
+                                            {isLoading ? (
+                                                <div className="tab-content">
+                                                    <div className="LoaderTDSatyle w-100">
+                                                        <ClipLoader
+                                                            color="lightgrey"
+                                                            loading={true}
+                                                            size={30}
+                                                            aria-label="Loading Spinner"
+                                                            data-testid="loader"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="tab-content">
+                                                    {departments.map((department, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className={`tab-pane container ${activeDepartment === department ? 'active' : 'fade'}`}
+                                                            id={department.replace(/\s+/g, '_')}
+                                                        >
+                                                            <div className="E_Start-Up_Assets_inner">
+                                                                <div className="ESAI_data row">
+                                                                    {services
+                                                                        .filter(service => service.departmentName === department)
+                                                                        .map((service, serviceIndex) => (
+                                                                            service.hideService === false && (
+                                                                                <div className="col-sm-4" key={serviceIndex}>
+                                                                                    <div className="ESAI_data_card mt-3">
+                                                                                        <div className="ESAI_data_card_h">
+                                                                                            {service.serviceName}
+                                                                                        </div>
+                                                                                        <div className="ESAI_data_card_b">
+                                                                                            {service.serviceDescription}
+                                                                                        </div>
+                                                                                        <div className="ESAI_data_card_F">
+                                                                                            <button
+                                                                                                className="btn ESAI_data_card_F-btn"
+                                                                                                onClick={() => {
+                                                                                                    setOpenDeatilsPage(true);
+                                                                                                    setServiceName(service.serviceName);
+                                                                                                    setDepartmentName(service.departmentName);
+                                                                                                }}
+                                                                                            >
+                                                                                                Know More
+                                                                                            </button>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        )
-                                                                    ))}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            {/* <div class="tab-pane container active" id="Business_Registration">
-                                                <div className="E_Start-Up_Assets_inner">
-                                                    <div className="ESAI_data row">
-
-                                                        {services.map((department) => (
-                                                            department.hideService === false && <div className="col-sm-4">
-                                                                <div className="ESAI_data_card mt-3">
-                                                                    <div className="ESAI_data_card_h">
-                                                                        {department.serviceName}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_b">
-                                                                        {department.serviceDescription}
-                                                                    </div>
-                                                                    <div className="ESAI_data_card_F">
-                                                                        <button className="btn ESAI_data_card_F-btn"
-                                                                            onClick={() => {
-                                                                                setOpenDeatilsPage(true);
-                                                                                setServiceName(department.serviceName);
-                                                                                setDepartmentName(department.departmentName);
-                                                                            }}>
-                                                                            Know More
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ))} */}
-
-                                            {/* <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Private Limited Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure with limited liability, suitable for startups and medium to large businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn"
-                                                                        onClick={
-                                                                            () => {
-                                                                                setOpenDeatilsPage(true)
-                                                                            }
-                                                                        }>
-                                                                        Know More
-                                                                    </button>
+                                                                            )
+                                                                        ))}
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    LLP Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Hybrid structure offering limited liability and flexibility for small to medium businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    LLP Firm Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Application for Issue of Phytosanitary Certificate for Export of Agriculture Commodit...
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    OPC Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Single-owner company with limited liability, ideal for solo entrepreneurs.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Public Company Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Large entity raising capital through public shares, suitable for large-scale businesses.
-
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Nidhi Company Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    NBFC promoting savings and lending among members, with limited liability.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Sole Proprietorship Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Simple structure with complete control, ideal for individual-owned businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Producer Company Registration
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div> */}
-                                            {/* </div>
-                                    </div>
-                                </div> */}
-
-                                            {/* <div class="tab-pane container fade" id="Certification_Services">
-                                    <div className="E_Start-Up_Assets_inner">
-                                        <div className="ESAI_data row">
-
-                                            {services.map((department) => (
-                                                department.hideService === false && <div className="col-sm-4">
-                                                    <div className="ESAI_data_card mt-3">
-                                                        <div className="ESAI_data_card_h">
-                                                            {department.serviceName}
-                                                        </div>
-                                                        <div className="ESAI_data_card_b">
-                                                            {department.serviceDescription}
-                                                        </div>
-                                                        <div className="ESAI_data_card_F">
-                                                            <button className="btn ESAI_data_card_F-btn"
-                                                                onClick={() => {
-                                                                    setOpenDeatilsPage(true);
-                                                                    setServiceName(department.serviceName);
-                                                                    setDepartmentName(department.departmentName);
-                                                                }}>
-                                                                Know More
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))} */}
-
-                                            {/* <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Start-Up India Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure with limited liability, suitable for startups and medium to large businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    MSME/UYDAM Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Hybrid structure offering limited liability and flexibility for small to medium businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    IEC CODE Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Application for Issue of Phytosanitary Certificate for Export of Agriculture Commodit...
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    BIS Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Single-owner company with limited liability, ideal for solo entrepreneurs.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    NSIC Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Large entity raising capital through public shares, suitable for large-scale businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    FSSAI Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    NBFC promoting savings and lending among members, with limited liability.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    APEDA Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Simple structure with complete control, ideal for individual-owned businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    GST Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div> */}
-                                            {/* </div>
-                                    </div>
-                                </div> */}
-
-                                            {/* <div class="tab-pane container fade" id="Documentations_Services">
-                                    <div className="E_Start-Up_Assets_inner">
-                                        <div className="ESAI_data row">
-
-                                            {services.map((department) => (
-                                                department.hideService === false && <div className="col-sm-4">
-                                                    <div className="ESAI_data_card mt-3">
-                                                        <div className="ESAI_data_card_h">
-                                                            {department.serviceName}
-                                                        </div>
-                                                        <div className="ESAI_data_card_b">
-                                                            {department.serviceDescription}
-                                                        </div>
-                                                        <div className="ESAI_data_card_F">
-                                                            <button className="btn ESAI_data_card_F-btn"
-                                                                onClick={() => {
-                                                                    setOpenDeatilsPage(true);
-                                                                    setServiceName(department.serviceName);
-                                                                    setDepartmentName(department.departmentName);
-                                                                }}>
-                                                                Know More
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))} */}
-
-                                            {/* <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Pitch Deck Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure with limited liability, suitable for startups and medium to large businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Financial Modeling
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Hybrid structure offering limited liability and flexibility for small to medium businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    DPR Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Application for Issue of Phytosanitary Certificate for Export of Agriculture Commodit...
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    CMA Report Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Single-owner company with limited liability, ideal for solo entrepreneurs.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Company Profile
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Large entity raising capital through public shares, suitable for large-scale businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    FSSAI Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    NBFC promoting savings and lending among members, with limited liability.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    APEDA Certificate
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Simple structure with complete control, ideal for individual-owned businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Company Brochure
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Product Catalog
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure for farmers/producers to pool resources, share profits, and scale operations.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div> */}
-                                            {/* </div>
-                                    </div>
-                                </div> */}
-
-                                            {/* <div class="tab-pane container fade" id="Fund_Raising_Services">
-                                    <div className="E_Start-Up_Assets_inner">
-                                        <div className="ESAI_data row">
-
-                                            {services.map((department) => (
-                                                department.hideService === false && <div className="col-sm-4">
-                                                    <div className="ESAI_data_card mt-3">
-                                                        <div className="ESAI_data_card_h">
-                                                            {department.serviceName}
-                                                        </div>
-                                                        <div className="ESAI_data_card_b">
-                                                            {department.serviceDescription}
-                                                        </div>
-                                                        <div className="ESAI_data_card_F">
-                                                            <button className="btn ESAI_data_card_F-btn"
-                                                                onClick={() => {
-                                                                    setOpenDeatilsPage(true);
-                                                                    setServiceName(department.serviceName);
-                                                                    setDepartmentName(department.departmentName);
-                                                                }}>
-                                                                Know More
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))} */}
-
-                                            {/* <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Seed Funding Support
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure with limited liability, suitable for startups and medium to large businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    I-CREATE Funding Support
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Hybrid structure offering limited liability and flexibility for small to medium businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    DBS Funding
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Application for Issue of Phytosanitary Certificate for Export of Agriculture Commodit...
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Angel Funding Support
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Single-owner company with limited liability, ideal for solo entrepreneurs.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    VC Funding Support
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Large entity raising capital through public shares, suitable for large-scale businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Crowd Funding Support
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    NBFC promoting savings and lending among members, with limited liability.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Government Funding Support
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Simple structure with complete control, ideal for individual-owned businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div> */}
-                                            {/* </div>
-                                    </div>
-                                </div> */}
-
-                                            {/* <div class="tab-pane container fade" id="IT_Services">
-                                    <div className="E_Start-Up_Assets_inner">
-                                        <div className="ESAI_data row">
-
-                                            {services.map((department) => (
-                                                department.hideService === false && <div className="col-sm-4">
-                                                    <div className="ESAI_data_card mt-3">
-                                                        <div className="ESAI_data_card_h">
-                                                            {department.serviceName}
-                                                        </div>
-                                                        <div className="ESAI_data_card_b">
-                                                            {department.serviceDescription}
-                                                        </div>
-                                                        <div className="ESAI_data_card_F">
-                                                            <button className="btn ESAI_data_card_F-btn"
-                                                                onClick={() => {
-                                                                    setOpenDeatilsPage(true);
-                                                                    setServiceName(department.serviceName);
-                                                                    setDepartmentName(department.departmentName);
-                                                                }}>
-                                                                Know More
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))} */}
-
-                                            {/* <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Website Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Structure with limited liability, suitable for startups and medium to large businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    App Design & Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Hybrid structure offering limited liability and flexibility for small to medium businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Web Application Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Application for Issue of Phytosanitary Certificate for Export of Agriculture Commodit...
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Software Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Single-owner company with limited liability, ideal for solo entrepreneurs.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    E-Commerce Website
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Large entity raising capital through public shares, suitable for large-scale businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    Product Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    NBFC promoting savings and lending among members, with limited liability.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-4">
-                                                            <div className="ESAI_data_card mt-3">
-                                                                <div className="ESAI_data_card_h">
-                                                                    CRM Development
-                                                                </div>
-                                                                <div className="ESAI_data_card_b">
-                                                                    Simple structure with complete control, ideal for individual-owned businesses.
-                                                                </div>
-                                                                <div className="ESAI_data_card_F">
-                                                                    <button className="btn ESAI_data_card_F-btn">
-                                                                        Know More
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div> */}
-                                            {/* </div>
-                                    </div>
-                                </div> */}
-
-                                            {/* <div class="tab-pane container fade" id="Digital_Marketing">
-                                    <div className="E_Start-Up_Assets_inner">
-                                        <div className="ESAI_data row">
-
-                                            {services.map((department) => (
-                                                department.hideService === false && <div className="col-sm-4">
-                                                    <div className="ESAI_data_card mt-3">
-                                                        <div className="ESAI_data_card_h">
-                                                            {department.serviceName}
-                                                        </div>
-                                                        <div className="ESAI_data_card_b">
-                                                            {department.serviceDescription}
-                                                        </div>
-                                                        <div className="ESAI_data_card_F">
-                                                            <button className="btn ESAI_data_card_F-btn"
-                                                                onClick={() => {
-                                                                    setOpenDeatilsPage(true);
-                                                                    setServiceName(department.serviceName);
-                                                                    setDepartmentName(department.departmentName);
-                                                                }}>
-                                                                Know More
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane container fade" id="ISO_Services">
-                                    <div className="E_Start-Up_Assets_inner">
-                                        <div className="ESAI_data row">
-
-                                            {services.map((department) => (
-                                                department.hideService === false && <div className="col-sm-4">
-                                                    <div className="ESAI_data_card mt-3">
-                                                        <div className="ESAI_data_card_h">
-                                                            {department.serviceName}
-                                                        </div>
-                                                        <div className="ESAI_data_card_b">
-                                                            {department.serviceDescription}
-                                                        </div>
-                                                        <div className="ESAI_data_card_F">
-                                                            <button className="btn ESAI_data_card_F-btn"
-                                                                onClick={() => {
-                                                                    setOpenDeatilsPage(true);
-                                                                    setServiceName(department.serviceName);
-                                                                    setDepartmentName(department.departmentName);
-                                                                }}>
-                                                                Know More
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-
-                                        </div>
-                                    </div>
-                                </div> */}
+                                                    ))}
+                                                </div>)}
 
                                         </div>
                                     </div>

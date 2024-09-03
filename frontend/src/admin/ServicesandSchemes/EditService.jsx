@@ -63,7 +63,7 @@ function EditService({ close, serviceName }) {
     // const [services, setServices] = useState([]);
     // const [isServiceDisabled, setIsServiceDisabled] = useState(true);
     const [employees, setEmployees] = useState([]);
-    // const [id, setId] = useState("");
+    const [id, setId] = useState("");
 
     const [departmentInfo, setDepartmentInfo] = useState({
         departmentName: "",
@@ -73,7 +73,7 @@ function EditService({ close, serviceName }) {
         const newErrors = {};
         const { departmentName, serviceName } = departmentInfo;
 
-        if (!departmentName) newErrors.departmentName = "Department name is required";
+        if (!departmentName) newErrors.departmentName = "Service Category is required";
         if (!serviceName) newErrors.serviceName = "Service name is required";
 
         setErrors(newErrors);
@@ -84,48 +84,48 @@ function EditService({ close, serviceName }) {
         objectives: "",
         benefits: "",
     });
-    const validateObjectivesInfo = () => {
-        const newErrors = {};
-        const { objectives, benefits } = departmentInfo;
+    // const validateObjectivesInfo = () => {
+    //     const newErrors = {};
+    //     const { objectives, benefits } = departmentInfo;
 
-        if (!objectives) newErrors.objectives = "Objective is required";
-        if (!benefits) newErrors.benefits = "Benefits is required";
+    //     if (!objectives) newErrors.objectives = "Objective is required";
+    //     if (!benefits) newErrors.benefits = "Benefits is required";
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const [requirementsInfo, setRequirementsInfo] = useState({
         requiredDocuments: "",
         eligibilityRequirements: ""
     });
-    const validateRequirementsInfo = () => {
-        const newErrors = {};
-        const { requiredDocuments, eligibilityRequirements } = departmentInfo;
+    // const validateRequirementsInfo = () => {
+    //     const newErrors = {};
+    //     const { requiredDocuments, eligibilityRequirements } = departmentInfo;
 
-        if (!requiredDocuments) newErrors.requiredDocuments = "Required documnets are required";
-        if (!eligibilityRequirements) newErrors.eligibilityRequirements = "Eligibility is required";
+    //     if (!requiredDocuments) newErrors.requiredDocuments = "Required documnets are required";
+    //     if (!eligibilityRequirements) newErrors.eligibilityRequirements = "Eligibility is required";
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const [processInfo, setProcessInfo] = useState({
         process: "",
         deliverables: "",
         timeline: ""
     });
-    const validateProcessInfo = () => {
-        const newErrors = {};
-        const { process, deliverables, timeline } = departmentInfo;
+    // const validateProcessInfo = () => {
+    //     const newErrors = {};
+    //     const { process, deliverables, timeline } = departmentInfo;
 
-        if (!process) newErrors.process = "Process is required";
-        if (!deliverables) newErrors.deliverables = "Deliverables is required";
-        if (!timeline) newErrors.timeline = "Timeline is required";
+    //     if (!process) newErrors.process = "Process is required";
+    //     if (!deliverables) newErrors.deliverables = "Deliverables is required";
+    //     if (!timeline) newErrors.timeline = "Timeline is required";
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const [teamInfo, setTeamInfo] = useState({
         employeeName: [],
@@ -141,54 +141,12 @@ function EditService({ close, serviceName }) {
 
         if (!employeeName || employeeName.length === 0) newErrors.employeeName = "Employee name is required";
         if (!headName || headName.length === 0) newErrors.headName = "Head name is required";
-        if (!portfolio) newErrors.portfolio = "Portfolio is required";
-        if (!document) newErrors.document = "Document is required";
+        // if (!portfolio) newErrors.portfolio = "Portfolio is required";
+        // if (!document) newErrors.document = "Document is required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-    // const fetchDepartments = async () => {
-    //     try {
-    //         const res = await axios.get(`${secretKey}/department/fetchDepartments`);
-    //         const data = res.data.data;
-    //         const uniqueDepartments = [...new Set(data.map((item) => item.departmentName))];
-    //         setDepartments(uniqueDepartments);
-    //         // console.log("Fetched departments are :", uniqueDepartments);
-    //     } catch (error) {
-    //         console.log("Error fetching departments :", error);
-    //     }
-    // };
-
-    // // Fetch services based on selected department
-    // const fetchServicesByDepartment = async (departmentName) => {
-    //     try {
-    //         const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment`, {
-    //             params: { departmentName }
-    //         });
-    //         // console.log("Fetched services are :", res.data.data);
-    //         setServices(res.data.data);
-    //         setIsServiceDisabled(false); // Enable the service dropdown
-    //     } catch (error) {
-    //         console.log("Error fetching services:", error);
-    //     }
-    // };
-
-    // // Handle department selection
-    // const handleDepartmentChange = (e) => {
-    //     const selectedDepartment = e.target.value;
-    //     setDepartmentInfo((prev) => ({
-    //         ...prev,
-    //         departmentName: selectedDepartment,
-    //         serviceName: "", // Reset serviceName when department changes
-    //     }));
-    //     if (selectedDepartment !== "Select Department") {
-    //         fetchServicesByDepartment(selectedDepartment); // Fetch services for the selected department
-    //     } else {
-    //         setIsServiceDisabled(true); // Disable the service dropdown if no department is selected
-    //         setServices([]); // Clear services when no department is selected
-    //     }
-    // };
 
     const fetchEmployees = async () => {
         try {
@@ -208,6 +166,7 @@ function EditService({ close, serviceName }) {
         try {
             const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${serviceName}`);
             const data = res.data.data;
+            setId(data._id);
             // console.log("Fetched service is :", data);
 
             setDepartmentInfo({
@@ -417,7 +376,7 @@ function EditService({ close, serviceName }) {
         if (activeStep === 0) {
             try {
 
-                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, departmentInfo);
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}/${id}`, departmentInfo);
                 // console.log("Service details updated successfully at step-0 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
@@ -429,7 +388,7 @@ function EditService({ close, serviceName }) {
             }
         } else if (activeStep === 1) {
             try {
-                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, objectivesInfo);
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}/${id}`, objectivesInfo);
                 // console.log("Service details updated successfully at step-1 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
@@ -442,7 +401,7 @@ function EditService({ close, serviceName }) {
             }
         } else if (activeStep === 2) {
             try {
-                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, requirementsInfo);
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}/${id}`, requirementsInfo);
                 // console.log("Service details updated successfully at step-2 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
@@ -455,7 +414,7 @@ function EditService({ close, serviceName }) {
             }
         } else if (activeStep === 3) {
             try {
-                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, processInfo);
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}/${id}`, processInfo);
                 // console.log("Service details updated successfully at step-3 :", res.data.data);
                 setCompleted((prevCompleted) => ({
                     ...prevCompleted,
@@ -470,9 +429,21 @@ function EditService({ close, serviceName }) {
     };
 
     const handleComplete = async () => {
-        if (departmentInfo && objectivesInfo && requirementsInfo && processInfo && activeStep === 4) {
+        if (activeStep === 4 && validateTeamInfo()) {
+            const formData = new FormData();
+
+            formData.append('teamInfo', JSON.stringify(teamInfo));
+
+            const documentInput = document.getElementById('document');
+            if (documentInput && documentInput.files) {
+                const files = documentInput.files;
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('document', files[i]);
+                }
+            }
+
             try {
-                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}`, teamInfo, {
+                const res = await axios.put(`${secretKey}/services/updateService/${serviceName}/${id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -497,33 +468,32 @@ function EditService({ close, serviceName }) {
     }, []);
 
     useEffect(() => {
-        // fetchDepartments();
         fetchEmployees();
     }, []);
 
     useEffect(() => {
         if (activeStep === 0 && departmentInfo) {
-          setCompleted((prevCompleted) => ({
-            ...prevCompleted,
-            [activeStep]: true
-          }));
+            setCompleted((prevCompleted) => ({
+                ...prevCompleted,
+                [activeStep]: true
+            }));
         } else if (activeStep === 1 && isObjectivesInfoEditable && objectivesInfo) {
-          setCompleted((prevCompleted) => ({
-            ...prevCompleted,
-            [activeStep]: true
-          }));
+            setCompleted((prevCompleted) => ({
+                ...prevCompleted,
+                [activeStep]: true
+            }));
         } else if (activeStep === 2 && isRequirementsInfoEditable && requirementsInfo) {
-          setCompleted((prevCompleted) => ({
-            ...prevCompleted,
-            [activeStep]: true
-          }));
+            setCompleted((prevCompleted) => ({
+                ...prevCompleted,
+                [activeStep]: true
+            }));
         } else if (activeStep === 3 && isProcessInfoEditable && processInfo) {
-          setCompleted((prevCompleted) => ({
-            ...prevCompleted,
-            [activeStep]: true
-          }));
+            setCompleted((prevCompleted) => ({
+                ...prevCompleted,
+                [activeStep]: true
+            }));
         }
-      }, [activeStep]);
+    }, [activeStep]);
 
     return (
         <>
@@ -585,7 +555,7 @@ function EditService({ close, serviceName }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-2 mb-2">
-                                                                            <label for="departmentName">Select Department<span style={{ color: "red" }}> * </span></label>
+                                                                            <label for="departmentName">Service Category</label>
                                                                             {/* <select
                                                                                 className="form-select mt-1"
                                                                                 name="departmentName"
@@ -602,7 +572,7 @@ function EditService({ close, serviceName }) {
                                                                                 type="text"
                                                                                 value={departmentInfo.departmentName}
                                                                                 className="form-control"
-                                                                                placeholder="Enter Department Name"
+                                                                                placeholder="Enter Service Category"
                                                                                 required
                                                                                 onChange={(e) => handleInputChange(e)}
                                                                                 disabled
@@ -613,7 +583,7 @@ function EditService({ close, serviceName }) {
 
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-2 mb-2">
-                                                                            <label for="serviceName">Select Service<span style={{ color: "red" }}> * </span></label>
+                                                                            <label for="serviceName">Service Name</label>
                                                                             {/* <select
                                                                                 className="form-select mt-1"
                                                                                 name="serviceName"
@@ -657,7 +627,7 @@ function EditService({ close, serviceName }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Objectives<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Objectives</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -674,7 +644,7 @@ function EditService({ close, serviceName }) {
 
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Benefits<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Benefits</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -706,7 +676,7 @@ function EditService({ close, serviceName }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Required Documents<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Required Documents</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -723,7 +693,7 @@ function EditService({ close, serviceName }) {
 
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Eligibility Requirements<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Eligibility Requirements</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -755,7 +725,7 @@ function EditService({ close, serviceName }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Process<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Process</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -772,7 +742,7 @@ function EditService({ close, serviceName }) {
 
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Deliverables<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Deliverables</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -789,7 +759,7 @@ function EditService({ close, serviceName }) {
 
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Timeline<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Timeline</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -875,7 +845,7 @@ function EditService({ close, serviceName }) {
 
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group">
-                                                                            <label htmlFor="portfolio">Portfolio<span style={{ color: "red" }}> * </span></label>
+                                                                            <label htmlFor="portfolio">Portfolio</label>
                                                                             <TagsInput
                                                                                 className="multivalue-input mt-1"
                                                                                 value={teamInfo.portfolio || []}
@@ -885,13 +855,13 @@ function EditService({ close, serviceName }) {
                                                                                 }}
                                                                                 disabled={!isTeamInfoEditable}
                                                                             />
-                                                                            {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>}
+                                                                            {/* {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>} */}
                                                                         </div>
                                                                     </div>
 
                                                                     <div className="col-sm-6">
                                                                         <div class="form-group">
-                                                                            <label htmlFor="document">Document<span style={{ color: "red" }}> * </span></label>
+                                                                            <label htmlFor="document">Document</label>
                                                                             <input
                                                                                 type="file"
                                                                                 className="form-control mt-1"
@@ -901,13 +871,13 @@ function EditService({ close, serviceName }) {
                                                                                 multiple // Allow multiple file selection
                                                                                 disabled={!isTeamInfoEditable}
                                                                             />
-                                                                            {errors.document && <p style={{ color: "red" }}>{errors.document}</p>}
+                                                                            {/* {errors.document && <p style={{ color: "red" }}>{errors.document}</p>} */}
                                                                         </div>
                                                                         {teamInfo.document.length > 0 && (
                                                                             <div className="uploaded-filename-main d-flex flex-wrap">
                                                                                 {teamInfo.document.map((file, index) => (
                                                                                     <div key={index} className="uploaded-fileItem d-flex align-items-center">
-                                                                                        <p className="m-0">{file.originalname}</p> {/* Display the selected file name */}
+                                                                                        <p className="m-0">{file.originalname || file.name}</p> {/* Display the selected file name */}
                                                                                         <button
                                                                                             onClick={(e) => {
                                                                                                 e.preventDefault(); // Prevent default form submission
@@ -1223,7 +1193,7 @@ function EditService({ close, serviceName }) {
                                                 </Button>}
 
                                                 {/* Show "Save Draft" on all steps except the last one */}
-                                                {!isLastStep() && (
+                                                {activeStep !== 0 && !isLastStep() && (
                                                     <Button onClick={() => saveDraft()} variant="contained" sx={{ mr: 1, background: "#ffba00 " }}>
                                                         Save Draft
                                                     </Button>

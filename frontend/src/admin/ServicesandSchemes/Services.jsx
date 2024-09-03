@@ -81,6 +81,7 @@ function Services() {
     const [showServiceDetails, setShowServiceDetails] = useState(false);
 
     const [departments, setDepartments] = useState([]);
+    const [serviceDetails, setServiceDetails] = useState({});
 
     const [departmentName, setDepartmentName] = useState("");
     const [updatedDepartmentName, setUpdatedDepartmentName] = useState("");
@@ -98,25 +99,31 @@ function Services() {
     const handleCloseAddDepartment = () => {
         setShowAddDepartment(false);
         setShowEditDepartment(false);
-        setDepartmentErrorMessage("");
-        setServiceErrorMessage("");
-        setDescriptionErrorMessage("");
-        setDepartmentName("");
-        setUpdatedDepartmentName(departmentName);
-    };
-
-    const handleCloseAddService = () => {
-        setShowAddService(false);
         setShowEditService(false);
         setDepartmentErrorMessage("");
         setServiceErrorMessage("");
         setDescriptionErrorMessage("");
         setDepartmentName("");
-        setUpdatedDepartmentName(departmentName);
+        setUpdatedDepartmentName("");
         setServiceName("");
-        setUpdatedServiceName(serviceName);
+        setUpdatedServiceName("");
         setServiceDescription("");
-        setUpdatedServiceDescription(serviceDescription);
+        setUpdatedServiceDescription("");
+    };
+
+    const handleCloseAddService = () => {
+        setShowAddService(false);
+        setShowEditService(false);
+        setShowEditDepartment(false);
+        setDepartmentErrorMessage("");
+        setServiceErrorMessage("");
+        setDescriptionErrorMessage("");
+        setDepartmentName("");
+        setUpdatedDepartmentName("");
+        setServiceName("");
+        setUpdatedServiceName("");
+        setServiceDescription("");
+        setUpdatedServiceDescription("");
     };
 
     const handleCloseUpdateOptions = () => {
@@ -133,8 +140,13 @@ function Services() {
     const handleCloseShowEditServiceDetails = () => {
         setShowEditServiceDetails(false);
         setDepartmentName("");
+        setUpdatedDepartmentName("");
         setServiceName("");
+        setUpdatedServiceName("");
         setServiceDescription("");
+        setUpdatedServiceDescription("");
+        setShowEditDepartment(false);
+        setShowEditService(false);
     };
 
     const handleCloseShowServiceDetails = () => {
@@ -313,7 +325,7 @@ function Services() {
                     Swal.fire("error", "Error deleting service", "error");
                 }
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                Swal.fire("Cancelled","Service data is safe :)","error");
+                Swal.fire("Cancelled", "Service data is safe :)", "error");
             }
         });
     };
@@ -348,9 +360,28 @@ function Services() {
         }
     };
 
+    const fetchServiceDetails = async () => {
+        // console.log("Service name inside fetch service details function :", serviceName);
+        if(serviceName) {
+            try {
+                const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${serviceName}`);
+                // console.log("Service details is :", res.data.data);
+                setServiceDetails(res.data.data);
+            } catch (error) {
+                console.log("Error fetching service details", error);
+            }
+        } else {
+            setServiceDetails({});
+        }
+    };
+
     useEffect(() => {
         fetchServices();
     }, []);
+
+    useEffect(() => {
+        fetchServiceDetails();
+    }, [serviceName]);
 
     useEffect(() => {
         if (showAddService) {
@@ -371,7 +402,7 @@ function Services() {
                             <div className='d-flex align-items-center justify-content-between'>
                                 <div className="dashboard-title"  >
                                     <h2 className="m-0">
-                                        Services and Schemes
+                                        Schemes and Services
                                     </h2>
                                 </div>
                                 <div className="d-flex align-items-center">
@@ -398,7 +429,7 @@ function Services() {
                                                         <path d="M12 5l0 14" />
                                                         <path d="M5 12l14 0" />
                                                     </svg>
-                                                    Add Department
+                                                    Add Service Category
                                                 </button>
                                             </div>
 
@@ -468,7 +499,7 @@ function Services() {
                                             <thead className="admin-dash-tbl-thead">
                                                 <tr>
                                                     <th>Sr. No</th>
-                                                    <th>Department Name</th>
+                                                    <th>Service Category</th>
                                                     <th>Services Name</th>
                                                     <th>Hide Service</th>
                                                     {/* <th>Add Service Details</th> */}
@@ -616,7 +647,7 @@ function Services() {
                 maxWidth="sm"
             >
                 <DialogTitle>
-                    {showEditDepartment ? "Edit Department" : "Add Department"}
+                    {showEditDepartment ? "Edit Service Category" : "Add Service Category"}
                     <IconButton onClick={handleCloseAddDepartment} style={{ float: "right" }}>
                         <CloseIcon color="primary" />
                     </IconButton>
@@ -629,13 +660,13 @@ function Services() {
                                     <div className='d-flex'>
                                         <div className="mb-3 col-12">
                                             <div className="d-flex">
-                                                <label className="form-label">Department Name</label>
+                                                <label className="form-label">Service Category</label>
                                             </div>
                                             <input
                                                 type="text"
                                                 value={showEditDepartment ? updatedDepartmentName : departmentName}
                                                 className="form-control"
-                                                placeholder="Enter Department Name"
+                                                placeholder="Enter Service Category"
                                                 required
                                                 onChange={(e) => {
                                                     if (showEditDepartment) {
@@ -685,7 +716,7 @@ function Services() {
                                     <div className='d-flex'>
                                         <div className="mb-3 col-6">
                                             <div className="d-flex">
-                                                <label className="form-label">Department Name</label>
+                                                <label className="form-label">Service Category</label>
                                             </div>
                                             <select
                                                 className="form-select"
@@ -700,7 +731,7 @@ function Services() {
                                                     }
                                                 }}
                                             >
-                                                <option value="" disabled>Select Department</option>
+                                                <option value="" disabled>Select Service Category</option>
                                                 {departments.map((dept, index) => (
                                                     <option key={index} value={dept}>
                                                         {dept}
@@ -808,11 +839,11 @@ function Services() {
                                                                 }}
                                                             />
                                                         </IconButton>
-                                                        Edit Department
+                                                        Edit Service Category
                                                     </button>
                                                 </div>
 
-                                                <div className="ms-5">
+                                                <div className="ms-3">
                                                     <button
                                                         className="btn action-btn-alert"
                                                         onClick={() => {
@@ -836,13 +867,18 @@ function Services() {
                                                     </button>
                                                 </div>
 
-                                                <div className="ms-5">
+                                                <div className="ms-3">
                                                     <div className="d-flex">
                                                         <button
                                                             className="btn action-btn-success"
                                                             onClick={() => {
-                                                                setShowEditServiceDetails(true);
-                                                                setShowUpdateOptions(false);
+                                                                if (!serviceDetails || !serviceName) {
+                                                                    Swal.fire("Info", "Please add service details before editing", "info");
+                                                                    setShowUpdateOptions(false);
+                                                                } else {
+                                                                    setShowEditServiceDetails(true);
+                                                                    setShowUpdateOptions(false);
+                                                                }
                                                             }}
                                                         >
                                                             <IconButton>

@@ -1870,7 +1870,7 @@ function EmployeeLeads() {
                                             overflowX: "auto",
                                             overflowY: "auto",
                                             maxHeight: "60vh",
-                                        }}
+                                        }} id="table-default"
                                     >
                                         <table
                                             style={{

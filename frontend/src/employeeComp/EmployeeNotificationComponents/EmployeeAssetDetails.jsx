@@ -312,7 +312,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
               <div className='col-lg-3 p-0'>
                 <div className='emply_S_assets_dtl_inner_right'>
                   <div className='esadir_docs bdr-btm-eee' >
-                    <h3 className='m-0 esadir_docs_depart'>Department</h3>
+                    <h3 className='m-0 esadir_docs_depart'>Service Category</h3>
                     <div className='esadir_docs_depart_name'>
                       {departmentName}
                     </div>
