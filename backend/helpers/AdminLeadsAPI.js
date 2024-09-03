@@ -128,6 +128,7 @@ router.get('/', async function (req, res) {
 //   }
 // });
 
+// -----------------update-leads-button-function-for emergency-use-only------------
 router.post('/update-ename', async (req, res) => {
   const data = req.body;
 
@@ -136,7 +137,7 @@ router.post('/update-ename', async (req, res) => {
           const { 'Company Name': companyName, ename } = item;
           await CompanyModel.updateOne(
               { "Company Name": companyName },
-              { $set: { ename: ename } }
+              { $set: { AssignDate : new Date() } }
           );
       });
 
@@ -692,7 +693,7 @@ router.get('/getIds', async (req, res) => {
 //       selectedStatus,
 //       selectedState,
 //       selectedNewCity,
-//       selectedBDEName,
+//       selectedBDEName,<th?
 //       selectedAssignDate,
 //       selectedUploadedDate,
 //       selectedAdminName,

@@ -1779,6 +1779,8 @@ function TestLeads() {
         setOpenBacdrop(false)
     }
 
+
+// -----------------update-leads-button-function-for emergency-use-only------------
     const handleFileUploadForChange = async (e) => {
         const file = e.target.files[0];
 
@@ -1847,13 +1849,13 @@ function TestLeads() {
                                         <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
                                             <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
                                         </button>
-                                        {/* <div>
+                                        <div>
                                             <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
                                             <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
                                                 <LiaPagerSolid className="mr-1" />
                                                 Update Leads
                                             </button>
-                                        </div> */}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">
@@ -1946,7 +1948,8 @@ function TestLeads() {
                                             onClick={() => {
                                                 setDataStatus("Assigned")
                                                 setCurrentPage(1)
-                                            }}>
+                                            }}
+                                            >
                                             Assigned
                                             <span className="no_badge">
                                                 {totalCompaniesAssigned}
