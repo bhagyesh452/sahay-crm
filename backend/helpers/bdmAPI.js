@@ -715,10 +715,13 @@ router.post(`/rejectedrequestdonebybdm`, async (req, res) => {
 
 router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
   const { data, name } = req.body;
+  console.log(data)
   try {
     const updatePromises = data.map(async (company) => {
+      const uploadDate = company.UploadDate === '$AssignDate' ? new Date() : company.UploadDate;
       await CompanyModel.findByIdAndUpdate(company._id, {
         ...company,
+        UploadDate: uploadDate, // Set UploadDate to current date if it was '$AssignDate'
         bdmAcceptStatus: "Forwarded",
         bdmName: name,
         bdeForwardDate: new Date(),
