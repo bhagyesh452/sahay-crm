@@ -443,7 +443,7 @@ export default function HREditEmployee() {
         [activeStep]: true
       }));
     }
-  }, [activeStep])
+  }, [activeStep]);
 
   const calculateSalary = (salary, condition) => {
     if (!salary || !condition) return "";

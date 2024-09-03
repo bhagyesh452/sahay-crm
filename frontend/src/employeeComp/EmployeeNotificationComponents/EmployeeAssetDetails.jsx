@@ -101,25 +101,29 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
 
         <div className='emply_S_assets_dtl'>
           <div className='container-xl'>
-            <div className='emply_S_assets_dtl_head_back'>
-              <button className='btn_style_1 btn_style_1_primary' onClick={() => {
-                back();
-              }}>
-                <div className='d-flex align-items-center justify-content-center'>
-                  <div style={{ lineHeight: '10px', marginRight: '6px' }}>
-                    <IoArrowBackSharp />
-                  </div>
-                  <div style={{ lineHeight: '10px' }}>
-                    Back
-                  </div>
+            <div className='d-flex align-items-center justify-content-between'>
+              <div>
+                <div className='emply_S_assets_dtl_head_brdcrm mt-3'>
+                  <span>Services</span> <span><GrFormNext /></span> <span><b>Services Details & Assets</b></span>
                 </div>
-              </button>
-            </div>
-            <div className='emply_S_assets_dtl_head_brdcrm mt-3'>
-              <span>Services</span> <span><GrFormNext /></span> <span><b>Services Details & Assets</b></span>
-            </div>
-            <div className='emply_S_assets_dtl_head_sname mt-1'>
-              {serviceName}
+                <div className='emply_S_assets_dtl_head_sname mt-1'>
+                  {serviceName}
+                </div>
+              </div>
+              <div className='emply_S_assets_dtl_head_back'>
+                <button className='btn_style_1 btn_style_1_primary' onClick={() => {
+                  back();
+                }}>
+                  <div className='d-flex align-items-center justify-content-center'>
+                    <div style={{ lineHeight: '10px', marginRight: '6px' }}>
+                      <IoArrowBackSharp />
+                    </div>
+                    <div style={{ lineHeight: '10px' }}>
+                      Back
+                    </div>
+                  </div>
+                </button>
+              </div>
             </div>
             <div className='emply_S_assets_dtl_head_tagline'>
               {serviceDescription}
@@ -162,7 +166,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
 
                     <div class="tab-content">
 
-                      <div class="tab-pane active" id="Objective">
+                      <div class="tab-pane ES_assetsdtl_Linner active" id="Objective">
                         <div className='ES_assetsdtl_Linner_h'>
                           <h2 className='m-0'>Objective:</h2>
                         </div>
@@ -175,7 +179,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                         </div>
                       </div>
 
-                      <div class="tab-pane fade" id="Benefits">
+                      <div class="tab-pane ES_assetsdtl_Linner fade" id="Benefits">
                         <div className='ES_assetsdtl_Linner_h'>
                           <h2 className='m-0'>Benefits:</h2>
                         </div>
@@ -194,7 +198,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                         </div>
                       </div>
 
-                      <div class="tab-pane fade" id="Documents">
+                      <div class="tab-pane ES_assetsdtl_Linner fade" id="Documents">
                         <div className='ES_assetsdtl_Linner_h'>
                           <h2 className='m-0'>Required Documents:</h2>
                           <div className='ES_assetsdtl_Linner_p'>
@@ -221,7 +225,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                         </div>
                       </div>
 
-                      <div class="tab-pane fade" id="Eligibility">
+                      <div class="tab-pane ES_assetsdtl_Linner fade" id="Eligibility">
                         <div className='ES_assetsdtl_Linner_h'>
                           <h2 className='m-0'>Eligibility Requirements:</h2>
                         </div>
@@ -239,7 +243,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                         </div>
                       </div>
 
-                      <div class="tab-pane fade" id="Process">
+                      <div class="tab-pane ES_assetsdtl_Linner fade" id="Process">
                         <div className='ES_assetsdtl_Linner_h'>
                           <h2 className='m-0'>Application Process:</h2>
                         </div>
@@ -258,7 +262,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                         </div>
                       </div>
 
-                      <div class="tab-pane fade" id="Deliverables">
+                      <div class="tab-pane ES_assetsdtl_Linner fade" id="Deliverables">
                         <div className='ES_assetsdtl_Linner_h'>
                           <h2 className='m-0'>What You Will Receive from Start-Up Sahay</h2>
                         </div>
@@ -285,7 +289,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                         </div>
                       </div>
 
-                      <div class="tab-pane fade" id="Timeline">
+                      <div class="tab-pane ES_assetsdtl_Linner fade" id="Timeline">
                         <div className='ES_assetsdtl_Linner_h'>
                           <h2 className='m-0'>Timeline:</h2>
                         </div>
@@ -320,7 +324,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                         <h3 className='m-0 esadir_docs_depart'>Concerned Team </h3>
 
 
-                        {employeeNames?.length !== 0 &&
+                        {employeeNames?.length > 0 &&
                           <div className='esadir_docs_depart_name mt-2' >
                             <h4 className='m-0'>For sales and marketing related</h4>
                             <div className='ConcerneddepartPerson mt-1'>
@@ -393,7 +397,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                       </div> */}
                           </div>}
 
-                        {headNames?.length !== 0 &&
+                        {headNames?.length > 0 &&
                           <div className='esadir_docs_depart_name mt-2' >
                             <h4 className='m-0'>For Backend Process Related</h4>
                             <div className='ConcerneddepartPerson mt-1'>
@@ -455,7 +459,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                   }
 
 
-                  {service?.portfolio !== "" || service?.portfolio?.length !== 0 &&
+                  {service?.portfolio?.length > 0 &&
                     <div className='esadir_docs bdr-btm-eee'>
                       <h3 className='m-0 esadir_docs_depart'>Portfolio</h3>
                       <div className='esadir_docs_depart_name'>
@@ -475,7 +479,7 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                     </div>
                   }
 
-                  {service?.documents?.length !== 0 &&
+                  {service?.documents?.length > 0 &&
                     <div className='esadir_docs '>
                       <h3>Documents</h3>
                       <div className='row'>

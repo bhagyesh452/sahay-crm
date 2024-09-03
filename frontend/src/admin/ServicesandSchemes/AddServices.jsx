@@ -44,6 +44,18 @@ function AddServices({ close, fetchServices }) {
         "link", "image", "align", "size",
     ];
 
+    const [isDepartmentInfoNext, setIsDepartmentInfoNext] = useState(false);
+    const [isObjectivesInfoNext, setIsObjectivesInfoNext] = useState(false);
+    const [isRequirementsInfoNext, setIsRequirementsInfoNext] = useState(false);
+    const [isProcessInfoNext, setIsProcessInfoNext] = useState(false);
+    const [isTeamInfoNext, setIsTeamInfoNext] = useState(false);
+
+    const [isDepartmentInfoEditable, setIsDepartmentInfoEditable] = useState(true);
+    const [isObjectivesInfoEditable, setIsObjectivesInfoEditable] = useState(false);
+    const [isRequirementsInfoEditable, setIsRequirementsInfoEditable] = useState(false);
+    const [isProcessInfoEditable, setIsProcessInfoEditable] = useState(false);
+    const [isTeamInfoEditable, setIsTeamInfoEditable] = useState(true);
+
     const [activeStep, setActiveStep] = useState(0);
     const [completed, setCompleted] = useState({});
     const [errors, setErrors] = useState({});
@@ -137,8 +149,8 @@ function AddServices({ close, fetchServices }) {
 
         if (!employeeName || employeeName.length === 0) newErrors.employeeName = "Employee name is required";
         if (!headName || headName.length === 0) newErrors.headName = "Head name is required";
-        if (!portfolio) newErrors.portfolio = "Portfolio is required";
-        if (!document) newErrors.document = "Document is required";
+        if (!portfolio || portfolio.length === 0) newErrors.portfolio = "Portfolio is required";
+        if (!document || document.length === 0) newErrors.document = "Document is required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -317,14 +329,19 @@ function AddServices({ close, fetchServices }) {
     const handleNext = async () => {
         if (activeStep === 0 && validateDepartmentInfo()) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsDepartmentInfoNext(true);
         } else if (activeStep === 1) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsObjectivesInfoNext(true);
         } else if (activeStep === 2) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsRequirementsInfoNext(true);
         } else if (activeStep === 3) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsProcessInfoNext(true);
         } else if (activeStep === 4 && validateTeamInfo()) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setIsTeamInfoNext(true);
         }
     };
 
@@ -375,38 +392,59 @@ function AddServices({ close, fetchServices }) {
     const saveDraft = async () => {
         let res;
 
-        const requestBody = {
-            ...(
-                activeStep === 0 ? departmentInfo :
-                    activeStep === 1 ? objectivesInfo :
-                        activeStep === 2 ? requirementsInfo :
-                            activeStep === 3 ? processInfo :
-                                teamInfo
-            ),
-            activeStep
-        };
+        if (departmentInfo.departmentName === "" || departmentInfo.serviceName === "") {
+            Swal.fire("error", "Please select Department Name or Service Name before Saving", "error");
+        } else {
+            const requestBody = {
+                ...(
+                    activeStep === 0 ? departmentInfo :
+                        activeStep === 1 ? objectivesInfo :
+                            activeStep === 2 ? requirementsInfo :
+                                activeStep === 3 ? processInfo :
+                                    teamInfo
+                ),
+                activeStep
+            };
 
-        const url = `${secretKey}/serviceDraft/${!id ? 'saveServiceDraft' : `updateServiceDraft/${id}`}`;
+            const url = `${secretKey}/serviceDraft/${!id ? 'saveServiceDraft' : `updateServiceDraft/${id}`}`;
 
-        try {
-            if (!id) {
-                res = await axios.post(url, requestBody);
-                // console.log(`Service created successfully at step-${activeStep}:`, res.data);
-            } else {
-                res = await axios.put(url, requestBody, {
-                    headers: activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
-                });
-                // console.log(`Services updated successfully at step-${activeStep}:`, res.data);
+            try {
+                if (!id) {
+                    res = await axios.post(url, requestBody);
+                    // console.log(`Service created successfully at step-${activeStep}:`, res.data);
+                } else {
+                    res = await axios.put(url, requestBody, {
+                        headers: activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
+                    });
+                    // console.log(`Services updated successfully at step-${activeStep}:`, res.data);
+                }
+
+                // console.log(`Service ${!id ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
+
+                setCompleted((prevCompleted) => ({
+                    ...prevCompleted,
+                    [activeStep]: true
+                }));
+
+                if (activeStep === 0) {
+                    setIsDepartmentInfoEditable(false);
+                    setIsDepartmentInfoNext(true);
+                } else if (activeStep === 1) {
+                    setIsObjectivesInfoEditable(true);
+                    setIsObjectivesInfoNext(true);
+                } else if (activeStep === 2) {
+                    setIsRequirementsInfoEditable(true);
+                    setIsRequirementsInfoNext(true);
+                } else if (activeStep === 3) {
+                    setIsProcessInfoEditable(true);
+                    setIsProcessInfoNext(true);
+                } else if (activeStep === 4) {
+                    setIsTeamInfoEditable(false);
+                    setIsTeamInfoNext(true);
+                }
+            } catch (error) {
+                console.log(`Error ${!id ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
             }
-
-            // console.log(`Service ${!id ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
-
-            setCompleted((prevCompleted) => ({
-                ...prevCompleted,
-                [activeStep]: true
-            }));
-        } catch (error) {
-            console.log(`Error ${!id ? 'creating' : 'updating'} employee at step-${activeStep}:`, error);
         }
     };
 
@@ -417,49 +455,50 @@ function AddServices({ close, fetchServices }) {
         // console.log("Process info before sending :", processInfo);
         // console.log("Team info before sending :", teamInfo);
 
-        try {
-            // Create a FormData object
-            const formData = new FormData();
+        if (validateTeamInfo()) {
+            try {
+                // Create a FormData object
+                const formData = new FormData();
 
-            // Append text data to FormData
-            formData.append('departmentInfo', JSON.stringify(departmentInfo));
-            formData.append('objectivesInfo', JSON.stringify(objectivesInfo));
-            formData.append('requirementsInfo', JSON.stringify(requirementsInfo));
-            formData.append('processInfo', JSON.stringify(processInfo));
-            formData.append('teamInfo', JSON.stringify(teamInfo));
-            formData.append('id', id);
+                // Append text data to FormData
+                formData.append('departmentInfo', JSON.stringify(departmentInfo));
+                formData.append('objectivesInfo', JSON.stringify(objectivesInfo));
+                formData.append('requirementsInfo', JSON.stringify(requirementsInfo));
+                formData.append('processInfo', JSON.stringify(processInfo));
+                formData.append('teamInfo', JSON.stringify(teamInfo));
+                formData.append('id', id);
 
-            // Append files (assuming file inputs are available in the document)
-            const documentInput = document.getElementById('document');
-            if (documentInput && documentInput.files) {
-                const files = documentInput.files;
-                for (let i = 0; i < files.length; i++) {
-                    formData.append('document', files[i]);
+                // Append files (assuming file inputs are available in the document)
+                const documentInput = document.getElementById('document');
+                if (documentInput && documentInput.files) {
+                    const files = documentInput.files;
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append('document', files[i]);
+                    }
                 }
-            }
 
-            // Make the POST request with FormData
-            const res1 = await axios.post(`${secretKey}/services/addServices/${id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+                // Make the POST request with FormData
+                const res1 = await axios.post(`${secretKey}/services/addServices/${id}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                // console.log("Created service is :", res1.data);
+                Swal.fire("success", "Service details created successfully!", "success");
+                close();
+                fetchServices();
+
+                // If creation is successful, delete from draft
+                if (res1.status === 200) {
+                    const res2 = await axios.delete(`${secretKey}/serviceDraft/deleteServiceDraft/${id}`);
+                    // console.log("Service successfully deleted from draft model :", res2.data);
                 }
-            });
-            // console.log("Created service is :", res1.data);
-            Swal.fire("success", "Service details created successfully!", "success");
-            close();
-            fetchServices();
-
-            // If creation is successful, delete from draft
-            if (res1.status === 200) {
-                const res2 = await axios.delete(`${secretKey}/serviceDraft/deleteServiceDraft/${id}`);
-                // console.log("Service successfully deleted from draft model :", res2.data);
+            } catch (error) {
+                console.log("Error creating service details:", error);
+                Swal.fire("error", "Error creating service service details", "error");
             }
-        } catch (error) {
-            console.log("Error creating service details:", error);
-            Swal.fire("error", "Error creating service service details", "error");
         }
     };
-
 
     const fetchService = async () => {
         try {
@@ -579,6 +618,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 id="departmentName"
                                                                                 value={departmentInfo.departmentName}
                                                                                 onChange={handleDepartmentChange}
+                                                                                disabled={!isDepartmentInfoEditable}
                                                                             >
                                                                                 <option value="Select Department" selected> Select Department</option>
                                                                                 {departments.map((department, index) => (
@@ -606,7 +646,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 id="serviceName"
                                                                                 value={departmentInfo.serviceName}
                                                                                 onChange={(e) => handleInputChange(e)}
-                                                                                disabled={isServiceDisabled}
+                                                                                disabled={isServiceDisabled || !isDepartmentInfoEditable}
                                                                             >
                                                                                 <option value="">Select Service</option>
                                                                                 {services.map((service, index) => (
@@ -651,6 +691,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 value={objectivesInfo.objectives}
                                                                                 onChange={(value) => handleTextEditorChange("objectives", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isObjectivesInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -667,6 +708,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 value={objectivesInfo.benefits}
                                                                                 onChange={(value) => handleTextEditorChange("benefits", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isObjectivesInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -698,6 +740,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 value={requirementsInfo.requiredDocuments}
                                                                                 onChange={(value) => handleTextEditorChange("requiredDocuments", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isRequirementsInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -714,6 +757,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 value={requirementsInfo.eligibilityRequirements}
                                                                                 onChange={(value) => handleTextEditorChange("eligibilityRequirements", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isRequirementsInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -745,6 +789,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 value={processInfo.process}
                                                                                 onChange={(value) => handleTextEditorChange("process", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isProcessInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -761,6 +806,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 value={processInfo.deliverables}
                                                                                 onChange={(value) => handleTextEditorChange("deliverables", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isProcessInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -777,6 +823,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 value={processInfo.timeline}
                                                                                 onChange={(value) => handleTextEditorChange("timeline", value)}
                                                                                 style={{ height: "200px" }}
+                                                                                readOnly={isProcessInfoEditable}
                                                                             >
                                                                             </ReactQuill>
                                                                         </div>
@@ -809,6 +856,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 placeholder="Select Concern Person for Sales and Marketing"
                                                                                 value={employees.filter(employee => teamInfo.employeeName.includes(employee.value))} // Filter based on selected values
                                                                                 onChange={handleSelectChange}
+                                                                                disabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.employeeName && <p style={{ color: "red" }}>{errors.employeeName}</p>}
                                                                         </div>
@@ -826,6 +874,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 placeholder="Select Concern Person for Backend Process"
                                                                                 value={employees.filter(employee => teamInfo.headName.includes(employee.value))} // Filter based on selected values
                                                                                 onChange={handleSelectChange}
+                                                                                disabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.headName && <p style={{ color: "red" }}>{errors.headName}</p>}
                                                                         </div>
@@ -859,6 +908,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 inputProps={{
                                                                                     placeholder: "Enter links"
                                                                                 }}
+                                                                                disabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>}
                                                                         </div>
@@ -874,6 +924,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 id="document"
                                                                                 onChange={handleFileChange}
                                                                                 multiple // Allow multiple file selection
+                                                                                disabled={!isTeamInfoEditable}
                                                                             />
                                                                             {errors.document && <p style={{ color: "red" }}>{errors.document}</p>}
                                                                         </div>
@@ -1200,7 +1251,19 @@ function AddServices({ close, fetchServices }) {
 
                                                 <Box sx={{ flex: "1 1 auto" }} />
                                                 {completed[activeStep] && activeStep !== totalSteps() - 1 && (
-                                                    <Button variant="contained" sx={{ mr: 1, background: "#ffba00 " }}>
+                                                    <Button
+                                                        onClick={() => {
+                                                            activeStep === 0 && setIsDepartmentInfoEditable(true);
+                                                            activeStep === 1 && setIsObjectivesInfoEditable(false);
+                                                            activeStep === 2 && setIsRequirementsInfoEditable(false);
+                                                            activeStep === 3 && setIsProcessInfoEditable(false);
+                                                            activeStep === 4 && setIsTeamInfoEditable(true);
+                                                            setCompleted((prevCompleted) => ({
+                                                                ...prevCompleted,
+                                                                [activeStep]: false,
+                                                            }));
+                                                        }}
+                                                        variant="contained" sx={{ mr: 1, background: "#ffba00 " }}>
                                                         Edit
                                                     </Button>
                                                 )}
@@ -1221,7 +1284,15 @@ function AddServices({ close, fetchServices }) {
 
                                                 {/* Show "Next" button if not on the last step */}
                                                 {!isLastStep() && (
-                                                    <Button onClick={handleNext} variant="contained" sx={{ mr: 1 }}>
+                                                    <Button onClick={handleNext} variant="contained" sx={{ mr: 1 }}
+                                                        disabled={(
+                                                            (activeStep === 0 && !isDepartmentInfoNext) ||
+                                                            (activeStep === 1 && !isObjectivesInfoNext) ||
+                                                            (activeStep === 2 && !isRequirementsInfoNext) ||
+                                                            (activeStep === 3 && !isProcessInfoNext) ||
+                                                            (activeStep === 4 && !isTeamInfoNext)
+                                                        )}
+                                                    >
                                                         Next
                                                     </Button>
                                                 )}
