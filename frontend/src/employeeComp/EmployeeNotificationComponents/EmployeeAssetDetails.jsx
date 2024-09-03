@@ -314,52 +314,56 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                     </div>
                   </div>
 
-                  <div className='esadir_docs bdr-btm-eee'>
-                    <h3 className='m-0 esadir_docs_depart'>Concerned Team </h3>
+                  {(employeeNames?.length > 0 || headNames?.length > 0) &&
+                    <>
+                      <div className='esadir_docs bdr-btm-eee'>
+                        <h3 className='m-0 esadir_docs_depart'>Concerned Team </h3>
 
-                    <div className='esadir_docs_depart_name mt-2' >
-                      <h4 className='m-0'>For sales and marketing related</h4>
-                      <div className='ConcerneddepartPerson mt-1'>
 
-                        {employeeNames.length > 0 ? (
-                          employeeNames.map((employee, index) => (
-                            <div key={index} className="ConcerneddepartPerson mt-1">
-                              <div className='d-flex'>
-                                <img src={employee.profilePhoto?.length !== 0
-                                  ? `${secretKey}/employee/fetchProfilePhoto/${employee._id}/${employee.profilePhoto?.[0]?.filename}`
-                                  : employee.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{height: "35px", width: "35px", borderRadius: "50%"}} />
-                                <p className="ms-2 mt-2">{employee.ename}</p>
-                              </div>
-                              <div className="d-flex align-items-center justify-content-between">
-                                <label>
-                                  {employee.newDesignation === "Business Development Executive" && "BDE" ||
-                                    employee.newDesignation === "Business Development Manager" && "BDM" ||
-                                    employee.newDesignation},{" "}
-                                  {employee.branchOffice === "Sindhu Bhawan" && "SBR" || employee.branchOffice} Branch
-                                </label>
-                                <label className="d-flex align-items-center justify-content-between">
-                                  <div className="mr-1">
-                                    <a
-                                      target="_blank"
-                                      className="text-decoration-none text-dark"
-                                      href={`https://wa.me/91${employee.number}`}
-                                    >
-                                      {employee.number}
-                                    </a>
+                        {employeeNames?.length !== 0 &&
+                          <div className='esadir_docs_depart_name mt-2' >
+                            <h4 className='m-0'>For sales and marketing related</h4>
+                            <div className='ConcerneddepartPerson mt-1'>
+
+                              {employeeNames.length > 0 ? (
+                                employeeNames.map((employee, index) => (
+                                  <div key={index} className="ConcerneddepartPerson mt-1">
+                                    <div className='d-flex'>
+                                      <img src={employee.profilePhoto?.length !== 0
+                                        ? `${secretKey}/employee/fetchProfilePhoto/${employee._id}/${employee.profilePhoto?.[0]?.filename}`
+                                        : employee.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{ height: "35px", width: "35px", borderRadius: "50%" }} />
+                                      <p className="ms-2 mt-2">{employee.ename}</p>
+                                    </div>
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <label>
+                                        {employee.newDesignation === "Business Development Executive" && "BDE" ||
+                                          employee.newDesignation === "Business Development Manager" && "BDM" ||
+                                          employee.newDesignation},{" "}
+                                        {employee.branchOffice === "Sindhu Bhawan" && "SBR" || employee.branchOffice} Branch
+                                      </label>
+                                      <label className="d-flex align-items-center justify-content-between">
+                                        <div className="mr-1">
+                                          <a
+                                            target="_blank"
+                                            className="text-decoration-none text-dark"
+                                            href={`https://wa.me/91${employee.number}`}
+                                          >
+                                            {employee.number}
+                                          </a>
+                                        </div>
+                                        <div className="wp-icon">
+                                          <FaWhatsapp />
+                                        </div>
+                                      </label>
+                                    </div>
                                   </div>
-                                  <div className="wp-icon">
-                                    <FaWhatsapp />
-                                  </div>
-                                </label>
-                              </div>
+                                ))
+                              ) : (
+                                <p>No concerned employees found.</p>
+                              )}
                             </div>
-                          ))
-                        ) : (
-                          <p>No concerned employees found.</p>
-                        )}
-                      </div>
 
-                      {/* <div className='ConcerneddepartPerson mt-1'>
+                            {/* <div className='ConcerneddepartPerson mt-1'>
                         <p>Vaibhav Acharya</p>
                         <div className='d-flex align-items-center justify-content-between'>
                           <label>Floor Manager, Gota Branch</label>
@@ -387,52 +391,52 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                           </label>
                         </div>
                       </div> */}
-                    </div>
+                          </div>}
 
-                    <div className='esadir_docs_depart_name mt-2' >
-                      <h4 className='m-0'>For Backend Process Related</h4>
-                      <div className='ConcerneddepartPerson mt-1'>
+                        {headNames?.length !== 0 &&
+                          <div className='esadir_docs_depart_name mt-2' >
+                            <h4 className='m-0'>For Backend Process Related</h4>
+                            <div className='ConcerneddepartPerson mt-1'>
 
-                        {headNames.length > 0 ? (
-                          headNames.map((head, index) => (
-                            <div key={index} className="ConcerneddepartPerson mt-1">
-                              <div className='d-flex'>
-                                <img src={head.profilePhoto?.length !== 0
-                                  ? `${secretKey}/employee/fetchProfilePhoto/${head._id}/${head.profilePhoto?.[0]?.filename}`
-                                  : head.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{height: "35px", width: "35px", borderRadius: "50%"}} />
-                                <p className="ms-2 mt-2">{head.ename}</p>
-                              </div>
-                              <p>{head.ename}</p>
-                              <div className="d-flex align-items-center justify-content-between">
-                                <label>
-                                  <label>
-                                    {head.newDesignation === "Business Development Executive" && "BDE" ||
-                                      head.newDesignation === "Business Development Manager" && "BDM" ||
-                                      head.newDesignation},{" "}
-                                    {head.branchOffice === "Sindhu Bhawan" && "SBR" || head.branchOffice} Branch
-                                  </label>
-                                </label>
-                                <label className="d-flex align-items-center justify-content-between">
-                                  <div className="mr-1">
-                                    <a
-                                      target="_blank"
-                                      className="text-decoration-none text-dark"
-                                      href={`https://wa.me/91${head.number}`}
-                                    >
-                                      {head.number}
-                                    </a>
+                              {headNames.length > 0 ? (
+                                headNames.map((head, index) => (
+                                  <div key={index} className="ConcerneddepartPerson mt-1">
+                                    <div className='d-flex'>
+                                      <img src={head.profilePhoto?.length !== 0
+                                        ? `${secretKey}/employee/fetchProfilePhoto/${head._id}/${head.profilePhoto?.[0]?.filename}`
+                                        : head.gender === "Male" ? EmpDfaullt : FemaleEmployee} alt="profile" style={{ height: "35px", width: "35px", borderRadius: "50%" }} />
+                                      <p className="ms-2 mt-2">{head.ename}</p>
+                                    </div>
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <label>
+                                        <label>
+                                          {head.newDesignation === "Business Development Executive" && "BDE" ||
+                                            head.newDesignation === "Business Development Manager" && "BDM" ||
+                                            head.newDesignation},{" "}
+                                          {head.branchOffice === "Sindhu Bhawan" && "SBR" || head.branchOffice} Branch
+                                        </label>
+                                      </label>
+                                      <label className="d-flex align-items-center justify-content-between">
+                                        <div className="mr-1">
+                                          <a
+                                            target="_blank"
+                                            className="text-decoration-none text-dark"
+                                            href={`https://wa.me/91${head.number}`}
+                                          >
+                                            {head.number}
+                                          </a>
+                                        </div>
+                                        <div className="wp-icon">
+                                          <FaWhatsapp />
+                                        </div>
+                                      </label>
+                                    </div>
                                   </div>
-                                  <div className="wp-icon">
-                                    <FaWhatsapp />
-                                  </div>
-                                </label>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p>No concerned employees found.</p>
-                        )}
-                        {/* <p>RonakKumar</p>
+                                ))
+                              ) : (
+                                <p>No concerned employees found.</p>
+                              )}
+                              {/* <p>RonakKumar</p>
                         <div className='d-flex align-items-center justify-content-between'>
                           <label>MD</label>
                           <label className='d-flex align-items-center justify-content-between'>
@@ -444,60 +448,66 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                             </div>
                           </label>
                         </div> */}
+                            </div>
+                          </div>}
+                      </div>
+                    </>
+                  }
+
+
+                  {service?.portfolio !== "" || service?.portfolio?.length !== 0 &&
+                    <div className='esadir_docs bdr-btm-eee'>
+                      <h3 className='m-0 esadir_docs_depart'>Portfolio</h3>
+                      <div className='esadir_docs_depart_name'>
+                        {/* <a className='link_wrap'>https://drive.google.com/drive/u/1/folders/1XJlCdsbgw_2_7gwT6EKANPxPZ5MN9Kbg</a>, */}
+                        {service?.portfolio?.map((portfolio, index) => {
+                          return <div key={index}>
+                            <a className='link_wrap'
+                              target="_blank"
+                              href={portfolio}
+                              rel="noopener noreferrer"
+                            >
+                              {portfolio}
+                            </a>
+                          </div>
+                        })}
                       </div>
                     </div>
-                  </div>
+                  }
 
-                  <div className='esadir_docs bdr-btm-eee'>
-                    <h3 className='m-0 esadir_docs_depart'>Portfolio</h3>
-                    <div className='esadir_docs_depart_name'>
-                      {/* <a className='link_wrap'>https://drive.google.com/drive/u/1/folders/1XJlCdsbgw_2_7gwT6EKANPxPZ5MN9Kbg</a>, */}
-                      {service?.portfolio?.map((portfolio, index) => {
-                        return <div key={index}>
-                          <a className='link_wrap'
-                            target="_blank"
-                            href={portfolio}
-                            rel="noopener noreferrer"
-                          >
-                            {portfolio}
-                          </a>
-                        </div>
-                      })}
-                    </div>
-                  </div>
+                  {service?.documents?.length !== 0 &&
+                    <div className='esadir_docs '>
+                      <h3>Documents</h3>
+                      <div className='row'>
+                        {service?.documents?.map((doc, index) => {
+                          // Extract the file extension
+                          const fileExtension = doc.filename.split('.').pop().toLowerCase();
 
-                  <div className='esadir_docs '>
-                    <h3>Documents</h3>
-                    <div className='row'>
-                      {service?.documents?.map((doc, index) => {
-                        // Extract the file extension
-                        const fileExtension = doc.filename.split('.').pop().toLowerCase();
+                          // Check if the file is an image (jpg, jpeg, png)
+                          const isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
 
-                        // Check if the file is an image (jpg, jpeg, png)
-                        const isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
-
-                        return (
-                          <div className='col' key={index}>
-                            <div className="booking-docs-preview" onClick={() => openDocument(doc.filename)}>
-                              <div className="booking-docs-preview-img">
-                                {isImage ? (
-                                  <img src={`${secretKey}/services/fetchDocuments/${service._id}/${doc.filename}`} alt={doc.originalname} />
-                                ) : (
-                                  <img src={pdfimg} alt="Document Preview" />
-                                )}
-                              </div>
-                              <div className="booking-docs-preview-text">
-                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0">
-                                  {doc.originalname}
-                                </p>
+                          return (
+                            <div className='col' key={index}>
+                              <div className="booking-docs-preview" onClick={() => openDocument(doc.filename)}>
+                                <div className="booking-docs-preview-img">
+                                  {isImage ? (
+                                    <img src={`${secretKey}/services/fetchDocuments/${service._id}/${doc.filename}`} alt={doc.originalname} />
+                                  ) : (
+                                    <img src={pdfimg} alt="Document Preview" />
+                                  )}
+                                </div>
+                                <div className="booking-docs-preview-text">
+                                  <p className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0">
+                                    {doc.originalname}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
 
 
-                      {/* <div className='col'>
+                        {/* <div className='col'>
                         <div className="booking-docs-preview">
                           <div className="booking-docs-preview-img" >
                             <img src={pdfimg}   ></img>
@@ -521,8 +531,9 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
                           </div>
                         </div>
                       </div> */}
+                      </div>
                     </div>
-                  </div>
+                  }
 
                 </div>
               </div>
