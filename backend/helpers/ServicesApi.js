@@ -140,13 +140,17 @@ router.get("/fetchDocuments/:id/:filename", (req, res) => {
 });
 
 // Updating service from serviceName
-router.put("/updateService/:serviceName", upload.fields([
+router.put("/updateService/:serviceName/:id", upload.fields([
     { name: "document", maxCount: 20 },
 ]), async (req, res) => {
     try {
         const { serviceName } = req.params;
 
-        const {departmentName, objectives, benefits, requiredDocuments, eligibilityRequirements, process, deliverables, timeline, employeeName, headName, portfolio} = req.body;
+        const {departmentName, objectives, benefits, requiredDocuments, eligibilityRequirements, process, deliverables, timeline, portfolio} = req.body;
+
+        const teamInfo = req.body.teamInfo ? JSON.parse(req.body.teamInfo) : {};
+        const { employeeName, headName } = teamInfo;
+
         if (!serviceName) {
             return res.status(400).json({ result: false, message: "Service name is required to update the service" });
         }
@@ -164,8 +168,7 @@ router.put("/updateService/:serviceName", upload.fields([
         })) : [];
 
         // Retrieve document details from uploaded files
-        // const documentDetails = getFileDetails(req.files ? req.files["document"] : []);
-        const documentDetails = getFileDetails(req.files?.document);
+        const documentDetails = getFileDetails(req.files ? req.files["document"] : []);
 
         // Prepare the service data to be updated
         const updatedServiceData = {

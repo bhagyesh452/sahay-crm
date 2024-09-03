@@ -81,8 +81,8 @@ function AddServices({ close, fetchServices }) {
         const newErrors = {};
         const { departmentName, serviceName } = departmentInfo;
 
-        if (!departmentName) newErrors.departmentName = "Department name is required";
-        if (!serviceName) newErrors.serviceName = "Service name is required";
+        if (!departmentName) newErrors.departmentName = "Please select Service category";
+        if (!serviceName) newErrors.serviceName = "Please select Service name";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -92,48 +92,48 @@ function AddServices({ close, fetchServices }) {
         objectives: "",
         benefits: "",
     });
-    const validateObjectivesInfo = () => {
-        const newErrors = {};
-        const { objectives, benefits } = departmentInfo;
+    // const validateObjectivesInfo = () => {
+    //     const newErrors = {};
+    //     const { objectives, benefits } = departmentInfo;
 
-        if (!objectives) newErrors.objectives = "Objective is required";
-        if (!benefits) newErrors.benefits = "Benefits is required";
+    //     if (!objectives) newErrors.objectives = "Objective is required";
+    //     if (!benefits) newErrors.benefits = "Benefits is required";
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const [requirementsInfo, setRequirementsInfo] = useState({
         requiredDocuments: "",
         eligibilityRequirements: ""
     });
-    const validateRequirementsInfo = () => {
-        const newErrors = {};
-        const { requiredDocuments, eligibilityRequirements } = departmentInfo;
+    // const validateRequirementsInfo = () => {
+    //     const newErrors = {};
+    //     const { requiredDocuments, eligibilityRequirements } = departmentInfo;
 
-        if (!requiredDocuments) newErrors.requiredDocuments = "Required documnets are required";
-        if (!eligibilityRequirements) newErrors.eligibilityRequirements = "Eligibility is required";
+    //     if (!requiredDocuments) newErrors.requiredDocuments = "Required documnets are required";
+    //     if (!eligibilityRequirements) newErrors.eligibilityRequirements = "Eligibility is required";
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const [processInfo, setProcessInfo] = useState({
         process: "",
         deliverables: "",
         timeline: ""
     });
-    const validateProcessInfo = () => {
-        const newErrors = {};
-        const { process, deliverables, timeline } = departmentInfo;
+    // const validateProcessInfo = () => {
+    //     const newErrors = {};
+    //     const { process, deliverables, timeline } = departmentInfo;
 
-        if (!process) newErrors.process = "Process is required";
-        if (!deliverables) newErrors.deliverables = "Deliverables is required";
-        if (!timeline) newErrors.timeline = "Timeline is required";
+    //     if (!process) newErrors.process = "Process is required";
+    //     if (!deliverables) newErrors.deliverables = "Deliverables is required";
+    //     if (!timeline) newErrors.timeline = "Timeline is required";
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const [teamInfo, setTeamInfo] = useState({
         employeeName: [],
@@ -149,8 +149,8 @@ function AddServices({ close, fetchServices }) {
 
         if (!employeeName || employeeName.length === 0) newErrors.employeeName = "Employee name is required";
         if (!headName || headName.length === 0) newErrors.headName = "Head name is required";
-        if (!portfolio || portfolio.length === 0) newErrors.portfolio = "Portfolio is required";
-        if (!document || document.length === 0) newErrors.document = "Document is required";
+        // if (!portfolio || portfolio.length === 0) newErrors.portfolio = "Portfolio is required";
+        // if (!document || document.length === 0) newErrors.document = "Document is required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -357,7 +357,7 @@ function AddServices({ close, fetchServices }) {
         setActiveStep(step);
     };
 
-    const handleReset = () => {
+    const handleReset = async () => {
         setActiveStep(0);
 
         setDepartmentInfo({
@@ -387,13 +387,24 @@ function AddServices({ close, fetchServices }) {
             portfolio: [],
             document: []
         });
+
+        setCompleted({});
+        if (id) {
+            try {
+                const res = await axios.delete(`${secretKey}/serviceDraft/deleteServiceDraft/${id}`);
+                // console.log("Service successfully deleted", res.data.data);
+                setId("");
+            } catch (error) {
+                console.log("Error deleting services :", error);
+            }
+        }
     };
 
     const saveDraft = async () => {
         let res;
 
         if (departmentInfo.departmentName === "" || departmentInfo.serviceName === "") {
-            Swal.fire("error", "Please select Department Name or Service Name before Saving", "error");
+            Swal.fire("error", "Please select Service Category or Service Name before Saving", "error");
         } else {
             const requestBody = {
                 ...(
@@ -557,7 +568,7 @@ function AddServices({ close, fetchServices }) {
                 <div className="card">
                     <div className="card-body p-3">
                         <Box sx={{ width: '100%' }}>
-                            <Stepper nonLinear activeStep={activeStep}>
+                            {/* <Stepper nonLinear activeStep={activeStep}>
                                 {steps.map((label, index) => (
                                     <Step key={label} completed={completed[index]}>
                                         <StepButton color="inherit" onClick={handleStep(index)} className={
@@ -567,10 +578,10 @@ function AddServices({ close, fetchServices }) {
                                         </StepButton>
                                     </Step>
                                 ))}
-                            </Stepper>
+                            </Stepper> */}
 
                             {/* Here this will not move to next step untill data is not saved for current step and not clicked on next button */}
-                            {/* <Stepper nonLinear activeStep={activeStep}>
+                            <Stepper nonLinear activeStep={activeStep}>
                                 {steps.map((label, index) => (
                                     <Step key={label} completed={completed[index]}>
                                         <StepButton
@@ -583,7 +594,7 @@ function AddServices({ close, fetchServices }) {
                                         </StepButton>
                                     </Step>
                                 ))}
-                            </Stepper> */}
+                            </Stepper>
 
                             <div className="mb-4 steprForm-bg he_steprForm_e_add">
                                 <div className="steprForm">
@@ -611,16 +622,16 @@ function AddServices({ close, fetchServices }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-2 mb-2">
-                                                                            <label for="departmentName">Select Department<span style={{ color: "red" }}> * </span></label>
+                                                                            <label for="departmentName">Service Category<span style={{ color: "red" }}> * </span></label>
                                                                             <select
                                                                                 className="form-select mt-1"
                                                                                 name="departmentName"
                                                                                 id="departmentName"
                                                                                 value={departmentInfo.departmentName}
                                                                                 onChange={handleDepartmentChange}
-                                                                                disabled={!isDepartmentInfoEditable}
+                                                                            // disabled={!isDepartmentInfoEditable}
                                                                             >
-                                                                                <option value="Select Department" selected> Select Department</option>
+                                                                                <option value="Select Service Category" selected> Select Service Category</option>
                                                                                 {departments.map((department, index) => (
                                                                                     <option key={index} value={department}>{department}</option>
                                                                                 ))}
@@ -646,7 +657,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 id="serviceName"
                                                                                 value={departmentInfo.serviceName}
                                                                                 onChange={(e) => handleInputChange(e)}
-                                                                                disabled={isServiceDisabled || !isDepartmentInfoEditable}
+                                                                                disabled={isServiceDisabled}
                                                                             >
                                                                                 <option value="">Select Service</option>
                                                                                 {services.map((service, index) => (
@@ -682,7 +693,7 @@ function AddServices({ close, fetchServices }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Objectives<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Objectives</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -699,7 +710,7 @@ function AddServices({ close, fetchServices }) {
 
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Benefits<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Benefits</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -731,7 +742,7 @@ function AddServices({ close, fetchServices }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Required Documents<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Required Documents</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -748,7 +759,7 @@ function AddServices({ close, fetchServices }) {
 
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Eligibility Requirements<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Eligibility Requirements</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -780,7 +791,7 @@ function AddServices({ close, fetchServices }) {
                                                                 <div className="row">
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Process<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Process</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -797,7 +808,7 @@ function AddServices({ close, fetchServices }) {
 
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Deliverables<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Deliverables</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -814,7 +825,7 @@ function AddServices({ close, fetchServices }) {
 
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-0 mb-0">
-                                                                            <h3>Timeline<span style={{ color: "red" }}> * </span></h3>
+                                                                            <h3>Timeline</h3>
                                                                             <ReactQuill
                                                                                 theme="snow"
                                                                                 modules={modules}
@@ -900,7 +911,7 @@ function AddServices({ close, fetchServices }) {
 
                                                                     <div className="col-sm-6">
                                                                         <div className="form-group">
-                                                                            <label htmlFor="portfolio">Portfolio<span style={{ color: "red" }}> * </span></label>
+                                                                            <label htmlFor="portfolio">Portfolio</label>
                                                                             <TagsInput
                                                                                 className="multivalue-input mt-1"
                                                                                 value={teamInfo.portfolio || []}
@@ -910,13 +921,13 @@ function AddServices({ close, fetchServices }) {
                                                                                 }}
                                                                                 disabled={!isTeamInfoEditable}
                                                                             />
-                                                                            {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>}
+                                                                            {/* {errors.portfolio && <p style={{ color: "red" }}>{errors.portfolio}</p>} */}
                                                                         </div>
                                                                     </div>
 
                                                                     <div className="col-sm-6">
                                                                         <div class="form-group">
-                                                                            <label htmlFor="document">Document<span style={{ color: "red" }}> * </span></label>
+                                                                            <label htmlFor="document">Document</label>
                                                                             <input
                                                                                 type="file"
                                                                                 className="form-control mt-1"
@@ -926,7 +937,7 @@ function AddServices({ close, fetchServices }) {
                                                                                 multiple // Allow multiple file selection
                                                                                 disabled={!isTeamInfoEditable}
                                                                             />
-                                                                            {errors.document && <p style={{ color: "red" }}>{errors.document}</p>}
+                                                                            {/* {errors.document && <p style={{ color: "red" }}>{errors.document}</p>} */}
                                                                         </div>
                                                                         {/* {documentArray.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
                                                                             <div class="uploaded-fileItem d-flex align-items-center">

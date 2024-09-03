@@ -693,7 +693,7 @@ export default function HorizontalNonLinearStepper() {
     });
     setCompleted({});
     const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
-    console.log("Employee successfully deleted from draft model :", res2.data);
+    // console.log("Employee successfully deleted from draft model :", res2.data);
   };
 
   const fetchEmployee = async () => {
