@@ -969,24 +969,10 @@ router.get('/filter-leads', async (req, res) => {
 
     console.log("selectedbdeforwaddate", selectedBdeForwardDate)
     if (selectedBdeForwardDate) {
-      // Parse the selected date and add 1 day to correctly adjust for local time
-      const startOfDay = new Date(selectedBdeForwardDate);
-      startOfDay.setDate(startOfDay.getDate() + 1);
-      startOfDay.setHours(0, 0, 0, 0); // Start of the adjusted day (00:00:00.000)
-
-      // Create the end of the adjusted day (23:59:59.999)
-      const endOfDay = new Date(startOfDay);
-      endOfDay.setHours(23, 59, 59, 999);
-
-      console.log("start", startOfDay.toISOString()); // Debugging: Logs start of the adjusted day in UTC
-      console.log("end", endOfDay.toISOString()); // Debugging: Logs end of the adjusted day in UTC
-
-      baseQuery.bdeForwardDate = {
-        $gte: startOfDay.toISOString(),
-        $lt: endOfDay.toISOString()
-      };
+      const dateString = new Date(selectedBdeForwardDate).toDateString(); // "Tue Sep 03 2024"
+      baseQuery.bdeForwardDate = new RegExp(`^${dateString}`, 'i'); // Matches the start of the string
     }
-
+    
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);

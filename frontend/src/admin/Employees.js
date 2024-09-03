@@ -486,7 +486,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
       } else {
        
-        setSearchResult(result.data)
+        setSearchResult(result)
       }
     } catch (error) {
       console.error("Error fetching data:", error.message);
