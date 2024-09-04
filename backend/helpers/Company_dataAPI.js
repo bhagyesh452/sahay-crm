@@ -18,6 +18,7 @@ const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryFor
 
 
 
+
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
 
 // const authenticateToken = (req, res, next) => {
@@ -581,14 +582,17 @@ router.get('/new-leads/interested-followup', async (req, res) => {
     //console.log(sort)
     // Query the database to get paginated data
     let query = {};
-
+    const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name')
     if (dataStatus === "Unassigned") {
       query = { ename: "Not Alloted" };
     } else if (dataStatus === "Assigned") {
       query = {
-        $and: [{ ename: { $ne: "Not Alloted" } },
-        { ename: { $ne: "Extracted" } },
-        { Status: { $in: ["Interested", "FollowUp"] } }]
+        $and: [
+          { ename: { $ne: "Not Alloted" } },
+          { ename: { $ne: "Extracted" } },
+          { Status: { $in: ["Interested", "FollowUp"] } },
+          { "Company Name": { $in: leadHistoryCompany } }
+        ]
       };
     } else if (dataStatus === "Extracted") {
       query = { ename: "Extracted" };
@@ -625,9 +629,12 @@ router.get('/new-leads/interested-followup', async (req, res) => {
     // Get total count of documents for pagination
     const unAssignedCount = await CompanyModel.countDocuments({ ename: "Not Alloted" });
     const assignedCount = await CompanyModel.countDocuments({
-      $and: [{ ename: { $ne: "Not Alloted" } }, 
-        { ename: { $ne: "Extracted" } },
-        { Status: { $in: ["Interested", "FollowUp"] } }]
+      $and: [
+        { ename: { $ne: "Not Alloted" } },
+      { ename: { $ne: "Extracted" } },
+      { Status: { $in: ["Interested", "FollowUp"] } },
+      {"Company Name" : {$in : leadHistoryCompany}}
+    ]
     });
     const extractedCount = await CompanyModel.countDocuments({ ename: "Extracted" });
     const totalCount = await CompanyModel.countDocuments(query);
@@ -920,12 +927,13 @@ router.get('/filter-leads', async (req, res) => {
     selectedBdeForwardDate,
     selectedFowradedStatus,
     selectedStatusModificationDate,
+    isInterestedSection
   } = req.query;
 
   const page = parseInt(req.query.page) || 1; // Page number
   const limit = parseInt(req.query.limit) || 500; // Items per page
   const skip = (page - 1) * limit; // Number of documents to skip
-
+  const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name')
   try {
     let baseQuery = {};
 
@@ -972,7 +980,7 @@ router.get('/filter-leads', async (req, res) => {
       const dateString = new Date(selectedBdeForwardDate).toDateString(); // "Tue Sep 03 2024"
       baseQuery.bdeForwardDate = new RegExp(`^${dateString}`, 'i'); // Matches the start of the string
     }
-    
+
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
