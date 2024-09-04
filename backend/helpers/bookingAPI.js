@@ -1348,7 +1348,7 @@ router.post(
           "Company Name": newData["Company Name"],
         });
         const projectionData = await FollowUpModel.findOne({
-          companyName : newData["Company Name"]
+          companyName: newData["Company Name"]
         })
 
         if (companyData) {
@@ -1367,9 +1367,9 @@ router.post(
           });
         }
 
-        if(projectionData){
+        if (projectionData) {
           await FollowUpModel.findOneAndDelete({
-            companyName : newData["Company Name"]
+            companyName: newData["Company Name"]
           })
         }
         const boomDate = new Date();
@@ -2613,6 +2613,7 @@ router.post(
               "Income Tax Exemption",
               "Start-Up India Certificate",
               "GST Registration Application Support",
+              "Private Limited Company Incorporation"
             ];
             return tempServices.includes(service.serviceName);
           })
@@ -2626,6 +2627,7 @@ router.post(
             let fundingServices = "";
             let incomeTaxServices = "";
             let gstCertificateServices = "";
+            let privateLimitedCompany = "";
 
             for (let i = 0; i < newData.services.length; i++) {
               const service = newData.services[i];
@@ -2681,6 +2683,40 @@ router.post(
                 <p class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable, and I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</p>
                 `
 
+              }else if (service.serviceName === "Private Limited Company Incorporation") {
+                privateLimitedCompany += `
+                      <p class="Declaration_text_head mt-2">
+                        <b>Private Limited Incorporation Service Acknowledgement:</b>
+                      </p>
+                      <p class="Declaration_text_data" >I,___________________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate our Private Limited Company. START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further company compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates.</p>
+                     <ul>
+                     <li>
+                      <p class="Declaration_text_head mt-2">
+                        <b>Service Scope and Charges:</b>
+                      </p>
+                       <span class="Declaration_text_data" >I acknowledge that the price covers a private limited company with 2 directors and up to ₹5 lakhs in authorized/paid-up capital. Any increase in directors or capital will incur additional charges as per Start-Up Sahay's rates.</span>
+                     </li>
+                     <li>
+                      <p class="Declaration_text_head mt-2">
+                        <b>Name Reservation Trials:</b>
+                      </p>
+                       <span class="Declaration_text_data" >I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
+                     </li>
+                     <li>
+                      <p class="Declaration_text_head mt-2">
+                        <b>Document Submission and Refund Policy:</b>
+                      </p>
+                       <span class="Declaration_text_data" >If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
+                     </li>
+                     <li>
+                      <p class="Declaration_text_head mt-2">
+                        <b>Director's DIN Activation: </b>
+                      </p>
+                       <span class="Declaration_text_data" >: I acknowledge that in cases where any process director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
+                     </li>
+                     </ul>
+                      `
+      
               } else {
                 servicesHtml += `<br>`;
               }
@@ -2703,7 +2739,9 @@ router.post(
             if (gstCertificateServices !== "") {
               servicesHtml += gstCertificateServices
             }
-
+            if (privateLimitedCompany !== "") {
+              servicesHtml += privateLimitedCompany
+            }
             return servicesHtml;
           };
 
@@ -3104,13 +3142,13 @@ router.post(
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
           const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
             ? (newData.services[0].serviceName === "Start-Up India Certificate" ||
-              "GST Registration Application Support" ? 2 : 1)
+              "GST Registration Application Support" || "Private Limited Company Incorporation" ? 2 : 1)
             : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
               ? 2
               : 3;
           const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
             return service.serviceName !== "Start-Up India Certificate" ||
-              "GST Registration Application Support"
+              "GST Registration Application Support" || "Private Limited Company Incorporation"
           })) ? 2 : tempPageLength;
 
 
@@ -3515,9 +3553,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         date: date,
       });
     }
-    if(projectionData){
+    if (projectionData) {
       await FollowUpModel.findOneAndDelete({
-        companyName : newData["Company Name"]
+        companyName: newData["Company Name"]
       })
     }
 
@@ -4721,6 +4759,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         "Income Tax Exemption",
         "Start-Up India Certificate",
         "GST Registration Application Support",
+        "Private Limited Company Incorporation"
       ];
       return tempServices.includes(service.serviceName);
     })
@@ -4734,6 +4773,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let fundingServices = "";
       let incomeTaxServices = "";
       let gstCertificateServices = "";
+      let privateLimitedCompany = "";
 
       for (let i = 0; i < newData.services.length; i++) {
         const service = newData.services[i];
@@ -4789,6 +4829,40 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <p class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable, and I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</p>
                 `
 
+        } else if (service.serviceName === "Private Limited Company Incorporation") {
+          privateLimitedCompany += `
+                <p class="Declaration_text_head mt-2">
+                  <b>Private Limited Incorporation Service Acknowledgement:</b>
+                </p>
+                <p class="Declaration_text_data" >I,___________________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate our Private Limited Company. START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further company compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates.</p>
+               <ul>
+               <li>
+                <p class="Declaration_text_head mt-2">
+                  <b>Service Scope and Charges:</b>
+                </p>
+                 <span class="Declaration_text_data" >I acknowledge that the price covers a private limited company with 2 directors and up to ₹5 lakhs in authorized/paid-up capital. Any increase in directors or capital will incur additional charges as per Start-Up Sahay's rates.</span>
+               </li>
+               <li>
+                <p class="Declaration_text_head mt-2">
+                  <b>Name Reservation Trials:</b>
+                </p>
+                 <span class="Declaration_text_data" >I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
+               </li>
+               <li>
+                <p class="Declaration_text_head mt-2">
+                  <b>Document Submission and Refund Policy:</b>
+                </p>
+                 <span class="Declaration_text_data" >If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
+               </li>
+               <li>
+                <p class="Declaration_text_head mt-2">
+                  <b>Director's DIN Activation: </b>
+                </p>
+                 <span class="Declaration_text_data" >: I acknowledge that in cases where any process director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
+               </li>
+               </ul>
+                `
+
         } else {
           servicesHtml += `<br>`;
         }
@@ -4810,6 +4884,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
       if (gstCertificateServices !== "") {
         servicesHtml += gstCertificateServices
+      }
+      if (privateLimitedCompany !== "") {
+        servicesHtml += privateLimitedCompany
       }
 
       return servicesHtml;
@@ -5213,12 +5290,12 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
     const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
-      ? (newData.services[0].serviceName === "Start-Up India Certificate" || "GST Registration Application Support" ? 2 : 1)
+      ? (newData.services[0].serviceName === "Start-Up India Certificate" || "GST Registration Application Support" || "Private Limited Company Incorporation" ? 2 : 1)
       : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
         ? 2
         : 3;
     const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
-      return service.serviceName !== "Start-Up India Certificate" || "GST Registration Application Support"
+      return service.serviceName !== "Start-Up India Certificate" || "GST Registration Application Support" || "Private Limited Company Incorporation"
     })) ? 2 : tempPageLength;
 
 
@@ -5233,7 +5310,8 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
       "Income Tax Exemption Application",
       "GST Registration Application Support",
       "I-Create Application",
-      "DBS Grant Application"
+      "DBS Grant Application",
+      "Private Limited Company Incorporation"
     ];
 
     const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
