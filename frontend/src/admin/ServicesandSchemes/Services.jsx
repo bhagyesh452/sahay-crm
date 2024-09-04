@@ -362,7 +362,7 @@ function Services() {
 
     const fetchServiceDetails = async () => {
         // console.log("Service name inside fetch service details function :", serviceName);
-        if(serviceName) {
+        if (serviceName) {
             try {
                 const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${serviceName}`);
                 // console.log("Service details is :", res.data.data);
@@ -875,6 +875,19 @@ function Services() {
                                                                 if (!serviceDetails || !serviceName) {
                                                                     Swal.fire("Info", "Please add service details before editing", "info");
                                                                     setShowUpdateOptions(false);
+                                                                    setShowAddDepartment(false);
+                                                                    setShowEditDepartment(false);
+                                                                    setShowAddService(false);
+                                                                    setShowEditService(false);
+                                                                    setDepartmentErrorMessage("");
+                                                                    setServiceErrorMessage("");
+                                                                    setDescriptionErrorMessage("");
+                                                                    setDepartmentName("");
+                                                                    setUpdatedDepartmentName("");
+                                                                    setServiceName("");
+                                                                    setUpdatedServiceName("");
+                                                                    setServiceDescription("");
+                                                                    setUpdatedServiceDescription("");
                                                                 } else {
                                                                     setShowEditServiceDetails(true);
                                                                     setShowUpdateOptions(false);
