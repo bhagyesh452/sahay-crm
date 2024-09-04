@@ -3,6 +3,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import ClipLoader from 'react-spinners/ClipLoader';
 import Nodata from '../../components/Nodata';
+import RemainingServiceAnalysis from './RemainingServiceAnalysis';
 
 function ServiceAnalysis() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -52,7 +53,7 @@ function ServiceAnalysis() {
     // const getServiceAnalysisData = () => {
     //     // Initialize an object to store service analysis data
     //     const serviceAnalysis = {};
-    
+
     //     const processServiceData = (booking, service) => {
     //         // Initialize the service if not already in serviceAnalysis
     //         if (!serviceAnalysis[service.serviceName]) {
@@ -63,59 +64,59 @@ function ServiceAnalysis() {
     //                 remainingPaymentsArray: [], // Array to store remaining payments
     //             };
     //         }
-    
+
     //         // Update the service analysis data
     //         serviceAnalysis[service.serviceName].timesSold += 1;
     //         serviceAnalysis[service.serviceName].totalPayment += service.totalPaymentWOGST;
-    
+
     //         if (service.paymentTerms === "Full Advanced") {
     //             // Full advanced payment, no remaining payment
     //             serviceAnalysis[service.serviceName].advancePayment += service.totalPaymentWOGST;
-    
+
     //         } else if (service.paymentTerms === "two-part") {
     //             // Calculate advance payment (adjusted for GST if applicable)
     //             const adjustedFirstPayment = service.withGST
     //                 ? service.firstPayment / 1.18
     //                 : service.firstPayment;
-    
+
     //             serviceAnalysis[service.serviceName].advancePayment += adjustedFirstPayment;
-    
+
     //             // Collect remaining payments for this service
     //             const secondPayment = service.withGST ? service.secondPayment/1.18 : service.secondPayment;
     //             const thirdPayment = service.withGST ? service.thirdPayment/1.18 : service.thirdPayment;
     //             const fourthPayment = service.withGST ? service.fourthPayment/1.18 : service.fourthPayment;
-    
+
     //             const remainingPayment = (secondPayment + thirdPayment + fourthPayment);
-    
+
     //             // Push the remaining payment to the array
     //             serviceAnalysis[service.serviceName].remainingPaymentsArray.push(remainingPayment);
-    
+
     //         }
     //     };
-    
+
     //     const processBooking = (booking) => {
     //         const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
     //         const bookingYear = new Date(booking.bookingDate).getFullYear();
-    
+
     //         if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
     //             booking.services.forEach(service => processServiceData(booking, service));
     //         }
     //     };
-    
+
     //     // Process main booking data
     //     bookingData.forEach(booking => {
     //         processBooking(booking);
-    
+
     //         // Process moreBookings array
     //         booking.moreBookings.forEach(moreBooking => {
     //             processBooking(moreBooking);
     //         });
     //     });
-    
+
     //     // Calculate total remaining payments for each service
     //     return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
     //         const totalRemainingPayment = data.remainingPaymentsArray.reduce((sum, payment) => sum + payment, 0);
-    
+
     //         return {
     //             id: index + 1,
     //             serviceName,
@@ -127,7 +128,7 @@ function ServiceAnalysis() {
     //         };
     //     });
     // };
-    
+
     // const serviceAnalysisData = getServiceAnalysisData();
 
     // const totalTimesSold = serviceAnalysisData.reduce((total, service) => total + service.timesSold, 0);
@@ -136,17 +137,17 @@ function ServiceAnalysis() {
     // const totalRemainingPayment = serviceAnalysisData.reduce((total, service) => total + service.remainingPayment, 0);
     // const totalAverageSellingPrice = totalTimesSold ? (totalTotalPayment / totalTimesSold) : 0;
 
-    
+
 
     // Combine total of all services whose names start with ISO Certificate :
     const getServiceAnalysisData = () => {
         // Initialize an object to store service analysis data
         const serviceAnalysis = {};
-    
+
         const processServiceData = (booking, service) => {
             // Standardize service name for "ISO Certificate" services
             const serviceNameKey = service.serviceName.startsWith("ISO Certificate") ? "ISO Certificate" : service.serviceName;
-    
+
             // Initialize the service if not already in serviceAnalysis
             if (!serviceAnalysis[serviceNameKey]) {
                 serviceAnalysis[serviceNameKey] = {
@@ -156,58 +157,58 @@ function ServiceAnalysis() {
                     remainingPaymentsArray: [], // Array to store remaining payments
                 };
             }
-    
+
             // Update the service analysis data
             serviceAnalysis[serviceNameKey].timesSold += 1;
             serviceAnalysis[serviceNameKey].totalPayment += service.totalPaymentWOGST;
-    
+
             if (service.paymentTerms === "Full Advanced") {
                 // Full advanced payment, no remaining payment
                 serviceAnalysis[serviceNameKey].advancePayment += service.totalPaymentWOGST;
-    
+
             } else if (service.paymentTerms === "two-part") {
                 // Calculate advance payment (adjusted for GST if applicable)
                 const adjustedFirstPayment = service.withGST
                     ? service.firstPayment / 1.18
                     : service.firstPayment;
-    
+
                 serviceAnalysis[serviceNameKey].advancePayment += adjustedFirstPayment;
-    
+
                 // Collect remaining payments for this service
                 const secondPayment = service.withGST ? service.secondPayment / 1.18 : service.secondPayment;
                 const thirdPayment = service.withGST ? service.thirdPayment / 1.18 : service.thirdPayment;
                 const fourthPayment = service.withGST ? service.fourthPayment / 1.18 : service.fourthPayment;
-    
+
                 const remainingPayment = secondPayment + thirdPayment + fourthPayment;
-    
+
                 // Push the remaining payment to the array
                 serviceAnalysis[serviceNameKey].remainingPaymentsArray.push(remainingPayment);
             }
         };
-    
+
         const processBooking = (booking) => {
             const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
             const bookingYear = new Date(booking.bookingDate).getFullYear();
-    
+
             if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
                 booking.services.forEach(service => processServiceData(booking, service));
             }
         };
-    
+
         // Process main booking data
         bookingData.forEach(booking => {
             processBooking(booking);
-    
+
             // Process moreBookings array
             booking.moreBookings.forEach(moreBooking => {
                 processBooking(moreBooking);
             });
         });
-    
+
         // Calculate total remaining payments for each service
         return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
             const totalRemainingPayment = data.remainingPaymentsArray.reduce((sum, payment) => sum + payment, 0);
-    
+
             return {
                 id: index + 1,
                 serviceName,
@@ -219,121 +220,127 @@ function ServiceAnalysis() {
             };
         });
     };
-    
+
     const serviceAnalysisData = getServiceAnalysisData();
-    
+
     // Calculate total values for the table footer
     const totalTimesSold = serviceAnalysisData.reduce((total, service) => total + service.timesSold, 0);
     const totalTotalPayment = serviceAnalysisData.reduce((total, service) => total + service.totalPayment, 0);
     const totalAdvancePayment = serviceAnalysisData.reduce((total, service) => total + service.advancePayment, 0);
     const totalRemainingPayment = serviceAnalysisData.reduce((total, service) => total + service.remainingPayment, 0);
     const totalAverageSellingPrice = totalTimesSold ? (totalTotalPayment / totalTimesSold) : 0;
-    
+
     return (
-        <div className="card">
-            <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
-                <div className="dashboard-title pl-1"  >
-                    <h2 className="m-0">
-                        Service Analysis
-                    </h2>
-                </div>
-                <div className="d-flex align-items-center pr-1">
-                    <div className="filter-booking mr-1 d-flex align-items-center">
-                        <div className='d-flex align-items-center justify-content-between'>
-                            <div className='form-group ml-1'>
-                                <select className='form-select' value={selectedYear} onChange={handleYearChange}>
-                                    <option disabled>--Select Year--</option>
-                                    {years.map(year => (
-                                        <option key={year} value={year}>{year}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className='form-group ml-1'>
-                                <select className='form-select' value={selectedMonth} onChange={handleMonthChange}>
-                                    <option disabled>--Select Month--</option>
-                                    {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(month => (
-                                        <option key={month} value={month}>{month}</option>
-                                    ))}
-                                </select>
+        <>
+            <div className="card">
+                <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                    <div className="dashboard-title pl-1"  >
+                        <h2 className="m-0">
+                            Service Analysis
+                        </h2>
+                    </div>
+                    <div className="d-flex align-items-center pr-1">
+                        <div className="filter-booking mr-1 d-flex align-items-center">
+                            <div className='d-flex align-items-center justify-content-between'>
+                                <div className='form-group ml-1'>
+                                    <select className='form-select' value={selectedYear} onChange={handleYearChange}>
+                                        <option disabled>--Select Year--</option>
+                                        {years.map(year => (
+                                            <option key={year} value={year}>{year}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className='form-group ml-1'>
+                                    <select className='form-select' value={selectedMonth} onChange={handleMonthChange}>
+                                        <option disabled>--Select Month--</option>
+                                        {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(month => (
+                                            <option key={month} value={month}>{month}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="card-body">
-                <div id="table-default" className="row tbl-scroll">
-                    <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+                <div className="card-body">
+                    <div id="table-default" className="row tbl-scroll">
+                        <table className="table-vcenter table-nowrap admin-dash-tbl"  >
 
-                        <thead className="admin-dash-tbl-thead">
-                            <tr>
-                                <th>Sr. No</th>
-                                <th>Service Name</th>
-                                <th>Times Sold</th>
-                                <th>Total Payment</th>
-                                <th>Advance Payment</th>
-                                <th>Remaining Payment</th>
-                                <th>Average Selling Price</th>
-                            </tr>
-                        </thead>
-
-                        {isLoading ? (
-                            <tbody>
+                            <thead className="admin-dash-tbl-thead">
                                 <tr>
-                                    <td colSpan="11" >
-                                        <div className="LoaderTDSatyle w-100" >
-                                            <ClipLoader
-                                                color="lightgrey"
-                                                currentDataLoading
-                                                size={30}
-                                                aria-label="Loading Spinner"
-                                                data-testid="loader"
-                                            />
-                                        </div>
-                                    </td>
+                                    <th>Sr. No</th>
+                                    <th>Service Name</th>
+                                    <th>Times Sold</th>
+                                    <th>Total Payment</th>
+                                    <th>Advance Payment</th>
+                                    <th>Remaining Payment</th>
+                                    <th>Average Selling Price</th>
                                 </tr>
-                            </tbody>
-                        ) : serviceAnalysisData.length !== 0 ? (
-                            <>
+                            </thead>
 
+                            {isLoading ? (
                                 <tbody>
-                                    {serviceAnalysisData.map((service, index) => (
-                                        <tr key={index}>
-                                            <td>{service.id}</td>
-                                            <td>{service.serviceName}</td>
-                                            <td>{service.timesSold}</td>
-                                            <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
-                                            <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-
-                                <tfoot className="admin-dash-tbl-tfoot">
-                                    <tr style={{ fontWeight: 500 }}>
-                                        <td>Total</td>
-                                        <td>{serviceAnalysisData.length}</td>
-                                        <td>{totalTimesSold}</td>
-                                        <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
-                                        <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
-                                        <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
-                                        <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
+                                    <tr>
+                                        <td colSpan="11" >
+                                            <div className="LoaderTDSatyle w-100" >
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    currentDataLoading
+                                                    size={30}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </div>
+                                        </td>
                                     </tr>
-                                </tfoot>
-                            </>
-                        ) : (
-                            <tbody>
-                                <tr>
-                                    <td colSpan="7" className="text-center"><Nodata /></td>
-                                </tr>
-                            </tbody>
-                        )}
+                                </tbody>
+                            ) : serviceAnalysisData.length !== 0 ? (
+                                <>
 
-                    </table>
+                                    <tbody>
+                                        {serviceAnalysisData.map((service, index) => (
+                                            <tr key={index}>
+                                                <td>{service.id}</td>
+                                                <td>{service.serviceName}</td>
+                                                <td>{service.timesSold}</td>
+                                                <td>₹ {formatSalary(service.totalPayment.toFixed(2))}</td>
+                                                <td>₹ {formatSalary(service.advancePayment.toFixed(2))}</td>
+                                                <td>₹ {formatSalary(service.remainingPayment.toFixed(2))}</td>
+                                                <td>₹ {formatSalary(service.averageSellingPrice.toFixed(2))}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+
+                                    <tfoot className="admin-dash-tbl-tfoot">
+                                        <tr style={{ fontWeight: 500 }}>
+                                            <td>Total</td>
+                                            <td>{serviceAnalysisData.length}</td>
+                                            <td>{totalTimesSold}</td>
+                                            <td>₹ {formatSalary(totalTotalPayment.toFixed(2))}</td>
+                                            <td>₹ {formatSalary(totalAdvancePayment.toFixed(2))}</td>
+                                            <td>₹ {formatSalary(totalRemainingPayment.toFixed(2))}</td>
+                                            <td>₹ {formatSalary(totalAverageSellingPrice.toFixed(2))}</td>
+                                        </tr>
+                                    </tfoot>
+                                </>
+                            ) : (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="7" className="text-center"><Nodata /></td>
+                                    </tr>
+                                </tbody>
+                            )}
+
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div className="mt-2">
+                <RemainingServiceAnalysis />
+            </div>
+        </>
     )
 }
 

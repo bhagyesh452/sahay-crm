@@ -146,12 +146,13 @@ router.post("/einfo", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
-    const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo, employeeID, oldDesignation } = req.body;
+    const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo, empId, employeeID, oldDesignation } = req.body;
     // console.log("Personal Info is :", personalInfo);
     // console.log("Employeement Info is :", employeementInfo);
     // console.log("Payroll info is :", payrollInfo);
     // console.log("Emergency info is :", emergencyInfo);
     // console.log("Employee document info is :", empDocumentInfo);
+    // console.log("Employee id is :", empId);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -207,6 +208,7 @@ router.post("/einfo", upload.fields([
     const emp = {
       ...req.body,
       AddedOn: new Date(),
+      _id: empId,
       employeeID: employeeID,
 
       ...(personalInfo?.firstName || personalInfo?.middleName || personalInfo?.lastName) && {
@@ -223,7 +225,7 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo?.empId && { empID: employeementInfo.empId }),
       ...(employeementInfo?.department && { department: employeementInfo.department }),
       ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
-      ...(oldDesignation && { designation: newDesignation }),
+      ...(oldDesignation || employeementInfo?.designation && { designation: newDesignation }),
       ...(employeementInfo?.designation && {
         bdmWork:
           employeementInfo.designation === "Business Development Manager" ||
@@ -260,9 +262,7 @@ router.post("/einfo", upload.fields([
       ...(empDocumentInfo?.salarySlip?.length > 0 && { salarySlip: empDocumentInfo.salarySlip || [] }),
       ...(empDocumentInfo?.profilePhoto?.length > 0 && { profilePhoto: empDocumentInfo.profilePhoto || [] })
     };
-    if (employeementInfo?.empId) {
-      emp._id = employeementInfo.empId;
-    }
+    
     const result = await adminModel.create(emp);
     res.json(result); // Ensure you respond with the result
 
@@ -332,6 +332,25 @@ router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
 
     // If the file exists, send it
     res.sendFile(pdfPath);
+  });
+});
+
+router.get("/fetchEmployeeDocuments/:empId/:filename", (req, res) => {
+  const { empId, filename } = req.params;
+  const pdfPath = path.join(
+      __dirname,
+      `../EmployeeDocs/${empId}/${filename}`
+  );
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+      if (err) {
+          // console.error(err);
+          return res.status(404).json({ error: "File not found" });
+      }
+
+      // If the file exists, send it
+      res.sendFile(pdfPath);
   });
 });
 

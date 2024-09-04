@@ -336,12 +336,17 @@ export default function HREditEmployee() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const openDocument = (filename) => {
+    const url = `${secretKey}/employee/fetchEmployeeDocuments/${empId}/${filename}`;
+    window.open(url, "_blank"); // Open document in a new tab
+  };
+
   const fetchEmployee = async () => {
     try {
       setIsLoading(true);
       const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
       const data = res.data.data;
-      console.log("Fetched employee is :", res.data.data);
+      // console.log("Fetched employee is :", res.data.data);
       // setEmployee(res.data.data);
 
       // Update personalInfo state with fetched data
@@ -605,7 +610,7 @@ export default function HREditEmployee() {
     if (activeStep === 0) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, personalInfo);
-        console.log("Employee updated successfully at step-0 :", res.data.data);
+        // console.log("Employee updated successfully at step-0 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
@@ -618,7 +623,7 @@ export default function HREditEmployee() {
     } else if (activeStep === 1) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, employeementInfo);
-        console.log("Employee updated successfully at step-1 :", res.data.data);
+        // console.log("Employee updated successfully at step-1 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
@@ -635,7 +640,7 @@ export default function HREditEmployee() {
             'Content-Type': 'multipart/form-data'
           }
         });
-        console.log("Employee updated successfully at step-2 :", res.data.data);
+        // console.log("Employee updated successfully at step-2 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
@@ -648,7 +653,7 @@ export default function HREditEmployee() {
     } else if (activeStep === 3) {
       try {
         const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${empId}`, emergencyInfo);
-        console.log("Emergency info updated successfully at step-3 :", res.data.data);
+        // console.log("Emergency info updated successfully at step-3 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
@@ -665,7 +670,7 @@ export default function HREditEmployee() {
             'Content-Type': 'multipart/form-data'
           }
         });
-        console.log("Document info updated successfully at step-4 :", res.data.data);
+        // console.log("Document info updated successfully at step-4 :", res.data.data);
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
           [activeStep]: true
@@ -1398,8 +1403,8 @@ export default function HREditEmployee() {
                                     {errors.aadharCard && <p style={{ color: "red" }}>{errors.aadharCard}</p>}
                                   </div>
                                   {aadharCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center">
-                                      <p class="m-0">{aadharCardDocument[0]?.originalname}</p>
+                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(aadharCardDocument[0]?.filename)}>
+                                      <p class="m-0 cursor-pointer">{aadharCardDocument[0]?.originalname}</p>
                                       <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
@@ -1420,8 +1425,8 @@ export default function HREditEmployee() {
                                     {errors.panCard && <p style={{ color: "red" }}>{errors.panCard}</p>}
                                   </div>
                                   {panCardDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center">
-                                      <p class="m-0">{panCardDocument[0]?.originalname}</p>
+                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(panCardDocument[0]?.filename)}>
+                                      <p class="m-0 cursor-pointer">{panCardDocument[0]?.originalname}</p>
                                       <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
@@ -1442,8 +1447,8 @@ export default function HREditEmployee() {
                                     {errors.educationCertificate && <p style={{ color: "red" }}>{errors.educationCertificate}</p>}
                                   </div>
                                   {educationCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center">
-                                      <p class="m-0">{educationCertificateDocument[0]?.originalname}</p>
+                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(educationCertificateDocument[0]?.filename)}>
+                                      <p class="m-0 cursor-pointer">{educationCertificateDocument[0]?.originalname}</p>
                                       <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
@@ -1467,8 +1472,8 @@ export default function HREditEmployee() {
                                     {/* {errors.relievingCertificate && <p style={{ color: "red" }}>{errors.relievingCertificate}</p>} */}
                                   </div>
                                   {relievingCertificateDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center">
-                                      <p class="m-0">{relievingCertificateDocument[0]?.originalname}</p>
+                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(relievingCertificateDocument[0]?.filename)}>
+                                      <p class="m-0 cursor-pointer">{relievingCertificateDocument[0]?.originalname}</p>
                                       <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
@@ -1492,8 +1497,8 @@ export default function HREditEmployee() {
                                     {/* {errors.salarySlip && <p style={{ color: "red" }}>{errors.salarySlip}</p>} */}
                                   </div>
                                   {salarySlipDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center">
-                                      <p class="m-0">{salarySlipDocument[0]?.originalname}</p>
+                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(salarySlipDocument[0]?.filename)}>
+                                      <p class="m-0 cursor-pointer">{salarySlipDocument[0]?.originalname}</p>
                                       <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
@@ -1514,8 +1519,8 @@ export default function HREditEmployee() {
                                     {/* {errors.profilePhoto && <p style={{ color: "red" }}>{errors.profilePhoto}</p>} */}
                                   </div>
                                   {profilePhotoDocument.length !== 0 && <div class="uploaded-filename-main d-flex flex-wrap">
-                                    <div class="uploaded-fileItem d-flex align-items-center">
-                                      <p class="m-0">{profilePhotoDocument[0]?.originalname}</p>
+                                    <div class="uploaded-fileItem d-flex align-items-center" onClick={() => openDocument(profilePhotoDocument[0]?.filename)}>
+                                      <p class="m-0 cursor-pointer">{profilePhotoDocument[0]?.originalname}</p>
                                       <button onClick={(e) => e.preventDefault()} class="fileItem-dlt-btn" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon">
                                         <path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                                       </button>
@@ -1844,7 +1849,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
-                                    <div className="form-label-data">
+                                    <div className={`form-label-data ${offerLetterDocument[0]?.originalname && 'cursor-pointer'}`} onClick={() => offerLetterDocument[0]?.originalname && openDocument(offerLetterDocument[0]?.filename)}>
                                       {offerLetterDocument[0]?.originalname || "-"}
                                     </div>
                                   </div>
@@ -1954,7 +1959,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
-                                    <div className="form-label-data">
+                                    <div className={`form-label-data ${aadharCardDocument[0]?.originalname && 'cursor-pointer'}`} onClick={() => aadharCardDocument[0]?.originalname && openDocument(aadharCardDocument[0]?.filename)}>
                                       {aadharCardDocument[0]?.originalname || "-"}
                                     </div>
                                   </div>
@@ -1966,19 +1971,19 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
-                                    <div className="form-label-data">
+                                    <div className={`form-label-data ${panCardDocument[0]?.originalname && 'cursor-pointer'}`} onClick={() => panCardDocument[0]?.originalname && openDocument(panCardDocument[0]?.filename)}>
                                       {panCardDocument[0]?.originalname || "-"}
                                     </div>
                                   </div>
                                 </div>
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
-                                    <div className="form-label-name">
+                                    <div className="form-label-name cursor-pointer">
                                       <b>Education Certificate</b>
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
-                                    <div className="form-label-data">
+                                    <div className={`form-label-data ${educationCertificateDocument[0]?.originalname && 'cursor-pointer'}`} onClick={() => educationCertificateDocument[0]?.originalname && openDocument(educationCertificateDocument[0]?.filename)}>
                                       {educationCertificateDocument[0]?.originalname || "-"}
                                     </div>
                                   </div>
@@ -1990,19 +1995,19 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
-                                    <div className="form-label-data">
+                                    <div className={`form-label-data ${relievingCertificateDocument[0]?.originalname && 'cursor-pointer'}`} onClick={() => relievingCertificateDocument[0]?.originalname && openDocument(relievingCertificateDocument[0]?.filename)}>
                                       {relievingCertificateDocument[0]?.originalname || "-"}
                                     </div>
                                   </div>
                                 </div>
                                 <div className="row m-0">
                                   <div className="col-sm-3 p-0">
-                                    <div className="form-label-name">
+                                    <div className="form-label-name cursor-pointer">
                                       <b>Salary Slip</b>
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
-                                    <div className="form-label-data">
+                                    <div className={`form-label-data ${salarySlipDocument[0]?.originalname && 'cursor-pointer'}`} onClick={() => salarySlipDocument[0]?.originalname && openDocument(salarySlipDocument[0]?.filename)}>
                                       {salarySlipDocument[0]?.originalname || "-"}
                                     </div>
                                   </div>
@@ -2014,7 +2019,7 @@ export default function HREditEmployee() {
                                     </div>
                                   </div>
                                   <div className="col-sm-9 p-0">
-                                    <div className="form-label-data">
+                                    <div className={`form-label-data ${profilePhotoDocument[0]?.originalname && 'cursor-pointer'}`} onClick={() => profilePhotoDocument[0]?.originalname && openDocument(profilePhotoDocument[0]?.filename)}>
                                       {profilePhotoDocument[0]?.originalname || "-"}
                                     </div>
                                   </div>
