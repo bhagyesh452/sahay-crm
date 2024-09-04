@@ -81,7 +81,7 @@ function Services() {
     const [showServiceDetails, setShowServiceDetails] = useState(false);
 
     const [departments, setDepartments] = useState([]);
-    const [serviceDetails, setServiceDetails] = useState({});
+    const [serviceDetails, setServiceDetails] = useState(null);
 
     const [departmentName, setDepartmentName] = useState("");
     const [updatedDepartmentName, setUpdatedDepartmentName] = useState("");
@@ -361,17 +361,19 @@ function Services() {
     };
 
     const fetchServiceDetails = async () => {
-        // console.log("Service name inside fetch service details function :", serviceName);
-        if (serviceName) {
-            try {
-                const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${serviceName}`);
-                // console.log("Service details is :", res.data.data);
-                setServiceDetails(res.data.data);
-            } catch (error) {
-                console.log("Error fetching service details", error);
+        try {
+            const encodedServiceName = encodeURIComponent(serviceName); // Encode the service name to handle special characters like /
+
+            const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${encodedServiceName}`);
+            // console.log("Fetched service details is :", res.data.data);
+            if (res.data.data) {
+                setServiceDetails(res.data.data); // Set service details if found
+            } else {
+                setServiceDetails(null); // Set to null if service not found
             }
-        } else {
-            setServiceDetails({});
+        } catch (error) {
+            console.log("Error fetching service :", error);
+            setServiceDetails(null);
         }
     };
 
@@ -380,7 +382,9 @@ function Services() {
     }, []);
 
     useEffect(() => {
-        fetchServiceDetails();
+        // if (serviceName) {
+            fetchServiceDetails();
+        // }
     }, [serviceName]);
 
     useEffect(() => {
@@ -872,22 +876,9 @@ function Services() {
                                                         <button
                                                             className="btn action-btn-success"
                                                             onClick={() => {
-                                                                if (!serviceDetails || !serviceName) {
+                                                                if (!serviceDetails) {
                                                                     Swal.fire("Info", "Please add service details before editing", "info");
                                                                     setShowUpdateOptions(false);
-                                                                    setShowAddDepartment(false);
-                                                                    setShowEditDepartment(false);
-                                                                    setShowAddService(false);
-                                                                    setShowEditService(false);
-                                                                    setDepartmentErrorMessage("");
-                                                                    setServiceErrorMessage("");
-                                                                    setDescriptionErrorMessage("");
-                                                                    setDepartmentName("");
-                                                                    setUpdatedDepartmentName("");
-                                                                    setServiceName("");
-                                                                    setUpdatedServiceName("");
-                                                                    setServiceDescription("");
-                                                                    setUpdatedServiceDescription("");
                                                                 } else {
                                                                     setShowEditServiceDetails(true);
                                                                     setShowUpdateOptions(false);
