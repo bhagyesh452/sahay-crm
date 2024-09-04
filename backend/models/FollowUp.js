@@ -56,6 +56,10 @@ const CompanySchema = new mongoose.Schema({
     type:String,
     default:"NotForwarded"
   },
+  isPreviousMaturedCase:{
+    type:String,
+    default:false,
+  },
   history: [{
     modifiedAt: { type: String, default: Date.now() },
     data: {
