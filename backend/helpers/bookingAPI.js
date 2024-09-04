@@ -2613,7 +2613,9 @@ router.post(
               "Income Tax Exemption",
               "Start-Up India Certificate",
               "GST Registration Application Support",
-              "Private Limited Company Incorporation"
+              "Private Limited Company Incorporation",
+              "OPC Private Limited Company Incorporation",
+              "LLP Company Incorporation"
             ];
             return tempServices.includes(service.serviceName);
           })
@@ -2628,6 +2630,8 @@ router.post(
             let incomeTaxServices = "";
             let gstCertificateServices = "";
             let privateLimitedCompany = "";
+            let opcLimitedCompany = "";
+            let llpCompany = "";
 
             for (let i = 0; i < newData.services.length; i++) {
               const service = newData.services[i];
@@ -2682,41 +2686,106 @@ router.post(
                 If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</p>          
                 <p class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable, and I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</p>
                 `
-
-              }else if (service.serviceName === "Private Limited Company Incorporation") {
+              } else if (service.serviceName === "Private Limited Company Incorporation") {
                 privateLimitedCompany += `
                       <p class="Declaration_text_head mt-2">
                         <b>Private Limited Incorporation Service Acknowledgement:</b>
                       </p>
                       <p class="Declaration_text_data" >I,___________________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate our Private Limited Company. START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further company compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates.</p>
                      <ul>
-                     <li>
-                      <p class="Declaration_text_head mt-2">
-                        <b>Service Scope and Charges:</b>
-                      </p>
-                       <span class="Declaration_text_data" >I acknowledge that the price covers a private limited company with 2 directors and up to ₹5 lakhs in authorized/paid-up capital. Any increase in directors or capital will incur additional charges as per Start-Up Sahay's rates.</span>
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
+                        <b>Service Scope and Charges: </b>
+                        <span >I acknowledge that the price covers a private limited company with 2 directors and up to ₹5 lakhs in authorized/paid-up capital. Any increase in directors or capital will incur additional charges as per Start-Up Sahay's rates.</span>
+                      </p>  
                      </li>
-                     <li>
-                      <p class="Declaration_text_head mt-2">
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
                         <b>Name Reservation Trials:</b>
+                       <span>I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
                       </p>
-                       <span class="Declaration_text_data" >I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
                      </li>
-                     <li>
-                      <p class="Declaration_text_head mt-2">
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
                         <b>Document Submission and Refund Policy:</b>
+                       <span>If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
                       </p>
-                       <span class="Declaration_text_data" >If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
                      </li>
-                     <li>
-                      <p class="Declaration_text_head mt-2">
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
                         <b>Director's DIN Activation: </b>
+                       <span>: I acknowledge that in cases where any process director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
                       </p>
-                       <span class="Declaration_text_data" >: I acknowledge that in cases where any process director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
                      </li>
                      </ul>
                       `
-      
+
+              } else if (service.serviceName === "OPC Private Limited Company Incorporation") {
+                opcLimitedCompany += `
+                      <p class="Declaration_text_head mt-2">
+                        <b>OPC Private Limited Incorporation Service Acknowledgement:</b>
+                      </p>
+                      <p class="Declaration_text_data" >I,____________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate my One Person Company (OPC) Private Limited. START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further company compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates.</p>
+                     <ul>
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
+                        <b>Service Scope and Charges: </b>
+                        <span >I acknowledge that the price covers an OPC Private Limited with 1 director as per the company type and up to ₹5 lakhs in authorized/paid-up capital. Any increase in authorized capital or if I choose to change the company type, additional charges will apply as per Start-Up Sahay's rates.</span>
+                      </p>  
+                     </li>
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
+                        <b>Name Reservation Trials:</b>
+                       <span>I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
+                      </p>
+                     </li>
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
+                        <b>Document Submission and Refund Policy:</b>
+                       <span>If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
+                      </p>
+                     </li>
+                     <li class="Declaration_text_data">
+                      <p class="mt-2">
+                        <b>Director's DIN Activation: </b>
+                       <span>I acknowledge that in cases where the director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
+                      </p>
+                     </li>
+                     </ul>
+                      `
+              } else if (service.serviceName === "LLP Company Incorporation") {
+                llpCompany += `
+                      <p class="Declaration_text_head mt-2">
+                    <b>LLP Incorporation Service Acknowledgement:</b>
+                  </p>
+                  <p class="Declaration_text_data" >I,____________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate our Limited Liability Partnership (LLP). START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further LLP compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates. </p>
+                 <ul>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Service Scope and Charges: </b>
+                    <span >I acknowledge that the price covers an LLP with 2 designated partners and up to ₹5 lakhs in capital contribution. Any increase in partners or capital will incur additional charges as per Start-Up Sahay's rates.</span>
+                  </p>  
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Name Reservation Trials:</b>
+                   <span>: I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹1,000 will apply for 2 more trials, and so on.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Document Submission and Refund Policy:</b>
+                   <span>If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Director's DIN Activation: </b>
+                   <span>: I acknowledge that in cases where any process partner's DPIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the partner, even if it is me.</span>
+                  </p>
+                 </li>
+                 </ul>
+                      `
               } else {
                 servicesHtml += `<br>`;
               }
@@ -2742,23 +2811,58 @@ router.post(
             if (privateLimitedCompany !== "") {
               servicesHtml += privateLimitedCompany
             }
+            if (opcLimitedCompany !== "") {
+              servicesHtml += opcLimitedCompany
+            }
+            if (llpCompany !== "") {
+              servicesHtml += llpCompany
+            }
             return servicesHtml;
           };
 
-          const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
+          // Check if there is only one service and if it's one of the specified types
+          const incorporationServices = [
+            "Private Limited Company Incorporation",
+            "OPC Private Limited Company Incorporation",
+            "LLP Company Incorporation"
+          ];
+
+          // Check if there is only one service and if it matches one of the specified types
+          const excludeParagraph =
+            newData.services.length === 1 &&
+            incorporationServices.includes(newData.services[0].serviceName);
+          // Re-application line conditionally included
+          const reapplicationLine = excludeParagraph
+            ? ""
+            : "Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company is eligible for the re-application.";
+          const conditional = newData.services.length < 2 ?
+            `<div class="Declaration_text">
       <p class="Declaration_text_data">
         I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
         between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
         services, and no additional services will be provided without separate payment, even in the case of rejection. 
-        Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
-        is eligible for the re-application.
-        
+        ${reapplicationLine}
       </p>
       </div>` : "";
           const serviceKawali = renderServiceKawali();
           const currentDate = new Date();
           const dateOptions = { day: "numeric", month: "long", year: "numeric" };
           const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
+          const additionalParagraph = excludeParagraph ?
+            ` <p class="Declaration_text_data">
+        I, understands that because of government regulations and portal, I have no objections if the
+        process takes longer than initially committed, knowing it's just how government schemes
+        related process works.
+    </p>` : `
+    <p class="Declaration_text_data">
+        I, understands that because of government regulations and portal, I have no objections if the
+        process takes longer than initially committed, knowing it's just how government schemes
+        related process works.
+    </p>
+    <p class="Declaration_text_data">
+        As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
+    </p>
+`;
           const mainPageHtml = `
               <div class="PDF_main">
                 <section>
@@ -2771,14 +2875,7 @@ router.post(
                   <div class="Declaration_text">
                     ${serviceKawali}
                        
-                    <p class="Declaration_text_data">
-                      I, understands that because of government regulations and portal, I have no objections if the
-                      process takes longer than initially committed, knowing it's just how government schemes
-                      related process works.
-                    </p>
-                    <p class="Declaration_text_data">
-                    As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
-                    </p>
+                    ${additionalParagraph}
                   </div>
                 </section>
               
@@ -2841,8 +2938,7 @@ router.post(
                 I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
                 between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
                 services, and no additional services will be provided without separate payment, even in the case of rejection. 
-                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
-                is eligible for the re-application.
+                ${reapplicationLine}
               </p>
             </div>
            
@@ -3142,13 +3238,19 @@ router.post(
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
           const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
             ? (newData.services[0].serviceName === "Start-Up India Certificate" ||
-              "GST Registration Application Support" || "Private Limited Company Incorporation" ? 2 : 1)
+              "GST Registration Application Support" ||
+              "Private Limited Company Incorporation"
+              || "OPC Private Limited Company Incorporation"
+              || "LLP Company Incorporation" ? 2 : 1)
             : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
               ? 2
               : 3;
           const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
             return service.serviceName !== "Start-Up India Certificate" ||
-              "GST Registration Application Support" || "Private Limited Company Incorporation"
+              "GST Registration Application Support" ||
+              "Private Limited Company Incorporation"
+              || "OPC Private Limited Company Incorporation" ||
+              "LLP Company Incorporation"
           })) ? 2 : tempPageLength;
 
 
@@ -4759,7 +4861,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         "Income Tax Exemption",
         "Start-Up India Certificate",
         "GST Registration Application Support",
-        "Private Limited Company Incorporation"
+        "Private Limited Company Incorporation",
+        "OPC Private Limited Company Incorporation",
+        "LLP Company Incorporation"
       ];
       return tempServices.includes(service.serviceName);
     })
@@ -4774,95 +4878,162 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let incomeTaxServices = "";
       let gstCertificateServices = "";
       let privateLimitedCompany = "";
+      let opcLimitedCompany = "";
+      let llpCompany = "";
 
       for (let i = 0; i < newData.services.length; i++) {
         const service = newData.services[i];
 
         if (service.serviceName === "Start-Up India Certificate" && service.withDSC) {
           servicesHtml += `
-          <p class="Declaration_text_head mt-2">
-            <b>Start-Up India Certification Acknowledgement:</b>
-          </p>
-          <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-          </p>
-          <p class="Declaration_text_data">
-            I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
-          </p>`;
+            <p class="Declaration_text_head mt-2">
+              <b>Start-Up India Certification Acknowledgement:</b>
+            </p>
+            <p class="Declaration_text_data">
+              I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+            </p>
+            <p class="Declaration_text_data">
+              I acknowledge that START-UP SAHAY PRIVATE LIMITED has promised to create the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS), as it is mandatory. As per the market standard, the organization DSC costs around ₹2,000, which is included in the amount I have paid. I also understand that the physical DSC will be only released by Start-Up Sahay upon my official request.
+            </p>`;
         } else if (service.serviceName === "Start-Up India Certificate" && !service.withDSC) {
           servicesHtml += `
-          <p class="Declaration_text_head mt-2">
-            <b>Start-Up India Certification Acknowledgement:</b>
-          </p>
-          <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
-          </p>
-          <p class="Declaration_text_data">
-            I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
-          </p>`;
+            <p class="Declaration_text_head mt-2">
+              <b>Start-Up India Certification Acknowledgement:</b>
+            </p>
+            <p class="Declaration_text_data">
+              I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Start-up India certificate, including document preparation and application support. I understand they charge a fee for their services. I acknowledge that the certificate is issued by the government free of charge and that START-UP SAHAY hasn't misled me about this.
+            </p>
+            <p class="Declaration_text_data">
+              I acknowledge that I already have the organization Digital Signature Certificate (DSC) necessary to proceed with the Start-Up India Recognition Certificate on the National Single Window System (NSWS). Therefore, START-UP SAHAY PRIVATE LIMITED will not create any organization DSC for my organization. I made the payment excluding the cost of the organization DSC. If it turns out that the DSC I have is for the director and not the organization, and it does not work on the NSWS portal, I will pay the amount START-UP SAHAY charges for creating a new DSC for my organization after mutual agreement.
+            </p>`;
         } else if (allowedServiceNames.includes(service.serviceName)) {
           fundingServicesArray += `${service.serviceName === "Seed Funding Support" ? "Seed Funding Document Support" : service.serviceName + " Document Support"},`;
           fundingServices += `
-          <p class="Declaration_text_head mt-2">
-            <b>${service.serviceName} Acknowledgement:</b>
-          </p>
-          <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-          </p>`;
+            <p class="Declaration_text_head mt-2">
+              <b>${service.serviceName} Acknowledgement:</b>
+            </p>
+            <p class="Declaration_text_data">
+              I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+            </p>`;
         } else if (service.serviceName === "Income Tax Exemption") {
           incomeTaxServices += `
-          <p class="Declaration_text_head mt-2">
-            <b>Income Tax Exemption Document Support Services Acknowledgement:</b>
-          </p>
-          <p class="Declaration_text_data">
-            I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
-          </p>`;
+            <p class="Declaration_text_head mt-2">
+              <b>Income Tax Exemption Document Support Services Acknowledgement:</b>
+            </p>
+            <p class="Declaration_text_data">
+              I, Director of ${newData["Company Name"]}, acknowledge START-UP SAHAY PRIVATE LIMITED's assistance in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. Their services include document preparation and application support, for which they charge a fee. I understand that government fees are not involved. START-UP SAHAY has provided accurate information about the approval process, and the decision rests with the relevant authorities.
+            </p>`;
         } else if (service.serviceName === "GST Registration Application Support") {
           gstCertificateServices += `
-                <p class="Declaration_text_head mt-2">
-                  <b>GST Registration Application Support Acknowledgement:</b>
-                </p>
-                <p class="Declaration_text_data" >I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</p>
-                <p class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</p> 
-                <p class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.
-                If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</p>          
-                <p class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable, and I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</p>
-                `
-
+            <p class="Declaration_text_head mt-2">
+              <b>GST Registration Application Support Acknowledgement:</b>
+            </p>
+            <p class="Declaration_text_data" >I acknowledge that Start-Up Sahay Private Limited's scope of work is limited to the submission of the GST application to the concerned department and resolving any queries that may arise during the process.</p>
+            <p class="Declaration_text_data">If I fail to provide the mandatory documents required to obtain the GST certificate/registration or any additional documents requested by the department, Start-Up Sahay will not be liable to refund any amount as they are adhering to government regulations.</p> 
+            <p class="Declaration_text_data">I acknowledge that sometimes GST officers might request extra information or even money under the table to clear the case.
+            If this situation arises, it is entirely my choice to comply with the request. Start-Up Sahay has charged fees solely for consultancy services and has no involvement with any additional amount the officer might ask for.</p>          
+            <p class="Declaration_text_data">I acknowledge that after the commencement of work, the paid amount is non-refundable, and I will not be eligible for a refund if I receive queries or additional requests from GST officers after Start-Up Sahay has submitted the application, as they have fulfilled their part of the service.</p>
+            `
         } else if (service.serviceName === "Private Limited Company Incorporation") {
           privateLimitedCompany += `
-                <p class="Declaration_text_head mt-2">
-                  <b>Private Limited Incorporation Service Acknowledgement:</b>
-                </p>
-                <p class="Declaration_text_data" >I,___________________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate our Private Limited Company. START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further company compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates.</p>
-               <ul>
-               <li>
-                <p class="Declaration_text_head mt-2">
-                  <b>Service Scope and Charges:</b>
-                </p>
-                 <span class="Declaration_text_data" >I acknowledge that the price covers a private limited company with 2 directors and up to ₹5 lakhs in authorized/paid-up capital. Any increase in directors or capital will incur additional charges as per Start-Up Sahay's rates.</span>
-               </li>
-               <li>
-                <p class="Declaration_text_head mt-2">
-                  <b>Name Reservation Trials:</b>
-                </p>
-                 <span class="Declaration_text_data" >I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
-               </li>
-               <li>
-                <p class="Declaration_text_head mt-2">
-                  <b>Document Submission and Refund Policy:</b>
-                </p>
-                 <span class="Declaration_text_data" >If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
-               </li>
-               <li>
-                <p class="Declaration_text_head mt-2">
-                  <b>Director's DIN Activation: </b>
-                </p>
-                 <span class="Declaration_text_data" >: I acknowledge that in cases where any process director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
-               </li>
-               </ul>
-                `
+                  <p class="Declaration_text_head mt-2">
+                    <b>Private Limited Incorporation Service Acknowledgement:</b>
+                  </p>
+                  <p class="Declaration_text_data" >I,___________________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate our Private Limited Company. START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further company compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates.</p>
+                 <ul>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Service Scope and Charges: </b>
+                    <span >I acknowledge that the price covers a private limited company with 2 directors and up to ₹5 lakhs in authorized/paid-up capital. Any increase in directors or capital will incur additional charges as per Start-Up Sahay's rates.</span>
+                  </p>  
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Name Reservation Trials:</b>
+                   <span>I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Document Submission and Refund Policy:</b>
+                   <span>If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Director's DIN Activation: </b>
+                   <span>: I acknowledge that in cases where any process director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
+                  </p>
+                 </li>
+                 </ul>
+                  `
 
+        } else if (service.serviceName === "OPC Private Limited Company Incorporation") {
+          opcLimitedCompany += `
+                  <p class="Declaration_text_head mt-2">
+                    <b>OPC Private Limited Incorporation Service Acknowledgement:</b>
+                  </p>
+                  <p class="Declaration_text_data" >I,____________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate my One Person Company (OPC) Private Limited. START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further company compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates.</p>
+                 <ul>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Service Scope and Charges: </b>
+                    <span >I acknowledge that the price covers an OPC Private Limited with 1 director as per the company type and up to ₹5 lakhs in authorized/paid-up capital. Any increase in authorized capital or if I choose to change the company type, additional charges will apply as per Start-Up Sahay's rates.</span>
+                  </p>  
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Name Reservation Trials:</b>
+                   <span>I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹2,000 will apply for 2 more trials, and so on.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Document Submission and Refund Policy:</b>
+                   <span>If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Director's DIN Activation: </b>
+                   <span>I acknowledge that in cases where the director's DIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the director, even if it is me.</span>
+                  </p>
+                 </li>
+                 </ul>
+                  `
+        } else if (service.serviceName === "LLP Company Incorporation") {
+          llpCompany += `
+                  <p class="Declaration_text_head mt-2">
+                    <b>LLP Incorporation Service Acknowledgement:</b>
+                  </p>
+                  <p class="Declaration_text_data" >I,____________________________, engage START-UP SAHAY PRIVATE LIMITED to incorporate our Limited Liability Partnership (LLP). START-UP SAHAY PRIVATE LIMITED will fully support the process, including name reservation, DSC issuance, DIN issuance, and preparation and filing of incorporation documents with the Registrar of Companies (RoC). I acknowledge that the price paid covers only the incorporation services, and any further LLP compliances will be charged separately if I opt for them through Start-Up Sahay, as per their rates. </p>
+                 <ul>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Service Scope and Charges: </b>
+                    <span >I acknowledge that the price covers an LLP with 2 designated partners and up to ₹5 lakhs in capital contribution. Any increase in partners or capital will incur additional charges as per Start-Up Sahay's rates.</span>
+                  </p>  
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Name Reservation Trials:</b>
+                   <span>: I acknowledge that the price I paid includes 2 name reservation trials on the MCA portal. If both are exhausted due to rejection, an additional ₹1,000 will apply for 2 more trials, and so on.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Document Submission and Refund Policy:</b>
+                   <span>If I fail to provide the required documents and request a refund due to service cancellation, Start-Up Sahay will deduct processing costs based on the stage of the process, and I accept this term.</span>
+                  </p>
+                 </li>
+                 <li class="Declaration_text_data">
+                  <p class="mt-2">
+                    <b>Director's DIN Activation: </b>
+                   <span>: I acknowledge that in cases where any process partner's DPIN is already created with inactive status, I will be liable to pay the penalty and consultancy fees to activate it. If not, I will change the partner, even if it is me.</span>
+                  </p>
+                 </li>
+                 </ul>
+                  `
         } else {
           servicesHtml += `<br>`;
         }
@@ -4870,12 +5041,12 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
       if (fundingServicesArray !== "") {
         servicesHtml += `
-        <p class="Declaration_text_head mt-2">
-          <b>${fundingServicesArray} Acknowledgement:</b>
-        </p>
-        <p class="Declaration_text_data">
-          I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-        </p>`;
+          <p class="Declaration_text_head mt-2">
+            <b>${fundingServicesArray} Acknowledgement:</b>
+          </p>
+          <p class="Declaration_text_data">
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned department/authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+          </p>`;
       }
 
       if (incomeTaxServices !== "") {
@@ -4888,22 +5059,59 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       if (privateLimitedCompany !== "") {
         servicesHtml += privateLimitedCompany
       }
-
+      if (opcLimitedCompany !== "") {
+        servicesHtml += opcLimitedCompany
+      }
+      if (llpCompany !== "") {
+        servicesHtml += llpCompany
+      }
       return servicesHtml;
     };
-    const conditional = newData.services.length < 2 ? `<div class="Declaration_text">
+  // Check if there is only one service and if it's one of the specified types
+  const incorporationServices = [
+    "Private Limited Company Incorporation",
+    "OPC Private Limited Company Incorporation",
+    "LLP Company Incorporation"
+  ];
+
+  // Check if there is only one service and if it matches one of the specified types
+  const excludeParagraph =
+    newData.services.length === 1 &&
+    incorporationServices.includes(newData.services[0].serviceName);
+  // Re-application line conditionally included
+  const reapplicationLine = excludeParagraph
+    ? ""
+    : "Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company is eligible for the re-application.";
+    
+    const conditional = newData.services.length < 2 ?
+      `<div class="Declaration_text">
     <p class="Declaration_text_data">
                      I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
                 between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
                 services, and no additional services will be provided without separate payment, even in the case of rejection. 
-                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
-                is eligible for the re-application.
+                ${reapplicationLine}
     </p>
-</div>` : "";
+</div>` :
+      "";
     const serviceKawali = renderServiceKawali();
     const currentDate = new Date();
     const dateOptions = { day: "numeric", month: "long", year: "numeric" };
     const todaysDate = currentDate.toLocaleDateString("en-US", dateOptions);
+    const additionalParagraph = excludeParagraph ?
+      ` <p class="Declaration_text_data">
+        I, understands that because of government regulations and portal, I have no objections if the
+        process takes longer than initially committed, knowing it's just how government schemes
+        related process works.
+    </p>` : `
+    <p class="Declaration_text_data">
+        I, understands that because of government regulations and portal, I have no objections if the
+        process takes longer than initially committed, knowing it's just how government schemes
+        related process works.
+    </p>
+    <p class="Declaration_text_data">
+        As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
+    </p>
+`;
     const mainPageHtml = `
         <div class="PDF_main">
           <section>
@@ -4916,14 +5124,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             <div class="Declaration_text">
               ${serviceKawali}
                
-              <p class="Declaration_text_data">
-                I, understands that because of government regulations and portal, I have no objections if the
-                process takes longer than initially committed, knowing it's just how government schemes
-                related process works.
-              </p>
-              <p class="Declaration_text_data">
-              As I am unfamiliar with the process, I give START-UP SAHAY PRIVATE LIMITED permission to submit the online or offline application in the concerned department on my behalf, if required.
-              </p>
+              ${additionalParagraph}
              
             </div>
          
@@ -4932,7 +5133,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         
         </div>
       `;
-    const totalPaymentHtml = newData.services.length < 2 ? ` <div class="table-data">
+    const totalPaymentHtml = newData.services.length < 2 ?
+      ` <div class="table-data">
 <table class="table table-bordered">
   <thead>
     <th colspan="3">Total Payment Details</th>
@@ -4963,7 +5165,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 1 ? ` <div class="PDF_main">
+    const thirdPage = newData.services.length > 1 ?
+      ` <div class="PDF_main">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -4989,8 +5192,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements 
                 between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified 
                 services, and no additional services will be provided without separate payment, even in the case of rejection. 
-                Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company 
-                is eligible for the re-application.
+                ${reapplicationLine}
         </p>
       </div>
      
@@ -5290,12 +5492,20 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
     const tempPageLength = (newData.services.length === 1 && mailName === "Dhruvi Gohel")
-      ? (newData.services[0].serviceName === "Start-Up India Certificate" || "GST Registration Application Support" || "Private Limited Company Incorporation" ? 2 : 1)
+      ? (newData.services[0].serviceName === "Start-Up India Certificate" ||
+        "GST Registration Application Support" ||
+        "Private Limited Company Incorporation" ||
+        "OPC Private Limited Company Incorporation" ||
+        "LLP Company Incorporation" ? 2 : 1)
       : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
         ? 2
         : 3;
     const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
-      return service.serviceName !== "Start-Up India Certificate" || "GST Registration Application Support" || "Private Limited Company Incorporation"
+      return service.serviceName !== "Start-Up India Certificate" ||
+        "GST Registration Application Support" ||
+        "Private Limited Company Incorporation" ||
+        "OPC Private Limited Company Incorporation" ||
+        "LLP Company Incorporation"
     })) ? 2 : tempPageLength;
 
 
@@ -5311,7 +5521,9 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
       "GST Registration Application Support",
       "I-Create Application",
       "DBS Grant Application",
-      "Private Limited Company Incorporation"
+      "Private Limited Company Incorporation",
+      "OPC Private Limited Company Incorporation",
+      "LLP Company Incorporation"
     ];
 
     const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
