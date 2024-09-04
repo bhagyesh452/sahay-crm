@@ -21,6 +21,7 @@ const NotiModel = require('../models/Notifications.js');
 const RMCertificationModel = require('../models/RMCertificationServices.js');
 const mongoose = require('mongoose'); // Import mongoose
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
+const FollowUpModel = require('../models/FollowUp.js');
 const ObjectId = mongoose.Types.ObjectId;
 
 const storage = multer.diskStorage({
@@ -1346,6 +1347,10 @@ router.post(
         const companyData = await CompanyModel.findOne({
           "Company Name": newData["Company Name"],
         });
+        const projectionData = await FollowUpModel.findOne({
+          companyName : newData["Company Name"]
+        })
+
         if (companyData) {
           const multiBdmName = [];
           if (companyData.maturedBdmName !== newData.bdmName) {
@@ -1360,6 +1365,12 @@ router.post(
           await CompanyModel.findByIdAndUpdate(companyData._id, {
             Status: "Matured"
           });
+        }
+
+        if(projectionData){
+          await FollowUpModel.findOneAndDelete({
+            companyName : newData["Company Name"]
+          })
         }
         const boomDate = new Date();
         const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
@@ -3468,6 +3479,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const teamData = await TeamLeadsModel.findOne({
       "Company Name": newData["Company Name"],
     });
+    const projectionData = await FollowUpModel.findOne({
+      companyName: newData["Company Name"],
+    });
     if (companyData) {
       newData.company = companyData._id;
     }
@@ -3500,6 +3514,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         "Company Name": teamData["Company Name"],
         date: date,
       });
+    }
+    if(projectionData){
+      await FollowUpModel.findOneAndDelete({
+        companyName : newData["Company Name"]
+      })
     }
 
     // After all the database operations, socket.io will work(Even if the mail fails, the booking will be matured and socket.io will hit!)

@@ -2363,13 +2363,9 @@ const handleCloseForwardBdmPopup = () => {
                                                 setSelectedStatus(e.target.value)
                                             }}>
                                             <option selected value='Select Status'>Select Status</option>
-                                            <option value='Not Picked Up'>Not Picked Up</option>
-                                            <option value="Busy">Busy</option>
-                                            <option value="Junk">Junk</option>
-                                            <option value="Not Interested">Not Interested</option>
-                                            <option value="Untouched">Untouched</option>
+                                           
                                             <option value="Interested">Interested</option>
-                                            <option value="Matured">Matured</option>
+                                            
                                             <option value="FollowUp">Followup</option>
                                         </select>
                                     </div>

@@ -31,6 +31,8 @@ import { GrDocumentPerformance } from "react-icons/gr";
 import { MdMedicalServices } from "react-icons/md";
 import AdminEmployeePerformanceReport from "./AdminEmployeePerformanceReport.jsx";
 import ServiceAnalysis from "./ServiceAnalysis.jsx";
+import { MdOutlineWeb } from "react-icons/md";
+import InterestedFollowLeadReport from "./InterestedFollowLeadReport.jsx";
 
 
 
@@ -151,6 +153,15 @@ function Dashboard() {
                                     }
                                     {...a11yProps(3)}
                                 />
+                                <Tab
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <MdOutlineWeb style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{fontSize:"12px"}}>Interested-FollowUp Leads Report</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(3)}
+                                />
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0} className="mat-tab-inner">
@@ -170,6 +181,9 @@ function Dashboard() {
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={5} className="mat-tab-inner">
                             <ServiceAnalysis />
+                        </CustomTabPanel>
+                        <CustomTabPanel value={value} index={6} className="mat-tab-inner">
+                            <InterestedFollowLeadReport />
                         </CustomTabPanel>
                     </div>
                 </div>

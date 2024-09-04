@@ -3163,12 +3163,12 @@ function EmployeePanel() {
                       >
                         <MdOutlinePostAdd className='mr-1' /> Request Data
                       </button>
-                      <button type="button" className="btn mybtn"
+                      {/* <button type="button" className="btn mybtn"
                         onClick={() => setOpenTodaysCollection(true)}
 
                       >
                         <GoPlusCircle className='mr-1' /> Today's General Projection
-                      </button>
+                      </button> */}
                       <button type="button" className="btn mybtn"
                         onClick={() => setOpenPaymentApproval(true)}
 
@@ -4194,12 +4194,16 @@ function EmployeePanel() {
                               <th>
                                 Publish Date
                               </th></>}
+                             
 
                             {
                               (dataStatus === "FollowUp" && (
                                 <th>Add Projection</th>
                               )) ||
                               (dataStatus === "Interested" && (
+                                <th>Add Projection</th>
+                              )) ||
+                              (dataStatus === "Matured" && (
                                 <th>Add Projection</th>
                               ))}
 
@@ -4505,83 +4509,6 @@ function EmployeePanel() {
                                     }}
                                   //className="hide-placeholder"
                                   /></td>}
-                                {/* <td>
-                                  <div
-                                    key={company._id}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                      width: "100px",
-                                    }}
-                                  >
-                                    <p
-                                      className="rematkText text-wrap m-0"
-                                      title={company.Remarks}
-                                    >
-                                      {!company["Remarks"]
-                                        ? "No Remarks"
-                                        : company.Remarks}
-                                    </p>
-
-                                    {(company.bdmAcceptStatus !== "Accept" || (company.Status === "Matured" || company.Status === "Not Interested" || company.Status === "Busy" || company.Status === "Busy" || company.Status === "Not Picked Up" || company.Status === "Junk")) && (
-                                      <IconButton
-                                        onClick={() => {
-                                          functionopenpopupremarks(
-                                            company._id,
-                                            company.Status,
-                                            company["Company Name"],
-                                            company.ename
-                                          );
-                                          //setOpenPopupByBdm(false);
-                                          setCurrentRemarks(company.Remarks);
-                                          setCompanyId(company._id);
-                                        }}
-                                      >
-                                        <EditIcon
-                                          onClick={() => {
-                                            functionopenpopupremarks(
-                                              company._id,
-                                              company.Status,
-                                              company["Company Name"]
-                                            );
-                                            //setOpenPopupByBdm(false);
-                                            setCurrentRemarks(company.Remarks);
-                                            setCompanyId(company._id);
-                                          }}
-                                          style={{
-                                            width: "12px",
-                                            height: "12px",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    )}
-                                    {company.bdmAcceptStatus === "Accept" && (company.Status !== "Matured" && company.Status !== "Not Interested" && company.Status !== "Busy" && company.Status !== "Busy" && company.Status !== "Not Picked Up" && company.Status !== "Junk") && (
-                                      <IconButton
-                                        onClick={() => {
-                                          functionopenpopupremarksEdit(
-                                            company._id,
-                                            company.Status,
-                                            company["Company Name"],
-                                            company.ename
-                                          );
-                                          //setOpenPopupByBdm(false);
-                                          //setCurrentRemarks(company.Remarks);
-                                          setCompanyId(company._id);
-                                        }}
-                                      >
-                                        <IconEye
-                                          style={{
-                                            width: "14px",
-                                            height: "14px",
-                                            color: "#d6a10c",
-                                            cursor: "pointer",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    )}
-                                  </div>
-                                </td> */}
                                 {dataStatus === "Forwarded" && <td>
                                   <div key={company._id}
                                     style={{
@@ -4635,10 +4562,51 @@ function EmployeePanel() {
                                 {dataStatus === "Matured" && <>
                                   <td>{functionCalculateBookingDate(company._id)}</td>
                                   <td>{functionCalculatePublishDate(company._id)}</td>
+                                  <td>
+                                          {company &&
+                                            projectionData &&
+                                            projectionData.some(
+                                              (item) =>
+                                                item.companyName ===
+                                                company["Company Name"]
+                                            ) ? (
+                                            <IconButton>
+                                              <RiEditCircleFill
+                                                onClick={() => {
+                                                  functionopenprojection(
+                                                    company["Company Name"]
+                                                  );
+                                                }}
+                                                style={{
+                                                  cursor: "pointer",
+                                                  width: "17px",
+                                                  height: "17px",
+                                                }}
+                                                color="#fbb900"
+                                              />
+                                            </IconButton>
+                                          ) : (
+                                            <IconButton>
+                                              <RiEditCircleFill
+                                                onClick={() => {
+                                                  functionopenprojection(
+                                                    company["Company Name"]
+                                                  );
+                                                  setIsEditProjection(true);
+                                                }}
+                                                style={{
+                                                  cursor: "pointer",
+                                                  width: "17px",
+                                                  height: "17px",
+                                                }}
+                                              />
+                                            </IconButton>
+                                          )}
+                                        </td>
 
                                 </>}
                                 {(dataStatus === "FollowUp" ||
-                                  dataStatus === "Interested") && (
+                                  dataStatus === "Interested" ) && (
                                     <>
                                       {company.bdmAcceptStatus ===
                                         "NotForwarded" ? (
@@ -4723,30 +4691,6 @@ function EmployeePanel() {
                                   {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
                                   <td>{formatDateNew(company.bdeForwardDate)}</td>
                                 </>)}
-                                {/* {dataStatus === "Forwarded" && (
-                                  <td>
-                                    {company.bdmAcceptStatus ===
-                                      "NotForwarded" && (
-                                      <TiArrowForward
-                                        onClick={() => {
-                                          handleConfirmAssign(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.Status, // Corrected parameter name
-                                            company.ename,
-                                            company.bdmAcceptStatus
-                                          );
-                                        }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="grey"
-                                      />
-                                    )}
-                                  </td>
-                                )} */}
                                 {
                                   dataStatus === "Forwarded" && (
                                     <td>
@@ -4873,98 +4817,6 @@ function EmployeePanel() {
                                     </td>
                                   )
                                 ) : null}
-
-                                {/* {dataStatus === "Matured" && (
-                                  <>
-                                    <td>
-                                      <div className="d-flex">
-                                        <IconButton
-                                          style={{ marginRight: "5px" }}
-                                          onClick={() => {
-                                            setMaturedID(company._id);
-
-                                            functionopenAnchor();
-                                          }}
-                                        >
-                                          <IconEye
-                                            style={{
-                                              width: "14px",
-                                              height: "14px",
-                                              color: "#d6a10c",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </IconButton>
-
-                                        <IconButton
-                                          onClick={() => {
-                                            handleRequestDelete(
-                                              company._id,
-                                              company["Company Name"]
-                                            );
-                                          }}
-                                          disabled={requestDeletes.some(
-                                            (item) =>
-                                              item.companyId === company._id &&
-                                              item.request === undefined
-                                          )}
-                                        >
-                                          <DeleteIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              color: "#f70000",
-                                              width: "14px",
-                                              height: "14px",
-                                            }}
-                                          />
-                                        </IconButton>
-                                        <IconButton
-                                          onClick={() => {
-                                            handleEditClick(company._id);
-                                          }}
-                                        // onClick={() => {
-                                        //   setMaturedID(company._id);
-                                        //   setTimeout(() => {
-                                        //     setEditFormOpen(true);
-                                        //   }, 1000);
-                                        // }}
-                                        // disabled={totalBookings.some(
-                                        //   (obj) =>
-                                        //     obj["Company Name"] ===
-                                        //     company["Company Name"]
-                                        // )}
-                                        >
-                                          <Edit
-                                            style={{
-                                              cursor: "pointer",
-                                              color: "#109c0b",
-                                              width: "14px",
-                                              height: "14px",
-                                            }}
-                                          />
-                                        </IconButton>
-                                        <IconButton
-                                          onClick={() => {
-                                            setCompanyName(
-                                              company["Company Name"]
-                                            );
-                                            setAddFormOpen(true);
-                                          }}
-                                        >
-                                          <AddCircleIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              color: "#4f5b74",
-                                              width: "14px",
-                                              height: "14px",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </div>
-                                    </td>
-                                  </>
-                                )} */}
-                                {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
                           </tbody>
@@ -4978,15 +4830,6 @@ function EmployeePanel() {
                             </tr>
                           </tbody>
                         )}
-                        {/* {companies.length === 0 && !loading && dataStatus === "Matured" && (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11" className="p-2 particular">
-                              <Nodata />
-                            </td>
-                          </tr>
-                        </tbody>
-                      )} */}
                       </table>
                     </div>
                     {currentData.length !== 0 && (
@@ -5210,37 +5053,6 @@ function EmployeePanel() {
                 />
                 <label htmlFor="general">General Data </label>
               </div>
-              {/* <div
-                style={
-                  selectedOption === "notgeneral"
-                    ? {
-                      backgroundColor: "#ffb900",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                      color: "white",
-                    }
-                    : {
-                      backgroundColor: "white",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                    }
-                }
-                className="notgeneral form-control col"
-                onClick={() => {
-                  setSelectedOption("notgeneral");
-                }}>
-                <input
-                  type="radio"
-                  id="notgeneral"
-                  value="notgeneral"
-                  style={{
-                    display: "none",
-                  }}
-                  checked={selectedOption === "notgeneral"}
-                  onChange={handleOptionChange}
-                />
-                <label htmlFor="notgeneral">Manual</label>
-              </div> */}
             </div>
             {selectedOption === "notgeneral" ? (
               <>
@@ -5322,76 +5134,6 @@ function EmployeePanel() {
           </button>
         </div>
       </Dialog>
-      {/* --------------------------  Inco-filter ---------------- */}
-      {/* <Dialog
-        open={openIncoDate}
-        onClose={handleCloseIncoDate}
-        fullWidth
-        maxWidth="xs"
-      >
-        <DialogContent>
-          <div>
-            <input
-              type="checkbox"
-              onChange={(e) => {
-                setIncoFilter(e.target.value);
-
-                setEmployeeData(
-                  employeeData.sort((a, b) =>
-                    a["Company Incorporation Date  "].localeCompare(
-                      b["Company Incorporation Date  "]
-                    )
-                  )
-                );
-              }}
-              name="oldest"
-              id="oldest"
-              value="oldest"
-              checked={incoFilter === "oldest"}
-            />{" "}
-            Oldest
-          </div>
-          <div>
-            <input
-              onChange={(e) => {
-                setIncoFilter(e.target.value);
-                setEmployeeData(
-                  employeeData.sort((a, b) =>
-                    b["Company Incorporation Date  "].localeCompare(
-                      a["Company Incorporation Date  "]
-                    )
-                  )
-                );
-              }}
-              type="checkbox"
-              value="newest"
-              name="newest"
-              id="newest"
-              checked={incoFilter === "newest"}
-            />
-            Newest
-          </div>
-          <div>
-            <input
-              onChange={(e) => {
-                setIncoFilter(e.target.value);
-                setEmployeeData(
-                  employeeData.sort((a, b) =>
-                    b["AssignDate"].localeCompare(a["AssignDate"])
-                  )
-                );
-              }}
-              type="checkbox"
-              value="removeFilter"
-              name="removeFilter"
-              id="removeFilter"
-              checked={incoFilter === "removeFilter"}
-            />
-            None
-          </div>
-        </DialogContent>
-      </Dialog> */}
-
       {/* Remarks edit icon pop up*/}
       <Dialog className='My_Mat_Dialog'
         open={openRemarks}
@@ -5577,105 +5319,7 @@ function EmployeePanel() {
         </DialogContent>
       </Dialog>
 
-      {/* ADD Leads starts here */}
 
-      {/* <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
-        <DialogTitle>
-          Company Info{" "}
-          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
-        </DialogTitle>
-        <DialogContent>
-          <div className="modal-dialog modal-lg" role="document">
-            <div className="modal-content">
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Company Name</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Your Company Name"
-                    onChange={(e) => {
-                      setCname(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Company Email</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="example@gmail.com"
-                    onChange={(e) => {
-                      setCemail(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <div className="mb-3">
-                      <label className="form-label">Company Number</label>
-                      <input
-                        type="number"
-                        onChange={(e) => {
-                          setCnumber(e.target.value);
-                        }}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-6">
-                    <div className="mb-3">
-                      <label className="form-label">
-                        Company Incorporation Date
-                      </label>
-                      <input
-                        onChange={(e) => {
-                          setCidate(e.target.value);
-                        }}
-                        type="date"
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <div className="mb-3">
-                      <label className="form-label">City</label>
-                      <input
-                        onChange={(e) => {
-                          setCity(e.target.value);
-                        }}
-                        type="text"
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-6">
-                    <div className="mb-3">
-                      <label className="form-label">State</label>
-                      <input
-                        onChange={(e) => {
-                          setState(e.target.value);
-                        }}
-                        type="text"
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-        <button onClick={handleSubmitData} className="btn btn-primary">
-          Submit
-        </button>
-      </Dialog> */}
       <Dialog className='My_Mat_Dialog' open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
         <DialogTitle>
           Company Info{" "}

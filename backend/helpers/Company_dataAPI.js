@@ -93,7 +93,9 @@ router.post("/update-status/:id", async (req, res) => {
     }
 
     // Update the status field in the CompanyModel
-    await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
+    await CompanyModel.findByIdAndUpdate(id, { 
+      Status: newStatus,
+     });
 
     // Check if newStatus is either "FollowUp" or "Interested"
     if (newStatus === "FollowUp" || newStatus === "Interested") {
@@ -106,7 +108,6 @@ router.post("/update-status/:id", async (req, res) => {
         // If the record exists, update old status, new status, date, and time
         leadHistory.oldStatus = oldStatus;
         leadHistory.newStatus = newStatus;
-        leadHistory.Count = 2
       } else {
         // If the record does not exist, create a new one with the company name, ename, and statuses
         leadHistory = new LeadHistoryForInterestedandFollowModel({
@@ -117,7 +118,6 @@ router.post("/update-status/:id", async (req, res) => {
           newStatus: newStatus,
           date: new Date(),  // Convert the date string to a Date object
           time: time,
-          Count: 1
         });
       }
 
