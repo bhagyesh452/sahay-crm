@@ -3265,7 +3265,10 @@ router.post(
             "Income Tax Exemption Application",
             "GST Registration Application Support",
             "I-Create Application",
-            "DBS Grant Application"
+            "DBS Grant Application",
+            "Private Limited Company Incorporation",
+            "OPC Private Limited Company Incorporation",
+            "LLP Company Incorporation"
           ];
 
           const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
@@ -5067,22 +5070,22 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return servicesHtml;
     };
-  // Check if there is only one service and if it's one of the specified types
-  const incorporationServices = [
-    "Private Limited Company Incorporation",
-    "OPC Private Limited Company Incorporation",
-    "LLP Company Incorporation"
-  ];
+    // Check if there is only one service and if it's one of the specified types
+    const incorporationServices = [
+      "Private Limited Company Incorporation",
+      "OPC Private Limited Company Incorporation",
+      "LLP Company Incorporation"
+    ];
 
-  // Check if there is only one service and if it matches one of the specified types
-  const excludeParagraph =
-    newData.services.length === 1 &&
-    incorporationServices.includes(newData.services[0].serviceName);
-  // Re-application line conditionally included
-  const reapplicationLine = excludeParagraph
-    ? ""
-    : "Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company is eligible for the re-application.";
-    
+    // Check if there is only one service and if it matches one of the specified types
+    const excludeParagraph =
+      newData.services.length === 1 &&
+      incorporationServices.includes(newData.services[0].serviceName);
+    // Re-application line conditionally included
+    const reapplicationLine = excludeParagraph
+      ? ""
+      : "Re-application support will be provided by Start-Up Sahay without any extra charges if and whenever the company is eligible for the re-application.";
+
     const conditional = newData.services.length < 2 ?
       `<div class="Declaration_text">
     <p class="Declaration_text_data">
