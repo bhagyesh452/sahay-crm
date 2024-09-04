@@ -42,8 +42,8 @@ function EmployeeAssetDetails({ serviceName, departmentName, back }) {
       const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${encodedServiceName}`);
       const res2 = await axios.get(`${secretKey}/department/fetchService/${encodedServiceName}`);
       
-      console.log("Fetched service is :", res.data.data);
-      console.log("Service description is :", res2.data.data.serviceDescription);
+      // console.log("Fetched service is :", res.data.data);
+      // console.log("Service description is :", res2.data.data.serviceDescription);
       
       setService(res.data.data);
       setServiceDescription(res2.data.data.serviceDescription);
