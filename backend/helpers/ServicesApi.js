@@ -109,10 +109,34 @@ router.get("/fetchServices", async (req, res) => {
 });
 
 // Fetch service from service name :
+// router.get("/fetchServiceFromServiceName/:serviceName", async (req, res) => {
+//     const { serviceName } = req.params;
+//     try {
+//         const service = await ServicesModel.findOne({ serviceName: serviceName });
+//         res.status(200).json({ result: true, message: "Service successfully fetched", data: service });
+//     } catch (error) {
+//         res.status(500).json({ result: false, message: "Error fetching service", error: error });
+//     }
+// });
 router.get("/fetchServiceFromServiceName/:serviceName", async (req, res) => {
     const { serviceName } = req.params;
+
     try {
-        const service = await ServicesModel.findOne({ serviceName: serviceName });
+        // Decode the service name in case it was URL-encoded
+        const decodedServiceName = decodeURIComponent(serviceName);
+
+        // Search for the service name, handling the slash replacement logic
+        const service = await ServicesModel.findOne({
+            $or: [
+                { serviceName: decodedServiceName }, // Exact match
+                { serviceName: decodedServiceName.replace(/-/g, "/") } // Handle alternate names
+            ]
+        });
+
+        if (!service) {
+            return res.status(404).json({ result: false, message: "Service not found" });
+        }
+
         res.status(200).json({ result: true, message: "Service successfully fetched", data: service });
     } catch (error) {
         res.status(500).json({ result: false, message: "Error fetching service", error: error });
@@ -146,7 +170,7 @@ router.put("/updateService/:serviceName/:id", upload.fields([
     try {
         const { serviceName } = req.params;
 
-        const {departmentName, objectives, benefits, requiredDocuments, eligibilityRequirements, process, deliverables, timeline, portfolio} = req.body;
+        const { departmentName, objectives, benefits, requiredDocuments, eligibilityRequirements, process, deliverables, timeline, portfolio } = req.body;
 
         const teamInfo = req.body.teamInfo ? JSON.parse(req.body.teamInfo) : {};
         const { employeeName, headName } = teamInfo;
@@ -174,25 +198,25 @@ router.put("/updateService/:serviceName/:id", upload.fields([
         const updatedServiceData = {
             ...req.body,
 
-            ...(departmentName && {departmentName: departmentName}),
-            ...(serviceName && {serviceName: serviceName}),
+            ...(departmentName && { departmentName: departmentName }),
+            ...(serviceName && { serviceName: serviceName }),
 
-            ...(objectives && {objectives: objectives}),
-            ...(benefits && {benefits: benefits}),
+            ...(objectives && { objectives: objectives }),
+            ...(benefits && { benefits: benefits }),
 
-            ...(requiredDocuments && {requiredDocuments: requiredDocuments}),
-            ...(eligibilityRequirements && {eligibilityRequirements: eligibilityRequirements}),
+            ...(requiredDocuments && { requiredDocuments: requiredDocuments }),
+            ...(eligibilityRequirements && { eligibilityRequirements: eligibilityRequirements }),
 
-            ...(process && {process: process}),
-            ...(deliverables && {deliverables: deliverables}),
-            ...(timeline && {timeline: timeline}),
+            ...(process && { process: process }),
+            ...(deliverables && { deliverables: deliverables }),
+            ...(timeline && { timeline: timeline }),
 
             concernTeam: {
-                ...(employeeName && {employeeNames: Array.isArray(employeeName) ? employeeName : [employeeName]}),
-                ...(headName && {headNames: Array.isArray(headName) ? headName : [headName]})
+                ...(employeeName && { employeeNames: Array.isArray(employeeName) ? employeeName : [employeeName] }),
+                ...(headName && { headNames: Array.isArray(headName) ? headName : [headName] })
             },
-            ...(portfolio && {portfolio: portfolio}),
-            ...(documentDetails.length > 0 && {documents: documentDetails})
+            ...(portfolio && { portfolio: portfolio }),
+            ...(documentDetails.length > 0 && { documents: documentDetails })
         };
 
         // Find the service by serviceName and update it
@@ -213,9 +237,9 @@ router.put("/updateService/:serviceName/:id", upload.fields([
 });
 
 router.put("/updateDepartmentInServiceModel/:departmentName", async (req, res) => {
-    const {departmentName} = req.params;
-    const {updatedDepartmentName} = req.body;
-    
+    const { departmentName } = req.params;
+    const { updatedDepartmentName } = req.body;
+
     // console.log("Old department name in service model :", departmentName);
     // console.log("UPdated department name in service model :", updatedDepartmentName);
 
@@ -224,15 +248,15 @@ router.put("/updateDepartmentInServiceModel/:departmentName", async (req, res) =
             { departmentName: departmentName },
             { $set: { departmentName: updatedDepartmentName } }
         );
-        res.status(200).json({result: true, message: "Department name updated successfully", data: updateDepartment});
+        res.status(200).json({ result: true, message: "Department name updated successfully", data: updateDepartment });
     } catch (error) {
-        res.status(500).json({result: false, message: "Error updating department name", error: error});
+        res.status(500).json({ result: false, message: "Error updating department name", error: error });
     }
 });
 
 router.put("/updateServiceInServiceModel/:serviceName", async (req, res) => {
-    const {serviceName} = req.params;
-    const {updatedDepartmentName, updatedServiceName} = req.body;
+    const { serviceName } = req.params;
+    const { updatedDepartmentName, updatedServiceName } = req.body;
 
     // console.log("Old service name in department model :", serviceName);
     // console.log("Updated department name in department model :", updatedDepartmentName);
@@ -243,20 +267,20 @@ router.put("/updateServiceInServiceModel/:serviceName", async (req, res) => {
             { serviceName: serviceName },
             { $set: { departmentName: updatedDepartmentName, serviceName: updatedServiceName } }
         );
-        res.status(200).json({result: true, message: "Service name updated successfully", data: updateService});
+        res.status(200).json({ result: true, message: "Service name updated successfully", data: updateService });
     } catch (error) {
-        res.status(500).json({result: false, message: "Error updating service name", error: error});
+        res.status(500).json({ result: false, message: "Error updating service name", error: error });
     }
 });
 
 router.delete("/deleteServiceFromServiceModel/:serviceName", async (req, res) => {
-    const {serviceName} = req.params;
+    const { serviceName } = req.params;
     try {
         const deletedService = await ServicesModel.findOneAndDelete(
             { serviceName: serviceName });
-        res.status(200).json({result: true, message: "Service successfully deleted", data: deletedService});
+        res.status(200).json({ result: true, message: "Service successfully deleted", data: deletedService });
     } catch (error) {
-        res.status(500).json({result: false, message: "Error deleting service", error: error});
+        res.status(500).json({ result: false, message: "Error deleting service", error: error });
     }
 });
 

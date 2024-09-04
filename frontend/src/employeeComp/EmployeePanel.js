@@ -3163,12 +3163,12 @@ function EmployeePanel() {
                       >
                         <MdOutlinePostAdd className='mr-1' /> Request Data
                       </button>
-                      <button type="button" className="btn mybtn"
+                      {/* <button type="button" className="btn mybtn"
                         onClick={() => setOpenTodaysCollection(true)}
 
                       >
                         <GoPlusCircle className='mr-1' /> Today's General Projection
-                      </button>
+                      </button> */}
                       <button type="button" className="btn mybtn"
                         onClick={() => setOpenPaymentApproval(true)}
 
