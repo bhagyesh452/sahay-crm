@@ -468,60 +468,60 @@ function EmployeeMaturedBookings() {
   // Shows today's projection pop-up :
   const [shouldShowCollection, setShouldShowCollection] = useState(false);
   const [currentDate, setCurrentDate] = useState(getCurrentDate());
-  useEffect(() => {
-    const checkAndShowCollection = () => {
-      const designation = localStorage.getItem('designation');
-      const loginTime = new Date(localStorage.getItem('loginTime'));
-      const loginDate = localStorage.getItem('loginDate');
+  // useEffect(() => {
+  //   const checkAndShowCollection = () => {
+  //     const designation = localStorage.getItem('designation');
+  //     const loginTime = new Date(localStorage.getItem('loginTime'));
+  //     const loginDate = localStorage.getItem('loginDate');
 
-      const currentDateTime = new Date(); // Current date and time in local time
+  //     const currentDateTime = new Date(); // Current date and time in local time
 
-      // Extract current hour and minute
-      const currentHour = currentDateTime.getHours();
-      // console.log("Current hour is :", currentHour);
+  //     // Extract current hour and minute
+  //     const currentHour = currentDateTime.getHours();
+  //     // console.log("Current hour is :", currentHour);
 
-      // Get current date in YYYY-MM-DD format
-      const newCurrentDate = getCurrentDate();
+  //     // Get current date in YYYY-MM-DD format
+  //     const newCurrentDate = getCurrentDate();
 
-      // Check if there is an old collectionShown flag and remove it if the date has passed
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith(`${userId}_`) && key.endsWith('_collectionShown')) {
-          const storedDate = key.split('_')[1];
-          if (storedDate !== newCurrentDate) {
-            localStorage.removeItem(key);
-          }
-        }
-      }
+  //     // Check if there is an old collectionShown flag and remove it if the date has passed
+  //     for (let i = 0; i < localStorage.length; i++) {
+  //       const key = localStorage.key(i);
+  //       if (key.startsWith(`${userId}_`) && key.endsWith('_collectionShown')) {
+  //         const storedDate = key.split('_')[1];
+  //         if (storedDate !== newCurrentDate) {
+  //           localStorage.removeItem(key);
+  //         }
+  //       }
+  //     }
 
-      // Check conditions to show the collection pop-up
-      if (
-        designation === 'Sales Executive' &&
-        loginDate === newCurrentDate && // Check if it's the same login date
-        currentHour >= 10 &&
-        !localStorage.getItem(`${userId}_${newCurrentDate}_collectionShown`)
-      ) {
-        setShouldShowCollection(true);
-        localStorage.setItem(`${userId}_${newCurrentDate}_collectionShown`, 'true'); // Set the flag to prevent showing again for this userId on this date
-      }
-    };
+  //     // Check conditions to show the collection pop-up
+  //     if (
+  //       designation === 'Sales Executive' &&
+  //       loginDate === newCurrentDate && // Check if it's the same login date
+  //       currentHour >= 10 &&
+  //       !localStorage.getItem(`${userId}_${newCurrentDate}_collectionShown`)
+  //     ) {
+  //       setShouldShowCollection(true);
+  //       localStorage.setItem(`${userId}_${newCurrentDate}_collectionShown`, 'true'); // Set the flag to prevent showing again for this userId on this date
+  //     }
+  //   };
 
-    const updateDateAndCheckCollection = () => {
-      const newCurrentDate = getCurrentDate();
-      if (newCurrentDate !== currentDate) {
-        setCurrentDate(newCurrentDate);
-      }
-      checkAndShowCollection();
-    };
+  //   const updateDateAndCheckCollection = () => {
+  //     const newCurrentDate = getCurrentDate();
+  //     if (newCurrentDate !== currentDate) {
+  //       setCurrentDate(newCurrentDate);
+  //     }
+  //     checkAndShowCollection();
+  //   };
 
-    checkAndShowCollection(); // Call the function initially
+  //   checkAndShowCollection(); // Call the function initially
 
-    // Set an interval to check every minute
-    const intervalId = setInterval(updateDateAndCheckCollection, 60000); // 60000 ms = 1 minute
+  //   // Set an interval to check every minute
+  //   const intervalId = setInterval(updateDateAndCheckCollection, 60000); // 60000 ms = 1 minute
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [userId, currentDate]); // Trigger when userId or currentDate changes
+  //   // Cleanup interval on component unmount
+  //   return () => clearInterval(intervalId);
+  // }, [userId, currentDate]); // Trigger when userId or currentDate changes
 
   // Function to get current date in YYYY-MM-DD format
   function getCurrentDate() {
