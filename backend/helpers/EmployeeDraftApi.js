@@ -36,7 +36,7 @@ const upload = multer({ storage: storage });
 
 router.post("/saveEmployeeDraft/", async (req, res) => {
     try {
-        const { firstName, middleName, lastName, gender, dob, personalPhoneNo, personalEmail, currentAddress, permanentAddress  } = req.body;
+        const { firstName, middleName, lastName, gender, dob, personalPhoneNo, personalEmail, currentAddress, permanentAddress } = req.body;
         const emp = {
             ...req.body,
             ename: `${firstName} ${lastName}`,
@@ -85,7 +85,7 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
 ]), async (req, res) => {
 
     const { empId } = req.params;
-    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, employeeID, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo, activeStep } = req.body;
+    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, employeeID, designation, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo, activeStep } = req.body;
     // console.log("Reqest file is :", req.files);
     // console.log("Emp id is :", employeeID);
     // console.log("Active step :", activeStep);
@@ -114,19 +114,37 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
             return res.status(404).json({ result: false, message: "Employee not found" });
         }
 
+        let newDesignation = designation;
+
+        if ((designation) === "Business Development Executive" || designation === "Business Development Manager") {
+            newDesignation = "Sales Executive";
+        } else if (designation === "Floor Manager") {
+            newDesignation = "Sales Manager";
+        } else if (designation === "Data Analyst") {
+            newDesignation = "Data Manager";
+        } else if (designation === "Admin Head") {
+            newDesignation = "RM-Certification";
+        } else if (designation === "HR Manager") {
+            newDesignation = "HR";
+        } else {
+            newDesignation = designation;
+        }
+
         const updateFields = {
             ...req.body,
-            ...(activeStep && {activeStep: activeStep}),
+            ...(activeStep && { activeStep: activeStep }),
 
             ...(firstName || middleName || lastName) && {
                 empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
             },
             ...(dob && { dob }),
-            ...(gender && {gender}),
+            ...(gender && { gender }),
             ...(personalPhoneNo && { personal_number: personalPhoneNo }),
             ...(personalEmail && { personal_email: personalEmail }),
 
             ...(employeeID && { employeeID: employeeID }),
+            ...(designation && {designation: newDesignation}),
+            ...(designation && {newDesignation: designation}),
             ...(officialNo && { number: officialNo }),
             ...(officialEmail && { email: officialEmail }),
             ...(joiningDate && { jdate: joiningDate }),

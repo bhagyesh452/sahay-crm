@@ -558,21 +558,21 @@ export default function HorizontalNonLinearStepper() {
         activeStep, employeeID
       };
 
-      console.log("Employeement Info before saving is :", employeementInfo)
+      // console.log("Employeement Info before saving is :", employeementInfo)
       const url = `${secretKey}/employeeDraft/${!empId ? 'saveEmployeeDraft' : `updateEmployeeDraft/${empId}`}`;
 
       try {
         if (!empId) {
           res = await axios.post(url, requestBody);
-          console.log(`Employee created successfully at step-${activeStep}:`, res.data);
+          // console.log(`Employee created successfully at step-${activeStep}:`, res.data);
         } else {
           res = await axios.put(url, requestBody, {
             headers: activeStep === 2 || activeStep === 4 ? { 'Content-Type': 'multipart/form-data' } : {}
           });
-          console.log(`Employee updated successfully at step-${activeStep}:`, res.data);
+          // console.log(`Employee updated successfully at step-${activeStep}:`, res.data);
         }
 
-        console.log(`Employee ${!empId ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
+        // console.log(`Employee ${!empId ? 'created' : 'updated'} successfully at step-${activeStep}:`, res.data);
 
         setCompleted((prevCompleted) => ({
           ...prevCompleted,
@@ -602,11 +602,11 @@ export default function HorizontalNonLinearStepper() {
   };
 
   const handleComplete = async () => {
-    console.log("personalInfo before sending :", personalInfo);
-    console.log("employeementInfo before sending :", employeementInfo);
-    console.log("payrollInfo before sending :", payrollInfo);
-    console.log("emergencyInfo before sending :", emergencyInfo);
-    console.log("empDocumentInfo before sending :", empDocumentInfo);
+    // console.log("personalInfo before sending :", personalInfo);
+    // console.log("employeementInfo before sending :", employeementInfo);
+    // console.log("payrollInfo before sending :", payrollInfo);
+    // console.log("emergencyInfo before sending :", emergencyInfo);
+    // console.log("empDocumentInfo before sending :", empDocumentInfo);
     try {
       // Create the employee
       const res1 = await axios.post(`${secretKey}/employee/einfo`, {
@@ -615,19 +615,20 @@ export default function HorizontalNonLinearStepper() {
         payrollInfo,
         emergencyInfo,
         empDocumentInfo,
-        employeeID: employeeID
+        empId: empId,
+        employeeID: employeeID,
         // }, {
         //   headers: {
         //     'Content-Type': 'multipart/form-data'
         //   }
       });
 
-      console.log("Created employee is :", res1.data);
+      // console.log("Created employee is :", res1.data);
 
       // If creation is successful, delete from draft
       if (res1.status === 200) {
         const res2 = await axios.delete(`${secretKey}/employeeDraft/deleteEmployeeDraft/${empId}`);
-        console.log("Employee successfully deleted from draft model :", res2.data);
+        // console.log("Employee successfully deleted from draft model :", res2.data);
 
         Swal.fire("success", "Employee created successfully!", "success");
         navigate("/hr/employees");
@@ -700,7 +701,7 @@ export default function HorizontalNonLinearStepper() {
     try {
       const res = await axios.get(`${secretKey}/employeeDraft/fetchEmployeeDraft/`);
       const data = res.data.data[0];
-      console.log("Fetched employee is :", data);
+      // console.log("Fetched employee is :", data);
       setEmpId(data._id);
       // setActiveStep(data.activeStep);
 
@@ -719,7 +720,7 @@ export default function HorizontalNonLinearStepper() {
       setEmployeementInfo({
         employeeID: data.employeeID || "",
         department: data.department || "",
-        designation: data.designation || "",
+        designation: data.newDesignation || "",
         joiningDate: convertToDateInputFormat(data.jdate) || "",
         branch: data.branchOffice || "",
         employeementType: data.employeementType || "",
