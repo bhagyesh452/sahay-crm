@@ -74,7 +74,7 @@ import TodaysCollection from "./TodaysCollection.jsx";
 import { GoPlusCircle } from "react-icons/go";
 import { jwtDecode } from "jwt-decode";
 import { MdPayment } from "react-icons/md";
-import EmployeeAssetDetails from "./EmployeeNotificationComponents/EmployeeAssetDetails.jsx";
+import EmployeeAssetDetails from "./EmployeeAssetDetails.jsx";
 // import DrawerComponent from "../components/Drawer.js";
 
 
