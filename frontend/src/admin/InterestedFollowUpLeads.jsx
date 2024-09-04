@@ -1468,7 +1468,8 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                     selectedFowradedStatus,
                     selectedStatusModificationDate,
                     page,  // Start from the first page
-                    limit
+                    limit,
+                    isInterestedSection: true  // Adding the isInterestedSection parameter
                 }
             });
             if (!selectedStatus &&

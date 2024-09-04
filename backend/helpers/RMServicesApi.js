@@ -1825,7 +1825,7 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
 
     if (letterStatus === "Letter Received") {
       // Update additional fields if letterStatus is "Letter Received"
-      updateFields.subCategoryStatus = "KYC Pending";
+      updateFields.subCategoryStatus = "Application Pending";
     }
 
     // Perform the update in AdminExecutiveModel
@@ -1843,7 +1843,7 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
 
     if (letterStatus === "Letter Received") {
       // Update dscStatus field if letterStatus is "Letter Received"
-      updateFieldsRm.dscStatus = "KYC Pending";
+      updateFieldsRm.dscStatus = "Application Pending";
     }
 
     // Perform the update in RMCertificationModel
@@ -1899,7 +1899,7 @@ router.post(`/update-letter-rmcert/`, async (req, res) => {
 
     if (letterStatus === "Letter Received") {
       // Update additional fields if letterStatus is "Letter Received"
-      updateFields.dscStatus = "KYC Pending";
+      updateFields.dscStatus = "Application Pending";
     }
 
     // Perform the update in AdminExecutiveModel
@@ -1917,7 +1917,7 @@ router.post(`/update-letter-rmcert/`, async (req, res) => {
 
     if (letterStatus === "Letter Received") {
       // Update dscStatus field if letterStatus is "Letter Received"
-      updateFieldsAdmin.subCategoryStatus = "KYC Pending";
+      updateFieldsAdmin.subCategoryStatus = "Application Pending";
     }
 
     // Perform the update in RMCertificationModel
