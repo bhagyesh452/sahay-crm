@@ -26,9 +26,9 @@ function InterestedFollowLeadReport() {
     const [finalEmployeeData, setFinalEmployeeData] = useState([])
     const [newSortType, setNewSortType] = useState({
         forwardedcase: "none",
-        interestedcase:"none",
-        followupcase:"none",
-        
+        interestedcase: "none",
+        followupcase: "none",
+
     });
     const [employeeData, setEmployeeData] = useState([]);
     const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
@@ -103,7 +103,7 @@ function InterestedFollowLeadReport() {
             setLoading(false)
         }
     };
-    
+
     //-------------------------------------fetching company data ----------------
 
     const fetchCompanyData = async () => {
@@ -126,7 +126,7 @@ function InterestedFollowLeadReport() {
     }, []);
 
 
-        //------------------------fetching follow data-------------------------------------------
+    //------------------------fetching follow data-------------------------------------------
 
     const fetchFollowUpData = async () => {
         try {
@@ -376,7 +376,7 @@ function InterestedFollowLeadReport() {
         const sortedData = [...forwardEmployeeData].sort((a, b) => {
             const aInterestedCount = leadHistoryData.filter(company => company.ename === a.ename && company.newStatus === "Interested").length;
             const bInterestedCount = leadHistoryData.filter(company => company.ename === b.ename && company.newStatus === "Interested").length;
-    
+
             if (sortType === "ascending") {
                 return aInterestedCount - bInterestedCount;
             } else if (sortType === "descending") {
@@ -385,22 +385,22 @@ function InterestedFollowLeadReport() {
                 return 0; // No sorting
             }
         });
-    
+
         return sortedData;
     };
     const handleSortInterestedCases = (sortType) => {
         if (sortType === "none") {
             setForwardEmployeeData(forwardEmployeeDataNew); // Restore original data
         } else {
-        const sortedData = sortForwardEmployeeData(sortType);
-        setForwardEmployeeData(sortedData); // Update the state with sorted data
+            const sortedData = sortForwardEmployeeData(sortType);
+            setForwardEmployeeData(sortedData); // Update the state with sorted data
         }
-    };    
+    };
     const sortForwardEmployeeDataByFollowUp = (sortType) => {
         const sortedData = [...forwardEmployeeData].sort((a, b) => {
             const aFollowUpCount = leadHistoryData.filter(company => company.ename === a.ename && company.newStatus === "FollowUp").length;
             const bFollowUpCount = leadHistoryData.filter(company => company.ename === b.ename && company.newStatus === "FollowUp").length;
-    
+
             if (sortType === "ascending") {
                 return aFollowUpCount - bFollowUpCount;
             } else if (sortType === "descending") {
@@ -409,40 +409,40 @@ function InterestedFollowLeadReport() {
                 return 0; // No sorting
             }
         });
-    
+
         return sortedData;
     };
     const handleSortFollowUpCase = (sortType) => {
         if (sortType === "none") {
             setForwardEmployeeData(forwardEmployeeDataNew); // Restore original data
         } else {
-        const sortedData = sortForwardEmployeeDataByFollowUp(sortType);
-        setForwardEmployeeData(sortedData); // Update the state with sorted data
+            const sortedData = sortForwardEmployeeDataByFollowUp(sortType);
+            setForwardEmployeeData(sortedData); // Update the state with sorted data
         }
     };
-    
+
     const sortForwardEmployeeDataByForwarded = (sortType) => {
         const sortedData = [...forwardEmployeeData].sort((a, b) => {
             const aForwardedCount = companyDataTotal.filter(mainObj =>
                 leadHistoryData.some(company =>
                     company.ename === a.ename &&
                     (mainObj.bdmAcceptStatus === "Forwarded" ||
-                     mainObj.bdmAcceptStatus === "Pending" ||
-                     mainObj.bdmAcceptStatus === "Accept") &&
+                        mainObj.bdmAcceptStatus === "Pending" ||
+                        mainObj.bdmAcceptStatus === "Accept") &&
                     mainObj.ename === company.ename
                 )
             ).length;
-    
+
             const bForwardedCount = companyDataTotal.filter(mainObj =>
                 leadHistoryData.some(company =>
                     company.ename === b.ename &&
                     (mainObj.bdmAcceptStatus === "Forwarded" ||
-                     mainObj.bdmAcceptStatus === "Pending" ||
-                     mainObj.bdmAcceptStatus === "Accept") &&
+                        mainObj.bdmAcceptStatus === "Pending" ||
+                        mainObj.bdmAcceptStatus === "Accept") &&
                     mainObj.ename === company.ename
                 )
             ).length;
-    
+
             if (sortType === "ascending") {
                 return aForwardedCount - bForwardedCount;
             } else if (sortType === "descending") {
@@ -451,7 +451,7 @@ function InterestedFollowLeadReport() {
                 return 0; // No sorting
             }
         });
-    
+
         return sortedData;
     };
     const handleSortForwardeCases = (sortType) => {
@@ -462,65 +462,65 @@ function InterestedFollowLeadReport() {
             setForwardEmployeeData(sortedData); // Update the state with sorted data
         }
     };
-    
+
 
     useEffect(() => {
         setFinalEmployeeData([...forwardEmployeeData]); // Store original state of employeeData
     }, [forwardEmployeeData]);
 
-   
 
-    
+
+
     const totalFilteredCompanies = forwardEmployeeData.reduce((total, obj) => {
         const filteredCompanies = companyDataTotal.filter(mainObj =>
             leadHistoryData.some(company =>
                 company.ename === obj.ename &&
                 (mainObj.bdmAcceptStatus === "Forwarded" ||
-                 mainObj.bdmAcceptStatus === "Pending" ||
-                 mainObj.bdmAcceptStatus === "Accept") &&
+                    mainObj.bdmAcceptStatus === "Pending" ||
+                    mainObj.bdmAcceptStatus === "Accept") &&
                 mainObj.ename === company.ename
             )
         );
-    
+
         return total + filteredCompanies.length;
     }, 0)
 
     // ----------------daterangefilterfunction---------------------
     // Function to filter data by date range
-const filterLeadHistoryByDateRange = (data, startDate, endDate) => {
-    const start = moment(startDate, "DD/MM/YYYY").startOf('day');
-    const end = moment(endDate, "DD/MM/YYYY").endOf('day');
+    const filterLeadHistoryByDateRange = (data, startDate, endDate) => {
+        const start = moment(startDate, "DD/MM/YYYY").startOf('day');
+        const end = moment(endDate, "DD/MM/YYYY").endOf('day');
 
-    return data.filter(item => {
-        const itemDate = moment(item.date); // Assuming 'date' is in ISO format
-        return itemDate.isBetween(start, end, null, '[]'); // '[]' includes start and end dates
-    });
-};
+        return data.filter(item => {
+            const itemDate = moment(item.date); // Assuming 'date' is in ISO format
+            return itemDate.isBetween(start, end, null, '[]'); // '[]' includes start and end dates
+        });
+    };
 
-// Function to filter other datasets based on filtered leadHistoryData
-const filterOtherDataByLeadHistory = (dataToFilter, filteredLeadHistoryData) => {
-    const filteredNames = new Set(filteredLeadHistoryData.map(item => item.ename));
+    // Function to filter other datasets based on filtered leadHistoryData
+    const filterOtherDataByLeadHistory = (dataToFilter, filteredLeadHistoryData) => {
+        const filteredNames = new Set(filteredLeadHistoryData.map(item => item.ename));
 
-    return dataToFilter.filter(item =>
-        filteredNames.has(item.ename)
-    );
-};
+        return dataToFilter.filter(item =>
+            filteredNames.has(item.ename)
+        );
+    };
 
-const handleForwardedEmployeeDateRange = (values) => {
-    const startDate = moment(values[0]).format("DD/MM/YYYY");
-    const endDate = moment(values[1]).format("DD/MM/YYYY");
+    const handleForwardedEmployeeDateRange = (values) => {
+        const startDate = moment(values[0]).format("DD/MM/YYYY");
+        const endDate = moment(values[1]).format("DD/MM/YYYY");
 
-    // Filter leadHistoryData
-    const filteredLeadHistory = filterLeadHistoryByDateRange(filteredLeadHistoryData, startDate, endDate);
+        // Filter leadHistoryData
+        const filteredLeadHistory = filterLeadHistoryByDateRange(filteredLeadHistoryData, startDate, endDate);
 
-    // Filter forwardEmployeeData and companyDataTotal based on filteredLeadHistoryData
-    const filteredForwardEmployeeData = filterOtherDataByLeadHistory(forwardEmployeeData, filteredLeadHistoryData);
-    const filteredCompanyDataTotal = filterOtherDataByLeadHistory(companyDataTotal, filteredLeadHistoryData);
+        // Filter forwardEmployeeData and companyDataTotal based on filteredLeadHistoryData
+        const filteredForwardEmployeeData = filterOtherDataByLeadHistory(forwardEmployeeData, filteredLeadHistoryData);
+        const filteredCompanyDataTotal = filterOtherDataByLeadHistory(companyDataTotal, filteredLeadHistoryData);
 
-    setLeadHistoryData(filteredLeadHistory);
-    setForwardEmployeeData(filteredForwardEmployeeData);
-    setCompanyDataTotal(filteredCompanyDataTotal);
-};
+        setLeadHistoryData(filteredLeadHistory);
+        setForwardEmployeeData(filteredForwardEmployeeData);
+        setCompanyDataTotal(filteredCompanyDataTotal);
+    };
 
     return (
         <div>
@@ -639,7 +639,7 @@ const handleForwardedEmployeeDateRange = (values) => {
                                                 }));
                                                 handleSortFollowUpCase(updatedSortType);
                                             }}>
-                                                <div className="d-flex align-items-center justify-content-center">
+                                            <div className="d-flex align-items-center justify-content-center">
                                                 <div className='mr-1'>FolLowUp Leads</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
@@ -730,11 +730,17 @@ const handleForwardedEmployeeDateRange = (values) => {
                                                         mainObj.ename === company.ename
                                                     )
                                                 );
-                                                // Extract the company names
-                                                const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
+                                                // // Extract the company names
+                                                // const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
 
-                                                // Log the company names to the console
-                                                console.log(companyNames);
+                                                // // Log the company names to the console
+                                                // console.log(companyNames);
+                                                const interestedCompanies = leadHistoryData
+                                                    .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
+                                                    .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
+
+                                                console.log("Interested Companies:", interestedCompanies);
+
                                                 return (
                                                     <tr key={`row-${index}`}>
                                                         <td style={{

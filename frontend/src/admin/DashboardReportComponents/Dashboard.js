@@ -45,7 +45,7 @@ function Dashboard() {
 
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
-      }, []);
+    }, []);
 
 
     function CustomTabPanel(props) {
@@ -87,7 +87,7 @@ function Dashboard() {
     };
 
     const token = localStorage.getItem('token');
-    
+
     if (token) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
@@ -105,14 +105,14 @@ function Dashboard() {
                                 <Tab label={
                                     <div style={{ display: "flex", alignItems: "center" }}>
                                         <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                        <span style={{fontSize:"12px"}}>This Months Booking</span>
+                                        <span style={{ fontSize: "12px" }}>This Months Booking</span>
                                     </div>
                                 } {...a11yProps(0)} />
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Employees Data Report</span>
+                                            <span style={{ fontSize: "12px" }}>Employees Data Report</span>
                                         </div>
                                     }
                                     {...a11yProps(1)}
@@ -121,7 +121,7 @@ function Dashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <RiShareForward2Fill style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Employees Forwarded Data Report</span>
+                                            <span style={{ fontSize: "12px" }}>Interested-Forwarded Data Report</span>
                                         </div>
                                     }
                                     {...a11yProps(2)}
@@ -130,7 +130,7 @@ function Dashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <RiDatabaseLine style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Projection Summary</span>
+                                            <span style={{ fontSize: "12px" }}>Projection Summary</span>
                                         </div>
                                     }
                                     {...a11yProps(3)}
@@ -139,7 +139,7 @@ function Dashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <GrDocumentPerformance style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Performacne Report</span>
+                                            <span style={{ fontSize: "12px" }}>Performacne Report</span>
                                         </div>
                                     }
                                     {...a11yProps(3)}
@@ -148,16 +148,7 @@ function Dashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Service Analysis</span>
-                                        </div>
-                                    }
-                                    {...a11yProps(3)}
-                                />
-                                <Tab
-                                    label={
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                            <MdOutlineWeb style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Interested-FollowUp Leads Report</span>
+                                            <span style={{ fontSize: "12px" }}>Service Analysis</span>
                                         </div>
                                     }
                                     {...a11yProps(3)}
@@ -168,13 +159,15 @@ function Dashboard() {
                             <EmployeesThisMonthBooking />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={1} className="mat-tab-inner">
-                            <EmployeeDataReport/>
+                            <EmployeeDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={2} className="mat-tab-inner">
+                            <InterestedFollowLeadReport />
                             <EmployeesForwardedDataReport />
+
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
-                            <EmployeesProjectionSummary/>
+                            <EmployeesProjectionSummary />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <AdminEmployeePerformanceReport />
@@ -182,13 +175,10 @@ function Dashboard() {
                         <CustomTabPanel value={value} index={5} className="mat-tab-inner">
                             <ServiceAnalysis />
                         </CustomTabPanel>
-                        <CustomTabPanel value={value} index={6} className="mat-tab-inner">
-                            <InterestedFollowLeadReport />
-                        </CustomTabPanel>
                     </div>
                 </div>
             </div>
-         
+
 
         </div>
     );

@@ -1007,7 +1007,7 @@ function EmployeesForwardedDataReport() {
 
     return (
         <div>
-            <div className="employee-dashboard">
+            <div className="employee-dashboard mt-2">
                 <div className="card">
                     <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1"  >
