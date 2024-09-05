@@ -885,7 +885,7 @@ router.post("/postAssignData", async (req, res) => {
       await model.bulkWrite(batch);
     }
   };
-
+console.log("selectedobjects" , selectedObjects)
 
   // Bulk operations for CompanyModel
   const bulkOperationsCompany = selectedObjects.map((obj) => ({

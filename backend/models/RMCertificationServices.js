@@ -30,6 +30,12 @@ const RMCertificationServicesSchema = new mongoose.Schema({
     type: String,
 
   },
+  City:{
+    type:String,
+  },
+  State:{
+    type:String
+  },
   panNumber: {
     type: String,
 
@@ -183,6 +189,9 @@ nswsMobileNo:{
   },
   submittedOn:{
     type:Date
+  },
+  submittedTime:{
+    type:String
   },
   previousMainCategoryStatus:{
     type:String,

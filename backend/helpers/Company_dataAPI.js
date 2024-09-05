@@ -56,37 +56,24 @@ router.get("/leads", async (req, res) => {
   }
 });
 
-router.get("/leads/interestedleads", async (req, res) => {
-  try {
-    const data = await CompanyModel.aggregate([
-      {
-        $lookup: {
-          from: 'LeadHistoryForInterestedandFollowModel',
-          localField: 'Company Name', // Field in CompanyModel
-          foreignField: 'Company Name', // Field in LeadHistoryForInterestedandFollowModel
-          as: 'leadHistory'
-        }
-      },
-      {
-        $match: {
-          'leadHistory': { $ne: [] } // Match only those companies with related lead history
-        }
-      },
-      {
-        $project: {
-          _id: 1,  // Include any other fields you need
-          'Company Name': 1,
-          // Add more fields from CompanyModel or `leadHistory` if needed
-        }
-      }
-    ]);
+// router.get("/leads/interestedleads", async (req, res) => {
+//   try {
+//     // Fetch all company names from LeadHistoryModel
+//     const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name')
 
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     // Fetch companies from CompanyModel whose names are in leadCompanyNames
+//     const data = await CompanyModel.find({
+//       "Company Name": { $in: leadHistoryCompany }
+//     }).lean();
+
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
 
 
 // router.post("/update-status/:id", async (req, res) => {

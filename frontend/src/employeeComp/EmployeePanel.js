@@ -373,7 +373,7 @@ function EmployeePanel() {
 
   const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
     openchangeRemarks(true);
-    console.log("yahan pr chala")
+
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
     );
@@ -399,7 +399,7 @@ function EmployeePanel() {
     companyName,
     ename
   ) => {
-    console.log("yahan chala")
+
     setOpenRemarksEdit(true);
     setFilteredRemarksBde(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
@@ -597,7 +597,7 @@ function EmployeePanel() {
       const tempData = response.data;
       const revertedData = response.data.filter((item) => item.RevertBackAcceptedCompanyRequest === 'Reject')
       setRevertedData(revertedData)
-      console.log("tempData", tempData, data.ename)
+ 
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
@@ -1113,7 +1113,7 @@ function EmployeePanel() {
       let response;
 
       if (bdmAcceptStatus === "Accept") {
-        console.log(bdmAcceptStatus, newStatus)
+      
         if (newStatus === "Interested" || newStatus === "FollowUp") {
 
           response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
@@ -1443,6 +1443,7 @@ function EmployeePanel() {
   };
 
   const handleSubmitData = async (e) => {
+    
     e.preventDefault();
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
@@ -1485,7 +1486,7 @@ function EmployeePanel() {
       }
       await axios.post(`${secretKey}/requests/requestCompanyData`, dataToSend).then((response) => {
         //console.log("response", response);
-        console.log("Data sent Successfully");
+      
         Swal.fire({
           title: "Lead Request Sent!",
           text: "Your Request has been sent to the Data Manager!",
@@ -1713,7 +1714,7 @@ function EmployeePanel() {
       ...data,
       ename: name,
     }));
-    console.log("updatedCsvData", updatedCsvdata)
+  
     //console.log("updatedcsv", updatedCsvdata);
 
     if (updatedCsvdata.length !== 0) {
@@ -1721,7 +1722,7 @@ function EmployeePanel() {
 
       try {
         await axios.post(`${secretKey}/requests/requestCompanyData`, updatedCsvdata);
-        console.log("Data sent successfully");
+     
         Swal.fire({
           title: "Request Sent!",
           text: "Your Request has been successfully sent to the Admin",
@@ -2130,7 +2131,7 @@ function EmployeePanel() {
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
-      console.log("Deleted!", "Your data has been deleted.", "success");
+    
       setCurrentProjection({
         companyName: "",
         ename: "",
@@ -2652,7 +2653,7 @@ function EmployeePanel() {
           'The company request has been reverted back.',
           'success'
         );
-        console.log("Request sent successfully", response.data);
+     
         fetchNewData(bdeStatus);
       } catch (error) {
         console.log("Error reverting back company", error);
@@ -2775,7 +2776,7 @@ function EmployeePanel() {
         setIsFilter(false);
       } else {
         // Update the employee data with the filtered results
-        console.log(response.data)
+     
         setFilteredData(response.data)
       }
     } catch (error) {
@@ -2786,7 +2787,6 @@ function EmployeePanel() {
     }
   };
 
-  console.log("FILTEREDdATA", filteredData)
 
   const handleClearFilter = () => {
     setIsFilter(false)
@@ -2925,7 +2925,7 @@ function EmployeePanel() {
 
     try {
       const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
-      console.log("Data successfully added :", response);
+      
       Swal.fire("Success!", "Data Successfully Added!", "success");
       setNoOfCompany("");
       setNoOfServiceOffered("");
@@ -2955,7 +2955,7 @@ function EmployeePanel() {
           } else {
             // Token not expired, continue session
             const timeToExpire = decoded.exp - currentTime;
-            console.log(`Token expires in ${timeToExpire} seconds`);
+            
           }
         } catch (error) {
           console.error("Error decoding token:", error);
@@ -3044,7 +3044,7 @@ function EmployeePanel() {
         });
 
         Swal.fire("Request Sent");
-        console.log("response", response.data);
+      
         handleClosePaymentApproval();
         fetchNewData();
       } catch (error) {
@@ -3209,521 +3209,6 @@ function EmployeePanel() {
                 </div>
               </div>
             </div>
-
-            {/* <div className="page-header d-print-none">
-              <div className="container-xl">
-                {requestData !== null && requestData !== undefined && (
-                  <div className="notification-bar">
-                    <div className="noti-text">
-                      <h1>
-                        You have just received {requestData.dAmount} data!
-                      </h1>
-                    </div>
-                    <div className="close-icon">
-                      <IconButton onClick={handleMarktrue}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  </div>
-                )}
-                <div className="row g-2 align-items-center">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                    className="features"
-                  >
-                    <div style={{ display: "flex" }} className="feature1">
-                      {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
-                        Gmail SignIn
-                    </button>
-                    <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
-                      <DialogTitle>
-                      <h1>Login Page</h1>
-                      </DialogTitle>
-                      <DialogContent>
-                      <div className="sign-in-google">
-
-                           <p>Please sign in with your Google account.</p>
-                          <button onClick={handleGoogleLogin} >Sign in with Google</button>
-                               </div>
-                      </DialogContent>
-
-                    </Dialog> 
-
-                      <div
-                        className="form-control"
-                        style={{ height: "fit-content", width: "auto" }}
-                      >
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            width: "fit-content",
-                          }}
-                          value={selectedField}
-                          onChange={handleFieldChange}
-                        >
-                          <option value="Company Name">Company Name</option>
-                          <option value="Company Number">Company Number</option>
-                          <option value="Company Email">Company Email</option>
-                          <option value="Company Incorporation Date  ">
-                            Company Incorporation Date
-                          </option>
-                          <option value="City">City</option>
-                          <option value="State">State</option>
-                          <option value="Status">Status</option>
-                          <option value="AssignDate">Assigned Date</option>
-
-                        </select>
-                      </div>
-                      {visibility === "block" && (
-                        <div>
-                          <input
-                            onChange={handleDateChange}
-                            style={{
-                              display: visibility,
-                              width: "83%",
-                              marginLeft: "10px",
-                            }}
-                            type="date"
-                            className="form-control"
-                          />
-                        </div>
-                      )}
-
-                      {visibilityOther === "block" ? (
-                        <div
-                          style={{
-                            //width: "20vw",
-                            margin: "0px 0px 0px 9px",
-                            display: visibilityOther,
-                          }}
-                          className="input-icon"
-                        >
-                          <span className="input-icon-addon">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="20"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                              <path d="M21 21l-6 -6" />
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            value={searchText}
-                            onChange={(e) => {
-                              setSearchText(e.target.value);
-                              setCurrentPage(0);
-                            }}
-                            className="form-control"
-                            placeholder="Search…"
-                            aria-label="Search in website"
-                            style={{ width: "60%" }}
-                          />
-                        </div>
-                      ) : (
-                        <div></div>
-                      )}
-                      {visibilityOthernew === "block" ? (
-                        <div
-                          style={{
-                            //width: "20vw",
-                            margin: "0px 0px 0px 9px",
-                            display: visibilityOthernew,
-                          }}
-                          className="input-icon"
-                        >
-                          <select
-                            value={searchText}
-                            onChange={(e) => {
-                              setSearchText(e.target.value);
-                              // Set dataStatus based on selected option
-                              if (
-                                e.target.value === "All" ||
-                                e.target.value === "Busy" ||
-                                e.target.value === "Not Picked Up"
-                              ) {
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) =>
-                                      obj.Status === "Busy" ||
-                                      obj.Status === "Not Picked Up" ||
-                                      obj.Status === "Untouched"
-                                  )
-                                );
-                              } else if (
-                                e.target.value === "Junk" ||
-                                e.target.value === "Not Interested"
-                              ) {
-                                setdataStatus("NotInterested");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) =>
-                                      obj.Status === "Not Interested" ||
-                                      obj.Status === "Junk"
-                                  )
-                                );
-                              } else if (e.target.value === "Interested") {
-                                setdataStatus("Interested");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) => obj.Status === "Interested"
-                                  )
-                                );
-                              } else if (e.target.value === "Untouched") {
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) => obj.Status === "Untouched"
-                                  )
-                                );
-                              }
-                            }}
-                            className="form-select"
-                          >
-                            <option value="All">All </option>
-                            <option value="Busy">Busy </option>
-                            <option value="Not Picked Up">
-                              Not Picked Up{" "}
-                            </option>
-                            <option value="Junk">Junk</option>
-                            <option value="Interested">Interested</option>
-                            <option value="Not Interested">
-                              Not Interested
-                            </option>
-                            <option value="Untouched">Untouched</option>
-                          </select>
-                        </div>
-                      ) : (
-                        <div></div>
-                      )}
-                      {searchText !== "" && (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "end",
-                            fontsize: "10px",
-                            fontfamily: "Poppins",
-                            //marginLeft: "-70px"
-                          }}
-                          className="results"
-                        >
-                          {filteredData.length} results found
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      style={{ display: "flex", alignItems: "center" }}
-                      className="feature2"
-                    >
-                      <div
-                        className="form-control mr-1 sort-by"
-                        style={{ width: "190px" }}
-                      >
-                        <label htmlFor="sort-by">Sort By:</label>
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            color: "#666a66",
-                          }}
-                          name="sort-by"
-                          id="sort-by"
-                          onChange={(e) => {
-                            setSortStatus(e.target.value);
-                            const selectedOption = e.target.value;
-
-                            switch (selectedOption) {
-                              case "Busy":
-                              case "Untouched":
-                              case "Not Picked Up":
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter((data) =>
-                                      [
-                                        "Busy",
-                                        "Untouched",
-                                        "Not Picked Up",
-                                      ].includes(data.Status)
-                                    )
-                                    .sort((a, b) => {
-                                      if (a.Status === selectedOption)
-                                        return -1;
-                                      if (b.Status === selectedOption) return 1;
-                                      return 0;
-                                    })
-                                );
-                                break;
-                              case "Interested":
-                                setdataStatus("Interested");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter(
-                                      (data) => data.Status === "Interested"
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-                              case "Not Interested":
-                                setdataStatus("NotInterested");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter((data) =>
-                                      ["Not Interested", "Junk"].includes(
-                                        data.Status
-                                      )
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-                              case "FollowUp":
-                                setdataStatus("FollowUp");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter(
-                                      (data) => data.Status === "FollowUp"
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-
-                              default:
-                                // No filtering if default option selected
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData.sort((a, b) => {
-                                    if (a.Status === selectedOption) return -1;
-                                    if (b.Status === selectedOption) return 1;
-                                    return 0;
-                                  })
-                                );
-                                break;
-                            }
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Status
-                          </option>
-                          <option value="Untouched">Untouched</option>
-                          <option value="Busy">Busy</option>
-                          <option value="Not Picked Up">Not Picked Up</option>
-                          <option value="FollowUp">Follow Up</option>
-                          <option value="Interested">Interested</option>
-                          <option value="Not Interested">Not Interested</option>
-                        </select>
-                      </div>
-
-                      {selectedField === "State" && (
-                        <div style={{ width: "15vw" }} className="input-icon">
-                          <span className="input-icon-addon">
-                            
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="20"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                              <path d="M21 21l-6 -6" />
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={citySearch}
-                            onChange={(e) => {
-                              setcitySearch(e.target.value);
-                              setCurrentPage(0);
-                            }}
-                            placeholder="Search City"
-                            aria-label="Search in website"
-                          />
-                        </div>
-                      )}
-                      {selectedField === "Company Incorporation Date  " && (
-                        <>
-                          <div
-                            style={{ width: "fit-content" }}
-                            className="form-control"
-                          >
-                            <select
-                              style={{
-                                border: "none",
-                                outline: "none",
-                                marginRight: "10px",
-                                width: "115px",
-                                paddingLeft: "10px",
-                              }}
-                              onChange={(e) => {
-                                setMonth(e.target.value);
-                                setCurrentPage(0);
-                              }}
-                            >
-                              <option value="" disabled selected>
-                                Select Month
-                              </option>
-                              <option value="12">December</option>
-                              <option value="11">November</option>
-                              <option value="10">October</option>
-                              <option value="9">September</option>
-                              <option value="8">August</option>
-                              <option value="7">July</option>
-                              <option value="6">June</option>
-                              <option value="5">May</option>
-                              <option value="4">April</option>
-                              <option value="3">March</option>
-                              <option value="2">February</option>
-                              <option value="1">January</option>
-                            </select>
-                          </div>
-                          <div
-                            className="input-icon  form-control"
-                            style={{ margin: "0px 10px", width: "110px" }}
-                          >
-                            <select
-                              select
-                              style={{ border: "none", outline: "none" }}
-                              value={year}
-                              onChange={(e) => {
-                                setYear(e.target.value);
-                                setCurrentPage(0); // Reset page when year changes
-                              }}
-                            >
-                              <option value="">Select Year</option>
-                              {[...Array(15)].map((_, index) => {
-                                const yearValue = 2024 - index;
-                                return (
-                                  <option key={yearValue} value={yearValue}>
-                                    {yearValue}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                        </>
-                      )}
-
-                      <div className="request" style={{ marginRight: "15px" }}>
-                        <div className="btn-list">
-                          <button
-                            onClick={functionopenpopup}
-                            className="btn btn-primary d-none d-sm-inline-block"
-                          >
-                            Request Data
-                          </button>
-                          <a
-                            href="#"
-                            className="btn btn-primary d-sm-none btn-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report"
-                            aria-label="Create new report"
-                          >
-                        
-                          </a>
-                        </div>
-                      </div>
-                      <div className="request" style={{ marginRight: "15px" }}>
-                        <div className="btn-list">
-                          <button
-                            onClick={functionopenpopupNew}
-                            className="btn btn-primary d-none d-sm-inline-block"
-                          >
-                            ADD Leads
-                          </button>
-                          <a
-                            href="#"
-                            className="btn btn-primary d-sm-none btn-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report"
-                            aria-label="Create new report"
-                          >
-                            
-                          </a>
-                        </div>
-                      </div>
-                      <div className="importCSV request">
-                        <div className="btn-list">
-                          <button
-                            className="btn btn-primary d-none d-sm-inline-block"
-                            onClick={functionopenpopupCSV}
-                          >
-                            
-                            <svg
-                              style={{
-                                verticalAlign: "middle",
-                              }}
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M12 5l0 14" />
-                              <path d="M5 12l14 0" />
-                            </svg>
-                            Import CSV
-                          </button>
-                          <a
-                            href="#"
-                            className="btn btn-primary d-sm-none btn-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report"
-                            aria-label="Create new report"
-                          > 
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
             <div
               onCopy={(e) => {
                 e.preventDefault();
@@ -5288,11 +4773,11 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
-            {console.log("Remarks are :", filteredRemarksBdm)}
+          
             {filteredRemarksBdm.length !== 0 ? (
               filteredRemarksBdm.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
-                  {console.log("History items :", historyItem)}
+                
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
@@ -5511,18 +4996,7 @@ function EmployeePanel() {
                         <path d="M5 12l14 0" />
                       </svg>
                     </button>
-                    {/* <button className="btn btn-primary d-none d-sm-inline-block">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="icon"
-                        width="24"
-                        height="24"
-                        fill="white"
-                        viewBox="0 0 448 512"
-                      >
-                        <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
-                      </svg>
-                    </button> */}
+                   
                   </div>
                 )}
 

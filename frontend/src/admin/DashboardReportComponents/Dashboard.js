@@ -121,7 +121,7 @@ function Dashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <RiShareForward2Fill style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "12px" }}>Interested-Forwarded Data Report</span>
+                                            <span style={{ fontSize: "12px" }}>Interested & Forwarded Data Report</span>
                                         </div>
                                     }
                                     {...a11yProps(2)}
