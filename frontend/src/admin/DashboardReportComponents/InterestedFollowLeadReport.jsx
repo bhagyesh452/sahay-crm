@@ -731,10 +731,10 @@ function InterestedFollowLeadReport() {
                                                     )
                                                 );
                                                 // // Extract the company names
-                                                // const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
+                                                const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
 
                                                 // // Log the company names to the console
-                                                // console.log(companyNames);
+                                                console.log("followupcompanies" , companyNames);
                                                 const interestedCompanies = leadHistoryData
                                                     .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
                                                     .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
