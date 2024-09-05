@@ -16,7 +16,7 @@ import Switch from '@mui/material/Switch';
 import axios from 'axios';
 import AddServices from './AddServices';
 import EditService from './EditService';
-import EmployeeAssetDetails from '../../employeeComp/EmployeeNotificationComponents/EmployeeAssetDetails';
+import EmployeeAssetDetails from '../../employeeComp/EmployeeAssetDetails';
 
 
 function Services() {
@@ -316,8 +316,8 @@ function Services() {
                 try {
                     const res = await axios.delete(`${secretKey}/department/deleteServiceFromDepartmentModel/${serviceName}`);
                     const res2 = await axios.delete(`${secretKey}/services/deleteServiceFromServiceModel/${serviceName}`);
-                    // console.log("Service successfully deleted from department model :", res.data.data);
-                    // console.log("Service successfully deleted from service model :", res2.data.data);
+                    console.log("Service successfully deleted from department model :", res.data.data);
+                    console.log("Service successfully deleted from service model :", res2.data.data);
                     Swal.fire("success", "Service Successfully Deleted", "success");
                     fetchServices();
                 } catch (error) {

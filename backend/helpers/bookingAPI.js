@@ -22,6 +22,7 @@ const RMCertificationModel = require('../models/RMCertificationServices.js');
 const mongoose = require('mongoose'); // Import mongoose
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const FollowUpModel = require('../models/FollowUp.js');
+const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 const ObjectId = mongoose.Types.ObjectId;
 
 const storage = multer.diskStorage({
@@ -1350,6 +1351,9 @@ router.post(
         const projectionData = await FollowUpModel.findOne({
           companyName: newData["Company Name"]
         })
+        const leadInterestedHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+          "Company Name": newData["Company Name"]
+        })
 
         if (companyData) {
           const multiBdmName = [];
@@ -1370,6 +1374,11 @@ router.post(
         if (projectionData) {
           await FollowUpModel.findOneAndDelete({
             companyName: newData["Company Name"]
+          })
+        }
+        if (leadInterestedHistory) {
+          await LeadHistoryForInterestedandFollowModel.findOneAndDelete({
+            "Company Name": newData["Company Name"]
           })
         }
         const boomDate = new Date();
@@ -3245,13 +3254,15 @@ router.post(
             : ((newData.services.length === 1 && mailName === "Shubhi Banthiya"))
               ? 2
               : 3;
-          const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
-            return service.serviceName !== "Start-Up India Certificate" ||
-              "GST Registration Application Support" ||
-              "Private Limited Company Incorporation"
-              || "OPC Private Limited Company Incorporation" ||
-              "LLP Company Incorporation"
-          })) ? 2 : tempPageLength;
+          const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 &&
+            newData.services.some((service) => {
+              return service.serviceName !== "Start-Up India Certificate" &&
+                service.serviceName !== "GST Registration Application Support" &&
+                service.serviceName !== "Private Limited Company Incorporation" &&
+                service.serviceName !== "OPC Private Limited Company Incorporation" &&
+                service.serviceName !== "LLP Company Incorporation";
+            })) ? 2 : tempPageLength;
+
 
 
           // const latestPageLength = (extraServiceName === "Seed Fund Application" ||
@@ -3625,6 +3636,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const projectionData = await FollowUpModel.findOne({
       companyName: newData["Company Name"],
     });
+    const leadInterestedHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+      "Company Name": newData["Company Name"]
+    })
+
     if (companyData) {
       newData.company = companyData._id;
     }
@@ -3663,7 +3678,11 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         companyName: newData["Company Name"]
       })
     }
-
+    if (leadInterestedHistory) {
+      await LeadHistoryForInterestedandFollowModel.findOneAndDelete({
+        "Company Name": newData["Company Name"]
+      })
+    }
     // After all the database operations, socket.io will work(Even if the mail fails, the booking will be matured and socket.io will hit!)
 
     io.emit('booking-submitted', ename);
@@ -5504,19 +5523,13 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
         ? 2
         : 3;
     const pagelength = (mailName === "Dhruvi Gohel" && newData.services.length > 1 && newData.services.some((service) => {
-      return service.serviceName !== "Start-Up India Certificate" ||
-        "GST Registration Application Support" ||
-        "Private Limited Company Incorporation" ||
-        "OPC Private Limited Company Incorporation" ||
-        "LLP Company Incorporation"
+      return service.serviceName !== "Start-Up India Certificate" &&
+        service.serviceName !== "GST Registration Application Support" &&
+        service.serviceName !== "Private Limited Company Incorporation" &&
+        service.serviceName !== "OPC Private Limited Company Incorporation" &&
+        service.serviceName !== "LLP Company Incorporation";
     })) ? 2 : tempPageLength;
 
-
-    // const latestPageLength = (extraServiceName === "Seed Fund Application" ||
-    //   extraServiceName === "Income Tax Exemption Application" ||
-    //   extraServiceName === "GST Registration Application Support" ||
-    //   extraServiceName === "I-Create Application" ||
-    //   extraServiceName === "DBS Grant Application") ? pagelength + 1 : pagelength
 
     const relevantServices = [
       "Seed Fund Application",

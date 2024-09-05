@@ -1021,7 +1021,7 @@ export default function RedesignedForm({
   };
 
 
-  
+
   const handleEdit = async () => {
     try {
       const formData = new FormData();
@@ -3266,9 +3266,8 @@ export default function RedesignedForm({
                                         {/* <option value="SRK Seedfund(Non GST)/IDFC first Bank">
                                           SRK Seedfund(Non GST)/IDFC first Bank
                                         </option> */}
-                                        <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
-                                          STARTUP SAHAY SERVICES/ADVISORY(Non
-                                          GST)/ IDFC First Bank
+                                        <option value="STARTUP SAHAY CONSULTANCY / ADVISORS">
+                                          STARTUP SAHAY CONSULTANCY / ADVISORS
                                         </option>
                                         <option value="Razorpay">
                                           Razorpay

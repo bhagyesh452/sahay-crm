@@ -56,6 +56,39 @@ router.get("/leads", async (req, res) => {
   }
 });
 
+router.get("/leads/interestedleads", async (req, res) => {
+  try {
+    const data = await CompanyModel.aggregate([
+      {
+        $lookup: {
+          from: 'LeadHistoryForInterestedandFollowModel',
+          localField: 'Company Name', // Field in CompanyModel
+          foreignField: 'Company Name', // Field in LeadHistoryForInterestedandFollowModel
+          as: 'leadHistory'
+        }
+      },
+      {
+        $match: {
+          'leadHistory': { $ne: [] } // Match only those companies with related lead history
+        }
+      },
+      {
+        $project: {
+          _id: 1,  // Include any other fields you need
+          'Company Name': 1,
+          // Add more fields from CompanyModel or `leadHistory` if needed
+        }
+      }
+    ]);
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 // router.post("/update-status/:id", async (req, res) => {
 //   const { id } = req.params;
 //   const { newStatus, title, date, time,oldStatus } = req.body; // Destructure the required properties from req.body
@@ -81,6 +114,65 @@ router.get("/leads", async (req, res) => {
 //   }
 // });
 
+// router.post("/update-status/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { newStatus, title, date, time, oldStatus } = req.body;
+
+//   try {
+//     // Find the company by ID in the CompanyModel to get the company details
+//     const company = await CompanyModel.findById(id);
+//     if (!company) {
+//       return res.status(404).json({ error: "Company not found" });
+//     }
+
+//     // Update the status field in the CompanyModel
+//     await CompanyModel.findByIdAndUpdate(id, {
+//       Status: newStatus,
+//     });
+
+//     // Check if newStatus is either "FollowUp" or "Interested"
+//     if (newStatus === "FollowUp" || newStatus === "Interested") {
+//       // Find the company in LeadHistoryForInterestedandFollowModel
+//       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+//         "Company Name": company["Company Name"],
+//       });
+
+//       if (leadHistory) {
+//         // If the record exists, update old status, new status, date, and time
+//         leadHistory.oldStatus = oldStatus;
+//         leadHistory.newStatus = newStatus;
+//       } else {
+//         // If the record does not exist, create a new one with the company name, ename, and statuses
+//         leadHistory = new LeadHistoryForInterestedandFollowModel({
+//           _id: id,
+//           "Company Name": company["Company Name"],
+//           ename: company.ename,
+//           oldStatus: oldStatus,
+//           newStatus: newStatus,
+//           date: new Date(),  // Convert the date string to a Date object
+//           time: time,
+//         });
+//       }
+
+//       // Save the lead history update
+//       await leadHistory.save();
+//     }
+
+//     // Create and save a new document in the RecentUpdatesModel collection
+//     // const newUpdate = new RecentUpdatesModel({
+//     //   title: title,
+//     //   date: date,
+//     //   time: time,
+//     // });
+//     // await newUpdate.save();
+
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating status:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
   const { newStatus, title, date, time, oldStatus } = req.body;
@@ -93,12 +185,28 @@ router.post("/update-status/:id", async (req, res) => {
     }
 
     // Update the status field in the CompanyModel
-    await CompanyModel.findByIdAndUpdate(id, { 
+    await CompanyModel.findByIdAndUpdate(id, {
       Status: newStatus,
-     });
+    });
 
-    // Check if newStatus is either "FollowUp" or "Interested"
-    if (newStatus === "FollowUp" || newStatus === "Interested") {
+    // Define an array of statuses for which the lead history should be deleted
+    const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched","Not Picked Up"];
+
+    if (deleteStatuses.includes(newStatus)) {
+      // Find the company in LeadHistoryForInterestedandFollowModel
+      const leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+        "Company Name": company["Company Name"],
+      });
+
+      // If lead history exists, delete the document
+      if (leadHistory) {
+        await LeadHistoryForInterestedandFollowModel.deleteOne({
+          "Company Name": company["Company Name"],
+        });
+      }
+
+    } else if (newStatus === "FollowUp" || newStatus === "Interested") {
+      // Check if newStatus is either "FollowUp" or "Interested"
       // Find the company in LeadHistoryForInterestedandFollowModel
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
         "Company Name": company["Company Name"],
@@ -125,7 +233,7 @@ router.post("/update-status/:id", async (req, res) => {
       await leadHistory.save();
     }
 
-    // Create and save a new document in the RecentUpdatesModel collection
+    // Optionally, you can still create and save a new document in RecentUpdatesModel collection
     // const newUpdate = new RecentUpdatesModel({
     //   title: title,
     //   date: date,
@@ -139,6 +247,7 @@ router.post("/update-status/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   const { ename } = req.params;
@@ -631,10 +740,10 @@ router.get('/new-leads/interested-followup', async (req, res) => {
     const assignedCount = await CompanyModel.countDocuments({
       $and: [
         { ename: { $ne: "Not Alloted" } },
-      { ename: { $ne: "Extracted" } },
-      { Status: { $in: ["Interested", "FollowUp"] } },
-      {"Company Name" : {$in : leadHistoryCompany}}
-    ]
+        { ename: { $ne: "Extracted" } },
+        { Status: { $in: ["Interested", "FollowUp"] } },
+        { "Company Name": { $in: leadHistoryCompany } }
+      ]
     });
     const extractedCount = await CompanyModel.countDocuments({ ename: "Extracted" });
     const totalCount = await CompanyModel.countDocuments(query);
@@ -933,7 +1042,7 @@ router.get('/filter-leads', async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Page number
   const limit = parseInt(req.query.limit) || 500; // Items per page
   const skip = (page - 1) * limit; // Number of documents to skip
-  const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name')
+
   try {
     let baseQuery = {};
 
@@ -945,7 +1054,7 @@ router.get('/filter-leads', async (req, res) => {
 
     if (selectedFowradedStatus === "Yes") {
       baseQuery.bdmAcceptStatus = {
-        $in: ["Forwarded", "Accept"]
+        $in: ["Forwarded", "Pending", "Accept"]
       };
     } else if (selectedFowradedStatus === "No") {
       baseQuery.bdmAcceptStatus = "NotForwarded";
@@ -957,6 +1066,7 @@ router.get('/filter-leads', async (req, res) => {
         $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
       };
     }
+
     if (selectedAdminName && selectedAdminName.trim() !== '') {
       baseQuery.UploadedBy = new RegExp(`^${selectedAdminName.trim()}$`, 'i');
     }
@@ -975,7 +1085,6 @@ router.get('/filter-leads', async (req, res) => {
       };
     }
 
-    console.log("selectedbdeforwaddate", selectedBdeForwardDate)
     if (selectedBdeForwardDate) {
       const dateString = new Date(selectedBdeForwardDate).toDateString(); // "Tue Sep 03 2024"
       baseQuery.bdeForwardDate = new RegExp(`^${dateString}`, 'i'); // Matches the start of the string
@@ -984,7 +1093,6 @@ router.get('/filter-leads', async (req, res) => {
     if (selectedYear) {
       if (monthIndex !== '0') {
         const year = parseInt(selectedYear);
-        console.log("year", year)
         const month = parseInt(monthIndex) - 1; // JavaScript months are 0-indexed
         const monthStartDate = new Date(year, month, 1);
         const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
@@ -1006,10 +1114,8 @@ router.get('/filter-leads', async (req, res) => {
       const selectedDate = new Date(selectedCompanyIncoDate);
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
       if (isEpochDate) {
-        // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
         baseQuery["Company Incorporation Date  "] = null;
       } else {
-        // Otherwise, use the selected date to find documents within that day
         baseQuery["Company Incorporation Date  "] = {
           $gte: new Date(selectedDate).toISOString(),
           $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString()
@@ -1025,13 +1131,11 @@ router.get('/filter-leads', async (req, res) => {
           $lt: new Date(new Date(selectedStatusModificationDate).setHours(23, 59, 59, 999)).toISOString()
         }
       });
-      console.log("matching", matchingLeadHistory)
       const companyNames = matchingLeadHistory.map(lead => lead["Company Name"]);
 
       if (companyNames.length > 0) {
         baseQuery["Company Name"] = { $in: companyNames };
       } else {
-        // If no matching companies, return an empty response
         return res.status(200).json({
           assigned: [],
           unassigned: [],
@@ -1049,7 +1153,7 @@ router.get('/filter-leads', async (req, res) => {
     let extractedData = [];
     let extractedDataCount = 0;
     if (!selectedBDEName || selectedBDEName.trim() === '') {
-      let extractedQuery = { ...baseQuery, ename: "Extracted" }
+      let extractedQuery = { ...baseQuery, ename: "Extracted" };
       extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
       extractedData = await CompanyModel.find(extractedQuery).skip(skip).limit(limit).lean();
     }
@@ -1072,10 +1176,6 @@ router.get('/filter-leads', async (req, res) => {
       unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
     }
 
-    console.log("assignedquery", assignedQuery)
-    console.log("assgineddata", assignedData)
-    console.log("totalAssigned", assignedCount)
-
     res.status(200).json({
       assigned: assignedData,
       unassigned: unassignedData,
@@ -1092,6 +1192,188 @@ router.get('/filter-leads', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+router.get('/filter-leads/interestedleads', async (req, res) => {
+  const {
+    selectedStatus,
+    selectedState,
+    selectedNewCity,
+    selectedBDEName,
+    selectedAssignDate,
+    selectedUploadedDate,
+    selectedExtractedDate,
+    selectedAdminName,
+    selectedYear,
+    monthIndex,
+    selectedCompanyIncoDate,
+    selectedBdmName,
+    selectedBdeForwardDate,
+    selectedFowradedStatus,
+    selectedStatusModificationDate
+  } = req.query;
+
+  const page = parseInt(req.query.page) || 1; // Page number
+  const limit = parseInt(req.query.limit) || 500; // Items per page
+  const skip = (page - 1) * limit; // Number of documents to skip
+
+  try {
+    let baseQuery = {};
+
+    // Add base filters
+    if (selectedStatus) baseQuery.Status = selectedStatus;
+    if (selectedState) baseQuery.State = selectedState;
+    if (selectedNewCity) baseQuery.City = selectedNewCity;
+    if (selectedBdmName) baseQuery.bdmName = selectedBdmName;
+
+    // Handle forwarded status
+    if (selectedFowradedStatus === "Yes") {
+      baseQuery.bdmAcceptStatus = { $in: ["Forwarded", "Pending", "Accept"] };
+    } else if (selectedFowradedStatus === "No") {
+      baseQuery.bdmAcceptStatus = "NotForwarded";
+    }
+
+    // Handle date filters
+    if (selectedAssignDate) {
+      baseQuery.AssignDate = {
+        $gte: new Date(selectedAssignDate).toISOString(),
+        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString(),
+      };
+    }
+
+    if (selectedUploadedDate) {
+      baseQuery.UploadDate = {
+        $gte: new Date(selectedUploadedDate).toISOString(),
+        $lt: new Date(new Date(selectedUploadedDate).setDate(new Date(selectedUploadedDate).getDate() + 1)).toISOString(),
+      };
+    }
+
+    if (selectedBdeForwardDate) {
+      const dateString = new Date(selectedBdeForwardDate).toDateString();
+      baseQuery.bdeForwardDate = new RegExp(`^${dateString}`, 'i');
+    }
+
+    // Handle company incorporation date filter
+    if (selectedYear) {
+      if (monthIndex !== '0') {
+        const year = parseInt(selectedYear);
+        const month = parseInt(monthIndex) - 1;
+        const monthStartDate = new Date(year, month, 1);
+        const monthEndDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: monthStartDate,
+          $lt: monthEndDate,
+        };
+      } else {
+        const yearStartDate = new Date(`${selectedYear}-01-01T00:00:00.000Z`);
+        const yearEndDate = new Date(`${selectedYear}-12-31T23:59:59.999Z`);
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: yearStartDate,
+          $lt: yearEndDate,
+        };
+      }
+    }
+
+    if (selectedCompanyIncoDate) {
+      const selectedDate = new Date(selectedCompanyIncoDate);
+      const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
+      if (isEpochDate) {
+        baseQuery["Company Incorporation Date  "] = null;
+      } else {
+        baseQuery["Company Incorporation Date  "] = {
+          $gte: new Date(selectedDate).toISOString(),
+          $lt: new Date(new Date(selectedDate).setDate(selectedDate.getDate() + 1)).toISOString(),
+        };
+      }
+    }
+
+    // Handle status modification date filter
+    if (selectedStatusModificationDate) {
+      console.log("modificationdate", selectedStatusModificationDate);
+      const matchingLeadHistory = await LeadHistoryForInterestedandFollowModel.find({
+        date: {
+          $gte: new Date(new Date(selectedStatusModificationDate).setHours(0, 0, 0, 0)).toISOString(),
+          $lt: new Date(new Date(selectedStatusModificationDate).setHours(23, 59, 59, 999)).toISOString(),
+        },
+      });
+
+      const companyNamesFromStatusModification = matchingLeadHistory.map((lead) => lead["Company Name"]);
+
+      if (companyNamesFromStatusModification.length > 0) {
+        // Combine with existing Company Name filter
+        if (baseQuery["Company Name"]) {
+          baseQuery["Company Name"] = {
+            $in: [...new Set([...baseQuery["Company Name"].$in, ...companyNamesFromStatusModification])],
+          };
+        } else {
+          baseQuery["Company Name"] = { $in: companyNamesFromStatusModification };
+        }
+      }
+    } else {
+      // If selectedStatusModificationDate is not provided, use the general company query
+      const leadHistoryCompanies = await LeadHistoryForInterestedandFollowModel.distinct('Company Name');
+
+      if (leadHistoryCompanies.length > 0) {
+        if (baseQuery["Company Name"]) {
+          baseQuery["Company Name"] = {
+            $in: [...new Set([...baseQuery["Company Name"].$in, ...leadHistoryCompanies])],
+          };
+        } else {
+          baseQuery["Company Name"] = { $in: leadHistoryCompanies };
+        }
+      }
+    }
+
+    // Now apply selectedBDEName filter if it exists
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+      baseQuery.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+    }
+
+    // Fetch extracted, assigned, and unassigned data...
+    let extractedData = [];
+    let extractedDataCount = 0;
+    if (!selectedBDEName || selectedBDEName.trim() === '') {
+      let extractedQuery = { ...baseQuery, ename: "Extracted" };
+      extractedDataCount = await CompanyModel.countDocuments(extractedQuery);
+      extractedData = await CompanyModel.find(extractedQuery).skip(skip).limit(limit).lean();
+    }
+    // Fetch assigned data
+    let assignedQuery = { ...baseQuery, ename: { $nin: ['Not Alloted', 'Extracted'] } };
+    if (selectedBDEName && selectedBDEName.trim() !== '') {
+      assignedQuery.ename = new RegExp(`^${selectedBDEName.trim()}$`, 'i');
+    }
+
+    const assignedCount = await CompanyModel.countDocuments(assignedQuery);
+    const assignedData = await CompanyModel.find(assignedQuery).skip(skip).limit(limit).lean();
+
+    // Fetch unassigned data only if selectedBDEName is not specified
+    let unassignedData = [];
+    let unassignedCount = 0;
+    if (!selectedBDEName || selectedBDEName.trim() === '') {
+      let unassignedQuery = { ...baseQuery, ename: 'Not Alloted' };
+      unassignedCount = await CompanyModel.countDocuments(unassignedQuery);
+      unassignedData = await CompanyModel.find(unassignedQuery).skip(skip).limit(limit).lean();
+    }
+
+    // Send response
+    res.status(200).json({
+      assigned: assignedData,
+      unassigned: unassignedData,
+      extracted: extractedData,
+      extractedDataCount: extractedDataCount,
+      totalAssigned: assignedCount,
+      totalUnassigned: unassignedCount,
+      totalPages: Math.ceil((assignedCount + unassignedCount) / limit),
+      currentPage: page,
+    });
+
+  } catch (error) {
+    console.error('Error searching leads:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 
 router.get('/filter-employee-leads', async (req, res) => {
   const {

@@ -841,7 +841,6 @@ function EmployeesForwardedDataReport() {
     function functionCalculateGeneratedRevenue(bdeName) {
         let generatedRevenue = 0;
         const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept" || obj.bdmAcceptStatus === "Pending") && obj.Status === "Matured");
-        console.log("boom", requiredObj, redesignedData)
         requiredObj.forEach((object) => {
             redesignedData.map((mainBooking) => {
                 if (object["Company Name"] === mainBooking["Company Name"] && (mainBooking.bdeName === bdeName || mainBooking.bdmName === bdeName)) {
@@ -1007,7 +1006,7 @@ function EmployeesForwardedDataReport() {
 
     return (
         <div>
-            <div className="employee-dashboard">
+            <div className="employee-dashboard mt-2">
                 <div className="card">
                     <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1"  >

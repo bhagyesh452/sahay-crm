@@ -284,7 +284,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
                 let response;
 
                 if (isFilter) {
-                    response = await axios.get(`${secretKey}/company-data/filter-leads`, {
+                    response = await axios.get(`${secretKey}/company-data/filter-leads/interestedleads`, {
                         params: {
                             selectedStatus,
                             selectedState,
@@ -1450,7 +1450,7 @@ function InterestedFollowUpLeads({ closeOpenInterestedLeads }) {
         try {
             setIsFilter(true);
             setOpenBacdrop(true)
-            const response = await axios.get(`${secretKey}/company-data/filter-leads`, {
+            const response = await axios.get(`${secretKey}/company-data/filter-leads/interestedleads`, {
                 params: {
                     selectedStatus,
                     selectedState,
@@ -1644,7 +1644,6 @@ const handleCloseForwardBdmPopup = () => {
             </div>
             <div className="page-body">
                 <div className="container-xl">
-
                     <div class="card-header  my-tab">
                         <ul
                             class="nav nav-tabs card-header-tabs nav-fill p-0"
