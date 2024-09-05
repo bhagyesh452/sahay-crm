@@ -14,9 +14,43 @@ import MaleEmployee from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import AdminExecutiveBell from "./AdminExecutiveBell";
 import AdminExecutiveNotification from "./AdminExecutiveNotification";
+import { SnackbarProvider, enqueueSnackbar, MaterialDesignContent } from 'notistack';
+import notification_audio from "../../assets/media/notification_tone.mp3";
+import ReportComplete from "../../components/ReportComplete.jsx";
 
 function AdminExecutiveHeader({ name, id, designation, empProfile, gender }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
+    });
+
+    // Listen for the 'welcome' event from the server
+
+
+   
+    // socket.on("adminexecutive-letter-updated", (res) => {
+    //   console.log("socketchala" , res.updatedDocumentAdmin)
+    //   if(res.updatedDocumentAdmin){
+    //     enqueueSnackbar(`Letter Status updated for ${res.updatedDocumentAdmin["Company Name"]}`, 
+    //       { variant: "reportComplete" , 
+    //         persist:true 
+    //       });
+      
+    //     const audioplayer = new Audio(notification_audio);
+    //     audioplayer.play();
+    //   }
+    // });
+    
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div>
@@ -94,6 +128,16 @@ function AdminExecutiveHeader({ name, id, designation, empProfile, gender }) {
           </div>
         </div>
       </header>
+      <SnackbarProvider Components={{
+        reportComplete: ReportComplete
+      }} iconVariant={{
+        success: '✅',
+        error: '✖️',
+        warning: '⚠️',
+        info: 'ℹ️',
+      }} maxSnack={3}>
+
+      </SnackbarProvider>
     </div>
   )
 }

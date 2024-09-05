@@ -59,7 +59,6 @@ function Header({ name, id, designation, empProfile, gender }) {
         variant: 'reportComplete',
         persist:true
       });
-    
       const audioplayer = new Audio(notification_audio);
       audioplayer.play();
     });
