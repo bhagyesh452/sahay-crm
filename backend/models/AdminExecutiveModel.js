@@ -29,6 +29,12 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
         type: String,
 
     },
+    City:{
+        type:String,
+      },
+      State:{
+        type:String
+      },
     panNumber: {
         type: String,
 

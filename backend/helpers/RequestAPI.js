@@ -21,13 +21,19 @@ const NotiModel = require('../models/Notifications.js');
 const adminModel = require('../models/Admin.js');
 const { clouddebugger } = require('googleapis/build/src/apis/clouddebugger/index.js');
 const PaymentApprovalRequestModel = require('../models/PaymentApprovalRequest.js');
+const CompanyModel = require('../models/Leads.js');
 //const PaymentApprovalRequest = require('../models/PaymentApprovalRequest.js')
 
 
 router.post("/requestCompanyData", async (req, res) => {
   const csvData = req.body;
-
   const socketIO = req.io;
+  const findData = await CompanyModel.findOne({
+    "Company Name" : csvData["Company Name"]
+  })
+ if(findData){
+  res.status(400).json({message : "Company Already Exists in Database"})
+ }else{
   let dataArray = [];
   if (Array.isArray(csvData)) {
     dataArray = csvData;
@@ -101,6 +107,8 @@ router.post("/requestCompanyData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
   }
+
+ }
 });
 
 router.post("/change-edit-request/:companyName", async (req, res) => {
