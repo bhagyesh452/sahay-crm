@@ -1385,7 +1385,6 @@ export default function RedesignedForm({
                       <option value="GFSI">GFSI</option>
                       <option value="GMO">GMO</option>
                       <option value="17025-2017">17025-2017</option>
-
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}
