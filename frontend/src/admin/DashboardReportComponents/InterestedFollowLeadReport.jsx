@@ -478,7 +478,7 @@ function InterestedFollowLeadReport() {
                 (mainObj.bdmAcceptStatus === "Forwarded" ||
                     mainObj.bdmAcceptStatus === "Pending" ||
                     mainObj.bdmAcceptStatus === "Accept") &&
-                mainObj.ename === company.ename
+                mainObj["Company Name"] === company["Company Name"]
             )
         );
 
@@ -521,6 +521,7 @@ function InterestedFollowLeadReport() {
         setForwardEmployeeData(filteredForwardEmployeeData);
         setCompanyDataTotal(filteredCompanyDataTotal);
     };
+    //console.log("company" , companyDataTotal)
 
     return (
         <div>
@@ -727,19 +728,21 @@ function InterestedFollowLeadReport() {
                                                         (mainObj.bdmAcceptStatus === "Forwarded" ||
                                                             mainObj.bdmAcceptStatus === "Pending" ||
                                                             mainObj.bdmAcceptStatus === "Accept") &&
-                                                        mainObj.ename === company.ename
+                                                        mainObj["Company Name"] === company["Company Name"]
                                                     )
                                                 );
+                                               
                                                 // // Extract the company names
                                                 const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
 
                                                 // // Log the company names to the console
                                                 console.log("followupcompanies" , companyNames);
-                                                const interestedCompanies = leadHistoryData
-                                                    .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
-                                                    .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
 
-                                                console.log("Interested Companies:", interestedCompanies);
+                                                // const interestedCompanies = leadHistoryData
+                                                //     .filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp")
+                                                //     .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
+
+                                                // console.log("Interested Companies:", interestedCompanies);
 
                                                 return (
                                                     <tr key={`row-${index}`}>
