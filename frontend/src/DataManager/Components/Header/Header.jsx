@@ -27,7 +27,7 @@ import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 
 function Header({ name, id, designation, empProfile, gender }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  console.log("Designation is :", designation);
+
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS

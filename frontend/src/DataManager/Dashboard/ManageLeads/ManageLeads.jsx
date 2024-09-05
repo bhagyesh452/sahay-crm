@@ -892,7 +892,7 @@ function ManageLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus;
-        console.log("currentDataStatus", currentDataStatus);
+       
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
         try {
@@ -938,7 +938,7 @@ function ManageLeads() {
         const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData;
         const tempFilter = (!isFilter && !isSearching) ? data : tempStatusData;
         const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
-
+        console.log("dataToSend" , dataToSend)
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
@@ -1295,7 +1295,7 @@ function ManageLeads() {
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);
             setMonthIndex(monthIndex + 1)
-            console.log(monthIndex)
+            
             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
         } else {
@@ -1406,7 +1406,7 @@ function ManageLeads() {
     };
 
     const dataManagerName = localStorage.getItem("dataManagerName");
-    console.log("Leads :", data);
+  
 
     // console.log("User id is :", userId);
 
