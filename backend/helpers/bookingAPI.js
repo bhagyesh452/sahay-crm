@@ -6204,7 +6204,7 @@ router.post(
               lastActionDate: latestDateUpdate,
               [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
               [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
-              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount,
+              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount || 0 ,
               [`moreBookings.${bookingIndex - 1}.services.$[elem].remainingAmount`]: remainingAmountCalculated,
               [`moreBookings.${bookingIndex - 1}.services.$[elem].pendingRecievedAmount`]: pendingReceivedPaymentCalculated,
             }
