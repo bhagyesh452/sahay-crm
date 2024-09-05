@@ -1537,11 +1537,11 @@ th.th-day {
     padding-bottom: 15px;
     height: 100%;
     z-index: 1;
-    min-height: 225px;
+    min-height: 124px;
 }
 .emply_S_assets_dtl_head_brdcrm
 {
-    font-size: 11px;
+    font-size: 12px;
     margin: 0px 0px;
     text-transform: uppercase;
     color: #a5a5a5;
@@ -1552,22 +1552,21 @@ th.th-day {
     font-weight: 700;
     color: #706f76;
 }
-.emply_S_assets_dtl_head_tagline
+.emply_S_assets_dtl_head_brdcrm_icon
 {
-    font-size: 18px;
-    font-weight: 500;
-    color: #a3a3a3;
+    line-height: 12px;
+    font-size: 16px;
 }
 .emply_S_assets_dtl_inner
 {
-    margin-top: -60px;
+    margin-top: -42px;
     z-index: 1;
     
 }
 .emply_S_assets_dtl_inner_left
 {
-    padding: 20px 15px;
-    height: 400px;
+    padding: 15px 15px;
+    height: 370px;
     position: relative;
     z-index: 0;
 }
@@ -1588,7 +1587,7 @@ th.th-day {
 .emply_S_assets_dtl_inner_right
 {
     border-left: 1px solid #eee;
-    height: 400px;
+    height: 370px;
     padding: 0px 15px;
     overflow-y: auto;
 }
@@ -1613,18 +1612,18 @@ th.th-day {
 }
 .ES_assetsdtl_Linner_p p
 {
-    font-size: 16px;
+    font-size: 14px;
     color: #6b6b6b;
 }
 .ES_assetsdtl_Linner_p ul li
 {
-    font-size: 16px;
+    font-size: 14px;
     color: #6b6b6b;
     margin: 10px 0;
 }
 .ES_assetsdtl_Linner_p ol li
 {
-    font-size: 16px;
+    font-size: 14px;
     color: #6b6b6b;
     margin: 10px 0;
 }
@@ -1637,7 +1636,6 @@ th.th-day {
     font-size: 14px;
     color: #878787;
     font-weight: 600;
-    margin-top: 2px;
 }
 .esadir_docs_depart_name a
 {
@@ -1728,8 +1726,19 @@ th.th-day {
 }
 .ES_assetsdtl_Linner
 {
-    min-height: calc(100vh - 420px);
+    height: 315px;
     overflow: auto;
+}
+.ConcerneddepartPerson
+{
+    padding: 8px 15px;
+    background: #f3f3f3;
+    border-radius: 12px;
+    margin-top: 9px;
+}
+.ConcerneddepartPerson-right
+{
+    width: calc(100% - 42px);
 }
 /* Sweep To Right */
 /* .sweep-to-right {
