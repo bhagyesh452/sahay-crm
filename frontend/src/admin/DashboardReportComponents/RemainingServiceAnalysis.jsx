@@ -50,85 +50,168 @@ function RemainingServiceAnalysis() {
     }, []);
 
     // Combine total of all services whose names start with ISO Certificate :
+    // const getServiceAnalysisData = () => {
+    //     const serviceAnalysis = {};
+    
+    //     const processServiceData = (service, remainingPayment) => {
+    //         const serviceNameKey = service.serviceName.startsWith("ISO Certificate")
+    //             ? "ISO Certificate"
+    //             : service.serviceName;
+    
+    //         if (!serviceAnalysis[serviceNameKey]) {
+    //             serviceAnalysis[serviceNameKey] = {
+    //                 timesSold: 0,
+    //                 totalRemainingAmount: 0,
+    //                 totalRemainingReceived: 0,
+    //                 remainingAmount: 0,
+    //             };
+    //         }
+    
+    //         // Increment the count of services sold
+    //         serviceAnalysis[serviceNameKey].timesSold += 1;
+    
+    //         let totalRemainingAmount = 0;
+    //         let totalRemainingReceived = 0;
+    
+    //         // Calculate total remaining amount based on paymentTerms and withGST conditions
+    //         if (service.paymentTerms === "two-part") {
+    //             const secondPayment = service.withGST ? (service.secondPayment || 0) / 1.18 : service.secondPayment || 0;
+    //             const thirdPayment = service.withGST ? (service.thirdPayment || 0) / 1.18 : service.thirdPayment || 0;
+    //             const fourthPayment = service.withGST ? (service.fourthPayment || 0) / 1.18 : service.fourthPayment || 0;
+    //             totalRemainingAmount = secondPayment + thirdPayment + fourthPayment;
+    //         }
+            
+    //         totalRemainingReceived = service.withGST ? remainingPayment.receivedPayment/1.18 : remainingPayment.receivedPayment
+
+    //         // Update the service analysis data with payment details
+    //         serviceAnalysis[serviceNameKey].totalRemainingAmount += totalRemainingAmount;
+    //         serviceAnalysis[serviceNameKey].totalRemainingReceived += totalRemainingReceived;
+    //         serviceAnalysis[serviceNameKey].remainingAmount += totalRemainingAmount - totalRemainingReceived;
+    //     };
+    
+    //     const processBooking = (booking) => {
+    //         booking.services.forEach(service => {
+    //             // Filter remaining payments by the selected month and year
+    //             booking.remainingPayments.forEach(remainingPayment => {
+    //                 const paymentDate = new Date(remainingPayment.paymentDate);
+    //                 const paymentMonth = format(paymentDate, 'MMMM');
+    //                 const paymentYear = paymentDate.getFullYear();
+    
+    //                 if (paymentMonth === selectedMonth && paymentYear === selectedYear && remainingPayment.serviceName === service.serviceName) {
+    //                     processServiceData(service, remainingPayment);
+    //                 }
+    //             });
+    //         });
+    //     };
+    
+    //     // Process all bookings and more bookings
+    //     bookingData.forEach(booking => {
+    //         processBooking(booking);
+    //         booking.moreBookings.forEach(moreBooking => {
+    //             processBooking(moreBooking);
+    //         });
+    //     });
+    
+    //     // Return the data in the desired format
+    //     return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
+    //         return {
+    //             id: index + 1,
+    //             serviceName,
+    //             timesSold: data.timesSold,
+    //             totalRemainingAmount: data.totalRemainingAmount,
+    //             totalRemainingReceived: data.totalRemainingReceived,
+    //             remainingAmount: data.remainingAmount,
+    //         };
+    //     });
+    // };
+    
+    // const serviceAnalysisData = getServiceAnalysisData();
+    
+    // // Calculate totals for the footer
+    // const totalTimesSold = serviceAnalysisData.reduce((total, service) => total + service.timesSold, 0);
+    // const totalRemainingAmount = serviceAnalysisData.reduce((total, service) => total + service.totalRemainingAmount, 0);
+    // const totalRemainingReceived = serviceAnalysisData.reduce((total, service) => total + service.totalRemainingReceived, 0);
+    // const totalRemainingAmountFooter = serviceAnalysisData.reduce((total, service) => total + service.remainingAmount, 0);
+    
+
     const getServiceAnalysisData = () => {
         const serviceAnalysis = {};
-
-        const processServiceData = (booking, service) => {
-            const serviceNameKey = service.serviceName.startsWith("ISO Certificate") ? "ISO Certificate" : service.serviceName;
-
+    
+        const processServiceData = (service, remainingPayment) => {
+            const serviceNameKey = service.serviceName.startsWith("ISO Certificate")
+                ? "ISO Certificate"
+                : service.serviceName;
+    
             if (!serviceAnalysis[serviceNameKey]) {
                 serviceAnalysis[serviceNameKey] = {
                     timesSold: 0,
                     totalRemainingAmount: 0,
-                    firstPayment: 0,
-                    secondPayment: 0,
-                    thirdPayment: 0,
-                    totalReceived: 0,
                     totalRemainingReceived: 0,
                     remainingAmount: 0,
                 };
             }
-
+    
             // Increment the count of services sold
             serviceAnalysis[serviceNameKey].timesSold += 1;
-
-            // Calculate the payment values
-            const firstPayment = service.withGST ? service.secondPayment / 1.18 : service.secondPayment;
-            const thirdPayment = service.withGST ? service.thirdPayment / 1.18 : service.thirdPayment;
-            const secondPayment = service.withGST ? service.fourthPayment / 1.18 : service.fourthPayment;
-
-            // Sum of remaining payments
-            const remainingAmount = secondPayment + thirdPayment;
-
-            serviceAnalysis[serviceNameKey].totalRemainingAmount += remainingAmount;
-            serviceAnalysis[serviceNameKey].secondPayment += firstPayment;
-            serviceAnalysis[serviceNameKey].thirdPayment += secondPayment;
-            serviceAnalysis[serviceNameKey].fourthPayment += thirdPayment;
-            serviceAnalysis[serviceNameKey].totalReceived += service.secondPayment + service.thirdPayment + service.fourthPayment;
-            serviceAnalysis[serviceNameKey].remainingAmount += remainingAmount;
-        };
-
-        const processBooking = (booking) => {
-            const bookingMonth = format(new Date(booking.bookingDate), 'MMMM');
-            const bookingYear = new Date(booking.bookingDate).getFullYear();
-
-            if (bookingMonth === selectedMonth && bookingYear === selectedYear) {
-                booking.services.forEach(service => processServiceData(booking, service));
+    
+            let totalRemainingAmount = 0;
+            let totalRemainingReceived = 0;
+    
+            // Calculate total remaining amount based on paymentTerms and withGST conditions
+            if (service.paymentTerms === "two-part") {
+                const secondPayment = service.withGST ? (service.secondPayment || 0) / 1.18 : service.secondPayment || 0;
+                const thirdPayment = service.withGST ? (service.thirdPayment || 0) / 1.18 : service.thirdPayment || 0;
+                const fourthPayment = service.withGST ? (service.fourthPayment || 0) / 1.18 : service.fourthPayment || 0;
+                totalRemainingAmount = secondPayment + thirdPayment + fourthPayment;
             }
+    
+            totalRemainingReceived = service.withGST ? remainingPayment.receivedPayment / 1.18 : remainingPayment.receivedPayment;
+    
+            // Update the service analysis data with payment details
+            serviceAnalysis[serviceNameKey].totalRemainingAmount += totalRemainingAmount;
+            serviceAnalysis[serviceNameKey].totalRemainingReceived += totalRemainingReceived;
+            serviceAnalysis[serviceNameKey].remainingAmount += totalRemainingAmount - totalRemainingReceived;
         };
-
+    
+        const processBooking = (booking) => {
+            booking.services.forEach(service => {
+                booking.remainingPayments.forEach(remainingPayment => {
+                    if (remainingPayment.serviceName === service.serviceName) {
+                        processServiceData(service, remainingPayment);
+                    }
+                });
+            });
+        };
+    
+        // Process all bookings and more bookings without filtering by month and year
         bookingData.forEach(booking => {
             processBooking(booking);
-
             booking.moreBookings.forEach(moreBooking => {
                 processBooking(moreBooking);
             });
         });
-
+    
+        // Return the data in the desired format
         return Object.entries(serviceAnalysis).map(([serviceName, data], index) => {
             return {
                 id: index + 1,
                 serviceName,
                 timesSold: data.timesSold,
                 totalRemainingAmount: data.totalRemainingAmount,
-                rps: `First: ₹ ${formatAmount(data.firstPayment)}, Second: ₹ ${formatAmount(data.secondPayment)}, Third: ₹ ${formatAmount(data.thirdPayment)}`,
-                totalRemainingReceived: data.totalReceived,
+                totalRemainingReceived: data.totalRemainingReceived,
                 remainingAmount: data.remainingAmount,
             };
         });
     };
-
+    
     const serviceAnalysisData = getServiceAnalysisData();
-
-    // Calculate totals for footer
+    
+    // Calculate totals for the footer
     const totalTimesSold = serviceAnalysisData.reduce((total, service) => total + service.timesSold, 0);
     const totalRemainingAmount = serviceAnalysisData.reduce((total, service) => total + service.totalRemainingAmount, 0);
-    const totalFirstPayment = serviceAnalysisData.reduce((total, service) => total + service.firstPayment, 0);
-    const totalSecondPayment = serviceAnalysisData.reduce((total, service) => total + service.secondPayment, 0);
-    const totalThirdPayment = serviceAnalysisData.reduce((total, service) => total + service.thirdPayment, 0);
     const totalRemainingReceived = serviceAnalysisData.reduce((total, service) => total + service.totalRemainingReceived, 0);
     const totalRemainingAmountFooter = serviceAnalysisData.reduce((total, service) => total + service.remainingAmount, 0);
-
+    
 
     return (
         <div className="card">
@@ -172,13 +255,13 @@ function RemainingServiceAnalysis() {
                                 <th>Service Name</th>
                                 <th>No. Of Count</th>
                                 <th>Total Remaining Amount</th>
-                                <th>R.P.S</th>
+                                {/* <th>R.P.S</th> */}
                                 <th>Total Remaining Received</th>
                                 <th>Remainign Amount</th>
                             </tr>
                         </thead>
 
-                        <tbody>
+                        {/* <tbody>
                             <tr>
                                 <td>1</td>
                                 <td>Seed Funding</td>
@@ -209,12 +292,12 @@ function RemainingServiceAnalysis() {
                                 <td>₹ 20000</td>
                                 <td>₹ 3000</td>
                             </tr>
-                        </tfoot>
+                        </tfoot> */}
 
-                        {/* {isLoading ? (
+                        {isLoading ? (
                             <tbody>
                                 <tr>
-                                    <td colSpan="11" >
+                                    <td colSpan="7" >
                                         <div className="LoaderTDSatyle w-100" >
                                             <ClipLoader
                                                 color="lightgrey"
@@ -236,7 +319,7 @@ function RemainingServiceAnalysis() {
                                             <td>{service.serviceName}</td>
                                             <td>{service.timesSold}</td>
                                             <td>₹ {formatAmount(service.totalRemainingAmount.toFixed(2))}</td>
-                                            <td>{service.rps}</td>
+                                            {/* <td>{service.rps}</td> */}
                                             <td>₹ {formatAmount(service.totalRemainingReceived.toFixed(2))}</td>
                                             <td>₹ {formatAmount(service.remainingAmount.toFixed(2))}</td>
                                         </tr>
@@ -249,7 +332,7 @@ function RemainingServiceAnalysis() {
                                         <td>{serviceAnalysisData.length}</td>
                                         <td>{totalTimesSold}</td>
                                         <td>₹ {formatAmount(totalRemainingAmount.toFixed(2))}</td>
-                                        <td>First: ₹{formatAmount(totalFirstPayment)}, Second: ₹{formatAmount(totalSecondPayment)}, Third: ₹{formatAmount(totalThirdPayment)}</td>
+                                        {/* <td>First: ₹{formatAmount(totalFirstPayment)}, Second: ₹{formatAmount(totalSecondPayment)}, Third: ₹{formatAmount(totalThirdPayment)}</td> */}
                                         <td>₹ {formatAmount(totalRemainingReceived.toFixed(2))}</td>
                                         <td>₹ {formatAmount(totalRemainingAmountFooter.toFixed(2))}</td>
                                     </tr>
@@ -261,7 +344,7 @@ function RemainingServiceAnalysis() {
                                     <td colSpan="7" className="text-center"><Nodata /></td>
                                 </tr>
                             </tbody>
-                        )} */}
+                        )}
 
                     </table>
                 </div>
