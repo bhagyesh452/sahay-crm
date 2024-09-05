@@ -81,6 +81,65 @@ router.get("/leads", async (req, res) => {
 //   }
 // });
 
+// router.post("/update-status/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { newStatus, title, date, time, oldStatus } = req.body;
+
+//   try {
+//     // Find the company by ID in the CompanyModel to get the company details
+//     const company = await CompanyModel.findById(id);
+//     if (!company) {
+//       return res.status(404).json({ error: "Company not found" });
+//     }
+
+//     // Update the status field in the CompanyModel
+//     await CompanyModel.findByIdAndUpdate(id, {
+//       Status: newStatus,
+//     });
+
+//     // Check if newStatus is either "FollowUp" or "Interested"
+//     if (newStatus === "FollowUp" || newStatus === "Interested") {
+//       // Find the company in LeadHistoryForInterestedandFollowModel
+//       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+//         "Company Name": company["Company Name"],
+//       });
+
+//       if (leadHistory) {
+//         // If the record exists, update old status, new status, date, and time
+//         leadHistory.oldStatus = oldStatus;
+//         leadHistory.newStatus = newStatus;
+//       } else {
+//         // If the record does not exist, create a new one with the company name, ename, and statuses
+//         leadHistory = new LeadHistoryForInterestedandFollowModel({
+//           _id: id,
+//           "Company Name": company["Company Name"],
+//           ename: company.ename,
+//           oldStatus: oldStatus,
+//           newStatus: newStatus,
+//           date: new Date(),  // Convert the date string to a Date object
+//           time: time,
+//         });
+//       }
+
+//       // Save the lead history update
+//       await leadHistory.save();
+//     }
+
+//     // Create and save a new document in the RecentUpdatesModel collection
+//     // const newUpdate = new RecentUpdatesModel({
+//     //   title: title,
+//     //   date: date,
+//     //   time: time,
+//     // });
+//     // await newUpdate.save();
+
+//     res.status(200).json({ message: "Status updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating status:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 router.post("/update-status/:id", async (req, res) => {
   const { id } = req.params;
   const { newStatus, title, date, time, oldStatus } = req.body;
@@ -97,8 +156,24 @@ router.post("/update-status/:id", async (req, res) => {
       Status: newStatus,
     });
 
-    // Check if newStatus is either "FollowUp" or "Interested"
-    if (newStatus === "FollowUp" || newStatus === "Interested") {
+    // Define an array of statuses for which the lead history should be deleted
+    const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched"];
+
+    if (deleteStatuses.includes(newStatus)) {
+      // Find the company in LeadHistoryForInterestedandFollowModel
+      const leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
+        "Company Name": company["Company Name"],
+      });
+
+      // If lead history exists, delete the document
+      if (leadHistory) {
+        await LeadHistoryForInterestedandFollowModel.deleteOne({
+          "Company Name": company["Company Name"],
+        });
+      }
+
+    } else if (newStatus === "FollowUp" || newStatus === "Interested") {
+      // Check if newStatus is either "FollowUp" or "Interested"
       // Find the company in LeadHistoryForInterestedandFollowModel
       let leadHistory = await LeadHistoryForInterestedandFollowModel.findOne({
         "Company Name": company["Company Name"],
@@ -125,7 +200,7 @@ router.post("/update-status/:id", async (req, res) => {
       await leadHistory.save();
     }
 
-    // Create and save a new document in the RecentUpdatesModel collection
+    // Optionally, you can still create and save a new document in RecentUpdatesModel collection
     // const newUpdate = new RecentUpdatesModel({
     //   title: title,
     //   date: date,
@@ -139,6 +214,7 @@ router.post("/update-status/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 router.get("/leadDataHistoryInterested/:ename", async (req, res) => {
   const { ename } = req.params;
