@@ -970,8 +970,8 @@ table.table.top_5_table tbody tr.myself td {
     font-size: 1rem;
     color: rgb(22, 119, 255);
     background: rgb(230, 244, 255);
-    width: 124px;
-    height: 124px;
+    width: 112px;
+    height: 112x;
     border: 1px dashed;
 }
 .emply_e_card_profile_div img
@@ -1017,7 +1017,7 @@ table.table.top_5_table tbody tr.myself td {
 }
 .emply_e_card_profile_name
 {
-    width: calc(100% - 124px);
+    width: calc(100% - 112px);
 }
 .emply_e_card_profile_inner_lbl:hover .emply_e_card_profile_update
 {
@@ -1042,27 +1042,6 @@ table.table.top_5_table tbody tr.myself td {
 .my-card-body-style-2
 {
     padding: 12px 0px 12px 0;
-}
-.emply_e_info_head
-{
-    font-size: 10px;
-    color: #808080;
-}
-.emply_e_info_data
-{
-    margin-top: 2px;
-    font-weight: 500;   
-}
-.emply_e_info_data_name
-{
-    color: #495663;
-    font-size: 12px;
-}
-.ee_info_i
-{
-    font-size: 14px;
-    margin-right: 3px;
-    line-height: 13px;
 }
 .attendance-date-tbl .date-f
 {
@@ -1656,7 +1635,7 @@ th.th-day {
 }
 .ConcerneddepartPerson label
 {
-    font-size: 12px;
+    font-size: 11px;
     color: #727272;
     margin: 0;
     font-weight: 400;

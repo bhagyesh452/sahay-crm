@@ -312,9 +312,9 @@ function RemainingServiceAnalysis() {
             booking.services.forEach(service => {
                 booking.remainingPayments.forEach(remainingPayment => {
                     if (remainingPayment.serviceName === service.serviceName) {
-                        if (service.serviceName && remainingPayment.serviceName === "Website Development") {
-                            console.log('Remaining Payment for Website Development:', service);
-                        }
+                        // if (service.serviceName && remainingPayment.serviceName === "Website Development") {
+                        //     console.log('Remaining Payment for Website Development:', service);
+                        // }
                         processServiceData(service, remainingPayment);
                     }
                 });
@@ -427,7 +427,7 @@ function RemainingServiceAnalysis() {
                                 <th>Sr. No</th>
                                 <th>Service Name</th>
                                 <th>No. Of Count</th>
-                                <th>R.P.S</th>
+                                <th colSpan="3">Remaining Payment Stage</th>
                                 <th>Total Remaining Amount</th>
                                 {/* <th>Total Remaining Received</th>
                                 <th>Remainign Amount</th> */}
@@ -492,9 +492,13 @@ function RemainingServiceAnalysis() {
                                             <td>{service.serviceName}</td>
                                             <td>{service.timesSold}</td>
                                             <td>
-                                                <strong>Stage-1:</strong> ₹ {formatAmount(service.totalSecondPayment.toFixed(2))},
-                                                <strong>Stage-2:</strong> ₹ {formatAmount(service.totalThirdPayment.toFixed(2))},
-                                                <strong>Stage-3:</strong> ₹ {formatAmount(service.totalFourthPayment.toFixed(2))},
+                                                <strong>Stage-1:</strong> ₹ {formatAmount(service.totalSecondPayment.toFixed(2))}
+                                                
+                                            </td>
+                                            <td>
+                                                <strong>Stage-2:</strong> ₹ {formatAmount(service.totalThirdPayment.toFixed(2))}
+                                            </td>
+                                            <td><strong>Stage-3:</strong> ₹ {formatAmount(service.totalFourthPayment.toFixed(2))}
                                             </td>
                                             <td>₹ {formatAmount(service.totalRemainingAmount.toFixed(2))}</td>
                                             {/* <td>₹ {formatAmount(service.totalRemainingReceived.toFixed(2))}</td>
