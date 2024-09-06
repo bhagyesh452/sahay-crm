@@ -164,7 +164,8 @@ function EditService({ close, serviceName }) {
 
     const fetchService = async () => {
         try {
-            const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${serviceName}`);
+            const encodedServiceName = encodeURIComponent(serviceName); // Encode the service name to handle special characters like /
+            const res = await axios.get(`${secretKey}/services/fetchServiceFromServiceName/${encodedServiceName}`);
             const data = res.data.data;
             setId(data._id);
             // console.log("Fetched service is :", data);

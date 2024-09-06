@@ -312,9 +312,9 @@ function RemainingServiceAnalysis() {
             booking.services.forEach(service => {
                 booking.remainingPayments.forEach(remainingPayment => {
                     if (remainingPayment.serviceName === service.serviceName) {
-                        if (service.serviceName && remainingPayment.serviceName === "Website Development") {
-                            console.log('Remaining Payment for Website Development:', service);
-                        }
+                        // if (service.serviceName && remainingPayment.serviceName === "Website Development") {
+                        //     console.log('Remaining Payment for Website Development:', service);
+                        // }
                         processServiceData(service, remainingPayment);
                     }
                 });

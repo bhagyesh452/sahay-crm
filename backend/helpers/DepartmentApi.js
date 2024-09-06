@@ -148,11 +148,27 @@ router.put("/updateServiceInDepartmentModel/:serviceName", async (req, res) => {
 });
 
 router.delete("/deleteServiceFromDepartmentModel/:serviceName", async (req, res) => {
-    const {serviceName} = req.params;
+    const {serviceName, departmentName} = req.params;
     try {
-        const deletedService = await DepartmentModel.findOneAndDelete(
-            { serviceName: serviceName });
-        res.status(200).json({result: true, message: "Service successfully deleted", data: deletedService});
+        const decodedServiceName = decodeURIComponent(serviceName);
+        const decodedDepartmentName = decodeURIComponent(departmentName);
+        let deletedData;
+        if(!serviceName) {
+            deletedData = await DepartmentModel.findOneAndDelete({
+                $or: [
+                    { serviceName: decodedDepartmentName }, // Exact match
+                    { serviceName: decodedDepartmentName.replace(/-/g, "/") } // Handle alternate names
+                ]
+            });
+        } else{
+            deletedData = await DepartmentModel.findOneAndDelete({
+                $or: [
+                    { serviceName: decodedServiceName }, // Exact match
+                    { serviceName: decodedServiceName.replace(/-/g, "/") } // Handle alternate names
+                ]
+            });
+        }
+        res.status(200).json({result: true, message: "Service successfully deleted", data: deletedData});
     } catch (error) {
         res.status(500).json({result: false, message: "Error deleting service", error: error});
     }
