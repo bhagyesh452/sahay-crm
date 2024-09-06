@@ -302,7 +302,7 @@ function Services() {
         }
     };
 
-    const handleDeleteService = async (serviceName) => {
+    const handleDeleteService = async (serviceName, departmentName) => {
         Swal.fire({
             title: 'Are you sure?',
             text: "You want to delete this service",
@@ -314,10 +314,19 @@ function Services() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.delete(`${secretKey}/department/deleteServiceFromDepartmentModel/${serviceName}`);
-                    const res2 = await axios.delete(`${secretKey}/services/deleteServiceFromServiceModel/${serviceName}`);
-                    console.log("Service successfully deleted from department model :", res.data.data);
-                    console.log("Service successfully deleted from service model :", res2.data.data);
+                    const encodedServiceName = encodeURIComponent(serviceName);
+                    const encodedDepartmentName = encodeURIComponent(departmentName);
+                    if(!serviceName) {
+                        const res = await axios.delete(`${secretKey}/department/deleteServiceFromDepartmentModel/${encodedDepartmentName}`);
+                        const res2 = await axios.delete(`${secretKey}/services/deleteServiceFromServiceModel/${encodedDepartmentName}`);
+                        // console.log("Service successfully deleted from department model :", res.data.data);
+                        // console.log("Service successfully deleted from service model :", res2.data.data);
+                    } else {
+                        const res = await axios.delete(`${secretKey}/department/deleteServiceFromDepartmentModel/${encodedServiceName}`);
+                        const res2 = await axios.delete(`${secretKey}/services/deleteServiceFromServiceModel/${encodedServiceName}`);
+                        // console.log("Service successfully deleted from department model :", res.data.data);
+                        // console.log("Service successfully deleted from service model :", res2.data.data);
+                    }
                     Swal.fire("success", "Service Successfully Deleted", "success");
                     fetchServices();
                 } catch (error) {
@@ -597,7 +606,7 @@ function Services() {
                                                                         </div>
 
                                                                         <div className="icons-btn">
-                                                                            <IconButton onClick={() => handleDeleteService(service.serviceName)}>
+                                                                            <IconButton onClick={() => handleDeleteService(service.serviceName, service.departmentName)}>
                                                                                 <IconTrash
                                                                                     style={{
                                                                                         cursor: "pointer",
