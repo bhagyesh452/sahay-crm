@@ -17,6 +17,9 @@ import { MdOutlineEmail } from "react-icons/md";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { TbPhoneCall } from "react-icons/tb";
 import { MdOutlineCalendarMonth } from "react-icons/md";
+import { HiOutlineBuildingLibrary } from "react-icons/hi2";
+import { MdOutlinePersonPin } from "react-icons/md";
+import { GoPerson } from "react-icons/go";
 import { GrLocation } from "react-icons/gr";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -35,13 +38,12 @@ import Swal from 'sweetalert2';
 import CloseIcon from "@mui/icons-material/Close";
 import Navbar from "./Navbar/Navbar.jsx";
 import { HiPencil } from "react-icons/hi";
-import { FcBusinessman } from "react-icons/fc";
-import { FcManager } from "react-icons/fc";
-import { FcCalendar } from "react-icons/fc";
+import { BsGenderTrans } from "react-icons/bs";
+import { FaRegUser } from "react-icons/fa";
+import { IoCalendarClearOutline } from "react-icons/io5";
 import { FcBusinesswoman } from "react-icons/fc";
-import { FcIphone } from "react-icons/fc";
-import { FaLocationDot } from "react-icons/fa6";
-import { FcFeedback } from "react-icons/fc";
+import { PiPhoneCall } from "react-icons/pi";
+import { MdOutlineMailOutline } from "react-icons/md";
 import { color } from "@mui/system";
 import { FcBriefcase } from "react-icons/fc";
 import { IoCall } from "react-icons/io5";
@@ -418,7 +420,7 @@ function EmployeeView() {
                                 </div>
                               </div>
                               <div className="row m-0 bdr-btm-eee">
-                                <div className="col-5  pt-1 pb-1">
+                                <div className="col-5 pt-1 pb-1">
                                   <div className="d-flex align-items-center">
                                     <div className="ep_info_icon clr-ffb900">
                                       <TbPhoneCall />
@@ -458,125 +460,165 @@ function EmployeeView() {
                     </div>
                   </div>
                 </div>
-                <div className="my-card-style-2 mt-3">
-                  <div className="my-card-head-style-2">
-                    Personal Information
+                <div className="my-card mt-2" >
+                  {/* <div className="my-card-head">
+                    Employment Information
+                  </div> */}
+                  <div className="my-card-body">
+                    <div className="row m-0  bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <HiOutlineBuildingLibrary />
+                          </div>
+                          <div className="ep_info_h">Department:</div>
+                        </div>
+                      </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          Sales
+                        </div>
+                      </div>
+                    </div>  
+                    <div className="row m-0  bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <MdOutlinePersonPin />
+                          </div>
+                          <div className="ep_info_h">Employment Type:</div>
+                        </div>
+                      </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          Full Time
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row m-0">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <GoPerson />
+                          </div>
+                          <div className="ep_info_h">Reporting Manager:</div>
+                        </div>
+                      </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          Vaibhav Acharya
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="my-card-body-style-2">
-                    <div className="emply_e_card_dtl">
-                      <div className="emply_e_info_head">
-                        <div className="d-flex align-item-center">
-                          <div className="ee_info_i"><FcManager /></div>
-                          <div>
-                            Full Name
+                </div>
+                <div className="my-card mt-2" >
+                  {/* <div className="my-card-head">
+                    Personal Information
+                  </div> */}
+                  <div className="my-card-body">
+                    <div className="row m-0  bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <FaRegUser  />
                           </div>
+                          <div className="ep_info_h">Full Name:</div>
                         </div>
                       </div>
-                      <div className="emply_e_info_data">
-                        <div className="emply_e_info_data_name">
-                            Vishunu Maheshbhai Suthar
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          Nimeshkumar Kamleshbhai Parekh
                         </div>
                       </div>
-                    </div>
-                    <div className="row mt-2">
-                      <div className="col">
-                        <div className="emply_e_card_dtl">
-                          <div className="emply_e_info_head">
-                            DOB
+                    </div>  
+                    <div className="row m-0 bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <IoCalendarClearOutline  />
                           </div>
-                          <div className="emply_e_info_data">
-                            <div className="d-flex aling-items-center">
-                              <div className="ee_info_i"><FcCalendar /></div>
-                              <div className="emply_e_info_data_name">
-                                2<sup>nd</sup> Dec 2024
-                              </div>
-                            </div>
-                          </div>
+                          <div className="ep_info_h">DOB:</div>
                         </div>
                       </div>
-                      <div className="col">
-                        <div className="emply_e_card_dtl">
-                          <div className="emply_e_info_head">
-                            Gender
-                          </div>
-                          <div className="emply_e_info_data">
-                            <div className="d-flex aling-items-center">
-                              <div className="ee_info_i"><FcBusinessman /></div>
-                              <div className="emply_e_info_data_name">
-                                Male
-                              </div>
-                              {/* <div className="ee_info_i"><FcBusinesswoman  /></div>
-                              <div className="emply_e_info_data_name">
-                                Female
-                              </div> */}
-                            </div>
-                          </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          2<sup>nd</sup> Dec 2024
                         </div>
                       </div>
                     </div>
-                    <div className="row mt-2">
-                      <div className="col">
-                        <div className="emply_e_card_dtl">
-                          <div className="emply_e_info_head">
-                            Phone No
+                    <div className="row m-0 bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1 ">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <BsGenderTrans  />
                           </div>
-                          <div className="emply_e_info_data">
-                            <div className="d-flex aling-items-center">
-                              <div className="ee_info_i"><FcIphone /></div>
-                              <div className="emply_e_info_data_name">
-                                9924283530
-                              </div>
-                            </div>
-                          </div>
+                          <div className="ep_info_h">Gender:</div>
                         </div>
                       </div>
-                      <div className="col">
-                        <div className="emply_e_card_dtl">
-                          <div className="emply_e_info_head">
-                            Email
-                          </div>
-                          <div className="emply_e_info_data">
-                            <div className="d-flex aling-items-center">
-                              <div className="ee_info_i"><FcFeedback /></div>
-                              <div className="emply_e_info_data_name">
-                                Nimesh@incsccale.in
-                              </div>
-                            </div>
-                          </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          male
                         </div>
                       </div>
                     </div>
-                    <div className="row mt-2">
-                      <div className="col">
-                        <div className="emply_e_card_dtl">
-                          <div className="emply_e_info_head">
-                            Current Address
+                    <div className="row m-0 bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <PiPhoneCall />
                           </div>
-                          <div className="emply_e_info_data">
-                            <div className="d-flex aling-items-center">
-                              <div className="ee_info_i" style={{ color: "#fbba1c" }}><FaLocationDot /></div>
-                              <div className="emply_e_info_data_name">
-                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
-                              </div>
-                            </div>
-                          </div>
+                          <div className="ep_info_h">Phone No:</div>
+                        </div>
+                      </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          9924283530
                         </div>
                       </div>
                     </div>
-                    <div className="row mt-2">
-                      <div className="col">
-                        <div className="emply_e_card_dtl">
-                          <div className="emply_e_info_head">
-                            Permanent Address
+                    <div className="row m-0 bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <MdOutlineMailOutline />
                           </div>
-                          <div className="emply_e_info_data">
-                            <div className="d-flex aling-items-center">
-                              <div className="ee_info_i" style={{ color: "#fbba1c" }}><FaLocationDot /></div>
-                              <div className="emply_e_info_data_name">
-                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
-                              </div>
-                            </div>
+                          <div className="ep_info_h">Email:</div>
+                        </div>
+                      </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          male@gmail.com
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row m-0 bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <GrLocation  />
                           </div>
+                          <div className="ep_info_h">Current Address:</div>
+                        </div>
+                      </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row m-0 bdr-btm-eee">
+                      <div className="col-4 pt-1 pb-1">
+                        <div className="d-flex align-items-center">
+                          <div className="ep_info_icon clr-ffb900">
+                            <GrLocation />
+                          </div>
+                          <div className="ep_info_h">Permanent Address:</div>
+                        </div>
+                      </div>
+                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                        <div className="ep_info_t">
+                          H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
                         </div>
                       </div>
                     </div>
