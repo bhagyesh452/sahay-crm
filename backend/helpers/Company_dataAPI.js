@@ -1948,6 +1948,16 @@ router.get("/get-bde-name-for-mybookings/:companyName", async (req, res) => {
   }
 });
 
+// Displaying gilter data based on status
+router.get("/getStatusWiseData/:status", async (req, res) => {
+  const {status} = req.params;
+  try {
+    const data = await CompanyModel.find({Status: status});
+    res.status(200).json({result: true, message: "Data successfully fetched", data: data, length: data.length || 0});
+  } catch (error) {
+    res.status(500).json({result: false, message: "Error fetching data", error: error});
+  }
 
+});
 
 module.exports = router;

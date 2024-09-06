@@ -121,9 +121,106 @@ function EmployeeDataReport() {
     };
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 
+    const [untouchedStatus, setUntouchedStatus] = useState([]);
+    const [busyStatus, setBusyStatus] = useState([]);
+    const [notPickedUpStatus, setNotPickedUpStatus] = useState([]);
+    const [junkStatus, setJunkStatus] = useState([]);
+    const [followUpStatus, setFollowUpStatus] = useState([]);
+    const [interestedStatus, setInterestedStatus] = useState([]);
+    const [notInterestedStatus, setNotInterestedStatus] = useState([]);
+    const [maturedStatus, setMaturedStatus] = useState([]);
+
+    const fetchUntouchedStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Untouched`);
+            console.log("Untouched status data is :", res.data.data);
+            setUntouchedStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
+    const fetchBusyStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Busy`);
+            console.log("Busy status data is :", res.data.data);
+            setBusyStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
+    const fetchNotPickedUpStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Not Picked Up`);
+            console.log("Not picked status data is :", res.data.data);
+            setNotPickedUpStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
+    const fetchJunkStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Junk`);
+            console.log("Junk status data is :", res.data.data);
+            setJunkStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
+    const fetchFollowUpStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Follow Up`);
+            console.log("Follow up data is :", res.data.data);
+            setFollowUpStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
+    const fetchInterestedStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Interested`);
+            console.log("Interested data is :", res.data.data);
+            setInterestedStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
+    const fetchNotInterestedStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/NotInterested`);
+            console.log("Not interested status data is :", res.data.data);
+            setNotInterestedStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
+    const fetchMaturedStatusData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Matured`);
+            console.log("Matured status data is :", res.data.data);
+            setMaturedStatus(res.data.data);
+        } catch (error) {
+            console.log("Error fetching data");
+        }
+    };
+
     useEffect(() => {
         fetchCompanyData()
         fetchEmployeeInfo()
+        fetchUntouchedStatusData();
+        fetchBusyStatusData();
+        fetchNotPickedUpStatusData();
+        fetchJunkStatusData();
+        fetchFollowUpStatusData();
+        fetchInterestedStatusData();
+        fetchNotInterestedStatusData();
+        fetchMaturedStatusData();
 
         //fetchCompanies();
         //fetchRedesignedBookings();
@@ -1545,6 +1642,9 @@ function EmployeeDataReport() {
                                                                             data.Status === "Untouched"
                                                                     )
                                                                     .length.toLocaleString()}
+                                                                {/* {untouchedStatus.filter(
+                                                                    (data) => data.ename === obj.ename
+                                                                ).length.toLocaleString()} */}
                                                             </Link>
                                                         </td>
 
