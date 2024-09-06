@@ -15,7 +15,10 @@ const isoTypeSchema = new mongoose.Schema({
   },
   Nontype: {
     type: String
-  }
+  },
+  forOther:{
+    type:String
+  },
 });
 
 const companyIncoTypeSchema = new mongoose.Schema({

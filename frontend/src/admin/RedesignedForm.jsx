@@ -30,7 +30,6 @@ const steps = [
   "Payment Summery",
   "Final",
 ];
-
 const defaultService = {
   serviceName: "",
   withDSC: true,
@@ -62,6 +61,7 @@ export default function RedesignedForm({
   setNowToFetch,
   bdmName
 }) {
+  const [showOtherField, setShowOtherField] = useState(false); // state to track "Others" option
   const [totalServices, setTotalServices] = useState(1);
   const [notAccess, setNotAccess] = useState(isBdm ? true : false);
   const [fetchedService, setfetchedService] = useState(false);
@@ -110,7 +110,8 @@ export default function RedesignedForm({
     type: "",
     IAFtype1: "",
     IAFtype2: "",
-    Nontype: ""
+    Nontype: "",
+    forOther: ""
   }
 
   const defaultCompanyIncoIsoType = {
@@ -144,7 +145,7 @@ export default function RedesignedForm({
       const filteredData = tempData.filter(employee =>
         employee.designation === "Sales Executive" ||
         employee.designation === "Sales Manager")
-      console.log("filteredData", filteredData);
+
       setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -400,7 +401,7 @@ export default function RedesignedForm({
     if (fetchBDE && unames.length !== 0) {
       const foundUser = unames.find((item) => item.ename === employeeName);
       const foundBDM = unames.find((item) => item.ename === bdmName)
-      console.log("isme ghusa")
+
       setLeadData({
         ...leadData,
         bdeEmail: foundUser ? foundUser.email : "",
@@ -590,7 +591,7 @@ export default function RedesignedForm({
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
-    console.log(pathname);
+
     window.open(`${secretKey}/bookings/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const handleStep = (step) => () => {
@@ -656,7 +657,7 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 1) {
-        console.log("bookingDate", leadData.bookingDate);
+
         if (
           !leadData.bdeName ||
           !leadData.bdmName ||
@@ -788,7 +789,12 @@ export default function RedesignedForm({
               ) {
                 updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
               } else {
-                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+                //updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+                updatedServiceName = iso.type === "IAF"
+                  ? `ISO Certificate IAF ${iso.IAFtype1} ${iso.IAFtype2}`
+                  : iso.type === "Non IAF" && iso.Nontype === "Others"
+                    ? `ISO Certificate Non IAF ${iso.forOther}`
+                    : `ISO Certificate Non IAF ${iso.Nontype}`;
               }
             } else if (service.serviceName === "Company Incorporation" && companyIso) {
               if (
@@ -806,7 +812,7 @@ export default function RedesignedForm({
               } else {
                 updatedServiceName = `${`Organization DSC ${organizationIso.type} With ${organizationIso.validity} Validity`}`;
               }
-            }else if (service.serviceName === "Director DSC" && directorIso) {
+            } else if (service.serviceName === "Director DSC" && directorIso) {
               if (
                 directorIso.type === ""
               ) {
@@ -839,7 +845,7 @@ export default function RedesignedForm({
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
               organizationTypeObject: organizationDscType,
-              directorDscTypeObject:directorDscType,
+              directorDscTypeObject: directorDscType,
             };
           });
 
@@ -944,14 +950,19 @@ export default function RedesignedForm({
             return {
               ...service,
               serviceName: service.serviceName === "ISO Certificate"
-                ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+                ? `ISO Certificate ${isoDetails.type === "IAF" ?
+                  `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                    ? `Non IAF ${isoDetails.forOther}`
+                    : `Non IAF ${isoDetails.Nontype}`
+                      }`
                 : service.serviceName === "Company Incorporation"
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
                     ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity} Validity`
                     : service.serviceName === "Director DSC"
-                    ? `Director DSC ${directorDscDetails.type} With ${directorDscDetails.validity} Validity`
-                    : service.serviceName,
+                      ? `Director DSC ${directorDscDetails.type} With ${directorDscDetails.validity} Validity`
+                      : service.serviceName,
               secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
                 : service.secondPaymentRemarks,
@@ -967,7 +978,7 @@ export default function RedesignedForm({
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
               organizationTypeObject: organizationDscType,
-              directorDscTypeObject:directorDscType
+              directorDscTypeObject: directorDscType
             };
           });
 
@@ -1186,11 +1197,10 @@ export default function RedesignedForm({
     }
   };
 
-  console.log("companyIncoType", companyIncoType)
 
   const renderServices = () => {
     const services = [];
-    console.log(leadData.services.length, Number(totalServices));
+
     if (leadData.services.length === Number(totalServices)) {
       for (let i = 0; i < totalServices; i++) {
         services.push(
@@ -1246,7 +1256,7 @@ export default function RedesignedForm({
                         });
                         setOrganizationDscType(defaultArray)
                       }
-                    }else if (e.target.value === "Director DSC") {
+                    } else if (e.target.value === "Director DSC") {
                       if (!organizationDscType.some(obj => obj.serviceID === i)) {
                         const defaultArray = directorDscType;
                         defaultArray.push({
@@ -1288,105 +1298,143 @@ export default function RedesignedForm({
                     <option value="IAF">IAF</option>
                     <option value="Non IAF">Non IAF</option>
                   </select>
-                  {/* IAF ISO LIST */}
-                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ? <><select value={isoType.find(obj => obj.serviceID === i).IAFtype1} className="form-select mt-1 ml-1" onChange={(e) => {
-                    const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                    if (currentObject) {
-                      const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                      const newCurrentObject = {
-                        ...currentObject,
-                        IAFtype1: e.target.value
-                      }
-                      remainingObject.push(newCurrentObject);
-                      setIsoType(remainingObject);
-                    }
-                  }}>
-                    <option value="" selected disabled>Select ISO Type</option>
-                    <option value="9001">9001</option>
-                    <option value="14001">14001</option>
-                    <option value="45001">45001</option>
-                    <option value="22000">22000</option>
-                    <option value="27001">27001</option>
-                    <option value="13485">13485</option>
-                    <option value="20000-1">20000-1</option>
-                    <option value="50001">50001</option>
-                    <option value="17025-2017">17025-2017</option>
-
-                  </select>
-                    {/* IAF ISO TYPES */}
-                    <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
-                      const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                      if (currentObject) {
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject = {
-                          ...currentObject,
-                          IAFtype2: e.target.value
-                        }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                      }
-                    }}>
-                      <option value="" selected disabled>Select ISO VALIDITY</option>
-                      <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
-                      <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
-                      <option value="3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
-                      const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                      if (currentObject) {
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject = {
-                          ...currentObject,
-                          Nontype: e.target.value
-                        }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                      }
-                    }}>
-                      <option value="" selected disabled>Select ISO Type</option>
-                      <option value="9001">9001</option>
-                      <option value="14001">14001</option>
-                      <option value="45001">45001</option>
-                      <option value="22000">22000</option>
-                      <option value="27001">27001</option>
-                      <option value="13485">13485</option>
-                      <option value="20000-1">20000-1</option>
-                      <option value="50001">50001</option>
-                      <option value="21001">21001</option>
-                      <option value="GMP">GMP</option>
-                      <option value="GAP">GAP</option>
-                      <option value="FDA">FDA</option>
-                      <option value="HALAL">HALAL</option>
-                      <option value="ORGANIC">ORGANIC</option>
-                      <option value="FSSC">FSSC</option>
-                      <option value="FSC">FSC</option>
-                      <option value="BIFMA">BIFMA</option>
-                      <option value="CE">CE</option>
-                      <option value="HACCP">HACCP</option>
-                      <option value="GHP">GHP</option>
-                      <option value="AIOTA">AIOTA</option>
-                      <option value="GREEN GUARD">GREEN GUARD</option>
-                      <option value="SEDEX">SEDEX</option>
-                      <option value="KOSHER">KOSHER</option>
-                      <option value="WHO-GMP">WHO-GMP</option>
-                      <option value="BRC">BRC</option>
-                      <option value="VEGAN">VEGAN</option>
-                      <option value="SA 8000">SA 8000</option>
-                      <option value="CCC">CCC</option>
-                      <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
-                      <option value="CMMI LEVEL 5">CMMI LEVEL 5</option>
-                      <option value="GO GREEN">GO GREEN</option>
-                      <option value="PCMM 5">PCMM 5</option>
-                      <option value="RIOS">RIOS</option>
-                      <option value="ROHS">ROHS</option>
-                      <option value="IEC 17020">IEC 17020</option>
-                      <option value="GFSI">GFSI</option>
-                      <option value="GMO">GMO</option>
-                      <option value="17025-2017">17025-2017</option>
-                    </select> </>}
-                  {/* NON-IAF ISO TYPES */}
+                  {/* IAF ISO TYPES */}
+                  {isoType.find(obj => obj.serviceID === i).type === "IAF" ?
+                    <>
+                      <select
+                        value={isoType.find(obj => obj.serviceID === i).IAFtype1}
+                        className="form-select mt-1 ml-1"
+                        onChange={(e) => {
+                          const currentObject = isoType.find(obj => obj.serviceID === i);
+                          if (currentObject) {
+                            const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                            const newCurrentObject = {
+                              ...currentObject,
+                              IAFtype1: e.target.value
+                            }
+                            remainingObject.push(newCurrentObject);
+                            setIsoType(remainingObject);
+                          }
+                        }}>
+                        <option value="" selected disabled>Select ISO Type</option>
+                        <option value="9001">9001</option>
+                        <option value="14001">14001</option>
+                        <option value="45001">45001</option>
+                        <option value="22000">22000</option>
+                        <option value="27001">27001</option>
+                        <option value="13485">13485</option>
+                        <option value="20000-1">20000-1</option>
+                        <option value="50001">50001</option>
+                        <option value="17025-2017">17025-2017</option>
+                      </select>
+                      <select className="form-select mt-1 ml-1"
+                        value={isoType.find(obj => obj.serviceID === i).IAFtype2}
+                        onChange={(e) => {
+                          const currentObject = isoType.find(obj => obj.serviceID === i);
+                          if (currentObject) {
+                            const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                            const newCurrentObject = {
+                              ...currentObject,
+                              IAFtype2: e.target.value
+                            }
+                            remainingObject.push(newCurrentObject);
+                            setIsoType(remainingObject);
+                          }
+                        }}>
+                        <option value="" selected disabled>Select ISO VALIDITY</option>
+                        <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
+                        <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
+                        <option value="3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
+                      </select>
+                    </> :
+                    <>
+                      {/* NON-IAF ISO TYPES */}
+                      <select className="form-select mt-1 ml-1"
+                        value={isoType.find(obj => obj.serviceID === i).Nontype}
+                        onChange={(e) => {
+                          // Check if "Others" is selected and update state
+                          if (e.target.value === 'Others') {
+                            setShowOtherField(true);
+                          } else {
+                            setShowOtherField(false);
+                          }
+                          const currentObject = isoType.find(obj => obj.serviceID === i);
+                          if (currentObject) {
+                            const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                            const newCurrentObject = {
+                              ...currentObject,
+                              Nontype: e.target.value
+                            }
+                            remainingObject.push(newCurrentObject);
+                            setIsoType(remainingObject);
+                          }
+                        }}
+                      >
+                        <option value="" selected disabled>Select ISO Type</option>
+                        <option value="9001">9001</option>
+                        <option value="14001">14001</option>
+                        <option value="45001">45001</option>
+                        <option value="22000">22000</option>
+                        <option value="27001">27001</option>
+                        <option value="13485">13485</option>
+                        <option value="20000-1">20000-1</option>
+                        <option value="50001">50001</option>
+                        <option value="21001">21001</option>
+                        <option value="GMP">GMP</option>
+                        <option value="GAP">GAP</option>
+                        <option value="FDA">FDA</option>
+                        <option value="HALAL">HALAL</option>
+                        <option value="ORGANIC">ORGANIC</option>
+                        <option value="FSSC">FSSC</option>
+                        <option value="FSC">FSC</option>
+                        <option value="BIFMA">BIFMA</option>
+                        <option value="CE">CE</option>
+                        <option value="HACCP">HACCP</option>
+                        <option value="GHP">GHP</option>
+                        <option value="AIOTA">AIOTA</option>
+                        <option value="GREEN GUARD">GREEN GUARD</option>
+                        <option value="SEDEX">SEDEX</option>
+                        <option value="KOSHER">KOSHER</option>
+                        <option value="WHO-GMP">WHO-GMP</option>
+                        <option value="BRC">BRC</option>
+                        <option value="VEGAN">VEGAN</option>
+                        <option value="SA 8000">SA 8000</option>
+                        <option value="CCC">CCC</option>
+                        <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
+                        <option value="CMMI LEVEL 5">CMMI LEVEL 5</option>
+                        <option value="GO GREEN">GO GREEN</option>
+                        <option value="PCMM 5">PCMM 5</option>
+                        <option value="RIOS">RIOS</option>
+                        <option value="ROHS">ROHS</option>
+                        <option value="IEC 17020">IEC 17020</option>
+                        <option value="GFSI">GFSI</option>
+                        <option value="GMO">GMO</option>
+                        <option value="17025-2017">17025-2017</option>
+                        <option value="Others">Others</option>
+                      </select>
+                      {/* Conditionally render the textarea */}
+                      {showOtherField && (
+                        <input 
+                        type="text"
+                          className="form-control mt-1 ml-1"
+                          value={isoType.find(obj => obj.serviceID === i).forOther}
+                          onChange={(e) => {
+                            const currentObject = isoType.find(obj => obj.serviceID === i);
+                            if (currentObject) {
+                              const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                              const newCurrentObject = {
+                                ...currentObject,
+                                forOther: e.target.value.toUpperCase() // Convert to uppercase
+                              }
+                              remainingObject.push(newCurrentObject);
+                              setIsoType(remainingObject);
+                            }
+                          }}
+                          placeholder="Please specify the ISO Type"
+                        />
+                      )}
+                    </>
+                  }
                 </>}
                 {/* Company Incorporation  */}
                 {leadData.services[i].serviceName.includes("Company Incorporation") && <>
@@ -1452,8 +1500,8 @@ export default function RedesignedForm({
                     <option value="3 Year">3 Year</option>
                   </select>
                 </>}
-                 {/* Director Dsc  */}
-                 {leadData.services[i].serviceName.includes("Director DSC") && <>
+                {/* Director Dsc  */}
+                {leadData.services[i].serviceName.includes("Director DSC") && <>
                   <select className="form-select mt-1 ml-1"
                     value={directorDscType.find(obj => obj.serviceID === i).type}
                     onChange={(e) => {
@@ -2310,7 +2358,7 @@ export default function RedesignedForm({
     }
   }
 
-  console.log("leadDatacacase", leadData.caCase)
+  console.log("isotType", isoType)
 
 
 
@@ -3610,7 +3658,12 @@ export default function RedesignedForm({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : isoDetails.Nontype}`;
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
+                                                  : 
+                                                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                                                  ? `${isoDetails.forOther}`
+                                                  : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {
@@ -3627,7 +3680,7 @@ export default function RedesignedForm({
                                                 const directorDetails = directorDscType.find(obj => obj.serviceID === index);
                                                 return `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`;
                                               })()
-                                            ): (
+                                            ) : (
                                               obj.serviceName
                                             )}
                                           </div>

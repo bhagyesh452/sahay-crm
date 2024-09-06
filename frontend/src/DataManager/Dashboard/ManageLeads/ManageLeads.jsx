@@ -938,7 +938,7 @@ function ManageLeads() {
         const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData;
         const tempFilter = (!isFilter && !isSearching) ? data : tempStatusData;
         const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
-        console.log("dataToSend" , dataToSend)
+      
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
