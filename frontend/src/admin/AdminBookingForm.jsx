@@ -1225,6 +1225,8 @@ export default function AdminBookingForm({
                     <option value="13485">13485</option>
                     <option value="20000-1">20000-1</option>
                     <option value="50001">50001</option>
+                    <option value="17025-2017">17025-2017</option>
+
                   </select>
                     {/* IAF ISO TYPES */}
                     <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).IAFtype2} onChange={(e) => {
@@ -1296,6 +1298,8 @@ export default function AdminBookingForm({
                       <option value="IEC 17020">IEC 17020</option>
                       <option value="GFSI">GFSI</option>
                       <option value="GMO">GMO</option>
+                      <option value="17025-2017">17025-2017</option>
+
                     </select> </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}

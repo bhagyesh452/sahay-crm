@@ -151,7 +151,6 @@ function RmofCertificationProcessPanel({
             if (res.updatedDocument) {
                 updateDocumentInState(res.updatedDocument);
             }
-
         });
         socket.on("adminexecutive-letter-updated", (res) => {
             //console.log("res" , res)

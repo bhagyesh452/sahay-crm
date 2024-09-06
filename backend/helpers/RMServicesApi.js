@@ -1866,7 +1866,8 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
 
     // Send the response and emit the update event
     socketIO.emit("adminexecutive-letter-updated", {
-      updatedDocument: updatedCompanyRm, // send the updated document from RMCertificationModel
+      updatedDocument: updatedCompanyRm,
+      updatedDocumentAdmin : updatedCompany // send the updated document from RMCertificationModel
     });
     res
       .status(200)
