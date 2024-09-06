@@ -728,7 +728,8 @@ export default function AddLeadForm({
               if (
                 iso.type === "" ||
                 (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
-                (iso.type === "Non IAF" && iso.Nontype === "")
+                (iso.type === "Non IAF" && iso.Nontype === "") ||
+                (iso.type === "Non IAF" && iso.Nontype === "Others" && iso.forOther === "")
               ) {
                 updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
               } else {
