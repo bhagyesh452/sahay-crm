@@ -443,7 +443,7 @@ function EmployeeView() {
                                       <MdOutlineCalendarMonth />
                                     </div>
                                     <div className="ep_info_h">
-                                      Joining Date:
+                                      Joining Date :
                                     </div>
                                   </div>
                                 </div>
@@ -471,7 +471,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <HiOutlineBuildingLibrary />
                           </div>
-                          <div className="ep_info_h">Department:</div>
+                          <div className="ep_info_h">Department :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -486,7 +486,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <MdOutlinePersonPin />
                           </div>
-                          <div className="ep_info_h">Employment Type:</div>
+                          <div className="ep_info_h">Employment Type :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -501,7 +501,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <GoPerson />
                           </div>
-                          <div className="ep_info_h">Reporting Manager:</div>
+                          <div className="ep_info_h">Reporting Manager :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -523,7 +523,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <FaRegUser  />
                           </div>
-                          <div className="ep_info_h">Full Name:</div>
+                          <div className="ep_info_h">Full Name :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -538,7 +538,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <IoCalendarClearOutline  />
                           </div>
-                          <div className="ep_info_h">DOB:</div>
+                          <div className="ep_info_h">DOB :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -553,7 +553,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <BsGenderTrans  />
                           </div>
-                          <div className="ep_info_h">Gender:</div>
+                          <div className="ep_info_h">Gender :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -568,7 +568,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <PiPhoneCall />
                           </div>
-                          <div className="ep_info_h">Phone No:</div>
+                          <div className="ep_info_h">Phone No :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -583,7 +583,7 @@ function EmployeeView() {
                           <div className="ep_info_icon clr-ffb900">
                             <MdOutlineMailOutline />
                           </div>
-                          <div className="ep_info_h">Email:</div>
+                          <div className="ep_info_h">Email :</div>
                         </div>
                       </div>
                       <div className="col-6 pt-1 pb-1 bdr-left-eee">
@@ -592,7 +592,7 @@ function EmployeeView() {
                         </div>
                       </div>
                     </div>
-                    <div className="row m-0 bdr-btm-eee">
+                    {/* <div className="row m-0 bdr-btm-eee">
                       <div className="col-4 pt-1 pb-1">
                         <div className="d-flex align-items-center">
                           <div className="ep_info_icon clr-ffb900">
@@ -621,13 +621,28 @@ function EmployeeView() {
                           H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
               <div className="hr_employee_information">
                 <div className="my-card hr_emply_info_inner">
-
+                  <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                      <a class="nav-link active" data-bs-toggle="tab" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#menu1">Menu 1</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#menu2">Menu 2</a>
+                    </li>
+                  </ul>
+                  <div class="tab-content">
+                    <div class="tab-pane container active" id="home">...</div>
+                    <div class="tab-pane container fade" id="menu1">...</div>
+                    <div class="tab-pane container fade" id="menu2">...</div>
+                  </div>
                 </div>
               </div>
             </div>
