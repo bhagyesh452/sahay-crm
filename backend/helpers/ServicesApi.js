@@ -273,30 +273,37 @@ router.put("/updateServiceInServiceModel/:serviceName", async (req, res) => {
     }
 });
 
-router.delete("/deleteServiceFromServiceModel/:serviceName", async (req, res) => {
-    const { serviceName, departmentName } = req.params;
+// Deleting service from service name :
+router.delete("/deleteServiceFromServiceModelUsingServiceName/:serviceName", async (req, res) => {
+    const { serviceName } = req.params;
     try {
         const decodedServiceName = decodeURIComponent(serviceName);
-        const decodedDepartmentName = decodeURIComponent(departmentName);
-        let deletedData;
-        if(!serviceName) {
-            deletedData = await ServicesModel.findOneAndDelete({
-                $or: [
-                    { serviceName: decodedDepartmentName }, // Exact match
-                    { serviceName: decodedDepartmentName.replace(/-/g, "/") } // Handle alternate names
-                ]
-            });
-        } else {
-            deletedData = await ServicesModel.findOneAndDelete({
-                $or: [
-                    { serviceName: decodedServiceName }, // Exact match
-                    { serviceName: decodedServiceName.replace(/-/g, "/") } // Handle alternate names
-                ]
-            });
-        }
-        res.status(200).json({ result: true, message: "Service successfully deleted", data: deletedData });
+        const deletedService = await ServicesModel.findOneAndDelete({
+            $or: [
+                { serviceName: decodedServiceName }, // Exact match
+                { serviceName: decodedServiceName.replace(/-/g, "/") } // Handle alternate names
+            ]
+        });
+        res.status(200).json({ result: true, message: "Service successfully deleted", data: deletedService });
     } catch (error) {
         res.status(500).json({ result: false, message: "Error deleting service", error: error });
+    }
+});
+
+// Deleting service from department name :
+router.delete("/deleteServiceFromServiceModelUsingDepartmentName/:departmentName", async (req, res) => {
+    const { departmentName } = req.params;
+    try {
+        const decodedDepartmentName = decodeURIComponent(departmentName);
+        const deletedDepartment = await ServicesModel.findOneAndDelete({
+            $or: [
+                { departmentName: decodedDepartmentName }, // Exact match
+                { departmentName: decodedDepartmentName.replace(/-/g, "/") } // Handle alternate names
+            ]
+        });
+        res.status(200).json({ result: true, message: "Department successfully deleted", data: deletedDepartment });
+    } catch (error) {
+        res.status(500).json({ result: false, message: "Error deleting department", error: error });
     }
 });
 
