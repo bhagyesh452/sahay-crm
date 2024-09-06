@@ -29,6 +29,7 @@ import { RiShareForward2Fill } from "react-icons/ri";
 import { RiDatabaseLine } from "react-icons/ri";
 import { MdMedicalServices } from "react-icons/md";
 import DataAnalystServiceAnalysis from "../ServiceAnalysis/DataAnalystServiceAnalysis.jsx";
+import InterestedFollowLeadReport from "../../../admin/DashboardReportComponents/InterestedFollowLeadReport.jsx"
 
 
 
@@ -130,7 +131,7 @@ function DatamanagerDashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <RiShareForward2Fill style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "12px" }}>Employees Forwarded Data Report</span>
+                                            <span style={{ fontSize: "12px" }}>Interested & Forwarded Data Report</span>
                                         </div>
                                     }
                                     {...a11yProps(2)}
@@ -162,6 +163,7 @@ function DatamanagerDashboard() {
                             <EmployeeDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={2} className="mat-tab-inner">
+                            <InterestedFollowLeadReport/>
                             <EmployeesForwardedDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">

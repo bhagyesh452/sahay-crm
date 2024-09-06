@@ -1940,7 +1940,7 @@ router.post(`/update-letter-rmcert/`, async (req, res) => {
     }
 
     // Send the response and emit the update event
-    socketIO.emit("adminexecutive-letter-updated", {
+    socketIO.emit("rmcert-letter-updated", {
       updatedDocument: updatedCompanyRm,
       updatedDocumentAdmin:updatedCompanyAdmin // send the updated document from RMCertificationModel
     });
