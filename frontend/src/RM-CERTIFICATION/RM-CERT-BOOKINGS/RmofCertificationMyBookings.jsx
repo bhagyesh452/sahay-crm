@@ -265,13 +265,13 @@ function RmofCertificationMyBookings() {
                                         </b>
                                     </div>
                                 )}
-                                <div>
+                                {/* <div>
                                     <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
                                     <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
                                         <LiaPagerSolid className="mr-1" />
                                         Upload Approved Leads
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
