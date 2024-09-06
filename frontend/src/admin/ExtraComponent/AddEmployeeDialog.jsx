@@ -251,7 +251,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
             setIsLoading(true);
             const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${empId}`);
             const data = res.data.data;
-            console.log("Fetched employee is :", data);
+            // console.log("Fetched employee is :", data);
             // Set the retrieved data in the state\
             setFirstName(data.empFullName.split(" ")[0] || "");
             setMiddleName(data.empFullName.split(" ")[1] || "");
@@ -424,8 +424,8 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                         `${secretKey}/employee/einfo/${empId}`,
                         dataToSendUpdated
                     );
-                    console.log("response", response.data)
-                    console.log("dataTosendupdated", dataToSendUpdated)
+                    // console.log("response", response.data)
+                    // console.log("dataTosendupdated", dataToSendUpdated)
                     closeForEdit();
 
                     // console.log("Updated employee is :", dataToSendUpdated);
@@ -455,11 +455,12 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                         }
                     }
                 } else {
+                    // console.log("Before creating employee data is :", dataToSend);
                     const response = await axios.post(`${secretKey}/employee/einfo`, dataToSend);
                     // Adds data in performance report:
                     closeForAdd();
-                    console.log("Created employee is :", response.data);
-                    console.log("Close add popup", openForAdd);
+                    // console.log("Created employee is :", response.data);
+                    // console.log("Close add popup", openForAdd);
                     setFirstName("");
                     setMiddleName("");
                     setLastName("");
@@ -475,7 +476,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     setJdate(null);
                     setIsUpdateMode(false);
                     setTargetCount(1);
-                    setTargetObjects([defaultObject])
+                    setTargetObjects([defaultObject]);
                     //console.log("Data sent successfully");
                     Swal.fire({
                         title: "Data Added!",

@@ -189,7 +189,7 @@ router.post("/einfo", upload.fields([
       }
     });
 
-    let newDesignation = employeementInfo?.designation;
+    let newDesignation = employeementInfo?.designation || oldDesignation;
 
     if ((employeementInfo?.designation || oldDesignation) === "Business Development Executive" || employeementInfo?.designation === "Business Development Manager") {
       newDesignation = "Sales Executive";
@@ -225,7 +225,7 @@ router.post("/einfo", upload.fields([
       ...(employeementInfo?.empId && { empID: employeementInfo.empId }),
       ...(employeementInfo?.department && { department: employeementInfo.department }),
       ...(employeementInfo?.designation && { newDesignation: employeementInfo.designation }),
-      ...(oldDesignation || employeementInfo?.designation && { designation: newDesignation }),
+      ...({ designation: newDesignation }),
       ...(employeementInfo?.designation && {
         bdmWork:
           employeementInfo.designation === "Business Development Manager" ||
@@ -262,7 +262,7 @@ router.post("/einfo", upload.fields([
       ...(empDocumentInfo?.salarySlip?.length > 0 && { salarySlip: empDocumentInfo.salarySlip || [] }),
       ...(empDocumentInfo?.profilePhoto?.length > 0 && { profilePhoto: empDocumentInfo.profilePhoto || [] })
     };
-    
+
     const result = await adminModel.create(emp);
     res.json(result); // Ensure you respond with the result
 
@@ -338,19 +338,19 @@ router.get("/fetchProfilePhoto/:empId/:filename", (req, res) => {
 router.get("/fetchEmployeeDocuments/:empId/:filename", (req, res) => {
   const { empId, filename } = req.params;
   const pdfPath = path.join(
-      __dirname,
-      `../EmployeeDocs/${empId}/${filename}`
+    __dirname,
+    `../EmployeeDocs/${empId}/${filename}`
   );
 
   // Check if the file exists
   fs.access(pdfPath, fs.constants.F_OK, (err) => {
-      if (err) {
-          // console.error(err);
-          return res.status(404).json({ error: "File not found" });
-      }
+    if (err) {
+      // console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
 
-      // If the file exists, send it
-      res.sendFile(pdfPath);
+    // If the file exists, send it
+    res.sendFile(pdfPath);
   });
 });
 
@@ -626,23 +626,23 @@ router.get("/deletedemployeeinfo", async (req, res) => {
 });
 
 router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
-    const { id: itemId } = req.params; // Correct destructuring
-    console.log(itemId);
-    try {
-      const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
+  const { id: itemId } = req.params; // Correct destructuring
+  console.log(itemId);
+  try {
+    const data = await deletedEmployeeModel.findByIdAndDelete(itemId);
 
-      if (!data) {
-        return res.status(404).json({ error: "Data not found" });
-      } else {
-        return res
-          .status(200)
-          .json({ message: "Data deleted successfully", data });
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-      return res.status(500).json({ error: "Internal Server Error" });
+    if (!data) {
+      return res.status(404).json({ error: "Data not found" });
+    } else {
+      return res
+        .status(200)
+        .json({ message: "Data deleted successfully", data });
     }
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
+}
 );
 
 // router.put("/revertbackdeletedemployeeintomaindatabase", async (req, res) => {
