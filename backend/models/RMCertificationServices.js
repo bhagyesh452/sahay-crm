@@ -216,6 +216,17 @@ const RMCertificationServicesSchema = new mongoose.Schema({
     type: String,
     default: "Both Pending"
   },
+  leadId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'newcdatas',
+    localField: 'Company Name',
+    foreignField: 'Company Name',
+    justOne: true,
+    match: { Status: 'Matured' }
+  },
+  isUploadedDirect:{
+    type:Boolean
+  }
 })
 
 const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)

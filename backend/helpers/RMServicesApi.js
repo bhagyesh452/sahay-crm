@@ -3655,86 +3655,200 @@ function decimalToTime(decimal) {
   return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
 }
 // Function to parse the date and set the time to 00:00:00 to avoid time zone shifts
-function parseDateWithoutTimezone(dateString) {
-  const [month, day, year] = dateString.split('/');
-  return new Date(`${year}-${month}-${day}T00:00:00`);
-}
+
+const excelSerialToJSDate = (serial) => {
+  if (typeof serial !== 'number' || isNaN(serial)) {
+    console.error("Invalid serial date:", serial);
+    return undefined;
+  }
+
+  const excelStartDate = new Date(1900, 0, 1);
+  return new Date(excelStartDate.getTime() + (serial - 1) * 24 * 60 * 60 * 1000);
+};
+
+// router.post('/upload-approved-data', async (req, res) => {
+//   const data = req.body; // This should be the array of objects parsed from Excel
+
+//   try {
+//     const updates = data.map(async (item) => {
+//       console.log("item", item)
+//       const parsedSubmittedOn = item["Submitted On Date"]
+//         ? excelSerialToJSDate(item["Submitted On Date"])
+//         : undefined;
+//         const parsedBookingDate = item["Booking Date"]
+//         ? excelSerialToJSDate(item["Booking Date"])
+//         : undefined;
+      
+//       await RMCertificationModel.create({
+//         "Company Name": item["Company Name"] ? item["Company Name"] : "",
+//         "Company Number": item["Company Number"],
+//         "Company Email": item["Company Email"],
+//         caNumber: item["CA Number"] ? item["CA Number"] : 0,
+//         serviceName: item["Services Name"],
+//         mainCategoryStatus: item["Status"] || "Approved",
+//         subCategoryStatus: item["Status"] || "Approved",
+//         websiteLink: item["Website Link/Brief"],
+//         withDSC: item["DSC Applicable"] === "Yes" ? true : false,
+//         letterStatus: item["Letter Status"] || "Not Started",
+//         dscStatus: item["DSC Status"] || "Not Started",
+//         contentWriter: item["Content Writer"] || "RonakKumar",
+//         contentStatus: item["Content Status"] || "Not Started",
+//         nswsMobileNo: item["NSWS Phone No"],
+//         nswsMailId: item["NSWS Email Id"],
+//         nswsPaswsord: item["NSWS Password"],
+//         City: item.City,
+//         State: item.State,
+//         industry: item.Industry,
+//         sector: item.Sector,
+//         lastAttemptSubmitted: item["No of Attempt"],
+//         // Parse date without timezone issues
+//         submittedOn :parsedSubmittedOn,
+
+//         // Convert decimal time to HH:MM:SS
+//         submittedTime: item["Submitted On Time"]
+//           ? decimalToTime(item["Submitted On Time"])
+//           : undefined,
+//         submittedBy: parsedBookingDate,
+//         bookingDate:item["Booking Date"]
+//         ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0] // Extract YYYY-MM-DD
+//         : undefined,
+      
+//         bdeName: item["BDE Name"],
+//         bdmName: item["BDM Name"],
+//         totalPaymentWGST: item["Total Payment"],
+//         //pendingRecievedPayment:item["Recieved Payment"],
+//         pendingNotRecievedPayment: item["Pending Payment"],
+//         pendingRecievedPaymentDate: item["Pending Recieved Payment Date"] ? new Date(item["Pending Recieved Payment Date"]) : undefined,
+//         panNumber: item.panNumber ? item.panNumber : "",
+//         bdeEmail: item.bdeEmail ? item.bdeEmail : "",
+//         bdmType: item.bdmType ? item.bdmType : "",
+//         paymentMethod: item.paymentMethod,
+//         caCase: item.caCase ? item.caCase : "",
+//         caEmail: item.caEmail ? item.caEmail : "",
+//         totalPaymentWOGST: item.totalPaymentWOGST,
+//         withGST: item.withGST ? true : false,
+//         // Conditionally adding paymentTerms
+//         paymentTerms: item["Total Payment"] === item["Recieved Payment"] ? "Full Advanced" : "two-part",
+//         firstPayment: item["Recieved Payment"],
+//         secondPayment: item.secondPayment ? item.secondPayment : 0,
+//         thirdPayment: item.thirdPayment ? item.thirdPayment : 0,
+//         fourthPayment: item.fourthPayment ? item.fourthPayment : 0,
+//         secondPaymentRemarks: item.secondPaymentRemarks ? item.secondPaymentRemarks : "",
+//         thirdPaymentRemarks: item.thirdPaymentRemarks ? item.thirdPaymentRemarks : "",
+//         fourthPaymentRemarks: item.fourthPaymentRemarks,
+//         bookingPublishDate: item["Booking Date"],
+//         addedOn: parsedSubmittedOn,
+//         brochureStatus: item.brochureStatus || "Not Applicable",
+//         brochureDesigner: item.brochureDesigner ? item.brochureDesigner : "",
+//         companyBriefing: item.companyBriefing ? item.companyBriefing : "",
+//         lastActionDate: item.lastActionDate ? new Date(item.lastActionDate) : new Date(),
+//         dateOfChangingMainStatus: item.dateOfChangingMainStatus ? new Date(item.dateOfChangingMainStatus) : new Date(),
+//         previousMainCategoryStatus: item.previousMainCategoryStatus || "Direct",
+//         previousSubCategoryStatus: item.previousSubCategoryStatus || "Direct",
+//         SecondTimeSubmitDate: item.SecondTimeSubmitDate ? new Date(item.SecondTimeSubmitDate) : new Date(),
+//         ThirdTimeSubmitDate: item.ThirdTimeSubmitDate ? new Date(item.ThirdTimeSubmitDate) : new Date(),
+//         isIndustryEnabled: item.isIndustryEnabled ? item.isIndustryEnabled : false,
+//         otpVerificationStatus: item.otpVerificationStatus || "Both Done",
+//         isUploadedDirect: true
+//       });
+//     });
+
+//     await Promise.all(updates);
+
+//     res.status(200).json({ message: 'Data uploaded successfully' });
+//   } catch (error) {
+//     console.error('Error updating data:', error);
+//     res.status(500).json({ error: 'Failed to upload data' });
+//   }
+// });
+
 router.post('/upload-approved-data', async (req, res) => {
   const data = req.body; // This should be the array of objects parsed from Excel
 
   try {
     const updates = data.map(async (item) => {
-      console.log("item", item)
-      await RMCertificationModel.create({
-        "Company Name": item["Company Name"] ? item["Company Name"] : "",
-        "Company Number": item["Company Number"],
-        "Company Email": item["Company Email"],
-        caNumber: item["CA Number"],
-        serviceName: item["Services Name"],
-        mainCategoryStatus: item["Status"] || "Approved",
-        subCategoryStatus: item["Status"] || "Approved",
-        websiteLink: item["Website Link/Brief"],
-        withDSC: item["DSC Applicable"] === "Yes" ? true : false,
-        letterStatus: item["Letter Status"] || "Not Started",
-        dscStatus: item["DSC Status"] || "Not Started",
-        contentWriter: item["Content Writer"] || "RonakKumar",
-        contentStatus: item["Content Status"] || "Not Started",
-        nswsMobileNo: item["NSWS Phone No"],
-        nswsMailId: item["NSWS Email Id"],
-        nswsPaswsord: item["NSWS Password"],
-        City: item.City,
-        State: item.State,
-        industry: item.Industry,
-        sector: item.Sector,
-        lastAttemptSubmitted: item["No of Attempt"],
-        // Parse date without timezone issues
-        submittedOn: item["Submitted On Date"]
-        ? moment(item["Submitted On Date"], 'MM/DD/YYYY').add(1, 'day').startOf('day').toDate()
-        : undefined,
-      
-        // Convert decimal time to HH:MM:SS
-        submittedTime: item["Submitted On Time"]
-          ? decimalToTime(item["Submitted On Time"])
-          : undefined,
-        submittedBy: item["Submitted By"],
-        bookingDate: item["Booking Date"],
-        bdeName: item["BDE Name"],
-        bdmName: item["BDM Name"],
-        totalPaymentWGST: item["Total Payment"],
-        //pendingRecievedPayment:item["Recieved Payment"],
-        pendingNotRecievedPayment: item["Pending Payment"],
-        pendingRecievedPaymentDate: item["Pending Recieved Payment Date"] ? new Date(item["Pending Recieved Payment Date"]) : undefined,
-        panNumber: item.panNumber ? item.panNumber : "",
-        bdeEmail: item.bdeEmail ? item.bdeEmail : "",
-        bdmType: item.bdmType ? item.bdmType : "",
-        paymentMethod: item.paymentMethod,
-        caCase: item.caCase ? item.caCase : "",
-        caEmail: item.caEmail ? item.caEmail : "",
-        totalPaymentWOGST: item.totalPaymentWOGST,
-        withGST: item.withGST ? true : false,
-        // Conditionally adding paymentTerms
-        paymentTerms: item["Total Payment"] === item["Recieved Payment"] ? "Full Advanced" : "two-part",
-        firstPayment: item["Recieved Payment"],
-        secondPayment: item.secondPayment ? item.secondPayment : 0,
-        thirdPayment: item.thirdPayment ? item.thirdPayment : 0,
-        fourthPayment: item.fourthPayment ? item.fourthPayment : 0,
-        secondPaymentRemarks: item.secondPaymentRemarks ? item.secondPaymentRemarks : "",
-        thirdPaymentRemarks: item.thirdPaymentRemarks ? item.thirdPaymentRemarks : "",
-        fourthPaymentRemarks: item.fourthPaymentRemarks,
-        bookingPublishDate: item["Booking Date"],
-        addedOn: item.addedOn ? new Date(item.addedOn) : new Date(),
-        brochureStatus: item.brochureStatus || "Not Applicable",
-        brochureDesigner: item.brochureDesigner ? item.brochureDesigner : "",
-        companyBriefing: item.companyBriefing ? item.companyBriefing : "",
-        lastActionDate: item.lastActionDate ? new Date(item.lastActionDate) : new Date(),
-        dateOfChangingMainStatus: item.dateOfChangingMainStatus ? new Date(item.dateOfChangingMainStatus) : new Date(),
-        previousMainCategoryStatus: item.previousMainCategoryStatus || "Direct",
-        previousSubCategoryStatus: item.previousSubCategoryStatus || "Direct",
-        SecondTimeSubmitDate: item.SecondTimeSubmitDate ? new Date(item.SecondTimeSubmitDate) : new Date(),
-        ThirdTimeSubmitDate: item.ThirdTimeSubmitDate ? new Date(item.ThirdTimeSubmitDate) : new Date(),
-        isIndustryEnabled: item.isIndustryEnabled ? item.isIndustryEnabled : false,
-        otpVerificationStatus: item.otpVerificationStatus || "Both Pending"
-      });
+      try {
+        console.log("Processing item:", item["Company Name"]); // Log each company being processed
+
+        const parsedSubmittedOn = item["Submitted On Date"]
+          ? excelSerialToJSDate(item["Submitted On Date"])
+          : undefined;
+        const parsedBookingDate = item["Booking Date"]
+          ? excelSerialToJSDate(item["Booking Date"])
+          : undefined;
+
+        await RMCertificationModel.create({
+          "Company Name": item["Company Name"] ? item["Company Name"] : "",
+          "Company Number": item["Company Number"],
+          "Company Email": item["Company Email"],
+          caNumber: item["CA Number"] ? item["CA Number"] : 0,
+          serviceName: item["Services Name"],
+          mainCategoryStatus: item["Status"] || "Approved",
+          subCategoryStatus: item["Status"] || "Approved",
+          websiteLink: item["Website Link/Brief"],
+          withDSC: item["DSC Applicable"] === "Yes" ? true : false,
+          letterStatus: item["Letter Status"] || "Not Started",
+          dscStatus: item["DSC Status"] || "Not Started",
+          contentWriter: item["Content Writer"] || "RonakKumar",
+          contentStatus: item["Content Status"] || "Not Started",
+          nswsMobileNo: item["NSWS Phone No"],
+          nswsMailId: item["NSWS Email Id"],
+          nswsPaswsord: item["NSWS Password"],
+          City: item.City,
+          State: item.State,
+          industry: item.Industry,
+          sector: item.Sector,
+          lastAttemptSubmitted: item["No of Attempt"],
+          submittedOn: parsedSubmittedOn,
+          submittedTime: item["Submitted On Time"]
+            ? decimalToTime(item["Submitted On Time"])
+            : undefined,
+          submittedBy: parsedBookingDate,
+          bookingDate: item["Booking Date"]
+            ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0]
+            : undefined,
+          bdeName: item["BDE Name"],
+          bdmName: item["BDM Name"],
+          totalPaymentWGST: item["Total Payment"],
+          pendingNotRecievedPayment: item["Pending Payment"],
+          pendingRecievedPaymentDate: item["Pending Recieved Payment Date"]
+            ? new Date(item["Pending Recieved Payment Date"])
+            : undefined,
+          panNumber: item.panNumber ? item.panNumber : "",
+          bdeEmail: item.bdeEmail ? item.bdeEmail : "",
+          bdmType: item.bdmType ? item.bdmType : "",
+          paymentMethod: item.paymentMethod,
+          caCase: item.caCase ? item.caCase : "",
+          caEmail: item.caEmail ? item.caEmail : "",
+          totalPaymentWOGST: item.totalPaymentWOGST,
+          withGST: item.withGST ? true : false,
+          paymentTerms: item["Total Payment"] === item["Recieved Payment"] ? "Full Advanced" : "two-part",
+          firstPayment: item["Recieved Payment"],
+          secondPayment: item.secondPayment ? item.secondPayment : 0,
+          thirdPayment: item.thirdPayment ? item.thirdPayment : 0,
+          fourthPayment: item.fourthPayment ? item.fourthPayment : 0,
+          secondPaymentRemarks: item.secondPaymentRemarks ? item.secondPaymentRemarks : "",
+          thirdPaymentRemarks: item.thirdPaymentRemarks ? item.thirdPaymentRemarks : "",
+          fourthPaymentRemarks: item.fourthPaymentRemarks,
+          bookingPublishDate: item["Booking Date"],
+          addedOn: parsedSubmittedOn,
+          brochureStatus: item.brochureStatus || "Not Applicable",
+          brochureDesigner: item.brochureDesigner ? item.brochureDesigner : "",
+          companyBriefing: item.companyBriefing ? item.companyBriefing : "",
+          lastActionDate: item.lastActionDate ? new Date(item.lastActionDate) : new Date(),
+          dateOfChangingMainStatus: parsedSubmittedOn,
+          previousMainCategoryStatus: item.previousMainCategoryStatus || "Direct",
+          previousSubCategoryStatus: item.previousSubCategoryStatus || "Direct",
+          SecondTimeSubmitDate: item.SecondTimeSubmitDate ? new Date(item.SecondTimeSubmitDate) : new Date(),
+          ThirdTimeSubmitDate: item.ThirdTimeSubmitDate ? new Date(item.ThirdTimeSubmitDate) : new Date(),
+          isIndustryEnabled: item.isIndustryEnabled ? item.isIndustryEnabled : false,
+          otpVerificationStatus: item.otpVerificationStatus || "Both Done",
+          isUploadedDirect: true
+        });
+      } catch (err) {
+        console.error(`Failed to process company: ${item["Company Name"]}`);
+        console.error("Error details:", err.message);
+      }
     });
 
     await Promise.all(updates);
@@ -3745,6 +3859,7 @@ router.post('/upload-approved-data', async (req, res) => {
     res.status(500).json({ error: 'Failed to upload data' });
   }
 });
+
 
 
 
