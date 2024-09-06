@@ -78,7 +78,7 @@ function HrLogin({ setHrToken }){
             localStorage.setItem("hrName", ename)
             localStorage.setItem("hrToken", hrToken)
             localStorage.setItem("hrUserId", userId)
-            console.log(userId);
+            console.log("userId" , userId);
             window.location.replace(`/hr/dashboard`);
         } catch (error) {
             console.error("Login Failed", error);

@@ -1830,7 +1830,13 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                           ? "2nd"
                           : obj.subCategoryStatus === "3rd Time Submitted"
                             ? "3rd"
-                            : "1st"}
+                            : obj.subCategoryStatus === "Submitted"
+                              ? "1st"
+                              : obj.subCategoryStatus === "Approved"
+                                ? obj.lastAttemptSubmitted
+                                : obj.lastAttemptSubmitted
+                                  ? obj.lastAttemptSubmitted
+                                  : "1st"}
                       </td>
                       <td>
                         {obj.submittedOn

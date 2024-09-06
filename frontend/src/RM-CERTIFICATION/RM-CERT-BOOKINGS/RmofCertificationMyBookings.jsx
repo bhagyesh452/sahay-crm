@@ -25,6 +25,8 @@ import RmofCertificationDefaulterPanel from "./RmofCertificationDefaulterPanel";
 import RmofCertificationHoldPanel from "./RmofCertificationHoldPanel";
 import io from 'socket.io-client';
 import RmofCertificationReadyToSubmitPanel from "./RmofCertificationReadyToSubmitPanel";
+import * as XLSX from "xlsx";
+import { LiaPagerSolid } from "react-icons/lia";
 
 function RmofCertificationMyBookings() {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
@@ -128,7 +130,7 @@ function RmofCertificationMyBookings() {
                 totalDocumentsApproved,
 
             } = response.data;
-            console.log("response", response.data)
+            //console.log("response", response.data)
 
             // If it's a search query, replace the data; otherwise, append for pagination
             if (page === 1) {
@@ -171,12 +173,44 @@ function RmofCertificationMyBookings() {
     }, []);
 
     const setNoOfData = (number) => {
-        console.log("number", number)
+        //console.log("number", number)
         setnoOfFilteredData(number)
     }
 
     //console.log("showiconfilter", showNoOfFilteredData)
-    console.log("nooffilterdata", noOfFilteredData)
+    //console.log("nooffilterdata", noOfFilteredData)
+
+
+    //----------------------------function to upload excel sheet----------------------------
+    const handleFileUploadForChange = async (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const binaryStr = event.target.result;
+                const workbook = XLSX.read(binaryStr, { type: 'binary' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const data = XLSX.utils.sheet_to_json(worksheet);
+
+                try {
+                    // Send the data to the backend to update the ename
+                    const response = await axios.post(`${secretKey}/rm-services/upload-approved-data`, data);
+                    if (response.status === 200) {
+                        alert('Leads updated successfully!');
+                    } else {
+                        alert('Failed to update leads.');
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    alert('An error occurred while uploading the file.');
+                }
+            };
+
+            reader.readAsBinaryString(file);
+        }
+    };
 
 
     return (
@@ -231,7 +265,13 @@ function RmofCertificationMyBookings() {
                                         </b>
                                     </div>
                                 )}
-
+                                <div>
+                                    <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
+                                    <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
+                                        <LiaPagerSolid className="mr-1" />
+                                        Upload Approved Leads
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -354,8 +394,8 @@ function RmofCertificationMyBookings() {
                                             totalFilteredData={activeTab === "General" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.General} 
-                                            />
+                                            showFilter={showFilterIcon.General}
+                                        />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
                                         <RmofCertificationProcessPanel
@@ -388,8 +428,8 @@ function RmofCertificationMyBookings() {
                                             totalFilteredData={activeTab === "Approved" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.Approved} 
-                                            />
+                                            showFilter={showFilterIcon.Approved}
+                                        />
                                     </div>
                                     <div class="tab-pane" id="Hold">
                                         <RmofCertificationHoldPanel
@@ -397,8 +437,8 @@ function RmofCertificationMyBookings() {
                                             totalFilteredData={activeTab === "Hold" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.Hold} 
-                                            />
+                                            showFilter={showFilterIcon.Hold}
+                                        />
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
                                         <RmofCertificationDefaulterPanel

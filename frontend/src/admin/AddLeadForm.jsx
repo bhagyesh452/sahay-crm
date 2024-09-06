@@ -102,7 +102,7 @@ export default function AddLeadForm({
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-
+  const [showOtherField, setShowOtherField] = useState(false); // state to track "Others" option
   const [secondTempRemarks, setSecondTempRemarks] = useState([]);
   const [thirdTempRemarks, setThirdTempRemarks] = useState([]);
   const [fourthTempRemarks, setFourthTempRemarks] = useState([]);
@@ -113,7 +113,8 @@ export default function AddLeadForm({
     type: "",
     IAFtype1: "",
     IAFtype2: "",
-    Nontype: ""
+    Nontype: "",
+    forOther: ""
   }
   const defaultCompanyIncoIsoType = {
     serviceID: "",
@@ -148,7 +149,7 @@ export default function AddLeadForm({
       const filteredData = tempData.filter(employee =>
         employee.designation === "Sales Executive" ||
         employee.designation === "Sales Manager")
-      console.log("filteredData" , filteredData);
+      console.log("filteredData", filteredData);
       setUnames(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -217,13 +218,13 @@ export default function AddLeadForm({
           console.log("bookings", booking)
           const servicestoSend = booking.services.map((service, index) => {
             // Call setIsoType for each service's isoTypeObject
-           
+
             setIsoType(service.isoTypeObject);
             setCompanyIncoType(service.companyIncoTypeObject);
             setOrganizationDscType(service.organizationTypeObject);
-          setDirectorDscType(service.directorDscTypeObject);
+            setDirectorDscType(service.directorDscTypeObject);
 
-            
+
             if (!isNaN(new Date(service.secondPaymentRemarks))) {
               const tempState = {
                 serviceID: index,
@@ -319,7 +320,7 @@ export default function AddLeadForm({
             setIsoType(service.isoTypeObject);
             setCompanyIncoType(service.companyIncoTypeObject);
             setOrganizationDscType(service.organizationTypeObject);
-          setDirectorDscType(service.directorDscTypeObject);
+            setDirectorDscType(service.directorDscTypeObject);
 
 
             if (!isNaN(new Date(service.secondPaymentRemarks))) {
@@ -328,7 +329,7 @@ export default function AddLeadForm({
                 value: service.secondPaymentRemarks
               };
               const prevState = secondTempRemarks.find(obj => obj.serviceID === index);
-              
+
               if (prevState) {
                 setSecondTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -343,7 +344,7 @@ export default function AddLeadForm({
                 value: service.thirdPaymentRemarks
               };
               const prevState = thirdTempRemarks.find(obj => obj.serviceID === index);
-             
+
               if (prevState) {
                 setThirdTempRemarks(prev =>
                   prev.map(obj => (obj.serviceID === index ? tempState : obj))
@@ -434,7 +435,7 @@ export default function AddLeadForm({
   };
 
   console.log(secondTempRemarks, thirdTempRemarks, fourthTempRemarks, "This is Temp Remarks");
-  
+
   console.log("Real time data: ", leadData);
   useEffect(() => {
     fetchData();
@@ -536,7 +537,7 @@ export default function AddLeadForm({
     return `${year}-${month}-${day}`;
   }
 
- 
+
 
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
@@ -727,11 +728,17 @@ export default function AddLeadForm({
               if (
                 iso.type === "" ||
                 (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
-                (iso.type === "Non IAF" && iso.Nontype === "")
+                (iso.type === "Non IAF" && iso.Nontype === "") ||
+                (iso.type === "Non IAF" && iso.Nontype === "Others" && iso.forOther === "")
               ) {
                 updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
               } else {
-                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+                //updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+                updatedServiceName = iso.type === "IAF"
+                  ? `ISO Certificate IAF ${iso.IAFtype1} ${iso.IAFtype2}`
+                  : iso.type === "Non IAF" && iso.Nontype === "Others"
+                    ? `ISO Certificate Non IAF ${iso.forOther}`
+                    : `ISO Certificate Non IAF ${iso.Nontype}`;
               }
             } else if (service.serviceName === "Company Incorporation" && companyIso) {
               if (
@@ -749,7 +756,7 @@ export default function AddLeadForm({
               } else {
                 updatedServiceName = `${`Organization DSC ${organizationIso.type} With ${organizationIso.validity} Validity`}`;
               }
-            }else if (service.serviceName === "Director DSC" && directorIso) {
+            } else if (service.serviceName === "Director DSC" && directorIso) {
               if (
                 directorIso.type === ""
               ) {
@@ -782,7 +789,7 @@ export default function AddLeadForm({
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
               organizationTypeObject: organizationDscType,
-              directorDscTypeObject:directorDscType,
+              directorDscTypeObject: directorDscType,
             };
           });
           // Check if any service has an "Invalid" serviceName
@@ -897,14 +904,19 @@ export default function AddLeadForm({
             return {
               ...service,
               serviceName: service.serviceName === "ISO Certificate"
-                ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+              ? `ISO Certificate ${isoDetails.type === "IAF"
+                ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}`
+                : isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                  ? `Non IAF ${isoDetails.forOther}`
+                  : `Non IAF ${isoDetails.Nontype}`
+              }`
                 : service.serviceName === "Company Incorporation"
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
                     ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity} Validity`
                     : service.serviceName === "Director DSC"
-                    ? `Director DSC ${directorDscDetails.type} With ${directorDscDetails.validity} Validity`
-                    : service.serviceName,
+                      ? `Director DSC ${directorDscDetails.type} With ${directorDscDetails.validity} Validity`
+                      : service.serviceName,
               secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
                 : service.secondPaymentRemarks,
@@ -920,7 +932,7 @@ export default function AddLeadForm({
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
               organizationTypeObject: organizationDscType,
-              directorDscTypeObject:directorDscType
+              directorDscTypeObject: directorDscType
             };
           });
           const tempLeadData = {
@@ -1166,7 +1178,7 @@ export default function AddLeadForm({
                         });
                         setIsoType(defaultArray)
                       }
-                    }else if (e.target.value === "Company Incorporation") {
+                    } else if (e.target.value === "Company Incorporation") {
                       if (!companyIncoType.some(obj => obj.serviceID === i)) {
                         const defaultArray = companyIncoType;
                         defaultArray.push({
@@ -1175,7 +1187,7 @@ export default function AddLeadForm({
                         });
                         setCompanyIncoType(defaultArray)
                       }
-                    }else if (e.target.value === "Organization DSC") {
+                    } else if (e.target.value === "Organization DSC") {
                       if (!organizationDscType.some(obj => obj.serviceID === i)) {
                         const defaultArray = organizationDscType;
                         defaultArray.push({
@@ -1184,7 +1196,7 @@ export default function AddLeadForm({
                         });
                         setOrganizationDscType(defaultArray)
                       }
-                    }else if (e.target.value === "Director DSC") {
+                    } else if (e.target.value === "Director DSC") {
                       if (!organizationDscType.some(obj => obj.serviceID === i)) {
                         const defaultArray = directorDscType;
                         defaultArray.push({
@@ -1276,11 +1288,20 @@ export default function AddLeadForm({
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  <select className="form-select mt-1 ml-1"
+                    </select>
+                    </> : 
+                    <> 
+                     {/* NON-IAF ISO TYPES */} 
+                    <select className="form-select mt-1 ml-1"
                       value={isoType.find(obj => obj.serviceID === i)?.Nontype || " "}
                       onChange={(e) => {
+                         // Check if "Others" is selected and update state
+                         if (e.target.value === 'Others') {
+                          setShowOtherField(true);
+                        } else {
+                          setShowOtherField(false);
+                        }
                         const currentObject = isoType.find(obj => obj.serviceID === i);
-
                         if (currentObject) {
                           const remainingObject = isoType.filter(obj => obj.serviceID !== i);
                           const newCurrentObject = {
@@ -1331,12 +1352,33 @@ export default function AddLeadForm({
                       <option value="GFSI">GFSI</option>
                       <option value="GMO">GMO</option>
                       <option value="17025-2017">17025-2017</option>
-
-                    </select> </>}
-                  {/* NON-IAF ISO TYPES */}
+                      <option value="Others">Others</option>
+                    </select> 
+                    {/* Conditionally render the textarea */}
+                   {showOtherField && (
+                        <input
+                        type='text'
+                          className="form-control mt-1 ml-1"
+                          value={isoType.find(obj => obj.serviceID === i).forOther}
+                          onChange={(e) => {
+                            const currentObject = isoType.find(obj => obj.serviceID === i);
+                            if (currentObject) {
+                              const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                              const newCurrentObject = {
+                                ...currentObject,
+                                forOther: e.target.value.toUpperCase() // Convert to uppercase
+                              }
+                              remainingObject.push(newCurrentObject);
+                              setIsoType(remainingObject);
+                            }
+                          }}
+                          placeholder="Please specify the ISO Type"
+                        />
+                      )}
+                    </>}
                 </>}
-                 {/* Company Incorporation  */}
-                 {leadData.services[i].serviceName.includes("Company Incorporation") && <>
+                {/* Company Incorporation  */}
+                {leadData.services[i].serviceName.includes("Company Incorporation") && <>
                   <select className="form-select mt-1 ml-1"
                     value={companyIncoType.find(obj => obj.serviceID === i).type}
                     onChange={(e) => {
@@ -3258,7 +3300,7 @@ export default function AddLeadForm({
                                           SRK Seedfund(Non GST)/IDFC first Bank
                                         </option> */}
                                         <option value="STARTUP SAHAY CONSULTANCY / ADVISORS">
-                                        STARTUP SAHAY CONSULTANCY / ADVISORS
+                                          STARTUP SAHAY CONSULTANCY / ADVISORS
                                         </option>
                                         <option value="Razorpay">
                                           Razorpay
@@ -3597,7 +3639,12 @@ export default function AddLeadForm({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : isoDetails.Nontype}`;
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
+                                                  : 
+                                                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                                                  ? `${isoDetails.forOther}`
+                                                  : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {
@@ -3614,7 +3661,7 @@ export default function AddLeadForm({
                                                 const directorDetails = directorDscType.find(obj => obj.serviceID === index);
                                                 return `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`;
                                               })()
-                                            ): (
+                                            ) : (
                                               obj.serviceName
                                             )}
                                           </div>

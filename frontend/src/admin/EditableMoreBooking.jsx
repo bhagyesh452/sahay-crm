@@ -60,6 +60,7 @@ export default function EditableMoreBooking({
 }) {
   const [totalServices, setTotalServices] = useState(1);
   const [step4changed, setStep4Changed] = useState(false)
+  const [showOtherField, setShowOtherField] = useState(false); // state to track "Others" option
 
   const [fetchedService, setfetchedService] = useState(false);
   const defaultLeadData = {
@@ -105,7 +106,8 @@ export default function EditableMoreBooking({
     type: "",
     IAFtype1: "",
     IAFtype2: "",
-    Nontype: ""
+    Nontype: "",
+    forOther:"",
   }
   const defaultCompanyIncoIsoType = {
     serviceID: "",
@@ -713,7 +715,12 @@ export default function EditableMoreBooking({
         return {
           ...service,
           serviceName: service.serviceName === "ISO Certificate"
-            ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+                ? `ISO Certificate ${isoDetails.type === "IAF" ?
+                  `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                    ? `Non IAF ${isoDetails.forOther}`
+                    : `Non IAF ${isoDetails.Nontype}`
+                      }`
             : service.serviceName === "Company Incorporation"
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
@@ -807,7 +814,12 @@ export default function EditableMoreBooking({
         return {
           ...service,
           serviceName: service.serviceName === "ISO Certificate"
-            ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+          ? `ISO Certificate ${isoDetails.type === "IAF" ?
+            `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+            isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+              ? `Non IAF ${isoDetails.forOther}`
+              : `Non IAF ${isoDetails.Nontype}`
+                }`
             : service.serviceName === "Company Incorporation"
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
@@ -1234,9 +1246,19 @@ export default function EditableMoreBooking({
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  <select className="form-select mt-1 ml-1" disabled={completed[activeStep] === true} value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                    </select></> : <>  
+                    <select 
+                    className="form-select mt-1 ml-1" 
+                    disabled={completed[activeStep] === true} 
+                    value={isoType.find(obj => obj.serviceID === i).Nontype} 
+                    onChange={(e) => {
+                      // Check if "Others" is selected and update state
+                      if (e.target.value === 'Others') {
+                        setShowOtherField(true);
+                      } else {
+                        setShowOtherField(false);
+                      }
                       const currentObject = isoType.find(obj => obj.serviceID === i);
-
                       if (currentObject) {
                         const remainingObject = isoType.filter(obj => obj.serviceID !== i);
                         const newCurrentObject = {
@@ -1287,8 +1309,31 @@ export default function EditableMoreBooking({
                       <option value="GFSI">GFSI</option>
                       <option value="GMO">GMO</option>
                       <option value="17025-2017">17025-2017</option>
-
-                    </select> </>}
+                      <option value="Others">Others</option>
+                    </select> 
+                     {/* Conditionally render the textarea */}
+                     {showOtherField && (
+                        <input 
+                        type="text"
+                          className="form-control mt-1 ml-1"
+                          value={isoType.find(obj => obj.serviceID === i).forOther}
+                          onChange={(e) => {
+                            const currentObject = isoType.find(obj => obj.serviceID === i);
+                            if (currentObject) {
+                              const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                              const newCurrentObject = {
+                                ...currentObject,
+                                forOther: e.target.value.toUpperCase() // Convert to uppercase
+                              }
+                              remainingObject.push(newCurrentObject);
+                              setIsoType(remainingObject);
+                            }
+                          }}
+                          placeholder="Please specify the ISO Type"
+                        />
+                      )}
+                    </>
+                    }
                   {/* NON-IAF ISO TYPES */}
                 </>}
                 {/* Company Incorporation  */}
@@ -3493,7 +3538,12 @@ export default function EditableMoreBooking({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : isoDetails.Nontype}`;
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
+                                                  : 
+                                                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                                                  ? `${isoDetails.forOther}`
+                                                  : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {
@@ -3510,7 +3560,7 @@ export default function EditableMoreBooking({
                                                 const directorDetails = directorDscType.find(obj => obj.serviceID === index);
                                                 return `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`;
                                               })()
-                                            ): (
+                                            ) : (
                                               obj.serviceName
                                             )}
                                           </div>

@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 const app = express();
 dotenv.config();
 const { exec } = require("child_process");
+const { parse } = require('date-fns');
+const moment = require('moment');
 
 app.use(express.json());
 
@@ -1067,7 +1069,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
-      console.log("document" , document)
+      console.log("document", document)
 
       if (!document) {
         console.error("Document not found");
@@ -1081,7 +1083,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
           ...rmServicesMainBooking,
         ])
       );
-      console.log("uniquemainservices" , uniqueMainServices)
+      console.log("uniquemainservices", uniqueMainServices)
       document.servicesTakenByRmOfCertification = uniqueMainServices;
 
       // Iterate through moreBookings and update only relevant objects
@@ -1107,7 +1109,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
 
       // Save the updated document
       const updatedDocument = await document.save();
-      console.log("updateddocument" , updatedDocument)
+      console.log("updateddocument", updatedDocument)
 
       // if (!updatedDocument) {
       //   console.error("Failed to save the updated document");
@@ -1577,7 +1579,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
 
       // Emit socket event
       socketIO.emit("adminexecutive-general-status-updated", {
-        updatedDocument:updateCompanyRm
+        updatedDocument: updateCompanyRm
       });
       res.status(200).json({
         message: "Document updated successfully",
@@ -1633,7 +1635,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
 
       // Emit socket event
       socketIO.emit("adminexecutive-general-status-updated", {
-        updatedDocument:updateCompanyRm
+        updatedDocument: updateCompanyRm
       });
       res.status(200).json({
         message: "Document updated successfully",
@@ -1867,7 +1869,7 @@ router.post(`/update-letter-adminexecutive/`, async (req, res) => {
     // Send the response and emit the update event
     socketIO.emit("adminexecutive-letter-updated", {
       updatedDocument: updatedCompanyRm,
-      updatedDocumentAdmin : updatedCompany // send the updated document from RMCertificationModel
+      updatedDocumentAdmin: updatedCompany // send the updated document from RMCertificationModel
     });
     res
       .status(200)
@@ -1942,7 +1944,7 @@ router.post(`/update-letter-rmcert/`, async (req, res) => {
     // Send the response and emit the update event
     socketIO.emit("rmcert-letter-updated", {
       updatedDocument: updatedCompanyRm,
-      updatedDocumentAdmin:updatedCompanyAdmin // send the updated document from RMCertificationModel
+      updatedDocumentAdmin: updatedCompanyAdmin // send the updated document from RMCertificationModel
     });
     res
       .status(200)
@@ -2007,8 +2009,8 @@ router.post(`/update-otpstatus-rmcert/`, async (req, res) => {
   const { companyName, serviceName, otpVerificationStatus } = req.body;
   //console.log("contentStatus", contentStatus, companyName, serviceName)
   const socketIO = req.io;
- 
-  
+
+
   try {
     // Find the company document
     const company = await RMCertificationModel.findOne({
@@ -2716,7 +2718,7 @@ router.post(`/post-save-nswsemail/`, async (req, res) => {
 
 router.post(`/post-save-nswspassword/`, async (req, res) => {
   const { companyName, serviceName, password } = req.body;
-  
+
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -2749,7 +2751,7 @@ router.post(`/post-save-nswspassword/`, async (req, res) => {
 
 router.post(`/post-save-websitelink/`, async (req, res) => {
   const { companyName, serviceName, link, briefing } = req.body;
-  
+
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -2789,7 +2791,7 @@ router.post(`/post-save-industry/`, async (req, res) => {
     isIndustryEnabled,
     sector,
   } = req.body;
-  
+
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -2889,8 +2891,8 @@ router.post(`/post-disasble-industry/`, async (req, res) => {
 router.post(`/post-save-sector/`, async (req, res) => {
   const { companyName, serviceName, sectorOption, isIndustryEnabled } =
     req.body;
-  
-    
+
+
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -3636,5 +3638,229 @@ router.get("/sectors", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// -----------------update-leads-button-function-for emergency-use-only------------
+// Helper function to convert decimal time to HH:MM:SS format
+function decimalToTime(decimal) {
+  const totalSeconds = Math.floor(decimal * 24 * 60 * 60); // Convert decimal days to seconds
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  // Pad the values to ensure they are always two digits
+  const paddedHours = String(hours).padStart(2, '0');
+  const paddedMinutes = String(minutes).padStart(2, '0');
+  const paddedSeconds = String(seconds).padStart(2, '0');
+
+  return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+}
+// Function to parse the date and set the time to 00:00:00 to avoid time zone shifts
+
+const excelSerialToJSDate = (serial) => {
+  if (typeof serial !== 'number' || isNaN(serial)) {
+    console.error("Invalid serial date:", serial);
+    return undefined;
+  }
+
+  const excelStartDate = new Date(1900, 0, 1);
+  return new Date(excelStartDate.getTime() + (serial - 1) * 24 * 60 * 60 * 1000);
+};
+
+// router.post('/upload-approved-data', async (req, res) => {
+//   const data = req.body; // This should be the array of objects parsed from Excel
+
+//   try {
+//     const updates = data.map(async (item) => {
+//       console.log("item", item)
+//       const parsedSubmittedOn = item["Submitted On Date"]
+//         ? excelSerialToJSDate(item["Submitted On Date"])
+//         : undefined;
+//         const parsedBookingDate = item["Booking Date"]
+//         ? excelSerialToJSDate(item["Booking Date"])
+//         : undefined;
+      
+//       await RMCertificationModel.create({
+//         "Company Name": item["Company Name"] ? item["Company Name"] : "",
+//         "Company Number": item["Company Number"],
+//         "Company Email": item["Company Email"],
+//         caNumber: item["CA Number"] ? item["CA Number"] : 0,
+//         serviceName: item["Services Name"],
+//         mainCategoryStatus: item["Status"] || "Approved",
+//         subCategoryStatus: item["Status"] || "Approved",
+//         websiteLink: item["Website Link/Brief"],
+//         withDSC: item["DSC Applicable"] === "Yes" ? true : false,
+//         letterStatus: item["Letter Status"] || "Not Started",
+//         dscStatus: item["DSC Status"] || "Not Started",
+//         contentWriter: item["Content Writer"] || "RonakKumar",
+//         contentStatus: item["Content Status"] || "Not Started",
+//         nswsMobileNo: item["NSWS Phone No"],
+//         nswsMailId: item["NSWS Email Id"],
+//         nswsPaswsord: item["NSWS Password"],
+//         City: item.City,
+//         State: item.State,
+//         industry: item.Industry,
+//         sector: item.Sector,
+//         lastAttemptSubmitted: item["No of Attempt"],
+//         // Parse date without timezone issues
+//         submittedOn :parsedSubmittedOn,
+
+//         // Convert decimal time to HH:MM:SS
+//         submittedTime: item["Submitted On Time"]
+//           ? decimalToTime(item["Submitted On Time"])
+//           : undefined,
+//         submittedBy: parsedBookingDate,
+//         bookingDate:item["Booking Date"]
+//         ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0] // Extract YYYY-MM-DD
+//         : undefined,
+      
+//         bdeName: item["BDE Name"],
+//         bdmName: item["BDM Name"],
+//         totalPaymentWGST: item["Total Payment"],
+//         //pendingRecievedPayment:item["Recieved Payment"],
+//         pendingNotRecievedPayment: item["Pending Payment"],
+//         pendingRecievedPaymentDate: item["Pending Recieved Payment Date"] ? new Date(item["Pending Recieved Payment Date"]) : undefined,
+//         panNumber: item.panNumber ? item.panNumber : "",
+//         bdeEmail: item.bdeEmail ? item.bdeEmail : "",
+//         bdmType: item.bdmType ? item.bdmType : "",
+//         paymentMethod: item.paymentMethod,
+//         caCase: item.caCase ? item.caCase : "",
+//         caEmail: item.caEmail ? item.caEmail : "",
+//         totalPaymentWOGST: item.totalPaymentWOGST,
+//         withGST: item.withGST ? true : false,
+//         // Conditionally adding paymentTerms
+//         paymentTerms: item["Total Payment"] === item["Recieved Payment"] ? "Full Advanced" : "two-part",
+//         firstPayment: item["Recieved Payment"],
+//         secondPayment: item.secondPayment ? item.secondPayment : 0,
+//         thirdPayment: item.thirdPayment ? item.thirdPayment : 0,
+//         fourthPayment: item.fourthPayment ? item.fourthPayment : 0,
+//         secondPaymentRemarks: item.secondPaymentRemarks ? item.secondPaymentRemarks : "",
+//         thirdPaymentRemarks: item.thirdPaymentRemarks ? item.thirdPaymentRemarks : "",
+//         fourthPaymentRemarks: item.fourthPaymentRemarks,
+//         bookingPublishDate: item["Booking Date"],
+//         addedOn: parsedSubmittedOn,
+//         brochureStatus: item.brochureStatus || "Not Applicable",
+//         brochureDesigner: item.brochureDesigner ? item.brochureDesigner : "",
+//         companyBriefing: item.companyBriefing ? item.companyBriefing : "",
+//         lastActionDate: item.lastActionDate ? new Date(item.lastActionDate) : new Date(),
+//         dateOfChangingMainStatus: item.dateOfChangingMainStatus ? new Date(item.dateOfChangingMainStatus) : new Date(),
+//         previousMainCategoryStatus: item.previousMainCategoryStatus || "Direct",
+//         previousSubCategoryStatus: item.previousSubCategoryStatus || "Direct",
+//         SecondTimeSubmitDate: item.SecondTimeSubmitDate ? new Date(item.SecondTimeSubmitDate) : new Date(),
+//         ThirdTimeSubmitDate: item.ThirdTimeSubmitDate ? new Date(item.ThirdTimeSubmitDate) : new Date(),
+//         isIndustryEnabled: item.isIndustryEnabled ? item.isIndustryEnabled : false,
+//         otpVerificationStatus: item.otpVerificationStatus || "Both Done",
+//         isUploadedDirect: true
+//       });
+//     });
+
+//     await Promise.all(updates);
+
+//     res.status(200).json({ message: 'Data uploaded successfully' });
+//   } catch (error) {
+//     console.error('Error updating data:', error);
+//     res.status(500).json({ error: 'Failed to upload data' });
+//   }
+// });
+
+router.post('/upload-approved-data', async (req, res) => {
+  const data = req.body; // This should be the array of objects parsed from Excel
+
+  try {
+    const updates = data.map(async (item) => {
+      try {
+        console.log("Processing item:", item["Company Name"]); // Log each company being processed
+
+        const parsedSubmittedOn = item["Submitted On Date"]
+          ? excelSerialToJSDate(item["Submitted On Date"])
+          : undefined;
+        const parsedBookingDate = item["Booking Date"]
+          ? excelSerialToJSDate(item["Booking Date"])
+          : undefined;
+
+        await RMCertificationModel.create({
+          "Company Name": item["Company Name"] ? item["Company Name"] : "",
+          "Company Number": item["Company Number"],
+          "Company Email": item["Company Email"],
+          caNumber: item["CA Number"] ? item["CA Number"] : 0,
+          serviceName: item["Services Name"],
+          mainCategoryStatus: item["Status"] || "Approved",
+          subCategoryStatus: item["Status"] || "Approved",
+          websiteLink: item["Website Link/Brief"],
+          withDSC: item["DSC Applicable"] === "Yes" ? true : false,
+          letterStatus: item["Letter Status"] || "Not Started",
+          dscStatus: item["DSC Status"] || "Not Started",
+          contentWriter: item["Content Writer"] || "RonakKumar",
+          contentStatus: item["Content Status"] || "Not Started",
+          nswsMobileNo: item["NSWS Phone No"],
+          nswsMailId: item["NSWS Email Id"],
+          nswsPaswsord: item["NSWS Password"],
+          City: item.City,
+          State: item.State,
+          industry: item.Industry,
+          sector: item.Sector,
+          lastAttemptSubmitted: item["No of Attempt"],
+          submittedOn: parsedSubmittedOn,
+          submittedTime: item["Submitted On Time"]
+            ? decimalToTime(item["Submitted On Time"])
+            : undefined,
+          submittedBy: parsedBookingDate,
+          bookingDate: item["Booking Date"]
+            ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0]
+            : undefined,
+          bdeName: item["BDE Name"],
+          bdmName: item["BDM Name"],
+          totalPaymentWGST: item["Total Payment"],
+          pendingNotRecievedPayment: item["Pending Payment"],
+          pendingRecievedPaymentDate: item["Pending Recieved Payment Date"]
+            ? new Date(item["Pending Recieved Payment Date"])
+            : undefined,
+          panNumber: item.panNumber ? item.panNumber : "",
+          bdeEmail: item.bdeEmail ? item.bdeEmail : "",
+          bdmType: item.bdmType ? item.bdmType : "",
+          paymentMethod: item.paymentMethod,
+          caCase: item.caCase ? item.caCase : "",
+          caEmail: item.caEmail ? item.caEmail : "",
+          totalPaymentWOGST: item.totalPaymentWOGST,
+          withGST: item.withGST ? true : false,
+          paymentTerms: item["Total Payment"] === item["Recieved Payment"] ? "Full Advanced" : "two-part",
+          firstPayment: item["Recieved Payment"],
+          secondPayment: item.secondPayment ? item.secondPayment : 0,
+          thirdPayment: item.thirdPayment ? item.thirdPayment : 0,
+          fourthPayment: item.fourthPayment ? item.fourthPayment : 0,
+          secondPaymentRemarks: item.secondPaymentRemarks ? item.secondPaymentRemarks : "",
+          thirdPaymentRemarks: item.thirdPaymentRemarks ? item.thirdPaymentRemarks : "",
+          fourthPaymentRemarks: item.fourthPaymentRemarks,
+          bookingPublishDate: item["Booking Date"],
+          addedOn: parsedSubmittedOn,
+          brochureStatus: item.brochureStatus || "Not Applicable",
+          brochureDesigner: item.brochureDesigner ? item.brochureDesigner : "",
+          companyBriefing: item.companyBriefing ? item.companyBriefing : "",
+          lastActionDate: item.lastActionDate ? new Date(item.lastActionDate) : new Date(),
+          dateOfChangingMainStatus: parsedSubmittedOn,
+          previousMainCategoryStatus: item.previousMainCategoryStatus || "Direct",
+          previousSubCategoryStatus: item.previousSubCategoryStatus || "Direct",
+          SecondTimeSubmitDate: item.SecondTimeSubmitDate ? new Date(item.SecondTimeSubmitDate) : new Date(),
+          ThirdTimeSubmitDate: item.ThirdTimeSubmitDate ? new Date(item.ThirdTimeSubmitDate) : new Date(),
+          isIndustryEnabled: item.isIndustryEnabled ? item.isIndustryEnabled : false,
+          otpVerificationStatus: item.otpVerificationStatus || "Both Done",
+          isUploadedDirect: true
+        });
+      } catch (err) {
+        console.error(`Failed to process company: ${item["Company Name"]}`);
+        console.error("Error details:", err.message);
+      }
+    });
+
+    await Promise.all(updates);
+
+    res.status(200).json({ message: 'Data uploaded successfully' });
+  } catch (error) {
+    console.error('Error updating data:', error);
+    res.status(500).json({ error: 'Failed to upload data' });
+  }
+});
+
+
+
 
 module.exports = router;

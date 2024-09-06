@@ -60,7 +60,7 @@ export default function AdminBookingForm({
 }) {
   const [totalServices, setTotalServices] = useState(1);
   const [loader, setLoader] = useState(false)
-
+  const [showOtherField, setShowOtherField] = useState(false); // state to track "Others" option
   const [fetchedService, setfetchedService] = useState(false);
 
   const defaultISOtypes = {
@@ -68,7 +68,8 @@ export default function AdminBookingForm({
     type: "",
     IAFtype1: "",
     IAFtype2: "",
-    Nontype: ""
+    Nontype: "",
+    forOther: ""
   }
   const defaultCompanyIncoIsoType = {
     serviceID: "",
@@ -659,11 +660,17 @@ export default function AdminBookingForm({
               if (
                 iso.type === "" ||
                 (iso.type === "IAF" && (iso.IAFtype1 === "" || iso.IAFtype2 === "")) ||
-                (iso.type === "Non IAF" && iso.Nontype === "")
+                (iso.type === "Non IAF" && iso.Nontype === "") ||
+                (iso.type === "Non IAF" && iso.Nontype === "Others" && iso.forOther === "")
               ) {
                 updatedServiceName = "Invalid"; // Use a placeholder or specific value if needed
               } else {
-                updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
+                updatedServiceName = iso.type === "IAF"
+                  ? `ISO Certificate IAF ${iso.IAFtype1} ${iso.IAFtype2}`
+                  : iso.type === "Non IAF" && iso.Nontype === "Others"
+                    ? `ISO Certificate Non IAF ${iso.forOther}`
+                    : `ISO Certificate Non IAF ${iso.Nontype}`;
+                //updatedServiceName = `ISO Certificate ${iso.type === "IAF" ? `IAF ${iso.IAFtype1} ${iso.IAFtype2}` : `Non IAF ${iso.Nontype}`}`;
               }
             } else if (service.serviceName === "Company Incorporation" && companyIso) {
               if (
@@ -681,7 +688,7 @@ export default function AdminBookingForm({
               } else {
                 updatedServiceName = `${`Organization DSC ${organizationIso.type} With ${organizationIso.validity} Validity`}`;
               }
-            }else if (service.serviceName === "Director DSC" && directorIso) {
+            } else if (service.serviceName === "Director DSC" && directorIso) {
               if (
                 directorIso.type === ""
               ) {
@@ -714,7 +721,7 @@ export default function AdminBookingForm({
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
               organizationTypeObject: organizationDscType,
-              directorDscTypeObject:directorDscType,
+              directorDscTypeObject: directorDscType,
             };
           });
 
@@ -821,14 +828,19 @@ export default function AdminBookingForm({
             return {
               ...service,
               serviceName: service.serviceName === "ISO Certificate"
-                ? `ISO Certificate ${isoDetails.type === "IAF" ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : `Non IAF ${isoDetails.Nontype}`}`
+              ? `ISO Certificate ${isoDetails.type === "IAF" ?
+                `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+                isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                  ? `Non IAF ${isoDetails.forOther}`
+                  : `Non IAF ${isoDetails.Nontype}`
+                    }`
                 : service.serviceName === "Company Incorporation"
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
                     ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity} Validity`
                     : service.serviceName === "Director DSC"
-                    ? `Director DSC ${directorDscDetails.type} With ${directorDscDetails.validity} Validity`
-                    : service.serviceName,
+                      ? `Director DSC ${directorDscDetails.type} With ${directorDscDetails.validity} Validity`
+                      : service.serviceName,
               secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
                 ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
                 : service.secondPaymentRemarks,
@@ -844,7 +856,7 @@ export default function AdminBookingForm({
               isoTypeObject: isoType,
               companyIncoTypeObject: companyIncoType,
               organizationTypeObject: organizationDscType,
-              directorDscTypeObject:directorDscType
+              directorDscTypeObject: directorDscType
             };
           });
 
@@ -1161,7 +1173,7 @@ export default function AdminBookingForm({
                         });
                         setOrganizationDscType(defaultArray)
                       }
-                    }else if (e.target.value === "Director DSC") {
+                    } else if (e.target.value === "Director DSC") {
                       if (!organizationDscType.some(obj => obj.serviceID === i)) {
                         const defaultArray = directorDscType;
                         defaultArray.push({
@@ -1246,7 +1258,17 @@ export default function AdminBookingForm({
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY ( 1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY ( 1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  <select className="form-select mt-1 ml-1" value={isoType.find(obj => obj.serviceID === i).Nontype} onChange={(e) => {
+                    </select></> : <>  
+                    <select 
+                    className="form-select mt-1 ml-1" 
+                    value={isoType.find(obj => obj.serviceID === i).Nontype} 
+                    onChange={(e) => {
+                      // Check if "Others" is selected and update state
+                      if (e.target.value === 'Others') {
+                        setShowOtherField(true);
+                      } else {
+                        setShowOtherField(false);
+                      }
                       const currentObject = isoType.find(obj => obj.serviceID === i);
 
                       if (currentObject) {
@@ -1299,8 +1321,31 @@ export default function AdminBookingForm({
                       <option value="GFSI">GFSI</option>
                       <option value="GMO">GMO</option>
                       <option value="17025-2017">17025-2017</option>
-
-                    </select> </>}
+                      <option value="Others">Others</option>
+                    </select> 
+                    {/* Conditionally render the textarea */}
+                    {showOtherField && (
+                        <input 
+                        type='text'
+                          class="form-control mt-1 ml-1"
+                          value={isoType.find(obj => obj.serviceID === i).forOther}
+                          onChange={(e) => {
+                            const currentObject = isoType.find(obj => obj.serviceID === i);
+                            if (currentObject) {
+                              const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                              const newCurrentObject = {
+                                ...currentObject,
+                                forOther: e.target.value.toUpperCase()
+                              }
+                              remainingObject.push(newCurrentObject);
+                              setIsoType(remainingObject);
+                            }
+                          }}
+                          placeholder="Please specify the ISO Type"
+                        />
+                      )}
+                    
+                    </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}
                 {/* Company Incorporation  */}
@@ -1367,8 +1412,8 @@ export default function AdminBookingForm({
                     <option value="3 Year">3 Year</option>
                   </select>
                 </>}
-                 {/* Director Dsc  */}
-                 {leadData.services[i].serviceName.includes("Director DSC") && <>
+                {/* Director Dsc  */}
+                {leadData.services[i].serviceName.includes("Director DSC") && <>
                   <select className="form-select mt-1 ml-1"
                     value={directorDscType.find(obj => obj.serviceID === i).type}
                     onChange={(e) => {
@@ -3365,7 +3410,7 @@ export default function AdminBookingForm({
                                           SRK Seedfund(Non GST)/IDFC first Bank
                                         </option> */}
                                         <option value="STARTUP SAHAY CONSULTANCY / ADVISORS">
-                                        STARTUP SAHAY CONSULTANCY / ADVISORS
+                                          STARTUP SAHAY CONSULTANCY / ADVISORS
                                         </option>
                                         <option value="Razorpay">
                                           Razorpay
@@ -3701,7 +3746,12 @@ export default function AdminBookingForm({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` : isoDetails.Nontype}`;
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
+                                                  : 
+                                                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                                                  ? `${isoDetails.forOther}`
+                                                  : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {
@@ -3718,7 +3768,7 @@ export default function AdminBookingForm({
                                                 const directorDetails = directorDscType.find(obj => obj.serviceID === index);
                                                 return `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`;
                                               })()
-                                            ): (
+                                            ) : (
                                               obj.serviceName
                                             )}
                                           </div>
