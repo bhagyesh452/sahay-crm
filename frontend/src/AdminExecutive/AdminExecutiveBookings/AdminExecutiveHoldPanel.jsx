@@ -219,7 +219,7 @@ function AdminExecutiveHoldPanel({ searchText, showFilter, activeTab, totalFilte
       ));
   };
 
-    socket.on("adminexecutive-letter-updated", (res) => {
+    socket.on("rmcert-letter-updated", (res) => {
       //console.log("res" , res)
       if (res.updatedDocumentAdmin) {
           updateDocumentInState(res.updatedDocumentAdmin);
