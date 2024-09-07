@@ -472,6 +472,11 @@ function ViewAttendance({ year, month, date }) {
                                                 </th>
                                             );
                                         })}
+                                        <th className='hr-sticky-action4'>
+                                            <div className='l-lc'>
+                                                LC
+                                            </div>
+                                        </th>
                                         <th className='hr-sticky-action3'>
                                             <div className='p-present'>
                                                 P
@@ -670,6 +675,9 @@ function ViewAttendance({ year, month, date }) {
                                                                 </td>
                                                             );
                                                         })}
+                                                        <td className='hr-sticky-action4'>
+                                                            {presentCount}
+                                                        </td>
                                                         <td className='hr-sticky-action3'>
                                                             {presentCount}
                                                         </td>
@@ -727,7 +735,11 @@ function ViewAttendance({ year, month, date }) {
                                                 </th>
                                             );
                                         })}
-
+                                        <th className='hr-sticky-action4'>
+                                            <div className='l-lc'>
+                                                LC
+                                            </div>
+                                        </th>
                                         <th className='hr-sticky-action3'>
                                             <div className='p-present'>
                                                 P
@@ -928,7 +940,9 @@ function ViewAttendance({ year, month, date }) {
                                                                 </td>
                                                             );
                                                         })}
-
+                                                    <td className='hr-sticky-action4'>
+                                                        {presentCount}
+                                                    </td>
                                                     <td className='hr-sticky-action3'>
                                                         {presentCount}
                                                     </td>
