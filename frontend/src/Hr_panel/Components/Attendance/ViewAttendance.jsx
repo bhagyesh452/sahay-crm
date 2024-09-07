@@ -385,7 +385,18 @@ function ViewAttendance({ year, month, date }) {
     // console.log("Gota employees are :", gotaBranchEmployees);
     // console.log("Sindhu Bhawan employees are :", sindhuBhawanBranchEmployees);
     // console.log("Deleted employees are :", deletedEmployees);
-    
+
+    const officialHolidays = [
+        '14-01-2024', '15-01-2024', '24-03-2024', '25-03-2024',
+        '07-07-2024', '19-08-2024', '12-10-2024', '31-10-2024',
+        '01-11-2024', '02-11-2024', '03-11-2024', '04-11-2024', '05-11-2024'
+    ];
+
+    const formatDateForHolidayCheck = (year, month, day) => {
+        const formattedDay = day < 10 ? '0' + day : day;
+        const formattedMonth = month < 10 ? '0' + month : month;
+        return `${formattedDay}-${formattedMonth}-${year}`;
+    };
 
     return (
         <>
@@ -517,7 +528,6 @@ function ViewAttendance({ year, month, date }) {
                                                                 </div>
                                                             </div>
                                                         </td>
-
                                                         {selectedMonthDays.map(day => {
                                                             const empAttendance = attendanceData[emp._id] || {};
                                                             const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
@@ -532,6 +542,12 @@ function ViewAttendance({ year, month, date }) {
                                                             const selectedDate = new Date(`${currentYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`);
 
                                                             const isFutureDate = selectedDate > currentDate;
+
+                                                            // Format selected date for holiday check
+                                                            const formattedSelectedDate = formatDateForHolidayCheck(currentYear, monthNumber, day);
+
+                                                            // Check if selected date is an official holiday
+                                                            const isHoliday = officialHolidays.includes(formattedSelectedDate);
 
                                                             const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
                                                                 inTime: "",
@@ -571,8 +587,8 @@ function ViewAttendance({ year, month, date }) {
                                                                         <div>
                                                                             {selectedDate < joiningDate ? (
                                                                                 <div className='before-joining-icon'><FcCancel /></div>
-                                                                            ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
-                                                                                // Get the status of the previous day (Saturday) and the next day (Monday)
+                                                                            ) : isHoliday ? (
+                                                                                // Logic for Official Holidays (OH)
                                                                                 (() => {
                                                                                     const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status;
                                                                                     const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
@@ -584,8 +600,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                     ) {
                                                                                         return (
                                                                                             <>
-                                                                                                <div className="sl-sunday">SL</div>    {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
-                                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if conditions are met */}
+                                                                                                <div className="sl-sunday">OHL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
+                                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
                                                                                             </>
                                                                                         );
                                                                                     } else if (
@@ -593,12 +609,50 @@ function ViewAttendance({ year, month, date }) {
                                                                                     ) {
                                                                                         return (
                                                                                             <>
-                                                                                                <div className="sh-sunday">SH</div>    {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
-                                                                                                <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday if conditions are met */}
+                                                                                                <div className="sh-sunday">OHH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
                                                                                             </>
                                                                                         );
                                                                                     } else {
-                                                                                        return <div className="s-sunday">SP</div>; // Otherwise, fill with "S"
+                                                                                        return <div className="s-sunday">OH</div>; // Default Sunday fill with "S"
+                                                                                    }
+                                                                                })()
+                                                                            ) : selectedDate.getDay() === 0 ? ( // Logic for Sunday
+                                                                                (() => {
+                                                                                    const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status;
+                                                                                    const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
+
+                                                                                    if (
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sl-sunday">SL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
+                                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else if (
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">SH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    }else if (
+                                                                                        (prevDayStatus === "Present" && nextDayStatus === "Present")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">SP</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{presentCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else {
+                                                                                        return <div className="s-sunday">S</div>; // Default Sunday fill with "S"
                                                                                     }
                                                                                 })()
                                                                             ) : (
@@ -611,8 +665,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                 </button>
                                                                             )}
                                                                         </div>
-
                                                                     )}
+
                                                                 </td>
                                                             );
                                                         })}
@@ -733,103 +787,147 @@ function ViewAttendance({ year, month, date }) {
                                                     </td>
 
                                                     {selectedMonthDays.map(day => {
-                                                        const empAttendance = attendanceData[emp._id] || {};
-                                                        const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
-                                                        const { attendanceDate = formattedDate } = empAttendance;
+                                                            const empAttendance = attendanceData[emp._id] || {};
+                                                            const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
+                                                            const { attendanceDate = formattedDate } = empAttendance;
 
-                                                        const currentYear = year; // Use the prop year instead of the current year
-                                                        const currentMonth = month; // Use the prop month instead of the current month
-                                                        const currentDay = new Date().getDate();
-                                                        const myDate = new Date(attendanceDate).getDate();
+                                                            const currentYear = year; // Use the prop year instead of the current year
+                                                            const currentMonth = month; // Use the prop month instead of the current month
+                                                            const currentDay = new Date().getDate();
+                                                            const myDate = new Date(attendanceDate).getDate();
 
-                                                        const currentDate = new Date(); // Today's date
-                                                        const selectedDate = new Date(`${currentYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`);
+                                                            const currentDate = new Date(); // Today's date
+                                                            const selectedDate = new Date(`${currentYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`);
 
-                                                        const isFutureDate = selectedDate > currentDate;
+                                                            const isFutureDate = selectedDate > currentDate;
 
-                                                        const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
-                                                            inTime: "",
-                                                            outTime: "",
-                                                            workingHours: "",
-                                                            status: ""
-                                                        };
+                                                            // Format selected date for holiday check
+                                                            const formattedSelectedDate = formatDateForHolidayCheck(currentYear, monthNumber, day);
 
-                                                        if (attendanceDetails.status === "Present") presentCount++;
-                                                        if (attendanceDetails.status === "Leave") leaveCount++;
-                                                        if (attendanceDetails.status === "Half Day") halfDayCount++;
+                                                            // Check if selected date is an official holiday
+                                                            const isHoliday = officialHolidays.includes(formattedSelectedDate);
 
-                                                        // console.log("Emp attendance details :", attendanceDetails);
+                                                            const attendanceDetails = empAttendance[currentYear]?.[currentMonth]?.[myDate] || {
+                                                                inTime: "",
+                                                                outTime: "",
+                                                                workingHours: "",
+                                                                status: ""
+                                                            };
 
-                                                        const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
-                                                        const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
-                                                        const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+                                                            if (attendanceDetails.status === "Present") presentCount++;
+                                                            if (attendanceDetails.status === "Leave") leaveCount++;
+                                                            if (attendanceDetails.status === "Half Day") halfDayCount++;
 
-                                                        return (
-                                                            <td key={day}>
-                                                                <div
-                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
-                                                                    className={`
+                                                            // console.log("Emp attendance details :", attendanceDetails);
+
+                                                            const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
+                                                            const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
+                                                            const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+
+                                                            return (
+                                                                <td key={day}>
+                                                                    <div
+                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                        className={`
                                                                    ${status === "Present" ? "p-present" : ""}
                                                                        ${status === "Half Day" ? "H-Halfday" : ""}
                                                                             ${status === "Leave" ? "l-leave" : ""}
                                                                             ${status.startsWith("LC") ? "l-lc" : ""}
                                                                         `.trim()}
-                                                                >
-                                                                    {status === "Present" ? "P" :
-                                                                        status === "Half Day" ? "H" :
-                                                                            status === "Leave" ? "L" :
-                                                                                status.startsWith("LC") ? status : ""
-                                                                    }
-                                                                </div>
-
-                                                                {!status && (
-                                                                    <div>
-                                                                        {selectedDate < joiningDate ? (
-                                                                            <div className='before-joining-icon'><FcCancel /></div>
-                                                                        ) : selectedDate.getDay() === 0 ? ( // Check if the day is Sunday (0 = Sunday)
-                                                                            // Get the status of the previous day (Saturday) and the next day (Monday)
-                                                                            (() => {
-                                                                                const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status;
-                                                                                const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
-
-                                                                                if (
-                                                                                    (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
-                                                                                    (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
-                                                                                ) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div className="sl-sunday">SL</div>    {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
-                                                                                            <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday if conditions are met */}
-                                                                                        </>
-                                                                                    );
-                                                                                } else if (
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
-                                                                                ) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div className="sh-sunday">SH</div>    {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
-                                                                                            <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday if conditions are met */}
-                                                                                        </>
-                                                                                    );
-                                                                                } else {
-                                                                                    return <div className="s-sunday">SP</div>; // Otherwise, fill with "S"
-                                                                                }
-                                                                            })()
-                                                                        ) : (
-                                                                            <button
-                                                                                className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
-                                                                                onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
-                                                                                disabled={isFutureDate} // Disable button for future dates
-                                                                            >
-                                                                                {day <= daysInMonth && <FaPlus />}
-                                                                            </button>
-                                                                        )}
+                                                                    >
+                                                                        {status === "Present" ? "P" :
+                                                                            status === "Half Day" ? "H" :
+                                                                                status === "Leave" ? "L" :
+                                                                                    status.startsWith("LC") ? status : ""
+                                                                        }
                                                                     </div>
-                                                                )}
-                                                            </td>
-                                                        );
-                                                    })}
+                                                                    {!status && (
+                                                                        <div>
+                                                                            {selectedDate < joiningDate ? (
+                                                                                <div className='before-joining-icon'><FcCancel /></div>
+                                                                            ) : isHoliday ? (
+                                                                                // Logic for Official Holidays (OH)
+                                                                                (() => {
+                                                                                    const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status;
+                                                                                    const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
+
+                                                                                    if (
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sl-sunday">OHL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
+                                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else if (
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">OHH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else {
+                                                                                        return <div className="s-sunday">OH</div>; // Default Sunday fill with "S"
+                                                                                    }
+                                                                                })()
+                                                                            ) : selectedDate.getDay() === 0 ? ( // Logic for Sunday
+                                                                                (() => {
+                                                                                    const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day - 1]?.status;
+                                                                                    const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
+
+                                                                                    if (
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sl-sunday">SL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
+                                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else if (
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">SH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    }else if (
+                                                                                        (prevDayStatus === "Present" && nextDayStatus === "Present")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">SP</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{presentCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else {
+                                                                                        return <div className="s-sunday">S</div>; // Default Sunday fill with "S"
+                                                                                    }
+                                                                                })()
+                                                                            ) : (
+                                                                                <button
+                                                                                    className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
+                                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                                    disabled={isFutureDate} // Disable button for future dates
+                                                                                >
+                                                                                    {day <= daysInMonth && <FaPlus />}
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+
+                                                                </td>
+                                                            );
+                                                        })}
 
                                                     <td className='hr-sticky-action3'>
                                                         {presentCount}

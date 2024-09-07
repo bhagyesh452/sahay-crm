@@ -270,35 +270,30 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   };
 
 
-//  useEffect(() => {
-//     const handleScroll = debounce(() => {
-//         const tableContainer = document.querySelector('#submittedTable');
+  useEffect(() => {
+    const handleScroll = debounce(() => {
+      const tableContainer = document.querySelector('#submittedTable');
 
-//         if (tableContainer) {
-//             // Check for vertical scroll (ignore horizontal scrolling)
-//             const verticalScroll = tableContainer.scrollTop + tableContainer.clientHeight;
-//             const totalScrollableHeight = tableContainer.scrollHeight;
+      if (tableContainer) {
+        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+          if (page < totalPages) {
+            setPage(prevPage => prevPage + 1); // Load next page
+          }
+        }
+      }
+    }, 200);
 
-//             // If it's a vertical scroll and we are near the bottom
-//             if (verticalScroll >= totalScrollableHeight - 50) {
-//                 if (page < totalPages) {
-//                     setPage(prevPage => prevPage + 1); // Load next page
-//                 }
-//             }
-//         }
-//     }, 200);
-//     const tableContainer = document.querySelector('#submittedTable');
-//     if (tableContainer) {
-//         tableContainer.addEventListener('scroll', handleScroll);
-//     }
-//     console.log("page" , page)
+    const tableContainer = document.querySelector('#submittedTable');
+    if (tableContainer) {
+      tableContainer.addEventListener('scroll', handleScroll);
+    }
 
-//     return () => {
-//         if (tableContainer) {
-//             tableContainer.removeEventListener('scroll', handleScroll);
-//         }
-//     };
-// }, [page, totalPages, filteredData]);
+    return () => {
+      if (tableContainer) {
+        tableContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [page, totalPages, filteredData]);
 
 
 
@@ -463,7 +458,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   // }, [showFilter]);
 
   const handleFilter = (newData) => {
-    console.log("newData", newData)
+    
     setFilteredData(newData)
     setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Submitted"));
   };
