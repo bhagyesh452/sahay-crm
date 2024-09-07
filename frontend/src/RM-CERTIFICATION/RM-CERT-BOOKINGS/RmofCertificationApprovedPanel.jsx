@@ -231,6 +231,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   // };
 
   const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
+    console.log("chal rha h loader approved")
     setOpenBacdrop(true);
     try {
       const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);

@@ -223,6 +223,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   // };
 
   const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
+    console.log("chal rha h loader")
     setOpenBacdrop(true);
     try {
       const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
@@ -269,20 +270,37 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   };
 
 
-  useEffect(() => {
-    const tableContainer = document.querySelector('#submittedTable');
+//  useEffect(() => {
+//     const handleScroll = debounce(() => {
+//         const tableContainer = document.querySelector('#submittedTable');
 
-    const handleScroll = debounce(() => {
-      if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
-        if (page < totalPages) {
-          setPage(prevPage => prevPage + 1); // Load next page
-        }
-      }
-    }, 200);
+//         if (tableContainer) {
+//             // Check for vertical scroll (ignore horizontal scrolling)
+//             const verticalScroll = tableContainer.scrollTop + tableContainer.clientHeight;
+//             const totalScrollableHeight = tableContainer.scrollHeight;
 
-    tableContainer.addEventListener('scroll', handleScroll);
-    return () => tableContainer.removeEventListener('scroll', handleScroll);
-  }, [page, totalPages, filteredData]);
+//             // If it's a vertical scroll and we are near the bottom
+//             if (verticalScroll >= totalScrollableHeight - 50) {
+//                 if (page < totalPages) {
+//                     setPage(prevPage => prevPage + 1); // Load next page
+//                 }
+//             }
+//         }
+//     }, 200);
+//     const tableContainer = document.querySelector('#submittedTable');
+//     if (tableContainer) {
+//         tableContainer.addEventListener('scroll', handleScroll);
+//     }
+//     console.log("page" , page)
+
+//     return () => {
+//         if (tableContainer) {
+//             tableContainer.removeEventListener('scroll', handleScroll);
+//         }
+//     };
+// }, [page, totalPages, filteredData]);
+
+
 
   useEffect(() => {
     fetchData(searchText, page);
@@ -488,19 +506,21 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-        setShowFilterMenu(false);
-        setIsScrollLocked(false);
-      }
-    };
+    if (typeof document !== 'undefined') {
+        const handleClickOutside = (event) => {
+            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                setShowFilterMenu(false);
+                setIsScrollLocked(false);
+            }
+        };
 
-    document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }
+}, []);
 
   return (
     <div>
