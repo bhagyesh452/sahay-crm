@@ -746,10 +746,10 @@ table.table.top_5_table tbody tr.myself td {
     height: 26px;
     position: absolute;
     rotate: 66deg;
-    top: 9px;
-    right: -14.5px;
+    top: 12px;
+    right: -23.5px;
     transition: .5s;
-    width: 38px;
+    width: 55px;
     z-index: 1;
     border: none;
     box-shadow: 11px -4px 9px -3px #eee;
