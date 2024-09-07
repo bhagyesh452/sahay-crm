@@ -555,7 +555,7 @@ span.input-group-text {
 
 .my-tab .nav-fill .nav-item .nav-link {
   justify-content: space-between;
-  padding: 4px 10px;
+  padding: 10px 10px !important;
   color: #494949;
   font-weight: 600;
   border: 1px solid #eee;
@@ -2860,10 +2860,10 @@ td input {
   height: 26px;
   position: absolute;
   rotate: 66deg;
-  top: 9px;
-  right: -14.5px;
+  top: 12px;
+  right: -23.5px;
   transition: .5s;
-  width: 38px;
+  width: 55px;
   z-index: 1;
   border: none;
   box-shadow: 11px -4px 9px -3px #eee;
@@ -2888,15 +2888,17 @@ td input {
 }
 .rm_tsn_bdge
 {
-    width: 23px;
-    height: 23px;
-    line-height: 23px;
-    text-align: center;
-    border-radius: 100px;
-    background: #ffecba;
-    color: #585252;
-    font-size: 10px;
-    z-index: 2;
+  background: #ffecba;
+  border-radius: 5px;
+  color: #585252;
+  font-size: 10px;
+  height: 23px;
+  line-height: 23px;
+  text-align: center;
+  width: fit-content;
+  z-index: 2;
+  padding: 0 6px;
+  min-width: 23px;
 }
 .btn_style_1
 {
