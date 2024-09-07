@@ -105,128 +105,57 @@ function EmployeeDataReport() {
 
     //----------------------------fetching company data ---------------------------
 
+    // const fetchCompanyData = async () => {
+    //     try {
+    //         const response = await fetch(`${secretKey}/company-data/leads`);
+    //         const data = await response.json();
+    //         setLoading(true);
+    //         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
+    //         setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
+    //         setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
+    //     } catch (error) {
+    //         console.error('Error Fetching Company Data ', error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+
     const fetchCompanyData = async () => {
         try {
-            const response = await fetch(`${secretKey}/company-data/leads`);
-            const data = await response.json();
             setLoading(true);
-            setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
-            setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
-            setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
+            const response = await fetch(`${secretKey}/company-data/fetchLeads`);
+            const data = await response.json();
+            console.log("Company data is :", data);
+            setCompanyData(data);
         } catch (error) {
-            console.error('Error Fetching Company Data ', error);
+            console.error("Error Fetching Company Data", error);
         } finally {
             setLoading(false);
         }
     };
+
+    const mergedData = employeeData.map(employee => {
+        const companyInfo = companyData.find(company => company._id === employee.ename) || {};
+
+        return {
+            ...employee,
+            statusCounts: companyInfo.statusCounts || [], // Use an empty array if no statusCounts found
+            totalLeads: companyInfo.totalLeads || 0,
+            lastAssignDate: companyInfo.lastAssignDate || null,
+        };
+    });
+
+
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
-
-    const [untouchedStatus, setUntouchedStatus] = useState([]);
-    const [busyStatus, setBusyStatus] = useState([]);
-    const [notPickedUpStatus, setNotPickedUpStatus] = useState([]);
-    const [junkStatus, setJunkStatus] = useState([]);
-    const [followUpStatus, setFollowUpStatus] = useState([]);
-    const [interestedStatus, setInterestedStatus] = useState([]);
-    const [notInterestedStatus, setNotInterestedStatus] = useState([]);
-    const [maturedStatus, setMaturedStatus] = useState([]);
-
-    const fetchUntouchedStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Untouched`);
-            console.log("Untouched status data is :", res.data.data);
-            setUntouchedStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
-
-    const fetchBusyStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Busy`);
-            console.log("Busy status data is :", res.data.data);
-            setBusyStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
-
-    const fetchNotPickedUpStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Not Picked Up`);
-            console.log("Not picked status data is :", res.data.data);
-            setNotPickedUpStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
-
-    const fetchJunkStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Junk`);
-            console.log("Junk status data is :", res.data.data);
-            setJunkStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
-
-    const fetchFollowUpStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Follow Up`);
-            console.log("Follow up data is :", res.data.data);
-            setFollowUpStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
-
-    const fetchInterestedStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Interested`);
-            console.log("Interested data is :", res.data.data);
-            setInterestedStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
-
-    const fetchNotInterestedStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/NotInterested`);
-            console.log("Not interested status data is :", res.data.data);
-            setNotInterestedStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
-
-    const fetchMaturedStatusData = async () => {
-        try {
-            const res = await axios.get(`${secretKey}/company-data/getStatusWiseData/Matured`);
-            console.log("Matured status data is :", res.data.data);
-            setMaturedStatus(res.data.data);
-        } catch (error) {
-            console.log("Error fetching data");
-        }
-    };
 
     useEffect(() => {
         fetchCompanyData()
         fetchEmployeeInfo()
-        fetchUntouchedStatusData();
-        fetchBusyStatusData();
-        fetchNotPickedUpStatusData();
-        fetchJunkStatusData();
-        fetchFollowUpStatusData();
-        fetchInterestedStatusData();
-        fetchNotInterestedStatusData();
-        fetchMaturedStatusData();
-
         //fetchCompanies();
         //fetchRedesignedBookings();
         // debouncedFetchCompanyData();
         // debouncedFetchEmployeeInfo();
-
     }, []);
 
     // -----------------------branch office filter function--------------------------------------------
@@ -1611,7 +1540,7 @@ function EmployeeDataReport() {
                                         </tr>
                                     </tbody>) :
                                     (<tbody>
-                                        {employeeData.length !== 0 &&
+                                        {/* {employeeData.length !== 0 &&
                                             companyData.length !== 0 &&
                                             employeeData.map((obj, index) => (
                                                 <React.Fragment key={index}>
@@ -1642,9 +1571,6 @@ function EmployeeDataReport() {
                                                                             data.Status === "Untouched"
                                                                     )
                                                                     .length.toLocaleString()}
-                                                                {/* {untouchedStatus.filter(
-                                                                    (data) => data.ename === obj.ename
-                                                                ).length.toLocaleString()} */}
                                                             </Link>
                                                         </td>
 
@@ -1832,7 +1758,41 @@ function EmployeeDataReport() {
                                                         </td>
                                                     </tr>
                                                 </React.Fragment>
-                                            ))}
+                                            ))} */}
+
+                                        {/* {companyData.map((obj, index) => (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{obj._id}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}</td>
+                                                <td>{obj.totalLeads?.toLocaleString()}</td>
+                                                <td>{formatDateFinal(obj.lastAssignDate)}</td>
+                                            </tr>
+                                        ))} */}
+
+                                        {mergedData.map((obj, index) => (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{obj.ename}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}</td>
+                                                <td>{obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}</td>
+                                                <td>{obj.totalLeads?.toLocaleString()}</td>
+                                                <td>{formatDateFinal(obj.lastAssignDate)}</td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                     )}
                                 {employeeData.length !== 0 && !loading &&

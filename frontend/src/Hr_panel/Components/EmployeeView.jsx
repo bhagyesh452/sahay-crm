@@ -48,6 +48,7 @@ import { color } from "@mui/system";
 import { FcBriefcase } from "react-icons/fc";
 import { IoCall } from "react-icons/io5";
 import EmployeeViewAttendance from "./EmployeeView/EmloyeeViewAttendance.jsx";
+import EmployeeViewPayrollView from "./EmployeeView/EmployeePayrollView.jsx";
 
 
 function EmployeeView() {
@@ -650,7 +651,9 @@ function EmployeeView() {
                       <EmployeeViewAttendance/>
                     </div>
                     <div class="tab-pane container heiitc_inner fade" id="SalaryCalculation">...</div>
-                    <div class="tab-pane container heiitc_inner fade" id="PayrollInformation">...</div>
+                    <div class="tab-pane container heiitc_inner fade" id="PayrollInformation">
+                      <EmployeeViewPayrollView></EmployeeViewPayrollView>
+                    </div>
                     <div class="tab-pane container heiitc_inner fade" id="EmergencyContact">...</div>
                     <div class="tab-pane container heiitc_inner fade" id="EmployeeDocuments">...</div>
                   </div>

@@ -177,7 +177,7 @@ router.post("/update-status/:id", async (req, res) => {
     });
 
     // Define an array of statuses for which the lead history should be deleted
-    const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched","Not Picked Up"];
+    const deleteStatuses = ["Matured", "Not Interested", "Busy", "Junk", "Untouched", "Not Picked Up"];
 
     if (deleteStatuses.includes(newStatus)) {
       // Find the company in LeadHistoryForInterestedandFollowModel
@@ -1948,16 +1948,49 @@ router.get("/get-bde-name-for-mybookings/:companyName", async (req, res) => {
   }
 });
 
-// Displaying gilter data based on status
-router.get("/getStatusWiseData/:status", async (req, res) => {
-  const {status} = req.params;
+router.get("/fetchLeads", async (req, res) => {
   try {
-    const data = await CompanyModel.find({Status: status});
-    res.status(200).json({result: true, message: "Data successfully fetched", data: data, length: data.length || 0});
-  } catch (error) {
-    res.status(500).json({result: false, message: "Error fetching data", error: error});
-  }
+    // Aggregating the data based on ename and status
+    const data = await CompanyModel.aggregate([
+      {
+        $match: {
+          ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
+        },
+      },
+      {
+        $group: {
+          _id: {
+            ename: "$ename",
+            status: "$Status",
+          },
+          count: { $sum: 1 },
+          lastAssignDate: { $max: "$AssignDate" }, // Get the latest AssignDate for each ename
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.ename",
+          statusCounts: {
+            $push: {
+              status: "$_id.status",
+              count: "$count",
+            },
+          },
+          totalLeads: { $sum: "$count" },
+          lastAssignDate: { $max: "$lastAssignDate" },
+        },
+      },
+      {
+        $sort: { _id: 1 }, // Sort by ename
+      },
+    ]);
 
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
+
 
 module.exports = router;
