@@ -47,6 +47,7 @@ import { MdOutlineMailOutline } from "react-icons/md";
 import { color } from "@mui/system";
 import { FcBriefcase } from "react-icons/fc";
 import { IoCall } from "react-icons/io5";
+import EmployeeViewAttendance from "./EmployeeView/EmloyeeViewAttendance.jsx";
 
 
 function EmployeeView() {
@@ -627,21 +628,31 @@ function EmployeeView() {
               </div>
               <div className="hr_employee_information">
                 <div className="my-card hr_emply_info_inner">
-                  <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                      <a class="nav-link active" data-bs-toggle="tab" href="#home">Home</a>
+                  <ul class="nav nav-tabs hr_emply_info_inner_tabs">
+                    <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link active" data-bs-toggle="tab" href="#Attendance">Attendance</a>
                     </li>
-                    <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#menu1">Menu 1</a>
+                    <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#SalaryCalculation">Salary Calculation</a>
                     </li>
-                    <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#menu2">Menu 2</a>
+                    <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Information</a>
+                    </li>
+                    <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#EmergencyContact">Emergency Contact</a>
+                    </li>
+                    <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#EmployeeDocuments">Employee Documents</a>
                     </li>
                   </ul>
-                  <div class="tab-content">
-                    <div class="tab-pane container active" id="home">...</div>
-                    <div class="tab-pane container fade" id="menu1">...</div>
-                    <div class="tab-pane container fade" id="menu2">...</div>
+                  <div class="tab-content hr_eiinr_tab_content">
+                    <div class="tab-pane container heiitc_inner active" id="Attendance">
+                      <EmployeeViewAttendance/>
+                    </div>
+                    <div class="tab-pane container heiitc_inner fade" id="SalaryCalculation">...</div>
+                    <div class="tab-pane container heiitc_inner fade" id="PayrollInformation">...</div>
+                    <div class="tab-pane container heiitc_inner fade" id="EmergencyContact">...</div>
+                    <div class="tab-pane container heiitc_inner fade" id="EmployeeDocuments">...</div>
                   </div>
                 </div>
               </div>

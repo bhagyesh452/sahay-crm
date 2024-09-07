@@ -1719,6 +1719,41 @@ th.th-day {
 {
     width: calc(100% - 42px);
 }
+.hr_emply_info_inner
+{
+    padding: 15px;
+}
+.hr_emply_info_inner_tabs
+{
+    width: 100%;
+    background: #ebedff;
+    border-bottom: none !important;
+    border-radius: 10px;
+    padding: 9px 12px 9px 12px;
+}
+.hr_emply_info_inner_tab_item .nav-link
+{
+    margin: 0 4px 1px 4px;
+    font-weight: 600;
+}
+.hr_emply_info_inner_tab_item .nav-link.active
+{
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #fff !important;
+    color: #ffb900 !important;
+}
+.hr_emply_info_inner_tab_item .nav-link:hover
+{
+    border-radius: 8px;
+    background: #f6f8fb;
+    border: 1px solid #f6f8fb !important;
+    color: #929292 !important;
+}
+.hr_emply_info_inner_tab_item .nav-link:focus
+{
+    border: 1px solid #f6f8fb00 !important;
+}
 /* Sweep To Right */
 /* .sweep-to-right {
     -webkit-transform: perspective(1px) translateZ(0);
