@@ -382,9 +382,6 @@ function ViewAttendance({ year, month, date }) {
         fetchAttendance();
     }, [year, month, showAttendanceForParticularEmployee]);
 
-    // console.log("Gota employees are :", gotaBranchEmployees);
-    // console.log("Sindhu Bhawan employees are :", sindhuBhawanBranchEmployees);
-    // console.log("Deleted employees are :", deletedEmployees);
 
     const officialHolidays = [
         '14-01-2024', '15-01-2024', '24-03-2024', '25-03-2024',
