@@ -223,6 +223,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   // };
 
   const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
+    console.log("chal rha h loader")
     setOpenBacdrop(true);
     try {
       const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
@@ -270,19 +271,31 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
 
 
   useEffect(() => {
-    const tableContainer = document.querySelector('#submittedTable');
-
     const handleScroll = debounce(() => {
-      if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
-        if (page < totalPages) {
-          setPage(prevPage => prevPage + 1); // Load next page
+      const tableContainer = document.querySelector('#submittedTable');
+
+      if (tableContainer) {
+        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+          if (page < totalPages) {
+            setPage(prevPage => prevPage + 1); // Load next page
+          }
         }
       }
     }, 200);
 
-    tableContainer.addEventListener('scroll', handleScroll);
-    return () => tableContainer.removeEventListener('scroll', handleScroll);
+    const tableContainer = document.querySelector('#submittedTable');
+    if (tableContainer) {
+      tableContainer.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (tableContainer) {
+        tableContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
   }, [page, totalPages, filteredData]);
+
+
 
   useEffect(() => {
     fetchData(searchText, page);
@@ -445,7 +458,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   // }, [showFilter]);
 
   const handleFilter = (newData) => {
-    console.log("newData", newData)
+    
     setFilteredData(newData)
     setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Submitted"));
   };
@@ -488,19 +501,21 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   const isActiveField = (field) => activeFilterFields.includes(field);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-        setShowFilterMenu(false);
-        setIsScrollLocked(false);
-      }
-    };
+    if (typeof document !== 'undefined') {
+        const handleClickOutside = (event) => {
+            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                setShowFilterMenu(false);
+                setIsScrollLocked(false);
+            }
+        };
 
-    document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }
+}, []);
 
   return (
     <div>

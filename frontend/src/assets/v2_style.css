@@ -746,10 +746,10 @@ table.table.top_5_table tbody tr.myself td {
     height: 26px;
     position: absolute;
     rotate: 66deg;
-    top: 9px;
-    right: -14.5px;
+    top: 12px;
+    right: -23.5px;
     transition: .5s;
-    width: 38px;
+    width: 55px;
     z-index: 1;
     border: none;
     box-shadow: 11px -4px 9px -3px #eee;
@@ -1718,6 +1718,41 @@ th.th-day {
 .ConcerneddepartPerson-right
 {
     width: calc(100% - 42px);
+}
+.hr_emply_info_inner
+{
+    padding: 15px;
+}
+.hr_emply_info_inner_tabs
+{
+    width: 100%;
+    background: #ebedff;
+    border-bottom: none !important;
+    border-radius: 10px;
+    padding: 9px 12px 9px 12px;
+}
+.hr_emply_info_inner_tab_item .nav-link
+{
+    margin: 0 4px 1px 4px;
+    font-weight: 600;
+}
+.hr_emply_info_inner_tab_item .nav-link.active
+{
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #fff !important;
+    color: #ffb900 !important;
+}
+.hr_emply_info_inner_tab_item .nav-link:hover
+{
+    border-radius: 8px;
+    background: #f6f8fb;
+    border: 1px solid #f6f8fb !important;
+    color: #929292 !important;
+}
+.hr_emply_info_inner_tab_item .nav-link:focus
+{
+    border: 1px solid #f6f8fb00 !important;
 }
 /* Sweep To Right */
 /* .sweep-to-right {

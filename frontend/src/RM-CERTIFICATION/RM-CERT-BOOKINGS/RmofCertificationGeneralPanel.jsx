@@ -131,19 +131,21 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
             setOpenBacdrop(false);
         }
     };
-
+    
+      
     useEffect(() => {
-        const tableContainer = document.querySelector('#generalTable');
-
         const handleScroll = debounce(() => {
+            const tableContainer = document.querySelector('#generalTable');
             if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
                 if (page < totalPages) {
                     setPage(prevPage => prevPage + 1); // Load next page
                 }
             }
         }, 200);
-
-        tableContainer.addEventListener('scroll', handleScroll);
+        const tableContainer = document.querySelector('#generalTable');
+        if (tableContainer) {
+            tableContainer.addEventListener('scroll', handleScroll);
+          }
         return () => tableContainer.removeEventListener('scroll', handleScroll);
     }, [page, totalPages, filteredData]);
 
@@ -386,18 +388,20 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     const isActiveField = (field) => activeFilterFields.includes(field);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-                setShowFilterMenu(false);
-                setIsScrollLocked(false);
-            }
-        };
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+                    setIsScrollLocked(false);
+                }
+            };
 
-        document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('mousedown', handleClickOutside);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
     }, []);
 
     
@@ -407,7 +411,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     return (
         <div>
             <div className="RM-my-booking-lists">
-                <div className="table table-responsive table-style-3 m-0" id='generalTable'>
+                <div className="table table-responsive table-style-3 m-0" id="generalTable">
                     {openBacdrop && (
                         <Backdrop
                             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

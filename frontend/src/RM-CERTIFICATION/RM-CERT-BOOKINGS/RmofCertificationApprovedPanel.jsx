@@ -40,7 +40,7 @@ import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
 
 
-function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon ,activeTab}) {
+function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -80,6 +80,22 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
     const year = date.getUTCFullYear();
     return `${day} ${month}, ${year}`;
   }
+
+  const formatTimeNew = (timeString) => {
+    // If the input is a time string in HH:MM:SS format
+    if (timeString && typeof timeString === 'string') {
+      const [hours, minutes, seconds] = timeString.split(':').map(Number);
+      const ampm = hours >= 12 ? "pm" : "am";
+      const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+      const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+      
+      return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    }
+  
+    // Handle invalid or empty input
+    return "Invalid time";
+  };
+  
 
   const formatTime = (dateString) => {
     //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
@@ -215,6 +231,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   // };
 
   const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
+    console.log("chal rha h loader approved")
     setOpenBacdrop(true);
     try {
       const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
@@ -393,7 +410,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   // }, [showFilter]);
 
   const handleFilter = (newData) => {
-    console.log("newData", newData)
+    
     setFilteredData(newData)
     setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Approved"));
   };
@@ -1243,7 +1260,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                       </div>
 
                       <div className="RM_filter_icon">
-                      {isActiveField('lastAttemptSubmitted') ? (
+                        {isActiveField('lastAttemptSubmitted') ? (
                           <FaFilter onClick={() => handleFilterClick("lastAttemptSubmitted")} />
                         ) : (
                           <BsFilter onClick={() => handleFilterClick("lastAttemptSubmitted")} />
@@ -1256,7 +1273,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
-                           <FilterableTable
+                          <FilterableTable
                             noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
@@ -1281,7 +1298,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                       </div>
 
                       <div className="RM_filter_icon">
-                      {isActiveField('submittedOn') ? (
+                        {isActiveField('submittedOn') ? (
                           <FaFilter onClick={() => handleFilterClick("submittedOn")} />
                         ) : (
                           <BsFilter onClick={() => handleFilterClick("submittedOn")} />
@@ -1294,7 +1311,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                           className="filter-menu"
                           style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                         >
-                           <FilterableTable
+                          <FilterableTable
                             noofItems={setnoOfAvailableData}
                             allFilterFields={setActiveFilterFields}
                             filteredData={filteredData}
@@ -1319,7 +1336,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                       </div>
 
                       <div className="RM_filter_icon">
-                      {isActiveField('submittedBy') ? (
+                        {isActiveField('submittedBy') ? (
                           <FaFilter onClick={() => handleFilterClick("submittedBy")} />
                         ) : (
                           <BsFilter onClick={() => handleFilterClick("submittedBy")} />
@@ -1383,7 +1400,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                         </div>
                       )}
                     </div>
-                    </th>
+                  </th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
                       <div ref={el => fieldRefs.current['bdeName'] = el}>
@@ -1484,7 +1501,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             onFilter={handleFilter}
                             completeData={completeRmData}
                             showingMenu={setShowFilterMenu}
-                            
+
                             dataForFilter={dataToFilter}
                           />
                         </div>
@@ -1839,13 +1856,16 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                                   : "1st"}
                       </td>
                       <td>
-                        {obj.submittedOn
-                          ? `${formatDateNew(obj.submittedOn)} | ${formatTime(
-                            obj.submittedOn
-                          )}`
-                          : `${formatDateNew(new Date())} | ${formatTime(
-                            new Date()
-                          )}`}
+                        {obj.submittedOn ? (
+                          <>
+                            {formatDateNew(obj.submittedOn)} |{" "}
+                            {obj.isUploadedDirect ? formatTimeNew(obj.submittedTime) : formatTime(obj.submittedOn)}
+                          </>
+                        ) : (
+                          <>
+                            {formatDateNew(new Date())} | {formatTime(new Date())}
+                          </>
+                        )}
                       </td>
                       <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
                       <td>{formatDatePro(obj.bookingDate)}</td>

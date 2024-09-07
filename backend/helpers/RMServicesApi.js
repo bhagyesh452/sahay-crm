@@ -3666,7 +3666,7 @@ const excelSerialToJSDate = (serial) => {
   return new Date(excelStartDate.getTime() + (serial - 1) * 24 * 60 * 60 * 1000);
 };
 
-// router.post('/upload-approved-data', async (req, res) => {
+
 //   const data = req.body; // This should be the array of objects parsed from Excel
 
 //   try {
@@ -3678,7 +3678,7 @@ const excelSerialToJSDate = (serial) => {
 //         const parsedBookingDate = item["Booking Date"]
 //         ? excelSerialToJSDate(item["Booking Date"])
 //         : undefined;
-      
+
 //       await RMCertificationModel.create({
 //         "Company Name": item["Company Name"] ? item["Company Name"] : "",
 //         "Company Number": item["Company Number"],
@@ -3712,7 +3712,7 @@ const excelSerialToJSDate = (serial) => {
 //         bookingDate:item["Booking Date"]
 //         ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0] // Extract YYYY-MM-DD
 //         : undefined,
-      
+
 //         bdeName: item["BDE Name"],
 //         bdmName: item["BDM Name"],
 //         totalPaymentWGST: item["Total Payment"],
@@ -3762,6 +3762,23 @@ const excelSerialToJSDate = (serial) => {
 //   }
 // });
 
+function combineDateAndTime(serialDate, serialTime) {
+  // Convert Excel serial date to JavaScript Date object
+  const datePart = excelSerialToJSDate(serialDate);
+
+  // Convert Excel decimal time to hours, minutes, seconds
+  const totalSeconds = serialTime * 24 * 60 * 60; // Excel decimal time represents a fraction of a day
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+
+  // Combine date and time into a single Date object
+  datePart.setUTCHours(hours, minutes, seconds, 0); // UTC to avoid timezone issues
+
+  // Return combined date and time in ISO string format
+  return datePart.toISOString(); // Outputs in "YYYY-MM-DDTHH:mm:ss.sssZ" format
+}
+
 router.post('/upload-approved-data', async (req, res) => {
   const data = req.body; // This should be the array of objects parsed from Excel
 
@@ -3769,7 +3786,7 @@ router.post('/upload-approved-data', async (req, res) => {
     const updates = data.map(async (item) => {
       try {
         console.log("Processing item:", item["Company Name"]); // Log each company being processed
-
+        console.log("item", item)
         const parsedSubmittedOn = item["Submitted On Date"]
           ? excelSerialToJSDate(item["Submitted On Date"])
           : undefined;

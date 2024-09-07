@@ -429,7 +429,7 @@ function RmofCertificationProcessPanel({
     }
 
 
-    const mycustomloop = Array(20).fill(null); // Create an array with 10 elements
+    
 
     const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
         try {

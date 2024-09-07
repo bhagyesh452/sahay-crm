@@ -20,6 +20,7 @@ const RemarksSchema = new mongoose.Schema({
 const RMCertificationServicesSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
+    required:true,
   },
   "Company Number": {
     type: Number,
