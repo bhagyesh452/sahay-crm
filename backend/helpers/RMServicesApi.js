@@ -1062,6 +1062,8 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
     try {
       const companyName = req.params.CompanyName;
       const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
+      console.log("rmservicesmainbooking" , rmServicesMainBooking)
+      console.log("rmservicesmorebooking" , rmServicesMoreBooking)
       const socketIO = req.io;
       //console.log("rmservicesmainbooking", rmServicesMainBooking);
       //console.log("rmservicesmorebooking", rmServicesMoreBooking);
