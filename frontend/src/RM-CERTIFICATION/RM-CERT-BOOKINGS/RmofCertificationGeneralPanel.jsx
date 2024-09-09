@@ -133,21 +133,21 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     };
     
       
-    useEffect(() => {
-        const handleScroll = debounce(() => {
-            const tableContainer = document.querySelector('#generalTable');
-            if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
-                if (page < totalPages) {
-                    setPage(prevPage => prevPage + 1); // Load next page
-                }
-            }
-        }, 200);
-        const tableContainer = document.querySelector('#generalTable');
-        if (tableContainer) {
-            tableContainer.addEventListener('scroll', handleScroll);
-          }
-        return () => tableContainer.removeEventListener('scroll', handleScroll);
-    }, [page, totalPages, filteredData]);
+    // useEffect(() => {
+    //     const handleScroll = debounce(() => {
+    //         const tableContainer = document.querySelector('#generalTable');
+    //         if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+    //             if (page < totalPages) {
+    //                 setPage(prevPage => prevPage + 1); // Load next page
+    //             }
+    //         }
+    //     }, 200);
+    //     const tableContainer = document.querySelector('#generalTable');
+    //     if (tableContainer) {
+    //         tableContainer.addEventListener('scroll', handleScroll);
+    //       }
+    //     return () => tableContainer.removeEventListener('scroll', handleScroll);
+    // }, [page, totalPages, filteredData]);
 
 
     useEffect(() => {

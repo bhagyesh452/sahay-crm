@@ -298,7 +298,7 @@ function RmofCertificationReadyToSubmitPanel({
     );
 
     const handleSubmitRemarks = async () => {
-        //console.log("changeremarks", changeRemarks)
+        console.log("changeremarks", changeRemarks)
         try {
             if (changeRemarks) {
                 const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
@@ -314,6 +314,7 @@ function RmofCertificationReadyToSubmitPanel({
                     if (filteredData && filteredData.length > 0) {
                         fetchData(searchText, page, true);
                     } else {
+                        console.log("yahan chal yr")
                         fetchData(searchText, page, false);
                     }
                     functionCloseRemarksPopup();

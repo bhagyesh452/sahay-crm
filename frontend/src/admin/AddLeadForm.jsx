@@ -168,6 +168,8 @@ export default function AddLeadForm({
     return formattedDate;
   };
 
+  console.log("addleadform")
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -177,7 +179,6 @@ export default function AddLeadForm({
       console.log("Fetched Data:", response.data);
 
       let updatedLeadData = { ...leadData }; // Create a copy of existing leadData
-
       // Set common properties from fetched data to leadData
       updatedLeadData = {
         ...updatedLeadData,

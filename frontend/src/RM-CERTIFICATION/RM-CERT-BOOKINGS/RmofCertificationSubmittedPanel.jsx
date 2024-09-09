@@ -270,30 +270,30 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   };
 
 
-  useEffect(() => {
-    const handleScroll = debounce(() => {
-      const tableContainer = document.querySelector('#submittedTable');
+  // useEffect(() => {
+  //   const handleScroll = debounce(() => {
+  //     const tableContainer = document.querySelector('#submittedTable');
 
-      if (tableContainer) {
-        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
-          if (page < totalPages) {
-            setPage(prevPage => prevPage + 1); // Load next page
-          }
-        }
-      }
-    }, 200);
+  //     if (tableContainer) {
+  //       if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
+  //         if (page < totalPages) {
+  //           setPage(prevPage => prevPage + 1); // Load next page
+  //         }
+  //       }
+  //     }
+  //   }, 200);
 
-    const tableContainer = document.querySelector('#submittedTable');
-    if (tableContainer) {
-      tableContainer.addEventListener('scroll', handleScroll);
-    }
+  //   const tableContainer = document.querySelector('#submittedTable');
+  //   if (tableContainer) {
+  //     tableContainer.addEventListener('scroll', handleScroll);
+  //   }
 
-    return () => {
-      if (tableContainer) {
-        tableContainer.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [page, totalPages, filteredData]);
+  //   return () => {
+  //     if (tableContainer) {
+  //       tableContainer.removeEventListener('scroll', handleScroll);
+  //     }
+  //   };
+  // }, [page, totalPages, filteredData]);
 
 
 

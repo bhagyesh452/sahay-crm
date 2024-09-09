@@ -597,7 +597,7 @@ function EmployeePanel() {
       const tempData = response.data;
       const revertedData = response.data.filter((item) => item.RevertBackAcceptedCompanyRequest === 'Reject')
       setRevertedData(revertedData)
- 
+
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
@@ -1073,6 +1073,7 @@ function EmployeePanel() {
   const [newBdeName, setNewBdeName] = useState("")
 
   const handleStatusChange = async (
+    company,
     employeeId,
     newStatus,
     cname,
@@ -1093,9 +1094,14 @@ function EmployeePanel() {
       setCompanyNumber(cnum);
       setDeletedEmployeeStatus(isDeletedEmployeeCompany)
       setNewBdeName(ename)
+      console.log("is", isDeletedEmployeeCompany)
+      console.log("company" , company)
+      // let isDeletedEmployeeCompany = true
       if (!isDeletedEmployeeCompany) {
+        console.log("formchal")
         setFormOpen(true);
       } else {
+        console.log("addleadfromchal")
         setAddFormOpen(true)
       }
       return true;
@@ -1108,12 +1114,11 @@ function EmployeePanel() {
     const time = DT.toLocaleTimeString();
 
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
-
     try {
       let response;
 
       if (bdmAcceptStatus === "Accept") {
-      
+
         if (newStatus === "Interested" || newStatus === "FollowUp") {
 
           response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
@@ -1443,7 +1448,7 @@ function EmployeePanel() {
   };
 
   const handleSubmitData = async (e) => {
-    
+
     e.preventDefault();
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
@@ -1486,7 +1491,7 @@ function EmployeePanel() {
       }
       await axios.post(`${secretKey}/requests/requestCompanyData`, dataToSend).then((response) => {
         //console.log("response", response);
-      
+
         Swal.fire({
           title: "Lead Request Sent!",
           text: "Your Request has been sent to the Data Manager!",
@@ -1714,7 +1719,7 @@ function EmployeePanel() {
       ...data,
       ename: name,
     }));
-  
+
     //console.log("updatedcsv", updatedCsvdata);
 
     if (updatedCsvdata.length !== 0) {
@@ -1722,7 +1727,7 @@ function EmployeePanel() {
 
       try {
         await axios.post(`${secretKey}/requests/requestCompanyData`, updatedCsvdata);
-     
+
         Swal.fire({
           title: "Request Sent!",
           text: "Your Request has been successfully sent to the Admin",
@@ -2131,7 +2136,7 @@ function EmployeePanel() {
       );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
-    
+
       setCurrentProjection({
         companyName: "",
         ename: "",
@@ -2653,7 +2658,7 @@ function EmployeePanel() {
           'The company request has been reverted back.',
           'success'
         );
-     
+
         fetchNewData(bdeStatus);
       } catch (error) {
         console.log("Error reverting back company", error);
@@ -2776,7 +2781,7 @@ function EmployeePanel() {
         setIsFilter(false);
       } else {
         // Update the employee data with the filtered results
-     
+
         setFilteredData(response.data)
       }
     } catch (error) {
@@ -2925,7 +2930,7 @@ function EmployeePanel() {
 
     try {
       const response = await axios.post(`${secretKey}/employee/addTodaysProjection`, payload);
-      
+
       Swal.fire("Success!", "Data Successfully Added!", "success");
       setNoOfCompany("");
       setNoOfServiceOffered("");
@@ -2955,7 +2960,7 @@ function EmployeePanel() {
           } else {
             // Token not expired, continue session
             const timeToExpire = decoded.exp - currentTime;
-            
+
           }
         } catch (error) {
           console.error("Error decoding token:", error);
@@ -3044,7 +3049,7 @@ function EmployeePanel() {
         });
 
         Swal.fire("Request Sent");
-      
+
         handleClosePaymentApproval();
         fetchNewData();
       } catch (error) {
@@ -3679,7 +3684,7 @@ function EmployeePanel() {
                               <th>
                                 Publish Date
                               </th></>}
-                             
+
 
                             {
                               (dataStatus === "FollowUp" && (
@@ -3771,6 +3776,7 @@ function EmployeePanel() {
                                             value={company["Status"]}
                                             onChange={(e) =>
                                               handleStatusChange(
+                                                company,
                                                 company._id,
                                                 e.target.value,
                                                 company["Company Name"],
@@ -3786,10 +3792,10 @@ function EmployeePanel() {
                                               )
                                             }
                                           >
-                                            {(dataStatus !== "Interested" && dataStatus !== "FollowUp" )&& 
-                                            <option value="Not Picked Up">
-                                              Not Picked Up
-                                            </option>}
+                                            {(dataStatus !== "Interested" && dataStatus !== "FollowUp") &&
+                                              <option value="Not Picked Up">
+                                                Not Picked Up
+                                              </option>}
                                             <option value="Busy">Busy</option>
                                             <option value="Junk">Junk</option>
                                             <option value="Not Interested">
@@ -3852,6 +3858,7 @@ function EmployeePanel() {
                                             value={company["Status"]}
                                             onChange={(e) =>
                                               handleStatusChange(
+                                                company,
                                                 company._id,
                                                 e.target.value,
                                                 company["Company Name"],
@@ -3861,7 +3868,9 @@ function EmployeePanel() {
                                                 ],
                                                 company["Company Number"],
                                                 company["Status"],
-                                                company.bdmAcceptStatus
+                                                company.bdmAcceptStatus,
+                                                company.isDeletedEmployeeCompany,
+                                                company.ename
                                               )
                                             }
                                           >
@@ -4048,50 +4057,50 @@ function EmployeePanel() {
                                   <td>{functionCalculateBookingDate(company._id)}</td>
                                   <td>{functionCalculatePublishDate(company._id)}</td>
                                   <td>
-                                          {company &&
-                                            projectionData &&
-                                            projectionData.some(
-                                              (item) =>
-                                                item.companyName ===
-                                                company["Company Name"]
-                                            ) ? (
-                                            <IconButton>
-                                              <RiEditCircleFill
-                                                onClick={() => {
-                                                  functionopenprojection(
-                                                    company["Company Name"]
-                                                  );
-                                                }}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  width: "17px",
-                                                  height: "17px",
-                                                }}
-                                                color="#fbb900"
-                                              />
-                                            </IconButton>
-                                          ) : (
-                                            <IconButton>
-                                              <RiEditCircleFill
-                                                onClick={() => {
-                                                  functionopenprojection(
-                                                    company["Company Name"]
-                                                  );
-                                                  setIsEditProjection(true);
-                                                }}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  width: "17px",
-                                                  height: "17px",
-                                                }}
-                                              />
-                                            </IconButton>
-                                          )}
-                                        </td>
+                                    {company &&
+                                      projectionData &&
+                                      projectionData.some(
+                                        (item) =>
+                                          item.companyName ===
+                                          company["Company Name"]
+                                      ) ? (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(
+                                              company["Company Name"]
+                                            );
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="#fbb900"
+                                        />
+                                      </IconButton>
+                                    ) : (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(
+                                              company["Company Name"]
+                                            );
+                                            setIsEditProjection(true);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                  </td>
 
                                 </>}
                                 {(dataStatus === "FollowUp" ||
-                                  dataStatus === "Interested" ) && (
+                                  dataStatus === "Interested") && (
                                     <>
                                       {company.bdmAcceptStatus ===
                                         "NotForwarded" ? (
@@ -4773,11 +4782,11 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
-          
+
             {filteredRemarksBdm.length !== 0 ? (
               filteredRemarksBdm.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
-                
+
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
@@ -4996,7 +5005,7 @@ function EmployeePanel() {
                         <path d="M5 12l14 0" />
                       </svg>
                     </button>
-                   
+
                   </div>
                 )}
 
