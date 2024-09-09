@@ -31,18 +31,18 @@ function RmofCertificationHeader({ name, id, designation, empProfile, gender }) 
 
 
    
-    socket.on("adminexecutive-letter-updated", (res) => {
-      console.log("socketchala" , res.updatedDocument)
-      if(res.updatedDocument){
-        enqueueSnackbar(`Letter Status updated for ${res.updatedDocument["Company Name"]}`, 
-          { variant: "reportComplete" , 
-            persist:true 
-          });
+    // socket.on("adminexecutive-letter-updated", (res) => {
+    //   console.log("socketchala" , res.updatedDocument)
+    //   if(res.updatedDocument){
+    //     enqueueSnackbar(`Letter Status updated for ${res.updatedDocument["Company Name"]}`, 
+    //       { variant: "reportComplete" , 
+    //         persist:true 
+    //       });
       
-        const audioplayer = new Audio(notification_audio);
-        audioplayer.play();
-      }
-    });
+    //     const audioplayer = new Audio(notification_audio);
+    //     audioplayer.play();
+    //   }
+    // });
     
     // Clean up the socket connection when the component unmounts
     return () => {
