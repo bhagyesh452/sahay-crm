@@ -4,16 +4,32 @@ function EmployeeViewAttendance()
 {
     return (
         <div className="mt-3">
-            <div className='d-flex mb-3 align-items-center justify-content-start'>
-                <div className='form-group'>
-                    <select className='form-select'>
-                        <option disabled selected>--Select Year--</option>
-                    </select>
-                </div>  
-                <div className='form-group ml-1'>
-                    <select className='form-select'>
-                        <option disabled selected>--Select Month--</option>
-                    </select>
+            <div className='d-flex mb-3 align-items-center justify-content-between'>
+                <div className='d-flex align-items-center justify-content-start'>
+                    <div className='form-group'>
+                        <select className='form-select'>
+                            <option disabled selected>--Select Year--</option>
+                        </select>
+                    </div>  
+                    <div className='form-group ml-1'>
+                        <select className='form-select'>
+                            <option disabled selected>--Select Month--</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="d-flex align-items-center justify-content-start">
+                    <div className="areport clr-bg-light-e65b5b">
+                        <div>L - 02</div>
+                    </div>
+                    <div className="areport clr-bg-light-1cba19 ml-1">
+                        <div>P - 02</div>
+                    </div>
+                    <div className="areport clr-bg-light-ffb900 ml-1">
+                        <div>H - 02</div>
+                    </div>
+                    <div className="areport clr-bg-light-4299e1 ml-1">
+                        <div>LC - 02</div>
+                    </div>
                 </div>
             </div>
             <div className="table table-responsive table-style-2 m-0" style={{height:"340px", overflow:"auto"}}>
