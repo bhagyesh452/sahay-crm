@@ -56,22 +56,39 @@ router.get("/leads", async (req, res) => {
   }
 });
 
-// router.get("/leads/interestedleads", async (req, res) => {
-//   try {
-//     // Fetch all company names from LeadHistoryModel
-//     const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name')
+router.get("/leads/interestedleads", async (req, res) => {
+  try {
+    // Fetch all company names from LeadHistoryModel
+    const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name')
 
-//     // Fetch companies from CompanyModel whose names are in leadCompanyNames
-//     const data = await CompanyModel.find({
-//       "Company Name": { $in: leadHistoryCompany }
-//     }).lean();
+    // Fetch companies from CompanyModel whose names are in leadCompanyNames
+    const data = await CompanyModel.find({
+      "Company Name": { $in: leadHistoryCompany }
+    }).lean();
 
-//     res.send(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/leads/interestedleads/followupleads", async (req, res) => {
+  try {
+    // Fetch all company names from LeadHistoryModel
+    const leadHistoryCompany = await LeadHistoryForInterestedandFollowModel.distinct('Company Name')
+
+    // Fetch companies from CompanyModel whose names are in leadCompanyNames
+    const data = await CompanyModel.find({
+      Status: { $in: ["Interested" , "FollowUp"] }
+    }).lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 

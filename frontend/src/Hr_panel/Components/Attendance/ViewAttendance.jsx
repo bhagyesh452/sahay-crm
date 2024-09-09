@@ -750,6 +750,7 @@ function ViewAttendance({ year, month, date }) {
                                                                                         </>
                                                                                     );
                                                                                 } else if (
+                                                                                    (prevDayStatus === "Present" || nextDayStatus === "Half Day") ||
                                                                                     (prevDayStatus === "Leave" && nextDayStatus === "Present") ||
                                                                                     (prevDayStatus === "Half Day" && nextDayStatus === "Present") ||
                                                                                     (prevDayStatus === "Present" && nextDayStatus === "Present")

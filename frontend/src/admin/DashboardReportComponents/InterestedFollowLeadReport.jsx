@@ -107,7 +107,7 @@ function InterestedFollowLeadReport() {
     //-------------------------------------fetching company data ----------------
 
     const fetchCompanyData = async () => {
-        fetch(`${secretKey}/company-data/leads`)
+        fetch(`${secretKey}/company-data/leads/interestedleads`)
             .then((response) => response.json())
             .then((data) => {
                 setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
