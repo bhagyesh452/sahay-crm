@@ -35,6 +35,7 @@ import {
   Button,
 } from "@mui/material";
 import Swal from 'sweetalert2';
+import { GiRelationshipBounds } from "react-icons/gi";
 import CloseIcon from "@mui/icons-material/Close";
 import Navbar from "./Navbar/Navbar.jsx";
 import { HiPencil } from "react-icons/hi";
@@ -462,171 +463,247 @@ function EmployeeView() {
                     </div>
                   </div>
                 </div>
-                <div className="my-card mt-2" >
-                  {/* <div className="my-card-head">
-                    Employment Information
-                  </div> */}
-                  <div className="my-card-body">
-                    <div className="row m-0  bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <HiOutlineBuildingLibrary />
+
+                <div className="mt-3">
+                  <ul class="nav nav-tabs employee_e_info_tab">
+                    <li class="nav-item">
+                      <a class="nav-link active" data-bs-toggle="tab" href="#eI">Employee Info</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Information</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#Emergency_Contact">Emergency Contact</a>
+                    </li>
+                  </ul>
+
+                  <div class="tab-content employee_e_info_tab_content">
+                    <div class="tab-pane active" id="eI">
+                      <div className="my-card mt-2" >
+                        {/* <div className="my-card-head">
+                          Employment Information
+                        </div> */}
+                        <div className="my-card-body">
+                          <div className="row m-0  bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <HiOutlineBuildingLibrary />
+                                </div>
+                                <div className="ep_info_h">Department :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                Sales
+                              </div>
+                            </div>
+                          </div>  
+                          <div className="row m-0  bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <MdOutlinePersonPin />
+                                </div>
+                                <div className="ep_info_h">Employment Type :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                Full Time
+                              </div>
+                            </div>
                           </div>
-                          <div className="ep_info_h">Department :</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          Sales
-                        </div>
-                      </div>
-                    </div>  
-                    <div className="row m-0  bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <MdOutlinePersonPin />
+                          <div className="row m-0">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <GoPerson />
+                                </div>
+                                <div className="ep_info_h">Reporting Manager :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                Vaibhav Acharya
+                              </div>
+                            </div>
                           </div>
-                          <div className="ep_info_h">Employment Type :</div>
                         </div>
                       </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          Full Time
+                      <div className="my-card mt-2" >
+                        {/* <div className="my-card-head">
+                          Personal Information
+                        </div> */}
+                        <div className="my-card-body">
+                          <div className="row m-0  bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <FaRegUser  />
+                                </div>
+                                <div className="ep_info_h">Full Name :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                Nimeshkumar Kamleshbhai Parekh
+                              </div>
+                            </div>
+                          </div>  
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <IoCalendarClearOutline  />
+                                </div>
+                                <div className="ep_info_h">DOB :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                2<sup>nd</sup> Dec 2024
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1 ">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <BsGenderTrans  />
+                                </div>
+                                <div className="ep_info_h">Gender :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                male
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <PiPhoneCall />
+                                </div>
+                                <div className="ep_info_h">Phone No :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                9924283530
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <MdOutlineMailOutline />
+                                </div>
+                                <div className="ep_info_h">Email :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                male@gmail.com
+                              </div>
+                            </div>
+                          </div>
+                          {/* <div className="row m-0 bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <GrLocation  />
+                                </div>
+                                <div className="ep_info_h">Current Address:</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <GrLocation />
+                                </div>
+                                <div className="ep_info_h">Permanent Address:</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
+                              </div>
+                            </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
-                    <div className="row m-0">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <GoPerson />
+                    <div class="tab-pane fade" id="PayrollInformation">
+                      <EmployeeViewPayrollView></EmployeeViewPayrollView>
+                    </div>
+                    <div class="tab-pane fade" id="Emergency_Contact">
+                      <div className="my-card mt-2" >
+                        <div className="my-card-body">
+                          <div className="row m-0  bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <GoPerson />
+                                </div>
+                                <div className="ep_info_h">Emergency Contact :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                Nimesh Parekh
+                              </div>
+                            </div>
+                          </div>  
+                          <div className="row m-0  bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <GiRelationshipBounds />
+                                </div>
+                                <div className="ep_info_h">Relationship  :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                Father
+                              </div>
+                            </div>
                           </div>
-                          <div className="ep_info_h">Reporting Manager :</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          Vaibhav Acharya
+                          <div className="row m-0">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <PiPhoneCall />
+                                </div>
+                                <div className="ep_info_h">Contect No :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                9924283530
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div className="my-card mt-2" >
-                  {/* <div className="my-card-head">
-                    Personal Information
-                  </div> */}
-                  <div className="my-card-body">
-                    <div className="row m-0  bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <FaRegUser  />
-                          </div>
-                          <div className="ep_info_h">Full Name :</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          Nimeshkumar Kamleshbhai Parekh
-                        </div>
-                      </div>
-                    </div>  
-                    <div className="row m-0 bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <IoCalendarClearOutline  />
-                          </div>
-                          <div className="ep_info_h">DOB :</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          2<sup>nd</sup> Dec 2024
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row m-0 bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1 ">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <BsGenderTrans  />
-                          </div>
-                          <div className="ep_info_h">Gender :</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          male
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row m-0 bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <PiPhoneCall />
-                          </div>
-                          <div className="ep_info_h">Phone No :</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          9924283530
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row m-0 bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <MdOutlineMailOutline />
-                          </div>
-                          <div className="ep_info_h">Email :</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          male@gmail.com
-                        </div>
-                      </div>
-                    </div>
-                    {/* <div className="row m-0 bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <GrLocation  />
-                          </div>
-                          <div className="ep_info_h">Current Address:</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row m-0 bdr-btm-eee">
-                      <div className="col-4 pt-1 pb-1">
-                        <div className="d-flex align-items-center">
-                          <div className="ep_info_icon clr-ffb900">
-                            <GrLocation />
-                          </div>
-                          <div className="ep_info_h">Permanent Address:</div>
-                        </div>
-                      </div>
-                      <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                        <div className="ep_info_t">
-                          H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
-                        </div>
-                      </div>
-                    </div> */}
                   </div>
                 </div>
               </div>
+
+
+              {/* Right Part */}
               <div className="hr_employee_information">
                 <div className="my-card hr_emply_info_inner">
                   <ul class="nav nav-tabs hr_emply_info_inner_tabs">
@@ -637,25 +714,15 @@ function EmployeeView() {
                       <a class="nav-link" data-bs-toggle="tab" href="#SalaryCalculation">Salary Calculation</a>
                     </li>
                     <li class="nav-item hr_emply_info_inner_tab_item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Information</a>
-                    </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#EmergencyContact">Emergency Contact</a>
-                    </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link" data-bs-toggle="tab" href="#EmployeeDocuments">Employee Documents</a>
                     </li>
                   </ul>
                   <div class="tab-content hr_eiinr_tab_content">
-                    <div class="tab-pane container heiitc_inner active" id="Attendance">
+                    <div class="tab-pane heiitc_inner active" id="Attendance">
                       <EmployeeViewAttendance/>
                     </div>
-                    <div class="tab-pane container heiitc_inner fade" id="SalaryCalculation">...</div>
-                    <div class="tab-pane container heiitc_inner fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView></EmployeeViewPayrollView>
-                    </div>
-                    <div class="tab-pane container heiitc_inner fade" id="EmergencyContact">...</div>
-                    <div class="tab-pane container heiitc_inner fade" id="EmployeeDocuments">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="SalaryCalculation">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                   </div>
                 </div>
               </div>

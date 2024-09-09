@@ -923,7 +923,7 @@ table.table.top_5_table tbody tr.myself td {
 
 .emply_e_card
 {
-    width: 30%;
+    width: 35%;
 }
 .hr_emply_info_inner
 {
@@ -933,7 +933,7 @@ table.table.top_5_table tbody tr.myself td {
 }
 .hr_employee_information
 {
-    width: calc(100% - 30%);
+    width: calc(100% - 35%);
     padding-left: 15px;
 }
 .emply_e_card_profile
@@ -1304,6 +1304,14 @@ th.th-day {
 .view-attendance-th-icon:hover
 {
     color: #ede105;
+}
+.employee_e_info_tab
+{
+    
+}
+.employee_e_info_tab_content
+{
+
 }
 @media (max-width: 1528px)
 {
@@ -1763,33 +1771,32 @@ th.th-day {
 .hr_emply_info_inner_tabs
 {
     width: 100%;
-    background: #ebedff;
-    border-bottom: none !important;
-    border-radius: 10px;
-    padding: 9px 12px 9px 12px;
+    /* background: #ebedff; */
+    border-bottom: 1px solid #eee !important;
+    /* border-radius: 10px;
+    padding: 9px 12px 9px 12px; */
 }
 .hr_emply_info_inner_tab_item .nav-link
 {
-    margin: 0 4px 1px 4px;
+    /* margin: 0 4px 1px 4px; */
     font-weight: 600;
+    border: 1px solid #eeeeee00 !important;
 }
 .hr_emply_info_inner_tab_item .nav-link.active
 {
-    border-radius: 8px;
     background: #fff;
-    border: 1px solid #fff !important;
+    border-bottom: 1px solid #ffb900 !important;
     color: #ffb900 !important;
 }
 .hr_emply_info_inner_tab_item .nav-link:hover
 {
-    border-radius: 8px;
     background: #f6f8fb;
-    border: 1px solid #f6f8fb !important;
+    border-bottom: 1px solid #ffb900 !important;
     color: #929292 !important;
 }
 .hr_emply_info_inner_tab_item .nav-link:focus
 {
-    border: 1px solid #f6f8fb00 !important;
+    border-bottom: 1px solid #ffb900 !important;
 }
 /* Sweep To Right */
 /* .sweep-to-right {
