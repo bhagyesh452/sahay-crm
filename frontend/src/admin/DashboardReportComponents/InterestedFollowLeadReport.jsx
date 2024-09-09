@@ -19,6 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ClipLoader from "react-spinners/ClipLoader";
+import { Link } from 'react-router-dom';
 
 function InterestedFollowLeadReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -76,8 +77,8 @@ function InterestedFollowLeadReport() {
 
     //----------------------fetching employees info--------------------------------------
     const [loading, setLoading] = useState(false)
-    
-    
+
+
     const fetchEmployeeInfo = async () => {
         try {
             setLoading(true);
@@ -151,7 +152,7 @@ function InterestedFollowLeadReport() {
     //     }
     // };
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
-    
+
     useEffect(() => {
         //fetchRedesignedBookings();
         fetchEmployeeInfo()
@@ -753,11 +754,50 @@ function InterestedFollowLeadReport() {
                                                         }} >{index + 1}</td>
                                                         <td >{obj.ename}</td>
                                                         <td>{obj.branchOffice}</td>
-                                                        <td >
-                                                            {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "Interested").length}
+                                                        <td>
+                                                        <Link
+                                                                to={`/interestedleadreport/${obj.ename}?filtered=${encodeURIComponent(
+                                                                    JSON.stringify(
+                                                                        leadHistoryData.filter(
+                                                                            (company) =>
+                                                                                company.ename === obj.ename && company.newStatus === "Interested"
+                                                                        )
+                                                                    )
+                                                                )}`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {
+                                                                    leadHistoryData.filter(
+                                                                        (company) => company.ename === obj.ename && company.newStatus === "Interested"
+                                                                    ).length
+                                                                }
+                                                            </Link>
                                                         </td>
+
                                                         <td >
+                                                        <Link
+                                                                to={`/followupleadreport/${obj.ename}?filtered=${encodeURIComponent(
+                                                                    JSON.stringify(
+                                                                        leadHistoryData.filter(
+                                                                            (company) =>
+                                                                                company.ename === obj.ename && company.newStatus === "FollowUp"
+                                                                        )
+                                                                    )
+                                                                )}`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
                                                             {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length}
+                                                            </Link>
                                                         </td>
                                                         <td>
                                                             {filteredCompanies.length}

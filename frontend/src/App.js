@@ -87,6 +87,8 @@ import AdminExecutiveDashboard from "./AdminExecutive/Dashboard/AdminExecutiveDa
 import AdminExecutiveRecievedBox from "./AdminExecutive/RecievedBookingBox/AdminExecutiveRecievedBox.jsx";
 import AdminExecutiveMyBookings from "./AdminExecutive/AdminExecutiveBookings/AdminExecutiveMyBookings.jsx";
 import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
+import EmployeeInterestedCompanies from "./admin/EmployeeInterestestedCompanies.jsx";
+import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -248,6 +250,8 @@ function App() {
           <Route path="/Processing/bellicon" element={<Bellicon_processing />} />
           <Route path="/Components/Drawer" element={<DrawerComponent />} />
           <Route path="/employeereport/:ename/:status" element={<StausInfo />} />
+          <Route path="/interestedleadreport/:ename" element={<EmployeeInterestedCompanies />} />
+          <Route path="/followupleadreport/:ename" element={<EmployeeFolowUpCompanies />} />
           <Route path='/daterange' element={<MaterialUIPickers />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/client/basic-form" element={<BasicForm />} />
