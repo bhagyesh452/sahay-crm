@@ -555,10 +555,19 @@ span.input-group-text {
 
 .my-tab .nav-fill .nav-item .nav-link {
   justify-content: space-between;
-  padding: 10px 10px !important;
+  padding: 4px 10px;
   color: #494949;
   font-weight: 600;
   border: 1px solid #eee;
+}
+
+.hr_emply_list_navtabs .nav-item .nav-link 
+{
+  padding: 10px 10px !important;
+}
+.rm_task_section_navtabs .nav-item .nav-link 
+{
+  padding: 10px 10px !important;
 }
 
 .nav-link.active {
