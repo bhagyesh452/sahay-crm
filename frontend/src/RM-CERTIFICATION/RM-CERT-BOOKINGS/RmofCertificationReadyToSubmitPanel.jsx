@@ -48,7 +48,7 @@ function RmofCertificationReadyToSubmitPanel({
     const [currentDataLoading, setCurrentDataLoading] = useState(false)
     const [isFilter, setIsFilter] = useState(false)
     const [rmServicesData, setRmServicesData] = useState([])
-    const [newStatusProcess, setNewStatusProcess] = useState("Process")
+    const [newStatusProcess, setNewStatusProcess] = useState("Ready To Submit")
     const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
     const [currentCompanyName, setCurrentCompanyName] = useState("")
     const [currentServiceName, setCurrentServiceName] = useState("")

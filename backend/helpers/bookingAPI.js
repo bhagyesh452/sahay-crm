@@ -503,7 +503,15 @@ router.post("/update-redesigned-final-form/:CompanyName",
         },
         { new: true }
       );
-      socketIO.emit('booking-updated', { name: boom.bdeName, companyName: companyName })
+      const updatedCompanyRm = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+      const updatedCompanyAdminExecutive =  await AdminExecutiveModel.findOne({"Company Name" : companyName});
+      
+      socketIO.emit('booking-updated', { 
+        name: boom.bdeName, 
+        companyName: companyName,
+      updateCompanyRm : updatedCompanyRm,
+    updatedCompanyAdminExecutive : updatedCompanyAdminExecutive
+   })
       res
         .status(200)
         .json({ message: "Document updated successfully" });

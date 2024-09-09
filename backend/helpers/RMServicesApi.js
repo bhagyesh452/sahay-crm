@@ -3788,10 +3788,10 @@ router.post('/upload-approved-data', async (req, res) => {
         console.log("Processing item:", item["Company Name"]); // Log each company being processed
         console.log("item", item)
         const parsedSubmittedOn = item["Submitted On Date"]
-          ? excelSerialToJSDate(item["Submitted On Date"])
+          ? excelSerialToJSDate(item["Submitted On Date"]).toISOString().split('T')[0]
           : undefined;
-        const parsedBookingDate = item["Booking Date"]
-          ? excelSerialToJSDate(item["Booking Date"])
+          const parsedBookingDate = item["Booking Date"]
+          ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0]
           : undefined;
 
         await RMCertificationModel.create({
@@ -3876,6 +3876,19 @@ router.post('/upload-approved-data', async (req, res) => {
     res.status(500).json({ error: 'Failed to upload data' });
   }
 });
+
+router.delete('/delete-directuploadedleads', async (req, res) => {
+  try {
+    const result = await RMCertificationModel.deleteMany({ "isUploadedDirect": true });
+    
+    // Sending response after deletion
+    res.status(200).json({ message: 'Leads deleted successfully', deletedCount: result.deletedCount });
+  } catch (error) {
+    console.error("Error deleting company", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 
