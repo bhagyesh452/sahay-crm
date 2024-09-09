@@ -1937,7 +1937,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                               })()}
                       </td>
 
-                      <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                      <td>{obj.submittedBy ? obj.submittedBy : employeeData.ename}</td>
                       <td>{formatDatePro(obj.bookingDate)}</td>
                       <td>
                         <div className="d-flex align-items-center justify-content-center">

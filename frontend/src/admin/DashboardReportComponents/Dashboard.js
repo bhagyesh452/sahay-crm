@@ -164,7 +164,6 @@ function Dashboard() {
                         <CustomTabPanel value={value} index={2} className="mat-tab-inner">
                             <InterestedFollowLeadReport />
                             <EmployeesForwardedDataReport />
-
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
                             <EmployeesProjectionSummary />

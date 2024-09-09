@@ -29,10 +29,6 @@ function AdminExecutiveHeader({ name, id, designation, empProfile, gender }) {
       transports: ['websocket'],
     });
 
-    // Listen for the 'welcome' event from the server
-
-
-   
     // socket.on("rmcert-letter-updated", (res) => {
     //   console.log("socketchala" , res.updatedDocumentAdmin)
     //   if(res.updatedDocumentAdmin){
