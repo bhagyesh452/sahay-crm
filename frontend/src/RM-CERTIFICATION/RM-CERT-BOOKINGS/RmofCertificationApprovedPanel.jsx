@@ -47,7 +47,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   const [currentDataLoading, setCurrentDataLoading] = useState(false)
   const [isFilter, setIsFilter] = useState(false)
   const [rmServicesData, setRmServicesData] = useState([])
-  const [newStatusProcess, setNewStatusProcess] = useState("Process")
+  const [newStatusProcess, setNewStatusProcess] = useState("Approved")
   const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
   const [currentCompanyName, setCurrentCompanyName] = useState("")
   const [currentServiceName, setCurrentServiceName] = useState("")

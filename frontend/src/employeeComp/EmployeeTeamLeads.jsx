@@ -2359,7 +2359,7 @@ function EmployeeTeamLeads() {
                                                 <th className="th-sticky">Sr.No</th>
                                                 <th className="th-sticky1">Company Name</th>
                                                 <th>BDE Name</th>
-                                                <th>Company Number</th>
+                                             {bdmNewStatus !== "Untouched" &&( <th>Company Number</th>)}
                                                 <th>BDE Status</th>
                                                 <th>BDE Remarks</th>
                                                 {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
@@ -2378,7 +2378,7 @@ function EmployeeTeamLeads() {
                                                 </th>
                                                 <th>City</th>
                                                 <th>State</th>
-                                                <th>Company Email</th>
+                                                {bdmNewStatus !== "Untouched" &&(<th>Company Email</th>)}
                                                 <th>
                                                     BDE Forward Date
                                                 </th>
@@ -2404,7 +2404,7 @@ function EmployeeTeamLeads() {
                                                         {company["Company Name"]}
                                                     </td>
                                                     <td>{company.ename}</td>
-                                                    <td>
+                                                    {bdmNewStatus !== "Untouched" &&(<td>
                                                         <div className="d-flex align-items-center justify-content-between wApp">
                                                             <div>{company["Company Number"]}</div>
                                                             <a
@@ -2414,7 +2414,7 @@ function EmployeeTeamLeads() {
                                                                 <FaWhatsapp />
                                                             </a>
                                                         </div>
-                                                    </td>
+                                                    </td>)}
                                                     <td>
                                                         {company.Status}
                                                     </td>
@@ -2603,7 +2603,7 @@ function EmployeeTeamLeads() {
                                                     </td>
                                                     <td>{company["City"]}</td>
                                                     <td>{company["State"]}</td>
-                                                    <td>{company["Company Email"]}</td>
+                                                    {bdmNewStatus !== "Untouched" &&(<td>{company["Company Email"]}</td>)}
                                                     <td>{formatDateNew(company.bdeForwardDate)}</td>
                                                     {
                                                         company.bdmStatus === "Untouched" && (
