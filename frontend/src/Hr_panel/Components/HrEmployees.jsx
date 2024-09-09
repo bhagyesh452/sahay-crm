@@ -148,9 +148,9 @@ function HrEmployees() {
         // Update companyData in the second database
         await Promise.all(
           filteredCompanyData.map(async (item) => {
-            if (item.Status === 'Matured') {
+            // if (item.Status === 'Matured') {
+            if (item.Status) {
               await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
-
             } else {
               await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
             }

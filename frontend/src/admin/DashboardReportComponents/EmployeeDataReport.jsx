@@ -31,15 +31,15 @@ function EmployeeDataReport() {
     const [selectedDateRangeEmployee, setSelectedDateRangeEmployee] = useState([]);
     const [sortType, setSortType] = useState({
         untouched: "none",
-        notPickedUp: "none",
         busy: "none",
+        notPickedUp: "none",
         junk: "none",
-        notInterested: "none",
         followUp: "none",
-        matured: "none",
         interested: "none",
-        lastLead: "none",
+        notInterested: "none",
+        matured: "none",
         totalLeads: "none",
+        lastLead: "none",
     })
     const [employeeData, setEmployeeData] = useState([]);
     const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
@@ -56,6 +56,7 @@ function EmployeeDataReport() {
     const [originalEmployeeData, setOriginalEmployeeData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
+    const [mergedData, setMergedData] = useState([]);
 
     //-------------------------date formats ------------------------------
 
@@ -126,8 +127,10 @@ function EmployeeDataReport() {
             setLoading(true);
             const response = await fetch(`${secretKey}/company-data/fetchLeads`);
             const data = await response.json();
-            console.log("Company data is :", data);
+            // console.log("Company data is :", data);
             setCompanyData(data);
+            setcompanyDataFilter(data);
+            mergeEmployeeAndCompanyData(employeeData, data);
         } catch (error) {
             console.error("Error Fetching Company Data", error);
         } finally {
@@ -135,22 +138,25 @@ function EmployeeDataReport() {
         }
     };
 
-    const mergedData = employeeData.map(employee => {
-        const companyInfo = companyData.find(company => company._id === employee.ename) || {};
+    const mergeEmployeeAndCompanyData = (employeeData, companyData) => {
+        const merged = employeeData.map(employee => {
+            const companyInfo = companyData.find(company => company._id === employee.ename) || {};
 
-        return {
-            ...employee,
-            statusCounts: companyInfo.statusCounts || [], // Use an empty array if no statusCounts found
-            totalLeads: companyInfo.totalLeads || 0,
-            lastAssignDate: companyInfo.lastAssignDate || null,
-        };
-    });
+            return {
+                ...employee,
+                statusCounts: companyInfo.statusCounts || [],
+                totalLeads: companyInfo.totalLeads || 0,
+                lastAssignDate: companyInfo.lastAssignDate || null,
+            };
+        });
+        setMergedData(merged); // Update mergedData state
+    };
 
 
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 
     useEffect(() => {
-        fetchCompanyData()
+        // fetchCompanyData()
         fetchEmployeeInfo()
         //fetchCompanies();
         //fetchRedesignedBookings();
@@ -160,17 +166,31 @@ function EmployeeDataReport() {
 
     // -----------------------branch office filter function--------------------------------------------
 
+    // const handleFilterBranchOfficeDataReport = (branchName) => {
+    //     if (branchName === "none") {
+    //         setEmployeeData(employeeInfo)
+    //         setCompanyData(companyDataFilter)
+    //     } else {
+    //         const filterEmployeeData = employeeDataFilter.filter((obj) => obj.branchOffice === branchName)
+    //         setEmployeeData(filterEmployeeData)
+    //         const filterCompanyData = companyDataFilter.filter((obj) => employeeInfo.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename))
+    //         setCompanyData(filterCompanyData)
+    //     }
+    // }
+
     const handleFilterBranchOfficeDataReport = (branchName) => {
         if (branchName === "none") {
-            setEmployeeData(employeeInfo)
-            setCompanyData(companyDataFilter)
+            mergeEmployeeAndCompanyData(employeeInfo, companyDataFilter); // Reset to all data
         } else {
-            const filterEmployeeData = employeeDataFilter.filter((obj) => obj.branchOffice === branchName)
-            setEmployeeData(filterEmployeeData)
-            const filterCompanyData = companyDataFilter.filter((obj) => employeeInfo.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename))
-            setCompanyData(filterCompanyData)
+            const filterEmployeeData = employeeDataFilter.filter((obj) => obj.branchOffice === branchName);
+            const filterCompanyData = companyDataFilter.filter((obj) => filterEmployeeData.some((empObj) => empObj.ename === obj._id));
+            mergeEmployeeAndCompanyData(filterEmployeeData, filterCompanyData); // Merge filtered data
         }
-    }
+    };
+
+    useEffect(() => {
+        fetchCompanyData();
+    }, [employeeData]);
 
     //   -------------------------------multilple employee name filter function--------------------------------
 
@@ -215,30 +235,68 @@ function EmployeeDataReport() {
     const debouncedFilterSearch = debounce(filterSearch, 100);
 
     // Modified filterSearch function with debounce
+    // function filterSearch(searchTerm) {
+    //     setSearchTerm(searchTerm);
+    //     setEmployeeData(
+    //         employeeDataFilter.filter((company) =>
+    //             company.ename.toLowerCase().includes(searchTerm.toLowerCase())
+    //         )
+    //     );
+    //     setCompanyData(companyDataFilter.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase())))
+    // }
     function filterSearch(searchTerm) {
         setSearchTerm(searchTerm);
-        setEmployeeData(
-            employeeDataFilter.filter((company) =>
-                company.ename.toLowerCase().includes(searchTerm.toLowerCase())
-            )
+        const filteredData = mergedData.filter((company) =>
+            company.ename.toLowerCase().includes(searchTerm.toLowerCase())
         );
-        setCompanyData(companyDataFilter.filter((company) => company.ename.toLowerCase().includes(searchTerm.toLowerCase())))
+        setMergedData(filteredData);
     }
 
     //--------------------------search by date range filter function-----------------------------------------------
 
+    // const handleSelectEmployee = (values) => {
+    //     //console.log(values);
+    //     if (values[1]) {
+    //         const startDate = values[0].format("MM/DD/YYYY");
+    //         const endDate = values[1].format("MM/DD/YYYY");
+
+    //         const filteredDataDateRange = companyDataFilter.filter((product) => {
+    //             const productDate = formatDateMonth(product.AssignDate);
+    //             // Check if the formatted productDate is within the selected date range
+    //             if (startDate === endDate) {
+    //                 console.log(startDate, endDate, productDate)
+
+    //                 // If both startDate and endDate are the same, filter for transactions on that day
+    //                 return productDate === startDate;
+    //             } else if (startDate !== endDate) {
+    //                 // If different startDate and endDate, filter within the range
+    //                 return (
+    //                     new Date(productDate) >= new Date(startDate) &&
+    //                     new Date(productDate) <= new Date(endDate)
+    //                 );
+    //             } else {
+    //                 return false;
+    //             }
+    //         });
+    //         console.log(filteredDataDateRange, "fileteredData")
+    //         console.log(companyData, "companydata")
+    //         setCompanyData(filteredDataDateRange);
+    //     } else {
+    //         return true;
+    //     }
+    // };
+
     const handleSelectEmployee = (values) => {
-        //console.log(values);
         if (values[1]) {
             const startDate = values[0].format("MM/DD/YYYY");
             const endDate = values[1].format("MM/DD/YYYY");
 
-            const filteredDataDateRange = companyDataFilter.filter((product) => {
-                const productDate = formatDateMonth(product.AssignDate);
+            // Filter merged data based on the selected date range
+            const filteredDataDateRange = mergedData.filter((employee) => {
+                const productDate = formatDateMonth(employee.lastAssignDate);
+
                 // Check if the formatted productDate is within the selected date range
                 if (startDate === endDate) {
-                    console.log(startDate, endDate, productDate)
-
                     // If both startDate and endDate are the same, filter for transactions on that day
                     return productDate === startDate;
                 } else if (startDate !== endDate) {
@@ -251,9 +309,9 @@ function EmployeeDataReport() {
                     return false;
                 }
             });
-            console.log(filteredDataDateRange, "fileteredData")
-            console.log(companyData, "companydata")
-            setCompanyData(filteredDataDateRange);
+
+            // Update the merged data with the filtered data
+            setMergedData(filteredDataDateRange);
         } else {
             return true;
         }
@@ -308,6 +366,66 @@ function EmployeeDataReport() {
 
     //-------------------------- Sort filteres for different status  -------------------------------------------------------------------------
 
+    // const handleSortUntouched = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         untouched:
+    //             prevData.untouched === "ascending"
+    //                 ? "descending"
+    //                 : prevData.untouched === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Untouched") {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Untouched") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+
+
     const handleSortUntouched = (sortBy1) => {
         setSortType((prevData) => ({
             ...prevData,
@@ -319,115 +437,94 @@ function EmployeeDataReport() {
                         : "ascending",
         }));
 
-        switch (sortBy1) {
-            case "ascending":
-                setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Untouched") {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
-                });
-
-                break;
-            case "descending":
-                setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Untouched") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
-                });
-                break;
-            case "none":
-                setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
-                break;
-            default:
-                break;
-        }
-    };
-    const handleSortNotPickedUp = (sortBy1) => {
-        setSortType((prevData) => ({
-            ...prevData,
-            notPickedUp:
-                prevData.notPickedUp === "ascending"
-                    ? "descending"
-                    : prevData.notPickedUp === "descending"
-                        ? "none"
-                        : "ascending",
-        }));
+        let sortedData = [...mergedData];
 
         switch (sortBy1) {
             case "ascending":
                 setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (
-                        company.Status === "Not Picked Up"
-                    ) {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Untouched")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Untouched")?.count || 0;
                     return countA - countB; // Sort in ascending order of "Untouched" count
                 });
                 break;
             case "descending":
                 setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Not Picked Up") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Untouched")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Untouched")?.count || 0;
                     return countB - countA; // Sort in descending order of "Untouched" count
                 });
                 break;
             case "none":
                 setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
+                sortedData = originalEmployeeData; // Restore to previous state
                 break;
             default:
                 break;
         }
+
+        setEmployeeData(sortedData);
     };
 
     // for busy
+    // const handleSortbusy = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         busy:
+    //             prevData.busy === "ascending"
+    //                 ? "descending"
+    //                 : prevData.busy === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Busy") {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
 
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Busy") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
     const handleSortbusy = (sortBy1) => {
         setSortType((prevData) => ({
             ...prevData,
@@ -438,228 +535,195 @@ function EmployeeDataReport() {
                         ? "none"
                         : "ascending",
         }));
+
+        let sortedData = [...mergedData];
+
         switch (sortBy1) {
             case "ascending":
                 setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Busy") {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Busy")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Busy")?.count || 0;
+                    return countA - countB; // Sort in ascending order of "Busy" count
                 });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
-                });
-
                 break;
             case "descending":
                 setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Busy") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Busy")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Busy")?.count || 0;
+                    return countB - countA; // Sort in descending order of "Busy" count
                 });
                 break;
             case "none":
                 setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
+                sortedData = originalEmployeeData; // Restore to previous state
                 break;
             default:
                 break;
         }
+
+        setEmployeeData(sortedData);
     };
-    const handleSortInterested = (sortBy1) => {
+
+
+    // const handleSortNotPickedUp = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         notPickedUp:
+    //             prevData.notPickedUp === "ascending"
+    //                 ? "descending"
+    //                 : prevData.notPickedUp === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (
+    //                     company.Status === "Not Picked Up"
+    //                 ) {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Not Picked Up") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+    const handleSortNotPickedUp = (sortBy1) => {
         setSortType((prevData) => ({
             ...prevData,
-            interested:
-                prevData.interested === "ascending"
+            notPickedUp:
+                prevData.notPickedUp === "ascending"
                     ? "descending"
-                    : prevData.interested === "descending"
+                    : prevData.notPickedUp === "descending"
                         ? "none"
                         : "ascending",
         }));
+    
+        let sortedData = [...mergedData];
+    
         switch (sortBy1) {
             case "ascending":
                 setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (
-                        company.Status === "Interested"
-                    ) {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0;
+                    return countA - countB; // Sort in ascending order of "Not Picked Up" count
                 });
                 break;
             case "descending":
                 setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Interested") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0;
+                    return countB - countA; // Sort in descending order of "Not Picked Up" count
                 });
                 break;
             case "none":
                 setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
+                sortedData = originalEmployeeData; // Restore to previous state
                 break;
             default:
                 break;
         }
+    
+        setEmployeeData(sortedData);
     };
-    const handleSortMatured = (sortBy1) => {
-        setSortType((prevData) => ({
-            ...prevData,
-            matured:
-                prevData.matured === "ascending"
-                    ? "descending"
-                    : prevData.matured === "descending"
-                        ? "none"
-                        : "ascending",
-        }));
-        switch (sortBy1) {
-            case "ascending":
-                setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (
-                        company.Status === "Matured"
-                    ) {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
-                });
+    
 
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
-                });
-                break;
-            case "descending":
-                setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Matured") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
+    // const handleSortJunk = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         junk:
+    //             prevData.junk === "ascending"
+    //                 ? "descending"
+    //                 : prevData.junk === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Junk") {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
 
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
-                });
-                break;
-            case "none":
-                setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
-                break;
-            default:
-                break;
-        }
-    };
-    const handleSortNotInterested = (sortBy1) => {
-        setSortType((prevData) => ({
-            ...prevData,
-            notInterested:
-                prevData.notInterested === "ascending"
-                    ? "descending"
-                    : prevData.notInterested === "descending"
-                        ? "none"
-                        : "ascending",
-        }));
-        switch (sortBy1) {
-            case "ascending":
-                setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (
-                        company.Status === "Not Interested"
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Junk") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
 
-                    ) {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
-                });
-                break;
-            case "descending":
-                setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Not Interested") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
-                });
-                break;
-            case "none":
-                setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
-                break;
-            default:
-                break;
-        }
-    };
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
     const handleSortJunk = (sortBy1) => {
         setSortType((prevData) => ({
             ...prevData,
@@ -670,52 +734,95 @@ function EmployeeDataReport() {
                         ? "none"
                         : "ascending",
         }));
+
+        let sortedData = [...mergedData];
+
         switch (sortBy1) {
             case "ascending":
                 setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Junk") {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Junk")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Junk")?.count || 0;
+                    return countA - countB; // Sort in ascending order of "Junk" count
                 });
                 break;
             case "descending":
                 setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "Junk") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Junk")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Junk")?.count || 0;
+                    return countB - countA; // Sort in descending order of "Junk" count
                 });
                 break;
             case "none":
                 setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
+                sortedData = employeeData; // Restore to previous state
                 break;
             default:
                 break;
         }
+
+        setEmployeeData(sortedData);
     };
+
+    // const handleSortFollowUp = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         followUp:
+    //             prevData.followUp === "ascending"
+    //                 ? "descending"
+    //                 : prevData.followUp === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (
+    //                     company.Status === "Follow Up"
+    //                 ) {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "FollowUp") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
     const handleSortFollowUp = (sortBy1) => {
         setSortType((prevData) => ({
             ...prevData,
@@ -726,54 +833,424 @@ function EmployeeDataReport() {
                         ? "none"
                         : "ascending",
         }));
+
+        let sortedData = [...mergedData];
+
         switch (sortBy1) {
             case "ascending":
                 setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    if (
-                        company.Status === "Follow Up"
-                    ) {
-                        untouchedCountAscending[company.ename] =
-                            (untouchedCountAscending[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0;
+                    return countA - countB; // Sort in ascending order of "FollowUp" count
                 });
                 break;
             case "descending":
                 setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    if (company.Status === "FollowUp") {
-                        untouchedCount[company.ename] =
-                            (untouchedCount[company.ename] || 0) + 1;
-                    }
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0;
+                    return countB - countA; // Sort in descending order of "FollowUp" count
                 });
                 break;
             case "none":
                 setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
+                sortedData = originalEmployeeData; // Restore to previous state
                 break;
             default:
                 break;
         }
+
+        setEmployeeData(sortedData);
     };
+
+    // const handleSortInterested = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         interested:
+    //             prevData.interested === "ascending"
+    //                 ? "descending"
+    //                 : prevData.interested === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (
+    //                     company.Status === "Interested"
+    //                 ) {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Interested") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+    const handleSortInterested = (sortBy1) => {
+        setSortType((prevData) => ({
+            ...prevData,
+            interested:
+                prevData.interested === "ascending"
+                    ? "descending"
+                    : prevData.interested === "descending"
+                        ? "none"
+                        : "ascending",
+        }));
+
+        let sortedData = [...mergedData];
+
+        switch (sortBy1) {
+            case "ascending":
+                setIncoFilter("ascending");
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Interested")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Interested")?.count || 0;
+                    return countA - countB; // Sort in ascending order of "Interested" count
+                });
+                break;
+            case "descending":
+                setIncoFilter("descending");
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Interested")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Interested")?.count || 0;
+                    return countB - countA; // Sort in descending order of "Interested" count
+                });
+                break;
+            case "none":
+                setIncoFilter("none");
+                sortedData = originalEmployeeData; // Restore to previous state
+                break;
+            default:
+                break;
+        }
+
+        setEmployeeData(sortedData);
+    };
+
+    // const handleSortNotInterested = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         notInterested:
+    //             prevData.notInterested === "ascending"
+    //                 ? "descending"
+    //                 : prevData.notInterested === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (
+    //                     company.Status === "Not Interested"
+
+    //                 ) {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Not Interested") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+    const handleSortNotInterested = (sortBy1) => {
+        setSortType((prevData) => ({
+            ...prevData,
+            notInterested:
+                prevData.notInterested === "ascending"
+                    ? "descending"
+                    : prevData.notInterested === "descending"
+                        ? "none"
+                        : "ascending",
+        }));
+
+        let sortedData = [...mergedData];
+
+        switch (sortBy1) {
+            case "ascending":
+                setIncoFilter("ascending");
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0;
+                    return countA - countB; // Sort in ascending order of "Not Interested" count
+                });
+                break;
+            case "descending":
+                setIncoFilter("descending");
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0;
+                    return countB - countA; // Sort in descending order of "Not Interested" count
+                });
+                break;
+            case "none":
+                setIncoFilter("none");
+                sortedData = originalEmployeeData; // Restore to previous state
+                break;
+            default:
+                break;
+        }
+
+        setEmployeeData(sortedData);
+    };
+
+    // const handleSortMatured = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         matured:
+    //             prevData.matured === "ascending"
+    //                 ? "descending"
+    //                 : prevData.matured === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 if (
+    //                     company.Status === "Matured"
+    //                 ) {
+    //                     untouchedCountAscending[company.ename] =
+    //                         (untouchedCountAscending[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 if (company.Status === "Matured") {
+    //                     untouchedCount[company.ename] =
+    //                         (untouchedCount[company.ename] || 0) + 1;
+    //                 }
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+    const handleSortMatured = (sortBy1) => {
+        setSortType((prevData) => ({
+            ...prevData,
+            matured:
+                prevData.matured === "ascending"
+                    ? "descending"
+                    : prevData.matured === "descending"
+                        ? "none"
+                        : "ascending",
+        }));
+
+        let sortedData = [...mergedData];
+
+        switch (sortBy1) {
+            case "ascending":
+                setIncoFilter("ascending");
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Matured")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Matured")?.count || 0;
+                    return countA - countB; // Sort in ascending order of "Matured" count
+                });
+                break;
+            case "descending":
+                setIncoFilter("descending");
+                sortedData.sort((a, b) => {
+                    const countA = a.statusCounts?.find((status) => status.status === "Matured")?.count || 0;
+                    const countB = b.statusCounts?.find((status) => status.status === "Matured")?.count || 0;
+                    return countB - countA; // Sort in descending order of "Matured" count
+                });
+                break;
+            case "none":
+                setIncoFilter("none");
+                sortedData = originalEmployeeData; // Restore to previous state
+                break;
+            default:
+                break;
+        }
+
+        setEmployeeData(sortedData);
+    };
+
+    // const handleSortTotalLeads = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         totalLeads:
+    //             prevData.totalLeads === "ascending" ? "descending" : "ascending",
+    //     }));
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 untouchedCountAscending[company.ename] =
+    //                     (untouchedCountAscending[company.ename] || 0) + 1;
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 untouchedCount[company.ename] =
+    //                     (untouchedCount[company.ename] || 0) + 1;
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 setEmployeeData(originalEmployeeData);
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+    const handleSortTotalLeads = (sortBy1) => {
+        setSortType((prevData) => ({
+            ...prevData,
+            totalLeads:
+                prevData.totalLeads === "ascending"
+                    ? "descending"
+                    : prevData.totalLeads === "descending"
+                        ? "none"
+                        : "ascending",
+        }));
+    
+        let sortedData = [...mergedData];
+    
+        switch (sortBy1) {
+            case "ascending":
+                setIncoFilter("ascending");
+                sortedData.sort((a, b) => {
+                    const totalA = a.statusCounts?.reduce((sum, status) => sum + (status.count || 0), 0) || 0;
+                    const totalB = b.statusCounts?.reduce((sum, status) => sum + (status.count || 0), 0) || 0;
+                    return totalA - totalB; // Sort in ascending order of total leads
+                });
+                break;
+            case "descending":
+                setIncoFilter("descending");
+                sortedData.sort((a, b) => {
+                    const totalA = a.statusCounts?.reduce((sum, status) => sum + (status.count || 0), 0) || 0;
+                    const totalB = b.statusCounts?.reduce((sum, status) => sum + (status.count || 0), 0) || 0;
+                    return totalB - totalA; // Sort in descending order of total leads
+                });
+                break;
+            case "none":
+                setIncoFilter("none");
+                sortedData = originalEmployeeData; // Restore to previous state
+                break;
+            default:
+                break;
+        }
+    
+        setEmployeeData(sortedData);
+    };    
+
     const handleSortLastLead = (sortBy1) => {
         setSortType((prevData) => ({
             ...prevData,
@@ -826,54 +1303,51 @@ function EmployeeDataReport() {
                 break;
         }
     };
-    const handleSortTotalLeads = (sortBy1) => {
-        setSortType((prevData) => ({
-            ...prevData,
-            totalLeads:
-                prevData.totalLeads === "ascending" ? "descending" : "ascending",
-        }));
-        switch (sortBy1) {
-            case "ascending":
-                setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    untouchedCountAscending[company.ename] =
-                        (untouchedCountAscending[company.ename] || 0) + 1;
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
-                });
-                break;
-            case "descending":
-                setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    untouchedCount[company.ename] =
-                        (untouchedCount[company.ename] || 0) + 1;
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
-                });
-                break;
-            case "none":
-                setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
-                break;
-            default:
-                break;
-        }
-    };
+    // const handleSortLastLead = (sortBy1) => {
+    //     setSortType((prevData) => ({
+    //         ...prevData,
+    //         lastLead:
+    //             prevData.lastLead === "ascending"
+    //                 ? "descending"
+    //                 : prevData.lastLead === "descending"
+    //                     ? "none"
+    //                     : "ascending",
+    //     }));
+    
+    //     let sortedData = [...employeeData,];
+        
+    //     console.log("Sorted data in last assign date :", sortedData);
+    //     switch (sortBy1) {
+    //         case "ascending":
+    //             setIncoFilter("ascending");
+    //             sortedData.sort((a, b) => {
+    //                 const dateA = new Date(a.lastAssignDate); // Convert assignedLeadsDate to Date object
+    //                 const dateB = new Date(b.lastAssignDate);
+    //                 return dateA - dateB; // Sort in ascending order by date
+    //             });
+    //             break;
+    //         case "descending":
+    //             setIncoFilter("descending");
+    //             sortedData.sort((a, b) => {
+    //                 const dateA = new Date(a.lastAssignDate); // Convert assignedLeadsDate to Date object
+    //                 const dateB = new Date(b.lastAssignDate);
+    //                 return dateB - dateA; // Sort in descending order by date
+    //             });
+    //             break;
+    //         case "none":
+    //             setIncoFilter("none");
+    //             if (originalEmployeeData.length > 0) {
+    //                 // Restore to previous state
+    //                 sortedData = originalEmployeeData;
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    
+    //     setEmployeeData(sortedData);
+    // };    
+    
 
     useEffect(() => {
         setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
@@ -1147,9 +1621,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.untouched === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.untouched === "descending"
-                                                ) {
+                                                } else if (sortType.untouched === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1185,9 +1657,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.busy === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.untouched === "descending"
-                                                ) {
+                                                } else if (sortType.busy === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1223,9 +1693,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.notPickedUp === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.notPickedUp === "descending"
-                                                ) {
+                                                } else if (sortType.notPickedUp === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1297,9 +1765,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.followUp === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.followUp === "descending"
-                                                ) {
+                                                } else if (sortType.followUp === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1335,9 +1801,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.interested === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.interested === "descending"
-                                                ) {
+                                                } else if (sortType.interested === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1371,13 +1835,9 @@ function EmployeeDataReport() {
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
-                                                if (
-                                                    sortType.notInterested === "ascending"
-                                                ) {
+                                                if (sortType.notInterested === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.notInterested === "descending"
-                                                ) {
+                                                } else if (sortType.notInterested === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1413,9 +1873,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.matured === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.matured === "descending"
-                                                ) {
+                                                } else if (sortType.matured === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1451,9 +1909,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.totalLeads === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.totalLeads === "descending"
-                                                ) {
+                                                } else if (sortType.totalLeads === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1489,9 +1945,7 @@ function EmployeeDataReport() {
                                                 let newSortType;
                                                 if (sortType.lastLead === "ascending") {
                                                     newSortType = "descending";
-                                                } else if (
-                                                    sortType.lastLead === "descending"
-                                                ) {
+                                                } else if (sortType.lastLead === "descending") {
                                                     newSortType = "none";
                                                 } else {
                                                     newSortType = "ascending";
@@ -1781,16 +2235,139 @@ function EmployeeDataReport() {
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
                                                 <td>{obj.ename}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}</td>
-                                                <td>{obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}</td>
-                                                <td>{obj.totalLeads?.toLocaleString()}</td>
-                                                <td>{formatDateFinal(obj.lastAssignDate)}</td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Untouched`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Busy`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Not Picked Up`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Junk`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/FollowUp`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Interested`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Not Interested`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/Matured`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <Link
+                                                        to={`/employeereport/${obj.ename}/complete`}
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                        }}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {obj.totalLeads?.toLocaleString()}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    {formatDateFinal(obj.lastAssignDate)}
+                                                    <OpenInNewIcon
+                                                        onClick={() => {
+                                                            functionOpenEmployeeTable(
+                                                                obj.ename
+                                                            );
+                                                        }}
+                                                        style={{
+                                                            cursor: "pointer",
+                                                            marginRight: "-41px",
+                                                            marginLeft: "21px",
+                                                            fontSize: "17px",
+                                                        }}
+                                                    />
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -1798,7 +2375,7 @@ function EmployeeDataReport() {
                                 {employeeData.length !== 0 && !loading &&
                                     companyData.length !== 0 && (
                                         <tfoot className="admin-dash-tbl-tfoot"    >
-                                            <tr style={{ fontWeight: 500 }}>
+                                            {/* <tr style={{ fontWeight: 500 }}>
                                                 <td
                                                     colSpan="2"
                                                 >
@@ -1868,6 +2445,37 @@ function EmployeeDataReport() {
                                                 </td>
                                                 <td>
                                                     {companyData.length.toLocaleString()}
+                                                </td>
+                                                <td>-</td>
+                                            </tr> */}
+                                            <tr style={{ fontWeight: 500 }}>
+                                                <td colSpan="2">Total</td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0), 0).toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {mergedData.reduce((total, obj) => total + (obj.totalLeads || 0), 0).toLocaleString()}
                                                 </td>
                                                 <td>-</td>
                                             </tr>

@@ -558,7 +558,8 @@ router.delete("/newcompanynamedelete/:id", async (req, res) => {
 
 
 router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, res) => {
-  const itemId = req.params.id
+  const itemId = req.params.id;
+  // console.log("Id is :", itemId);
   try {
     const employeeData = await CompanyModel.findById(itemId)
 
@@ -594,7 +595,7 @@ router.put("/updateCompanyForDeletedEmployeeWithMaturedStatus/:id", async (req, 
     console.error("Error deleting employee data:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
 
 //8. Read Multiple companies New
 router.get('/new-leads', async (req, res) => {

@@ -346,6 +346,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     setCompanyDdata(filteredCompanyData);
     setItemIdToDelete(itemId);
 
+    console.log("object")
     Swal.fire({
       title: 'Are you sure?',
       text: `Do you really want to remove ${nametochange}?`,
@@ -364,7 +365,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
           });
           const deleteResponse = await axios.delete(`${secretKey}/employee/einfo/${itemId}`);
 
-          //const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
+          const response3 = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${nametochange}`)
 
           // Refresh the data after successful deletion
           handledeletefromcompany(filteredCompanyData);
@@ -399,14 +400,14 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
   const handledeletefromcompany = async (filteredCompanyData) => {
     if (filteredCompanyData && filteredCompanyData.length !== 0) {
-
+      console.log("Filtered company data is :", filteredCompanyData);
       try {
         // Update companyData in the second database
         await Promise.all(
           filteredCompanyData.map(async (item) => {
-            if (item.Status === 'Matured') {
+            // if (item.Status === 'Matured') {
+            if (item.Status) {
               await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
-
             } else {
               await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
             }
