@@ -76,6 +76,8 @@ function InterestedFollowLeadReport() {
 
     //----------------------fetching employees info--------------------------------------
     const [loading, setLoading] = useState(false)
+    
+    
     const fetchEmployeeInfo = async () => {
         try {
             setLoading(true);
@@ -107,7 +109,7 @@ function InterestedFollowLeadReport() {
     //-------------------------------------fetching company data ----------------
 
     const fetchCompanyData = async () => {
-        fetch(`${secretKey}/company-data/leads/interestedleads`)
+        fetch(`${secretKey}/company-data/leads`)
             .then((response) => response.json())
             .then((data) => {
                 setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -118,49 +120,49 @@ function InterestedFollowLeadReport() {
                 console.error("Error fetching data:", error);
             });
     };
+
+    // const fetchFollowUpData = async () => {
+    //     try {
+    //         const response = await fetch(`${secretKey}/projection/projection-data`);
+    //         const followdata = await response.json();
+    //         setfollowData(followdata);
+    //         setFollowDataFilter(followdata)
+    //         setFollowDataNew(followdata)
+    //         //console.log("followdata", followdata)
+    //         setfollowDataToday(
+    //             followdata
+    //                 .filter((company) => {
+    //                     // Assuming you want to filter companies with an estimated payment date for today
+    //                     const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+    //                     return company.estPaymentDate === today;
+    //                 })
+    //         );
+    //         setfollowDataTodayNew(
+    //             followdata
+    //                 .filter((company) => {
+    //                     // Assuming you want to filter companies with an estimated payment date for today
+    //                     const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+    //                     return company.estPaymentDate === today;
+    //                 })
+    //         );
+    //     } catch (error) {
+    //         console.error("Error fetching data:", error);
+    //         return { error: "Error fetching data" };
+    //     }
+    // };
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
+    
     useEffect(() => {
         //fetchRedesignedBookings();
         fetchEmployeeInfo()
         fetchCompanyData()
+        //fetchFollowUpData();
     }, []);
 
 
     //------------------------fetching follow data-------------------------------------------
 
-    const fetchFollowUpData = async () => {
-        try {
-            const response = await fetch(`${secretKey}/projection/projection-data`);
-            const followdata = await response.json();
-            setfollowData(followdata);
-            setFollowDataFilter(followdata)
-            setFollowDataNew(followdata)
-            //console.log("followdata", followdata)
-            setfollowDataToday(
-                followdata
-                    .filter((company) => {
-                        // Assuming you want to filter companies with an estimated payment date for today
-                        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-                        return company.estPaymentDate === today;
-                    })
-            );
-            setfollowDataTodayNew(
-                followdata
-                    .filter((company) => {
-                        // Assuming you want to filter companies with an estimated payment date for today
-                        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-                        return company.estPaymentDate === today;
-                    })
-            );
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            return { error: "Error fetching data" };
-        }
-    };
 
-    useEffect(() => {
-        fetchFollowUpData();
-    }, []);
     //-----------------------------date range filter function---------------------------------
     const numberFormatOptions = {
         style: "currency",
@@ -731,18 +733,17 @@ function InterestedFollowLeadReport() {
                                                         mainObj["Company Name"] === company["Company Name"]
                                                     )
                                                 );
-                                               
                                                 // // Extract the company names
                                                 // const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
 
                                                 // // // Log the company names to the console
                                                 // console.log("followupcompanies" , companyNames);
 
-                                                // const interestedCompanies = leadHistoryData
-                                                //     .filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp")
-                                                //     .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
+                                                const interestedCompanies = leadHistoryData
+                                                    .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
+                                                    .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
 
-                                                // console.log("Interested Companies:", interestedCompanies);
+                                                console.log("Interested Companies:", interestedCompanies);
 
                                                 return (
                                                     <tr key={`row-${index}`}>

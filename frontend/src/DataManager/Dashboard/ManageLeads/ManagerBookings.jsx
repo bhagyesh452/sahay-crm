@@ -3583,6 +3583,7 @@ function ManagerBookings() {
           // companysInco={companyInco}
           // employeeName={data.ename}
           // employeeEmail={data.email}
+          isDataManager={true}
           />
         </>
       )}

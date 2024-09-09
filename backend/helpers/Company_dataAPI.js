@@ -80,7 +80,7 @@ router.get("/leads/interestedleads/followupleads", async (req, res) => {
 
     // Fetch companies from CompanyModel whose names are in leadCompanyNames
     const data = await CompanyModel.find({
-      Status: { $in: ["Interested" , "FollowUp"] }
+      Status: { $in: ["Interested", "FollowUp"] }
     }).lean();
 
     res.send(data);

@@ -9,6 +9,7 @@ const TeamLeadsModel = require("../models/TeamLeads.js");
 const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const FollowUpModel = require('../models/FollowUp.js');
+const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 
 router.get("/teamleadsdata", async (req, res) => {
   try {
@@ -385,6 +386,12 @@ router.post("/bdm-status-change/:id", async (req, res) => {
       bdmStatusChangeDate: new Date(bdmStatusChangeDate),
       bdmStatusChangeTime: time,
     });
+
+    if(bdmnewstatus === "Not Interested" || bdmnewstatus === "Junk" || bdmnewstatus === "Busy"){
+      await LeadHistoryForInterestedandFollowModel.findOneAndDelete({
+        _id : id
+      })
+    }
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
