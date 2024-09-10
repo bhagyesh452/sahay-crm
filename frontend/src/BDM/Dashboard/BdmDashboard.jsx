@@ -26,6 +26,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import BDMInterestedLeadsReport from './BdmTeamLeads/BDMInterestedLeadsReport.jsx';
 
 function BdmDashboard() {
   const { userId } = useParams();
@@ -3827,6 +3828,9 @@ useEffect(() => {
           </div>
         </div>
       </div>
+
+      {/* -----------------employess interested leads---------------------- */}
+      <BDMInterestedLeadsReport/>
     </div>
   )
 }

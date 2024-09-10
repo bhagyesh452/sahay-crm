@@ -402,9 +402,6 @@ function InterestedFollowLeadReport() {
         setFinalEmployeeData([...forwardEmployeeData]); // Store original state of employeeData
     }, [forwardEmployeeData]);
 
-
-
-
     const totalFilteredCompanies = forwardEmployeeData.reduce((total, obj) => {
         const filteredCompanies = companyDataTotal.filter(mainObj =>
             leadHistoryData.some(company =>
@@ -653,7 +650,8 @@ function InterestedFollowLeadReport() {
                                             </td>
                                         </tr>
                                     </tbody>) :
-                                    (<tbody>
+                                    (
+                                    <tbody>
                                         {forwardEmployeeData.length !== 0 &&
                                             forwardEmployeeData.map((obj, index) => {
                                                 const filteredCompanies = companyDataTotal.filter(mainObj =>
@@ -671,11 +669,11 @@ function InterestedFollowLeadReport() {
                                                 // // // Log the company names to the console
                                                 // console.log("followupcompanies" , companyNames);
 
-                                                // const interestedCompanies = leadHistoryData
-                                                //     .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
-                                                //     .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
+                                                const interestedCompanies = leadHistoryData
+                                                    .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
+                                                    .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
 
-                                                // console.log("Interested Companies:", interestedCompanies);
+                                                console.log("Interested Companies:", interestedCompanies);
 
                                                 return (
                                                     <tr key={`row-${index}`}>
@@ -737,7 +735,8 @@ function InterestedFollowLeadReport() {
                                                     </tr>
                                                 )
                                             })}
-                                    </tbody>)}
+                                    </tbody>
+                                )}
                                 <tfoot className="admin-dash-tbl-tfoot">
                                     <tr>
                                         <td

@@ -13,11 +13,7 @@ import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
 function Header({ name, id, designation, empProfile, gender }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
  
-  console.log("Employee name is :", name);
-  console.log("Employee id is :", id);
-  console.log("Employee gender is :", gender);
-  console.log("Designation is :", designation);
-  console.log("Employee profile :", empProfile);
+  
 
   return (
     <div>
