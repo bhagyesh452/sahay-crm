@@ -669,11 +669,11 @@ function InterestedFollowLeadReport() {
                                                 // // // Log the company names to the console
                                                 // console.log("followupcompanies" , companyNames);
 
-                                                // const interestedCompanies = leadHistoryData
-                                                //     .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
-                                                //     .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
+                                                const interestedCompanies = leadHistoryData
+                                                    .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
+                                                    .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
 
-                                                // console.log("Interested Companies:", interestedCompanies);
+                                                console.log("Interested Companies:", interestedCompanies);
 
                                                 return (
                                                     <tr key={`row-${index}`}>
