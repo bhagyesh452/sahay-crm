@@ -449,9 +449,9 @@ function AddAttendance({ year, month, date, employeeData }) {
                                
                                 if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
                                     status = "LC";
-                                } else if (workingMinutes >= 429) { // 7 hours 15 minutes in minutes
+                                } else if (workingMinutes >= 420) { // 7 hours 15 minutes in minutes
                                     status = "Present";
-                                } else if (workingMinutes > 120 && workingMinutes < 210) { // 7 hours 15 minutes / 2 in minutes
+                                } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours 15 minutes / 2 in minutes
                                     status = "Half Day";
                                 } else {
                                     status = "Leave";

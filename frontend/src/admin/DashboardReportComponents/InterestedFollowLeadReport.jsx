@@ -685,14 +685,14 @@ function InterestedFollowLeadReport() {
                                                         <td>{obj.branchOffice}</td>
                                                         <td>
                                                         <Link
-                                                                // to={`/interestedleadreport/${obj.ename}?filtered=${encodeURIComponent(
-                                                                //     JSON.stringify(
-                                                                //         leadHistoryData.filter(
-                                                                //             (company) =>
-                                                                //                 company.ename === obj.ename && company.newStatus === "Interested"
-                                                                //         )
-                                                                //     )
-                                                                // )}`}
+                                                                to={`/interestedleadreport/${obj.ename}?filtered=${encodeURIComponent(
+                                                                    JSON.stringify(
+                                                                        leadHistoryData.filter(
+                                                                            (company) =>
+                                                                                company.ename === obj.ename && company.newStatus === "Interested"
+                                                                        )
+                                                                    )
+                                                                )}`}
                                                                 style={{
                                                                     color: "black",
                                                                     textDecoration: "none",
@@ -710,14 +710,14 @@ function InterestedFollowLeadReport() {
 
                                                         <td >
                                                         <Link
-                                                                // to={`/followupleadreport/${obj.ename}?filtered=${encodeURIComponent(
-                                                                //     JSON.stringify(
-                                                                //         leadHistoryData.filter(
-                                                                //             (company) =>
-                                                                //                 company.ename === obj.ename && company.newStatus === "FollowUp"
-                                                                //         )
-                                                                //     )
-                                                                // )}`}
+                                                                to={`/followupleadreport/${obj.ename}?filtered=${encodeURIComponent(
+                                                                    JSON.stringify(
+                                                                        leadHistoryData.filter(
+                                                                            (company) =>
+                                                                                company.ename === obj.ename && company.newStatus === "FollowUp"
+                                                                        )
+                                                                    )
+                                                                )}`}
                                                                 style={{
                                                                     color: "black",
                                                                     textDecoration: "none",

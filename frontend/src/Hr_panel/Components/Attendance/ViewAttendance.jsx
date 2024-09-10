@@ -284,14 +284,14 @@ function ViewAttendance({ year, month, date }) {
             console.log("workingminutes", workingMinutes)
             if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
                 status = "LC";
-            } else if (workingMinutes >= 429) { // 7 hours 15 minutes in minutes
+            } else if (workingMinutes >= 420) { // 7 hours 15 minutes in minutes
                 status = "Present";
-            } else if (workingMinutes > 210 && workingMinutes < 429) { // 7 hours 15 minutes / 2 in minutes
+            } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours 15 minutes / 2 in minutes
                 status = "Half Day";
             } else {
                 status = "Leave";
             }
-            console.log("status", status)
+            // console.log("status", status)
         }
 
         const payload = {
@@ -656,7 +656,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                         </>
                                                                                     );
                                                                                 } else if (
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
+                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+                                                                                    (prevDayStatus === "LCH" && nextDayStatus === "LCH")
                                                                                 ) {
                                                                                     return (
                                                                                         <>
@@ -695,8 +696,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                 }
                                                                                 const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, prevDay)
                                                                                 const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
-                                                                                console.log("prevWorkingDay" , prevWorkingDay)
-                                                                                console.log("prevDayStatus" , prevDayStatus)
+                                                                                // console.log("prevWorkingDay" , prevWorkingDay)
+                                                                                // console.log("prevDayStatus" , prevDayStatus)
                                                                                 const findNextWorkingDay = (year, month, startDay) => {
                                                                                     let currentDay = startDay;
                                                                                     while (true) {
@@ -732,7 +733,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                 if (
                                                                                     (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
                                                                                     (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Leave") 
+                                                                                   
                                                                                 ) {
                                                                                     return (
                                                                                         <>
@@ -741,7 +743,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                         </>
                                                                                     );
                                                                                 } else if (
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
+                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+                                                                                    (prevDayStatus === "LCH" && nextDayStatus === "LCH")
                                                                                 ) {
                                                                                     return (
                                                                                         <>
@@ -1067,8 +1070,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                 }
                                                                                 const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, prevDay)
                                                                                 const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
-                                                                                console.log("prevWorkingDay" , prevWorkingDay)
-                                                                                console.log("prevDayStatus" , prevDayStatus)
+                                                                                // console.log("prevWorkingDay" , prevWorkingDay)
+                                                                                // console.log("prevDayStatus" , prevDayStatus)
                                                                                 const findNextWorkingDay = (year, month, startDay) => {
                                                                                     let currentDay = startDay;
                                                                                     while (true) {
