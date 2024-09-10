@@ -271,27 +271,64 @@ function AddAttendance({ year, month, date, employeeData }) {
         console.log("Data to be send :", payload);
     };
 
+    // const calculateWorkingHours = (inTime, outTime) => {
+    //     if (!inTime || !outTime) return "00:00"; // Ensure both times are available
+
+    //     const [inHours, inMinutes] = inTime.split(':').map(Number);
+    //     const [outHours, outMinutes] = outTime.split(':').map(Number);
+
+    //     const inTimeMinutes = inHours * 60 + inMinutes;
+    //     const outTimeMinutes = outHours * 60 + outMinutes;
+
+    //     let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+
+    //     if (workingMinutes < 0) {
+    //         workingMinutes += 24 * 60; // Adjust for overnight shifts
+    //     }
+
+    //     // Convert minutes back to HH:MM format
+    //     const hours = Math.floor(workingMinutes / 60);
+    //     const minutes = workingMinutes % 60;
+    //     return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+    // };
+
     const calculateWorkingHours = (inTime, outTime) => {
-        if (!inTime || !outTime) return "00:00"; // Ensure both times are available
+    if (!inTime || !outTime) return "00:00"; // Ensure both times are available
 
-        const [inHours, inMinutes] = inTime.split(':').map(Number);
-        const [outHours, outMinutes] = outTime.split(':').map(Number);
-
-        const inTimeMinutes = inHours * 60 + inMinutes;
-        const outTimeMinutes = outHours * 60 + outMinutes;
-
-        let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
-
-        if (workingMinutes < 0) {
-            workingMinutes += 24 * 60; // Adjust for overnight shifts
-        }
-
-        // Convert minutes back to HH:MM format
-        const hours = Math.floor(workingMinutes / 60);
-        const minutes = workingMinutes % 60;
-        return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-
+    const convertToMinutes = (timeString) => {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
     };
+
+    const formatToHHMM = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
+    };
+
+    const inTimeMinutes = convertToMinutes(inTime);
+    const outTimeMinutes = convertToMinutes(outTime);
+
+    // Define boundaries for 10:00 AM and 6:00 PM
+    const startBoundary = convertToMinutes("10:00");
+    const endBoundary = convertToMinutes("18:00");
+
+    // Adjust inTime and outTime to fit within 10:00 AM to 6:00 PM
+    const actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10:00 AM, set it to 10:00 AM
+    const actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6:00 PM, set it to 6:00 PM
+
+    // Calculate working minutes and subtract 45 minutes for break
+    let workingMinutes = actualOutTime - actualInTime - 45; 
+
+    // Ensure workingMinutes are not negative
+    if (workingMinutes < 0) {
+        workingMinutes = 0;
+    }
+
+    // Convert working minutes back to HH:MM format
+    return formatToHHMM(workingMinutes);
+};
 
     const fetchAttendance = async () => {
         try {
@@ -521,7 +558,19 @@ function AddAttendance({ year, month, date, employeeData }) {
                                             <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                                                 <AntSwitch
                                                     checked={onLeave}
-                                                    onChange={(e) => handleCheckboxChange(e.target.checked, emp._id, emp.employeeId, emp.empFullName, emp.newDesignation, emp.department, emp.branchOffice, attendanceDate, inTime, outTime, workingHours, status)}
+                                                    onChange={(e) => handleCheckboxChange(
+                                                        e.target.checked, 
+                                                        emp._id, 
+                                                        emp.employeeId, 
+                                                        emp.empFullName, 
+                                                        emp.newDesignation, 
+                                                        emp.department, 
+                                                        emp.branchOffice, 
+                                                        attendanceDate, 
+                                                        inTime, 
+                                                        outTime, 
+                                                        workingHours, 
+                                                        status)}
                                                     inputProps={{ 'aria-label': 'ant design' }} />
                                                 {/* <FormControlLabel
                                                     control={
