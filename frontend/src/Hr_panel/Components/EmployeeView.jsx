@@ -54,8 +54,11 @@ import EmployeeViewPayrollView from "./EmployeeView/EmployeePayrollView.jsx";
 function EmployeeView() {
 
   const { userId } = useParams();
+  const personalUserId = localStorage.getItem("hrUserId");
+
   const { newtoken } = useParams();
   const [data, setdata] = useState([]);
+  const [myInfo, setMyInfo] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
 
 
@@ -99,9 +102,6 @@ function EmployeeView() {
       alert("Please select a valid image file (JPG, JPEG, PNG).");
     }
   };
-
-
-
 
   const handleSubmit = async () => {
     console.log("personalEmail", personal_email);
@@ -173,13 +173,20 @@ function EmployeeView() {
     }
   };
 
+  const fetchPersonalInfo = async () => {
+    try {
+      const res = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${personalUserId}`);
+      // console.log("Fetched details is :", res.data.data);
+      setMyInfo(res.data.data);
+    } catch (error) {
+      console.log("Error fetching employee details :", error);
+    }
+  };
 
-
-  React.useEffect(() => {
+  useEffect(() => {
     fetchEmployeeData();
+    fetchPersonalInfo();
   }, []);
-
-
 
   // const today = new Date().toISOString().split('T')[0];
 
@@ -261,7 +268,7 @@ function EmployeeView() {
 
   return (
     <div>
-      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
       <Navbar />
       <div className="page-wrapper">
         <div className="page-header rm_Filter m-0">

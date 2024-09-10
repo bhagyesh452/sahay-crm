@@ -1089,7 +1089,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                             <div className="docItemImg">
                               <img
                                 src={
-                                  requestedBooking.paymentReceipt[0].filename.endsWith(
+                                  requestedBooking.paymentReceipt[0].filename?.endsWith(
                                     ".pdf"
                                   )
                                     ? pdfimg
@@ -1100,13 +1100,13 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                             <div
                               className="docItemName wrap-MyText"
                               title={
-                                requestedBooking.paymentReceipt[0].filename.split(
+                                requestedBooking.paymentReceipt[0].filename?.split(
                                   "-"
                                 )[1]
                               }
                             >
                               {
-                                requestedBooking.paymentReceipt[0].filename.split(
+                                requestedBooking.paymentReceipt[0].filename?.split(
                                   "-"
                                 )[1]
                               }
@@ -1117,7 +1117,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                             <div className="docItemImg">
                               <img
                                 src={
-                                  existingBooking.paymentReceipt[0].filename.endsWith(
+                                  existingBooking.paymentReceipt[0].filename?.endsWith(
                                     ".pdf"
                                   )
                                     ? pdfimg
@@ -1128,13 +1128,13 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                             <div
                               className="docItemName wrap-MyText"
                               title={
-                                existingBooking.paymentReceipt[0].filename.split(
+                                existingBooking.paymentReceipt[0].filename?.split(
                                   "-"
                                 )[1]
                               }
                             >
                               {
-                                existingBooking.paymentReceipt[0].filename.split(
+                                existingBooking.paymentReceipt[0].filename?.split(
                                   "-"
                                 )[1]
                               }
@@ -1210,7 +1210,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                                 <div className="docItemImg">
                                   <img
                                     src={
-                                      val.filename.endsWith(".pdf")
+                                      val.filename?.endsWith(".pdf")
                                         ? pdfimg
                                         : img
                                     }
@@ -1221,7 +1221,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                                   className="docItemName wrap-MyText"
                                   title="logo.png"
                                 >
-                                  {val.filename.split("-")[1]}
+                                  {val.filename?.split("-")[1]}
                                 </div>
                               </div>
                             </>
@@ -1237,7 +1237,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                                 <div className="docItemImg">
                                   <img
                                     src={
-                                      val.filename.endsWith(".pdf")
+                                      val.filename?.endsWith(".pdf")
                                         ? pdfimg
                                         : img
                                     }
@@ -1248,7 +1248,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                                   className="docItemName wrap-MyText"
                                   title="logo.png"
                                 >
-                                  {val.filename.split("-")[1]}
+                                  {val.filename?.split("-")[1]}
                                 </div>
                               </div>
                             </>
