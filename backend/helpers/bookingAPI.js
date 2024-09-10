@@ -280,6 +280,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
     } = req.body;
     const newOtherDocs = req.files["otherDocs"] || [];
     const newPaymentReceipt = req.files["paymentReceipt"] || [];
+
     const updatedDocWithoutId = {
       ...boom,
       otherDocs: newOtherDocs,

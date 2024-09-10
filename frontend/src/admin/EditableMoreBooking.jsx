@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import pdfimg from "../static/my-images/pdf.png";
 import Swal from "sweetalert2";
+import ClipLoader from "react-spinners/ClipLoader";
 import img from "../static/my-images/image.png";
 import wordimg from "../static/my-images/word.png";
 import excelimg from "../static/my-images/excel.png";
@@ -107,7 +108,7 @@ export default function EditableMoreBooking({
     IAFtype1: "",
     IAFtype2: "",
     Nontype: "",
-    forOther:"",
+    forOther: "",
   }
   const defaultCompanyIncoIsoType = {
     serviceID: "",
@@ -239,7 +240,7 @@ export default function EditableMoreBooking({
           if (!service.organizationTypeObject.length || service.organizationTypeObject[0].serviceID === undefined) {
             allOrganizationTypes.push(tempDefaultOrganizationDscType);
           }
-        }else if (service.serviceName.includes("Director DSC")) {
+        } else if (service.serviceName.includes("Director DSC")) {
           const uniqueIdDirectorDsc = new Set(allDirectorTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
 
           service.directorDscTypeObject.forEach(isoObj => {
@@ -305,8 +306,8 @@ export default function EditableMoreBooking({
               : service.serviceName.includes("Organization DSC")
                 ? "Organization DSC"
                 : service.serviceName.includes("Director DSC")
-                ? "Director DSC"
-                : service.serviceName,
+                  ? "Director DSC"
+                  : service.serviceName,
           paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
           secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
           thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
@@ -711,23 +712,23 @@ export default function EditableMoreBooking({
         const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
         const organsizationDetails = organizationDscType.find(obj => obj.serviceID === index);
         const directorDetails = directorDscType.find(obj => obj.serviceID === index);
-        
+
         return {
           ...service,
           serviceName: service.serviceName === "ISO Certificate"
-                ? `ISO Certificate ${isoDetails.type === "IAF" ?
-                  `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
-                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                    ? `Non IAF ${isoDetails.forOther}`
-                    : `Non IAF ${isoDetails.Nontype}`
-                      }`
+            ? `ISO Certificate ${isoDetails.type === "IAF" ?
+              `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+              isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                ? `Non IAF ${isoDetails.forOther}`
+                : `Non IAF ${isoDetails.Nontype}`
+            }`
             : service.serviceName === "Company Incorporation"
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
                 ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity} Validity`
                 : service.serviceName === "Director DSC"
-                ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
-                : service.serviceName,
+                  ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
+                  : service.serviceName,
           secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
             ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
             : service.secondPaymentRemarks,
@@ -743,7 +744,7 @@ export default function EditableMoreBooking({
           isoTypeObject: isoType,
           companyIncoTypeObject: companyIncoType,
           organizationTypeObject: organizationDscType,
-          directorDscTypeObject:directorDscType
+          directorDscTypeObject: directorDscType
         };
       });
 
@@ -790,12 +791,12 @@ export default function EditableMoreBooking({
           total + parseFloat(service.totalPaymentWGST || 0), 0)
 
       }
-
+      
       try {
         const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
         console.log('Data created:', response.data);
         Swal.fire("Request Sent!", "Request has been successfully sent to the Admin", "success");
-        setFormOpen(false)
+        setFormOpen(false);
 
       } catch (error) {
         console.error('Error creating data:', error);
@@ -814,19 +815,19 @@ export default function EditableMoreBooking({
         return {
           ...service,
           serviceName: service.serviceName === "ISO Certificate"
-          ? `ISO Certificate ${isoDetails.type === "IAF" ?
-            `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
-            isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-              ? `Non IAF ${isoDetails.forOther}`
-              : `Non IAF ${isoDetails.Nontype}`
-                }`
+            ? `ISO Certificate ${isoDetails.type === "IAF" ?
+              `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+              isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                ? `Non IAF ${isoDetails.forOther}`
+                : `Non IAF ${isoDetails.Nontype}`
+            }`
             : service.serviceName === "Company Incorporation"
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
                 ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity} Validity`
                 : service.serviceName === "Director DSC"
-                ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
-                : service.serviceName,
+                  ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
+                  : service.serviceName,
           secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
             ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
             : service.secondPaymentRemarks,
@@ -842,7 +843,7 @@ export default function EditableMoreBooking({
           isoTypeObject: isoType,
           companyIncoTypeObject: companyIncoType,
           organizationTypeObject: organizationDscType,
-          directorDscTypeObject:directorDscType
+          directorDscTypeObject: directorDscType
         };
       });
       const generatedTotalAmount = leadData.services.reduce(
@@ -908,7 +909,7 @@ export default function EditableMoreBooking({
                   if (prop !== "isoTypeObject" ||
                     prop !== "companyIncoTypeObject" ||
                     prop !== "Organization DSC" ||
-                  prop !== "Director DSC") {
+                    prop !== "Director DSC") {
                     formData.append(`services[${index}][${prop}]`, service[prop]);
                   }
                 });
@@ -938,7 +939,7 @@ export default function EditableMoreBooking({
 
                   })
                 })
-              }else if (directorDscType.length !== 0) {
+              } else if (directorDscType.length !== 0) {
                 directorDscType.forEach((isoObj, isoIndex) => {
                   Object.keys(isoObj).forEach((isoProp) => {
 
@@ -1014,7 +1015,7 @@ export default function EditableMoreBooking({
 
                 })
               })
-            }else if (directorDscType.length !== 0) {
+            } else if (directorDscType.length !== 0) {
               directorDscType.forEach((isoObj, isoIndex) => {
                 Object.keys(isoObj).forEach((isoProp) => {
 
@@ -1057,15 +1058,12 @@ export default function EditableMoreBooking({
       }));
       handleNext();
     }
-
-
   };
 
   const handleReset = () => {
     setActiveStep(0);
     setCompleted({});
   };
-
 
   const handleResetDraft = async () => {
     try {
@@ -1128,7 +1126,7 @@ export default function EditableMoreBooking({
                       setCompanyIncoType([]);
                     } else if (organizationDscType.length !== 0 && e.target.value !== "Organization DSC") {
                       setOrganizationDscType([]);
-                    }else if (directorDscType.length !== 0 && e.target.value !== "Director DSC") {
+                    } else if (directorDscType.length !== 0 && e.target.value !== "Director DSC") {
                       setDirectorDscType([]);
                     }
                     if (e.target.value === "ISO Certificate") {
@@ -1158,7 +1156,7 @@ export default function EditableMoreBooking({
                         });
                         setOrganizationDscType(defaultArray)
                       }
-                    }else if (e.target.value === "Director DSC") {
+                    } else if (e.target.value === "Director DSC") {
                       if (!organizationDscType.some(obj => obj.serviceID === i)) {
                         const defaultArray = directorDscType;
                         defaultArray.push({
@@ -1246,29 +1244,29 @@ export default function EditableMoreBooking({
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  
-                    <select 
-                    className="form-select mt-1 ml-1" 
-                    disabled={completed[activeStep] === true} 
-                    value={isoType.find(obj => obj.serviceID === i).Nontype} 
-                    onChange={(e) => {
-                      // Check if "Others" is selected and update state
-                      if (e.target.value === 'Others') {
-                        setShowOtherField(true);
-                      } else {
-                        setShowOtherField(false);
-                      }
-                      const currentObject = isoType.find(obj => obj.serviceID === i);
-                      if (currentObject) {
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject = {
-                          ...currentObject,
-                          Nontype: e.target.value
+                    </select></> : <>
+                    <select
+                      className="form-select mt-1 ml-1"
+                      disabled={completed[activeStep] === true}
+                      value={isoType.find(obj => obj.serviceID === i).Nontype}
+                      onChange={(e) => {
+                        // Check if "Others" is selected and update state
+                        if (e.target.value === 'Others') {
+                          setShowOtherField(true);
+                        } else {
+                          setShowOtherField(false);
                         }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                      }
-                    }}>
+                        const currentObject = isoType.find(obj => obj.serviceID === i);
+                        if (currentObject) {
+                          const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                          const newCurrentObject = {
+                            ...currentObject,
+                            Nontype: e.target.value
+                          }
+                          remainingObject.push(newCurrentObject);
+                          setIsoType(remainingObject);
+                        }
+                      }}>
                       <option value="" selected disabled>Select ISO Type</option>
                       <option value="9001">9001</option>
                       <option value="14001">14001</option>
@@ -1310,30 +1308,30 @@ export default function EditableMoreBooking({
                       <option value="GMO">GMO</option>
                       <option value="17025-2017">17025-2017</option>
                       <option value="Others">Others</option>
-                    </select> 
-                     {/* Conditionally render the textarea */}
-                     {showOtherField && (
-                        <input 
+                    </select>
+                    {/* Conditionally render the textarea */}
+                    {showOtherField && (
+                      <input
                         type="text"
-                          className="form-control mt-1 ml-1"
-                          value={isoType.find(obj => obj.serviceID === i).forOther}
-                          onChange={(e) => {
-                            const currentObject = isoType.find(obj => obj.serviceID === i);
-                            if (currentObject) {
-                              const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                              const newCurrentObject = {
-                                ...currentObject,
-                                forOther: e.target.value.toUpperCase() // Convert to uppercase
-                              }
-                              remainingObject.push(newCurrentObject);
-                              setIsoType(remainingObject);
+                        className="form-control mt-1 ml-1"
+                        value={isoType.find(obj => obj.serviceID === i).forOther}
+                        onChange={(e) => {
+                          const currentObject = isoType.find(obj => obj.serviceID === i);
+                          if (currentObject) {
+                            const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                            const newCurrentObject = {
+                              ...currentObject,
+                              forOther: e.target.value.toUpperCase() // Convert to uppercase
                             }
-                          }}
-                          placeholder="Please specify the ISO Type"
-                        />
-                      )}
-                    </>
-                    }
+                            remainingObject.push(newCurrentObject);
+                            setIsoType(remainingObject);
+                          }
+                        }}
+                        placeholder="Please specify the ISO Type"
+                      />
+                    )}
+                  </>
+                  }
                   {/* NON-IAF ISO TYPES */}
                 </>}
                 {/* Company Incorporation  */}
@@ -1400,8 +1398,8 @@ export default function EditableMoreBooking({
                     <option value="3 Year">3 Year</option>
                   </select>
                 </>}
-                 {/* Director Dsc  */}
-                 {leadData.services[i].serviceName.includes("Director DSC") && <>
+                {/* Director Dsc  */}
+                {leadData.services[i].serviceName.includes("Director DSC") && <>
                   <select className="form-select mt-1 ml-1"
                     value={directorDscType.find(obj => obj.serviceID === i).type}
                     onChange={(e) => {
@@ -2218,16 +2216,29 @@ export default function EditableMoreBooking({
   const handleRemoveFile = () => {
     setLeadData({ ...leadData, paymentReceipt: null });
   };
+
   const handleRemoveOtherFile = (index) => {
     setLeadData((prevLeadData) => {
       const updatedDocs = [...prevLeadData.otherDocs];
       updatedDocs.splice(index, 1);
       return {
         ...prevLeadData,
-        otherDocs: updatedDocs,
+        otherDocs: updatedDocs
       };
     });
   };
+
+  const handleRemovePaymentReceipt = (index) => {
+    setLeadData((prevLeadData) => {
+      const updatedPaymentReceipt = [...prevLeadData.paymentReceipt];
+      updatedPaymentReceipt.splice(index, 1);
+      return {
+        ...prevLeadData,
+        paymentReceipt: updatedPaymentReceipt
+      };
+    });
+  };
+
   const formatInputDate = (dateString) => {
     const parsedDate = new Date(dateString);
     const year = parsedDate.getFullYear();
@@ -2237,6 +2248,8 @@ export default function EditableMoreBooking({
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const functionShowSizeLimit = (e) => {
     const file = e.target.files[0];
@@ -2249,7 +2262,35 @@ export default function EditableMoreBooking({
     } else {
       return true;
     }
-  }
+  };
+
+  const handleFileUpload = async (e, fieldName) => {
+    if (functionShowSizeLimit(e)) {
+      setIsLoading(true); // Start loader
+      console.log("Loader is running");
+      try {
+        setLeadData((prevLeadData) => ({
+          ...prevLeadData,
+          [fieldName]: [
+            ...(prevLeadData[fieldName] || []),
+            ...e.target.files,
+          ],
+        }));
+        // Simulate upload delay
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Handle actual file upload logic here
+
+        // Swal.fire('Success!', 'Files uploaded successfully.', 'success');
+      }
+      catch (error) {
+        // Swal.fire('Error!', 'Failed to upload files.', 'error');
+      } finally {
+        setIsLoading(false); // Stop loader
+        console.log("Loader has stopped");
+      }
+    }
+  };
+
   return (
     <div>
       <div className="container mt-2">
@@ -3010,7 +3051,15 @@ export default function EditableMoreBooking({
                             </h2>
                             <div className="steprForm-inner">
                               <form>
-                                <div className="row">
+                                {isLoading ? <div className="LoaderTDSatyle w-100">
+                                  <ClipLoader
+                                    color="lightgrey"
+                                    loading={true}
+                                    size={30}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                  />
+                                </div> : <div className="row">
                                   <div className="col-sm-12">
                                     <span className="notes">
                                       Note: Total Selected Services is{" "}
@@ -3136,34 +3185,66 @@ export default function EditableMoreBooking({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-
                                       </label>
                                       <input
                                         type="file"
                                         className="form-control mt-1"
                                         id="Company"
-                                        onChange={(e) => {
-                                          // Update the state with the selected files
-
-                                          setStep4Changed(true)
-                                          if (functionShowSizeLimit(e)) {
-                                            setLeadData((prevLeadData) => ({
-                                              ...prevLeadData,
-                                              paymentReceipt: [
-                                                ...(prevLeadData.paymentReceipt ||
-                                                  []),
-                                                ...e.target.files,
-                                              ],
-                                            }));
-                                          }
-                                        }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
-                                        multi
+                                        // onChange={(e) => {
+                                        //   // Update the state with the selected files
+                                        //   try {
+                                        //     setStep4Changed(true);
+                                        //     if (functionShowSizeLimit(e)) {
+                                        //       setIsLoading(true);
+                                        //       setLeadData((prevLeadData) => ({
+                                        //         ...prevLeadData,
+                                        //         paymentReceipt: [
+                                        //           ...(prevLeadData.paymentReceipt ||
+                                        //             []),
+                                        //           ...e.target.files,
+                                        //         ],
+                                        //       }));
+                                        //     }
+                                        //   } finally {
+                                        //     setIsLoading(false);
+                                        //   }
+                                        // }}
+                                        onChange={(e) => handleFileUpload(e, "paymentReceipt")}
+                                        disabled={completed[activeStep] === true}
+                                        multiple
                                       ></input>
                                     </div>
                                   </div>
+                                  {leadData.paymentReceipt &&
+                                    leadData.paymentReceipt.length > 0 && (
+                                      <div className="uploaded-filename-main d-flex flex-wrap">
+                                        {leadData.paymentReceipt.map(
+                                          (file, index) => (
+                                            <div
+                                              className="uploaded-fileItem d-flex align-items-center"
+                                              key={index}
+                                            >
+                                              <p className="m-0">
+                                                {file.name !== undefined
+                                                  ? file.name
+                                                  : file.filename}
+                                              </p>
+                                              <button
+                                                className="fileItem-dlt-btn"
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  handleRemovePaymentReceipt(index);
+                                                }}
+                                                disabled={completed[activeStep] === true}
+                                              >
+                                                <IconX className="close-icon" />
+                                              </button>
+                                            </div>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+
 
                                   <div className="col-sm-6 mt-2">
                                     <div class="form-group mt-2 mb-2">
@@ -3200,7 +3281,7 @@ export default function EditableMoreBooking({
                                           SRK Seedfund(Non GST)/IDFC first Bank
                                         </option> */}
                                         <option value="STARTUP SAHAY CONSULTANCY / ADVISORS">
-                                        STARTUP SAHAY CONSULTANCY / ADVISORS
+                                          STARTUP SAHAY CONSULTANCY / ADVISORS
                                         </option>
                                         <option value="Razorpay">
                                           Razorpay
@@ -3242,28 +3323,31 @@ export default function EditableMoreBooking({
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-
                                       </label>
                                       <input
                                         type="file"
-                                        onChange={(e) => {
-                                          // Update the state with the selected files
-                                          setStep4Changed(true)
-                                          if (functionShowSizeLimit(e)) {
-                                            setLeadData((prevLeadData) => ({
-                                              ...prevLeadData,
-                                              otherDocs: [
-                                                ...(prevLeadData.otherDocs || []),
-                                                ...e.target.files,
-                                              ],
-                                            }));
-                                          }
-                                        }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
                                         className="form-control mt-1"
                                         id="docs"
+                                        // onChange={(e) => {
+                                        //   // Update the state with the selected files
+                                        //   try {
+                                        //     setStep4Changed(true);
+                                        //     if (functionShowSizeLimit(e)) {
+                                        //       setIsLoading(true);
+                                        //       setLeadData((prevLeadData) => ({
+                                        //         ...prevLeadData,
+                                        //         otherDocs: [
+                                        //           ...(prevLeadData.otherDocs || []),
+                                        //           ...e.target.files,
+                                        //         ],
+                                        //       }));
+                                        //     }
+                                        //   } finally {
+                                        //     setIsLoading(false);
+                                        //   }
+                                        // }}
+                                        onChange={(e) => handleFileUpload(e, "otherDocs")}
+                                        disabled={completed[activeStep] === true}
                                         multiple
                                       />
                                       {leadData.otherDocs &&
@@ -3283,16 +3367,10 @@ export default function EditableMoreBooking({
                                                   <button
                                                     className="fileItem-dlt-btn"
                                                     onClick={(e) => {
-                                                      e.preventDefault()
-                                                      handleRemoveOtherFile(
-                                                        index
-                                                      )
-                                                    }
-                                                    }
-                                                    disabled={
-                                                      completed[activeStep] ===
-                                                      true
-                                                    }
+                                                      e.preventDefault();
+                                                      handleRemoveOtherFile(index);
+                                                    }}
+                                                    disabled={completed[activeStep] === true}
                                                   >
                                                     <IconX className="close-icon" />
                                                   </button>
@@ -3304,6 +3382,7 @@ export default function EditableMoreBooking({
                                     </div>
                                   </div>
                                 </div>
+                                }
                               </form>
                             </div>
                           </div>
@@ -3538,12 +3617,12 @@ export default function EditableMoreBooking({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
-                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
-                                                  : 
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ?
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}`
+                                                  :
                                                   isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                                                  ? `${isoDetails.forOther}`
-                                                  : `${isoDetails.Nontype}`}`;
+                                                    ? `${isoDetails.forOther}`
+                                                    : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {

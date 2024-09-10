@@ -59,7 +59,6 @@ function EmployeeDataReport() {
     const [mergedData, setMergedData] = useState([]);
 
     //-------------------------date formats ------------------------------
-
     function formatDateMonth(timestamp) {
         const date = new Date(timestamp);
         const day = date.getDate().toString().padStart(2, "0");
@@ -67,6 +66,7 @@ function EmployeeDataReport() {
         const year = date.getFullYear();
         return `${month}/${day}/${year}`;
     }
+
     function formatDateFinal(timestamp) {
         const date = new Date(timestamp);
         const day = date.getDate().toString().padStart(2, "0");
@@ -74,6 +74,7 @@ function EmployeeDataReport() {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
+
     const formatDate = (inputDate) => {
         const date = new Date(inputDate);
         const convertedDate = date.toLocaleDateString();
@@ -121,7 +122,6 @@ function EmployeeDataReport() {
     //     }
     // };
 
-
     const fetchCompanyData = async () => {
         try {
             setLoading(true);
@@ -156,8 +156,8 @@ function EmployeeDataReport() {
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 
     useEffect(() => {
-        // fetchCompanyData()
-        fetchEmployeeInfo()
+        // fetchCompanyData();
+        fetchEmployeeInfo();
         //fetchCompanies();
         //fetchRedesignedBookings();
         // debouncedFetchCompanyData();
@@ -323,6 +323,7 @@ function EmployeeDataReport() {
         minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
         maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
     };
+
     const shortcutsItems = [
         {
             label: "This Week",
@@ -365,7 +366,6 @@ function EmployeeDataReport() {
     ];
 
     //-------------------------- Sort filteres for different status  -------------------------------------------------------------------------
-
     // const handleSortUntouched = (sortBy1) => {
     //     setSortType((prevData) => ({
     //         ...prevData,
@@ -424,8 +424,6 @@ function EmployeeDataReport() {
     //             break;
     //     }
     // };
-
-
     const handleSortUntouched = (sortBy1) => {
         setSortType((prevData) => ({
             ...prevData,
@@ -467,7 +465,7 @@ function EmployeeDataReport() {
         setEmployeeData(sortedData);
     };
 
-    // for busy
+
     // const handleSortbusy = (sortBy1) => {
     //     setSortType((prevData) => ({
     //         ...prevData,
@@ -636,9 +634,9 @@ function EmployeeDataReport() {
                         ? "none"
                         : "ascending",
         }));
-    
+
         let sortedData = [...mergedData];
-    
+
         switch (sortBy1) {
             case "ascending":
                 setIncoFilter("ascending");
@@ -663,10 +661,10 @@ function EmployeeDataReport() {
             default:
                 break;
         }
-    
+
         setEmployeeData(sortedData);
     };
-    
+
 
     // const handleSortJunk = (sortBy1) => {
     //     setSortType((prevData) => ({
@@ -764,6 +762,7 @@ function EmployeeDataReport() {
 
         setEmployeeData(sortedData);
     };
+
 
     // const handleSortFollowUp = (sortBy1) => {
     //     setSortType((prevData) => ({
@@ -864,6 +863,7 @@ function EmployeeDataReport() {
         setEmployeeData(sortedData);
     };
 
+
     // const handleSortInterested = (sortBy1) => {
     //     setSortType((prevData) => ({
     //         ...prevData,
@@ -962,6 +962,7 @@ function EmployeeDataReport() {
 
         setEmployeeData(sortedData);
     };
+
 
     // const handleSortNotInterested = (sortBy1) => {
     //     setSortType((prevData) => ({
@@ -1063,6 +1064,7 @@ function EmployeeDataReport() {
         setEmployeeData(sortedData);
     };
 
+
     // const handleSortMatured = (sortBy1) => {
     //     setSortType((prevData) => ({
     //         ...prevData,
@@ -1162,6 +1164,7 @@ function EmployeeDataReport() {
         setEmployeeData(sortedData);
     };
 
+
     // const handleSortTotalLeads = (sortBy1) => {
     //     setSortType((prevData) => ({
     //         ...prevData,
@@ -1220,9 +1223,9 @@ function EmployeeDataReport() {
                         ? "none"
                         : "ascending",
         }));
-    
+
         let sortedData = [...mergedData];
-    
+
         switch (sortBy1) {
             case "ascending":
                 setIncoFilter("ascending");
@@ -1247,62 +1250,11 @@ function EmployeeDataReport() {
             default:
                 break;
         }
-    
+
         setEmployeeData(sortedData);
-    };    
-
-    const handleSortLastLead = (sortBy1) => {
-        setSortType((prevData) => ({
-            ...prevData,
-            lastLead:
-                prevData.lastLead === "ascending"
-                    ? "descending"
-                    : prevData.lastLead === "descending"
-                        ? "none"
-                        : "ascending",
-        }));
-        switch (sortBy1) {
-            case "ascending":
-                setIncoFilter("ascending");
-                const untouchedCountAscending = {};
-                companyData.forEach((company) => {
-                    untouchedCountAscending[company.ename] =
-                        (untouchedCountAscending[company.ename] || 0) + 1;
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCountAscending[a.ename] || 0;
-                    const countB = untouchedCountAscending[b.ename] || 0;
-                    return countA - countB; // Sort in ascending order of "Untouched" count
-                });
-                break;
-            case "descending":
-                setIncoFilter("descending");
-                const untouchedCount = {};
-                companyData.forEach((company) => {
-                    untouchedCount[company.ename] =
-                        (untouchedCount[company.ename] || 0) + 1;
-                });
-
-                // Step 2: Sort employeeData based on the count of "Untouched" statuses
-                employeeData.sort((a, b) => {
-                    const countA = untouchedCount[a.ename] || 0;
-                    const countB = untouchedCount[b.ename] || 0;
-                    return countB - countA; // Sort in descending order of "Untouched" count
-                });
-                break;
-            case "none":
-                setIncoFilter("none");
-                if (originalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setEmployeeData(originalEmployeeData);
-                }
-                break;
-            default:
-                break;
-        }
     };
+
+    
     // const handleSortLastLead = (sortBy1) => {
     //     setSortType((prevData) => ({
     //         ...prevData,
@@ -1313,73 +1265,119 @@ function EmployeeDataReport() {
     //                     ? "none"
     //                     : "ascending",
     //     }));
-    
-    //     let sortedData = [...employeeData,];
-        
-    //     console.log("Sorted data in last assign date :", sortedData);
     //     switch (sortBy1) {
     //         case "ascending":
     //             setIncoFilter("ascending");
-    //             sortedData.sort((a, b) => {
-    //                 const dateA = new Date(a.lastAssignDate); // Convert assignedLeadsDate to Date object
-    //                 const dateB = new Date(b.lastAssignDate);
-    //                 return dateA - dateB; // Sort in ascending order by date
+    //             const untouchedCountAscending = {};
+    //             companyData.forEach((company) => {
+    //                 untouchedCountAscending[company.ename] =
+    //                     (untouchedCountAscending[company.ename] || 0) + 1;
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCountAscending[a.ename] || 0;
+    //                 const countB = untouchedCountAscending[b.ename] || 0;
+    //                 return countA - countB; // Sort in ascending order of "Untouched" count
     //             });
     //             break;
     //         case "descending":
     //             setIncoFilter("descending");
-    //             sortedData.sort((a, b) => {
-    //                 const dateA = new Date(a.lastAssignDate); // Convert assignedLeadsDate to Date object
-    //                 const dateB = new Date(b.lastAssignDate);
-    //                 return dateB - dateA; // Sort in descending order by date
+    //             const untouchedCount = {};
+    //             companyData.forEach((company) => {
+    //                 untouchedCount[company.ename] =
+    //                     (untouchedCount[company.ename] || 0) + 1;
+    //             });
+
+    //             // Step 2: Sort employeeData based on the count of "Untouched" statuses
+    //             employeeData.sort((a, b) => {
+    //                 const countA = untouchedCount[a.ename] || 0;
+    //                 const countB = untouchedCount[b.ename] || 0;
+    //                 return countB - countA; // Sort in descending order of "Untouched" count
     //             });
     //             break;
     //         case "none":
     //             setIncoFilter("none");
     //             if (originalEmployeeData.length > 0) {
     //                 // Restore to previous state
-    //                 sortedData = originalEmployeeData;
+    //                 setEmployeeData(originalEmployeeData);
     //             }
     //             break;
     //         default:
     //             break;
     //     }
-    
-    //     setEmployeeData(sortedData);
-    // };    
-    
+    // };
+    const handleSortLastLead = (sortBy1) => {
+        setSortType((prevData) => ({
+            ...prevData,
+            lastLead:
+                prevData.lastLead === "ascending"
+                    ? "descending"
+                    : prevData.lastLead === "descending"
+                        ? "none"
+                        : "ascending",
+        }));
+
+        let sortedData = [...employeeData];
+        switch (sortBy1) {
+            case "ascending":
+                setIncoFilter("ascending");
+                sortedData.sort((a, b) => {
+                    const dateA = new Date(a.lastAssignDate); // Convert assignedLeadsDate to Date object
+                    const dateB = new Date(b.lastAssignDate);
+                    return dateA - dateB; // Sort in ascending order by date
+                });
+                break;
+            case "descending":
+                setIncoFilter("descending");
+                sortedData.sort((a, b) => {
+                    const dateA = new Date(a.lastAssignDate); // Convert assignedLeadsDate to Date object
+                    const dateB = new Date(b.lastAssignDate);
+                    return dateB - dateA; // Sort in descending order by date
+                });
+                break;
+            case "none":
+                setIncoFilter("none");
+                if (originalEmployeeData.length > 0) {
+                    // Restore to previous state
+                    sortedData = originalEmployeeData;
+                }
+                break;
+            default:
+                break;
+        }
+
+        setEmployeeData(sortedData);
+    }; 
 
     useEffect(() => {
         setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
     }, [employeeData]);
-
 
     //---------------------------------------employee table open functions------------------------------------
     const functionOpenEmployeeTable = (employee) => {
         setOpenEmployeeTable(true);
         setSelectedEmployee(employee);
     };
+
     const closeEmployeeTable = () => {
         setOpenEmployeeTable(false);
     };
 
-    const formattedDates =
-        companyData.length !== 0 &&
-        selectedEmployee !== "" &&
-        companyData
-            .filter((data) => data.ename === selectedEmployee) // Filter data based on ename
-            .map((data) => formatDate(data.AssignDate));
+    // const formattedDates =
+    // companyData.length !== 0 &&
+    //     selectedEmployee !== "" &&
+    //     companyData
+    //         .filter((data) => data._id === selectedEmployee) // Filter data based on ename
+    //         .map((data) => formatDate(data.AssignDate));
 
-    const uniqueArray = formattedDates && [...new Set(formattedDates)];
+    // const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
-    const properCompanyData =
-        selectedEmployee !== "" &&
-        companyData.filter((obj) => obj.ename === selectedEmployee);
-
-
+    // const properCompanyData =
+    //     selectedEmployee !== "" &&
+    //     companyData.filter((obj) => obj._id === selectedEmployee);
 
     //  ---------------------------------------------   Exporting Booking function  ---------------------------------------------
-
     const handleExportBookings = async () => {
         const tempData = [];
         employeeData.forEach((obj, index) => {
@@ -1671,7 +1669,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.busy === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1679,7 +1677,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.busy === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1707,7 +1705,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.notPickedUp === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1715,7 +1713,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.notPickedUp === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1743,7 +1741,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.junk === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1751,7 +1749,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.junk === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1779,7 +1777,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.followUp === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1787,7 +1785,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.followUp === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1815,7 +1813,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.interested === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1823,7 +1821,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.interested === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1851,7 +1849,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.notInterested === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1859,7 +1857,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.notInterested === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1887,7 +1885,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.matured === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1895,7 +1893,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.matured === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1923,7 +1921,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.totalLeads === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1931,7 +1929,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.totalLeads === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1959,7 +1957,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "descending"
+                                                                sortType.lastLead === "descending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -1967,7 +1965,7 @@ function EmployeeDataReport() {
                                                     <ArrowDropDownIcon className="down-short-arrow"
                                                         style={{
                                                             color:
-                                                                sortType.untouched === "ascending"
+                                                                sortType.lastLead === "ascending"
                                                                     ? "black"
                                                                     : "#9d8f8f",
                                                         }}
@@ -2533,13 +2531,7 @@ function EmployeeDataReport() {
                                         fontWeight: "bold",
                                     }}
                                 >
-                                    <th
-                                        style={{
-                                            lineHeight: "32px",
-                                        }}
-                                    >
-                                        Sr. No
-                                    </th>
+                                    <th style={{lineHeight: "32px"}}>Sr. No</th>
                                     <th>Lead Assign Date</th>
                                     <th>Untouched</th>
                                     <th>Busy</th>
@@ -2553,7 +2545,7 @@ function EmployeeDataReport() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {uniqueArray &&
+                                {/* {uniqueArray &&
                                     uniqueArray.map((obj, index) => (
                                         <tr key={`row-${index}`}>
                                             <td>{index + 1}</td>
@@ -2645,9 +2637,43 @@ function EmployeeDataReport() {
                                                     .length.toLocaleString()}
                                             </td>
                                         </tr>
+                                    ))} */}
+                                {mergedData
+                                    .filter((obj) => obj.ename === selectedEmployee) // Filter data for selected employee
+                                    .map((obj, index) => (
+                                        <tr key={index}>
+                                            <td style={{lineHeight: "32px"}}>{index + 1}</td>
+                                            <td>{formatDateFinal(obj.lastAssignDate)}</td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}
+                                            </td>
+                                            <td>{obj.totalLeads?.toLocaleString()}</td>
+                                        </tr>
                                     ))}
+
                             </tbody>
-                            {uniqueArray && (
+                            {/* {uniqueArray && (
                                 <tfoot>
                                     <tr style={{ fontWeight: 500 }}>
                                         <td colSpan="2">Total</td>
@@ -2705,7 +2731,41 @@ function EmployeeDataReport() {
                                         <td>{properCompanyData.length.toLocaleString()}</td>
                                     </tr>
                                 </tfoot>
-                            )}
+                            )} */}
+                            <tfoot>
+                            {mergedData
+                                    .filter((obj) => obj.ename === selectedEmployee) // Filter data for selected employee
+                                    .map((obj, index) => (
+                                        <tr style={{ fontWeight: 500 }} key={index}>
+                                            <td colSpan="2" style={{lineHeight: "32px"}}>Total</td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Busy")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Not Picked Up")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Junk")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "FollowUp")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Interested")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Not Interested")?.count || 0}
+                                            </td>
+                                            <td>
+                                                {obj.statusCounts?.find((status) => status.status === "Matured")?.count || 0}
+                                            </td>
+                                            <td>{obj.totalLeads?.toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                            </tfoot>
                         </table>
                     </div>
                 </DialogContent>

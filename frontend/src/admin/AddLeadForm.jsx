@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import pdfimg from "../static/my-images/pdf.png";
 import Swal from "sweetalert2";
+import ClipLoader from "react-spinners/ClipLoader";
 import img from "../static/my-images/image.png";
 import wordimg from "../static/my-images/word.png";
 import excelimg from "../static/my-images/excel.png";
@@ -19,9 +20,9 @@ import confetti from 'canvas-confetti';
 import Dhanyavad from './DashboardReportComponents/dhanyavad.wav'
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const steps = [
   "Basic Company Informations",
@@ -67,6 +68,7 @@ export default function AddLeadForm({
 }) {
   const [totalServices, setTotalServices] = useState(1);
   const [fetchedService, setfetchedService] = useState(false);
+
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
     "Company Number": companyNumber ? companyNumber : 0,
@@ -905,12 +907,12 @@ export default function AddLeadForm({
             return {
               ...service,
               serviceName: service.serviceName === "ISO Certificate"
-              ? `ISO Certificate ${isoDetails.type === "IAF"
-                ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}`
-                : isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                  ? `Non IAF ${isoDetails.forOther}`
-                  : `Non IAF ${isoDetails.Nontype}`
-              }`
+                ? `ISO Certificate ${isoDetails.type === "IAF"
+                  ? `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}`
+                  : isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                    ? `Non IAF ${isoDetails.forOther}`
+                    : `Non IAF ${isoDetails.Nontype}`
+                }`
                 : service.serviceName === "Company Incorporation"
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
@@ -1290,75 +1292,75 @@ export default function AddLeadForm({
                       <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
                     </select>
-                    </> : 
-                    <> 
-                     {/* NON-IAF ISO TYPES */} 
-                    <select className="form-select mt-1 ml-1"
-                      value={isoType.find(obj => obj.serviceID === i)?.Nontype || " "}
-                      onChange={(e) => {
-                         // Check if "Others" is selected and update state
-                         if (e.target.value === 'Others') {
-                          setShowOtherField(true);
-                        } else {
-                          setShowOtherField(false);
-                        }
-                        const currentObject = isoType.find(obj => obj.serviceID === i);
-                        if (currentObject) {
-                          const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                          const newCurrentObject = {
-                            ...currentObject,
-                            Nontype: e.target.value
+                  </> :
+                    <>
+                      {/* NON-IAF ISO TYPES */}
+                      <select className="form-select mt-1 ml-1"
+                        value={isoType.find(obj => obj.serviceID === i)?.Nontype || " "}
+                        onChange={(e) => {
+                          // Check if "Others" is selected and update state
+                          if (e.target.value === 'Others') {
+                            setShowOtherField(true);
+                          } else {
+                            setShowOtherField(false);
                           }
-                          remainingObject.push(newCurrentObject);
-                          setIsoType(remainingObject);
-                        }
-                      }}>
-                      <option value="" selected disabled>Select ISO Type</option>
-                      <option value="9001">9001</option>
-                      <option value="14001">14001</option>
-                      <option value="45001">45001</option>
-                      <option value="22000">22000</option>
-                      <option value="27001">27001</option>
-                      <option value="13485">13485</option>
-                      <option value="20000-1">20000-1</option>
-                      <option value="50001">50001</option>
-                      <option value="21001">21001</option>
-                      <option value="GMP">GMP</option>
-                      <option value="GAP">GAP</option>
-                      <option value="FDA">FDA</option>
-                      <option value="HALAL">HALAL</option>
-                      <option value="ORGANIC">ORGANIC</option>
-                      <option value="FSSC">FSSC</option>
-                      <option value="FSC">FSC</option>
-                      <option value="BIFMA">BIFMA</option>
-                      <option value="CE">CE</option>
-                      <option value="HACCP">HACCP</option>
-                      <option value="GHP">GHP</option>
-                      <option value="AIOTA">AIOTA</option>
-                      <option value="GREEN GUARD">GREEN GUARD</option>
-                      <option value="SEDEX">SEDEX</option>
-                      <option value="KOSHER">KOSHER</option>
-                      <option value="WHO-GMP">WHO-GMP</option>
-                      <option value="BRC">BRC</option>
-                      <option value="VEGAN">VEGAN</option>
-                      <option value="SA 8000">SA 8000</option>
-                      <option value="CCC">CCC</option>
-                      <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
-                      <option value="CMMI LEVEL 5">CMMI LEVEL 5</option>
-                      <option value="GO GREEN">GO GREEN</option>
-                      <option value="PCMM 5">PCMM 5</option>
-                      <option value="RIOS">RIOS</option>
-                      <option value="ROHS">ROHS</option>
-                      <option value="IEC 17020">IEC 17020</option>
-                      <option value="GFSI">GFSI</option>
-                      <option value="GMO">GMO</option>
-                      <option value="17025-2017">17025-2017</option>
-                      <option value="Others">Others</option>
-                    </select> 
-                    {/* Conditionally render the textarea */}
-                   {showOtherField && (
+                          const currentObject = isoType.find(obj => obj.serviceID === i);
+                          if (currentObject) {
+                            const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                            const newCurrentObject = {
+                              ...currentObject,
+                              Nontype: e.target.value
+                            }
+                            remainingObject.push(newCurrentObject);
+                            setIsoType(remainingObject);
+                          }
+                        }}>
+                        <option value="" selected disabled>Select ISO Type</option>
+                        <option value="9001">9001</option>
+                        <option value="14001">14001</option>
+                        <option value="45001">45001</option>
+                        <option value="22000">22000</option>
+                        <option value="27001">27001</option>
+                        <option value="13485">13485</option>
+                        <option value="20000-1">20000-1</option>
+                        <option value="50001">50001</option>
+                        <option value="21001">21001</option>
+                        <option value="GMP">GMP</option>
+                        <option value="GAP">GAP</option>
+                        <option value="FDA">FDA</option>
+                        <option value="HALAL">HALAL</option>
+                        <option value="ORGANIC">ORGANIC</option>
+                        <option value="FSSC">FSSC</option>
+                        <option value="FSC">FSC</option>
+                        <option value="BIFMA">BIFMA</option>
+                        <option value="CE">CE</option>
+                        <option value="HACCP">HACCP</option>
+                        <option value="GHP">GHP</option>
+                        <option value="AIOTA">AIOTA</option>
+                        <option value="GREEN GUARD">GREEN GUARD</option>
+                        <option value="SEDEX">SEDEX</option>
+                        <option value="KOSHER">KOSHER</option>
+                        <option value="WHO-GMP">WHO-GMP</option>
+                        <option value="BRC">BRC</option>
+                        <option value="VEGAN">VEGAN</option>
+                        <option value="SA 8000">SA 8000</option>
+                        <option value="CCC">CCC</option>
+                        <option value="CMMI LEVEL 3">CMMI LEVEL 3</option>
+                        <option value="CMMI LEVEL 5">CMMI LEVEL 5</option>
+                        <option value="GO GREEN">GO GREEN</option>
+                        <option value="PCMM 5">PCMM 5</option>
+                        <option value="RIOS">RIOS</option>
+                        <option value="ROHS">ROHS</option>
+                        <option value="IEC 17020">IEC 17020</option>
+                        <option value="GFSI">GFSI</option>
+                        <option value="GMO">GMO</option>
+                        <option value="17025-2017">17025-2017</option>
+                        <option value="Others">Others</option>
+                      </select>
+                      {/* Conditionally render the textarea */}
+                      {showOtherField && (
                         <input
-                        type='text'
+                          type='text'
                           className="form-control mt-1 ml-1"
                           value={isoType.find(obj => obj.serviceID === i).forOther}
                           onChange={(e) => {
@@ -2270,13 +2272,25 @@ export default function AddLeadForm({
   const handleRemoveFile = () => {
     setLeadData({ ...leadData, paymentReceipt: null });
   };
+
   const handleRemoveOtherFile = (index) => {
     setLeadData((prevLeadData) => {
       const updatedDocs = [...prevLeadData.otherDocs];
       updatedDocs.splice(index, 1);
       return {
         ...prevLeadData,
-        otherDocs: updatedDocs,
+        otherDocs: updatedDocs
+      };
+    });
+  };
+
+  const handleRemovePaymentReceipt = (index) => {
+    setLeadData((prevLeadData) => {
+      const updatedPaymentReceipt = [...prevLeadData.paymentReceipt];
+      updatedPaymentReceipt.splice(index, 1);
+      return {
+        ...prevLeadData,
+        paymentReceipt: updatedPaymentReceipt
       };
     });
   };
@@ -2301,7 +2315,6 @@ export default function AddLeadForm({
       })
     );
   }
-
 
   const soundRef = useRef(null); // useRef for optional sound element
 
@@ -2333,6 +2346,7 @@ export default function AddLeadForm({
 
   const buttonRef = useRef(null);;
 
+  const [isLoading, setIsLoading] = useState(false);
 
   const functionShowSizeLimit = (e) => {
     const file = e.target.files[0];
@@ -2345,9 +2359,34 @@ export default function AddLeadForm({
     } else {
       return true;
     }
-  }
+  };
 
+  const handleFileUpload = async (e, fieldName) => {
+    if (functionShowSizeLimit(e)) {
+      setIsLoading(true); // Start loader
+      console.log("Loader is running");
+      try {
+        setLeadData((prevLeadData) => ({
+          ...prevLeadData,
+          [fieldName]: [
+            ...(prevLeadData[fieldName] || []),
+            ...e.target.files,
+          ],
+        }));
+        // Simulate upload delay
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Handle actual file upload logic here
 
+        // Swal.fire('Success!', 'Files uploaded successfully.', 'success');
+      }
+      catch (error) {
+        // Swal.fire('Error!', 'Failed to upload files.', 'error');
+      } finally {
+        setIsLoading(false); // Stop loader
+        console.log("Loader has stopped");
+      }
+    }
+  };
 
 
 
@@ -3111,7 +3150,15 @@ export default function AddLeadForm({
                             </h2>
                             <div className="steprForm-inner">
                               <form>
-                                <div className="row">
+                                {isLoading ? <div className="LoaderTDSatyle w-100">
+                                  <ClipLoader
+                                    color="lightgrey"
+                                    loading={true}
+                                    size={30}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                  />
+                                </div> : <div className="row">
                                   <div className="col-sm-12">
                                     <span className="notes">
                                       Note: Total Selected Services is{" "}
@@ -3237,34 +3284,60 @@ export default function AddLeadForm({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-
                                       </label>
                                       <input
                                         type="file"
                                         className="form-control mt-1"
                                         id="Company"
-                                        onChange={(e) => {
-                                          if (functionShowSizeLimit(e)) {
-                                            setLeadData((prevLeadData) => ({
-                                              ...prevLeadData,
-                                              paymentReceipt: [
-                                                ...(prevLeadData.paymentReceipt ||
-                                                  []),
-                                                ...e.target.files,
-                                              ],
-                                            }));
-                                          }
-                                          // Update the state with the selected files
-
-
-                                        }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
-                                        multi
+                                        // onChange={(e) => {
+                                        //   console.log("Uploading file...");
+                                        //   if (functionShowSizeLimit(e)) {
+                                        //     setLeadData((prevLeadData) => ({
+                                        //       ...prevLeadData,
+                                        //       paymentReceipt: [
+                                        //         ...(prevLeadData.paymentReceipt ||
+                                        //           []),
+                                        //         ...e.target.files,
+                                        //       ],
+                                        //     }));
+                                        //   }
+                                        //   // Update the state with the selected files
+                                        // }}
+                                        onChange={(e) => handleFileUpload(e, "paymentReceipt")}
+                                        disabled={completed[activeStep] === true}
+                                        multiple
                                       ></input>
                                     </div>
                                   </div>
+                                  {leadData.paymentReceipt &&
+                                    leadData.paymentReceipt.length > 0 && (
+                                      <div className="uploaded-filename-main d-flex flex-wrap">
+                                        {leadData.paymentReceipt.map(
+                                          (file, index) => (
+                                            <div
+                                              className="uploaded-fileItem d-flex align-items-center"
+                                              key={index}
+                                            >
+                                              <p className="m-0">
+                                                {file.name !== undefined
+                                                  ? file.name
+                                                  : file.filename}
+                                              </p>
+                                              <button
+                                                className="fileItem-dlt-btn"
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  handleRemovePaymentReceipt(index);
+                                                }}
+                                                disabled={completed[activeStep] === true}
+                                              >
+                                                <IconX className="close-icon" />
+                                              </button>
+                                            </div>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
 
                                   <div className="col-sm-6 mt-2">
                                     <div class="form-group mt-2 mb-2">
@@ -3319,7 +3392,6 @@ export default function AddLeadForm({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-
                                       </label>
                                       <textarea
                                         rows={1}
@@ -3344,28 +3416,25 @@ export default function AddLeadForm({
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-
                                       </label>
                                       <input
                                         type="file"
-                                        onChange={(e) => {
-                                          if (functionShowSizeLimit(e)) {
-                                            setLeadData((prevLeadData) => ({
-                                              ...prevLeadData,
-                                              otherDocs: [
-                                                ...(prevLeadData.otherDocs || []),
-                                                ...e.target.files,
-                                              ],
-                                            }));
-                                          }
-                                          // Update the state with the selected files
-
-                                        }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
                                         className="form-control mt-1"
                                         id="docs"
+                                        // onChange={(e) => {
+                                        //   if (functionShowSizeLimit(e)) {
+                                        //     setLeadData((prevLeadData) => ({
+                                        //       ...prevLeadData,
+                                        //       otherDocs: [
+                                        //         ...(prevLeadData.otherDocs || []),
+                                        //         ...e.target.files,
+                                        //       ],
+                                        //     }));
+                                        //   }
+                                        //   // Update the state with the selected files
+                                        // }}
+                                        onChange={(e) => handleFileUpload(e, "otherDocs")}
+                                        disabled={completed[activeStep] === true}
                                         multiple
                                       />
                                       {leadData.otherDocs &&
@@ -3384,15 +3453,8 @@ export default function AddLeadForm({
                                                   </p>
                                                   <button
                                                     className="fileItem-dlt-btn"
-                                                    onClick={() =>
-                                                      handleRemoveOtherFile(
-                                                        index
-                                                      )
-                                                    }
-                                                    disabled={
-                                                      completed[activeStep] ===
-                                                      true
-                                                    }
+                                                    onClick={() => handleRemoveOtherFile(index)}
+                                                    disabled={completed[activeStep] === true}
                                                   >
                                                     <IconX className="close-icon" />
                                                   </button>
@@ -3404,6 +3466,7 @@ export default function AddLeadForm({
                                     </div>
                                   </div>
                                 </div>
+                                }
                               </form>
                             </div>
                           </div>
@@ -3640,12 +3703,12 @@ export default function AddLeadForm({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
-                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
-                                                  : 
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ?
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}`
+                                                  :
                                                   isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                                                  ? `${isoDetails.forOther}`
-                                                  : `${isoDetails.Nontype}`}`;
+                                                    ? `${isoDetails.forOther}`
+                                                    : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {

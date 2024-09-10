@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import pdfimg from "../static/my-images/pdf.png";
 import Swal from "sweetalert2";
+import ClipLoader from "react-spinners/ClipLoader";
 import img from "../static/my-images/image.png";
 import wordimg from "../static/my-images/word.png";
 import excelimg from "../static/my-images/excel.png";
@@ -828,12 +829,12 @@ export default function AdminBookingForm({
             return {
               ...service,
               serviceName: service.serviceName === "ISO Certificate"
-              ? `ISO Certificate ${isoDetails.type === "IAF" ?
-                `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
-                isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                  ? `Non IAF ${isoDetails.forOther}`
-                  : `Non IAF ${isoDetails.Nontype}`
-                    }`
+                ? `ISO Certificate ${isoDetails.type === "IAF" ?
+                  `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                    ? `Non IAF ${isoDetails.forOther}`
+                    : `Non IAF ${isoDetails.Nontype}`
+                }`
                 : service.serviceName === "Company Incorporation"
                   ? `${companyIncoDetails.type} Company Incorporation`
                   : service.serviceName === "Organization DSC"
@@ -1258,29 +1259,29 @@ export default function AdminBookingForm({
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY ( 1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY ( 1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  
-                    <select 
-                    className="form-select mt-1 ml-1" 
-                    value={isoType.find(obj => obj.serviceID === i).Nontype} 
-                    onChange={(e) => {
-                      // Check if "Others" is selected and update state
-                      if (e.target.value === 'Others') {
-                        setShowOtherField(true);
-                      } else {
-                        setShowOtherField(false);
-                      }
-                      const currentObject = isoType.find(obj => obj.serviceID === i);
-
-                      if (currentObject) {
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject = {
-                          ...currentObject,
-                          Nontype: e.target.value
+                    </select></> : <>
+                    <select
+                      className="form-select mt-1 ml-1"
+                      value={isoType.find(obj => obj.serviceID === i).Nontype}
+                      onChange={(e) => {
+                        // Check if "Others" is selected and update state
+                        if (e.target.value === 'Others') {
+                          setShowOtherField(true);
+                        } else {
+                          setShowOtherField(false);
                         }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                      }
-                    }}>
+                        const currentObject = isoType.find(obj => obj.serviceID === i);
+
+                        if (currentObject) {
+                          const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                          const newCurrentObject = {
+                            ...currentObject,
+                            Nontype: e.target.value
+                          }
+                          remainingObject.push(newCurrentObject);
+                          setIsoType(remainingObject);
+                        }
+                      }}>
                       <option value="" selected disabled>Select ISO Type</option>
                       <option value="9001">9001</option>
                       <option value="14001">14001</option>
@@ -1322,30 +1323,30 @@ export default function AdminBookingForm({
                       <option value="GMO">GMO</option>
                       <option value="17025-2017">17025-2017</option>
                       <option value="Others">Others</option>
-                    </select> 
+                    </select>
                     {/* Conditionally render the textarea */}
                     {showOtherField && (
-                        <input 
+                      <input
                         type='text'
-                          class="form-control mt-1 ml-1"
-                          value={isoType.find(obj => obj.serviceID === i).forOther}
-                          onChange={(e) => {
-                            const currentObject = isoType.find(obj => obj.serviceID === i);
-                            if (currentObject) {
-                              const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                              const newCurrentObject = {
-                                ...currentObject,
-                                forOther: e.target.value.toUpperCase()
-                              }
-                              remainingObject.push(newCurrentObject);
-                              setIsoType(remainingObject);
+                        class="form-control mt-1 ml-1"
+                        value={isoType.find(obj => obj.serviceID === i).forOther}
+                        onChange={(e) => {
+                          const currentObject = isoType.find(obj => obj.serviceID === i);
+                          if (currentObject) {
+                            const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                            const newCurrentObject = {
+                              ...currentObject,
+                              forOther: e.target.value.toUpperCase()
                             }
-                          }}
-                          placeholder="Please specify the ISO Type"
-                        />
-                      )}
-                    
-                    </>}
+                            remainingObject.push(newCurrentObject);
+                            setIsoType(remainingObject);
+                          }
+                        }}
+                        placeholder="Please specify the ISO Type"
+                      />
+                    )}
+
+                  </>}
                   {/* NON-IAF ISO TYPES */}
                 </>}
                 {/* Company Incorporation  */}
@@ -2341,6 +2342,18 @@ export default function AdminBookingForm({
     });
   };
 
+  const handleRemovePaymentReceipt = (index) => {
+    setLeadData((prevLeadData) => {
+      const updatedPaymentReceipt = [...prevLeadData.paymentReceipt];
+      updatedPaymentReceipt.splice(index, 1);
+      return {
+        ...prevLeadData,
+        paymentReceipt: updatedPaymentReceipt
+      };
+    });
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const functionShowSizeLimit = (e) => {
     const file = e.target.files[0];
@@ -2353,8 +2366,34 @@ export default function AdminBookingForm({
     } else {
       return true;
     }
-  }
+  };
 
+  const handleFileUpload = async (e, fieldName) => {
+    if (functionShowSizeLimit(e)) {
+      setIsLoading(true); // Start loader
+      console.log("Loader is running");
+      try {
+        setLeadData((prevLeadData) => ({
+          ...prevLeadData,
+          [fieldName]: [
+            ...(prevLeadData[fieldName] || []),
+            ...e.target.files,
+          ],
+        }));
+        // Simulate upload delay
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Handle actual file upload logic here
+
+        // Swal.fire('Success!', 'Files uploaded successfully.', 'success');
+      }
+      catch (error) {
+        // Swal.fire('Error!', 'Failed to upload files.', 'error');
+      } finally {
+        setIsLoading(false); // Stop loader
+        console.log("Loader has stopped");
+      }
+    }
+  };
 
   console.log("Lead-Data : ", leadData)
 
@@ -3221,7 +3260,15 @@ export default function AdminBookingForm({
                             </h2>
                             <div className="steprForm-inner">
                               <form>
-                                <div className="row">
+                                {isLoading ? <div className="LoaderTDSatyle w-100">
+                                  <ClipLoader
+                                    color="lightgrey"
+                                    loading={true}
+                                    size={30}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                  />
+                                </div> : <div className="row">
                                   <div className="col-sm-12">
                                     <span className="notes">
                                       Note: Total Selected Services is{" "}
@@ -3352,28 +3399,54 @@ export default function AdminBookingForm({
                                         type="file"
                                         className="form-control mt-1"
                                         id="Company"
-                                        onChange={(e) => {
-                                          if (functionShowSizeLimit(e)) {
-                                            setLeadData((prevLeadData) => ({
-                                              ...prevLeadData,
-                                              paymentReceipt: [
-                                                ...(prevLeadData.paymentReceipt ||
-                                                  []),
-                                                ...e.target.files,
-                                              ],
-                                            }));
-                                          }
-                                          // Update the state with the selected files
-
-
-                                        }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
-                                        multi
+                                        // onChange={(e) => {
+                                        //   if (functionShowSizeLimit(e)) {
+                                        //     setLeadData((prevLeadData) => ({
+                                        //       ...prevLeadData,
+                                        //       paymentReceipt: [
+                                        //         ...(prevLeadData.paymentReceipt ||
+                                        //           []),
+                                        //         ...e.target.files,
+                                        //       ],
+                                        //     }));
+                                        //   }
+                                        //   // Update the state with the selected files
+                                        // }}
+                                        onChange={(e) => handleFileUpload(e, "paymentReceipt")}
+                                        disabled={completed[activeStep] === true}
+                                        multiple
                                       ></input>
                                     </div>
                                   </div>
+                                  {leadData.paymentReceipt &&
+                                    leadData.paymentReceipt.length > 0 && (
+                                      <div className="uploaded-filename-main d-flex flex-wrap">
+                                        {leadData.paymentReceipt.map(
+                                          (file, index) => (
+                                            <div
+                                              className="uploaded-fileItem d-flex align-items-center"
+                                              key={index}
+                                            >
+                                              <p className="m-0">
+                                                {file.name !== undefined
+                                                  ? file.name
+                                                  : file.filename}
+                                              </p>
+                                              <button
+                                                className="fileItem-dlt-btn"
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  handleRemovePaymentReceipt(index);
+                                                }}
+                                                disabled={completed[activeStep] === true}
+                                              >
+                                                <IconX className="close-icon" />
+                                              </button>
+                                            </div>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
 
                                   <div className="col-sm-6 mt-2">
                                     <div class="form-group mt-2 mb-2">
@@ -3455,23 +3528,21 @@ export default function AdminBookingForm({
                                       </label>
                                       <input
                                         type="file"
-                                        onChange={(e) => {
-                                          if (functionShowSizeLimit(e)) {
-                                            setLeadData((prevLeadData) => ({
-                                              ...prevLeadData,
-                                              otherDocs: [
-                                                ...(prevLeadData.otherDocs || []),
-                                                ...e.target.files,
-                                              ],
-                                            }));
-                                          }
-
-                                        }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
                                         className="form-control mt-1"
                                         id="docs"
+                                        // onChange={(e) => {
+                                        //   if (functionShowSizeLimit(e)) {
+                                        //     setLeadData((prevLeadData) => ({
+                                        //       ...prevLeadData,
+                                        //       otherDocs: [
+                                        //         ...(prevLeadData.otherDocs || []),
+                                        //         ...e.target.files,
+                                        //       ],
+                                        //     }));
+                                        //   }
+                                        // }}
+                                        onChange={(e) => handleFileUpload(e, "otherDocs")}
+                                        disabled={completed[activeStep] === true}
                                         multiple
                                       />
                                       {leadData.otherDocs &&
@@ -3490,15 +3561,11 @@ export default function AdminBookingForm({
                                                   </p>
                                                   <button
                                                     className="fileItem-dlt-btn"
-                                                    onClick={() =>
-                                                      handleRemoveOtherFile(
-                                                        index
-                                                      )
-                                                    }
-                                                    disabled={
-                                                      completed[activeStep] ===
-                                                      true
-                                                    }
+                                                    onClick={(e) => {
+                                                      e.preventDefault();
+                                                      handleRemoveOtherFile(index)
+                                                    }}
+                                                    disabled={completed[activeStep] === true}
                                                   >
                                                     <IconX className="close-icon" />
                                                   </button>
@@ -3510,6 +3577,7 @@ export default function AdminBookingForm({
                                     </div>
                                   </div>
                                 </div>
+                                }
                               </form>
                             </div>
                           </div>
@@ -3746,12 +3814,12 @@ export default function AdminBookingForm({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
-                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
-                                                  : 
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ?
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}`
+                                                  :
                                                   isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                                                  ? `${isoDetails.forOther}`
-                                                  : `${isoDetails.Nontype}`}`;
+                                                    ? `${isoDetails.forOther}`
+                                                    : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {
