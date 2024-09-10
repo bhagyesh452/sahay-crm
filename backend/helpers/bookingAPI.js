@@ -273,13 +273,17 @@ router.post("/update-redesigned-final-form/:CompanyName",
       _id,
       moreBookings,
       step4changed,
-      otherDocs,
-      paymentReceipt,
+      // otherDocs,
+      // paymentReceipt,
       remainingPayments,
       ...boom
     } = req.body;
+
     const newOtherDocs = req.files["otherDocs"] || [];
+    // console.log("Other docs in bookings :", newOtherDocs);
+    
     const newPaymentReceipt = req.files["paymentReceipt"] || [];
+    // console.log("Payment receipt in bookings :", newPaymentReceipt);
 
     const updatedDocWithoutId = {
       ...boom,
@@ -287,14 +291,17 @@ router.post("/update-redesigned-final-form/:CompanyName",
       paymentReceipt: newPaymentReceipt,
       remainingPayments: []
     };
+
     const updatedDocs = {
       ...boom, remainingPayments: []
-    }
+    };
+
     const findCompany = await RedesignedLeadformModel.findOne({
       "Company Name": companyName
-    })
-    const goingToUpdate =
-      step4changed === "true" ? updatedDocWithoutId : updatedDocs;
+    });
+
+    const goingToUpdate = step4changed === "true" ? updatedDocWithoutId : updatedDocs;
+    
     const tempDateToday = new Date();
 
     const newGoingToUpdate = {
@@ -302,10 +309,11 @@ router.post("/update-redesigned-final-form/:CompanyName",
       lastActionDate: tempDateToday,
       servicesTakenByRmOfCertification: findCompany.servicesTakenByRmOfCertification,
       servicesTakenByAdminExecutive: findCompany.servicesTakenByAdminExecutive
-    }
+    };
+
     //console.log("newgoingtoupdate" , newGoingToUpdate)
-    console.log("boom", boom)
-    console.log("findCompany", findCompany)
+    // console.log("boom", boom)
+    // console.log("findCompany", findCompany)
 
     try {
       const companyData = await RedesignedLeadformModel.findOne({ "Company Name": companyName })
@@ -540,6 +548,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
 
       const newOtherDocs = req.files["otherDocs"] || [];
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
+
       const latestData = {
         ...newData,
         otherDocs: newOtherDocs,
@@ -551,6 +560,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       const existingDocument = await RedesignedLeadformModel.findOne({
         "Company Name": CompanyName,
       });
+
       const moreDocument = existingDocument.moreBookings[bookingIndex - 1];
       console.log("moreDocument", moreDocument)
 

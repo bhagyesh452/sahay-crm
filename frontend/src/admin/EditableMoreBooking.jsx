@@ -521,11 +521,13 @@ export default function EditableMoreBooking({
   };
 
   console.log("Real time data: ", leadData);
+
   useEffect(() => {
     fetchData();
     fetchDataEmp();
     console.log("Fetch After Component Mount", leadData);
   }, []);
+
   useEffect(() => {
     // Create new services array based on totalServices
     {
@@ -755,45 +757,52 @@ export default function EditableMoreBooking({
         bookingSource: selectedValues,
         generatedTotalAmount: generatedTotalAmount,
         generatedReceivedAmount: generatedReceivedAmount,
-        receivedAmount: parseInt(leadData.services
-          .reduce(
-            (total, service) =>
-              service.paymentTerms ===
-                "Full Advanced"
-                ? total +
-                Number(
-                  service.totalPaymentWGST
-                )
-                : total +
-                Number(
-                  service.firstPayment
-                ),
-            0
-          ))
-          .toFixed(2),
-        pendingAmount: parseInt(leadData.services
-          .reduce(
-            (total, service) =>
-              service.paymentTerms ===
-                "Full Advanced"
-                ? total + 0
-                : total +
-                Number(
-                  service.totalPaymentWGST
-                ) -
-                Number(
-                  service.firstPayment
-                ),
-            0
-          ))
-          .toFixed(2),
+        receivedAmount: parseInt(leadData.services.reduce((total, service) =>
+          service.paymentTerms === "Full Advanced"
+            ? total + Number(service.totalPaymentWGST)
+            : total + Number(service.firstPayment), 0)).toFixed(2),
+        pendingAmount: parseInt(leadData.services.reduce((total, service) =>
+          service.paymentTerms === "Full Advanced"
+            ? total + 0
+            : total +
+            Number(service.totalPaymentWGST) - Number(service.firstPayment), 0)).toFixed(2),
         totalAmount: leadData.services.reduce((total, service) =>
           total + parseFloat(service.totalPaymentWGST || 0), 0)
-
       }
-      
+
+      const formData = new FormData();
+
+      // Append non-file data (services, leadData)
+      formData.append('dataToSend', JSON.stringify(dataToSend));
+
+      for (let i = 0; i < leadData.paymentReceipt.length; i++) {
+        formData.append("paymentReceipt", leadData.paymentReceipt[i]);
+      }
+
+      for (let i = 0; i < leadData.otherDocs.length; i++) {
+        formData.append("otherDocs", leadData.otherDocs[i]);
+      }
+
+      // try {
+      //   console.log("Before sending payment receipt :", leadData.paymentReceipt[0]);
+      //   console.log("Before sending other docs :", leadData.otherDocs);
+
+      //   const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, {
+      //     dataToSend: dataToSend,
+      //     paymentReceipt: leadData.paymentReceipt,
+      //     otherDocs: leadData.otherDocs
+      //   });
       try {
-        const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
+        const response = await axios.post(
+          `${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        // const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
         console.log('Data created:', response.data);
         Swal.fire("Request Sent!", "Request has been successfully sent to the Admin", "success");
         setFormOpen(false);
@@ -2265,6 +2274,12 @@ export default function EditableMoreBooking({
   };
 
   const handleFileUpload = async (e, fieldName) => {
+    if (fieldName === "paymentReceipt") {
+      console.log("Uploaded payment receipt :", e.target.files);
+    } else if (fieldName === "otherDocs") {
+      console.log("Uploaded other docs :", e.target.files);
+    }
+
     if (functionShowSizeLimit(e)) {
       setIsLoading(true); // Start loader
       console.log("Loader is running");
