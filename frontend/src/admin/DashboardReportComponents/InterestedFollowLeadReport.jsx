@@ -77,35 +77,58 @@ function InterestedFollowLeadReport() {
 
     //----------------------fetching employees info--------------------------------------
     const [loading, setLoading] = useState(false)
+    const [deletedEmployeeData, setDeletedEmployeeData] = useState([])
 
 
     const fetchEmployeeInfo = async () => {
         try {
             setLoading(true);
+    
+            // Fetch data using fetch and axios
             const response = await fetch(`${secretKey}/employee/einfo`);
+            const response3 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
-            const leadHistory = response2.data
+            const leadHistory = response2.data;
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+    
             const data = await response.json();
-            setLeadHistoryData(leadHistory)
-            setFilteredLeadHistoryData(leadHistory)
-            setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-            setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-            setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            // setEmployeeDataFilter(data.filter)
-
+            const deletedData = response3.data;
+    
+            // Filter by designations
+            const filteredData = data.filter(employee => 
+                employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
+            );
+            const filteredDeletedData = deletedData.filter(employee => 
+                employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
+            );
+    
+            // Combine data from both responses
+            const combinedForwardEmployeeData = [...filteredData, ...filteredDeletedData];
+    
+            // Set state values
+            setDeletedEmployeeData(filteredDeletedData);
+            setLeadHistoryData(leadHistory);
+            setFilteredLeadHistoryData(leadHistory);
+            setEmployeeData(filteredData);
+            setEmployeeDataFilter(filteredData);
+            setEmployeeInfo(filteredData);
+            setForwardEmployeeData(combinedForwardEmployeeData); // Use combined data
+            setForwardEmployeeDataFilter(combinedForwardEmployeeData);
+            setForwardEmployeeDataNew(combinedForwardEmployeeData);
+            setEmployeeDataProjectionSummary(filteredData);
+            
         } catch (error) {
             console.error(`Error Fetching Employee Data `, error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
+    
+
+    console.log("deletedData" , deletedEmployeeData)
 
     //-------------------------------------fetching company data ----------------
 
@@ -432,7 +455,7 @@ function InterestedFollowLeadReport() {
         setForwardEmployeeData(filteredForwardEmployeeData);
         setCompanyDataTotal(filteredCompanyDataTotal);
     };
-    console.log("company" , companyDataTotal)
+    // console.log("company" , companyDataTotal)
 
     return (
         <div>
