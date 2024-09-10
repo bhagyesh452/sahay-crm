@@ -359,7 +359,7 @@ function ViewAttendance({ year, month, date }) {
         fetchAttendance();
     };
 
-    const handleClear = async (id, empId, name, designation, department, branch, date, inTime, outTime, workingHours, status) => {
+    const handleClear = async (id, empId, name, designation, department, branch, date) => {
         // Define the new attendance data based on the checkbox state
         const updatedData = { inTime: "", outTime: "", workingHours: "", status: "" };
 
@@ -373,8 +373,8 @@ function ViewAttendance({ year, month, date }) {
         // }));
 
         // Prepare the payload for the API request
-       // const selectedDate = new Date(date);
-        //const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+       const selectedDate = new Date(date);
+        const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
         const payload = {
             id: id,
@@ -384,7 +384,7 @@ function ViewAttendance({ year, month, date }) {
             department: department,
             branchOffice: branch,
             attendanceDate: date,
-            dayName: "",
+            dayName: dayName,
             inTime: updatedData.inTime,
             outTime: updatedData.outTime,
             workingHours: updatedData.workingHours,
@@ -1589,7 +1589,7 @@ function ViewAttendance({ year, month, date }) {
                     </Button>
            
                   <Button className="btn btn-danger bdr-radius-none w-50" variant="contained"
-                    onClick={() => handleClear(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                    onClick={() => handleClear(id, employeeId, empName, designation, department, branchOffice, attendanceDate,inTime, outTime)}>
                     Clear
                 </Button>
                   
