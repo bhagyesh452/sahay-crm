@@ -104,15 +104,15 @@ function Dashboard() {
                             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                                 <Tab label={
                                     <div style={{ display: "flex", alignItems: "center" }}>
-                                        <MdOutlinePersonPin style={{ height: "20px", width: "16px", marginRight: "5px" }} />
-                                        <span style={{ fontSize: "10px" }}>This Months Booking</span>
+                                        <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                        <span style={{ fontSize: "12px" }}>This Months Booking</span>
                                     </div>
                                 } {...a11yProps(0)} />
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
-                                            <AiOutlineTeam style={{ height: "20px", width: "16px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "10px" }}>Employees Data Report</span>
+                                            <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{ fontSize: "12px" }}>Employees Data Report</span>
                                         </div>
                                     }
                                     {...a11yProps(1)}
@@ -120,8 +120,8 @@ function Dashboard() {
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
-                                            <RiShareForward2Fill style={{ height: "20px", width: "16px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "10px" }}>Forwarded Data Report</span>
+                                            <RiShareForward2Fill style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{ fontSize: "12px" }}>Interested & Forwarded Data Report</span>
                                         </div>
                                     }
                                     {...a11yProps(2)}
@@ -129,8 +129,8 @@ function Dashboard() {
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
-                                            <RiShareForward2Fill style={{ height: "20px", width: "16px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "10px" }}>Interested Data Report</span>
+                                            <RiDatabaseLine style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{ fontSize: "12px" }}>Projection Summary</span>
                                         </div>
                                     }
                                     {...a11yProps(3)}
@@ -138,29 +138,11 @@ function Dashboard() {
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
-                                            <RiDatabaseLine style={{ height: "20px", width: "16px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "10px" }}>Projection Summary</span>
+                                            <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{fontSize:"12px"}}>Service Analysis</span>
                                         </div>
                                     }
-                                    {...a11yProps(4)}
-                                />
-                                <Tab
-                                    label={
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                            <GrDocumentPerformance style={{ height: "20px", width: "16px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "10px" }}>Performacne Report</span>
-                                        </div>
-                                    }
-                                    {...a11yProps(5)}
-                                />
-                                <Tab
-                                    label={
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                            <MdMedicalServices style={{ height: "20px", width: "16px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "10px" }}>Service Analysis</span>
-                                        </div>
-                                    }
-                                    {...a11yProps(6)}
+                                    {...a11yProps(3)}
                                 />
                             </Tabs>
                         </Box>
@@ -171,27 +153,18 @@ function Dashboard() {
                             <EmployeeDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={2} className="mat-tab-inner">
-                            {/* <InterestedFollowLeadReport /> */}
+                            <InterestedFollowLeadReport/>
                             <EmployeesForwardedDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
-                            <InterestedFollowLeadReport />
-                            {/* <EmployeesForwardedDataReport /> */}
-                        </CustomTabPanel>
-                        <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <EmployeesProjectionSummary />
                         </CustomTabPanel>
-                        <CustomTabPanel value={value} index={5} className="mat-tab-inner">
-                            <AdminEmployeePerformanceReport />
-                        </CustomTabPanel>
-                        <CustomTabPanel value={value} index={6} className="mat-tab-inner">
+                        <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <ServiceAnalysis />
                         </CustomTabPanel>
                     </div>
                 </div>
             </div>
-
-
         </div>
     );
 }
