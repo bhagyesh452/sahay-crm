@@ -110,7 +110,7 @@ function InterestedFollowLeadReport() {
     //-------------------------------------fetching company data ----------------
 
     const fetchCompanyData = async () => {
-        fetch(`${secretKey}/company-data/leads`)
+        fetch(`${secretKey}/company-data/leads/interestedleads`)
             .then((response) => response.json())
             .then((data) => {
                 setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -211,68 +211,6 @@ function InterestedFollowLeadReport() {
         },
         { label: "Reset", getValue: () => [null, null] },
     ];
-
-    // const handleForwardedEmployeeDateRange = (values) => {
-    //     if (values[1]) {
-    //         const startDate = values[0].format("MM/DD/YYYY");
-    //         const endDate = values[1].format("MM/DD/YYYY");
-
-    //         const filteredDataDateRange = companyDataFilter.filter((product) => {
-    //             const productDate = formatDateMonth(product.bdeForwardDate);
-    //             // Check if the formatted productDate is within the selected date range
-    //             if (startDate === endDate) {
-    //                 // If both startDate and endDate are the same, filter for transactions on that day
-    //                 return productDate === startDate;
-    //             } else if (startDate !== endDate) {
-    //                 // If different startDate and endDate, filter within the range
-    //                 return (
-    //                     new Date(productDate) >= new Date(startDate) &&
-    //                     new Date(productDate) <= new Date(endDate)
-    //                 );
-    //             } else {
-    //                 return false;
-    //             }
-    //         });
-    //         const filteredTeamLeadsData = teamLeadsDataFilter.filter((product) => {
-    //             const productDate = formatDateMonth(product.bdeForwardDate);
-    //             if (startDate === endDate) {
-    //                 return productDate === startDate;
-
-    //             } else if (startDate !== endDate) {
-    //                 return (
-    //                     new Date(productDate) >= new Date(startDate) &&
-    //                     new Date(productDate) <= new Date(endDate)
-    //                 );
-    //             } else {
-    //                 return false;
-    //             }
-    //         })
-
-    //         const newFollowData = followDataFilter.filter((obj) => obj.caseType === "Forwarded" || obj.caseType === "Recieved")
-    //         const filteredFollowData = newFollowData.filter((product) => {
-    //             //console.log(product.date)
-    //             const productDate = formatDateFinal(product.date);
-    //             //console.log(startDate , endDate , productDate)
-    //             if (startDate === endDate) {
-    //                 return productDate === startDate;
-    //             } else if (startDate !== endDate) {
-    //                 return (
-    //                     new Date(productDate) >= new Date(startDate) &&
-    //                     new Date(productDate) <= new Date(endDate)
-    //                 );
-    //             } else {
-    //                 return false;
-    //             }
-
-    //         })
-    //         setTeamLeadsData(filteredTeamLeadsData)
-    //         setCompanyDataTotal(filteredDataDateRange);
-    //         setfollowData(filteredFollowData)
-    //     } else {
-    //         return true;
-    //     }
-    // };
-
     //---------------------------------multiple bde name filter function---------------------------------
 
     const options = forwardEmployeeDataNew.map((obj) => obj.ename);
@@ -286,36 +224,6 @@ function InterestedFollowLeadReport() {
                 width: 250,
             },
         },
-    };
-
-    function getStyles(name, personName, theme) {
-        return {
-            fontWeight:
-                personName.indexOf(name) === -1
-                    ? theme.typography.fontWeightRegular
-                    : theme.typography.fontWeightMedium,
-        };
-    }
-
-    const theme = useTheme();
-
-    const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-        const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
-        const filteredCompanyData = companyDataFilter.filter(
-            (obj) =>
-                (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
-                forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
-        );
-        const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) => selectedEmployeeNames.includes(obj.bdmName));
-        if (filteredForwardEmployeeData.length > 0) {
-            setForwardEmployeeData(filteredForwardEmployeeData);
-            setTeamLeadsData(filteredTeamLeadsData);
-            setCompanyDataTotal(filteredCompanyData);
-        } else if (filteredForwardEmployeeData.length === 0) {
-            setForwardEmployeeData(forwardEmployeeDataNew)
-            setTeamLeadsData(teamLeadsDataFilter)
-            setCompanyDataTotal(companyDataFilter)
-        }
     };
 
     // ------------------------------sorting function employees forwardede data report----------------------------------
@@ -477,7 +385,7 @@ function InterestedFollowLeadReport() {
     const totalFilteredCompanies = forwardEmployeeData.reduce((total, obj) => {
         const filteredCompanies = companyDataTotal.filter(mainObj =>
             leadHistoryData.some(company =>
-                company.ename === obj.ename &&
+                 (company.ename === obj.ename) &&
                 (mainObj.bdmAcceptStatus === "Forwarded" ||
                     mainObj.bdmAcceptStatus === "Pending" ||
                     mainObj.bdmAcceptStatus === "Accept") &&
@@ -524,7 +432,7 @@ function InterestedFollowLeadReport() {
         setForwardEmployeeData(filteredForwardEmployeeData);
         setCompanyDataTotal(filteredCompanyDataTotal);
     };
-    //console.log("company" , companyDataTotal)
+    console.log("company" , companyDataTotal)
 
     return (
         <div>
@@ -740,11 +648,11 @@ function InterestedFollowLeadReport() {
                                                 // // // Log the company names to the console
                                                 // console.log("followupcompanies" , companyNames);
 
-                                                const interestedCompanies = leadHistoryData
-                                                    .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
-                                                    .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
+                                                // const interestedCompanies = leadHistoryData
+                                                //     .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
+                                                //     .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
 
-                                                console.log("Interested Companies:", interestedCompanies);
+                                                // console.log("Interested Companies:", interestedCompanies);
 
                                                 return (
                                                     <tr key={`row-${index}`}>
