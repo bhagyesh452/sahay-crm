@@ -19,6 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ClipLoader from "react-spinners/ClipLoader";
+import { Link } from 'react-router-dom';
 
 function InterestedFollowLeadReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -76,38 +77,63 @@ function InterestedFollowLeadReport() {
 
     //----------------------fetching employees info--------------------------------------
     const [loading, setLoading] = useState(false)
+    const [deletedEmployeeData, setDeletedEmployeeData] = useState([])
+
+
     const fetchEmployeeInfo = async () => {
         try {
             setLoading(true);
+    
+            // Fetch data using fetch and axios
             const response = await fetch(`${secretKey}/employee/einfo`);
+            const response3 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
-            const leadHistory = response2.data
+            const leadHistory = response2.data;
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+    
             const data = await response.json();
-            setLeadHistoryData(leadHistory)
-            setFilteredLeadHistoryData(leadHistory)
-            setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-            setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
-            setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            setEmployeeDataProjectionSummary(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-            // setEmployeeDataFilter(data.filter)
-
+            const deletedData = response3.data;
+    
+            // Filter by designations
+            const filteredData = data.filter(employee => 
+                employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
+            );
+            const filteredDeletedData = deletedData.filter(employee => 
+                employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
+            );
+    
+            // Combine data from both responses
+            const combinedForwardEmployeeData = [...filteredData, ...filteredDeletedData];
+    
+            // Set state values
+            setDeletedEmployeeData(filteredDeletedData);
+            setLeadHistoryData(leadHistory);
+            setFilteredLeadHistoryData(leadHistory);
+            setEmployeeData(filteredData);
+            setEmployeeDataFilter(filteredData);
+            setEmployeeInfo(filteredData);
+            setForwardEmployeeData(combinedForwardEmployeeData); // Use combined data
+            setForwardEmployeeDataFilter(combinedForwardEmployeeData);
+            setForwardEmployeeDataNew(combinedForwardEmployeeData);
+            setEmployeeDataProjectionSummary(filteredData);
+            
         } catch (error) {
             console.error(`Error Fetching Employee Data `, error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
+    
+
+    console.log("deletedData" , deletedEmployeeData)
 
     //-------------------------------------fetching company data ----------------
 
     const fetchCompanyData = async () => {
-        fetch(`${secretKey}/company-data/leads`)
+        fetch(`${secretKey}/company-data/leads/interestedleads`)
             .then((response) => response.json())
             .then((data) => {
                 setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -118,49 +144,49 @@ function InterestedFollowLeadReport() {
                 console.error("Error fetching data:", error);
             });
     };
+
+    // const fetchFollowUpData = async () => {
+    //     try {
+    //         const response = await fetch(`${secretKey}/projection/projection-data`);
+    //         const followdata = await response.json();
+    //         setfollowData(followdata);
+    //         setFollowDataFilter(followdata)
+    //         setFollowDataNew(followdata)
+    //         //console.log("followdata", followdata)
+    //         setfollowDataToday(
+    //             followdata
+    //                 .filter((company) => {
+    //                     // Assuming you want to filter companies with an estimated payment date for today
+    //                     const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+    //                     return company.estPaymentDate === today;
+    //                 })
+    //         );
+    //         setfollowDataTodayNew(
+    //             followdata
+    //                 .filter((company) => {
+    //                     // Assuming you want to filter companies with an estimated payment date for today
+    //                     const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+    //                     return company.estPaymentDate === today;
+    //                 })
+    //         );
+    //     } catch (error) {
+    //         console.error("Error fetching data:", error);
+    //         return { error: "Error fetching data" };
+    //     }
+    // };
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
+
     useEffect(() => {
         //fetchRedesignedBookings();
         fetchEmployeeInfo()
         fetchCompanyData()
+        //fetchFollowUpData();
     }, []);
 
 
     //------------------------fetching follow data-------------------------------------------
 
-    const fetchFollowUpData = async () => {
-        try {
-            const response = await fetch(`${secretKey}/projection/projection-data`);
-            const followdata = await response.json();
-            setfollowData(followdata);
-            setFollowDataFilter(followdata)
-            setFollowDataNew(followdata)
-            //console.log("followdata", followdata)
-            setfollowDataToday(
-                followdata
-                    .filter((company) => {
-                        // Assuming you want to filter companies with an estimated payment date for today
-                        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-                        return company.estPaymentDate === today;
-                    })
-            );
-            setfollowDataTodayNew(
-                followdata
-                    .filter((company) => {
-                        // Assuming you want to filter companies with an estimated payment date for today
-                        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-                        return company.estPaymentDate === today;
-                    })
-            );
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            return { error: "Error fetching data" };
-        }
-    };
 
-    useEffect(() => {
-        fetchFollowUpData();
-    }, []);
     //-----------------------------date range filter function---------------------------------
     const numberFormatOptions = {
         style: "currency",
@@ -208,68 +234,6 @@ function InterestedFollowLeadReport() {
         },
         { label: "Reset", getValue: () => [null, null] },
     ];
-
-    // const handleForwardedEmployeeDateRange = (values) => {
-    //     if (values[1]) {
-    //         const startDate = values[0].format("MM/DD/YYYY");
-    //         const endDate = values[1].format("MM/DD/YYYY");
-
-    //         const filteredDataDateRange = companyDataFilter.filter((product) => {
-    //             const productDate = formatDateMonth(product.bdeForwardDate);
-    //             // Check if the formatted productDate is within the selected date range
-    //             if (startDate === endDate) {
-    //                 // If both startDate and endDate are the same, filter for transactions on that day
-    //                 return productDate === startDate;
-    //             } else if (startDate !== endDate) {
-    //                 // If different startDate and endDate, filter within the range
-    //                 return (
-    //                     new Date(productDate) >= new Date(startDate) &&
-    //                     new Date(productDate) <= new Date(endDate)
-    //                 );
-    //             } else {
-    //                 return false;
-    //             }
-    //         });
-    //         const filteredTeamLeadsData = teamLeadsDataFilter.filter((product) => {
-    //             const productDate = formatDateMonth(product.bdeForwardDate);
-    //             if (startDate === endDate) {
-    //                 return productDate === startDate;
-
-    //             } else if (startDate !== endDate) {
-    //                 return (
-    //                     new Date(productDate) >= new Date(startDate) &&
-    //                     new Date(productDate) <= new Date(endDate)
-    //                 );
-    //             } else {
-    //                 return false;
-    //             }
-    //         })
-
-    //         const newFollowData = followDataFilter.filter((obj) => obj.caseType === "Forwarded" || obj.caseType === "Recieved")
-    //         const filteredFollowData = newFollowData.filter((product) => {
-    //             //console.log(product.date)
-    //             const productDate = formatDateFinal(product.date);
-    //             //console.log(startDate , endDate , productDate)
-    //             if (startDate === endDate) {
-    //                 return productDate === startDate;
-    //             } else if (startDate !== endDate) {
-    //                 return (
-    //                     new Date(productDate) >= new Date(startDate) &&
-    //                     new Date(productDate) <= new Date(endDate)
-    //                 );
-    //             } else {
-    //                 return false;
-    //             }
-
-    //         })
-    //         setTeamLeadsData(filteredTeamLeadsData)
-    //         setCompanyDataTotal(filteredDataDateRange);
-    //         setfollowData(filteredFollowData)
-    //     } else {
-    //         return true;
-    //     }
-    // };
-
     //---------------------------------multiple bde name filter function---------------------------------
 
     const options = forwardEmployeeDataNew.map((obj) => obj.ename);
@@ -283,36 +247,6 @@ function InterestedFollowLeadReport() {
                 width: 250,
             },
         },
-    };
-
-    function getStyles(name, personName, theme) {
-        return {
-            fontWeight:
-                personName.indexOf(name) === -1
-                    ? theme.typography.fontWeightRegular
-                    : theme.typography.fontWeightMedium,
-        };
-    }
-
-    const theme = useTheme();
-
-    const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-        const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) => selectedEmployeeNames.includes(company.ename));
-        const filteredCompanyData = companyDataFilter.filter(
-            (obj) =>
-                (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
-                forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
-        );
-        const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) => selectedEmployeeNames.includes(obj.bdmName));
-        if (filteredForwardEmployeeData.length > 0) {
-            setForwardEmployeeData(filteredForwardEmployeeData);
-            setTeamLeadsData(filteredTeamLeadsData);
-            setCompanyDataTotal(filteredCompanyData);
-        } else if (filteredForwardEmployeeData.length === 0) {
-            setForwardEmployeeData(forwardEmployeeDataNew)
-            setTeamLeadsData(teamLeadsDataFilter)
-            setCompanyDataTotal(companyDataFilter)
-        }
     };
 
     // ------------------------------sorting function employees forwardede data report----------------------------------
@@ -474,7 +408,7 @@ function InterestedFollowLeadReport() {
     const totalFilteredCompanies = forwardEmployeeData.reduce((total, obj) => {
         const filteredCompanies = companyDataTotal.filter(mainObj =>
             leadHistoryData.some(company =>
-                company.ename === obj.ename &&
+                 (company.ename === obj.ename) &&
                 (mainObj.bdmAcceptStatus === "Forwarded" ||
                     mainObj.bdmAcceptStatus === "Pending" ||
                     mainObj.bdmAcceptStatus === "Accept") &&
@@ -521,7 +455,7 @@ function InterestedFollowLeadReport() {
         setForwardEmployeeData(filteredForwardEmployeeData);
         setCompanyDataTotal(filteredCompanyDataTotal);
     };
-    //console.log("company" , companyDataTotal)
+    // console.log("company" , companyDataTotal)
 
     return (
         <div>
@@ -731,7 +665,6 @@ function InterestedFollowLeadReport() {
                                                         mainObj["Company Name"] === company["Company Name"]
                                                     )
                                                 );
-                                               
                                                 // // Extract the company names
                                                 // const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
 
@@ -739,7 +672,7 @@ function InterestedFollowLeadReport() {
                                                 // console.log("followupcompanies" , companyNames);
 
                                                 // const interestedCompanies = leadHistoryData
-                                                //     .filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp")
+                                                //     .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
                                                 //     .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
 
                                                 // console.log("Interested Companies:", interestedCompanies);
@@ -752,11 +685,50 @@ function InterestedFollowLeadReport() {
                                                         }} >{index + 1}</td>
                                                         <td >{obj.ename}</td>
                                                         <td>{obj.branchOffice}</td>
-                                                        <td >
-                                                            {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "Interested").length}
+                                                        <td>
+                                                        <Link
+                                                                to={`/interestedleadreport/${obj.ename}?filtered=${encodeURIComponent(
+                                                                    JSON.stringify(
+                                                                        leadHistoryData.filter(
+                                                                            (company) =>
+                                                                                company.ename === obj.ename && company.newStatus === "Interested"
+                                                                        )
+                                                                    )
+                                                                )}`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {
+                                                                    leadHistoryData.filter(
+                                                                        (company) => company.ename === obj.ename && company.newStatus === "Interested"
+                                                                    ).length
+                                                                }
+                                                            </Link>
                                                         </td>
+
                                                         <td >
+                                                        <Link
+                                                                to={`/followupleadreport/${obj.ename}?filtered=${encodeURIComponent(
+                                                                    JSON.stringify(
+                                                                        leadHistoryData.filter(
+                                                                            (company) =>
+                                                                                company.ename === obj.ename && company.newStatus === "FollowUp"
+                                                                        )
+                                                                    )
+                                                                )}`}
+                                                                style={{
+                                                                    color: "black",
+                                                                    textDecoration: "none",
+                                                                }}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
                                                             {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length}
+                                                            </Link>
                                                         </td>
                                                         <td>
                                                             {filteredCompanies.length}

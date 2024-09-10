@@ -1062,6 +1062,8 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
     try {
       const companyName = req.params.CompanyName;
       const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
+      console.log("rmservicesmainbooking" , rmServicesMainBooking)
+      console.log("rmservicesmorebooking" , rmServicesMoreBooking)
       const socketIO = req.io;
       //console.log("rmservicesmainbooking", rmServicesMainBooking);
       //console.log("rmservicesmorebooking", rmServicesMoreBooking);
@@ -3662,105 +3664,17 @@ const excelSerialToJSDate = (serial) => {
     return undefined;
   }
 
-  const excelStartDate = new Date(1900, 0, 1);
-  return new Date(excelStartDate.getTime() + (serial - 1) * 24 * 60 * 60 * 1000);
+  // Excel incorrectly assumes 1900 was a leap year, so we adjust the serial number accordingly
+  let daysOffset = serial > 59 ? serial - 2 : serial - 1;
+
+  // Add the daysOffset to the Excel base date (January 1, 1900)
+  const excelStartDate = new Date(Date.UTC(1900, 0, 1)); // Using UTC to avoid time zone issues
+  const jsDate = new Date(excelStartDate.getTime() + daysOffset * 24 * 60 * 60 * 1000);
+
+  // Returning the date in ISO format (without time zone interference)
+  return jsDate.toISOString().split('T')[0];
 };
 
-
-//   const data = req.body; // This should be the array of objects parsed from Excel
-
-//   try {
-//     const updates = data.map(async (item) => {
-//       console.log("item", item)
-//       const parsedSubmittedOn = item["Submitted On Date"]
-//         ? excelSerialToJSDate(item["Submitted On Date"])
-//         : undefined;
-//         const parsedBookingDate = item["Booking Date"]
-//         ? excelSerialToJSDate(item["Booking Date"])
-//         : undefined;
-
-//       await RMCertificationModel.create({
-//         "Company Name": item["Company Name"] ? item["Company Name"] : "",
-//         "Company Number": item["Company Number"],
-//         "Company Email": item["Company Email"],
-//         caNumber: item["CA Number"] ? item["CA Number"] : 0,
-//         serviceName: item["Services Name"],
-//         mainCategoryStatus: item["Status"] || "Approved",
-//         subCategoryStatus: item["Status"] || "Approved",
-//         websiteLink: item["Website Link/Brief"],
-//         withDSC: item["DSC Applicable"] === "Yes" ? true : false,
-//         letterStatus: item["Letter Status"] || "Not Started",
-//         dscStatus: item["DSC Status"] || "Not Started",
-//         contentWriter: item["Content Writer"] || "RonakKumar",
-//         contentStatus: item["Content Status"] || "Not Started",
-//         nswsMobileNo: item["NSWS Phone No"],
-//         nswsMailId: item["NSWS Email Id"],
-//         nswsPaswsord: item["NSWS Password"],
-//         City: item.City,
-//         State: item.State,
-//         industry: item.Industry,
-//         sector: item.Sector,
-//         lastAttemptSubmitted: item["No of Attempt"],
-//         // Parse date without timezone issues
-//         submittedOn :parsedSubmittedOn,
-
-//         // Convert decimal time to HH:MM:SS
-//         submittedTime: item["Submitted On Time"]
-//           ? decimalToTime(item["Submitted On Time"])
-//           : undefined,
-//         submittedBy: parsedBookingDate,
-//         bookingDate:item["Booking Date"]
-//         ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0] // Extract YYYY-MM-DD
-//         : undefined,
-
-//         bdeName: item["BDE Name"],
-//         bdmName: item["BDM Name"],
-//         totalPaymentWGST: item["Total Payment"],
-//         //pendingRecievedPayment:item["Recieved Payment"],
-//         pendingNotRecievedPayment: item["Pending Payment"],
-//         pendingRecievedPaymentDate: item["Pending Recieved Payment Date"] ? new Date(item["Pending Recieved Payment Date"]) : undefined,
-//         panNumber: item.panNumber ? item.panNumber : "",
-//         bdeEmail: item.bdeEmail ? item.bdeEmail : "",
-//         bdmType: item.bdmType ? item.bdmType : "",
-//         paymentMethod: item.paymentMethod,
-//         caCase: item.caCase ? item.caCase : "",
-//         caEmail: item.caEmail ? item.caEmail : "",
-//         totalPaymentWOGST: item.totalPaymentWOGST,
-//         withGST: item.withGST ? true : false,
-//         // Conditionally adding paymentTerms
-//         paymentTerms: item["Total Payment"] === item["Recieved Payment"] ? "Full Advanced" : "two-part",
-//         firstPayment: item["Recieved Payment"],
-//         secondPayment: item.secondPayment ? item.secondPayment : 0,
-//         thirdPayment: item.thirdPayment ? item.thirdPayment : 0,
-//         fourthPayment: item.fourthPayment ? item.fourthPayment : 0,
-//         secondPaymentRemarks: item.secondPaymentRemarks ? item.secondPaymentRemarks : "",
-//         thirdPaymentRemarks: item.thirdPaymentRemarks ? item.thirdPaymentRemarks : "",
-//         fourthPaymentRemarks: item.fourthPaymentRemarks,
-//         bookingPublishDate: item["Booking Date"],
-//         addedOn: parsedSubmittedOn,
-//         brochureStatus: item.brochureStatus || "Not Applicable",
-//         brochureDesigner: item.brochureDesigner ? item.brochureDesigner : "",
-//         companyBriefing: item.companyBriefing ? item.companyBriefing : "",
-//         lastActionDate: item.lastActionDate ? new Date(item.lastActionDate) : new Date(),
-//         dateOfChangingMainStatus: item.dateOfChangingMainStatus ? new Date(item.dateOfChangingMainStatus) : new Date(),
-//         previousMainCategoryStatus: item.previousMainCategoryStatus || "Direct",
-//         previousSubCategoryStatus: item.previousSubCategoryStatus || "Direct",
-//         SecondTimeSubmitDate: item.SecondTimeSubmitDate ? new Date(item.SecondTimeSubmitDate) : new Date(),
-//         ThirdTimeSubmitDate: item.ThirdTimeSubmitDate ? new Date(item.ThirdTimeSubmitDate) : new Date(),
-//         isIndustryEnabled: item.isIndustryEnabled ? item.isIndustryEnabled : false,
-//         otpVerificationStatus: item.otpVerificationStatus || "Both Done",
-//         isUploadedDirect: true
-//       });
-//     });
-
-//     await Promise.all(updates);
-
-//     res.status(200).json({ message: 'Data uploaded successfully' });
-//   } catch (error) {
-//     console.error('Error updating data:', error);
-//     res.status(500).json({ error: 'Failed to upload data' });
-//   }
-// });
 
 function combineDateAndTime(serialDate, serialTime) {
   // Convert Excel serial date to JavaScript Date object
@@ -3790,7 +3704,7 @@ router.post('/upload-approved-data', async (req, res) => {
         const parsedSubmittedOn = item["Submitted On Date"]
           ? excelSerialToJSDate(item["Submitted On Date"])
           : undefined;
-        const parsedBookingDate = item["Booking Date"]
+          const parsedBookingDate = item["Booking Date"]
           ? excelSerialToJSDate(item["Booking Date"])
           : undefined;
 
@@ -3820,9 +3734,9 @@ router.post('/upload-approved-data', async (req, res) => {
           submittedTime: item["Submitted On Time"]
             ? decimalToTime(item["Submitted On Time"])
             : undefined,
-          submittedBy: parsedBookingDate,
+          submittedBy: item["Submitted By"],
           bookingDate: item["Booking Date"]
-            ? excelSerialToJSDate(item["Booking Date"]).toISOString().split('T')[0]
+            ? excelSerialToJSDate(item["Booking Date"])
             : undefined,
           bdeName: item["BDE Name"],
           bdmName: item["BDM Name"],
@@ -3876,6 +3790,19 @@ router.post('/upload-approved-data', async (req, res) => {
     res.status(500).json({ error: 'Failed to upload data' });
   }
 });
+
+router.delete('/delete-directuploadedleads', async (req, res) => {
+  try {
+    const result = await RMCertificationModel.deleteMany({ "isUploadedDirect": true });
+    
+    // Sending response after deletion
+    res.status(200).json({ message: 'Leads deleted successfully', deletedCount: result.deletedCount });
+  } catch (error) {
+    console.error("Error deleting company", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 

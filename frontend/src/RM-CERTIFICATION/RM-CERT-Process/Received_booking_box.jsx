@@ -644,203 +644,293 @@ function Received_booking_box() {
     //console.log("selected", selectedServices)
     //console.log("selectedCompanyData", selectedCompanyData)
 
+    // const handleSubmitServicesToSwap = async () => {
+    //     // Check if selectedCompanyData is defined
+    //     if (!selectedCompanyData) {
+    //         console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
+    //         return;
+    //     }
+    //     //console.log("selectedservices" , selectedServices)
+
+    //     // Default moreBookings to an empty array if it's undefined
+    //     const moreBookings = selectedCompanyData.moreBookings || [];
+
+    //     const combinedServices = [
+    //         ...(selectedCompanyData.services || []),
+    //         ...moreBookings.flatMap((item) => item.services || [])
+    //     ];
+
+    //     const primaryServices = selectedCompanyData.services || [];
+
+    //     const combinedRemainingpaymentsForServices = [
+    //         ...(selectedCompanyData.remainingPayments || []),
+    //         ...moreBookings.flatMap((item) => item.remainingPayments || [])
+    //     ];
+
+    //     console.log("primaryservices", primaryServices)
+
+
+    //     // Combine services from selectedCompanyData.moreBookings
+    //     const moreBookingServices = moreBookings.flatMap((item) => item.services || []);
+    //     console.log("combinesservices", moreBookingServices)
+    //     // Filter services based on certificationLabels
+    //     const filteredPrimaryServices = primaryServices.filter((service) =>
+    //         selectedServices.includes(service.serviceName)
+    //     );
+    //     const filteredMoreBookingServices = moreBookingServices.filter((service) =>
+    //         selectedServices.includes(service.serviceName)
+    //     );
+
+    //     // Map through the selected services to get the service names
+    //     const primaryServiceNames = filteredPrimaryServices.map((service) => service.serviceName);
+    //     const moreBookingServiceNames = filteredMoreBookingServices.map((service) => service.serviceName);
+
+    //     console.log("primaryservicesnames", primaryServiceNames)
+    //     console.log("combinesservicenames", moreBookingServiceNames)
+    //     // Initialize an array to store objects for each selected service
+    //     const dataToSend = [];
+
+    //     // Iterate through selectedServices (which contain only service names)
+    //     selectedServices.forEach(serviceName => {
+    //         // Find the detailed service object in combinedServices
+    //         const serviceData = combinedServices.find(service => service.serviceName === serviceName);
+    //         const remainingPaymentData = combinedRemainingpaymentsForServices.filter(service => service.serviceName === serviceName)
+    //         console.log("RemainingPaymentData", remainingPaymentData)
+    //         const totalReceivedPayment = remainingPaymentData.reduce((total, service) => {
+    //             return total + service.receivedPayment;
+    //         }, 0);
+
+    //         // Get the payment date, ensuring remainingPaymentData is not empty
+    //         const pendingRecievedPaymentDate = remainingPaymentData.length > 0 ? remainingPaymentData[0].paymentDate : null;
+
+    //         console.log("Total Received Payment:", totalReceivedPayment);
+    //         // Check if serviceData is found
+    //         if (serviceData) {
+    //             // Create an object with the required fields from selectedCompanyData and serviceData
+    //             const serviceToSend = {
+    //                 "Company Name": selectedCompanyData["Company Name"],
+    //                 "Company Number": selectedCompanyData["Company Number"],
+    //                 "Company Email": selectedCompanyData["Company Email"],
+    //                 panNumber: selectedCompanyData.panNumber,
+    //                 bdeName: selectedCompanyData.bdeName,
+    //                 bdeEmail: selectedCompanyData.bdeEmail || '', // Handle optional fields
+    //                 bdmName: selectedCompanyData.bdmName,
+    //                 bdmType: selectedCompanyData.bdmType || 'Close-by', // Default value if not provided
+    //                 bookingDate: selectedCompanyData.bookingDate,
+    //                 paymentMethod: selectedCompanyData.paymentMethod || '', // Handle optional fields
+    //                 caCase: selectedCompanyData.caCase || false, // Default to false if not provided
+    //                 caNumber: selectedCompanyData.caNumber || 0, // Default to 0 if not provided
+    //                 caEmail: selectedCompanyData.caEmail || '', // Handle optional fields
+    //                 serviceName: serviceData.serviceName,
+    //                 totalPaymentWOGST: serviceData.totalPaymentWOGST || 0, // Default to 0 if not provided
+    //                 totalPaymentWGST: serviceData.totalPaymentWGST || 0,
+    //                 withGST: serviceData.withGST,
+    //                 withDSC: serviceData.withDSC || 0,
+    //                 paymentTerms: serviceData.paymentTerms || "", // Default to 0 if not provided
+    //                 firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
+    //                 secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
+    //                 thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
+    //                 fourthPayment: serviceData.fourthPayment || 0,
+    //                 secondPaymentRemarks: serviceData.secondPaymentRemarks || "",
+    //                 thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
+    //                 fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
+    //                 bookingPublishDate: serviceData.bookingPublishDate || '',
+    //                 pendingRecievedPayment: remainingPaymentData ? totalReceivedPayment : 0,
+    //                 pendingRecievedPaymentDate: pendingRecievedPaymentDate,
+    //                 addedOn: new Date() // Handle optional fields
+    //             };
+
+    //             // Push the created object to dataToSend array
+    //             console.log("servicesToSend", serviceToSend)
+    //             dataToSend.push(serviceToSend);
+    //         } else {
+    //             console.error(`Service with name '${serviceName}' not found in selected company data.`);
+    //         }
+    //     });
+    //     console.log("dataToSend", dataToSend)
+    //     console.log("selectedcompany", selectedCompanyData)
+       
+
+    //     if (dataToSend.length !== 0) {
+    //         setOpenBacdrop(true)
+    //         try {
+    //             console.log("dataToSend", dataToSend)
+    //             const responses = await Promise.all([
+    //                 axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
+    //                     dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
+    //                 }),
+    //                 axios.post(`${secretKey}/rm-services/postrmselectedservicestobookings/${selectedCompanyData["Company Name"]}`, {
+    //                     rmServicesMainBooking: primaryServiceNames || [],
+    //                     rmServicesMoreBooking: moreBookingServiceNames || []
+    //                 })
+    //             ]);
+
+    //             const response = responses[0];
+    //             const response2 = responses[1];
+
+    //             console.log("response1", response)
+    //             console.log("response", response2.data)
+    //             //console.log("response", response2.data);
+    //             if (response.data.successEntries === 0) {
+    //                 Swal.fire("Please Select Unique Services");
+    //             } else {
+    //                 Swal.fire({
+    //                     icon: 'success',
+    //                     title: 'Success',
+    //                     //html: `Bookings Uploaded Successfully<br><br>Successful Entries: ${response.data.successEntries}<br>Failed Entries: ${response.data.failedEntries}`
+    //                 });
+    //             }
+    //             fetchRedesignedFormData();
+    //             handleCloseServicesPopup();
+    //         } catch (error) {
+    //             console.error("Error sending data:", error.message);
+    //             Swal.fire("Error", "Failed to upload bookings", error.message);
+    //         } finally {
+    //             setOpenBacdrop(false)
+    //         }
+    //     } else {
+    //         console.log("No data to send.");
+    //     }
+    //     // Assuming setDataToSend updates state to store dataToSend array
+    //     setDataToSend(dataToSend);
+    //     // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
+    // }
     const handleSubmitServicesToSwap = async () => {
         // Check if selectedCompanyData is defined
         if (!selectedCompanyData) {
             console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
             return;
         }
-        //console.log("selectedservices" , selectedServices)
-
-        // Default moreBookings to an empty array if it's undefined
+    
         const moreBookings = selectedCompanyData.moreBookings || [];
-
+    
         const combinedServices = [
             ...(selectedCompanyData.services || []),
             ...moreBookings.flatMap((item) => item.services || [])
         ];
-
+    
         const primaryServices = selectedCompanyData.services || [];
-
+    
         const combinedRemainingpaymentsForServices = [
             ...(selectedCompanyData.remainingPayments || []),
             ...moreBookings.flatMap((item) => item.remainingPayments || [])
         ];
-
-        console.log("primaryservices", primaryServices)
-
-
-        // Combine services from selectedCompanyData.moreBookings
+    
         const moreBookingServices = moreBookings.flatMap((item) => item.services || []);
-        console.log("combinesservices", moreBookingServices)
-        // Filter services based on certificationLabels
+    
+        // Filter services based on selectedServices
         const filteredPrimaryServices = primaryServices.filter((service) =>
             selectedServices.includes(service.serviceName)
         );
         const filteredMoreBookingServices = moreBookingServices.filter((service) =>
             selectedServices.includes(service.serviceName)
         );
-
-        // Map through the selected services to get the service names
+    
         const primaryServiceNames = filteredPrimaryServices.map((service) => service.serviceName);
         const moreBookingServiceNames = filteredMoreBookingServices.map((service) => service.serviceName);
-
-        console.log("primaryservicesnames", primaryServiceNames)
-        console.log("combinesservicenames", moreBookingServiceNames)
+    
         // Initialize an array to store objects for each selected service
         const dataToSend = [];
-
-        // Iterate through selectedServices (which contain only service names)
+    
         selectedServices.forEach(serviceName => {
-            // Find the detailed service object in combinedServices
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
-            const remainingPaymentData = combinedRemainingpaymentsForServices.filter(service => service.serviceName === serviceName)
-            console.log("RemainingPaymentData", remainingPaymentData)
-            const totalReceivedPayment = remainingPaymentData.reduce((total, service) => {
-                return total + service.receivedPayment;
-            }, 0);
-
-            // Get the payment date, ensuring remainingPaymentData is not empty
+            const remainingPaymentData = combinedRemainingpaymentsForServices.filter(service => service.serviceName === serviceName);
+    
+            const totalReceivedPayment = remainingPaymentData.reduce((total, service) => total + service.receivedPayment, 0);
             const pendingRecievedPaymentDate = remainingPaymentData.length > 0 ? remainingPaymentData[0].paymentDate : null;
-
-            console.log("Total Received Payment:", totalReceivedPayment);
-            // Check if serviceData is found
+    
             if (serviceData) {
-                // Create an object with the required fields from selectedCompanyData and serviceData
                 const serviceToSend = {
                     "Company Name": selectedCompanyData["Company Name"],
                     "Company Number": selectedCompanyData["Company Number"],
                     "Company Email": selectedCompanyData["Company Email"],
                     panNumber: selectedCompanyData.panNumber,
                     bdeName: selectedCompanyData.bdeName,
-                    bdeEmail: selectedCompanyData.bdeEmail || '', // Handle optional fields
+                    bdeEmail: selectedCompanyData.bdeEmail || '',
                     bdmName: selectedCompanyData.bdmName,
-                    bdmType: selectedCompanyData.bdmType || 'Close-by', // Default value if not provided
+                    bdmType: selectedCompanyData.bdmType || 'Close-by',
                     bookingDate: selectedCompanyData.bookingDate,
-                    paymentMethod: selectedCompanyData.paymentMethod || '', // Handle optional fields
-                    caCase: selectedCompanyData.caCase || false, // Default to false if not provided
-                    caNumber: selectedCompanyData.caNumber || 0, // Default to 0 if not provided
-                    caEmail: selectedCompanyData.caEmail || '', // Handle optional fields
+                    paymentMethod: selectedCompanyData.paymentMethod || '',
+                    caCase: selectedCompanyData.caCase || false,
+                    caNumber: selectedCompanyData.caNumber || 0,
+                    caEmail: selectedCompanyData.caEmail || '',
                     serviceName: serviceData.serviceName,
-                    totalPaymentWOGST: serviceData.totalPaymentWOGST || 0, // Default to 0 if not provided
+                    totalPaymentWOGST: serviceData.totalPaymentWOGST || 0,
                     totalPaymentWGST: serviceData.totalPaymentWGST || 0,
                     withGST: serviceData.withGST,
                     withDSC: serviceData.withDSC || 0,
-                    paymentTerms: serviceData.paymentTerms || "", // Default to 0 if not provided
-                    firstPayment: serviceData.firstPayment || 0, // Default to 0 if not provided
-                    secondPayment: serviceData.secondPayment || 0, // Default to 0 if not provided
-                    thirdPayment: serviceData.thirdPayment || 0, // Default to 0 if not provided
+                    paymentTerms: serviceData.paymentTerms || "",
+                    firstPayment: serviceData.firstPayment || 0,
+                    secondPayment: serviceData.secondPayment || 0,
+                    thirdPayment: serviceData.thirdPayment || 0,
                     fourthPayment: serviceData.fourthPayment || 0,
                     secondPaymentRemarks: serviceData.secondPaymentRemarks || "",
                     thirdPaymentRemarks: serviceData.thirdPaymentRemarks || "",
                     fourthPaymentRemarks: serviceData.fourthPaymentRemarks || "",
                     bookingPublishDate: serviceData.bookingPublishDate || '',
-                    pendingRecievedPayment: remainingPaymentData ? totalReceivedPayment : 0,
+                    pendingRecievedPayment: totalReceivedPayment,
                     pendingRecievedPaymentDate: pendingRecievedPaymentDate,
-                    addedOn: new Date() // Handle optional fields
+                    addedOn: new Date()
                 };
-
-                // Push the created object to dataToSend array
-                console.log("servicesToSend", serviceToSend)
+    
                 dataToSend.push(serviceToSend);
             } else {
                 console.error(`Service with name '${serviceName}' not found in selected company data.`);
             }
         });
-        console.log("dataToSend", dataToSend)
-        console.log("selectedcompany", selectedCompanyData)
-
+    
         if (dataToSend.length !== 0) {
-            setOpenBacdrop(true)
+            setOpenBacdrop(true);
             try {
-                console.log("dataToSend", dataToSend)
-                const responses = await Promise.all([
-                    axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
-                        dataToSend: dataToSend  // Ensure dataToSend is correctly formatted
-                    }),
-                    axios.post(`${secretKey}/rm-services/postrmselectedservicestobookings/${selectedCompanyData["Company Name"]}`, {
-                        rmServicesMainBooking: primaryServiceNames || [],
-                        rmServicesMoreBooking: moreBookingServiceNames || []
-                    })
-                ]);
-
-                const response = responses[0];
-                const response2 = responses[1];
-
-                console.log("response1", response)
-                console.log("response", response2.data)
-                //console.log("response", response2.data);
-                if (response.data.successEntries === 0) {
-                    Swal.fire("Please Select Unique Services");
-                } else {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        //html: `Bookings Uploaded Successfully<br><br>Successful Entries: ${response.data.successEntries}<br>Failed Entries: ${response.data.failedEntries}`
+                console.log("Attempting to post selected services to bookings");
+    
+                // First API call to postrmselectedservicestobookings
+                const response1 = await axios.post(`${secretKey}/rm-services/postrmselectedservicestobookings/${selectedCompanyData["Company Name"]}`, {
+                    rmServicesMainBooking: primaryServiceNames || [],
+                    rmServicesMoreBooking: moreBookingServiceNames || []
+                });
+    
+                // Check if the first response is successful
+                if (response1.status === 200) {
+                    // If successful, proceed to the second API call
+                    console.log("Attempting to post rm services data");
+                    const response2 = await axios.post(`${secretKey}/rm-services/post-rmservicesdata`, {
+                        dataToSend: dataToSend
                     });
+    
+                    console.log("response2", response2);
+    
+                    if (response2.data.successEntries === 0) {
+                        Swal.fire("Please Select Unique Services");
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: `Bookings Uploaded Successfully`,
+                        });
+                    }
+                } else {
+                    // If the first API call fails
+                    Swal.fire("Error", "Failed to post selected services to bookings");
                 }
+    
                 fetchRedesignedFormData();
                 handleCloseServicesPopup();
             } catch (error) {
                 console.error("Error sending data:", error.message);
                 Swal.fire("Error", "Failed to upload bookings", error.message);
             } finally {
-                setOpenBacdrop(false)
+                setOpenBacdrop(false);
             }
         } else {
             console.log("No data to send.");
         }
-        // Assuming setDataToSend updates state to store dataToSend array
+    
         setDataToSend(dataToSend);
-        // Assuming handleSendDataToMyBookings updates or sends dataToSend somewhere
     }
-
+    
 
     //----------function to remove company from rm panel-----------------------
-
-
-
-    // const handleDisplayOffToRm = async (companyName, company) => {
-    //     console.log("company", company)
-
-    //     const shouldDisableButton = ![
-    //         ...company.services,
-    //         ...(company.moreBookings || []).flatMap(booking => booking.services)
-    //     ].some(service => certificationLabels.some(label => service.serviceName.includes(label)));
-
-    //     console.log("shoulddisablebutton" , shouldDisableButton)
-
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: `Do you want to remove ${companyName} from RM panel?`,
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonText: 'Yes, remove it!',
-    //         cancelButtonText: 'No, keep it'
-    //     }).then(async (result) => {
-    //         if (result.isConfirmed) {
-    //             try {
-    //                 const response = await axios.post(`${secretKey}/rm-services/postmethodtoremovecompanyfromrmpanel/${companyName}`);
-    //                 //console.log(response.data);
-    //                 if (response.status === 200) {
-    //                     fetchRedesignedFormData();
-    //                     Swal.fire(
-    //                         'Removed!',
-    //                         'The company has been removed from RM panel.',
-    //                         'success'
-    //                     );
-    //                 }
-    //             } catch (error) {
-    //                 console.log("Internal Server Error", error.message);
-    //                 Swal.fire(
-    //                     'Error!',
-    //                     'There was an error removing the company from RM panel.',
-    //                     'error'
-    //                 );
-    //             }
-    //         }
-    //     });
-    // };
 
     const handleDisplayOffToRm = async (companyName, company) => {
         console.log("company", company);

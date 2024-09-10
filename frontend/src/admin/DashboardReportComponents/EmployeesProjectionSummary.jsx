@@ -944,6 +944,31 @@ function EmployeesProjectionSummary() {
                         }}
                       />
                     </th>
+                    <th>
+                      Recieved Amount
+                      {/* <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={() => {
+                          let newSortType;
+                          if (sortTypeExpectedPayment === "ascending") {
+                            newSortType = "descending";
+                          } else if (
+                            sortTypeExpectedPayment === "descending"
+                          ) {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortExpectedPayment(newSortType);
+                        }}
+                      /> */}
+                    </th>
+                    
                     {/* <th>Est. Payment Date</th> */}
                   </tr>
                 </thead>
@@ -1058,6 +1083,7 @@ function EmployeesProjectionSummary() {
                                 }, 0)
                                 .toLocaleString("en-IN", numberFormatOptions)}
                             </td>
+                            <td>-</td>
                           </tr>
                         ))}
                         {/* Map employeeData with default fields */}
@@ -1077,6 +1103,7 @@ function EmployeesProjectionSummary() {
                                   marginLeft: "58px",
                                 }}
                               /></td>
+                              <td>0</td>
                               <td>0</td>
                               <td>0</td>
                               <td>0</td>
@@ -1104,6 +1131,7 @@ function EmployeesProjectionSummary() {
                             <td>0</td>
                             <td>0</td>
                             <td>0</td>
+                            <td>-</td>
                           </tr>
 
                         ))
@@ -1155,6 +1183,7 @@ function EmployeesProjectionSummary() {
                         }, 0)
                         .toLocaleString("en-IN", numberFormatOptions)}
                     </td>
+                    <td>0</td>
                   </tr>
                 </tfoot>
                 {((sortedData && !loading && sortedData.length === 0) && employeeData.length === 0) && (

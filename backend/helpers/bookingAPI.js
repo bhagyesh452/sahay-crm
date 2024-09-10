@@ -504,7 +504,15 @@ router.post("/update-redesigned-final-form/:CompanyName",
         },
         { new: true }
       );
-      socketIO.emit('booking-updated', { name: boom.bdeName, companyName: companyName })
+      const updatedCompanyRm = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+      const updatedCompanyAdminExecutive = await AdminExecutiveModel.findOne({ "Company Name": companyName });
+
+      socketIO.emit('booking-updated', {
+        name: boom.bdeName,
+        companyName: companyName,
+        updateCompanyRm: updatedCompanyRm,
+        updatedCompanyAdminExecutive: updatedCompanyAdminExecutive
+      })
       res
         .status(200)
         .json({ message: "Document updated successfully" });
@@ -1650,12 +1658,15 @@ router.post(
           const isAdmin = newData.isAdmin;
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
-          const recipients = isAdmin ? ["nimesh@incscale.in"] : [
-            newData.bdeEmail,
-            newData.bdmEmail,
-            "bookings@startupsahay.com",
-            "documents@startupsahay.com",
-          ];
+          const recipients = isAdmin ?
+            ["nimesh@incscale.in" , "bookings@startupsahay.com"] :
+            [
+              newData.bdeEmail,
+              newData.bdmEmail,
+              "bookings@startupsahay.com",
+              "documents@startupsahay.com",
+              // "admin@startupsahay.com"
+            ];
 
           sendMail(
             recipients,
@@ -3313,9 +3324,13 @@ router.post(
               },
             },
           };
-          const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
-          const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
-
+          const clientMail = newData.caCase == "Yes" ? 
+          newData.caEmail : 
+          newData["Company Email"]
+          const mainClientMail = isAdmin ?
+            ["nimesh@incscale.in" , "bookings@startupsahay.com"] :
+            [clientMail, "admin@startupsahay.com"]
+            console.log("mainClientMail" , mainClientMail)
           const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/client/basic-form" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
     <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
           pdf
@@ -3621,7 +3636,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const boomDate = new Date();
     const io = req.io;
     const ename = newData.bdeName;
-
+    console.log("newData", newData)
 
     const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
@@ -3933,7 +3948,10 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
-    ] : ["nimesh@incscale.in"];
+      // "admin@startupsahay.com"
+    ] : ["nimesh@incscale.in" , "bookings@startupsahay.com"];
+
+    console.log("recipients", recipients)
 
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -5576,7 +5594,9 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
     //console.log(clientMail)
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] : [clientMail, "admin@startupsahay.com"]
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in" , "bookings@startupsahay.com"] : 
+    [clientMail, "admin@startupsahay.com"]
+    console.log("mainClientMail" , mainClientMail)
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
@@ -6202,7 +6222,7 @@ router.post(
               lastActionDate: latestDateUpdate,
               [`moreBookings.${bookingIndex - 1}.receivedAmount`]: newReceivedAmount,
               [`moreBookings.${bookingIndex - 1}.pendingAmount`]: newPendingAmount,
-              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount || 0 ,
+              [`moreBookings.${bookingIndex - 1}.generatedReceivedAmount`]: newGeneratedReceivedAmount || 0,
               [`moreBookings.${bookingIndex - 1}.services.$[elem].remainingAmount`]: remainingAmountCalculated,
               [`moreBookings.${bookingIndex - 1}.services.$[elem].pendingRecievedAmount`]: pendingReceivedPaymentCalculated,
             }

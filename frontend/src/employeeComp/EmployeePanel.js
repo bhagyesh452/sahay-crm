@@ -3793,11 +3793,15 @@ function EmployeePanel() {
                                             }
                                           >
                                             {(dataStatus !== "Interested" && dataStatus !== "FollowUp") &&
-                                              <option value="Not Picked Up">
+                                            (<>
+                                            <option value="Not Picked Up">
                                                 Not Picked Up
-                                              </option>}
+                                              </option>
+                                               <option value="Junk">Junk</option>
+                                            </>
+                                          )}
                                             <option value="Busy">Busy</option>
-                                            <option value="Junk">Junk</option>
+                                           
                                             <option value="Not Interested">
                                               Not Interested
                                             </option>

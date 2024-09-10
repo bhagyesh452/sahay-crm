@@ -47,7 +47,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   const [currentDataLoading, setCurrentDataLoading] = useState(false)
   const [isFilter, setIsFilter] = useState(false)
   const [rmServicesData, setRmServicesData] = useState([])
-  const [newStatusProcess, setNewStatusProcess] = useState("Process")
+  const [newStatusProcess, setNewStatusProcess] = useState("Approved")
   const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
   const [currentCompanyName, setCurrentCompanyName] = useState("")
   const [currentServiceName, setCurrentServiceName] = useState("")
@@ -1867,7 +1867,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                           </>
                         )}
                       </td>
-                      <td>{employeeData ? employeeData.ename : "RM-CERT"}</td>
+                      <td>{obj.submittedBy ? obj.submittedBy : employeeData.ename}</td>
                       <td>{formatDatePro(obj.bookingDate)}</td>
                       <td>
                         <div className="d-flex align-items-center justify-content-center">

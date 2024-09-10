@@ -2359,7 +2359,7 @@ function EmployeeTeamLeads() {
                                                 <th className="th-sticky">Sr.No</th>
                                                 <th className="th-sticky1">Company Name</th>
                                                 <th>BDE Name</th>
-                                                <th>Company Number</th>
+                                                {bdmNewStatus !== "Untouched" && (<th>Company Number</th>)}
                                                 <th>BDE Status</th>
                                                 <th>BDE Remarks</th>
                                                 {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
@@ -2378,7 +2378,7 @@ function EmployeeTeamLeads() {
                                                 </th>
                                                 <th>City</th>
                                                 <th>State</th>
-                                                <th>Company Email</th>
+                                                {bdmNewStatus !== "Untouched" && (<th>Company Email</th>)}
                                                 <th>
                                                     BDE Forward Date
                                                 </th>
@@ -2404,7 +2404,7 @@ function EmployeeTeamLeads() {
                                                         {company["Company Name"]}
                                                     </td>
                                                     <td>{company.ename}</td>
-                                                    <td>
+                                                    {bdmNewStatus !== "Untouched" && (<td>
                                                         <div className="d-flex align-items-center justify-content-between wApp">
                                                             <div>{company["Company Number"]}</div>
                                                             <a
@@ -2414,7 +2414,7 @@ function EmployeeTeamLeads() {
                                                                 <FaWhatsapp />
                                                             </a>
                                                         </div>
-                                                    </td>
+                                                    </td>)}
                                                     <td>
                                                         {company.Status}
                                                     </td>
@@ -2603,7 +2603,7 @@ function EmployeeTeamLeads() {
                                                     </td>
                                                     <td>{company["City"]}</td>
                                                     <td>{company["State"]}</td>
-                                                    <td>{company["Company Email"]}</td>
+                                                    {bdmNewStatus !== "Untouched" && (<td>{company["Company Email"]}</td>)}
                                                     <td>{formatDateNew(company.bdeForwardDate)}</td>
                                                     {
                                                         company.bdmStatus === "Untouched" && (
@@ -2623,7 +2623,7 @@ function EmployeeTeamLeads() {
                                                                     )}>
                                                                     <GrStatusGood />
                                                                 </IconButton>
-                                                                <IconButton onClick={() => {
+                                                                {/* <IconButton onClick={() => {
                                                                     functionopenpopupremarksEdit(
                                                                         company._id,
                                                                         company.Status,
@@ -2633,7 +2633,9 @@ function EmployeeTeamLeads() {
                                                                     )
                                                                     handleRejectData(company._id)
                                                                 }}>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" />
+                                                                    </svg>
+                                                                </IconButton> */}
                                                             </td>
                                                         )
                                                     }

@@ -29,22 +29,18 @@ function AdminExecutiveHeader({ name, id, designation, empProfile, gender }) {
       transports: ['websocket'],
     });
 
-    // Listen for the 'welcome' event from the server
-
-
-   
-    socket.on("rmcert-letter-updated", (res) => {
-      console.log("socketchala" , res.updatedDocumentAdmin)
-      if(res.updatedDocumentAdmin){
-        enqueueSnackbar(`Letter Status updated for ${res.updatedDocumentAdmin["Company Name"]}`, 
-          { variant: "reportComplete" , 
-            persist:true 
-          });
+    // socket.on("rmcert-letter-updated", (res) => {
+    //   console.log("socketchala" , res.updatedDocumentAdmin)
+    //   if(res.updatedDocumentAdmin){
+    //     enqueueSnackbar(`Letter Status updated for ${res.updatedDocumentAdmin["Company Name"]}`, 
+    //       { variant: "reportComplete" , 
+    //         persist:true 
+    //       });
       
-        const audioplayer = new Audio(notification_audio);
-        audioplayer.play();
-      }
-    });
+    //     const audioplayer = new Audio(notification_audio);
+    //     audioplayer.play();
+    //   }
+    // });
     
     // Clean up the socket connection when the component unmounts
     return () => {
