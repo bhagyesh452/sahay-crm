@@ -1658,7 +1658,7 @@ router.post(
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
           const recipients = isAdmin ?
-            ["nimesh@incscale.in"] :
+            ["nimesh@incscale.in" , "bookings@startupsahay.com"] :
             [
               newData.bdeEmail,
               newData.bdmEmail,
@@ -3948,7 +3948,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
       // "admin@startupsahay.com"
-    ] : ["nimesh@incscale.in"];
+    ] : ["nimesh@incscale.in" , "bookings@startupsahay.com"];
 
     console.log("recipients", recipients)
 
