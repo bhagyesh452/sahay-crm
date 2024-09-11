@@ -298,21 +298,27 @@ function EmployeeCompleteCallingReport() {
     ];
 
     const handleSingleDateSelection = async (formattedDate) => {
-        // Convert formattedDate to a timestamp if needed
-        const startOfDay = moment(formattedDate, "DD/MM/YYYY").startOf('day').unix(); // Start of the day
-        const endOfDay = moment(formattedDate, "DD/MM/YYYY").endOf('day').unix(); // End of the day
-    
+        // Convert formattedDate to a moment object in IST timezone
+        const date = moment(formattedDate, "DD/MM/YYYY").utcOffset('+05:30'); // Adjust to IST
+
+        // Set specific times for start and end of the day in IST
+        const startOfDay = date.set({ hour: 9, minute: 30, second: 0, millisecond: 0 }).unix(); // 9:30 AM IST
+        const endOfDay = date.set({ hour: 18, minute: 30, second: 0, millisecond: 0 }).unix(); // 6:30 PM IST
+
         // Set the timestamps
         const startTimestamp = startOfDay;
         const endTimestamp = endOfDay;
-    
-        console.log(startOfDay , endOfDay)
-        console.log(startTimestamp , endTimestamp)
+
+        console.log("Start of Day (UTC):", moment.unix(startOfDay).utc().format());
+        console.log("End of Day (UTC):", moment.unix(endOfDay).utc().format());
+        console.log("Start of Day (IST):", moment.unix(startOfDay).format());
+        console.log("End of Day (IST):", moment.unix(endOfDay).format());
+        console.log(startTimestamp, endTimestamp)
         // Fetch data based on the selected date
         const fetchEmployeeData = async () => {
             const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
             const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-    
+
             // Prepare the request body
             const body = {
                 "call_from": startTimestamp,
@@ -323,7 +329,7 @@ function EmployeeCompleteCallingReport() {
                 // "working_hour_to": "20:59",
                 // "is_exclude_numbers": true
             }
-    
+
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -333,27 +339,34 @@ function EmployeeCompleteCallingReport() {
                     },
                     body: JSON.stringify(body)
                 });
-    
+
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
                 }
                 const data = await response.json();
-                
+
                 setTotalCalls(data.result);
                 setFilteredTotalCalls(data.result);
-    
+
                 console.log("Data fetched:", data.result);
-    
+
             } catch (err) {
                 console.log(err);
             }
         };
-    
+
         // Call the fetch function
         fetchEmployeeData();
     };
-    
+
+    const formatDate = (dateString) => {
+        // Parse the date string as IST
+        const date = moment(dateString, "YYYY-MM-DD HH:mm:ss").utcOffset('+05:30');
+        
+        // Format the date
+        return date.format('DD MMM YYYY, h:mm:ss A');
+    };
 
 
 
@@ -373,8 +386,8 @@ function EmployeeCompleteCallingReport() {
                         <div className="d-flex align-items-center pr-1">
                             <div className="data-filter">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DemoContainer components={['DatePicker']} 
-                                    sx={{ padding: '0px', width: '220px' }}>
+                                    <DemoContainer components={['DatePicker']}
+                                        sx={{ padding: '0px', width: '220px' }}>
                                         <DatePicker
                                             className="form-control my-date-picker form-control-sm p-0"
                                             onChange={(value) => {
@@ -447,7 +460,7 @@ function EmployeeCompleteCallingReport() {
                                                             <td>{obj.total_calls}</td>
                                                             <td>{obj.total_unique_clients}</td>
                                                             <td>{convertSecondsToHMS(obj.total_duration)}</td>
-                                                            <td>{obj.last_call_log.synced_at}</td>
+                                                            <td>{formatDate(obj.last_call_log.synced_at)}</td>
                                                         </tr>
                                                     ))}
                                         </tbody>
