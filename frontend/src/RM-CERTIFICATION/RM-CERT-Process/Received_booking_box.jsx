@@ -2277,7 +2277,7 @@ function Received_booking_box() {
                                                                                                         )
                                                                                                     }
                                                                                                 >
-                                                                                                    {currentLeadform &&
+                                                                                                    {/* {currentLeadform &&
                                                                                                         currentLeadform.paymentReceipt[0] &&
                                                                                                         (((currentLeadform.paymentReceipt[0].filename).toLowerCase()).endsWith(
                                                                                                             ".pdf"
@@ -2310,7 +2310,44 @@ function Received_booking_box() {
                                                                                                                 src={wordimg}
                                                                                                                 alt="Default Image"
                                                                                                             />
-                                                                                                        ))}
+                                                                                                        ))} */}
+                                                                                                        {currentLeadform &&
+                                          currentLeadform.paymentReceipt &&
+                                          currentLeadform.paymentReceipt[0] &&
+                                          currentLeadform.paymentReceipt[0]
+                                            .filename && // Ensure filename exists
+                                          (currentLeadform.paymentReceipt[0].filename
+                                            .toLowerCase()
+                                            .endsWith(".pdf") ? (
+                                            <PdfImageViewerAdmin
+                                              type="paymentrecieptpdf"
+                                              path={
+                                                currentLeadform
+                                                  .paymentReceipt[0].filename
+                                              }
+                                              companyName={
+                                                currentLeadform["Company Name"]
+                                              }
+                                            />
+                                          ) : currentLeadform.paymentReceipt[0].filename
+                                              .toLowerCase()
+                                              .endsWith(".png") ||
+                                            currentLeadform.paymentReceipt[0].filename
+                                              .toLowerCase()
+                                              .endsWith(".jpg") ||
+                                            currentLeadform.paymentReceipt[0].filename
+                                              .toLowerCase()
+                                              .endsWith(".jpeg") ? (
+                                            <img
+                                              src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                              alt="Receipt Image"
+                                            />
+                                          ) : (
+                                            <img
+                                              src={wordimg}
+                                              alt="Default Image"
+                                            />
+                                          ))}
                                                                                                 </div>
                                                                                                 <div className="booking-docs-preview-text">
                                                                                                     <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -2365,7 +2402,7 @@ function Received_booking_box() {
                                                                                         )
                                                                                     ))}
 
-                                                                                {currentLeadform &&
+                                                                                {/* {currentLeadform &&
                                                                                     currentLeadform.otherDocs.map((obj) => (
                                                                                         <div className="col-sm-2 mb-1">
                                                                                             <div className="booking-docs-preview">
@@ -2403,7 +2440,56 @@ function Received_booking_box() {
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    ))}
+                                                                                    ))} */}
+                                                                                    {currentLeadform &&
+                                  currentLeadform.otherDocs &&
+                                  currentLeadform.otherDocs.map((obj) => (
+                                    <div
+                                      className="col-sm-2 mb-1"
+                                      key={obj.filename}
+                                    >
+                                      <div className="booking-docs-preview">
+                                        <div
+                                          className="booking-docs-preview-img"
+                                          onClick={() =>
+                                            handleViewPdOtherDocs(
+                                              obj.filename,
+                                              currentLeadform["Company Name"]
+                                            )
+                                          }
+                                        >
+                                          {obj.filename && // Ensure filename exists
+                                          obj.filename
+                                            .toLowerCase()
+                                            .endsWith(".pdf") ? (
+                                            <PdfImageViewerAdmin
+                                              type="pdf"
+                                              path={obj.filename}
+                                              companyName={
+                                                currentLeadform["Company Name"]
+                                              }
+                                            />
+                                          ) : (
+                                            obj.filename && (
+                                              <img
+                                                src={`${secretKey}/bookings/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                                alt={pdfimg}
+                                              />
+                                            )
+                                          )}
+                                        </div>
+                                        <div className="booking-docs-preview-text">
+                                          <p
+                                            className="booking-img-name-txtwrap text-wrap m-auto m-0"
+                                            title={obj.originalname}
+                                          >
+                                            {obj.originalname}
+                                          </p>
+                                        </div>
+                                      </div>
+                                        
+                                    </div>
+                                  ))}
                                                                                 {/* ---------- Upload Documents From Preview -----------*/}
                                                                                 <div className="col-sm-2 mb-1">
                                                                                     <div

@@ -932,7 +932,7 @@ table.table.top_5_table tbody tr.myself td {
 .hr_emply_info_inner
 {
     background: #fafafb;
-    height: calc(100vh - 196px);
+    height: calc(100vh - 183px);
     overflow-y: auto;
 }
 .hr_employee_information
@@ -1278,7 +1278,6 @@ table.table.top_5_table tbody tr.myself td {
 }
 .hr-sticky-action3
 {
-    box-shadow: -3px 0 4px -4px #ccc !important;
     position: sticky;
     width: 50px;
     background: #f5f5f5 !important;
@@ -1772,7 +1771,7 @@ th.th-day {
 {
     padding: 15px;
 }
-.hr_emply_info_inner_tabs
+.hr_emply_info_inner_tabs, .employee_e_info_tab
 {
     width: 100%;
     /* background: #ebedff; */
@@ -1780,25 +1779,25 @@ th.th-day {
     /* border-radius: 10px;
     padding: 9px 12px 9px 12px; */
 }
-.hr_emply_info_inner_tab_item .nav-link
+.hr_emply_info_inner_tab_item .nav-link, .employee_e_info_tab .nav-item .nav-link
 {
     /* margin: 0 4px 1px 4px; */
     font-weight: 600;
     border: 1px solid #eeeeee00 !important;
 }
-.hr_emply_info_inner_tab_item .nav-link.active
+.hr_emply_info_inner_tab_item .nav-link.active, .employee_e_info_tab .nav-item .nav-link.active
 {
     background: #fff;
     border-bottom: 1px solid #ffb900 !important;
     color: #ffb900 !important;
 }
-.hr_emply_info_inner_tab_item .nav-link:hover
+.hr_emply_info_inner_tab_item .nav-link:hover, .employee_e_info_tab .nav-item .nav-link:hover
 {
     background: #f6f8fb;
     border-bottom: 1px solid #ffb900 !important;
     color: #929292 !important;
 }
-.hr_emply_info_inner_tab_item .nav-link:focus
+.hr_emply_info_inner_tab_item .nav-link:focus, .employee_e_info_tab .nav-item .nav-link:focus
 {
     border-bottom: 1px solid #ffb900 !important;
 }

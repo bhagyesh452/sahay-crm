@@ -944,9 +944,9 @@ function EmployeesProjectionSummary() {
                         }}
                       />
                     </th>
-                    <th>
+                    {/* <th>
                       Recieved Amount
-                      {/* <SwapVertIcon
+                      <SwapVertIcon
                         style={{
                           height: "15px",
                           width: "15px",
@@ -966,8 +966,8 @@ function EmployeesProjectionSummary() {
                           }
                           handleSortExpectedPayment(newSortType);
                         }}
-                      /> */}
-                    </th>
+                      />
+                    </th> */}
                     
                     {/* <th>Est. Payment Date</th> */}
                   </tr>
@@ -1065,7 +1065,6 @@ function EmployeesProjectionSummary() {
                                 }, 0)
                                 .toLocaleString("en-IN", numberFormatOptions)}
                             </td>
-
                             <td>
                               {followDataToday
                                 .reduce((totalPaymentSum, partObj) => {
@@ -1083,7 +1082,7 @@ function EmployeesProjectionSummary() {
                                 }, 0)
                                 .toLocaleString("en-IN", numberFormatOptions)}
                             </td>
-                            <td>-</td>
+                            {/* <td>-</td> */}
                           </tr>
                         ))}
                         {/* Map employeeData with default fields */}
@@ -1106,7 +1105,7 @@ function EmployeesProjectionSummary() {
                               <td>0</td>
                               <td>0</td>
                               <td>0</td>
-                              <td>0</td>
+                              {/* <td>0</td> */}
                             </tr>
                           ))}
                       </>
@@ -1131,7 +1130,7 @@ function EmployeesProjectionSummary() {
                             <td>0</td>
                             <td>0</td>
                             <td>0</td>
-                            <td>-</td>
+                            {/* <td>-</td> */}
                           </tr>
 
                         ))
@@ -1183,7 +1182,7 @@ function EmployeesProjectionSummary() {
                         }, 0)
                         .toLocaleString("en-IN", numberFormatOptions)}
                     </td>
-                    <td>0</td>
+                    {/* <td>0</td> */}
                   </tr>
                 </tfoot>
                 {((sortedData && !loading && sortedData.length === 0) && employeeData.length === 0) && (
