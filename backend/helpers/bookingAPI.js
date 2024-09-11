@@ -273,11 +273,13 @@ router.post("/update-redesigned-final-form/:CompanyName",
       _id,
       moreBookings,
       step4changed,
-      // otherDocs,
-      // paymentReceipt,
+      otherDocs,
+      paymentReceipt,
       remainingPayments,
       ...boom
     } = req.body;
+
+    // console.log("Request body :", req.body);
 
     const newOtherDocs = req.files["otherDocs"] || [];
     // console.log("Other docs in bookings :", newOtherDocs);

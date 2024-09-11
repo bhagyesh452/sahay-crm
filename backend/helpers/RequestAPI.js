@@ -971,6 +971,8 @@ const bookingStorage = multer.diskStorage({
       destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'ExtraDocs');
     } else if (file.fieldname === "paymentReceipt") {
       destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'PaymentReceipts');
+    } else if (file.fieldname === "paymentReceipt") {
+      destinationPath = path.resolve(__dirname, '../ClientDocuments');
     }
 
     // Create the directory if it doesn't exist
