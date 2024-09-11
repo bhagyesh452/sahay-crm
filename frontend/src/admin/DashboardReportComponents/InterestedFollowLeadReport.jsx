@@ -83,31 +83,31 @@ function InterestedFollowLeadReport() {
     const fetchEmployeeInfo = async () => {
         try {
             setLoading(true);
-    
+
             // Fetch data using fetch and axios
             const response = await fetch(`${secretKey}/employee/einfo`);
             const response3 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
             const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
             const leadHistory = response2.data;
-    
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-    
+
             const data = await response.json();
             const deletedData = response3.data;
-    
+
             // Filter by designations
-            const filteredData = data.filter(employee => 
+            const filteredData = data.filter(employee =>
                 employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
             );
-            const filteredDeletedData = deletedData.filter(employee => 
+            const filteredDeletedData = deletedData.filter(employee =>
                 employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
             );
-    
+
             // Combine data from both responses
             const combinedForwardEmployeeData = [...filteredData, ...filteredDeletedData];
-    
+
             // Set state values
             setDeletedEmployeeData(filteredDeletedData);
             setLeadHistoryData(leadHistory);
@@ -119,16 +119,16 @@ function InterestedFollowLeadReport() {
             setForwardEmployeeDataFilter(combinedForwardEmployeeData);
             setForwardEmployeeDataNew(combinedForwardEmployeeData);
             setEmployeeDataProjectionSummary(filteredData);
-            
+
         } catch (error) {
             console.error(`Error Fetching Employee Data `, error);
         } finally {
             setLoading(false);
         }
     };
-    
 
-    console.log("deletedData" , deletedEmployeeData)
+
+    // console.log("deletedData", deletedEmployeeData)
 
     //-------------------------------------fetching company data ----------------
 
@@ -405,7 +405,7 @@ function InterestedFollowLeadReport() {
     const totalFilteredCompanies = forwardEmployeeData.reduce((total, obj) => {
         const filteredCompanies = companyDataTotal.filter(mainObj =>
             leadHistoryData.some(company =>
-                 (company.ename === obj.ename) &&
+                (company.ename === obj.ename) &&
                 (mainObj.bdmAcceptStatus === "Forwarded" ||
                     mainObj.bdmAcceptStatus === "Pending" ||
                     mainObj.bdmAcceptStatus === "Accept") &&
@@ -651,92 +651,94 @@ function InterestedFollowLeadReport() {
                                         </tr>
                                     </tbody>) :
                                     (
-                                    <tbody>
-                                        {forwardEmployeeData.length !== 0 &&
-                                            forwardEmployeeData.map((obj, index) => {
-                                                const filteredCompanies = companyDataTotal.filter(mainObj =>
-                                                    leadHistoryData.some(company =>
-                                                        company.ename === obj.ename &&
-                                                        (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                            mainObj.bdmAcceptStatus === "Pending" ||
-                                                            mainObj.bdmAcceptStatus === "Accept") &&
-                                                        mainObj["Company Name"] === company["Company Name"]
+                                        <tbody>
+                                            {forwardEmployeeData.length !== 0 &&
+                                                forwardEmployeeData.map((obj, index) => {
+                                                    const filteredCompanies = companyDataTotal.filter(mainObj =>
+                                                        leadHistoryData.some(company =>
+                                                            company.ename === obj.ename &&
+                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
+                                                                mainObj.bdmAcceptStatus === "Pending" ||
+                                                                mainObj.bdmAcceptStatus === "Accept") &&
+                                                            mainObj["Company Name"] === company["Company Name"]
+                                                        )
+                                                    );
+                                                    // Step 1: Calculate total interested companies for the employee
+                                                    const totalInterestedCompanies = leadHistoryData.filter(
+                                                        (company) => company.ename === obj.ename && company.newStatus === "Interested"
+                                                    ).map(company => company["Company Name"]);
+
+                                                    const totalFollowCompanies = leadHistoryData.filter(
+                                                        (company) => company.ename === obj.ename && company.newStatus === "FollowUp"
+                                                    ).map(company => company["Company Name"]);
+
+                                                    // Step 2: Calculate forwarded companies for the employee
+                                                    const forwardedCompaniesFollow = companyDataTotal
+                                                        .filter(mainObj =>
+                                                            leadHistoryData.some(company =>
+                                                                company.ename === obj.ename &&
+                                                                (mainObj.bdmAcceptStatus === "Forwarded" ||
+                                                                    mainObj.bdmAcceptStatus === "Pending" ||
+                                                                    mainObj.bdmAcceptStatus === "Accept") &&
+                                                                mainObj["Company Name"] === company["Company Name"]
+                                                                && mainObj.Status === "FollowUp"
+                                                            )
+                                                        ).map(company => company["Company Name"]);
+
+                                                    // Step 2: Calculate forwarded companies for the employee
+                                                    const forwardedCompanies = companyDataTotal
+                                                        .filter(mainObj =>
+                                                            leadHistoryData.some(company =>
+                                                                company.ename === obj.ename &&
+                                                                (mainObj.bdmAcceptStatus === "Forwarded" ||
+                                                                    mainObj.bdmAcceptStatus === "Pending" ||
+                                                                    mainObj.bdmAcceptStatus === "Accept") &&
+                                                                mainObj["Company Name"] === company["Company Name"]
+                                                                && mainObj.Status === "Interested"
+                                                            )
+                                                        ).map(company => company["Company Name"]);
+
+                                                    // Step 3: Calculate remaining interested companies (interested - forwarded)
+                                                    const remainingInterestedCompanies = totalInterestedCompanies.filter(
+                                                        (companyName) => !forwardedCompanies.includes(companyName)
+                                                    );
+                                                    const remainingFollowCompanies = totalFollowCompanies.filter(
+                                                        (companyName) => !forwardedCompaniesFollow.includes(companyName)
+                                                    );
+
+
+
+                                                    // You can now use the `remainingInterestedCompanies` array
+                                                    console.log(`Remaining Interested Companies for ${obj.ename}:`, remainingInterestedCompanies);
+                                                    console.log(`Remaining Follow Companies for ${obj.ename}:`, remainingFollowCompanies);
+                                                    return (
+                                                        <tr key={`row-${index}`}>
+                                                            <td style={{
+                                                                color: "black",
+                                                                textDecoration: "none",
+                                                            }} >{index + 1}</td>
+                                                            <td >{obj.ename}</td>
+                                                            <td>{obj.branchOffice}</td>
+                                                            <td>
+                                                                {/* {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "Interested").length} */}
+
+                                                                {remainingInterestedCompanies.length}
+                                                            </td>
+
+                                                            <td >
+                                                                {remainingFollowCompanies.length}
+                                                                {/* {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length} */}
+
+                                                            </td>
+                                                            <td>
+                                                                {filteredCompanies.length}
+                                                            </td>
+
+                                                        </tr>
                                                     )
-                                                );
-                                                // // Extract the company names
-                                                // const companyNames = filteredCompanies.map(mainObj => mainObj["Company Name"]); // Adjust the field name if necessary
-
-                                                // // // Log the company names to the console
-                                                // console.log("followupcompanies" , companyNames);
-
-                                                const interestedCompanies = leadHistoryData
-                                                    .filter((company) => company.ename === obj.ename && company.newStatus === "Interested")
-                                                    .map((company) => company["Company Name"]); // Assuming "Company Name" is the field for company names
-
-                                                console.log("Interested Companies:", interestedCompanies);
-
-                                                return (
-                                                    <tr key={`row-${index}`}>
-                                                        <td style={{
-                                                            color: "black",
-                                                            textDecoration: "none",
-                                                        }} >{index + 1}</td>
-                                                        <td >{obj.ename}</td>
-                                                        <td>{obj.branchOffice}</td>
-                                                        <td>
-                                                        <Link
-                                                                to={`/interestedleadreport/${obj.ename}?filtered=${encodeURIComponent(
-                                                                    JSON.stringify(
-                                                                        leadHistoryData.filter(
-                                                                            (company) =>
-                                                                                company.ename === obj.ename && company.newStatus === "Interested"
-                                                                        )
-                                                                    )
-                                                                )}`}
-                                                                style={{
-                                                                    color: "black",
-                                                                    textDecoration: "none",
-                                                                }}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                            >
-                                                                {
-                                                                    leadHistoryData.filter(
-                                                                        (company) => company.ename === obj.ename && company.newStatus === "Interested"
-                                                                    ).length
-                                                                }
-                                                            </Link>
-                                                        </td>
-
-                                                        <td >
-                                                        <Link
-                                                                to={`/followupleadreport/${obj.ename}?filtered=${encodeURIComponent(
-                                                                    JSON.stringify(
-                                                                        leadHistoryData.filter(
-                                                                            (company) =>
-                                                                                company.ename === obj.ename && company.newStatus === "FollowUp"
-                                                                        )
-                                                                    )
-                                                                )}`}
-                                                                style={{
-                                                                    color: "black",
-                                                                    textDecoration: "none",
-                                                                }}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                            >
-                                                            {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length}
-                                                            </Link>
-                                                        </td>
-                                                        <td>
-                                                            {filteredCompanies.length}
-                                                        </td>
-
-                                                    </tr>
-                                                )
-                                            })}
-                                    </tbody>
-                                )}
+                                                })}
+                                        </tbody>
+                                    )}
                                 <tfoot className="admin-dash-tbl-tfoot">
                                     <tr>
                                         <td
@@ -745,11 +747,58 @@ function InterestedFollowLeadReport() {
                                             Total
                                         </td>
                                         <td>
-                                            {leadHistoryData.filter(company => company.newStatus === "Interested").length}
+                                            {forwardEmployeeData.reduce((total, obj) => {
+                                                const totalInterestedCompanies = leadHistoryData
+                                                    .filter(company => company.ename === obj.ename && company.newStatus === "Interested")
+                                                    .map(company => company["Company Name"]);
+
+                                                const forwardedCompanies = companyDataTotal
+                                                    .filter(mainObj =>
+                                                        leadHistoryData.some(company =>
+                                                            company.ename === obj.ename &&
+                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
+                                                                mainObj.bdmAcceptStatus === "Pending" ||
+                                                                mainObj.bdmAcceptStatus === "Accept") &&
+                                                            mainObj["Company Name"] === company["Company Name"] &&
+                                                            mainObj.Status === "Interested"
+                                                        )
+                                                    )
+                                                    .map(company => company["Company Name"]);
+
+                                                // Add the remaining interested companies to the total
+                                                return total + totalInterestedCompanies.filter(
+                                                    companyName => !forwardedCompanies.includes(companyName)
+                                                ).length;
+                                            }, 0)}
                                         </td>
+
+                                        {/* Total remaining follow-up companies across all employees */}
                                         <td>
-                                            {leadHistoryData.filter(company => company.newStatus === "FollowUp").length}
+                                            {forwardEmployeeData.reduce((total, obj) => {
+                                                const totalFollowCompanies = leadHistoryData
+                                                    .filter(company => company.ename === obj.ename && company.newStatus === "FollowUp")
+                                                    .map(company => company["Company Name"]);
+
+                                                const forwardedCompaniesFollow = companyDataTotal
+                                                    .filter(mainObj =>
+                                                        leadHistoryData.some(company =>
+                                                            company.ename === obj.ename &&
+                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
+                                                                mainObj.bdmAcceptStatus === "Pending" ||
+                                                                mainObj.bdmAcceptStatus === "Accept") &&
+                                                            mainObj["Company Name"] === company["Company Name"] &&
+                                                            mainObj.Status === "FollowUp"
+                                                        )
+                                                    )
+                                                    .map(company => company["Company Name"]);
+
+                                                // Add the remaining follow-up companies to the total
+                                                return total + totalFollowCompanies.filter(
+                                                    companyName => !forwardedCompaniesFollow.includes(companyName)
+                                                ).length;
+                                            }, 0)}
                                         </td>
+
                                         <td>
                                             {totalFilteredCompanies}
                                         </td>

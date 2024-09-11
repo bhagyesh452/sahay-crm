@@ -12,6 +12,10 @@ function Attendance() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const userId = localStorage.getItem("hrUserId");
 
+    useEffect(() => {
+        document.title = `HR-Sahay-CRM`;
+    }, []);
+
     const currentYear = new Date().getFullYear();
     const currentMonth = format(new Date(), 'MMMM'); // e.g., 'August'
 

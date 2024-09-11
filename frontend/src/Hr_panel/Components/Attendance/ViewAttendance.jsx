@@ -54,6 +54,9 @@ function ViewAttendance({ year, month, date }) {
 
     const selectedMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
+    // Determine if there is any 'LCH' in the selected month
+    
+
     const today = new Date();
     const currentDay = today.getDate();
     const currentMonth = today.getMonth() + 1; // JavaScript months are 0-based
@@ -373,7 +376,7 @@ function ViewAttendance({ year, month, date }) {
         // }));
 
         // Prepare the payload for the API request
-       const selectedDate = new Date(date);
+        const selectedDate = new Date(date);
         const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
         const payload = {
@@ -635,7 +638,8 @@ function ViewAttendance({ year, month, date }) {
                                                             };
                                                             if (attendanceDetails.status === "LC1" ||
                                                                 attendanceDetails.status === "LC2" ||
-                                                                attendanceDetails.status === "LC3" || attendanceDetails.status === "LCH") lcCount++
+                                                                attendanceDetails.status === "LC3" ||
+                                                                attendanceDetails.status === "LCH") lcCount++
                                                             if (attendanceDetails.status === "Present" ||
                                                                 attendanceDetails.status === "LC1" ||
                                                                 attendanceDetails.status === "LC2" ||
@@ -644,7 +648,7 @@ function ViewAttendance({ year, month, date }) {
                                                             if (attendanceDetails.status === "Half Day" ||
                                                                 attendanceDetails.status === "LCH") halfDayCount++;
 
-                                                            // console.log("Emp attendance details :", attendanceDetails);
+                                                            console.log("Emp attendance details :", attendanceDetails);
 
                                                             const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
                                                             const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
@@ -1580,23 +1584,23 @@ function ViewAttendance({ year, month, date }) {
                     </div>
                 </DialogContent>
                 {!isDeleted &&
-                   (
-                   <div className='d-flex align-items-center'>
-                    
-                    <Button className="btn btn-success bdr-radius-none w-50" variant="contained"
-                        onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
-                        Submit
-                    </Button>
-           
-                  <Button className="btn btn-danger bdr-radius-none w-50" variant="contained"
-                    onClick={() => handleClear(id, employeeId, empName, designation, department, branchOffice, attendanceDate,inTime, outTime)}>
-                    Clear
-                </Button>
-                  
-                   
-                </div>
-                )
-                    }
+                    (
+                        <div className='d-flex align-items-center'>
+
+                            <Button className="btn btn-success bdr-radius-none w-50" variant="contained"
+                                onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                                Submit
+                            </Button>
+
+                            <Button className="btn btn-danger bdr-radius-none w-50" variant="contained"
+                                onClick={() => handleClear(id, employeeId, empName, designation, department, branchOffice, attendanceDate, inTime, outTime)}>
+                                Clear
+                            </Button>
+
+
+                        </div>
+                    )
+                }
             </Dialog>
 
             {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}
