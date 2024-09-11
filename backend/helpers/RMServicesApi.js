@@ -548,8 +548,8 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
         .skip(skip)
         .limit(parseInt(limit));
     }
-    //console.log(activeTab)
-    //console.log(response)
+    console.log(activeTab)
+    console.log(response)
     const totalDocuments = await RMCertificationModel.countDocuments(query);
 
     const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });

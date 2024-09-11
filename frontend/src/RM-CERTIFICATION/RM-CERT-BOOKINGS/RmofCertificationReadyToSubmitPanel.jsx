@@ -221,7 +221,8 @@ function RmofCertificationReadyToSubmitPanel({
             });
 
             const { data, totalPages } = servicesResponse.data;
-
+            console.log("data" , data)
+            console.log("response" , servicesResponse)
 
             if (page === 1) {
                 setRmServicesData(data);
@@ -1455,17 +1456,29 @@ function RmofCertificationReadyToSubmitPanel({
                                         </td>
                                         <td className='td_of_remarks'>
                                             <div className="d-flex align-items-center justify-content-between wApp">
-                                                <div
-                                                    className="My_Text_Wrap"
-                                                    title={obj.Remarks && obj.Remarks.length > 0 ? obj.Remarks.sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks : "No Remarks"}
-                                                >
-                                                    {
-                                                        obj.Remarks && obj.Remarks.length > 0
-                                                            ? obj.Remarks
-                                                                .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks
-                                                            : "No Remarks"
-                                                    }
+                                                <div className="d-flex align-items-center justify-content-between wApp">
+                                                    {(() => {
+                                                        // Check and sort remarks
+                                                        let remarksValue = "No Remarks";
+                                                        if (obj.Remarks && obj.Remarks.length > 0) {
+                                                            console.log("obj.remarks" , obj.Remarks)
+                                                            remarksValue = obj.Remarks
+                                                                .sort((a, b) => new Date(b.updatedOn) - new Date(a.updatedOn))[0].remarks;
+                                                        }
+
+                                                        console.log('Sorted Remarks:', remarksValue); // Log the value of the remarks
+                                                        
+                                                        return (
+                                                            <div
+                                                                className="My_Text_Wrap"
+                                                                title={remarksValue}
+                                                            >
+                                                                {remarksValue}
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </div>
+
                                                 <button className='td_add_remarks_btn'
                                                     onClick={() => {
                                                         setOpenRemarksPopUp(true)
