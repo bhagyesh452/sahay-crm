@@ -497,7 +497,7 @@ router.get('/rm-sevicesgetrequest-complete', async (req, res) => {
 
 router.get('/rm-sevicesgetrequest', async (req, res) => {
   try {
-    const { search, page = 1, limit = 50, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+    const { search, page = 1, limit = 500, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
 
     // Build query object
     let query = {};
