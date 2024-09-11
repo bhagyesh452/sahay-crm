@@ -30,6 +30,7 @@ import { RiDatabaseLine } from "react-icons/ri";
 import { MdMedicalServices } from "react-icons/md";
 import DataAnalystServiceAnalysis from "../ServiceAnalysis/DataAnalystServiceAnalysis.jsx";
 import InterestedFollowLeadReport from "../../../admin/DashboardReportComponents/InterestedFollowLeadReport.jsx"
+import EmployeeCompleteCallingReport from "../../../admin/DashboardReportComponents/EmployeeCompleteCallingReport.jsx";
 
 
 
@@ -152,7 +153,16 @@ function DatamanagerDashboard() {
                                             <span style={{fontSize:"12px"}}>Service Analysis</span>
                                         </div>
                                     }
-                                    {...a11yProps(3)}
+                                    {...a11yProps(4)}
+                                />
+                                 <Tab
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{fontSize:"12px"}}>Calling Report</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(5)}
                                 />
                             </Tabs>
                         </Box>
@@ -171,6 +181,9 @@ function DatamanagerDashboard() {
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
                             <DataAnalystServiceAnalysis />
+                        </CustomTabPanel>
+                        <CustomTabPanel value={value} index={5} className="mat-tab-inner">
+                            <EmployeeCompleteCallingReport />
                         </CustomTabPanel>
                     </div>
                 </div>

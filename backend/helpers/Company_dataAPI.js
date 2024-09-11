@@ -337,6 +337,7 @@ router.put("/leads/:id", async (req, res) => {
     const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
+  
     //console.log(updatedData);
 
     if (!updatedData) {
