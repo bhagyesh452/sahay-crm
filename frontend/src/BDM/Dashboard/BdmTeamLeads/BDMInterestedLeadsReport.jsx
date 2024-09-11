@@ -624,7 +624,7 @@ function BDMInterestedLeadsReport() {
                                                         <td >{obj.ename}</td>
                                                         <td>{obj.branchOffice}</td>
                                                         <td>
-                                                            <Link
+                                                            {/* <Link
                                                                 to={`/interestedleadreport/${obj.ename}?filtered=${encodeURIComponent(
                                                                     JSON.stringify(
                                                                         leadHistoryData.filter(
@@ -639,17 +639,17 @@ function BDMInterestedLeadsReport() {
                                                                 }}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                            >
+                                                            > */}
                                                                 {
                                                                     leadHistoryData.filter(
                                                                         (company) => company.ename === obj.ename && company.newStatus === "Interested"
                                                                     ).length
                                                                 }
-                                                            </Link>
+                                                            {/* </Link> */}
                                                         </td>
 
                                                         <td >
-                                                            <Link
+                                                            {/* <Link
                                                                 to={`/followupleadreport/${obj.ename}?filtered=${encodeURIComponent(
                                                                     JSON.stringify(
                                                                         leadHistoryData.filter(
@@ -664,9 +664,9 @@ function BDMInterestedLeadsReport() {
                                                                 }}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                            >
+                                                            > */}
                                                                 {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length}
-                                                            </Link>
+                                                            {/* </Link> */}
                                                         </td>
                                                         <td>
                                                             {filteredCompanies.length}
