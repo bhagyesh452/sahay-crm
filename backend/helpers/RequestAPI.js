@@ -1001,9 +1001,9 @@ router.post("/edit-moreRequest/:companyName/:bookingIndex",
     try {
       const { companyName, bookingIndex } = req.params;
       const socketIO = req.io;
-      // const newData = req.body.dataToSend;
+      const newData = req.body;
 
-      const newData = JSON.parse(req.body.dataToSend);
+      // const newData = JSON.parse(req.body.dataToSend);
       // console.log("Form data is :", newData);
 
       const newOtherDocs = req.files?.["otherDocs"] || [];
