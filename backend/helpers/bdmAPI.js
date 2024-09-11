@@ -387,6 +387,20 @@ router.post("/bdm-status-change/:id", async (req, res) => {
       bdmStatusChangeTime: time,
     });
 
+    if (bdmnewstatus === "Interested") {
+      await LeadHistoryForInterestedandFollowModel.findOneAndUpdate(
+        { _id: id },  // Query to find the document by ID
+        {             // Update fields
+          $set: {
+            oldStatus: bdeStatus,
+            newStatus: bdmnewstatus,
+          },
+        },
+        { new: true } // Option to return the updated document
+      );
+    }
+    
+
     if(bdmnewstatus === "Not Interested" || bdmnewstatus === "Junk" || bdmnewstatus === "Busy"){
       await LeadHistoryForInterestedandFollowModel.findOneAndDelete({
         _id : id

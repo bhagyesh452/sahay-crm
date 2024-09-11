@@ -1173,7 +1173,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                   <>
                     <th>Added Date</th>
                     <th>Status</th>
-                    {/* <th>BDM Work</th> */}
+                    <th>BDM Work</th>
                     <th>Action</th>
                   </>
                 )}
@@ -1278,7 +1278,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         ) : (
                           <td>N/A</td>
                         )}
-                        {/* <td>
+                        <td>
                           <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
                             <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
                               disabled={item.newDesignation !== "Business Development Executive" && item.newDesignation !== "Business Development Manager"}
@@ -1286,7 +1286,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                 handleChecked(item._id, item.bdmWork, item)
                               }} />
                           </Stack>
-                        </td> */}
+                        </td>
                         <td>
                           <button className="action-btn action-btn-primary">
                             <Link

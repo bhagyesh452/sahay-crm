@@ -29,86 +29,86 @@ router.post("/requestCompanyData", async (req, res) => {
   const csvData = req.body;
   const socketIO = req.io;
   const findData = await CompanyModel.findOne({
-    "Company Name" : csvData["Company Name"]
+    "Company Name": csvData["Company Name"]
   })
- if(findData){
-  res.status(400).json({message : "Company Already Exists in Database"})
- }else{
-  let dataArray = [];
-  if (Array.isArray(csvData)) {
-    dataArray = csvData;
-    console.log("dataArray", dataArray)
-  } else if (typeof csvData === "object" && csvData !== null) {
-    dataArray.push(csvData);
+  if (findData) {
+    res.status(400).json({ message: "Company Already Exists in Database" })
   } else {
-    // Handle invalid input
-    console.error("Invalid input: csvData must be an array or an object.");
-  }
-  const ename = dataArray[0].ename
-
-  try {
-    for (const employeeData of dataArray) {
-      try {
-        const employeeWithAssignData = {
-          ...employeeData,
-          AssignDate: new Date(),
-          assigned: "Pending",
-          requestDate: new Date(),
-          UploadDate: new Date(),
-        };
-        //console.log("employeedata" , employeeData)
-        const employee = new CompanyRequestModel(employeeWithAssignData);
-        const savedEmployee = await employee.save();
-        //console.log("savedemployee" , savedEmployee)
-
-
-      } catch (error) {
-        console.error("Error saving employee:", error.message);
-        // res.status(500).json({ error: 'Internal Server Error' });
-
-        // Handle the error for this specific entry, but continue with the next one
-      }
+    let dataArray = [];
+    if (Array.isArray(csvData)) {
+      dataArray = csvData;
+      console.log("dataArray", dataArray)
+    } else if (typeof csvData === "object" && csvData !== null) {
+      dataArray.push(csvData);
+    } else {
+      // Handle invalid input
+      console.error("Invalid input: csvData must be an array or an object.");
     }
+    const ename = dataArray[0].ename
 
-    const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
-    let GetEmployeeProfile = "no-image"
-    if (GetEmployeeData) {
-      const EmployeeData = GetEmployeeData.employee_profile;
-      console.log("Employee Data:", EmployeeData);
+    try {
+      for (const employeeData of dataArray) {
+        try {
+          const employeeWithAssignData = {
+            ...employeeData,
+            AssignDate: new Date(),
+            assigned: "Pending",
+            requestDate: new Date(),
+            UploadDate: new Date(),
+          };
+          //console.log("employeedata" , employeeData)
+          const employee = new CompanyRequestModel(employeeWithAssignData);
+          const savedEmployee = await employee.save();
+          //console.log("savedemployee" , savedEmployee)
 
-      if (EmployeeData && EmployeeData.length > 0) {
-        GetEmployeeProfile = EmployeeData[0].filename;
 
+        } catch (error) {
+          console.error("Error saving employee:", error.message);
+          // res.status(500).json({ error: 'Internal Server Error' });
+
+          // Handle the error for this specific entry, but continue with the next one
+        }
+      }
+
+      const GetEmployeeData = await adminModel.findOne({ ename: ename }).exec();
+      let GetEmployeeProfile = "no-image"
+      if (GetEmployeeData) {
+        const EmployeeData = GetEmployeeData.employee_profile;
+        console.log("Employee Data:", EmployeeData);
+
+        if (EmployeeData && EmployeeData.length > 0) {
+          GetEmployeeProfile = EmployeeData[0].filename;
+
+        } else {
+          GetEmployeeProfile = "no-image";
+        }
       } else {
         GetEmployeeProfile = "no-image";
       }
-    } else {
-      GetEmployeeProfile = "no-image";
+
+
+      const requestCreate = {
+        ename: ename,
+        requestType: "Lead Upload",
+        requestTime: new Date(),
+        designation: "SE",
+        status: "Unread",
+        employee_status: "Unread",
+        img_url: GetEmployeeProfile,
+        companyName: "Approved Bulk Leads"
+      }
+      const addRequest = new NotiModel(requestCreate);
+      const saveRequest = await addRequest.save();
+      socketIO.emit('approve-request', ename);
+
+
+      res.status(200).json({ message: "Data sent successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+      console.error("Error in bulk save:", error.message);
     }
 
-
-    const requestCreate = {
-      ename: ename,
-      requestType: "Lead Upload",
-      requestTime: new Date(),
-      designation: "SE",
-      status: "Unread",
-      employee_status: "Unread",
-      img_url: GetEmployeeProfile,
-      companyName: "Approved Bulk Leads"
-    }
-    const addRequest = new NotiModel(requestCreate);
-    const saveRequest = await addRequest.save();
-    socketIO.emit('approve-request', ename);
-
-
-    res.status(200).json({ message: "Data sent successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-    console.error("Error in bulk save:", error.message);
   }
-
- }
 });
 
 router.post("/change-edit-request/:companyName", async (req, res) => {
@@ -961,20 +961,67 @@ router.delete("/delete-inform-Request/:id", async (req, res) => {
   }
 });
 
+const bookingStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Determine the destination path based on the fieldname and company name
+    const companyName = req.params.companyName;
+    let destinationPath = "";
+
+    if (file.fieldname === "otherDocs") {
+      destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'ExtraDocs');
+    } else if (file.fieldname === "paymentReceipt") {
+      destinationPath = path.resolve(__dirname, '../BookingsDocument', companyName, 'PaymentReceipts');
+    }
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(destinationPath)) {
+      fs.mkdirSync(destinationPath, { recursive: true });
+    }
+
+    cb(null, destinationPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const bookingUpload = multer({ storage: bookingStorage });
+
 router.post("/edit-moreRequest/:companyName/:bookingIndex",
+  bookingUpload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
   async (req, res) => {
+
+    
     try {
       const { companyName, bookingIndex } = req.params;
       const socketIO = req.io;
-      const newData = req.body;
+      // const newData = req.body.dataToSend;
+
+      const newData = JSON.parse(req.body.dataToSend);
+      // console.log("Form data is :", newData);
+
+      const newOtherDocs = req.files?.["otherDocs"] || [];
+      // console.log("Other docs are :", newOtherDocs);
+      
+      const newPaymentReceipt = req.files?.["paymentReceipt"] || [];
+      // console.log("Payment receipt is :", newPaymentReceipt);
+
       const requestDate = new Date();
+      
       const createdData = await EditableDraftModel.create({
         "Company Name": companyName,
         bookingIndex,
         requestDate,
         assigned: "Pending",
         ...newData,
+        otherDocs: newOtherDocs,
+        paymentReceipt: newPaymentReceipt
       });
+
       const name = newData.bdeName;
       const bdmName = newData.bdmName;
       const GetEmployeeData = await adminModel.findOne({ ename: name }).exec();
@@ -1166,8 +1213,8 @@ router.post('/paymentApprovalRequestByBde', upload.single('attachment'), async (
       status: "Unread",
       employee_status: "Unread",
       img_url: GetEmployeeProfile,
-      companyName:companyName,
-      paymentApprovalServices:serviceType
+      companyName: companyName,
+      paymentApprovalServices: serviceType
     };
     const addRequest = new NotiModel(requestCreate);
     await addRequest.save();
@@ -1195,11 +1242,11 @@ router.get("/paymentApprovalRequestByBde", async (req, res) => {
 
 router.get("/paymentApprovalRequestByBde/:ename", async (req, res) => {
   const { ename } = req.params;
-  
+
   try {
     // Retrieve all data from RequestModel
-    const allData = await PaymentApprovalRequestModel.find({ename : ename});
-   
+    const allData = await PaymentApprovalRequestModel.find({ ename: ename });
+
     res.status(200).json(allData);
   } catch (error) {
     console.error(error);
@@ -1281,10 +1328,10 @@ router.put('/paymentApprovalRequestAcceptByAdmin/:id', upload.single('attachment
       }
     }
     const updateNotification = await NotiModel.findOneAndUpdate(
-      {  
+      {
         companyName,
         ename,
-        paymentApprovalServices: { $all: serviceType } 
+        paymentApprovalServices: { $all: serviceType }
       },
       {
         $set: {

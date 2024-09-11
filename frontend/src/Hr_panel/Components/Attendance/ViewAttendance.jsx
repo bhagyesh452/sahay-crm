@@ -256,18 +256,49 @@ function ViewAttendance({ year, month, date }) {
             status = "Leave";
         } else {
             // const workingHours = calculateWorkingHours(inTime, outTime);
+            // const calculateWorkingHours = (inTime, outTime) => {
+            //     const [inHours, inMinutes] = inTime.split(':').map(Number);
+            //     const [outHours, outMinutes] = outTime.split(':').map(Number);
+
+
+            //     const inTimeMinutes = inHours * 60 + inMinutes;
+            //     const outTimeMinutes = outHours * 60 + outMinutes;
+
+            //     let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+
+            //     if (workingMinutes < 0) {
+            //         workingMinutes += 24 * 60; // Adjust for overnight shifts
+            //     }
+
+            //     return workingMinutes;
+            // };
+
             const calculateWorkingHours = (inTime, outTime) => {
-                const [inHours, inMinutes] = inTime.split(':').map(Number);
-                const [outHours, outMinutes] = outTime.split(':').map(Number);
+                const convertToMinutes = (timeString) => {
+                    const [hours, minutes] = timeString.split(':').map(Number);
+                    return hours * 60 + minutes;
+                };
 
+                const formatToHHMM = (minutes) => {
+                    const hours = Math.floor(minutes / 60);
+                    const mins = minutes % 60;
+                    return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
+                };
 
-                const inTimeMinutes = inHours * 60 + inMinutes;
-                const outTimeMinutes = outHours * 60 + outMinutes;
+                const inTimeMinutes = convertToMinutes(inTime);
+                const outTimeMinutes = convertToMinutes(outTime);
 
-                let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+                const startBoundary = convertToMinutes("10:00"); // 10:00 AM
+                const endBoundary = convertToMinutes("18:00"); // 6:00 PM
 
+                let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
+                let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
+
+                let workingMinutes = actualOutTime - actualInTime - 45; // Subtract 45 minutes for the break
+
+                // Ensure working minutes don't go negative
                 if (workingMinutes < 0) {
-                    workingMinutes += 24 * 60; // Adjust for overnight shifts
+                    workingMinutes = 0;
                 }
 
                 return workingMinutes;
@@ -284,14 +315,14 @@ function ViewAttendance({ year, month, date }) {
             console.log("workingminutes", workingMinutes)
             if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
                 status = "LC";
-            } else if (workingMinutes >= 429) { // 7 hours 15 minutes in minutes
+            } else if (workingMinutes >= 420) { // 7 hours 15 minutes in minutes
                 status = "Present";
-            } else if (workingMinutes > 120 && workingMinutes < 210) { // 7 hours 15 minutes / 2 in minutes
+            } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours 15 minutes / 2 in minutes
                 status = "Half Day";
             } else {
                 status = "Leave";
             }
-            console.log("status", status)
+            // console.log("status", status)
         }
 
         const payload = {
@@ -326,6 +357,50 @@ function ViewAttendance({ year, month, date }) {
             Swal.fire("error", "Error adding/updating attendance", "error");
         }
         fetchAttendance();
+    };
+
+    const handleClear = async (id, empId, name, designation, department, branch, date) => {
+        // Define the new attendance data based on the checkbox state
+        const updatedData = { inTime: "", outTime: "", workingHours: "", status: "" };
+
+        // Update the local state
+        // setAttendanceData(prevState => ({
+        //     ...prevState,
+        //     [empId]: {
+        //         ...prevState[empId],
+        //         ...updatedData
+        //     }
+        // }));
+
+        // Prepare the payload for the API request
+       const selectedDate = new Date(date);
+        const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+        const payload = {
+            id: id,
+            employeeId: empId,
+            ename: name,
+            designation: designation,
+            department: department,
+            branchOffice: branch,
+            attendanceDate: date,
+            dayName: dayName,
+            inTime: updatedData.inTime,
+            outTime: updatedData.outTime,
+            workingHours: updatedData.workingHours,
+            status: updatedData.status
+        };
+
+        console.log("Payload is :", payload);
+        try {
+            const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
+            Swal.fire("Success", "Attendance Successfully Added/Updated", "success");
+        } catch (error) {
+            console.log("Error updating attendance record", error);
+            Swal.fire("Error", "Error adding/updating attendance", "error");
+        }
+
+        fetchAttendance(); // Refresh the attendance data after updating
     };
 
     const fetchAttendance = async () => {
@@ -385,7 +460,7 @@ function ViewAttendance({ year, month, date }) {
 
     const officialHolidays = [
         '14-01-2024', '15-01-2024', '24-03-2024', '25-03-2024',
-        '07-07-2024', "10-08-2024","09-08-2024",'19-08-2024', '12-10-2024', '31-10-2024',
+        '07-07-2024', "10-08-2024", "09-08-2024", '19-08-2024', '12-10-2024', '31-10-2024',
         '01-11-2024', '02-11-2024', '03-11-2024', '04-11-2024', '05-11-2024'
     ];
 
@@ -593,189 +668,192 @@ function ViewAttendance({ year, month, date }) {
                                                                         }
                                                                     </div>
                                                                     {!status && (
-                                                                    <div>
-                                                                        {selectedDate < joiningDate ? (
-                                                                            <div className='before-joining-icon'><FcCancel /></div>
-                                                                        ) : isHoliday ? (
-                                                                            // Logic for Official Holidays (OH)
-                                                                            (() => {
-                                                                                const findPrevWorkingDay = (year, month, startDay) => {
-                                                                                    let currentDay = startDay;
-                                                                                    while (true) {
-                                                                                      // Format the current date for holiday checking
-                                                                                      const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
-                                                                                      const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
-                                                                          
-                                                                                      const isSunday = dateToCheck.getDay() === 0;
-                                                                                      const isHoliday = officialHolidays.includes(formattedDate);
-                                                                          
-                                                                                      // If it's neither a Sunday nor a holiday, return the working day
-                                                                                      if (!isSunday && !isHoliday) {
-                                                                                        break;
-                                                                                      }
-                                                                                      currentDay--; // Move to the previous day
-                                                                                    }
-                                                                                    return currentDay;
-                                                                                  };
-                                                                          
-                                                                                  const findNextWorkingDay = (year, month, startDay) => {
-                                                                                    let currentDay = startDay;
-                                                                                    while (true) {
-                                                                                      // Format the current date for holiday checking
-                                                                                      const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
-                                                                                      const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
-                                                                          
-                                                                                      const isSunday = dateToCheck.getDay() === 0;
-                                                                                      const isHoliday = officialHolidays.includes(formattedDate);
-                                                                          
-                                                                                      // If it's neither a Sunday nor a holiday, return the working day
-                                                                                      if (!isSunday && !isHoliday) {
-                                                                                        break;
-                                                                                      }
-                                                                                      currentDay++; // Move to the next day
-                                                                                    }
-                                                                                    return currentDay;
-                                                                                  };
-                                                                          
-                                                                                  // Get previous and next working days, excluding Sundays and holidays
-                                                                                  const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, day - 1);
-                                                                                  const nextWorkingDay = findNextWorkingDay(currentYear, monthNumber, day + 1);
-                                                                          
-                                                                                  const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
-                                                                                  const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[nextWorkingDay]?.status;
+                                                                        <div>
+                                                                            {selectedDate < joiningDate ? (
+                                                                                <div className='before-joining-icon'><FcCancel /></div>
+                                                                            ) : isHoliday ? (
+                                                                                // Logic for Official Holidays (OH)
+                                                                                (() => {
+                                                                                    const findPrevWorkingDay = (year, month, startDay) => {
+                                                                                        let currentDay = startDay;
+                                                                                        while (true) {
+                                                                                            // Format the current date for holiday checking
+                                                                                            const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
+                                                                                            const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
 
-                                                                                if (
-                                                                                    (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
-                                                                                    (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
-                                                                                ) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div className="sl-sunday">OHL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
-                                                                                            <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
-                                                                                        </>
-                                                                                    );
-                                                                                } else if (
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
-                                                                                ) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div className="sh-sunday">OHH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
-                                                                                            <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
-                                                                                        </>
-                                                                                    );
-                                                                                } else {
-                                                                                    return <div className="s-sunday">OH</div>; // Default Sunday fill with "S"
-                                                                                }
-                                                                            })()
-                                                                        ) : selectedDate.getDay() === 0 ? ( // Logic for Sunday
-                                                                            (() => {
-                                                                                let prevDay = day - 1;
-                                                                                let nextDay = day + 1;
-                                                                                const findPrevWorkingDay = (year , month , startDay) =>{
-                                                                                    let currentDay = startDay;
-                                                                                    while(true){
-                                                                                        // Format the current date for holiday checking
-                                                                                        const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
-                                                                                        // Create a new Date object for the current day
-                                                                                        const dateToCheck = new Date(year, month - 1, currentDay); // Month index in JavaScript Date is 0-based
-                                                                                         // Check if the day is Sunday
-                                                                                         const isSunday = dateToCheck.getDay() === 0;
+                                                                                            const isSunday = dateToCheck.getDay() === 0;
+                                                                                            const isHoliday = officialHolidays.includes(formattedDate);
 
-                                                                                         // Check if the day is a holiday
-                                                                                        const isHoliday = officialHolidays.includes(formattedDate);
-                                                                                        // If it's neither a Sunday nor a holiday, break the loop and return the working day
-                                                                                        if (!isSunday && !isHoliday) {
-                                                                                            break;
+                                                                                            // If it's neither a Sunday nor a holiday, return the working day
+                                                                                            if (!isSunday && !isHoliday) {
+                                                                                                break;
+                                                                                            }
+                                                                                            currentDay--; // Move to the previous day
                                                                                         }
-                                                                                         // Move to the next day
-                                                                                         currentDay--;
-                                                                                    }
-                                                                                    return currentDay;
-                                                                                }
-                                                                                const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, prevDay)
-                                                                                const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
-                                                                                console.log("prevWorkingDay" , prevWorkingDay)
-                                                                                console.log("prevDayStatus" , prevDayStatus)
-                                                                                const findNextWorkingDay = (year, month, startDay) => {
-                                                                                    let currentDay = startDay;
-                                                                                    while (true) {
-                                                                                        // Format the current date for holiday checking
-                                                                                        const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
-                                                                                
-                                                                                        // Create a new Date object for the current day
-                                                                                        const dateToCheck = new Date(year, month - 1, currentDay); // Month index in JavaScript Date is 0-based
-                                                                                
-                                                                                        // Check if the day is Sunday
-                                                                                        const isSunday = dateToCheck.getDay() === 0;
-                                                                                
-                                                                                        // Check if the day is a holiday
-                                                                                        const isHoliday = officialHolidays.includes(formattedDate);
-                                                                                
-                                                                                        // If it's neither a Sunday nor a holiday, break the loop and return the working day
-                                                                                        if (!isSunday && !isHoliday) {
-                                                                                            break;
-                                                                                        }
-                                                                                
-                                                                                        // Move to the next day
-                                                                                        currentDay++;
-                                                                                    }
-                                                                                
-                                                                                    return currentDay;
-                                                                                };
-                                                                                const nextWorkingDay = findNextWorkingDay(currentYear, monthNumber, nextDay); // Get the next working day
-                                                                               
-                                                                                const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[nextWorkingDay]?.status;
-                                                                              
-                                                                                //const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
+                                                                                        return currentDay;
+                                                                                    };
 
-                                                                                if (
-                                                                                    (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
-                                                                                    (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
-                                                                                ) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div className="sl-sunday">SL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
-                                                                                            <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
-                                                                                        </>
-                                                                                    );
-                                                                                } else if (
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
-                                                                                ) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div className="sh-sunday">SH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
-                                                                                            <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
-                                                                                        </>
-                                                                                    );
-                                                                                } else if (
-                                                                                    (prevDayStatus === "Present" || nextDayStatus === "Half Day") ||
-                                                                                    (prevDayStatus === "Leave" && nextDayStatus === "Present") ||
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Present") ||
-                                                                                    (prevDayStatus === "Present" && nextDayStatus === "Present")
-                                                                                ) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div className="sh-sunday">SP</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
-                                                                                            <div className="d-none">{presentCount++}</div> {/* Increment leaveCount for Sunday */}
-                                                                                        </>
-                                                                                    );
-                                                                                } else {
-                                                                                    return <div className="s-sunday">S</div>; // Default Sunday fill with "S"
-                                                                                }
-                                                                            })()
-                                                                        ) : (
-                                                                            <button
-                                                                                className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
-                                                                                onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
-                                                                                disabled={isFutureDate} // Disable button for future dates
-                                                                            >
-                                                                                {day <= daysInMonth && <FaPlus />}
-                                                                            </button>
-                                                                        )}
-                                                                    </div>
-                                                                )}
+                                                                                    const findNextWorkingDay = (year, month, startDay) => {
+                                                                                        let currentDay = startDay;
+                                                                                        while (true) {
+                                                                                            // Format the current date for holiday checking
+                                                                                            const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
+                                                                                            const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
+
+                                                                                            const isSunday = dateToCheck.getDay() === 0;
+                                                                                            const isHoliday = officialHolidays.includes(formattedDate);
+
+                                                                                            // If it's neither a Sunday nor a holiday, return the working day
+                                                                                            if (!isSunday && !isHoliday) {
+                                                                                                break;
+                                                                                            }
+                                                                                            currentDay++; // Move to the next day
+                                                                                        }
+                                                                                        return currentDay;
+                                                                                    };
+
+                                                                                    // Get previous and next working days, excluding Sundays and holidays
+                                                                                    const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, day - 1);
+                                                                                    const nextWorkingDay = findNextWorkingDay(currentYear, monthNumber, day + 1);
+
+                                                                                    const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
+                                                                                    const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[nextWorkingDay]?.status;
+
+                                                                                    if (
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sl-sunday">OHL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
+                                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else if (
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "LCH" && nextDayStatus === "LCH")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">OHH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else {
+                                                                                        return <div className="s-sunday">OH</div>; // Default Sunday fill with "S"
+                                                                                    }
+                                                                                })()
+                                                                            ) : selectedDate.getDay() === 0 ? ( // Logic for Sunday
+                                                                                (() => {
+                                                                                    let prevDay = day - 1;
+                                                                                    let nextDay = day + 1;
+                                                                                    const findPrevWorkingDay = (year, month, startDay) => {
+                                                                                        let currentDay = startDay;
+                                                                                        while (true) {
+                                                                                            // Format the current date for holiday checking
+                                                                                            const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
+                                                                                            // Create a new Date object for the current day
+                                                                                            const dateToCheck = new Date(year, month - 1, currentDay); // Month index in JavaScript Date is 0-based
+                                                                                            // Check if the day is Sunday
+                                                                                            const isSunday = dateToCheck.getDay() === 0;
+
+                                                                                            // Check if the day is a holiday
+                                                                                            const isHoliday = officialHolidays.includes(formattedDate);
+                                                                                            // If it's neither a Sunday nor a holiday, break the loop and return the working day
+                                                                                            if (!isSunday && !isHoliday) {
+                                                                                                break;
+                                                                                            }
+                                                                                            // Move to the next day
+                                                                                            currentDay--;
+                                                                                        }
+                                                                                        return currentDay;
+                                                                                    }
+                                                                                    const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, prevDay)
+                                                                                    const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
+                                                                                    // console.log("prevWorkingDay" , prevWorkingDay)
+                                                                                    // console.log("prevDayStatus" , prevDayStatus)
+                                                                                    const findNextWorkingDay = (year, month, startDay) => {
+                                                                                        let currentDay = startDay;
+                                                                                        while (true) {
+                                                                                            // Format the current date for holiday checking
+                                                                                            const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
+
+                                                                                            // Create a new Date object for the current day
+                                                                                            const dateToCheck = new Date(year, month - 1, currentDay); // Month index in JavaScript Date is 0-based
+
+                                                                                            // Check if the day is Sunday
+                                                                                            const isSunday = dateToCheck.getDay() === 0;
+
+                                                                                            // Check if the day is a holiday
+                                                                                            const isHoliday = officialHolidays.includes(formattedDate);
+
+                                                                                            // If it's neither a Sunday nor a holiday, break the loop and return the working day
+                                                                                            if (!isSunday && !isHoliday) {
+                                                                                                break;
+                                                                                            }
+
+                                                                                            // Move to the next day
+                                                                                            currentDay++;
+                                                                                        }
+
+                                                                                        return currentDay;
+                                                                                    };
+                                                                                    const nextWorkingDay = findNextWorkingDay(currentYear, monthNumber, nextDay); // Get the next working day
+
+                                                                                    const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[nextWorkingDay]?.status;
+
+                                                                                    //const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
+
+                                                                                    if (
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sl-sunday">SL</div> {/* Fill Sunday with "SL" if adjacent days meet the conditions */}
+                                                                                                <div className="d-none">{leaveCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else if (
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "LCH" && nextDayStatus === "LCH")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">SH</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{halfDayCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else if (
+                                                                                        (prevDayStatus === "Present" || nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "Present" && nextDayStatus === "Present")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="sh-sunday">SP</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{presentCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    } else {
+                                                                                        return <div className="s-sunday">S</div>; // Default Sunday fill with "S"
+                                                                                    }
+                                                                                })()
+                                                                            ) : (
+                                                                                <button
+                                                                                    className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
+                                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                                    disabled={isFutureDate} // Disable button for future dates
+                                                                                >
+                                                                                    {day <= daysInMonth && <FaPlus />}
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
                                                                 </td>
                                                             );
                                                         })}
@@ -974,47 +1052,47 @@ function ViewAttendance({ year, month, date }) {
                                                                                 const findPrevWorkingDay = (year, month, startDay) => {
                                                                                     let currentDay = startDay;
                                                                                     while (true) {
-                                                                                      // Format the current date for holiday checking
-                                                                                      const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
-                                                                                      const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
-                                                                          
-                                                                                      const isSunday = dateToCheck.getDay() === 0;
-                                                                                      const isHoliday = officialHolidays.includes(formattedDate);
-                                                                          
-                                                                                      // If it's neither a Sunday nor a holiday, return the working day
-                                                                                      if (!isSunday && !isHoliday) {
-                                                                                        break;
-                                                                                      }
-                                                                                      currentDay--; // Move to the previous day
+                                                                                        // Format the current date for holiday checking
+                                                                                        const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
+                                                                                        const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
+
+                                                                                        const isSunday = dateToCheck.getDay() === 0;
+                                                                                        const isHoliday = officialHolidays.includes(formattedDate);
+
+                                                                                        // If it's neither a Sunday nor a holiday, return the working day
+                                                                                        if (!isSunday && !isHoliday) {
+                                                                                            break;
+                                                                                        }
+                                                                                        currentDay--; // Move to the previous day
                                                                                     }
                                                                                     return currentDay;
-                                                                                  };
-                                                                          
-                                                                                  const findNextWorkingDay = (year, month, startDay) => {
+                                                                                };
+
+                                                                                const findNextWorkingDay = (year, month, startDay) => {
                                                                                     let currentDay = startDay;
                                                                                     while (true) {
-                                                                                      // Format the current date for holiday checking
-                                                                                      const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
-                                                                                      const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
-                                                                          
-                                                                                      const isSunday = dateToCheck.getDay() === 0;
-                                                                                      const isHoliday = officialHolidays.includes(formattedDate);
-                                                                          
-                                                                                      // If it's neither a Sunday nor a holiday, return the working day
-                                                                                      if (!isSunday && !isHoliday) {
-                                                                                        break;
-                                                                                      }
-                                                                                      currentDay++; // Move to the next day
+                                                                                        // Format the current date for holiday checking
+                                                                                        const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
+                                                                                        const dateToCheck = new Date(year, month - 1, currentDay); // Month index is 0-based
+
+                                                                                        const isSunday = dateToCheck.getDay() === 0;
+                                                                                        const isHoliday = officialHolidays.includes(formattedDate);
+
+                                                                                        // If it's neither a Sunday nor a holiday, return the working day
+                                                                                        if (!isSunday && !isHoliday) {
+                                                                                            break;
+                                                                                        }
+                                                                                        currentDay++; // Move to the next day
                                                                                     }
                                                                                     return currentDay;
-                                                                                  };
-                                                                          
-                                                                                  // Get previous and next working days, excluding Sundays and holidays
-                                                                                  const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, day - 1);
-                                                                                  const nextWorkingDay = findNextWorkingDay(currentYear, monthNumber, day + 1);
-                                                                          
-                                                                                  const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
-                                                                                  const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[nextWorkingDay]?.status;
+                                                                                };
+
+                                                                                // Get previous and next working days, excluding Sundays and holidays
+                                                                                const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, day - 1);
+                                                                                const nextWorkingDay = findNextWorkingDay(currentYear, monthNumber, day + 1);
+
+                                                                                const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
+                                                                                const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[nextWorkingDay]?.status;
 
                                                                                 if (
                                                                                     (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
@@ -1044,61 +1122,61 @@ function ViewAttendance({ year, month, date }) {
                                                                             (() => {
                                                                                 let prevDay = day - 1;
                                                                                 let nextDay = day + 1;
-                                                                                const findPrevWorkingDay = (year , month , startDay) =>{
+                                                                                const findPrevWorkingDay = (year, month, startDay) => {
                                                                                     let currentDay = startDay;
-                                                                                    while(true){
+                                                                                    while (true) {
                                                                                         // Format the current date for holiday checking
                                                                                         const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
                                                                                         // Create a new Date object for the current day
                                                                                         const dateToCheck = new Date(year, month - 1, currentDay); // Month index in JavaScript Date is 0-based
-                                                                                         // Check if the day is Sunday
-                                                                                         const isSunday = dateToCheck.getDay() === 0;
+                                                                                        // Check if the day is Sunday
+                                                                                        const isSunday = dateToCheck.getDay() === 0;
 
-                                                                                         // Check if the day is a holiday
+                                                                                        // Check if the day is a holiday
                                                                                         const isHoliday = officialHolidays.includes(formattedDate);
                                                                                         // If it's neither a Sunday nor a holiday, break the loop and return the working day
                                                                                         if (!isSunday && !isHoliday) {
                                                                                             break;
                                                                                         }
-                                                                                         // Move to the next day
-                                                                                         currentDay--;
+                                                                                        // Move to the next day
+                                                                                        currentDay--;
                                                                                     }
                                                                                     return currentDay;
                                                                                 }
                                                                                 const prevWorkingDay = findPrevWorkingDay(currentYear, monthNumber, prevDay)
                                                                                 const prevDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[prevWorkingDay]?.status;
-                                                                                console.log("prevWorkingDay" , prevWorkingDay)
-                                                                                console.log("prevDayStatus" , prevDayStatus)
+                                                                                // console.log("prevWorkingDay" , prevWorkingDay)
+                                                                                // console.log("prevDayStatus" , prevDayStatus)
                                                                                 const findNextWorkingDay = (year, month, startDay) => {
                                                                                     let currentDay = startDay;
                                                                                     while (true) {
                                                                                         // Format the current date for holiday checking
                                                                                         const formattedDate = formatDateForHolidayCheck(year, month, currentDay);
-                                                                                
+
                                                                                         // Create a new Date object for the current day
                                                                                         const dateToCheck = new Date(year, month - 1, currentDay); // Month index in JavaScript Date is 0-based
-                                                                                
+
                                                                                         // Check if the day is Sunday
                                                                                         const isSunday = dateToCheck.getDay() === 0;
-                                                                                
+
                                                                                         // Check if the day is a holiday
                                                                                         const isHoliday = officialHolidays.includes(formattedDate);
-                                                                                
+
                                                                                         // If it's neither a Sunday nor a holiday, break the loop and return the working day
                                                                                         if (!isSunday && !isHoliday) {
                                                                                             break;
                                                                                         }
-                                                                                
+
                                                                                         // Move to the next day
                                                                                         currentDay++;
                                                                                     }
-                                                                                
+
                                                                                     return currentDay;
                                                                                 };
                                                                                 const nextWorkingDay = findNextWorkingDay(currentYear, monthNumber, nextDay); // Get the next working day
-                                                                               
+
                                                                                 const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[nextWorkingDay]?.status;
-                                                                              
+
                                                                                 //const nextDayStatus = attendanceData[emp._id]?.[year]?.[month]?.[day + 1]?.status;
 
                                                                                 if (
@@ -1113,7 +1191,8 @@ function ViewAttendance({ year, month, date }) {
                                                                                         </>
                                                                                     );
                                                                                 } else if (
-                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day")
+                                                                                    (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+                                                                                    (prevDayStatus === "LCH" && nextDayStatus === "LCH")
                                                                                 ) {
                                                                                     return (
                                                                                         <>
@@ -1501,10 +1580,23 @@ function ViewAttendance({ year, month, date }) {
                     </div>
                 </DialogContent>
                 {!isDeleted &&
-                    <Button className="btn btn-primary bdr-radius-none" variant="contained"
+                   (
+                   <div className='d-flex align-items-center'>
+                    
+                    <Button className="btn btn-success bdr-radius-none w-50" variant="contained"
                         onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                         Submit
-                    </Button>}
+                    </Button>
+           
+                  <Button className="btn btn-danger bdr-radius-none w-50" variant="contained"
+                    onClick={() => handleClear(id, employeeId, empName, designation, department, branchOffice, attendanceDate,inTime, outTime)}>
+                    Clear
+                </Button>
+                  
+                   
+                </div>
+                )
+                    }
             </Dialog>
 
             {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}
