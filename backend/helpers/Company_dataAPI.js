@@ -15,6 +15,9 @@ const RedesignedDraftModel = require('../models/RedesignedDraftModel.js');
 const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 const DeletedLeadsModel = require('../models/DeletedLeadsModel.js');
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
+const RMCertificationModel = require('../models/RMCertificationServices.js');
+const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
+const RedesignedLeadModel = require('../models/RedesignedLeadform.js');
 
 
 
@@ -340,11 +343,26 @@ router.put("/leads/:id", async (req, res) => {
   
     //console.log(updatedData);
 
+    const updateRMCertificationCompanyDetails = await RMCertificationModel.updateMany(
+      { leadId: id },
+      req.body
+    );
+
+    const updateAdminExecutiveCompanyDetails = await AdminExecutiveModel.updateMany(
+      { leadId: id },
+      req.body
+    );
+
+    const updateRedesignedLeadFormDetails = await RedesignedLeadModel.findOneAndUpdate(
+      { company: id },
+      req.body
+    );
+
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
     }
 
-    res.json({ message: "Data updated successfully", updatedData });
+    res.json({ message: "Data updated successfully", updatedData, updateRMCertificationCompanyDetails, updateAdminExecutiveCompanyDetails, updateRedesignedLeadFormDetails });
   } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });

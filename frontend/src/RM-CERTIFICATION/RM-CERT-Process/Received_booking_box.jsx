@@ -247,7 +247,7 @@ function Received_booking_box() {
                     const dateB = new Date(b.lastActionDate);
                     return dateB - dateA; // Sort in descending order
                 });
-
+            
             // Process each document to combine services and filter them
             const processedData = filteredAndSortedData.map(item => {
                 // Combine servicesTakenByRmOfCertification and rmservicestaken for each document
@@ -801,14 +801,19 @@ function Received_booking_box() {
             console.error(`Company with name '${selectedCompanyName}' not found in mainDataSwap.`);
             return;
         }
-    
+        
+        // console.log("Selected company data :", selectedCompanyData);
+        let leadId = selectedCompanyData.company;
+
         const moreBookings = selectedCompanyData.moreBookings || [];
     
         const combinedServices = [
             ...(selectedCompanyData.services || []),
             ...moreBookings.flatMap((item) => item.services || [])
         ];
-    
+        
+        // console.log("Combined data :", combinedServices);
+
         const primaryServices = selectedCompanyData.services || [];
     
         const combinedRemainingpaymentsForServices = [
@@ -834,6 +839,8 @@ function Received_booking_box() {
     
         selectedServices.forEach(serviceName => {
             const serviceData = combinedServices.find(service => service.serviceName === serviceName);
+            // console.log("Service data :", serviceData);
+            
             const remainingPaymentData = combinedRemainingpaymentsForServices.filter(service => service.serviceName === serviceName);
     
             const totalReceivedPayment = remainingPaymentData.reduce((total, service) => total + service.receivedPayment, 0);
@@ -870,6 +877,7 @@ function Received_booking_box() {
                     bookingPublishDate: serviceData.bookingPublishDate || '',
                     pendingRecievedPayment: totalReceivedPayment,
                     pendingRecievedPaymentDate: pendingRecievedPaymentDate,
+                    leadId: leadId,
                     addedOn: new Date()
                 };
     

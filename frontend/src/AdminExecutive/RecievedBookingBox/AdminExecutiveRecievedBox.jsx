@@ -754,6 +754,8 @@ function AdminExecutiveRecievedBox() {
             return;
         }
         //console.log("selectedservices" , selectedServices)
+        // console.log("Selected company data :", selectedCompanyData);
+        let leadId = selectedCompanyData.company;
 
         // Default moreBookings to an empty array if it's undefined
         const moreBookings = selectedCompanyData.moreBookings || [];
@@ -834,6 +836,7 @@ function AdminExecutiveRecievedBox() {
                     bookingPublishDate: serviceData.bookingPublishDate || '',
                     pendingRecievedPayment: remainingPaymentData ? totalReceivedPayment : 0,
                     pendingRecievedPaymentDate: pendingRecievedPaymentDate,
+                    leadId: leadId,
                     addedOn: new Date() // Handle optional fields
                 };
 
