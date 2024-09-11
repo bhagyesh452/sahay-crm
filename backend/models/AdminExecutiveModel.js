@@ -29,12 +29,12 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
         type: String,
 
     },
-    City:{
-        type:String,
-      },
-      State:{
-        type:String
-      },
+    City: {
+        type: String,
+    },
+    State: {
+        type: String
+    },
     panNumber: {
         type: String,
 
@@ -169,7 +169,7 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
     },
     expenseReimbursementStatus: {
         type: String,
-        default:"Unpaid"
+        default: "Unpaid"
     },
     expenseReimbursementDate: {
         type: Date
@@ -193,17 +193,25 @@ const AdminExecutiveServicesSchema = new mongoose.Schema({
         type: String,
         default: "Not Started"
     },
-    approvalTime:{
-        type:Date
+    approvalTime: {
+        type: Date
     },
-    tokenStoredInBox:{
-        type:String
+    tokenStoredInBox: {
+        type: String
     },
-    courierStatus:{
-        type:String
+    courierStatus: {
+        type: String
     },
-    otpInboxNo:{
-        type:String
+    otpInboxNo: {
+        type: String
+    },
+    leadId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'newcdatas',
+        localField: 'Company Name',
+        foreignField: 'Company Name',
+        justOne: true,
+        match: { Status: 'Matured' }
     },
 });
 
