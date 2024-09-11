@@ -272,7 +272,7 @@ function EmployeeView() {
       <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
       <Navbar />
       <div className="page-wrapper">
-        <div className="page-header rm_Filter m-0">
+        <div className="page-header m-0">
           <div className="container-xl">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -477,10 +477,10 @@ function EmployeeView() {
                       <a class="nav-link active" data-bs-toggle="tab" href="#eI">Employee Info</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Information</a>
+                      <a class="nav-link" data-bs-toggle="tab" href="#Emergency_Contact">Emergency Contact</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#Emergency_Contact">Emergency Contact</a>
+                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Information</a>
                     </li>
                   </ul>
 
@@ -506,6 +506,21 @@ function EmployeeView() {
                               </div>
                             </div>
                           </div>  
+                          <div className="row m-0  bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <HiOutlineBuildingLibrary />
+                                </div>
+                                <div className="ep_info_h">Branch :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                Gota
+                              </div>
+                            </div>
+                          </div> 
                           <div className="row m-0  bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -618,36 +633,6 @@ function EmployeeView() {
                               </div>
                             </div>
                           </div>
-                          {/* <div className="row m-0 bdr-btm-eee">
-                            <div className="col-4 pt-1 pb-1">
-                              <div className="d-flex align-items-center">
-                                <div className="ep_info_icon clr-ffb900">
-                                  <GrLocation  />
-                                </div>
-                                <div className="ep_info_h">Current Address:</div>
-                              </div>
-                            </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row m-0 bdr-btm-eee">
-                            <div className="col-4 pt-1 pb-1">
-                              <div className="d-flex align-items-center">
-                                <div className="ep_info_icon clr-ffb900">
-                                  <GrLocation />
-                                </div>
-                                <div className="ep_info_h">Permanent Address:</div>
-                              </div>
-                            </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                H 21, Suvarna Apartment, Nirnay nagar, Ranip. Ahmedabad
-                              </div>
-                            </div>
-                          </div> */}
                         </div>
                       </div>
                     </div>
@@ -704,6 +689,40 @@ function EmployeeView() {
                           </div>
                         </div>
                       </div>
+                      <div className="my-card mt-2" >
+                        <div className="my-card-body">
+                          <div className="row m-0  bdr-btm-eee align-items-center">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <GrLocation />
+                                </div>
+                                <div className="ep_info_h">Current Address :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                H 21, Suvarna Apartment, Nirnaynagar, Ranip, Ahmedabad 380000
+                              </div>
+                            </div>
+                          </div>  
+                          <div className="row m-0  bdr-btm-eee align-items-center">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <GrLocation />
+                                </div>
+                                <div className="ep_info_h">Permanent Address  :</div>
+                              </div>
+                            </div>
+                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
+                              <div className="ep_info_t">
+                                H 21, Suvarna Apartment, Nirnaynagar, Ranip, Ahmedabad 380000
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -721,7 +740,16 @@ function EmployeeView() {
                       <a class="nav-link" data-bs-toggle="tab" href="#SalaryCalculation">Salary Calculation</a>
                     </li>
                     <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#LeaveReport">Leave Report</a>
+                    </li>
+                    <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#CallingReport">Calling Report</a>
+                    </li>
+                    <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link" data-bs-toggle="tab" href="#EmployeeDocuments">Employee Documents</a>
+                    </li>
+                    <li class="nav-item hr_emply_info_inner_tab_item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#Settings">Settings</a>
                     </li>
                   </ul>
                   <div class="tab-content hr_eiinr_tab_content">
@@ -729,7 +757,10 @@ function EmployeeView() {
                       <EmployeeViewAttendance/>
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="SalaryCalculation">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="LeaveReport">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="CallingReport">...</div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
                 </div>
               </div>
