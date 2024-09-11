@@ -21,7 +21,7 @@ import Select from '@mui/material/Select';
 import ClipLoader from "react-spinners/ClipLoader";
 import { Link } from 'react-router-dom';
 
-function InterestedFollowLeadReport() {
+function EmployeeCompleteCallingReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [selectedValue, setSelectedValue] = useState("")
     const [finalEmployeeData, setFinalEmployeeData] = useState([])
@@ -184,7 +184,7 @@ function InterestedFollowLeadReport() {
     }, []);
 
 
-    //------------------------fetching follow data-------------------------------------------
+    
 
 
     //-----------------------------date range filter function---------------------------------
@@ -251,61 +251,7 @@ function InterestedFollowLeadReport() {
 
     // ------------------------------sorting function employees forwardede data report----------------------------------
 
-    // const handleSortInterestedCases = (sortByForwarded) => {
-    //     //console.log(sortByForwarded, "case");
-    //     setNewSortType((prevData) => ({
-    //         ...prevData,
-    //         interestedcase:
-    //             prevData.interestedcase === 'ascending'
-    //                 ? 'descending'
-    //                 : prevData.interestedcase === 'descending'
-    //                     ? 'none'
-    //                     : 'ascending',
-    //     }));
-
-    //     switch (sortByForwarded) {
-    //         case 'ascending':
-    //             //console.log("yahan chala ascending");
-    //             const companyDataAscending = {};
-    //             leadHistoryData.forEach((company) => {
-    //                 if (company.bdmAcceptStatus === 'Pending' || company.bdmAcceptStatus === 'Accept') {
-    //                     companyDataAscending[company.ename] = (companyDataAscending[company.ename] || 0) + 1;
-    //                 }
-    //             });
-    //             forwardEmployeeData.sort((a, b) => {
-    //                 const countA = companyDataAscending[a.ename] || 0;
-    //                 const countB = companyDataAscending[b.ename] || 0;
-    //                 return countA - countB;
-    //             });
-    //             break; // Add break statement here
-
-    //         case 'descending':
-    //             //console.log("yahan chala descending");
-    //             const companyDataDescending = {};
-    //             companyDataTotal.forEach((company) => {
-    //                 if (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === 'Accept') {
-    //                     companyDataDescending[company.ename] = (companyDataDescending[company.ename] || 0) + 1;
-    //                 }
-    //             });
-    //             forwardEmployeeData.sort((a, b) => {
-    //                 const countA = companyDataDescending[a.ename] || 0;
-    //                 const countB = companyDataDescending[b.ename] || 0;
-    //                 return countB - countA;
-    //             });
-    //             break; // Add break statement here
-
-    //         case "none":
-    //             //console.log("yahan chala none");
-    //             if (finalEmployeeData.length > 0) {
-    //                 // Restore to previous state
-    //                 setForwardEmployeeData(finalEmployeeData);
-    //             }
-    //             break; // Add break statement here
-
-    //         default:
-    //             break;
-    //     }
-    // };
+   
     const sortForwardEmployeeData = (sortType) => {
         const sortedData = [...forwardEmployeeData].sort((a, b) => {
             const aInterestedCount = leadHistoryData.filter(company => company.ename === a.ename && company.newStatus === "Interested").length;
@@ -709,8 +655,8 @@ function InterestedFollowLeadReport() {
 
 
                                                     // You can now use the `remainingInterestedCompanies` array
-                                                    // console.log(`Remaining Interested Companies for ${obj.ename}:`, remainingInterestedCompanies);
-                                                    // console.log(`Remaining Follow Companies for ${obj.ename}:`, remainingFollowCompanies);
+                                                    console.log(`Remaining Interested Companies for ${obj.ename}:`, remainingInterestedCompanies);
+                                                    console.log(`Remaining Follow Companies for ${obj.ename}:`, remainingFollowCompanies);
                                                     return (
                                                         <tr key={`row-${index}`}>
                                                             <td style={{
@@ -771,6 +717,7 @@ function InterestedFollowLeadReport() {
                                                 ).length;
                                             }, 0)}
                                         </td>
+
                                         {/* Total remaining follow-up companies across all employees */}
                                         <td>
                                             {forwardEmployeeData.reduce((total, obj) => {
@@ -797,6 +744,7 @@ function InterestedFollowLeadReport() {
                                                 ).length;
                                             }, 0)}
                                         </td>
+
                                         <td>
                                             {totalFilteredCompanies}
                                         </td>
@@ -811,4 +759,4 @@ function InterestedFollowLeadReport() {
     )
 }
 
-export default InterestedFollowLeadReport
+export default EmployeeCompleteCallingReport

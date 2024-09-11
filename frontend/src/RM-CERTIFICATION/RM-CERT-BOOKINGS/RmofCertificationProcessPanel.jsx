@@ -263,7 +263,7 @@ function RmofCertificationProcessPanel({
             });
 
             const { data, totalPages } = servicesResponse.data;
-
+            console.log("data", data)
 
             if (page === 1) {
                 setRmServicesData(data);
@@ -429,7 +429,7 @@ function RmofCertificationProcessPanel({
     }
 
 
-    
+
 
     const handleRevokeCompanyToRecievedBox = async (companyName, serviceName) => {
         try {
@@ -493,14 +493,14 @@ function RmofCertificationProcessPanel({
 
     useEffect(() => {
         if (noOfAvailableData) {
-          showingFilterIcon(true)
-          totalFilteredData(noOfAvailableData)
+            showingFilterIcon(true)
+            totalFilteredData(noOfAvailableData)
         } else {
-          showingFilterIcon(false)
-          totalFilteredData(0)
+            showingFilterIcon(false)
+            totalFilteredData(0)
         }
-    
-      }, [noOfAvailableData, activeTab])
+
+    }, [noOfAvailableData, activeTab])
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {
@@ -1655,16 +1655,16 @@ function RmofCertificationProcessPanel({
                                             {/* <td>
                                                 {obj.withDSC ? obj.letterStatus : "Not Applicable"}
                                             </td> */}
-                                           <td>
-                                            {obj.withDSC ? (<DscLetterStatusAdHead
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                mainStatus={obj.mainCategoryStatus}
-                                                letterStatus={obj.letterStatus}
-                                                refreshData={refreshData}
-                                            />) : "Not Applicable"}
-                                        </td>
+                                            <td>
+                                                {obj.withDSC ? (<DscLetterStatusAdHead
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    mainStatus={obj.mainCategoryStatus}
+                                                    letterStatus={obj.letterStatus}
+                                                    refreshData={refreshData}
+                                                />) : "Not Applicable"}
+                                            </td>
                                             <td>
                                                 <div>
                                                     {obj.withDSC ? obj.dscStatus : "Not Applicable"}
