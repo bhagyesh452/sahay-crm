@@ -1,6 +1,22 @@
 const mongoose = require('mongoose');
 
-
+const historySchema = new mongoose.Schema({
+  title: {
+    type: String,
+  },
+  "Company Name": {
+    type: String,
+  },
+  ename:{
+    type:String
+  },
+  date: {
+    type: String,
+  },
+  time:{
+    type:String
+  },
+});
 const yourSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -25,7 +41,8 @@ const yourSchema = new mongoose.Schema({
   },
   time:{
     type:String
-  }
+  },
+  history:[historySchema]
 });
 
 
