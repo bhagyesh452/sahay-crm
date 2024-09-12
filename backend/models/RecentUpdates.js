@@ -7,6 +7,21 @@ const historySchema = new mongoose.Schema({
   "Company Name": {
     type: String,
   },
+  "Company Number": {
+    type: Number,
+  },
+  "Company Email": {
+    type: String,
+  },
+  "Company Incorporation Date  ": {
+    type: Date,
+  },
+  City: {
+    type: String,
+  },
+  State: {
+    type: String,
+  },
   ename:{
     type:String
   },

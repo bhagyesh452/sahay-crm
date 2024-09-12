@@ -331,6 +331,7 @@ router.get("/leads/:companyName", async (req, res) => {
 // 3. Update a Company 
 router.put("/leads/:id", async (req, res) => {
   const id = req.params.id;
+  const { data } = req.body
   let oldCompanyName = "";
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
@@ -341,13 +342,11 @@ router.put("/leads/:id", async (req, res) => {
 
     const existingData = await CompanyModel.findById(id);
     oldCompanyName = existingData["Company Name"];
-    // console.log("Old Company Name:", oldCompanyName);
-
+    
     const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    // console.log(updatedData);
-
+   
     const updateRMCertificationCompanyDetails = await RMCertificationModel.updateMany(
       { leadId: id },
       req.body
@@ -358,24 +357,49 @@ router.put("/leads/:id", async (req, res) => {
       req.body
     );
 
-    // if (updateRMCertificationCompanyDetails.nModified === 0) {
-    //   await RMCertificationModel.updateMany(
-    //     { "Company Name": oldCompanyName },
-    //     { $set: req.body }
-    //   );
-    // }
 
     const updateRedesignedLeadFormDetails = await RedesignedLeadModel.findOneAndUpdate(
       { company: id },
       req.body
     );
 
-    // if (updateAdminExecutiveCompanyDetails.nModified === 0) {
-    //   await AdminExecutiveModel.updateMany(
-    //     { "Company Name": oldCompanyName },
-    //     { $set: req.body }
-    //   );
-    // }
+      // Prepare the new history record
+    const newHistoryEntry = {
+      title: `Name of ${existingData["Company Name"]} updated to ${req.body["Company Name"]}`,
+      "Company Name": req.body["Company Name"],
+      "Company Number": req.body["Company Number"],
+      "Company Email": req.body["Company Email"],
+      "Company Incorporation Date ": req.body["Company Incorporation Date "],
+      City: req.body.City,
+      State: req.body.State,
+      ename: req.body.ename || "Unknown", // Handle if ename is not provided
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString(),
+    };
+
+    // Check if the entry exists in RecentUpdatesModel
+    let recentUpdate = await RecentUpdatesModel.findById(id);
+    if (!recentUpdate) {
+      // Create a new entry if it doesn't exist, with an empty history array
+      recentUpdate = new RecentUpdatesModel({
+        _id: existingData._id,
+        title: `Name of ${existingData["Company Name"]} updated to ${req.body["Company Name"]}`,
+        "Company Name": req.body["Company Name"],
+        ename: req.body.ename || "Unknown",
+        oldStatus: "Untouched",
+        newStatus: "Untouched",
+        properDate: new Date(),
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        history: [], // Empty history for new entries
+      });
+    }
+    // Push the new history entry into the history array if the document already exists
+    if (recentUpdate) {
+      recentUpdate.history.push(newHistoryEntry);
+      await recentUpdate.save();
+    }
+
 
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
