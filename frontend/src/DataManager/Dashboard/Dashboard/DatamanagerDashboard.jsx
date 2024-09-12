@@ -113,7 +113,11 @@ function DatamanagerDashboard() {
                 <div className="container-xl">
                     <div className="card mt-3">
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                            <Tabs
+                                value={value}
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                onChange={handleChange} aria-label="basic tabs example">
                                 <Tab label={
                                     <div style={{ display: "flex", alignItems: "center" }}>
                                         <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
@@ -151,16 +155,16 @@ function DatamanagerDashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Service Analysis</span>
+                                            <span style={{ fontSize: "12px" }}>Service Analysis</span>
                                         </div>
                                     }
                                     {...a11yProps(4)}
                                 />
-                                 <Tab
+                                <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Calling Report</span>
+                                            <span style={{ fontSize: "12px" }}>Calling Report</span>
                                         </div>
                                     }
                                     {...a11yProps(5)}
@@ -174,7 +178,7 @@ function DatamanagerDashboard() {
                             <EmployeeDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={2} className="mat-tab-inner">
-                            <InterestedFollowLeadReport/>
+                            <InterestedFollowLeadReport />
                             <EmployeesForwardedDataReport />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
