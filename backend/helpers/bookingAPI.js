@@ -280,11 +280,9 @@ router.post("/update-redesigned-final-form/:CompanyName",
       ...boom
     } = req.body;
 
-    // console.log("Request body :", req.body);
-
     const newOtherDocs = req.files["otherDocs"] || [];
     // console.log("Other docs in bookings :", newOtherDocs);
-    
+
     const newPaymentReceipt = req.files["paymentReceipt"] || [];
     // console.log("Payment receipt in bookings :", newPaymentReceipt);
 
@@ -304,7 +302,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
     });
 
     const goingToUpdate = step4changed === "true" ? updatedDocWithoutId : updatedDocs;
-    
+
     const tempDateToday = new Date();
 
     const newGoingToUpdate = {
@@ -314,7 +312,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
       servicesTakenByAdminExecutive: findCompany.servicesTakenByAdminExecutive
     };
 
-    //console.log("newgoingtoupdate" , newGoingToUpdate)
+    console.log("newgoingtoupdate", newGoingToUpdate)
     // console.log("boom", boom)
     // console.log("findCompany", findCompany)
 
@@ -354,7 +352,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
           }
         );
       }
-      console.log("updateddocument", newGoingToUpdate)
+      
       const serviceNames = companyData.services.map(service => service.serviceName);
 
       // Update RMCertificationModel
@@ -400,7 +398,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
               lastActionDate: tempDateToday, // Update lastActionDate
             };
 
-            console.log("updatedfields", updatedFields)
+            
 
             await RMCertificationModel.findOneAndUpdate(
               {
@@ -412,7 +410,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
             );
           } else {
             // If serviceData is not found, delete the existingRmCertData
-            console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
+            //console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
 
             await RMCertificationModel.deleteOne({
               "Company Name": companyName,
@@ -481,7 +479,7 @@ router.post("/update-redesigned-final-form/:CompanyName",
             );
           } else {
             // If serviceData is not found, delete the existingRmCertData
-            console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
+            //console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
 
             await AdminExecutiveModel.deleteOne({
               "Company Name": companyName,
@@ -547,7 +545,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       const { CompanyName, bookingIndex } = req.params;
       const { otherDocs, paymentReceipt, step4changed, remainingPayments, ...newData } = req.body;
 
-      console.log("newData", newData)
+   
 
       const newOtherDocs = req.files["otherDocs"] || [];
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
@@ -565,7 +563,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
       });
 
       const moreDocument = existingDocument.moreBookings[bookingIndex - 1];
-      console.log("moreDocument", moreDocument)
+
 
       if (!existingDocument) {
         return res.status(404).json({ error: "Document not found" });
@@ -630,7 +628,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
         );
       const serviceNames = moreDocument.services.map(service => service.serviceName);
 
-      console.log("serviceNames", serviceNames);
+ 
 
       // Update RMCertificationModel
       for (const serviceName of serviceNames) {
@@ -644,7 +642,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           const serviceData = newData.services.find(service => service.serviceName === serviceName);
 
           if (serviceData) {
-            console.log("serviceData", serviceData);
+         
             // Create updatedFields object to merge existing data with newData
             const updatedFields = {
               ...existingRmCertData.toObject(), // Copy existing fields
@@ -674,7 +672,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               lastActionDate: newTempDate, // Update lastActionDate
             };
 
-            console.log("updatedFields", updatedFields);
+       
 
             await RMCertificationModel.findOneAndUpdate(
               {
@@ -686,7 +684,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
             );
           } else {
             // If serviceData is not found, delete the existingRmCertData
-            console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
+            //console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
 
             await RMCertificationModel.deleteOne({
               "Company Name": CompanyName,
@@ -720,7 +718,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
           const serviceData = newData.services.find(service => service.serviceName === serviceName);
 
           if (serviceData) {
-            console.log("serviceData", serviceData);
+            
             // Create updatedFields object to merge existing data with newData
             const updatedFields = {
               ...existingRmCertData.toObject(), // Copy existing fields
@@ -750,7 +748,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
               lastActionDate: newTempDate, // Update lastActionDate
             };
 
-            console.log("updatedFields", updatedFields);
+         
 
             await AdminExecutiveModel.findOneAndUpdate(
               {
@@ -762,7 +760,7 @@ router.put("/update-more-booking/:CompanyName/:bookingIndex",
             );
           } else {
             // If serviceData is not found, delete the existingRmCertData
-            console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
+            //console.log(`No serviceData found for serviceName: ${serviceName}. Deleting existingRmCertData.`);
 
             await AdminExecutiveModel.deleteOne({
               "Company Name": CompanyName,
@@ -1672,7 +1670,7 @@ router.post(
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
           const recipients = isAdmin ?
-            ["nimesh@incscale.in" , "bookings@startupsahay.com"] :
+            ["nimesh@incscale.in", "bookings@startupsahay.com"] :
             [
               newData.bdeEmail,
               newData.bdmEmail,
@@ -3337,13 +3335,13 @@ router.post(
               },
             },
           };
-          const clientMail = newData.caCase == "Yes" ? 
-          newData.caEmail : 
-          newData["Company Email"]
+          const clientMail = newData.caCase == "Yes" ?
+            newData.caEmail :
+            newData["Company Email"]
           const mainClientMail = isAdmin ?
-            ["nimesh@incscale.in" , "bookings@startupsahay.com"] :
+            ["nimesh@incscale.in", "bookings@startupsahay.com"] :
             [clientMail, "admin@startupsahay.com"]
-            console.log("mainClientMail" , mainClientMail)
+          console.log("mainClientMail", mainClientMail)
           const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/client/basic-form" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
     <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
           pdf
@@ -3649,7 +3647,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const boomDate = new Date();
     const io = req.io;
     const ename = newData.bdeName;
-    console.log("newData", newData)
+  
 
     const sheetData = { ...newData, bookingPublishDate: formatDate(boomDate), bookingDate: formatDate(newData.bookingDate) }
     appendDataToSheet(sheetData);
@@ -3962,7 +3960,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
       // "admin@startupsahay.com"
-    ] : ["nimesh@incscale.in" , "bookings@startupsahay.com"];
+    ] : ["nimesh@incscale.in", "bookings@startupsahay.com"];
 
     console.log("recipients", recipients)
 
@@ -5607,9 +5605,9 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
     //console.log(clientMail)
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in" , "bookings@startupsahay.com"] : 
-    [clientMail, "admin@startupsahay.com"]
-    console.log("mainClientMail" , mainClientMail)
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in", "bookings@startupsahay.com"] :
+      [clientMail, "admin@startupsahay.com"]
+    console.log("mainClientMail", mainClientMail)
     pdf
       .create(filledHtml, options)
       .toFile(pdfFilePath, async (err, response) => {
@@ -5712,8 +5710,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
     const leadForm = await RedesignedLeadformModel.findOne({ company: companyId })
     const serviceNames = leadForm.services.map(service => service.serviceName);
 
-    console.log("leadForm", leadForm)
-    console.log("serviceName", serviceNames)
+   
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
       company: companyId,
@@ -5741,8 +5738,7 @@ router.delete("/redesigned-delete-booking/:companyId", async (req, res) => {
       serviceName: { $in: serviceNames }
     });
 
-    console.log('Delete Result:', deleteResult); // Debug log
-
+ 
     if (deletedBooking) {
       const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
         "Company Name": deletedBooking["Company Name"],
@@ -5888,8 +5884,7 @@ router.delete(
       //const companyObjectId = mongoose.Types.ObjectId(companyId);
       const leadForm = await RedesignedLeadformModel.findOne({ company: company })
       const bookingToRemove = leadForm.moreBookings.find(booking => {
-        console.log(`Booking ID: ${booking._id.toString()}`);  // Log the booking ID
-        console.log(`Company Object ID: ${companyId.toString()}`);  // Log the company Object ID
+        
 
         return booking._id.toString() === companyId.toString();
       });
@@ -5904,13 +5899,12 @@ router.delete(
           "Company Name": leadForm["Company Name"],
           serviceName: { $in: serviceNames }
         });
-        console.log('Delete Result:', deleteResult); // Debug log
+        
       }
 
 
 
-      console.log("leadForm", leadForm)
-      console.log("bookingToRenove", bookingToRemove)
+    
       //console.log("servicesName" , serviceNames)
 
 
@@ -6158,13 +6152,12 @@ router.post(
           parseInt(objectData.receivedAmount) || 0;
         const receivedAmountNew = parseInt(objectData.receivedAmount) || 0;
 
-        console.log("recieveddexisting", receivedAmountExisting)
+       
 
         const remainingAmountCalculated = totalPaymentWithGST - firstPaymentNew - (((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew);
         const pendingReceivedPaymentCalculated = ((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew;
 
-        console.log("remaining", remainingAmountCalculated);
-        console.log("pendingReceived", pendingReceivedPaymentCalculated);
+      
 
         const latestDate = new Date();
         // Handle updating RedesignedLeadformModel for bookingIndex 0
@@ -6186,7 +6179,7 @@ router.post(
           }
         );
 
-        console.log("updatedObject", updatedObjectNew)
+      
 
 
         // Push sendingObject into remainingPayments array
@@ -6217,7 +6210,7 @@ router.post(
           parseInt(objectData.receivedAmount) || 0;
         const receivedAmountNew = parseInt(objectData.receivedAmount) || 0;
 
-        console.log("recieveddexisting", receivedAmountExisting)
+     
 
         const remainingAmountCalculated = totalPaymentWithGST - firstPaymentNew - (((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew);
         const pendingReceivedPaymentCalculated = ((parseInt(findService.pendingRecievedAmount)) || 0) + receivedAmountNew;
@@ -6532,15 +6525,14 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
       const newCompany = findCompany;
       const tempObject = newCompany.remainingPayments.filter(rmpayments => rmpayments.serviceName === serviceName);
       const remainingObject = tempObject[tempObject.length - 1];
-      console.log("tempObject", tempObject)
-      console.log("remainigObject", remainingObject)
+   
       const newReceivedAmount = parseInt(newCompany.receivedAmount) - parseInt(remainingObject.receivedPayment);
       const newPendingAmount = parseInt(newCompany.pendingAmount) + parseInt(remainingObject.receivedPayment);
       const findService = newCompany.services.find((obj) => obj.serviceName === remainingObject.serviceName);
       const newGeneratedReceivedAmount = findService.withGST ? parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment) / 1.18 : parseInt(newCompany.generatedReceivedAmount) - parseInt(remainingObject.receivedPayment);
-      console.log("this is the required object", newGeneratedReceivedAmount);
+     
       const newRemainingArray = newCompany.remainingPayments.filter(boom => boom._id !== remainingObject._id);
-      console.log("This will be the object ", newRemainingArray)
+   
 
       // findCompany.moreBookings[bookingIndex - 1].remainingPayments.pop(); // Delete the last object from remainingPayments array
       // const updateResult = await findCompany.save();
@@ -6564,7 +6556,7 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
             pendingRecievedPayment: (parseInt(findRmCertCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
           }
         });
-        console.log("updatedcompany", updatedCompany)
+       
       }
 
 
@@ -6578,10 +6570,10 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
             pendingRecievedPayment: (parseInt(findAdminExecutiveCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
           }
         });
-        console.log("updatedcompany", updatedCompany)
+       
       }
       socketIO.emit('rm-recievedamount-deleted');
-      console.log("newupdatedarray", newUpdatedArray)
+
 
       return res.status(200).send("Successfully deleted last payment.");
     } catch (error) {
@@ -6628,7 +6620,7 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
             pendingRecievedPayment: (parseInt(findRmCertCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
           }
         });
-        console.log("updatedcompany", updatedCompany)
+    
       }
 
       const findAdminExecutiveCompany = await AdminExecutiveModel.findOne({ "Company Name": companyName, serviceName: serviceName });
@@ -6641,7 +6633,7 @@ router.delete('/redesigned-delete-morePayments/:companyName/:bookingIndex/:servi
             pendingRecievedPayment: (parseInt(findAdminExecutiveCompany.pendingRecievedPayment) || 0) - (parseInt(remainingObject.receivedPayment) || 0)
           }
         });
-        console.log("updatedcompany", updatedCompany)
+       
       }
       socketIO.emit('rm-recievedamount-deleted');
       return res.status(200).send("Successfully deleted last payment.");
