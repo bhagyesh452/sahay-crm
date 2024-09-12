@@ -107,7 +107,7 @@ export default function EditableMoreBooking({
     IAFtype1: "",
     IAFtype2: "",
     Nontype: "",
-    forOther:"",
+    forOther: "",
   }
   const defaultCompanyIncoIsoType = {
     serviceID: "",
@@ -239,7 +239,7 @@ export default function EditableMoreBooking({
           if (!service.organizationTypeObject.length || service.organizationTypeObject[0].serviceID === undefined) {
             allOrganizationTypes.push(tempDefaultOrganizationDscType);
           }
-        }else if (service.serviceName.includes("Director DSC")) {
+        } else if (service.serviceName.includes("Director DSC")) {
           const uniqueIdDirectorDsc = new Set(allDirectorTypes.map(obj => obj.serviceID)); // Initialize a Set with existing serviceIDs
 
           service.directorDscTypeObject.forEach(isoObj => {
@@ -305,8 +305,8 @@ export default function EditableMoreBooking({
               : service.serviceName.includes("Organization DSC")
                 ? "Organization DSC"
                 : service.serviceName.includes("Director DSC")
-                ? "Director DSC"
-                : service.serviceName,
+                  ? "Director DSC"
+                  : service.serviceName,
           paymentCount: service.paymentTerms === "Full Advanced" ? 1 : service.thirdPayment === 0 ? 2 : service.fourthPayment === 0 && service.thirdPayment !== 0 ? 3 : 4,
           secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
           thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
@@ -648,7 +648,12 @@ export default function EditableMoreBooking({
         Swal.fire("Empty Field!", "Please Enter CA Case", "warning")
         return true;
       }
-      if (leadData.caCase === "Yes" && (leadData.caCommission === 0 || leadData.caCommission === "" || leadData.caCommission === null || leadData.caCommission === undefined)) {
+      if (leadData.caCase === "Yes" && (
+        leadData.caCommission === 0 ||
+        leadData.caCommission === "" ||
+        leadData.caCommission === null ||
+        leadData.caCommission === undefined
+      )) {
         Swal.fire("Please Enter CA Commission");
         return true;
       }
@@ -711,23 +716,23 @@ export default function EditableMoreBooking({
         const companyIncoDetails = companyIncoType.find(obj => obj.serviceID === index);
         const organsizationDetails = organizationDscType.find(obj => obj.serviceID === index);
         const directorDetails = directorDscType.find(obj => obj.serviceID === index);
-        
+
         return {
           ...service,
           serviceName: service.serviceName === "ISO Certificate"
-                ? `ISO Certificate ${isoDetails.type === "IAF" ?
-                  `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
-                  isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                    ? `Non IAF ${isoDetails.forOther}`
-                    : `Non IAF ${isoDetails.Nontype}`
-                      }`
+            ? `ISO Certificate ${isoDetails.type === "IAF" ?
+              `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+              isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                ? `Non IAF ${isoDetails.forOther}`
+                : `Non IAF ${isoDetails.Nontype}`
+            }`
             : service.serviceName === "Company Incorporation"
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
                 ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity} Validity`
                 : service.serviceName === "Director DSC"
-                ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
-                : service.serviceName,
+                  ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
+                  : service.serviceName,
           secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
             ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
             : service.secondPaymentRemarks,
@@ -739,11 +744,10 @@ export default function EditableMoreBooking({
           fourthPaymentRemarks: service.fourthPaymentRemarks === "On Particular Date"
             ? fourthTempRemarks.find(obj => obj.serviceID === index)?.value || service.fourthPaymentRemarks
             : service.fourthPaymentRemarks,
-
           isoTypeObject: isoType,
           companyIncoTypeObject: companyIncoType,
           organizationTypeObject: organizationDscType,
-          directorDscTypeObject:directorDscType
+          directorDscTypeObject: directorDscType
         };
       });
 
@@ -790,7 +794,7 @@ export default function EditableMoreBooking({
           total + parseFloat(service.totalPaymentWGST || 0), 0)
 
       }
-
+      console.log("dataToSends", dataToSend)
       try {
         const response = await axios.post(`${secretKey}/requests/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
         console.log('Data created:', response.data);
@@ -814,19 +818,19 @@ export default function EditableMoreBooking({
         return {
           ...service,
           serviceName: service.serviceName === "ISO Certificate"
-          ? `ISO Certificate ${isoDetails.type === "IAF" ?
-            `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
-            isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-              ? `Non IAF ${isoDetails.forOther}`
-              : `Non IAF ${isoDetails.Nontype}`
-                }`
+            ? `ISO Certificate ${isoDetails.type === "IAF" ?
+              `IAF ${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` :
+              isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
+                ? `Non IAF ${isoDetails.forOther}`
+                : `Non IAF ${isoDetails.Nontype}`
+            }`
             : service.serviceName === "Company Incorporation"
               ? `${companyIncoDetails.type} Company Incorporation`
               : service.serviceName === "Organization DSC"
                 ? `Organization DSC ${organsizationDetails.type} With ${organsizationDetails.validity} Validity`
                 : service.serviceName === "Director DSC"
-                ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
-                : service.serviceName,
+                  ? `Director DSC ${directorDetails.type} With ${directorDetails.validity} Validity`
+                  : service.serviceName,
           secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date"
             ? secondTempRemarks.find(obj => obj.serviceID === index)?.value || service.secondPaymentRemarks
             : service.secondPaymentRemarks,
@@ -842,7 +846,7 @@ export default function EditableMoreBooking({
           isoTypeObject: isoType,
           companyIncoTypeObject: companyIncoType,
           organizationTypeObject: organizationDscType,
-          directorDscTypeObject:directorDscType
+          directorDscTypeObject: directorDscType
         };
       });
       const generatedTotalAmount = leadData.services.reduce(
@@ -900,52 +904,48 @@ export default function EditableMoreBooking({
       if (bookingIndex === 0) {
         try {
           const formData = new FormData();
+          // Helper function to append only non-empty fields
+          const appendNonEmptyFields = (formKey, objectToCheck, defaultObject) => {
+            Object.keys(defaultObject).forEach((key) => {
+              // Check if the property exists in the object and is non-empty
+              if (objectToCheck[key] !== undefined && objectToCheck[key] !== "" && objectToCheck[key] !== null) {
+                formData.append(`${formKey}[${key}]`, objectToCheck[key]);
+              }
+            });
+          };
           Object.keys(dataToSend).forEach((key) => {
             if (key === "services") {
-              // Handle services separately as it's an array
+              // Handle services array
               dataToSend.services.forEach((service, index) => {
                 Object.keys(service).forEach((prop) => {
-                  if (prop !== "isoTypeObject" ||
-                    prop !== "companyIncoTypeObject" ||
-                    prop !== "Organization DSC" ||
-                  prop !== "Director DSC") {
+                  if (
+                    prop !== "isoTypeObject" &&
+                    prop !== "companyIncoTypeObject" &&
+                    prop !== "organizationTypeObject" &&
+                    prop !== "directorDscTypeObject"
+                  ) {
                     formData.append(`services[${index}][${prop}]`, service[prop]);
                   }
                 });
               });
 
+              // Handle isoTypeObject, companyIncoTypeObject, organizationDscType, directorDscType based on defaults
               if (isoType.length !== 0) {
                 isoType.forEach((isoObj, isoIndex) => {
-                  Object.keys(isoObj).forEach((isoProp) => {
-
-                    formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                  })
-                })
+                  appendNonEmptyFields(`services[${isoIndex}][isoTypeObject]`, isoObj, defaultISOtypes);
+                });
               } else if (companyIncoType.length !== 0) {
-                companyIncoType.forEach((isoObj, isoIndex) => {
-                  Object.keys(isoObj).forEach((isoProp) => {
-
-                    formData.append(`services[${isoIndex}][companyIncoTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                  })
-                })
+                companyIncoType.forEach((incoObj, incoIndex) => {
+                  appendNonEmptyFields(`services[${incoIndex}][companyIncoTypeObject]`, incoObj, defaultCompanyIncoIsoType);
+                });
               } else if (organizationDscType.length !== 0) {
-                organizationDscType.forEach((isoObj, isoIndex) => {
-                  Object.keys(isoObj).forEach((isoProp) => {
-
-                    formData.append(`services[${isoIndex}][organizationTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                  })
-                })
-              }else if (directorDscType.length !== 0) {
-                directorDscType.forEach((isoObj, isoIndex) => {
-                  Object.keys(isoObj).forEach((isoProp) => {
-
-                    formData.append(`services[${isoIndex}][directorDscTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                  })
-                })
+                organizationDscType.forEach((orgDscObj, orgDscIndex) => {
+                  appendNonEmptyFields(`services[${orgDscIndex}][organizationTypeObject]`, orgDscObj, defaultOrganizationDscType);
+                });
+              } else if (directorDscType.length !== 0) {
+                directorDscType.forEach((directorDscObj, directorDscIndex) => {
+                  appendNonEmptyFields(`services[${directorDscIndex}][directorDscTypeObject]`, directorDscObj, defaultDirectorDscType);
+                });
               }
             } else if (key === "otherDocs") {
               for (let i = 0; i < leadData.otherDocs.length; i++) {
@@ -959,6 +959,8 @@ export default function EditableMoreBooking({
               formData.append(key, dataToSend[key]);
             }
           });
+
+
           // console.log(activeStep, dataToSend);
 
           console.log("dataToSend", dataToSend)
@@ -977,51 +979,49 @@ export default function EditableMoreBooking({
         }
       } else {
         const formData = new FormData();
+        // Helper function to append only non-empty fields
+        const appendNonEmptyFields = (formKey, objectToCheck, defaultObject) => {
+          Object.keys(defaultObject).forEach((key) => {
+            // Check if the property exists in the object and is non-empty
+            if (objectToCheck[key] !== undefined && objectToCheck[key] !== "" && objectToCheck[key] !== null) {
+              formData.append(`${formKey}[${key}]`, objectToCheck[key]);
+            }
+          });
+        };
+
         Object.keys(dataToSend).forEach((key) => {
           if (key === "services") {
-            // Handle services separately as it's an array
+            // Handle services array
             dataToSend.services.forEach((service, index) => {
               Object.keys(service).forEach((prop) => {
-                if (prop !== "isoTypeObject" ||
-                  prop !== "companyIncoTypeObject" ||
-                  prop !== "organizationTypeObject") {
+                if (
+                  prop !== "isoTypeObject" &&
+                  prop !== "companyIncoTypeObject" &&
+                  prop !== "organizationTypeObject" &&
+                  prop !== "directorDscTypeObject"
+                ) {
                   formData.append(`services[${index}][${prop}]`, service[prop]);
                 }
               });
             });
 
+            // Handle isoTypeObject, companyIncoTypeObject, organizationDscType, directorDscType based on defaults
             if (isoType.length !== 0) {
               isoType.forEach((isoObj, isoIndex) => {
-                Object.keys(isoObj).forEach((isoProp) => {
-
-                  formData.append(`services[${isoIndex}][isoTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                })
-              })
+                appendNonEmptyFields(`services[${isoIndex}][isoTypeObject]`, isoObj, defaultISOtypes);
+              });
             } else if (companyIncoType.length !== 0) {
-              companyIncoType.forEach((isoObj, isoIndex) => {
-                Object.keys(isoObj).forEach((isoProp) => {
-
-                  formData.append(`services[${isoIndex}][companyIncoTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                })
-              })
+              companyIncoType.forEach((incoObj, incoIndex) => {
+                appendNonEmptyFields(`services[${incoIndex}][companyIncoTypeObject]`, incoObj, defaultCompanyIncoIsoType);
+              });
             } else if (organizationDscType.length !== 0) {
-              organizationDscType.forEach((isoObj, isoIndex) => {
-                Object.keys(isoObj).forEach((isoProp) => {
-
-                  formData.append(`services[${isoIndex}][organizationTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                })
-              })
-            }else if (directorDscType.length !== 0) {
-              directorDscType.forEach((isoObj, isoIndex) => {
-                Object.keys(isoObj).forEach((isoProp) => {
-
-                  formData.append(`services[${isoIndex}][directorDscTypeObject][${isoProp}]`, isoObj[isoProp]);
-
-                })
-              })
+              organizationDscType.forEach((orgDscObj, orgDscIndex) => {
+                appendNonEmptyFields(`services[${orgDscIndex}][organizationTypeObject]`, orgDscObj, defaultOrganizationDscType);
+              });
+            } else if (directorDscType.length !== 0) {
+              directorDscType.forEach((directorDscObj, directorDscIndex) => {
+                appendNonEmptyFields(`services[${directorDscIndex}][directorDscTypeObject]`, directorDscObj, defaultDirectorDscType);
+              });
             }
           } else if (key === "otherDocs") {
             for (let i = 0; i < leadData.otherDocs.length; i++) {
@@ -1035,6 +1035,8 @@ export default function EditableMoreBooking({
             formData.append(key, dataToSend[key]);
           }
         });
+
+
         try {
           const response = await axios.put(`${secretKey}/bookings/update-more-booking/${companysName}/${bookingIndex}`, formData, {
             headers: {
@@ -1090,9 +1092,11 @@ export default function EditableMoreBooking({
     }
   };
 
+  console.log("isoType", isoType)
+
   const renderServices = () => {
     const services = [];
-    console.log(leadData.services.length, Number(totalServices));
+
     if (leadData.services.length === Number(totalServices)) {
       for (let i = 0; i < totalServices; i++) {
         services.push(
@@ -1128,7 +1132,7 @@ export default function EditableMoreBooking({
                       setCompanyIncoType([]);
                     } else if (organizationDscType.length !== 0 && e.target.value !== "Organization DSC") {
                       setOrganizationDscType([]);
-                    }else if (directorDscType.length !== 0 && e.target.value !== "Director DSC") {
+                    } else if (directorDscType.length !== 0 && e.target.value !== "Director DSC") {
                       setDirectorDscType([]);
                     }
                     if (e.target.value === "ISO Certificate") {
@@ -1158,7 +1162,7 @@ export default function EditableMoreBooking({
                         });
                         setOrganizationDscType(defaultArray)
                       }
-                    }else if (e.target.value === "Director DSC") {
+                    } else if (e.target.value === "Director DSC") {
                       if (!organizationDscType.some(obj => obj.serviceID === i)) {
                         const defaultArray = directorDscType;
                         defaultArray.push({
@@ -1246,29 +1250,29 @@ export default function EditableMoreBooking({
                       <option value="1 YEAR VALIDITY">1 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY">3 YEAR VALIDITY</option>
                       <option value="3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)">3 YEAR VALIDITY (1 YEAR PAID SURVEILLANCE)</option>
-                    </select></> : <>  
-                    <select 
-                    className="form-select mt-1 ml-1" 
-                    disabled={completed[activeStep] === true} 
-                    value={isoType.find(obj => obj.serviceID === i).Nontype} 
-                    onChange={(e) => {
-                      // Check if "Others" is selected and update state
-                      if (e.target.value === 'Others') {
-                        setShowOtherField(true);
-                      } else {
-                        setShowOtherField(false);
-                      }
-                      const currentObject = isoType.find(obj => obj.serviceID === i);
-                      if (currentObject) {
-                        const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                        const newCurrentObject = {
-                          ...currentObject,
-                          Nontype: e.target.value
+                    </select></> : <>
+                    <select
+                      className="form-select mt-1 ml-1"
+                      disabled={completed[activeStep] === true}
+                      value={isoType.find(obj => obj.serviceID === i).Nontype}
+                      onChange={(e) => {
+                        // Check if "Others" is selected and update state
+                        if (e.target.value === 'Others') {
+                          setShowOtherField(true);
+                        } else {
+                          setShowOtherField(false);
                         }
-                        remainingObject.push(newCurrentObject);
-                        setIsoType(remainingObject);
-                      }
-                    }}>
+                        const currentObject = isoType.find(obj => obj.serviceID === i);
+                        if (currentObject) {
+                          const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                          const newCurrentObject = {
+                            ...currentObject,
+                            Nontype: e.target.value
+                          }
+                          remainingObject.push(newCurrentObject);
+                          setIsoType(remainingObject);
+                        }
+                      }}>
                       <option value="" selected disabled>Select ISO Type</option>
                       <option value="9001">9001</option>
                       <option value="14001">14001</option>
@@ -1310,30 +1314,30 @@ export default function EditableMoreBooking({
                       <option value="GMO">GMO</option>
                       <option value="17025-2017">17025-2017</option>
                       <option value="Others">Others</option>
-                    </select> 
-                     {/* Conditionally render the textarea */}
-                     {showOtherField && (
-                        <input 
+                    </select>
+                    {/* Conditionally render the textarea */}
+                    {showOtherField && (
+                      <input
                         type="text"
-                          className="form-control mt-1 ml-1"
-                          value={isoType.find(obj => obj.serviceID === i).forOther}
-                          onChange={(e) => {
-                            const currentObject = isoType.find(obj => obj.serviceID === i);
-                            if (currentObject) {
-                              const remainingObject = isoType.filter(obj => obj.serviceID !== i);
-                              const newCurrentObject = {
-                                ...currentObject,
-                                forOther: e.target.value.toUpperCase() // Convert to uppercase
-                              }
-                              remainingObject.push(newCurrentObject);
-                              setIsoType(remainingObject);
+                        className="form-control mt-1 ml-1"
+                        value={isoType.find(obj => obj.serviceID === i).forOther}
+                        onChange={(e) => {
+                          const currentObject = isoType.find(obj => obj.serviceID === i);
+                          if (currentObject) {
+                            const remainingObject = isoType.filter(obj => obj.serviceID !== i);
+                            const newCurrentObject = {
+                              ...currentObject,
+                              forOther: e.target.value.toUpperCase() // Convert to uppercase
                             }
-                          }}
-                          placeholder="Please specify the ISO Type"
-                        />
-                      )}
-                    </>
-                    }
+                            remainingObject.push(newCurrentObject);
+                            setIsoType(remainingObject);
+                          }
+                        }}
+                        placeholder="Please specify the ISO Type"
+                      />
+                    )}
+                  </>
+                  }
                   {/* NON-IAF ISO TYPES */}
                 </>}
                 {/* Company Incorporation  */}
@@ -1400,8 +1404,8 @@ export default function EditableMoreBooking({
                     <option value="3 Year">3 Year</option>
                   </select>
                 </>}
-                 {/* Director Dsc  */}
-                 {leadData.services[i].serviceName.includes("Director DSC") && <>
+                {/* Director Dsc  */}
+                {leadData.services[i].serviceName.includes("Director DSC") && <>
                   <select className="form-select mt-1 ml-1"
                     value={directorDscType.find(obj => obj.serviceID === i).type}
                     onChange={(e) => {
@@ -3200,7 +3204,7 @@ export default function EditableMoreBooking({
                                           SRK Seedfund(Non GST)/IDFC first Bank
                                         </option> */}
                                         <option value="STARTUP SAHAY CONSULTANCY / ADVISORS">
-                                        STARTUP SAHAY CONSULTANCY / ADVISORS
+                                          STARTUP SAHAY CONSULTANCY / ADVISORS
                                         </option>
                                         <option value="Razorpay">
                                           Razorpay
@@ -3538,12 +3542,12 @@ export default function EditableMoreBooking({
                                             {obj.serviceName === "ISO Certificate" ? (
                                               (() => {
                                                 const isoDetails = isoType.find(obj => obj.serviceID === index);
-                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ? 
-                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}` 
-                                                  : 
+                                                return `ISO Certificate ${isoDetails.type} ${isoDetails.type === "IAF" ?
+                                                  `${isoDetails.IAFtype1} ${isoDetails.IAFtype2}`
+                                                  :
                                                   isoDetails.type === "Non IAF" && isoDetails.Nontype === "Others"
-                                                  ? `${isoDetails.forOther}`
-                                                  : `${isoDetails.Nontype}`}`;
+                                                    ? `${isoDetails.forOther}`
+                                                    : `${isoDetails.Nontype}`}`;
                                               })()
                                             ) : obj.serviceName === "Company Incorporation" ? (
                                               (() => {

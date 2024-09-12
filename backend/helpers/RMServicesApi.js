@@ -424,7 +424,7 @@ router.get("/adminexecutivedata/justfortest", async (req, res) => {
 
 router.get('/rm-sevicesgetrequest-complete', async (req, res) => {
   try {
-    const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+    const { search, page = 1, limit = 500, activeTab } = req.query; // Extract search, page, and limit from request
     //console.log("search", search)
     // Build query object
     let query = {};
@@ -548,8 +548,7 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
         .skip(skip)
         .limit(parseInt(limit));
     }
-    console.log(activeTab)
-    console.log(response)
+    
     const totalDocuments = await RMCertificationModel.countDocuments(query);
 
     const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
@@ -618,7 +617,7 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
 // });
 router.get('/adminexecutive-complete', async (req, res) => {
   try {
-    const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+    const { search, page = 1, limit = 500, activeTab } = req.query; // Extract search, page, and limit from request
     //console.log("search", search)
     // Build query object
     let query = {};
@@ -691,7 +690,7 @@ router.get('/adminexecutive-complete', async (req, res) => {
 
 router.get('/adminexecutivedata', async (req, res) => {
   try {
-    const { search, page = 1, limit = 50, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+    const { search, page = 1, limit = 500, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
 
     // Build query object
     let query = {};
@@ -867,7 +866,7 @@ router.get("/search-booking-data", async (req, res) => {
     const data = await RedesignedLeadformModel.find(query)
       .skip(skip)
       .limit(limit);
-    console.log("query", query);
+   
     // console.log("data", data);
     res.status(200).json({
       data,
@@ -1062,8 +1061,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
     try {
       const companyName = req.params.CompanyName;
       const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
-      console.log("rmservicesmainbooking" , rmServicesMainBooking)
-      console.log("rmservicesmorebooking" , rmServicesMoreBooking)
+    
       const socketIO = req.io;
       //console.log("rmservicesmainbooking", rmServicesMainBooking);
       //console.log("rmservicesmorebooking", rmServicesMoreBooking);
@@ -1071,7 +1069,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
-      console.log("document", document)
+  
 
       if (!document) {
         console.error("Document not found");
@@ -1085,7 +1083,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
           ...rmServicesMainBooking,
         ])
       );
-      console.log("uniquemainservices", uniqueMainServices)
+  
       document.servicesTakenByRmOfCertification = uniqueMainServices;
 
       // Iterate through moreBookings and update only relevant objects
@@ -1111,7 +1109,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
 
       // Save the updated document
       const updatedDocument = await document.save();
-      console.log("updateddocument", updatedDocument)
+    
 
       // if (!updatedDocument) {
       //   console.error("Failed to save the updated document");
@@ -2860,7 +2858,7 @@ router.post(`/post-enable-industry/`, async (req, res) => {
 
 router.post(`/post-disasble-industry/`, async (req, res) => {
   const { companyName, serviceName, isIndustryEnabled } = req.body;
-  console.log("industry", serviceName, companyName, industryOption)
+ 
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -3699,8 +3697,7 @@ router.post('/upload-approved-data', async (req, res) => {
   try {
     const updates = data.map(async (item) => {
       try {
-        console.log("Processing item:", item["Company Name"]); // Log each company being processed
-        console.log("item", item)
+     
         const parsedSubmittedOn = item["Submitted On Date"]
           ? excelSerialToJSDate(item["Submitted On Date"])
           : undefined;

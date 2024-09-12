@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { debounce } from "lodash";
 import Calendar from "@mui/icons-material/Event";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -6,7 +6,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment from "moment";
+// import moment from 'moment-timezone';
 import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -20,6 +22,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ClipLoader from "react-spinners/ClipLoader";
 import { Link } from 'react-router-dom';
+import FilterTableCallingReport from './FilterTableCallingReport';
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable'; // Import jsPDF and jsPDF AutoTable for generating PDFs
+
 
 function EmployeeCompleteCallingReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -31,6 +39,17 @@ function EmployeeCompleteCallingReport() {
         followupcase: "none",
 
     });
+    const [totalcalls, setTotalCalls] = useState(null);
+    const [filteredTotalCalls, setFilteredTotalCalls] = useState(null);
+    const [completeTotalCalls, setCompleteTotalCalls] = useState(null);
+    const [totalMissedCalls, setTotalMissedCalls] = useState(null);
+    //const [selectDate, setSelectDate] = useState(new Date().setUTCHours(0, 0, 0, 0))
+    const [selectTime, setselectTime] = useState()
+    const todayStartDate = new Date();
+    const todayEndDate = new Date();
+    const [selectDate, setSelectDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectStartTime, setSelectStartTime] = useState('00:00'); // Initialize to only time part
+    const [selectEndTime, setSelectEndTime] = useState('23:59'); // Initialize to only time part
     const [employeeData, setEmployeeData] = useState([]);
     const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
     const [employeeInfo, setEmployeeInfo] = useState([])
@@ -38,24 +57,15 @@ function EmployeeCompleteCallingReport() {
     const [forwardEmployeeDataFilter, setForwardEmployeeDataFilter] = useState([])
     const [forwardEmployeeDataNew, setForwardEmployeeDataNew] = useState([])
     const [employeeDataProjectionSummary, setEmployeeDataProjectionSummary] = useState([])
-    const [teamLeadsData, setTeamLeadsData] = useState([])
-    const [teamLeadsDataFilter, setTeamLeadsDataFilter] = useState([])
-    const [companyDataTotal, setCompanyDataTotal] = useState([])
-    const [companyData, setCompanyData] = useState([]);
-    const [companyDataFilter, setcompanyDataFilter] = useState([]);
-    const [followData, setfollowData] = useState([]);
-    const [followDataToday, setfollowDataToday] = useState([]);
-    const [followDataTodayNew, setfollowDataTodayNew] = useState([]);
-    const [followDataFilter, setFollowDataFilter] = useState([])
-    const [followDataNew, setFollowDataNew] = useState([])
-    const [selectedDataRangeForwardedEmployee, setSelectedDateRangeForwardedEmployee] = useState([]);
-    const [personName, setPersonName] = useState([])
-    const [searchTermForwardData, setSearchTermForwardData] = useState("")
-    const [bdeResegnedData, setBdeRedesignedData] = useState([])
-    const [leadHistoryData, setLeadHistoryData] = useState([])
-    const [filteredLeadHistoryData, setFilteredLeadHistoryData] = useState([])
-
-
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filteredData, setFilteredData] = useState(totalcalls);
+    const [filterField, setFilterField] = useState("")
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0)
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
 
     // --------------------------date formats--------------------------------------------
     function formatDateFinal(timestamp) {
@@ -87,8 +97,7 @@ function EmployeeCompleteCallingReport() {
             // Fetch data using fetch and axios
             const response = await fetch(`${secretKey}/employee/einfo`);
             const response3 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-            const response2 = await axios.get(`${secretKey}/company-data/leadDataHistoryInterested`);
-            const leadHistory = response2.data;
+
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -110,8 +119,6 @@ function EmployeeCompleteCallingReport() {
 
             // Set state values
             setDeletedEmployeeData(filteredDeletedData);
-            setLeadHistoryData(leadHistory);
-            setFilteredLeadHistoryData(leadHistory);
             setEmployeeData(filteredData);
             setEmployeeDataFilter(filteredData);
             setEmployeeInfo(filteredData);
@@ -126,279 +133,307 @@ function EmployeeCompleteCallingReport() {
             setLoading(false);
         }
     };
-
-
-    // console.log("deletedData", deletedEmployeeData)
-
-    //-------------------------------------fetching company data ----------------
-
-    const fetchCompanyData = async () => {
-        fetch(`${secretKey}/company-data/leads/interestedleads`)
-            .then((response) => response.json())
-            .then((data) => {
-                setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
-                setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
-                setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-            });
-    };
-
-    // const fetchFollowUpData = async () => {
-    //     try {
-    //         const response = await fetch(`${secretKey}/projection/projection-data`);
-    //         const followdata = await response.json();
-    //         setfollowData(followdata);
-    //         setFollowDataFilter(followdata)
-    //         setFollowDataNew(followdata)
-    //         //console.log("followdata", followdata)
-    //         setfollowDataToday(
-    //             followdata
-    //                 .filter((company) => {
-    //                     // Assuming you want to filter companies with an estimated payment date for today
-    //                     const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-    //                     return company.estPaymentDate === today;
-    //                 })
-    //         );
-    //         setfollowDataTodayNew(
-    //             followdata
-    //                 .filter((company) => {
-    //                     // Assuming you want to filter companies with an estimated payment date for today
-    //                     const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-    //                     return company.estPaymentDate === today;
-    //                 })
-    //         );
-    //     } catch (error) {
-    //         console.error("Error fetching data:", error);
-    //         return { error: "Error fetching data" };
-    //     }
-    // };
-    //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
-
     useEffect(() => {
         //fetchRedesignedBookings();
         fetchEmployeeInfo()
-        fetchCompanyData()
+        // fetchCompanyData()
         //fetchFollowUpData();
     }, []);
 
 
-    
+    //Set todayStartDate to the start of the day in UTC
+    todayStartDate.setUTCHours(4, 0, 0, 0);
 
+    //Set todayEndDate to the end of the day in UTC
+    todayEndDate.setUTCHours(13, 0, 0, 0);
 
-    //-----------------------------date range filter function---------------------------------
-    const numberFormatOptions = {
-        style: "currency",
-        currency: "INR", // Use the currency code for Indian Rupee (INR)
-        minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
-        maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
-    };
-    const shortcutsItems = [
-        {
-            label: "This Week",
-            getValue: () => {
-                const today = dayjs();
-                return [today.startOf("week"), today.endOf("week")];
-            },
-        },
-        {
-            label: "Last Week",
-            getValue: () => {
-                const today = dayjs();
-                const prevWeek = today.subtract(7, "day");
-                return [prevWeek.startOf("week"), prevWeek.endOf("week")];
-            },
-        },
-        {
-            label: "Last 7 Days",
-            getValue: () => {
-                const today = dayjs();
-                return [today.subtract(7, "day"), today];
-            },
-        },
-        {
-            label: "Current Month",
-            getValue: () => {
-                const today = dayjs();
-                return [today.startOf("month"), today.endOf("month")];
-            },
-        },
-        {
-            label: "Next Month",
-            getValue: () => {
-                const today = dayjs();
-                const startOfNextMonth = today.endOf("month").add(1, "day");
-                return [startOfNextMonth, startOfNextMonth.endOf("month")];
-            },
-        },
-        { label: "Reset", getValue: () => [null, null] },
-    ];
-    //---------------------------------multiple bde name filter function---------------------------------
+    // Convert to Unix timestamps (seconds since epoch)
+    const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
+    const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
-    const options = forwardEmployeeDataNew.map((obj) => obj.ename);
-
-    const ITEM_HEIGHT = 48;
-    const ITEM_PADDING_TOP = 8;
-    const MenuProps = {
-        PaperProps: {
-            style: {
-                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                width: 250,
-            },
-        },
-    };
-
-    // ------------------------------sorting function employees forwardede data report----------------------------------
-
-   
-    const sortForwardEmployeeData = (sortType) => {
-        const sortedData = [...forwardEmployeeData].sort((a, b) => {
-            const aInterestedCount = leadHistoryData.filter(company => company.ename === a.ename && company.newStatus === "Interested").length;
-            const bInterestedCount = leadHistoryData.filter(company => company.ename === b.ename && company.newStatus === "Interested").length;
-
-            if (sortType === "ascending") {
-                return aInterestedCount - bInterestedCount;
-            } else if (sortType === "descending") {
-                return bInterestedCount - aInterestedCount;
-            } else {
-                return 0; // No sorting
-            }
-        });
-
-        return sortedData;
-    };
-    const handleSortInterestedCases = (sortType) => {
-        if (sortType === "none") {
-            setForwardEmployeeData(forwardEmployeeDataNew); // Restore original data
-        } else {
-            const sortedData = sortForwardEmployeeData(sortType);
-            setForwardEmployeeData(sortedData); // Update the state with sorted data
-        }
-    };
-    const sortForwardEmployeeDataByFollowUp = (sortType) => {
-        const sortedData = [...forwardEmployeeData].sort((a, b) => {
-            const aFollowUpCount = leadHistoryData.filter(company => company.ename === a.ename && company.newStatus === "FollowUp").length;
-            const bFollowUpCount = leadHistoryData.filter(company => company.ename === b.ename && company.newStatus === "FollowUp").length;
-
-            if (sortType === "ascending") {
-                return aFollowUpCount - bFollowUpCount;
-            } else if (sortType === "descending") {
-                return bFollowUpCount - aFollowUpCount;
-            } else {
-                return 0; // No sorting
-            }
-        });
-
-        return sortedData;
-    };
-    const handleSortFollowUpCase = (sortType) => {
-        if (sortType === "none") {
-            setForwardEmployeeData(forwardEmployeeDataNew); // Restore original data
-        } else {
-            const sortedData = sortForwardEmployeeDataByFollowUp(sortType);
-            setForwardEmployeeData(sortedData); // Update the state with sorted data
-        }
-    };
-
-    const sortForwardEmployeeDataByForwarded = (sortType) => {
-        const sortedData = [...forwardEmployeeData].sort((a, b) => {
-            const aForwardedCount = companyDataTotal.filter(mainObj =>
-                leadHistoryData.some(company =>
-                    company.ename === a.ename &&
-                    (mainObj.bdmAcceptStatus === "Forwarded" ||
-                        mainObj.bdmAcceptStatus === "Pending" ||
-                        mainObj.bdmAcceptStatus === "Accept") &&
-                    mainObj.ename === company.ename
-                )
-            ).length;
-
-            const bForwardedCount = companyDataTotal.filter(mainObj =>
-                leadHistoryData.some(company =>
-                    company.ename === b.ename &&
-                    (mainObj.bdmAcceptStatus === "Forwarded" ||
-                        mainObj.bdmAcceptStatus === "Pending" ||
-                        mainObj.bdmAcceptStatus === "Accept") &&
-                    mainObj.ename === company.ename
-                )
-            ).length;
-
-            if (sortType === "ascending") {
-                return aForwardedCount - bForwardedCount;
-            } else if (sortType === "descending") {
-                return bForwardedCount - aForwardedCount;
-            } else {
-                return 0; // No sorting
-            }
-        });
-
-        return sortedData;
-    };
-    const handleSortForwardeCases = (sortType) => {
-        if (sortType === "none") {
-            setForwardEmployeeData(forwardEmployeeDataNew); // Restore original data
-        } else {
-            const sortedData = sortForwardEmployeeDataByForwarded(sortType);
-            setForwardEmployeeData(sortedData); // Update the state with sorted data
-        }
-    };
-
+    let employeeArray = []
+    employeeArray.push(employeeData.number);
 
     useEffect(() => {
-        setFinalEmployeeData([...forwardEmployeeData]); // Store original state of employeeData
-    }, [forwardEmployeeData]);
+        const fetchEmployeeData = async () => {
+            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+            const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+            // const employeeArray = [];
+            // employeeArray.push(employeeData.number);
+            console.log(startTimestamp, endTimestamp)
 
-    const totalFilteredCompanies = forwardEmployeeData.reduce((total, obj) => {
-        const filteredCompanies = companyDataTotal.filter(mainObj =>
-            leadHistoryData.some(company =>
-                (company.ename === obj.ename) &&
-                (mainObj.bdmAcceptStatus === "Forwarded" ||
-                    mainObj.bdmAcceptStatus === "Pending" ||
-                    mainObj.bdmAcceptStatus === "Accept") &&
-                mainObj["Company Name"] === company["Company Name"]
-            )
-        );
+            const body = {
+                "call_from": startTimestamp,
+                "call_to": endTimestamp,
+                "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+                "emp_numbers": employeeArray,
+                // "working_hour_from": "00:00",
+                // "working_hour_to": "20:59",
+                // "is_exclude_numbers": true
+            }
 
-        return total + filteredCompanies.length;
-    }, 0)
+            try {
+                setLoading(true)
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
 
-    // ----------------daterangefilterfunction---------------------
-    // Function to filter data by date range
-    const filterLeadHistoryByDateRange = (data, startDate, endDate) => {
-        const start = moment(startDate, "DD/MM/YYYY").startOf('day');
-        const end = moment(endDate, "DD/MM/YYYY").endOf('day');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                }
+                const data = await response.json();
 
-        return data.filter(item => {
-            const itemDate = moment(item.date); // Assuming 'date' is in ISO format
-            return itemDate.isBetween(start, end, null, '[]'); // '[]' includes start and end dates
+                setTotalCalls(data.result);
+                setFilteredTotalCalls(data.result)
+                setCompleteTotalCalls(data.result)
+
+                // setTotalCalls(data.result);
+                //console.log("data", data.result)
+
+            } catch (err) {
+
+                console.log(err)
+            } finally {
+                setLoading(false)
+            }
+        };
+        fetchEmployeeData();
+    }, [employeeData]);
+
+
+    const convertSecondsToHMS = (totalSeconds) => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 3600 % 60;
+
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+
+    // -----------------------filter functions----------------------
+
+
+    const handleSingleDateSelection = async (formattedDate) => {
+        // Convert formattedDate to a moment object in IST timezone
+        const date = moment(formattedDate, "DD/MM/YYYY").utcOffset('+05:30'); // Adjust to IST
+
+        // Set specific times for start and end of the day in IST
+        const startOfDay = date.set({ hour: 9, minute: 30, second: 0, millisecond: 0 }).unix(); // 9:30 AM IST
+        const endOfDay = date.set({ hour: 18, minute: 30, second: 0, millisecond: 0 }).unix(); // 6:30 PM IST
+
+        // Set the timestamps
+        const startTimestamp = startOfDay;
+        const endTimestamp = endOfDay;
+
+        // console.log("Start of Day (UTC):", moment.unix(startOfDay).utc().format());
+        // console.log("End of Day (UTC):", moment.unix(endOfDay).utc().format());
+        // console.log("Start of Day (IST):", moment.unix(startOfDay).format());
+        // console.log("End of Day (IST):", moment.unix(endOfDay).format());
+        console.log(startTimestamp, endTimestamp)
+        // Fetch data based on the selected date
+        const fetchEmployeeData = async () => {
+            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+            const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+
+            // Prepare the request body
+            const body = {
+                "call_from": startTimestamp,
+                "call_to": endTimestamp,
+                "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+                "emp_numbers": employeeArray,
+                // "working_hour_from": "00:00",
+                // "working_hour_to": "20:59",
+                // "is_exclude_numbers": true
+            }
+
+            try {
+                setLoading(true)
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                }
+                const data = await response.json();
+
+                setTotalCalls(data.result);
+                setFilteredTotalCalls(data.result)
+                setCompleteTotalCalls(data.result)
+                console.log("Data fetched:", data.result);
+
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false)
+            }
+        };
+        // Call the fetch function
+        fetchEmployeeData();
+    };
+
+    const formatDate = (dateString) => {
+        // Parse the date string as IST
+        const date = moment(dateString, "YYYY-MM-DD HH:mm:ss").utcOffset('+05:30');
+
+        // Format the date
+        return date.format('DD MMM YYYY, h:mm:ss A');
+    };
+    // const formatDate = (dateString) => {
+    //     const date = new Date(dateString);
+    //     const options = { 
+    //         year: 'numeric', 
+    //         month: 'long', 
+    //         day: 'numeric', 
+    //         hour: '2-digit', 
+    //         minute: '2-digit', 
+    //         second: '2-digit', 
+    //         timeZoneName: 'short'
+    //     };
+    //     return date.toLocaleDateString('en-IN', options);
+    // };
+
+    const formatToIST = (dateString) => {
+        // Remove the "IST" part and replace the space between date and time with "T"
+        const cleanedDateString = dateString.replace(' IST', '').replace(' ', 'T');
+
+        const utcDate = new Date(cleanedDateString);  // Parse the cleaned UTC date
+        if (isNaN(utcDate)) {
+            return 'Invalid Date'; // Handle invalid date
+        }
+
+        // Create a new Date object with the IST offset of +5:30 hours
+        const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
+
+        // Format the IST date
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZoneName: 'short'
+        };
+        return istDate.toLocaleString('en-IN', options);
+    };
+
+
+    // ------------------------------------filter functions-------------------------
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        setTotalCalls(newData);
+    };
+
+
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+
+    //   useEffect(() => {
+    //     if (noOfAvailableData) {
+    //       showingFilterIcon(true)
+    //       totalFilteredData(noOfAvailableData)
+    //     } else {
+    //       showingFilterIcon(false)
+    //       totalFilteredData(0)
+    //     }
+
+    //   }, [noOfAvailableData, activeTab])
+
+
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+    console.log("totalcalls", totalcalls)
+
+    // --------------------function to download pdf report----------------
+    const handleDownloadPDF = () => {
+        const doc = new jsPDF('l', 'mm', [297, 210]); // 'p' for portrait, 'mm' for units in millimeters, 'a4' for paper size
+    
+        // Add a heading
+        doc.setFontSize(16);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const title = "Employee Calls Report";
+        const titleWidth = doc.getStringUnitWidth(title) * doc.internal.scaleFactor;
+        const titleX = (pageWidth - titleWidth) / 2.3;
+        doc.text(title, titleX, 22); // Title centered horizontally at position (titleX, 22)
+    
+        // Define columns including Serial No
+        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Total Duration", "Unique Clients", "Last Synced At"];
+        
+        // Map rows data
+        const rows = totalcalls.filter(employee => employeeData
+            .some(obj => Number(obj.number) === Number(employee.emp_number)))
+            .map((call, index) => {
+                // Find branch name based on emp_number
+                const branch = employeeData.find(employee => Number(employee.number) === Number(call.emp_number))?.branchOffice || '-';
+    
+                return [
+                    index + 1, // Serial number
+                    call.emp_name || '-',
+                    branch,
+                    call.total_calls || '-',
+                    convertSecondsToHMS(call.total_duration) || '-',
+                    call.total_unique_clients || "-",
+                    formatDate(call.last_call_log.synced_at) || "-" // Ensure formatDate is defined
+                ];
+            });
+    
+        // Add table with customized styles
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            margin: { top: 30 }, // Adjust top margin to fit the header
+            styles: { cellPadding: 2, overflow: 'linebreak' }, // Adjust cell padding and prevent overflow
+            headStyles: { fillColor: [22, 160, 133] }, // Header background color
+            didDrawPage: () => {
+                // Draw border around the entire page
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                doc.setDrawColor(0, 0, 0); // Black color for border
+                doc.setLineWidth(0.2); // Border width
+                doc.rect(10, 10, pageWidth - 20, pageHeight - 20); // Draw border with margins
+            }
         });
+    
+        // Save the PDF
+        doc.save('employee-calls-report.pdf');
     };
 
-    // Function to filter other datasets based on filtered leadHistoryData
-    const filterOtherDataByLeadHistory = (dataToFilter, filteredLeadHistoryData) => {
-        const filteredNames = new Set(filteredLeadHistoryData.map(item => item.ename));
-
-        return dataToFilter.filter(item =>
-            filteredNames.has(item.ename)
-        );
-    };
-
-    const handleForwardedEmployeeDateRange = (values) => {
-        const startDate = moment(values[0]).format("DD/MM/YYYY");
-        const endDate = moment(values[1]).format("DD/MM/YYYY");
-
-        // Filter leadHistoryData
-        const filteredLeadHistory = filterLeadHistoryByDateRange(filteredLeadHistoryData, startDate, endDate);
-
-        // Filter forwardEmployeeData and companyDataTotal based on filteredLeadHistoryData
-        const filteredForwardEmployeeData = filterOtherDataByLeadHistory(forwardEmployeeData, filteredLeadHistoryData);
-        const filteredCompanyDataTotal = filterOtherDataByLeadHistory(companyDataTotal, filteredLeadHistoryData);
-
-        setLeadHistoryData(filteredLeadHistory);
-        setForwardEmployeeData(filteredForwardEmployeeData);
-        setCompanyDataTotal(filteredCompanyDataTotal);
-    };
-    // console.log("company" , companyDataTotal)
 
     return (
         <div>
@@ -407,175 +442,273 @@ function EmployeeCompleteCallingReport() {
                     <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1"  >
                             <h2 className="m-0">
-                                Employees Interested-FollowUp Leads Data Report
+                                Employee Calling Report
                             </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
+                            <div>
+                                <button className="btn btn-primary mr-1"
+                                    onClick={handleDownloadPDF}
+                                >
+                                    Download PDF
+                                </button>
+                                {/* Your existing UI components */}
+                            </div>
                             <div className="data-filter">
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDayjs} >
-                                    <DemoContainer
-                                        components={["SingleInputDateRangeField"]} sx={{
-                                            padding: '0px',
-                                            with: '220px'
-                                        }}  >
-                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
-                                            onChange={(values) => {
-                                                const startDateEmp = moment(values[0]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                const endDateEmp = moment(values[1]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                setSelectedDateRangeForwardedEmployee([
-                                                    startDateEmp,
-                                                    endDateEmp,
-                                                ]);
-                                                handleForwardedEmployeeDateRange(values); // Call handleSelect with the selected values
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DemoContainer components={['DatePicker']}
+                                        sx={{ padding: '0px', width: '220px' }}>
+                                        <DatePicker
+                                            className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={(value) => {
+                                                if (value) {
+                                                    // Convert the selected date to Moment object
+                                                    const selectedDate = moment(value.$d);
+
+                                                    // Format as required
+                                                    const formattedDate = selectedDate.format("DD/MM/YYYY");
+                                                    console.log("Formatted Date:", formattedDate); // Debugging
+
+                                                    // Call the function to handle the selected date and fetch data
+                                                    handleSingleDateSelection(formattedDate);
+                                                }
                                             }}
-                                            slots={{ field: SingleInputDateRangeField }}
-                                            slotProps={{
-                                                shortcuts: {
-                                                    items: shortcutsItems,
-                                                },
-                                                actionBar: { actions: [] },
-                                                textField: {
-                                                    InputProps: { endAdornment: <Calendar /> },
-                                                },
-                                            }}
-                                        //calendars={1}
+                                        // label="Basic date picker"
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
                             </div>
+
                         </div>
                     </div>
                     <div className='card-body'>
-                        <div className="row tbl-scroll">
-                            <table className="table-vcenter table-nowrap admin-dash-tbl">
+                        <div className="tbl-scroll" style={{ width: "100%", height: "500px" }}>
+                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ width: "100%" }}>
                                 <thead className="admin-dash-tbl-thead">
                                     <tr>
                                         <th>
                                             Sr.No
                                         </th>
-                                        <th>BDE/BDM Name</th>
-                                        <th >Branch Name</th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.interestedcase === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.interestedcase === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    interestedcase: updatedSortType,
-                                                }));
-                                                handleSortInterestedCases(updatedSortType);
-                                            }}
-                                        >
-                                            <div className="d-flex align-items-center justify-content-center">
-                                                <div className='mr-1'>Interested Leads</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.interestedcase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.interestedcase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['emp_name'] = el}>
+                                                    BDE/BDM Name
                                                 </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('emp_name') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("emp_name")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("emp_name")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'emp_name' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.followupcase === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.followupcase === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    followupcase: updatedSortType,
-                                                }));
-                                                handleSortFollowUpCase(updatedSortType);
-                                            }}>
-                                            <div className="d-flex align-items-center justify-content-center">
-                                                <div className='mr-1'>FolLowUp Leads</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.followupcase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.followupcase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['branchOffice'] = el}>
+                                                    Branch Name
                                                 </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('branchOffice') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'branchOffice' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.forwardedcase === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.forwardedcase === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    forwardedcase: updatedSortType,
-                                                }));
-                                                handleSortForwardeCases(updatedSortType);
-                                            }}>
-                                            <div className="d-flex align-items-center justify-content-center">
-                                                <div className='mr-1'>Forwarded Cases</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.forwardedcase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.forwardedcase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_calls'] = el}>
+                                                    Total Calls
                                                 </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_calls') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_calls")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_calls")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_calls' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_unique_clients'] = el}>
+                                                    Unique Clients
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_unique_clients') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_unique_clients")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_unique_clients")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_unique_clients' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_duration'] = el}>
+                                                    Total Call Duration
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_duration') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_duration")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_duration")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_duration' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['last_call_log.synced_at'] = el}>
+                                                    Last Sync Time
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('last_call_log.synced_at') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("last_call_log.synced_at")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("last_call_log.synced_at")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'last_call_log.synced_at' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </th>
                                     </tr>
@@ -598,158 +731,28 @@ function EmployeeCompleteCallingReport() {
                                     </tbody>) :
                                     (
                                         <tbody>
-                                            {forwardEmployeeData.length !== 0 &&
-                                                forwardEmployeeData.map((obj, index) => {
-                                                    const filteredCompanies = companyDataTotal.filter(mainObj =>
-                                                        leadHistoryData.some(company =>
-                                                            company.ename === obj.ename &&
-                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                                mainObj.bdmAcceptStatus === "Pending" ||
-                                                                mainObj.bdmAcceptStatus === "Accept") &&
-                                                            mainObj["Company Name"] === company["Company Name"]
-                                                        )
-                                                    );
-                                                    // Step 1: Calculate total interested companies for the employee
-                                                    const totalInterestedCompanies = leadHistoryData.filter(
-                                                        (company) => company.ename === obj.ename && company.newStatus === "Interested"
-                                                    ).map(company => company["Company Name"]);
-
-                                                    const totalFollowCompanies = leadHistoryData.filter(
-                                                        (company) => company.ename === obj.ename && company.newStatus === "FollowUp"
-                                                    ).map(company => company["Company Name"]);
-
-                                                    // Step 2: Calculate forwarded companies for the employee
-                                                    const forwardedCompaniesFollow = companyDataTotal
-                                                        .filter(mainObj =>
-                                                            leadHistoryData.some(company =>
-                                                                company.ename === obj.ename &&
-                                                                (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                                    mainObj.bdmAcceptStatus === "Pending" ||
-                                                                    mainObj.bdmAcceptStatus === "Accept") &&
-                                                                mainObj["Company Name"] === company["Company Name"]
-                                                                && mainObj.Status === "FollowUp"
-                                                            )
-                                                        ).map(company => company["Company Name"]);
-
-                                                    // Step 2: Calculate forwarded companies for the employee
-                                                    const forwardedCompanies = companyDataTotal
-                                                        .filter(mainObj =>
-                                                            leadHistoryData.some(company =>
-                                                                company.ename === obj.ename &&
-                                                                (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                                    mainObj.bdmAcceptStatus === "Pending" ||
-                                                                    mainObj.bdmAcceptStatus === "Accept") &&
-                                                                mainObj["Company Name"] === company["Company Name"]
-                                                                && mainObj.Status === "Interested"
-                                                            )
-                                                        ).map(company => company["Company Name"]);
-
-                                                    // Step 3: Calculate remaining interested companies (interested - forwarded)
-                                                    const remainingInterestedCompanies = totalInterestedCompanies.filter(
-                                                        (companyName) => !forwardedCompanies.includes(companyName)
-                                                    );
-                                                    const remainingFollowCompanies = totalFollowCompanies.filter(
-                                                        (companyName) => !forwardedCompaniesFollow.includes(companyName)
-                                                    );
-
-
-
-                                                    // You can now use the `remainingInterestedCompanies` array
-                                                    console.log(`Remaining Interested Companies for ${obj.ename}:`, remainingInterestedCompanies);
-                                                    console.log(`Remaining Follow Companies for ${obj.ename}:`, remainingFollowCompanies);
-                                                    return (
+                                            {totalcalls && totalcalls.length !== 0 &&
+                                                totalcalls
+                                                    .filter((obj) => employeeData.some((data) => Number(data.number) === Number(obj.emp_number))) // Filter employees present in employeeData
+                                                    .map((obj, index) => (
                                                         <tr key={`row-${index}`}>
-                                                            <td style={{
-                                                                color: "black",
-                                                                textDecoration: "none",
-                                                            }} >{index + 1}</td>
-                                                            <td >{obj.ename}</td>
-                                                            <td>{obj.branchOffice}</td>
+                                                            <td style={{ color: "black", textDecoration: "none" }}>{index + 1}</td>
+                                                            <td>{obj.emp_name}</td>
                                                             <td>
-                                                                {/* {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "Interested").length} */}
-
-                                                                {remainingInterestedCompanies.length}
+                                                                {employeeData.length > 0 &&
+                                                                    employeeData.filter((data) => Number(data.number) === Number(obj.emp_number)).length > 0
+                                                                    ? employeeData.filter((data) => Number(data.number) === Number(obj.emp_number))[0].branchOffice
+                                                                    : "-"}
                                                             </td>
-
-                                                            <td >
-                                                                {remainingFollowCompanies.length}
-                                                                {/* {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length} */}
-
-                                                            </td>
-                                                            <td>
-                                                                {filteredCompanies.length}
-                                                            </td>
-
+                                                            <td>{obj.total_calls}</td>
+                                                            <td>{obj.total_unique_clients}</td>
+                                                            <td>{convertSecondsToHMS(obj.total_duration)}</td>
+                                                            <td>{formatDate(obj.last_call_log.synced_at)}</td>
                                                         </tr>
-                                                    )
-                                                })}
+                                                    ))}
                                         </tbody>
                                     )}
-                                <tfoot className="admin-dash-tbl-tfoot">
-                                    <tr>
-                                        <td
-                                            colSpan="3"
-                                        >
-                                            Total
-                                        </td>
-                                        <td>
-                                            {forwardEmployeeData.reduce((total, obj) => {
-                                                const totalInterestedCompanies = leadHistoryData
-                                                    .filter(company => company.ename === obj.ename && company.newStatus === "Interested")
-                                                    .map(company => company["Company Name"]);
 
-                                                const forwardedCompanies = companyDataTotal
-                                                    .filter(mainObj =>
-                                                        leadHistoryData.some(company =>
-                                                            company.ename === obj.ename &&
-                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                                mainObj.bdmAcceptStatus === "Pending" ||
-                                                                mainObj.bdmAcceptStatus === "Accept") &&
-                                                            mainObj["Company Name"] === company["Company Name"] &&
-                                                            mainObj.Status === "Interested"
-                                                        )
-                                                    )
-                                                    .map(company => company["Company Name"]);
-
-                                                // Add the remaining interested companies to the total
-                                                return total + totalInterestedCompanies.filter(
-                                                    companyName => !forwardedCompanies.includes(companyName)
-                                                ).length;
-                                            }, 0)}
-                                        </td>
-
-                                        {/* Total remaining follow-up companies across all employees */}
-                                        <td>
-                                            {forwardEmployeeData.reduce((total, obj) => {
-                                                const totalFollowCompanies = leadHistoryData
-                                                    .filter(company => company.ename === obj.ename && company.newStatus === "FollowUp")
-                                                    .map(company => company["Company Name"]);
-
-                                                const forwardedCompaniesFollow = companyDataTotal
-                                                    .filter(mainObj =>
-                                                        leadHistoryData.some(company =>
-                                                            company.ename === obj.ename &&
-                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                                mainObj.bdmAcceptStatus === "Pending" ||
-                                                                mainObj.bdmAcceptStatus === "Accept") &&
-                                                            mainObj["Company Name"] === company["Company Name"] &&
-                                                            mainObj.Status === "FollowUp"
-                                                        )
-                                                    )
-                                                    .map(company => company["Company Name"]);
-
-                                                // Add the remaining follow-up companies to the total
-                                                return total + totalFollowCompanies.filter(
-                                                    companyName => !forwardedCompaniesFollow.includes(companyName)
-                                                ).length;
-                                            }, 0)}
-                                        </td>
-
-                                        <td>
-                                            {totalFilteredCompanies}
-                                        </td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
