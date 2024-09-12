@@ -349,19 +349,6 @@ function EmployeeCompleteCallingReport() {
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
     };
-
-    //   useEffect(() => {
-    //     if (noOfAvailableData) {
-    //       showingFilterIcon(true)
-    //       totalFilteredData(noOfAvailableData)
-    //     } else {
-    //       showingFilterIcon(false)
-    //       totalFilteredData(0)
-    //     }
-
-    //   }, [noOfAvailableData, activeTab])
-
-
     const isActiveField = (field) => activeFilterFields.includes(field);
 
     useEffect(() => {
