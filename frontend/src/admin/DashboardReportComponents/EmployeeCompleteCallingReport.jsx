@@ -389,7 +389,7 @@ function EmployeeCompleteCallingReport() {
         const pageWidth = doc.internal.pageSize.getWidth();
         const title = "Employee Calls Report";
         const titleWidth = doc.getStringUnitWidth(title) * doc.internal.scaleFactor;
-        const titleX = (pageWidth - titleWidth) / 2;
+        const titleX = (pageWidth - titleWidth) / 2.3;
         doc.text(title, titleX, 22); // Title centered horizontally at position (titleX, 22)
     
         // Define columns including Serial No
