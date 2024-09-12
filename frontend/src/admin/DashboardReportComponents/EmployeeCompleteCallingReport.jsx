@@ -27,6 +27,7 @@ import { BsFilter } from "react-icons/bs";
 import { FaFilter } from "react-icons/fa";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable'; // Import jsPDF and jsPDF AutoTable for generating PDFs
+import * as XLSX from 'xlsx';
 
 
 function EmployeeCompleteCallingReport() {
@@ -418,8 +419,16 @@ function EmployeeCompleteCallingReport() {
             head: [columns],
             body: rows,
             margin: { top: 30 }, // Adjust top margin to fit the header
-            styles: { cellPadding: 2, overflow: 'linebreak' }, // Adjust cell padding and prevent overflow
-            headStyles: { fillColor: [22, 160, 133] }, // Header background color
+            styles: {
+                cellPadding: 2,
+                fontSize: 8, // Reduce font size to fit data on one page
+                overflow: 'linebreak',
+            },
+            headStyles: {
+                fillColor: [22, 160, 133], // Header background color
+                fontSize: 10 // Slightly larger font for the header
+            },
+            rowPageBreak: 'avoid', // Avoid page breaks inside rows
             didDrawPage: () => {
                 // Draw border around the entire page
                 const pageWidth = doc.internal.pageSize.getWidth();
@@ -434,6 +443,40 @@ function EmployeeCompleteCallingReport() {
         doc.save('employee-calls-report.pdf');
     };
 
+    const handleDownloadExcel = () => {
+        // Define the columns
+        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Total Duration", "Unique Clients", "Last Synced At"];
+      
+        // Map rows data
+        const rows = totalcalls.filter(employee => employeeData
+            .some(obj => Number(obj.number) === Number(employee.emp_number)))
+            .map((call, index) => {
+                // Find branch name based on emp_number
+                const branch = employeeData.find(employee => Number(employee.number) === Number(call.emp_number))?.branchOffice || '-';
+      
+                return [
+                    index + 1, // Serial number
+                    call.emp_name || '-',
+                    branch,
+                    call.total_calls || '-',
+                    convertSecondsToHMS(call.total_duration) || '-',
+                    call.total_unique_clients || "-",
+                    formatDate(call.last_call_log.synced_at) || "-" // Ensure formatDate is defined
+                ];
+            });
+      
+        // Combine columns and rows
+        const worksheetData = [columns, ...rows];
+      
+        // Create a new workbook and add the worksheet
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+        XLSX.utils.book_append_sheet(wb, ws, 'Employee Calls Report');
+      
+        // Write the Excel file and trigger download
+        XLSX.writeFile(wb, 'employee-calls-report.xlsx');
+      };
+
 
     return (
         <div>
@@ -446,13 +489,21 @@ function EmployeeCompleteCallingReport() {
                             </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
+                        <div>
+                                <button className="btn btn-primary mr-1"
+                                    onClick={handleDownloadExcel}
+                                >
+                                    Download CSV
+                                </button>
+                                
+                            </div>
                             <div>
                                 <button className="btn btn-primary mr-1"
                                     onClick={handleDownloadPDF}
                                 >
                                     Download PDF
                                 </button>
-                                {/* Your existing UI components */}
+                              
                             </div>
                             <div className="data-filter">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
