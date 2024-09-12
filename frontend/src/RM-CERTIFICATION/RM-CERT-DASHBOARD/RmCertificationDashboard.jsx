@@ -28,12 +28,8 @@ function RmCertificationDashboard() {
   const [dscPending, setDscPending] = useState(0);
   const [clientNotResponding, setClientNotResponding] = useState(0);
   const [documentsPending, setDocumentsPending] = useState(0);
-  const [readyToSubmit, setReadyToSubmit] = useState(0);
   const [working, setWorking] = useState(0);
-  const [defaulter, setDefaulter] = useState(0);
   const [needToCall, setNeedToCall] = useState(0);
-  const [hold, setHold] = useState(0);
-  const [undo, setUndo] = useState(0);
 
   useEffect(() => {
     document.title = `AdminHead-Sahay-CRM`;
@@ -103,6 +99,13 @@ function RmCertificationDashboard() {
       const { data, totalPages } = servicesResponse.data;
       console.log("Inprocess data is :", data)
 
+      setCallBriefPending(data.filter((item) => item.subCategoryStatus === "Call Done Brief Pending").length);
+      setDscPending(data.filter((item) => item.subCategoryStatus === "All Done DSC Pending").length);
+      setClientNotResponding(data.filter((item) => item.subCategoryStatus === "Client Not Responding").length);
+      setDocumentsPending(data.filter((item) => item.subCategoryStatus === "Documents Pending").length);
+      setWorking(data.filter((item) => item.subCategoryStatus === "Working").length);
+      setNeedToCall(data.filter((item) => item.subCategoryStatus === "Need To Call").length);
+
     } catch (error) {
       console.error("Error fetching in process data :", error);
     }
@@ -135,7 +138,9 @@ function RmCertificationDashboard() {
 
                   {/* In process status report */}
                   <div className="col-sm-6 col-md-6 col-lg-6">
-                    <InProcessReport />
+                    <InProcessReport totalInProcess={totalDocumentsProcess} callBriefPending={callBriefPending}
+                      dscPending={dscPending} clientNotResponding={clientNotResponding}
+                      documentsPending={documentsPending} working={working} needToCall={needToCall} />
                   </div>
                 </div>
 

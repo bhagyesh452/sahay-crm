@@ -3,22 +3,25 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import { styled } from '@mui/material/styles';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 
-function InProcessReport() {
+function InProcessReport({ totalInProcess, callBriefPending, dscPending, clientNotResponding, documentsPending, working, needToCall }) {
 
     //---------------- function for piew charts----------------------------
-    const data_my = [
-        // {value: general, label: 'General', color: '#1ac9bd'},
-        // {value: inProcess, label: 'In Process', color: '#ffb900'},
-        // {value: readyToSubmit, label: 'Ready To Submit', color: '#4299e1'},
-        // {value: submitted, label: 'Submitted', color: '#1cba19'},
-        // {value: approved, label: 'Approved', color: '#e65b5b'},
-        // {value: hold, label: 'Hold', color: '#00d19d'},
-        // {value: defaulter, label: 'Defaulter', color: '#ff81f0'},
+    const data1 = [
+        { label: 'In Process', value: totalInProcess, color: '#ebd58e' },
+    ];
+
+    const data2 = [
+        { value: callBriefPending, label: 'Call Done Brief Pending', color: '#1ac9bd'},
+        { value: dscPending, label: 'All Done DSC Pending', color: '#ffb900'},
+        { value: clientNotResponding, label: 'Client Not Responding', color: '#4299e1'},
+        { value: documentsPending, label: 'Documents Pending', color: '#1cba19'},
+        { value: working, label: 'Working', color: '#e65b5b'},
+        { value: needToCall, label: 'Need To Call', color: '#00d19d'},
     ];
 
     const size = {
         width: 350,
-        height: 220,
+        height: 250,
         viewBox: "0 0 250 200",
     };
 
@@ -59,7 +62,7 @@ function InProcessReport() {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.Status === 'Untouched' || obj.Status === 'Busy' || obj.Status === 'Not Picked Up').length} */}
+                                        {callBriefPending}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -71,7 +74,7 @@ function InProcessReport() {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.Status === "Interested" && obj.bdmAcceptStatus !== "Pending" && obj.bdmAcceptStatus !== "Accept").length} */}
+                                        {dscPending}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -83,7 +86,7 @@ function InProcessReport() {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.Status === "FollowUp" && obj.bdmAcceptStatus !== "Pending" && obj.bdmAcceptStatus !== "Accept").length} */}
+                                        {clientNotResponding}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -95,7 +98,7 @@ function InProcessReport() {
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.Status === 'Matured').length} */}
+                                        {documentsPending}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -103,11 +106,11 @@ function InProcessReport() {
                                         <div className="color-dots clr-bg-e65b5b">
                                         </div>
                                         <div className="call-dr-name">
-                                            Ready To Submit
+                                            Working
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.Status === 'Not Interested').length} */}
+                                        {working}
                                     </div>
                                 </div>
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
@@ -115,71 +118,37 @@ function InProcessReport() {
                                         <div className="color-dots clr-bg-00d19d">
                                         </div>
                                         <div className="call-dr-name">
-                                            Working
-                                        </div>
-                                    </div>
-                                    <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length} */}
-                                    </div>
-                                </div>
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-ff81f0">
-                                        </div>
-                                        <div className="call-dr-name">
-                                            Defaulter
-                                        </div>
-                                    </div>
-                                    <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length} */}
-                                    </div>
-                                </div>
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-ad77f8">
-                                        </div>
-                                        <div className="call-dr-name">
                                             Need To Call
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length} */}
-                                    </div>
-                                </div>
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-ff3636">
-                                        </div>
-                                        <div className="call-dr-name">
-                                            Hold
-                                        </div>
-                                    </div>
-                                    <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length} */}
-                                    </div>
-                                </div>
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-3433ff">
-                                        </div>
-                                        <div className="call-dr-name">
-                                            Undo
-                                        </div>
-                                    </div>
-                                    <div className="call-dr-num">
-                                        {/* {empData.filter((obj) => obj.bdmAcceptStatus === 'Pending' || obj.bdmAcceptStatus === 'Accept').length} */}
+                                        {needToCall}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="col-sm-7 align-self-stretch">
                             <div className="call-dr-chart mt-1">
-                                <div className="chart-container" style={{ width: '100%', height: '220px' }}>
-                                    <PieChart series={[{ data: data_my, innerRadius: 80, labelComponent: null }]} {...size} slotProps={{
-                                    legend: { hidden: true },
-                                  }}>
-                                    <PieCenterLabel>Total: {}</PieCenterLabel>
-                                  </PieChart>
+                                <div className="chart-container" style={{ width: '100%', height: '262px' }}>
+                                    <PieChart
+                                        series={[
+                                            {
+                                                innerRadius: 0,
+                                                outerRadius: 80,
+                                                data: data1,
+                                            },
+                                            {
+                                                innerRadius: 100,
+                                                outerRadius: 120,
+                                                data: data2,
+                                            },
+                                        ]}
+                                        {...size}
+                                        slotProps={{
+                                            legend: { hidden: true },
+                                        }}>
+                                        <PieCenterLabel>Total: {totalInProcess}</PieCenterLabel>
+                                    </PieChart>
                                 </div>
                             </div>
                         </div>
