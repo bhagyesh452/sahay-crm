@@ -304,6 +304,32 @@ function EmployeeCompleteCallingReport() {
     //     return date.toLocaleDateString('en-IN', options);
     // };
 
+    const formatToIST = (dateString) => {
+        // Remove the "IST" part and replace the space between date and time with "T"
+        const cleanedDateString = dateString.replace(' IST', '').replace(' ', 'T');
+
+        const utcDate = new Date(cleanedDateString);  // Parse the cleaned UTC date
+        if (isNaN(utcDate)) {
+            return 'Invalid Date'; // Handle invalid date
+        }
+
+        // Create a new Date object with the IST offset of +5:30 hours
+        const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
+
+        // Format the IST date
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZoneName: 'short'
+        };
+        return istDate.toLocaleString('en-IN', options);
+    };
+
+
     // ------------------------------------filter functions-------------------------
     const handleFilter = (newData) => {
         setFilteredData(newData)
@@ -356,24 +382,55 @@ function EmployeeCompleteCallingReport() {
 
     // --------------------function to download pdf report----------------
     const handleDownloadPDF = () => {
-        const doc = new jsPDF();
-        const columns = ["Emp Name", "Emp Number", "Total Duration", "Total Calls"];
-        const rows = totalcalls.map(call => [
-            call.emp_name || '',
-            call.emp_number || '',
-            call.total_calls || '',
-            convertSecondsToHMS(call.total_duration) || '',
-            call.last_call_log.synced_at || ""
-        ]);
-
+        const doc = new jsPDF('l', 'mm', [297, 210]); // 'p' for portrait, 'mm' for units in millimeters, 'a4' for paper size
+    
+        // Add a heading
+        doc.setFontSize(16);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const title = "Employee Calls Report";
+        const titleWidth = doc.getStringUnitWidth(title) * doc.internal.scaleFactor;
+        const titleX = (pageWidth - titleWidth) / 2;
+        doc.text(title, titleX, 22); // Title centered horizontally at position (titleX, 22)
+    
+        // Define columns including Serial No
+        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Total Duration", "Unique Clients", "Last Synced At"];
+        
+        // Map rows data
+        const rows = totalcalls.filter(employee => employeeData
+            .some(obj => Number(obj.number) === Number(employee.emp_number)))
+            .map((call, index) => {
+                // Find branch name based on emp_number
+                const branch = employeeData.find(employee => Number(employee.number) === Number(call.emp_number))?.branchOffice || '-';
+    
+                return [
+                    index + 1, // Serial number
+                    call.emp_name || '-',
+                    branch,
+                    call.total_calls || '-',
+                    convertSecondsToHMS(call.total_duration) || '-',
+                    call.total_unique_clients || "-",
+                    formatDate(call.last_call_log.synced_at) || "-" // Ensure formatDate is defined
+                ];
+            });
+    
+        // Add table with customized styles
         doc.autoTable({
             head: [columns],
             body: rows,
-            theme: 'striped',
-            margin: { top: 10 },
-            styles: { cellPadding: 2 }
+            margin: { top: 30 }, // Adjust top margin to fit the header
+            styles: { cellPadding: 2, overflow: 'linebreak' }, // Adjust cell padding and prevent overflow
+            headStyles: { fillColor: [22, 160, 133] }, // Header background color
+            didDrawPage: () => {
+                // Draw border around the entire page
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                doc.setDrawColor(0, 0, 0); // Black color for border
+                doc.setLineWidth(0.2); // Border width
+                doc.rect(10, 10, pageWidth - 20, pageHeight - 20); // Draw border with margins
+            }
         });
-
+    
+        // Save the PDF
         doc.save('employee-calls-report.pdf');
     };
 
@@ -390,11 +447,11 @@ function EmployeeCompleteCallingReport() {
                         </div>
                         <div className="d-flex align-items-center pr-1">
                             <div>
-                                <button  className="btn btn-primary mr-1"
-                                 onClick={handleDownloadPDF}
-                                 >
+                                <button className="btn btn-primary mr-1"
+                                    onClick={handleDownloadPDF}
+                                >
                                     Download PDF
-                                    </button>
+                                </button>
                                 {/* Your existing UI components */}
                             </div>
                             <div className="data-filter">
