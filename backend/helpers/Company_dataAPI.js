@@ -331,17 +331,22 @@ router.get("/leads/:companyName", async (req, res) => {
 // 3. Update a Company 
 router.put("/leads/:id", async (req, res) => {
   const id = req.params.id;
+  let oldCompanyName = "";
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
   try {
     req.body["Company Incorporation Date  "] = new Date(
       req.body["Company Incorporation Date "]
     );
+
+    const existingData = await CompanyModel.findById(id);
+    oldCompanyName = existingData["Company Name"];
+    // console.log("Old Company Name:", oldCompanyName);
+
     const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-  
-    //console.log(updatedData);
+    // console.log(updatedData);
 
     const updateRMCertificationCompanyDetails = await RMCertificationModel.updateMany(
       { leadId: id },
@@ -353,10 +358,24 @@ router.put("/leads/:id", async (req, res) => {
       req.body
     );
 
+    // if (updateRMCertificationCompanyDetails.nModified === 0) {
+    //   await RMCertificationModel.updateMany(
+    //     { "Company Name": oldCompanyName },
+    //     { $set: req.body }
+    //   );
+    // }
+
     const updateRedesignedLeadFormDetails = await RedesignedLeadModel.findOneAndUpdate(
       { company: id },
       req.body
     );
+
+    // if (updateAdminExecutiveCompanyDetails.nModified === 0) {
+    //   await AdminExecutiveModel.updateMany(
+    //     { "Company Name": oldCompanyName },
+    //     { $set: req.body }
+    //   );
+    // }
 
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
