@@ -309,10 +309,10 @@ function EmployeeCompleteCallingReport() {
         const startTimestamp = startOfDay;
         const endTimestamp = endOfDay;
 
-        console.log("Start of Day (UTC):", moment.unix(startOfDay).utc().format());
-        console.log("End of Day (UTC):", moment.unix(endOfDay).utc().format());
-        console.log("Start of Day (IST):", moment.unix(startOfDay).format());
-        console.log("End of Day (IST):", moment.unix(endOfDay).format());
+        // console.log("Start of Day (UTC):", moment.unix(startOfDay).utc().format());
+        // console.log("End of Day (UTC):", moment.unix(endOfDay).utc().format());
+        // console.log("Start of Day (IST):", moment.unix(startOfDay).format());
+        // console.log("End of Day (IST):", moment.unix(endOfDay).format());
         console.log(startTimestamp, endTimestamp)
         // Fetch data based on the selected date
         const fetchEmployeeData = async () => {
@@ -403,7 +403,7 @@ function EmployeeCompleteCallingReport() {
                                                     handleSingleDateSelection(formattedDate);
                                                 }
                                             }}
-                                            label="Basic date picker"
+                                            // label="Basic date picker"
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
@@ -418,7 +418,10 @@ function EmployeeCompleteCallingReport() {
                                         <th>
                                             Sr.No
                                         </th>
-                                        <th>BDE/BDM Name</th>
+                                        <th>
+                                            BDE/BDM Name
+                                            
+                                            </th>
                                         <th >Branch Name</th>
                                         <th>Total Calls</th>
                                         <th>Unique Clients</th>
@@ -464,7 +467,6 @@ function EmployeeCompleteCallingReport() {
                                                         </tr>
                                                     ))}
                                         </tbody>
-
                                     )}
 
                             </table>

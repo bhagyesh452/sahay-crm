@@ -469,11 +469,13 @@ function InterestedFollowLeadReport() {
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >
                                     <DemoContainer
-                                        components={["SingleInputDateRangeField"]} sx={{
+                                        components={["SingleInputDateRangeField"]} 
+                                        sx={{
                                             padding: '0px',
                                             with: '220px'
                                         }}  >
-                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                        <DateRangePicker 
+                                        className="form-control my-date-picker form-control-sm p-0"
                                             onChange={(values) => {
                                                 const startDateEmp = moment(values[0]).format(
                                                     "DD/MM/YYYY"
