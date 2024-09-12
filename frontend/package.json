@@ -38,6 +38,8 @@
     "dayjs": "^1.11.10",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.3",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "litepicker": "^2.0.12",

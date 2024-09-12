@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { debounce } from "lodash";
 import Calendar from "@mui/icons-material/Event";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -22,6 +22,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ClipLoader from "react-spinners/ClipLoader";
 import { Link } from 'react-router-dom';
+import FilterTableCallingReport from './FilterTableCallingReport';
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable'; // Import jsPDF and jsPDF AutoTable for generating PDFs
+
 
 function EmployeeCompleteCallingReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -33,6 +39,17 @@ function EmployeeCompleteCallingReport() {
         followupcase: "none",
 
     });
+    const [totalcalls, setTotalCalls] = useState(null);
+    const [filteredTotalCalls, setFilteredTotalCalls] = useState(null);
+    const [completeTotalCalls, setCompleteTotalCalls] = useState(null);
+    const [totalMissedCalls, setTotalMissedCalls] = useState(null);
+    //const [selectDate, setSelectDate] = useState(new Date().setUTCHours(0, 0, 0, 0))
+    const [selectTime, setselectTime] = useState()
+    const todayStartDate = new Date();
+    const todayEndDate = new Date();
+    const [selectDate, setSelectDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectStartTime, setSelectStartTime] = useState('00:00'); // Initialize to only time part
+    const [selectEndTime, setSelectEndTime] = useState('23:59'); // Initialize to only time part
     const [employeeData, setEmployeeData] = useState([]);
     const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
     const [employeeInfo, setEmployeeInfo] = useState([])
@@ -40,24 +57,15 @@ function EmployeeCompleteCallingReport() {
     const [forwardEmployeeDataFilter, setForwardEmployeeDataFilter] = useState([])
     const [forwardEmployeeDataNew, setForwardEmployeeDataNew] = useState([])
     const [employeeDataProjectionSummary, setEmployeeDataProjectionSummary] = useState([])
-    const [teamLeadsData, setTeamLeadsData] = useState([])
-    const [teamLeadsDataFilter, setTeamLeadsDataFilter] = useState([])
-    const [companyDataTotal, setCompanyDataTotal] = useState([])
-    const [companyData, setCompanyData] = useState([]);
-    const [companyDataFilter, setcompanyDataFilter] = useState([]);
-    const [followData, setfollowData] = useState([]);
-    const [followDataToday, setfollowDataToday] = useState([]);
-    const [followDataTodayNew, setfollowDataTodayNew] = useState([]);
-    const [followDataFilter, setFollowDataFilter] = useState([])
-    const [followDataNew, setFollowDataNew] = useState([])
-    const [selectedDataRangeForwardedEmployee, setSelectedDateRangeForwardedEmployee] = useState([]);
-    const [personName, setPersonName] = useState([])
-    const [searchTermForwardData, setSearchTermForwardData] = useState("")
-    const [bdeResegnedData, setBdeRedesignedData] = useState([])
-    const [leadHistoryData, setLeadHistoryData] = useState([])
-    const [filteredLeadHistoryData, setFilteredLeadHistoryData] = useState([])
-
-
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filteredData, setFilteredData] = useState(totalcalls);
+    const [filterField, setFilterField] = useState("")
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0)
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
 
     // --------------------------date formats--------------------------------------------
     function formatDateFinal(timestamp) {
@@ -132,16 +140,6 @@ function EmployeeCompleteCallingReport() {
         //fetchFollowUpData();
     }, []);
 
-    const [totalcalls, setTotalCalls] = useState(null);
-    const [filteredTotalCalls, setFilteredTotalCalls] = useState(null);
-    const [totalMissedCalls, setTotalMissedCalls] = useState(null);
-    //const [selectDate, setSelectDate] = useState(new Date().setUTCHours(0, 0, 0, 0))
-    const [selectTime, setselectTime] = useState()
-    const todayStartDate = new Date();
-    const todayEndDate = new Date();
-    const [selectDate, setSelectDate] = useState(new Date().toISOString().split('T')[0]);
-    const [selectStartTime, setSelectStartTime] = useState('00:00'); // Initialize to only time part
-    const [selectEndTime, setSelectEndTime] = useState('23:59'); // Initialize to only time part
 
     //Set todayStartDate to the start of the day in UTC
     todayStartDate.setUTCHours(4, 0, 0, 0);
@@ -153,11 +151,6 @@ function EmployeeCompleteCallingReport() {
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
     const endTimestamp = Math.floor(todayEndDate.getTime() / 1000);
 
-
-    const handleDateChange = (e) => {
-        setSelectDate(e.target.value);
-    };
-
     let employeeArray = []
     employeeArray.push(employeeData.number);
 
@@ -167,7 +160,7 @@ function EmployeeCompleteCallingReport() {
             const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
             // const employeeArray = [];
             // employeeArray.push(employeeData.number);
-
+            console.log(startTimestamp, endTimestamp)
 
             const body = {
                 "call_from": startTimestamp,
@@ -180,6 +173,7 @@ function EmployeeCompleteCallingReport() {
             }
 
             try {
+                setLoading(true)
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -197,6 +191,7 @@ function EmployeeCompleteCallingReport() {
 
                 setTotalCalls(data.result);
                 setFilteredTotalCalls(data.result)
+                setCompleteTotalCalls(data.result)
 
                 // setTotalCalls(data.result);
                 //console.log("data", data.result)
@@ -204,47 +199,12 @@ function EmployeeCompleteCallingReport() {
             } catch (err) {
 
                 console.log(err)
+            } finally {
+                setLoading(false)
             }
         };
         fetchEmployeeData();
     }, [employeeData]);
-
-    // const fetchEmployeeData = async (startTimestamp, endTimestamp) => {
-    //     console.log(startTimestamp, endTimestamp)
-    //     const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-    //     const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-
-    //     const body = {
-    //         "call_from": startTimestamp, // Use dynamic start timestamp
-    //         "call_to": endTimestamp,     // Use dynamic end timestamp
-    //         "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-    //         "emp_numbers": employeeArray,
-    //     }
-
-    //     try {
-    //         const response = await fetch(url, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Authorization': `Bearer ${apiKey}`,
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify(body)
-    //         });
-
-    //         if (!response.ok) {
-    //             const errorData = await response.json();
-    //             throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-    //         }
-
-    //         const data = await response.json();
-    //         setTotalCalls(data.result);
-    //         setFilteredTotalCalls(data.result);
-    //         console.log("data", data.result);
-
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // };
 
 
     const convertSecondsToHMS = (totalSeconds) => {
@@ -256,46 +216,7 @@ function EmployeeCompleteCallingReport() {
     };
 
     // -----------------------filter functions----------------------
-    const shortcutsItems = [
-        {
-            label: "This Week",
-            getValue: () => {
-                const today = dayjs();
-                return [today.startOf("week"), today.endOf("week")];
-            },
-        },
-        {
-            label: "Last Week",
-            getValue: () => {
-                const today = dayjs();
-                const prevWeek = today.subtract(7, "day");
-                return [prevWeek.startOf("week"), prevWeek.endOf("week")];
-            },
-        },
-        {
-            label: "Last 7 Days",
-            getValue: () => {
-                const today = dayjs();
-                return [today.subtract(7, "day"), today];
-            },
-        },
-        {
-            label: "Current Month",
-            getValue: () => {
-                const today = dayjs();
-                return [today.startOf("month"), today.endOf("month")];
-            },
-        },
-        {
-            label: "Next Month",
-            getValue: () => {
-                const today = dayjs();
-                const startOfNextMonth = today.endOf("month").add(1, "day");
-                return [startOfNextMonth, startOfNextMonth.endOf("month")];
-            },
-        },
-        { label: "Reset", getValue: () => [null, null] },
-    ];
+
 
     const handleSingleDateSelection = async (formattedDate) => {
         // Convert formattedDate to a moment object in IST timezone
@@ -331,6 +252,7 @@ function EmployeeCompleteCallingReport() {
             }
 
             try {
+                setLoading(true)
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -347,15 +269,16 @@ function EmployeeCompleteCallingReport() {
                 const data = await response.json();
 
                 setTotalCalls(data.result);
-                setFilteredTotalCalls(data.result);
-
+                setFilteredTotalCalls(data.result)
+                setCompleteTotalCalls(data.result)
                 console.log("Data fetched:", data.result);
 
             } catch (err) {
                 console.log(err);
+            } finally {
+                setLoading(false)
             }
         };
-
         // Call the fetch function
         fetchEmployeeData();
     };
@@ -363,14 +286,96 @@ function EmployeeCompleteCallingReport() {
     const formatDate = (dateString) => {
         // Parse the date string as IST
         const date = moment(dateString, "YYYY-MM-DD HH:mm:ss").utcOffset('+05:30');
-        
+
         // Format the date
         return date.format('DD MMM YYYY, h:mm:ss A');
     };
+    // const formatDate = (dateString) => {
+    //     const date = new Date(dateString);
+    //     const options = { 
+    //         year: 'numeric', 
+    //         month: 'long', 
+    //         day: 'numeric', 
+    //         hour: '2-digit', 
+    //         minute: '2-digit', 
+    //         second: '2-digit', 
+    //         timeZoneName: 'short'
+    //     };
+    //     return date.toLocaleDateString('en-IN', options);
+    // };
+
+    // ------------------------------------filter functions-------------------------
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        setTotalCalls(newData);
+    };
 
 
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+
+    //   useEffect(() => {
+    //     if (noOfAvailableData) {
+    //       showingFilterIcon(true)
+    //       totalFilteredData(noOfAvailableData)
+    //     } else {
+    //       showingFilterIcon(false)
+    //       totalFilteredData(0)
+    //     }
+
+    //   }, [noOfAvailableData, activeTab])
 
 
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+    console.log("totalcalls", totalcalls)
+
+    // --------------------function to download pdf report----------------
+    const handleDownloadPDF = () => {
+        const doc = new jsPDF();
+        const columns = ["Emp Name", "Emp Number", "Total Duration", "Total Calls"];
+        const rows = totalcalls.map(call => [
+            call.emp_name || '',
+            call.emp_number || '',
+            call.total_calls || '',
+            convertSecondsToHMS(call.total_duration) || '',
+            call.last_call_log.synced_at || ""
+        ]);
+
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            theme: 'striped',
+            margin: { top: 10 },
+            styles: { cellPadding: 2 }
+        });
+
+        doc.save('employee-calls-report.pdf');
+    };
 
 
     return (
@@ -384,6 +389,14 @@ function EmployeeCompleteCallingReport() {
                             </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
+                            <div>
+                                <button  className="btn btn-primary mr-1"
+                                 onClick={handleDownloadPDF}
+                                 >
+                                    Download PDF
+                                    </button>
+                                {/* Your existing UI components */}
+                            </div>
                             <div className="data-filter">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={['DatePicker']}
@@ -403,30 +416,244 @@ function EmployeeCompleteCallingReport() {
                                                     handleSingleDateSelection(formattedDate);
                                                 }
                                             }}
-                                            // label="Basic date picker"
+                                        // label="Basic date picker"
                                         />
                                     </DemoContainer>
                                 </LocalizationProvider>
                             </div>
+
                         </div>
                     </div>
                     <div className='card-body'>
-                        <div className="row tbl-scroll">
-                            <table className="table-vcenter table-nowrap admin-dash-tbl">
+                        <div className="tbl-scroll" style={{ width: "100%", height: "500px" }}>
+                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ width: "100%" }}>
                                 <thead className="admin-dash-tbl-thead">
                                     <tr>
                                         <th>
                                             Sr.No
                                         </th>
                                         <th>
-                                            BDE/BDM Name
-                                            
-                                            </th>
-                                        <th >Branch Name</th>
-                                        <th>Total Calls</th>
-                                        <th>Unique Clients</th>
-                                        <th>Total Call Duration</th>
-                                        <th>Last Sync Time</th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['emp_name'] = el}>
+                                                    BDE/BDM Name
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('emp_name') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("emp_name")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("emp_name")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'emp_name' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['branchOffice'] = el}>
+                                                    Branch Name
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('branchOffice') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'branchOffice' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_calls'] = el}>
+                                                    Total Calls
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_calls') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_calls")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_calls")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_calls' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_unique_clients'] = el}>
+                                                    Unique Clients
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_unique_clients') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_unique_clients")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_unique_clients")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_unique_clients' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['total_duration'] = el}>
+                                                    Total Call Duration
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('total_duration') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("total_duration")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("total_duration")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'total_duration' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['last_call_log.synced_at'] = el}>
+                                                    Last Sync Time
+                                                </div>
+
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('last_call_log.synced_at') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("last_call_log.synced_at")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("last_call_log.synced_at")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'last_call_log.synced_at' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableCallingReport
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            data={totalcalls}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeTotalCalls}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={filteredTotalCalls}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 {loading ?

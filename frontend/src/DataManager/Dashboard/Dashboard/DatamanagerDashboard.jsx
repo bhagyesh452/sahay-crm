@@ -31,6 +31,7 @@ import { MdMedicalServices } from "react-icons/md";
 import DataAnalystServiceAnalysis from "../ServiceAnalysis/DataAnalystServiceAnalysis.jsx";
 import InterestedFollowLeadReport from "../../../admin/DashboardReportComponents/InterestedFollowLeadReport.jsx"
 import EmployeeCompleteCallingReport from "../../../admin/DashboardReportComponents/EmployeeCompleteCallingReport.jsx";
+import ServiceAnalysis from "../../../admin/DashboardReportComponents/ServiceAnalysis.jsx";
 
 
 
@@ -180,7 +181,7 @@ function DatamanagerDashboard() {
                             <EmployeesProjectionSummary />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
-                            <DataAnalystServiceAnalysis />
+                            <ServiceAnalysis />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={5} className="mat-tab-inner">
                             <EmployeeCompleteCallingReport />

@@ -424,7 +424,7 @@ router.get("/adminexecutivedata/justfortest", async (req, res) => {
 
 router.get('/rm-sevicesgetrequest-complete', async (req, res) => {
   try {
-    const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+    const { search, page = 1, limit = 500, activeTab } = req.query; // Extract search, page, and limit from request
     //console.log("search", search)
     // Build query object
     let query = {};
@@ -618,7 +618,7 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
 // });
 router.get('/adminexecutive-complete', async (req, res) => {
   try {
-    const { search, page = 1, limit = 50, activeTab } = req.query; // Extract search, page, and limit from request
+    const { search, page = 1, limit = 500, activeTab } = req.query; // Extract search, page, and limit from request
     //console.log("search", search)
     // Build query object
     let query = {};
@@ -691,7 +691,7 @@ router.get('/adminexecutive-complete', async (req, res) => {
 
 router.get('/adminexecutivedata', async (req, res) => {
   try {
-    const { search, page = 1, limit = 50, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+    const { search, page = 1, limit = 500, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
 
     // Build query object
     let query = {};
