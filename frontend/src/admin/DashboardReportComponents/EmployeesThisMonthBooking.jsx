@@ -3171,17 +3171,17 @@ function EmployeesThisMonthBooking() {
                         <div className="filter-booking d-flex align-items-center">
                             <div className="filter-booking mr-1 d-flex align-items-center" >
                                 <div className="export-data">
-                                    <button className="btn btn-link" onClick={handleExportBookings}>
+                                    <button className="btn btn-primary mr-1" onClick={handleExportBookings}>
                                         Export CSV
                                     </button>
                                 </div>
-                                <div className="filter-title">
+                                {/* <div className="filter-title d-none">
                                     <h2 className="m-0 mr-2">
                                         {" "}
                                         Filter Branch : {"  "}
                                     </h2>
-                                </div>
-                                <div className="filter-main ml-2">
+                                </div> */}
+                                {/* <div className="filter-main ml-2 d-none">
                                     <select
                                         className="form-select"
                                         id={`branch-filter`}
@@ -3204,7 +3204,7 @@ function EmployeesThisMonthBooking() {
                                         </option>
                                         <option value={"none"}>None</option>
                                     </select>
-                                </div>
+                                </div> */}
                             </div>
                             <div class='input-icon mr-1'>
                                 <span class="input-icon-addon">
@@ -3259,7 +3259,7 @@ function EmployeesThisMonthBooking() {
                                     </DemoContainer>
                                 </LocalizationProvider>
                             </div>
-                            <div>
+                            {/* <div>
                                 <FormControl sx={{ ml: 1, minWidth: 200 }}>
                                     <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
                                     <Select
@@ -3286,12 +3286,12 @@ function EmployeesThisMonthBooking() {
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className="card-body">
-                        <div className="row tbl-scroll">
-                            <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
+                        <div className="tbl-scroll" style={{width:"100%", height:"500px"}}>
+                            <table className="table-vcenter table-nowrap admin-dash-tbl w-100" style={{ maxHeight: "400px" }}>
                                 <thead className="admin-dash-tbl-thead">
                                     <tr  >
                                         <th>SR.NO</th>

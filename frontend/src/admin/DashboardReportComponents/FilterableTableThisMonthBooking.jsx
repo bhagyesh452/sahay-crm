@@ -980,13 +980,24 @@ const FilterTableThisMonthBooking = ({
                 dataToSort = dataToSort.sort((a, b) => {
                     let valueA = a[column];
                     let valueB = b[column];
-    
-                    // Handle other types
-                    if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'oldest' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
-                    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+            
+                    // Convert values to numbers if they are numeric strings
+                    if (!isNaN(valueA) && !isNaN(valueB)) {
+                        valueA = parseFloat(valueA);
+                        valueB = parseFloat(valueB);
+                    }
+            
+                    // Handle sorting of numeric values
+                    if (typeof valueA === 'number' && typeof valueB === 'number') {
                         return sortOrder === 'oldest' ? valueA - valueB : valueB - valueA;
                     }
+            
+                    // Handle sorting of string values
+                    if (typeof valueA === 'string' && typeof valueB === 'string') {
+                        return sortOrder === 'oldest' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                    }
+            
+                    // If types don't match, return 0 to skip sorting for this pair
                     return 0;
                 });
             }
@@ -1037,13 +1048,24 @@ const FilterTableThisMonthBooking = ({
                 dataToSort = dataToSort.sort((a, b) => {
                     let valueA = a[column];
                     let valueB = b[column];
-    
-                    // Handle other types
-                    if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'oldest' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
-                    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+            
+                    // Convert values to numbers if they are numeric strings
+                    if (!isNaN(valueA) && !isNaN(valueB)) {
+                        valueA = parseFloat(valueA);
+                        valueB = parseFloat(valueB);
+                    }
+            
+                    // Handle sorting of numeric values
+                    if (typeof valueA === 'number' && typeof valueB === 'number') {
                         return sortOrder === 'oldest' ? valueA - valueB : valueB - valueA;
                     }
+            
+                    // Handle sorting of string values
+                    if (typeof valueA === 'string' && typeof valueB === 'string') {
+                        return sortOrder === 'oldest' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                    }
+            
+                    // If types don't match, return 0 to skip sorting for this pair
                     return 0;
                 });
             }
