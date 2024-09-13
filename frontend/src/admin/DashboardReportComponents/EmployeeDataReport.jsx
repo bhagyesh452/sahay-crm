@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { debounce } from "lodash";
 import Calendar from "@mui/icons-material/Event";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -23,6 +23,10 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
+import FilterableTableEmployeeDataReport from './FilterableTableEmployeeDataReport';
+
 
 function EmployeeDataReport() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -57,7 +61,17 @@ function EmployeeDataReport() {
     const [searchTerm, setSearchTerm] = useState("");
     const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
     const [mergedData, setMergedData] = useState([]);
-
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filteredData, setFilteredData] = useState(employeeData);
+    const [filterField, setFilterField] = useState("")
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0)
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [completeMergedData, setCompleteMergedData] = useState([])
+    const [mergedDataForFilter, setMergedDataForFilter] = useState([])
     //-------------------------date formats ------------------------------
     function formatDateMonth(timestamp) {
         const date = new Date(timestamp);
@@ -150,9 +164,11 @@ function EmployeeDataReport() {
             };
         });
         setMergedData(merged); // Update mergedData state
+        setCompleteMergedData(merged); // Update mergedData state
+        setMergedDataForFilter(merged); // Update mergedData state
     };
 
-
+    console.log("mergedData", mergedData)
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 
     useEffect(() => {
@@ -1254,7 +1270,7 @@ function EmployeeDataReport() {
         setEmployeeData(sortedData);
     };
 
-    
+
     // const handleSortLastLead = (sortBy1) => {
     //     setSortType((prevData) => ({
     //         ...prevData,
@@ -1348,7 +1364,7 @@ function EmployeeDataReport() {
         }
 
         setEmployeeData(sortedData);
-    }; 
+    };
 
     useEffect(() => {
         setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
@@ -1478,6 +1494,43 @@ function EmployeeDataReport() {
         document.body.appendChild(link);
         link.click();
     }
+
+    // ------------------------------------filter functions-------------------------
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        setEmployeeData(newData);
+    };
+
+
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+
 
     return (
         <div>
@@ -1612,8 +1665,45 @@ function EmployeeDataReport() {
                                 <thead className="admin-dash-tbl-thead" >
                                     <tr>
                                         <th> Sr. No </th>
-                                        <th>BDE/BDM Name</th>
-                                        <th
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['ename'] = el}>
+                                                    BDE/BDM Name
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('ename') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("ename")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("ename")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'ename' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTableEmployeeDataReport
+                                                        //noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        //activeTab={"None"}
+                                                        employeeData={mergedData}
+                                                        companyData={companyData}
+                                                        data={mergedData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeMergedData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={mergedDataForFilter}
+                                                        initialDate={new Date()}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        {/* <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -1647,6 +1737,44 @@ function EmployeeDataReport() {
                                                         }}
                                                     />
                                                 </div>
+                                            </div>
+                                        </th> */}
+                                          <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['Untouched'] = el}>
+                                                    Untouched
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('Untouched') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("Untouched")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("Untouched")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'Untouched' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterableTableEmployeeDataReport
+                                                        //noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        //activeTab={"None"}
+                                                        employeeData={mergedData}
+                                                        companyData={companyData}
+                                                        data={mergedData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeMergedData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={mergedDataForFilter}
+                                                        initialDate={new Date()}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </th>
                                         <th
@@ -2531,7 +2659,7 @@ function EmployeeDataReport() {
                                         fontWeight: "bold",
                                     }}
                                 >
-                                    <th style={{lineHeight: "32px"}}>Sr. No</th>
+                                    <th style={{ lineHeight: "32px" }}>Sr. No</th>
                                     <th>Lead Assign Date</th>
                                     <th>Untouched</th>
                                     <th>Busy</th>
@@ -2642,7 +2770,7 @@ function EmployeeDataReport() {
                                     .filter((obj) => obj.ename === selectedEmployee) // Filter data for selected employee
                                     .map((obj, index) => (
                                         <tr key={index}>
-                                            <td style={{lineHeight: "32px"}}>{index + 1}</td>
+                                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                                             <td>{formatDateFinal(obj.lastAssignDate)}</td>
                                             <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
@@ -2733,11 +2861,11 @@ function EmployeeDataReport() {
                                 </tfoot>
                             )} */}
                             <tfoot>
-                            {mergedData
+                                {mergedData
                                     .filter((obj) => obj.ename === selectedEmployee) // Filter data for selected employee
                                     .map((obj, index) => (
                                         <tr style={{ fontWeight: 500 }} key={index}>
-                                            <td colSpan="2" style={{lineHeight: "32px"}}>Total</td>
+                                            <td colSpan="2" style={{ lineHeight: "32px" }}>Total</td>
                                             <td>
                                                 {obj.statusCounts?.find((status) => status.status === "Untouched")?.count || 0}
                                             </td>
