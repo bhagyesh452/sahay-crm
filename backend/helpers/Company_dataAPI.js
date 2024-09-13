@@ -347,15 +347,33 @@ router.put("/leads/:id", async (req, res) => {
       new: true,
     });
    
-    const updateRMCertificationCompanyDetails = await RMCertificationModel.updateMany(
-      { leadId: id },
-      req.body
-    );
+    // Update RMCertificationModel
+    let updateRMCertificationCompanyDetails;
+    if (existingData["Company Name"]) {
+      updateRMCertificationCompanyDetails = await RMCertificationModel.updateMany(
+        { 
+          $or: [
+            { leadId: id },
+            { "Company Name": oldCompanyName } // Fallback to company name
+          ]
+        },
+        req.body
+      );
+    }
 
-    const updateAdminExecutiveCompanyDetails = await AdminExecutiveModel.updateMany(
-      { leadId: id },
-      req.body
-    );
+    // Update AdminExecutiveModel
+    let updateAdminExecutiveCompanyDetails;
+    if (existingData["Company Name"]) {
+      updateAdminExecutiveCompanyDetails = await AdminExecutiveModel.updateMany(
+        { 
+          $or: [
+            { leadId: id },
+            { "Company Name": oldCompanyName } // Fallback to company name
+          ]
+        },
+        req.body
+      );
+    }
 
 
     const updateRedesignedLeadFormDetails = await RedesignedLeadModel.findOneAndUpdate(

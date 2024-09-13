@@ -349,19 +349,6 @@ function EmployeeCompleteCallingReport() {
             setFilterPosition({ top: rect.bottom, left: rect.left });
         }
     };
-
-    //   useEffect(() => {
-    //     if (noOfAvailableData) {
-    //       showingFilterIcon(true)
-    //       totalFilteredData(noOfAvailableData)
-    //     } else {
-    //       showingFilterIcon(false)
-    //       totalFilteredData(0)
-    //     }
-
-    //   }, [noOfAvailableData, activeTab])
-
-
     const isActiveField = (field) => activeFilterFields.includes(field);
 
     useEffect(() => {
@@ -394,7 +381,7 @@ function EmployeeCompleteCallingReport() {
         doc.text(title, titleX, 22); // Title centered horizontally at position (titleX, 22)
     
         // Define columns including Serial No
-        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Total Duration", "Unique Clients", "Last Synced At"];
+        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Unique Clients","Total Duration",  "Last Synced At"];
         
         // Map rows data
         const rows = totalcalls.filter(employee => employeeData
@@ -407,10 +394,10 @@ function EmployeeCompleteCallingReport() {
                     index + 1, // Serial number
                     call.emp_name || '-',
                     branch,
-                    call.total_calls || '-',
-                    convertSecondsToHMS(call.total_duration) || '-',
-                    call.total_unique_clients || "-",
-                    formatDate(call.last_call_log.synced_at) || "-" // Ensure formatDate is defined
+                    call.total_calls || 0,
+                    call.total_unique_clients || 0,
+                    convertSecondsToHMS(call.total_duration) || '00:00:00',
+                    formatDate(call.last_call_log.synced_at) || "00:00:00"// Ensure formatDate is defined
                 ];
             });
     
@@ -445,7 +432,7 @@ function EmployeeCompleteCallingReport() {
 
     const handleDownloadExcel = () => {
         // Define the columns
-        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Total Duration", "Unique Clients", "Last Synced At"];
+        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls","Unique Clients", "Total Duration",  "Last Synced At"];
       
         // Map rows data
         const rows = totalcalls.filter(employee => employeeData
@@ -458,10 +445,10 @@ function EmployeeCompleteCallingReport() {
                     index + 1, // Serial number
                     call.emp_name || '-',
                     branch,
-                    call.total_calls || '-',
-                    convertSecondsToHMS(call.total_duration) || '-',
-                    call.total_unique_clients || "-",
-                    formatDate(call.last_call_log.synced_at) || "-" // Ensure formatDate is defined
+                    call.total_calls || 0,
+                    call.total_unique_clients || 0,
+                    convertSecondsToHMS(call.total_duration) || '00:00:00',
+                    formatDate(call.last_call_log.synced_at) || "00:00:00" // Ensure formatDate is defined
                 ];
             });
       
