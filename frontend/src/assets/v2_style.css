@@ -195,13 +195,6 @@
 {
     font-size: 12px;
 }
-.clr-fff536 {
-  color: #ede105;
-}
-.clr-fff
-{
-    color: #fff;
-}
 .clr-bg-ff8800
 {
   background-color: #ff8800;
@@ -777,7 +770,6 @@ table.table.top_5_table tbody tr.myself td {
 .hr_emply_list_navitem .nav-link.active::after {
     background: #43474c !important;
 }
-
 /* ID crade Design Css strat */
 .E_Id_card_main {
     width: 350px;
@@ -1816,6 +1808,10 @@ th.th-day {
 .hr_emply_info_inner_tab_item .nav-link:focus, .employee_e_info_tab .nav-item .nav-link:focus
 {
     border-bottom: 1px solid #ffb900 !important;
+}
+.slry-cal-view-hdr
+{
+    color: #10171e;
 }
 /* Sweep To Right */
 /* .sweep-to-right {

@@ -38,7 +38,7 @@ function AdminExecutiveNavbar({ adminExecutiveUserId }) {
                             <ul className="navbar-nav">
                                 <Link style={{ textDecoration: "none", color: "black" }} 
                                 className={location.pathname === `/adminexecutive/dashboard/${adminExecutiveUserId}` ? "nav-item active" : 'nav-item'}
-                                    //</ul>to={`/adminexecutive/dashboard/${adminExecutiveUserId}`}
+                                    to={`/adminexecutive/dashboard/${adminExecutiveUserId}`}
                                     >
                                     <a className="nav-link" href="./">
                                         <span className="nav-link-icon d-md-none d-lg-inline-block">

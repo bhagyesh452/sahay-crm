@@ -1979,16 +1979,14 @@ th.th-sticky1::after {
 .dash-card-1-num {
   font-size: 18px;
 }
-
-.clr-ffffff {
+.clr-fff536 {
+  color: #ede105;
+}
+.clr-ffffff,.clr-fff {
   color: #ffffff;
 }
 .clr-1ac9bd {
   color: #1ac9bd;
-}
-.clr-ff8800
-{
-  color: #ff8800;
 }
 .clr-ffb900
 {
@@ -2003,9 +2001,12 @@ th.th-sticky1::after {
 }
 
 .clr-1cba19 {
-  color: #1cba19
+  color: #96e095
 }
-
+.clr-ff3636
+{
+  color: #ff3636;
+}
 .clr-e65b5b {
   color: #e65b5b;
 }
@@ -2013,7 +2014,18 @@ th.th-sticky1::after {
 .clr-00d19d {
   color: #00d19d;
 }
-
+.clr-ff81f0
+{
+  color: #ff81f0;
+}
+.clr-5acb14
+{
+  color: #5acb14;
+}
+.clr-ad77f8
+{
+  color: #ad77f8;
+}
 .clr-a0b1ad {
   color: #a0b1ad;
 }
