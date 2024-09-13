@@ -2122,7 +2122,7 @@ th.th-sticky1::after {
 .admin-dash-tbl-tfoot {
   position: sticky;
   bottom: -0.5px;
-  z-index: 1;
+  z-index: 0;
 }
 
 .admin-dash-tbl-tfoot td {
