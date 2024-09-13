@@ -162,7 +162,7 @@ function ManagerBookings() {
       setLeadFormData(sortedData); // Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
-    }finally{
+    } finally {
       setOpenBacdrop(false)
     }
   };
@@ -182,7 +182,7 @@ function ManagerBookings() {
       const ExecutiveDataResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata/justfortest`);
       const servicedata = servicesResponse.data;
       const newservicesdata = ExecutiveDataResponse.data;
-      console.log("rmdata" , newservicesdata)
+      console.log("rmdata", newservicesdata)
       setRmServicesData(servicedata)
       setAdminExecutiveData(newservicesdata)
 
@@ -207,36 +207,137 @@ function ManagerBookings() {
     //setCompanyName(data.companyName)
   };
   const calculateTotalAmount = (obj) => {
-    let total = Number(obj.totalAmount);
+    let total = parseInt(obj.totalAmount);
     if (obj.moreBookings && obj.moreBookings.length > 0) {
       total += obj.moreBookings.reduce(
-        (acc, booking) => acc + Number(booking.totalAmount),
+        (acc, booking) => acc + parseInt(booking.totalAmount),
         0
       );
     }
     return total.toFixed(2);
   };
 
+  const calculateTotalAmountLatestBooking = (obj) => {
+    // Combine services from both main and more bookings
+    const allBookings = [
+      ...obj.moreBookings,
+      {
+        services: obj.services,
+        totalAmount: obj.totalAmount,
+        bookingDate: "1970-01-01", // Default date for main services
+      }
+    ];
+
+    // Convert bookingDate strings to Date objects
+    const bookingsWithDates = allBookings.map((booking) => ({
+      ...booking,
+      bookingDate: new Date(booking.bookingDate),
+    }));
+
+    // Find the latest booking date
+    const latestDate = new Date(
+      Math.max(...bookingsWithDates.map((booking) => booking.bookingDate.getTime()))
+    );
+
+    // Filter to find the latest booking based on the latest date
+    const latestBooking = bookingsWithDates.find(
+      (booking) => booking.bookingDate.getTime() === latestDate.getTime()
+    );
+    console.log("latestBooking", latestBooking.totalAmount)
+    // Return the total amount for the latest booking (parse it to ensure it is a number)
+    return latestBooking
+      ? parseInt(latestBooking.totalAmount)
+      : '0';
+  };
+
+
   const calculateReceivedAmount = (obj) => {
-    let received = Number(obj.receivedAmount);
+    let received = parseInt(obj.receivedAmount);
     if (obj.moreBookings && obj.moreBookings.length > 0) {
       received += obj.moreBookings.reduce(
-        (acc, booking) => acc + Number(booking.receivedAmount),
+        (acc, booking) => acc + parseInt(booking.receivedAmount),
         0
       );
     }
     return received.toFixed(2);
   };
 
+  const calculateReceivedAmountLatestBooking = (obj) => {
+    // Combine services from both main and more bookings
+    const allBookings = [
+      ...obj.moreBookings,
+      {
+        services: obj.services,
+        receivedAmount: obj.receivedAmount,
+        bookingDate: "1970-01-01", // Default date for main services
+      }
+    ];
+
+    // Convert bookingDate strings to Date objects
+    const bookingsWithDates = allBookings.map((booking) => ({
+      ...booking,
+      bookingDate: new Date(booking.bookingDate),
+    }));
+
+    // Find the latest booking date
+    const latestDate = new Date(
+      Math.max(...bookingsWithDates.map((booking) => booking.bookingDate.getTime()))
+    );
+
+    // Filter to find the latest booking based on the latest date
+    const latestBooking = bookingsWithDates.find(
+      (booking) => booking.bookingDate.getTime() === latestDate.getTime()
+    );
+
+    // Return the received amount for the latest booking (parse it to ensure it is a number)
+    return latestBooking
+      ? parseInt(latestBooking.receivedAmount)
+      : '0.00';
+  };
+
+
   const calculatePendingAmount = (obj) => {
-    let pending = Number(obj.pendingAmount);
+    let pending = parseInt(obj.pendingAmount);
     if (obj.moreBookings && obj.moreBookings.length > 0) {
       pending += obj.moreBookings.reduce(
-        (acc, booking) => acc + Number(booking.pendingAmount),
+        (acc, booking) => acc + parseInt(booking.pendingAmount),
         0
       );
     }
     return pending.toFixed(2);
+  };
+
+  const calculatePendingAmountLatestBooking = (obj) => {
+    // Combine services from both main and more bookings
+    const allBookings = [
+      ...obj.moreBookings,
+      {
+        services: obj.services,
+        pendingAmount: obj.pendingAmount,
+        bookingDate: "1970-01-01", // Default date for main services
+      }
+    ];
+
+    // Convert bookingDate strings to Date objects
+    const bookingsWithDates = allBookings.map((booking) => ({
+      ...booking,
+      bookingDate: new Date(booking.bookingDate),
+    }));
+
+    // Find the latest booking date
+    const latestDate = new Date(
+      Math.max(...bookingsWithDates.map((booking) => booking.bookingDate.getTime()))
+    );
+
+    // Filter to find the latest booking based on the latest date
+    const latestBooking = bookingsWithDates.find(
+      (booking) => booking.bookingDate.getTime() === latestDate.getTime()
+    );
+
+    // Return the pending amount for the latest booking (parse it to ensure it is a number)
+    return latestBooking
+      ? parseInt(latestBooking.pendingAmount)
+      : '0.00';
   };
   function formatDatePro(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -324,7 +425,7 @@ function ManagerBookings() {
     }
   };
 
-  console.log("rmservicesdata" , rmServicesData)
+  console.log("rmservicesdata", rmServicesData)
 
 
 
@@ -645,7 +746,7 @@ function ManagerBookings() {
 
   const handleCloseBackdrop = () => {
     setOpenBacdrop(false)
-}
+  }
 
 
   const functionDeleteRemainingPayment = async (BookingIndex, serviceName) => {
@@ -834,7 +935,7 @@ function ManagerBookings() {
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                              <div className="b_Services_name d-flex flex-wrap">
+                              {/* <div className="b_Services_name d-flex flex-wrap">
                                 {(obj.services.length !== 0 ||
                                   (obj.moreBookings &&
                                     obj.moreBookings.length !== 0)) &&
@@ -873,8 +974,83 @@ function ManagerBookings() {
                                           )}
                                       </>
                                     ))}
-                              </div>
+                              </div> */}
+                              <div className="b_Services_name d-flex flex-wrap">
+                                {(obj.services.length !== 0 ||
+                                  (obj.moreBookings &&
+                                    obj.moreBookings.length !== 0)) &&
+                                  (() => {
+                                    // Combine services from both main and more bookings
+                                    const allBookings = [
+                                      ...obj.moreBookings,
+                                      // Creating a dummy booking object for obj.services with a default date
+                                      {
+                                        services: obj.services,
+                                        bookingDate: "1970-01-01",
+                                      }, // Default date for main services
+                                    ];
 
+                                    // Convert bookingDate strings to Date objects
+                                    const servicesWithDates =
+                                      allBookings.flatMap((booking) =>
+                                        booking.services.map((service) => ({
+                                          ...service,
+                                          bookingDate: new Date(
+                                            booking.bookingDate
+                                          ),
+                                        }))
+                                      );
+
+                                    // Find the latest booking date
+                                    const latestDate = new Date(
+                                      Math.max(
+                                        ...servicesWithDates.map((service) =>
+                                          service.bookingDate.getTime()
+                                        )
+                                      )
+                                    );
+
+                                    // Filter services based on the latest booking date
+                                    const latestServices =
+                                      servicesWithDates.filter(
+                                        (service) =>
+                                          service.bookingDate.getTime() ===
+                                          latestDate.getTime()
+                                      );
+
+                                    // Slice the filtered services to show only the first 3
+                                    const displayedServices =
+                                      latestServices.slice(0, 3);
+
+                                    // Calculate the count of additional services
+                                    const additionalCount = Math.max(
+                                      servicesWithDates.length - 3,
+                                      0
+                                    );
+
+                                    return (
+                                      <>
+                                        {displayedServices.map(
+                                          (service, index) => (
+                                            <div
+                                              key={service.serviceId}
+                                              className="sname mb-1"
+                                            >
+                                              {service.serviceName}
+                                            </div>
+                                          )
+                                        )}
+
+                                        {/* Show additional count if there are more than 3 services */}
+                                        {additionalCount > 0 && (
+                                          <div className="sname mb-1">
+                                            {`+${additionalCount}`}
+                                          </div>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                              </div>
                               <div className="d-flex align-items-center justify-content-between">
                                 {(obj.remainingPayments.length !== 0 || obj.moreBookings.some((moreObj) => moreObj.remainingPayments.length !== 0)) &&
                                   <div className="b_Service_remaining_receive" title="remaining Payment Received">
@@ -893,13 +1069,22 @@ function ManagerBookings() {
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
                                 <div className="amount total_amount_bg">
-                                  Total: ₹ {calculateTotalAmount(obj)}
+                                  Total: ₹{" "}
+                                  {
+                                    calculateTotalAmountLatestBooking(obj).toLocaleString()
+                                  }
                                 </div>
                                 <div className="amount receive_amount_bg">
-                                  Receive: ₹ {calculateReceivedAmount(obj)}
+                                  Received: ₹{" "}
+                                  {
+                                    calculateReceivedAmountLatestBooking(obj).toLocaleString()
+                                  }
                                 </div>
                                 <div className="amount pending_amount_bg">
-                                  Pending: ₹ {calculatePendingAmount(obj)}
+                                  Pending: ₹{" "}
+                                  {
+                                    calculatePendingAmountLatestBooking(obj).toLocaleString()
+                                  }
                                 </div>
                               </div>
                               <div className="b_BDE_name">{obj.bdeName}</div>
@@ -2258,43 +2443,43 @@ function ManagerBookings() {
                                                 alt="Default Image"
                                               />
                                             ))} */}
-                                             {currentLeadform &&
-                                          currentLeadform.paymentReceipt &&
-                                          currentLeadform.paymentReceipt[0] &&
-                                          currentLeadform.paymentReceipt[0]
-                                            .filename && // Ensure filename exists
-                                          (currentLeadform.paymentReceipt[0].filename
-                                            .toLowerCase()
-                                            .endsWith(".pdf") ? (
-                                            <PdfImageViewerAdmin
-                                              type="paymentrecieptpdf"
-                                              path={
-                                                currentLeadform
-                                                  .paymentReceipt[0].filename
-                                              }
-                                              companyName={
-                                                currentLeadform["Company Name"]
-                                              }
-                                            />
-                                          ) : currentLeadform.paymentReceipt[0].filename
+                                          {currentLeadform &&
+                                            currentLeadform.paymentReceipt &&
+                                            currentLeadform.paymentReceipt[0] &&
+                                            currentLeadform.paymentReceipt[0]
+                                              .filename && // Ensure filename exists
+                                            (currentLeadform.paymentReceipt[0].filename
+                                              .toLowerCase()
+                                              .endsWith(".pdf") ? (
+                                              <PdfImageViewerAdmin
+                                                type="paymentrecieptpdf"
+                                                path={
+                                                  currentLeadform
+                                                    .paymentReceipt[0].filename
+                                                }
+                                                companyName={
+                                                  currentLeadform["Company Name"]
+                                                }
+                                              />
+                                            ) : currentLeadform.paymentReceipt[0].filename
                                               .toLowerCase()
                                               .endsWith(".png") ||
-                                            currentLeadform.paymentReceipt[0].filename
-                                              .toLowerCase()
-                                              .endsWith(".jpg") ||
-                                            currentLeadform.paymentReceipt[0].filename
-                                              .toLowerCase()
-                                              .endsWith(".jpeg") ? (
-                                            <img
-                                              src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
-                                              alt="Receipt Image"
-                                            />
-                                          ) : (
-                                            <img
-                                              src={wordimg}
-                                              alt="Default Image"
-                                            />
-                                          ))}
+                                              currentLeadform.paymentReceipt[0].filename
+                                                .toLowerCase()
+                                                .endsWith(".jpg") ||
+                                              currentLeadform.paymentReceipt[0].filename
+                                                .toLowerCase()
+                                                .endsWith(".jpeg") ? (
+                                              <img
+                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                alt="Receipt Image"
+                                              />
+                                            ) : (
+                                              <img
+                                                src={wordimg}
+                                                alt="Default Image"
+                                              />
+                                            ))}
                                         </div>
                                         <div className="booking-docs-preview-text">
                                           <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -2388,7 +2573,7 @@ function ManagerBookings() {
                                       </div>
                                     </div>
                                   ))} */}
-                                   {currentLeadform &&
+                                {currentLeadform &&
                                   currentLeadform.otherDocs &&
                                   currentLeadform.otherDocs.map((obj) => (
                                     <div
@@ -2406,9 +2591,9 @@ function ManagerBookings() {
                                           }
                                         >
                                           {obj.filename && // Ensure filename exists
-                                          obj.filename
-                                            .toLowerCase()
-                                            .endsWith(".pdf") ? (
+                                            obj.filename
+                                              .toLowerCase()
+                                              .endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
@@ -2434,7 +2619,7 @@ function ManagerBookings() {
                                           </p>
                                         </div>
                                       </div>
-                                        
+
                                     </div>
                                   ))}
                                 {/* ---------- Upload Documents From Preview -----------*/}
@@ -3375,8 +3560,8 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-7 align-self-stretchh p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            ₹{" "}
-                                            {Math.round(
+                                          ₹{" "}
+                                            {parseInt(
                                               objMain.totalAmount
                                             ).toLocaleString()}
                                           </div>
@@ -3392,8 +3577,8 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            ₹{" "}
-                                            {Math.round(
+                                          ₹{" "}
+                                            {parseInt(
                                               objMain.receivedAmount
                                             ).toLocaleString()}
                                           </div>
@@ -3409,8 +3594,8 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            ₹{" "}
-                                            {Math.round(
+                                          ₹{" "}
+                                            {parseInt(
                                               objMain.pendingAmount
                                             ).toLocaleString()}
                                           </div>
@@ -3666,10 +3851,10 @@ function ManagerBookings() {
             // companysEmail={companyEmail}
             // companyNumber={companyNumber}
             setNowToFetch={setNowToFetch}
-          // companysInco={companyInco}
-          // employeeName={data.ename}
-          // employeeEmail={data.email}
-          isDataManager={true}
+            // companysInco={companyInco}
+            // employeeName={data.ename}
+            // employeeEmail={data.email}
+            isDataManager={true}
           />
         </>
       )}
@@ -3925,13 +4110,13 @@ function ManagerBookings() {
       </Dialog>
       {/* --------------------------------backedrop------------------------- */}
       {openBacdrop && (<Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={openBacdrop}
-                onClick={handleCloseBackdrop}>
-                <CircularProgress color="inherit" />
-            </Backdrop>)}
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBacdrop}
+        onClick={handleCloseBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>)}
     </div>
-    
+
   );
 }
 

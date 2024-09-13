@@ -188,18 +188,18 @@ function BookingList() {
   const closepopup = () => {
     openchange(false);
   };
-  // const calculateTotalAmount = (obj) => {
-  //   let total = parseInt(obj.totalAmount);
-  //   if (obj.moreBookings && obj.moreBookings.length > 0) {
-  //     total += obj.moreBookings.reduce(
-  //       (acc, booking) => acc + parseInt(booking.totalAmount),
-  //       0
-  //     );
-  //   }
-  //   return total.toFixed(2);
-  // };
-
   const calculateTotalAmount = (obj) => {
+    let total = parseInt(obj.totalAmount);
+    if (obj.moreBookings && obj.moreBookings.length > 0) {
+      total += obj.moreBookings.reduce(
+        (acc, booking) => acc + parseInt(booking.totalAmount),
+        0
+      );
+    }
+    return total.toFixed(2);
+  };
+
+  const calculateTotalAmountLatestBooking = (obj) => {
     // Combine services from both main and more bookings
     const allBookings = [
       ...obj.moreBookings,
@@ -233,18 +233,18 @@ function BookingList() {
   };
 
 
-  // const calculateReceivedAmount = (obj) => {
-  //   let received = parseInt(obj.receivedAmount);
-  //   if (obj.moreBookings && obj.moreBookings.length > 0) {
-  //     received += obj.moreBookings.reduce(
-  //       (acc, booking) => acc + parseInt(booking.receivedAmount),
-  //       0
-  //     );
-  //   }
-  //   return received.toFixed(2);
-  // };
-
   const calculateReceivedAmount = (obj) => {
+    let received = parseInt(obj.receivedAmount);
+    if (obj.moreBookings && obj.moreBookings.length > 0) {
+      received += obj.moreBookings.reduce(
+        (acc, booking) => acc + parseInt(booking.receivedAmount),
+        0
+      );
+    }
+    return received.toFixed(2);
+  };
+
+  const calculateReceivedAmountLatestBooking = (obj) => {
     // Combine services from both main and more bookings
     const allBookings = [
       ...obj.moreBookings,
@@ -278,18 +278,18 @@ function BookingList() {
   };
   
 
-  // const calculatePendingAmount = (obj) => {
-  //   let pending = parseInt(obj.pendingAmount);
-  //   if (obj.moreBookings && obj.moreBookings.length > 0) {
-  //     pending += obj.moreBookings.reduce(
-  //       (acc, booking) => acc + parseInt(booking.pendingAmount),
-  //       0
-  //     );
-  //   }
-  //   return pending.toFixed(2);
-  // };
-
   const calculatePendingAmount = (obj) => {
+    let pending = parseInt(obj.pendingAmount);
+    if (obj.moreBookings && obj.moreBookings.length > 0) {
+      pending += obj.moreBookings.reduce(
+        (acc, booking) => acc + parseInt(booking.pendingAmount),
+        0
+      );
+    }
+    return pending.toFixed(2);
+  };
+
+  const calculatePendingAmountLatestBooking = (obj) => {
     // Combine services from both main and more bookings
     const allBookings = [
       ...obj.moreBookings,
@@ -976,19 +976,19 @@ function BookingList() {
                                 <div className="amount total_amount_bg">
                                   Total: ₹{" "}
                                   {
-                                    calculateTotalAmount(obj).toLocaleString()
+                                    calculateTotalAmountLatestBooking(obj).toLocaleString()
                                   }
                                 </div>
                                 <div className="amount receive_amount_bg">
                                   Received: ₹{" "}
                                   {
-                                    calculateReceivedAmount(obj).toLocaleString()
+                                    calculateReceivedAmountLatestBooking(obj).toLocaleString()
                                   }
                                 </div>
                                 <div className="amount pending_amount_bg">
                                   Pending: ₹{" "}
                                   {
-                                    calculatePendingAmount(obj).toLocaleString()
+                                    calculatePendingAmountLatestBooking(obj).toLocaleString()
                                   }
                                 </div>
                               </div>
@@ -1162,9 +1162,9 @@ function BookingList() {
                                   {currentLeadform && (
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       ₹{" "}
-                                      {parseInt(
-                                        calculateTotalAmount(currentLeadform)
-                                      ).toLocaleString()}
+                                      {
+                                        parseInt(calculateTotalAmount(currentLeadform))
+                                      .toLocaleString()}
                                     </div>
                                   )}
                                 </div>
@@ -1181,9 +1181,9 @@ function BookingList() {
                                   {currentLeadform && (
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
-                                      {parseInt(
-                                        calculateReceivedAmount(currentLeadform)
-                                      ).toLocaleString()}
+                                      {
+                                        parseInt(calculateReceivedAmount(currentLeadform))
+                                      .toLocaleString()}
                                     </div>
                                   )}
                                 </div>
@@ -1200,9 +1200,9 @@ function BookingList() {
                                   {currentLeadform && (
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
-                                      {parseInt(
-                                        calculatePendingAmount(currentLeadform)
-                                      ).toLocaleString()}
+                                      {
+                                        parseInt(calculatePendingAmount(currentLeadform))
+                                      .toLocaleString()}
                                     </div>
                                   )}
                                 </div>

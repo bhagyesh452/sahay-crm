@@ -1,5 +1,6 @@
 import React, { useEffect, useState, CSSProperties, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Header from "./Header/Header.jsx";
 import axios from "axios";
 import "react-date-range/dist/styles.css"; // main style file
@@ -63,9 +64,7 @@ function EmployeeView() {
   const [myInfo, setMyInfo] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
 
-
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-
 
   const [empImg1, setEmpImg1] = useState(
     localStorage.getItem("empImg1") || "initial_image_url"
@@ -79,13 +78,10 @@ function EmployeeView() {
   const [open, setOpen] = useState(false);
   const [editempinfo, setEditEmpInfo] = useState(false);
 
-
   const [personal_email, setPersonalEmail] = useState('');
   const [personal_number, setPersonalPhone] = useState('');
   const [personal_contact_person, setContactPerson] = useState('');
   const [personal_address, setPersonalAddress] = useState('');
-
-
 
   useEffect(() => {
     const savedImage = localStorage.getItem("empImg1");
@@ -93,8 +89,6 @@ function EmployeeView() {
       setEmpImg1(savedImage);
     }
   }, []);
-
-
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -129,16 +123,42 @@ function EmployeeView() {
     closePopUp();
   };
 
-
+  // function formatDateNew(timestamp) {
+  //   const date = new Date(timestamp);
+  //   const day = date.getDate().toString().padStart(2, "0");
+  //   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+  //   const year = date.getFullYear();
+  //   return `${day}/${month}/${year}`;
+  // }
 
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+
+    // Day with suffix
+    const day = date.getDate();
+    const suffix = getDaySuffix(day);
+
+    // Month names array to convert month number to name
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const month = monthNames[date.getMonth()]; // Get month name
+
+    // Year
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+
+    // Return formatted date string
+    return `${day}${suffix} ${month} ${year}`;
   }
 
+  // Function to get the suffix for the day (st, nd, rd, th)
+  function getDaySuffix(day) {
+    if (day > 3 && day < 21) return "th"; // Special case for 11th to 19th
+    switch (day % 10) {
+      case 1: return "st";
+      case 2: return "nd";
+      case 3: return "rd";
+      default: return "th";
+    }
+  }
 
   const handleCameraClick = () => {
     setOpen(true);
@@ -147,9 +167,6 @@ function EmployeeView() {
   const handleClose = () => {
     setOpen(false);
   };
-
-
-
 
   //-----------------fetching employee details----------------------------------
   const fetchEmployeeData = async () => {
@@ -161,13 +178,11 @@ function EmployeeView() {
       console.log(data);
       setEmployeeData(data);
 
-
       // set the personal details fields
       setPersonalEmail(data.personal_email || '')
       setPersonalPhone(data.personal_number || '');
       setContactPerson(data.personal_contact_person || '');
       setPersonalAddress(data.personal_address || '');
-
 
       setdata(data);
     } catch (error) {
@@ -193,7 +208,6 @@ function EmployeeView() {
   // const today = new Date().toISOString().split('T')[0];
 
   const events = [
-
     {
       title: 'Present',
       start: '2024-07-02', // Static start date
@@ -217,9 +231,7 @@ function EmployeeView() {
     }
   ]
 
-
   // Edit Employee Information from Hr
-
   const functionEditEmployee = () => {
     setEditEmpInfo(true);
   }
@@ -227,7 +239,6 @@ function EmployeeView() {
   const closePopUp = () => {
     setEditEmpInfo(false);
   }
-
 
   // Handle form submission
   const handlePersonalDetailsSubmit = async (event) => {
@@ -277,7 +288,7 @@ function EmployeeView() {
           <div className="container-xl">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Employee</a></li>
+                <li class="breadcrumb-item"><Link to="/hr/employees">Employee</Link></li>
                 <li class="breadcrumb-item active" aria-current="page">Employee Profile</li>
               </ol>
             </nav>
@@ -308,8 +319,8 @@ function EmployeeView() {
                     <div className="emply_e_card_profile_name bdr-left-eee">
                       <div className="EP_Name d-flex justify-content-between align-items-center">
                         <h3 className="m-0">
-                          <span className="clr-ffb900">{data.ename}</span>
-                          <div className="EP_Designation">Sales Executive</div>
+                          <span className="clr-ffb900">{data.ename || "-"}</span>
+                          <div className="EP_Designation">{data.newDesignation || "-"}</div>
                         </h3>
                         <div className="employee_active">Active</div>
                       </div>
@@ -330,7 +341,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="">
-                                    <div className="ep_info_t">SSPL001</div>
+                                    <div className="ep_info_t">{data.employeeID || "-"}</div>
                                   </div>
                                 </div>
                               </div>
@@ -346,7 +357,7 @@ function EmployeeView() {
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="">
                                     <div className="ep_info_t">
-                                      {data.email}
+                                      {data.email || "-"}
                                     </div>
                                   </div>
                                 </div>
@@ -363,7 +374,7 @@ function EmployeeView() {
                                 <div className="col-7 pt-1 pb-1 bdr-left-eee">
                                   <div className="">
                                     <div className="ep_info_t">
-                                      {data.number}
+                                      {data.number || "-"}
                                     </div>
                                   </div>
                                 </div>
@@ -381,7 +392,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   <div className="">
-                                    <div className="ep_info_t">{formatDateNew(data.jdate)}</div>
+                                    <div className="ep_info_t">{data.jdate ? formatDateNew(data.jdate) : "-"}</div>
                                   </div>
                                 </div>
                               </div>
@@ -424,10 +435,10 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                Sales
+                                {data.department || "-"}
                               </div>
                             </div>
-                          </div>  
+                          </div>
                           <div className="row m-0  bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -439,10 +450,10 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                Gota
+                                {data.branchOffice || "-"}
                               </div>
                             </div>
-                          </div> 
+                          </div>
                           <div className="row m-0  bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -454,7 +465,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                Full Time
+                                {data.employeementType || "-"}
                               </div>
                             </div>
                           </div>
@@ -469,7 +480,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                Vaibhav Acharya
+                                {data.reportingManager || "-"}
                               </div>
                             </div>
                           </div>
@@ -484,29 +495,30 @@ function EmployeeView() {
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
-                                  <FaRegUser  />
+                                  <FaRegUser />
                                 </div>
                                 <div className="ep_info_h">Full Name :</div>
                               </div>
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                Nimeshkumar Kamleshbhai Parekh
+                                {data.empFullName || "-"}
                               </div>
                             </div>
-                          </div>  
+                          </div>
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
-                                  <IoCalendarClearOutline  />
+                                  <IoCalendarClearOutline />
                                 </div>
                                 <div className="ep_info_h">DOB :</div>
                               </div>
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                2<sup>nd</sup> Dec 2024
+                                {data.dob ? formatDateNew(data.dob) : "-"}
+                                {/* 2<sup>nd</sup> Dec 2024 */}
                               </div>
                             </div>
                           </div>
@@ -514,14 +526,14 @@ function EmployeeView() {
                             <div className="col-4 pt-1 pb-1 ">
                               <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
-                                  <BsGenderTrans  />
+                                  <BsGenderTrans />
                                 </div>
                                 <div className="ep_info_h">Gender :</div>
                               </div>
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                male
+                                {data.gender || "-"}
                               </div>
                             </div>
                           </div>
@@ -536,7 +548,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                9924283530
+                                {data.personal_number || "-"}
                               </div>
                             </div>
                           </div>
@@ -551,7 +563,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                male@gmail.com
+                                {data.personal_email || "-"}
                               </div>
                             </div>
                           </div>
@@ -559,7 +571,7 @@ function EmployeeView() {
                       </div>
                     </div>
                     <div class="tab-pane fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView></EmployeeViewPayrollView>
+                      <EmployeeViewPayrollView data={data}></EmployeeViewPayrollView>
                     </div>
                     <div class="tab-pane fade" id="Emergency_Contact">
                       <div className="my-card mt-2" >
@@ -575,10 +587,10 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                Nimesh Parekh
+                                {data.personal_contact_person || "-"}
                               </div>
                             </div>
-                          </div>  
+                          </div>
                           <div className="row m-0  bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -590,7 +602,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                Father
+                                {data.personal_contact_person_relationship || "-"}
                               </div>
                             </div>
                           </div>
@@ -605,7 +617,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                9924283530
+                                {data.personal_contact_person_number || "-"}
                               </div>
                             </div>
                           </div>
@@ -624,10 +636,10 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                H 21, Suvarna Apartment, Nirnaynagar, Ranip, Ahmedabad 380000
+                                {data.currentAddress || "-"}
                               </div>
                             </div>
-                          </div>  
+                          </div>
                           <div className="row m-0  bdr-btm-eee align-items-center">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -639,7 +651,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-6 pt-1 pb-1 bdr-left-eee">
                               <div className="ep_info_t">
-                                H 21, Suvarna Apartment, Nirnaynagar, Ranip, Ahmedabad 380000
+                                {data.permanentAddress || "-"}
                               </div>
                             </div>
                           </div>
@@ -676,7 +688,7 @@ function EmployeeView() {
                   </ul>
                   <div class="tab-content hr_eiinr_tab_content">
                     <div class="tab-pane heiitc_inner active" id="Attendance">
-                      <EmployeeViewAttendance/>
+                      <EmployeeViewAttendance />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="SalaryCalculation">
                       <SalaryCalculationView></SalaryCalculationView>
