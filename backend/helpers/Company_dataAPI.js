@@ -333,6 +333,7 @@ router.put("/leads/:id", async (req, res) => {
   const id = req.params.id;
   const { data } = req.body
   let oldCompanyName = "";
+  const socketIO = req.io;
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
   try {
@@ -417,13 +418,14 @@ router.put("/leads/:id", async (req, res) => {
       recentUpdate.history.push(newHistoryEntry);
       await recentUpdate.save();
     }
-
-
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
     }
-
-    res.json({ message: "Data updated successfully", updatedData, updateRMCertificationCompanyDetails, updateAdminExecutiveCompanyDetails, updateRedesignedLeadFormDetails });
+    socketIO.emit("lead-updated-by-admin", {
+      updatedDocument: updateRMCertificationCompanyDetails,
+      updatedDocumentAdmin: updateAdminExecutiveCompanyDetails // send the updated document from RMCertificationModel
+    });
+    res.status(200).json({ message: "Data updated successfully", updatedData, updateRMCertificationCompanyDetails, updateAdminExecutiveCompanyDetails, updateRedesignedLeadFormDetails });
   } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });

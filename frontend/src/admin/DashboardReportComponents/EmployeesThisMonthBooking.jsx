@@ -21,15 +21,18 @@ import Nodata from '../../components/Nodata';
 //import { options } from "../components/Options.js";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-
+import { BsFilter } from "react-icons/bs";
+import { FaFilter } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
 import confetti from 'canvas-confetti';
+import FilterTableThisMonthBooking from './FilterableTableThisMonthBooking';
 
 function EmployeesThisMonthBooking() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employeeData, setEmployeeData] = useState([])
     const [employeeDataFilter, setEmployeeDataFilter] = useState([])
     const [employeeInfo, setEmployeeInfo] = useState([])
+    const [completeEmployeeInfo, setCompleteEmployeeInfo] = useState([])
     const [monthBookingPerson, setMonthBookingPerson] = useState([])
     const [uniqueBDE, setUniqueBDE] = useState([]);
     const [redesignedData, setRedesignedData] = useState([]);
@@ -57,7 +60,17 @@ function EmployeesThisMonthBooking() {
         remainingRecieved: "none",
         remainingPaymentDate: "none"
     });
-
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [filteredData, setFilteredData] = useState([]);
+    const [filterField, setFilterField] = useState("")
+    const filterMenuRef = useRef(null); // Ref for the filter menu container
+    const [activeFilterField, setActiveFilterField] = useState(null);
+    const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
+    const fieldRefs = useRef({});
+    const [noOfAvailableData, setnoOfAvailableData] = useState(0)
+    const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
+    const [completeRedesignedData, setCompleteRedesignedData] = useState([])
+    const [redesignedDataFilter, setRedesignedDataFilter] = useState([])
 
 
 
@@ -91,6 +104,7 @@ function EmployeesThisMonthBooking() {
             setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
             setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
             setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
+            setCompleteEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"));
         } catch (error) {
             console.error('Error Fetching Employee Data ', error);
         } finally {
@@ -139,6 +153,8 @@ function EmployeesThisMonthBooking() {
             });
             setUniqueBDE(getBDEnames);
             setRedesignedData(bookingsData);
+            setCompleteRedesignedData(bookingsData)
+            setRedesignedDataFilter(bookingsData)
         } catch (error) {
             console.log("Error Fetching Bookings Data", error);
         } finally {
@@ -1177,7 +1193,7 @@ function EmployeesThisMonthBooking() {
                             //console.log(`Service name: ${service.serviceName}`);
                         });
                         if (findService) { // Check if findService is defined
-                           // console.log("findService1", findService, mainBooking["Company Name"])
+                            // console.log("findService1", findService, mainBooking["Company Name"])
                             const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
                             //console.log("yahan add ho rha remianing amount", mainBooking["Company Name"], tempAmount)
                             if (mainBooking.bdeName === mainBooking.bdmName) {
@@ -2061,34 +2077,34 @@ function EmployeesThisMonthBooking() {
     //             }
     //         })
     //     })
-      
-        
+
+
     //     return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
     // }
 
-    function functionGetLastBookingDate(bdeName = "Vishnu Suthar") {
+    function functionGetLastBookingDate(bdeName) {
         let tempBookingDate = null;
         const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
         const currentYear = new Date().getFullYear(); // Get the current year
-        
+
         // Filter objects based on bdeName
         redesignedData.map((mainBooking) => {
             const mainBookingDate = new Date(mainBooking.bookingDate);
             const mainBookingYear = mainBookingDate.getFullYear();
             const mainBookingMonth = monthNames[mainBookingDate.getMonth()];
-    
+
             if (mainBookingMonth === currentMonth && mainBookingYear === currentYear) {
                 if (cleanString(mainBooking.bdeName) === cleanString(bdeName) || cleanString(mainBooking.bdmName) === cleanString(bdeName)) {
                     tempBookingDate = mainBookingDate > tempBookingDate ? mainBookingDate : tempBookingDate;
                     //console.log("tempBookingDate", mainBooking["Company Name"], tempBookingDate, mainBooking.bdeName);
                 }
             }
-    
+
             mainBooking.moreBookings.map((moreObject) => {
                 const moreObjectDate = new Date(moreObject.bookingDate);
                 const moreObjectYear = moreObjectDate.getFullYear();
                 const moreObjectMonth = monthNames[moreObjectDate.getMonth()];
-    
+
                 if (moreObjectMonth === currentMonth && moreObjectYear === currentYear) {
                     if (cleanString(moreObject.bdeName) === cleanString(bdeName) || cleanString(moreObject.bdmName) === cleanString(bdeName)) {
                         tempBookingDate = moreObjectDate > tempBookingDate ? moreObjectDate : tempBookingDate;
@@ -2097,10 +2113,10 @@ function EmployeesThisMonthBooking() {
                 }
             });
         });
-    
+
         return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
     }
-    
+
 
     let generatedTotalRevenue = 0;
 
@@ -2964,6 +2980,44 @@ function EmployeesThisMonthBooking() {
 
     // console.log("Is date selected :", isDateSelectedInAdvancePayment);
 
+    // ----------------filter components----------------------------------
+    // ------------------------------------filter functions-------------------------
+    const handleFilter = (newData) => {
+        setFilteredData(newData)
+        setEmployeeData(newData);
+    };
+
+
+    const handleFilterClick = (field) => {
+        if (activeFilterField === field) {
+            setShowFilterMenu(!showFilterMenu);
+
+        } else {
+            setActiveFilterField(field);
+            setShowFilterMenu(true);
+            const rect = fieldRefs.current[field].getBoundingClientRect();
+            setFilterPosition({ top: rect.bottom, left: rect.left });
+        }
+    };
+    const isActiveField = (field) => activeFilterFields.includes(field);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const handleClickOutside = (event) => {
+                if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+                    setShowFilterMenu(false);
+
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, []);
+
+
     return (
         <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
 
@@ -3241,9 +3295,87 @@ function EmployeesThisMonthBooking() {
                                 <thead className="admin-dash-tbl-thead">
                                     <tr  >
                                         <th>SR.NO</th>
-                                        <th>BDE/BDM NAME</th>
-                                        <th>BRANCH</th>
-                                        <th style={{ cursor: "pointer" }}
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['ename'] = el}>
+                                                    BDE/BDM Name
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('ename') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("ename")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("ename")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'ename' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableThisMonthBooking
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            redesignedData={redesignedData}
+                                                            data={employeeData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeEmployeeInfo}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={employeeInfo}
+                                                            bookingStartDate={bookingStartDate}
+                                                            bookingEndDate={bookingEndDate}
+                                                            initialDate={initialDate}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['branchOffice'] = el}>
+                                                    BRANCH
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('branchOffice') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("branchOffice")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'branchOffice' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableThisMonthBooking
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            redesignedData={redesignedData}
+                                                            data={employeeData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeEmployeeInfo}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={employeeInfo}
+                                                            bookingStartDate={bookingStartDate}
+                                                            bookingEndDate={bookingEndDate}
+                                                            initialDate={initialDate}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        {/* <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
                                                 if (newSortType.maturedcase === "ascending") {
@@ -3279,8 +3411,48 @@ function EmployeesThisMonthBooking() {
                                                         }}
                                                     />
                                                 </div>
-                                            </div></th>
-                                        <th style={{ cursor: "pointer" }}
+                                            </div></th> */}
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['maturedcases'] = el}>
+                                                    MATURED CASES
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('maturedcases') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("maturedcases")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("maturedcases")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'maturedcases' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableThisMonthBooking
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            redesignedData={redesignedData}
+                                                            data={employeeData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeEmployeeInfo}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={employeeInfo}
+                                                            bookingStartDate={bookingStartDate}
+                                                            bookingEndDate={bookingEndDate}
+                                                            initialDate={initialDate}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        {/* <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
                                                 if (newSortType.targetamount === "ascending") {
@@ -3316,8 +3488,48 @@ function EmployeesThisMonthBooking() {
                                                         }}
                                                     />
                                                 </div>
-                                            </div></th>
-                                        <th style={{ cursor: "pointer" }}
+                                            </div></th> */}
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['target'] = el}>
+                                                    TARGET
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('target') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("target")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("target")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'target' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableThisMonthBooking
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            redesignedData={redesignedData}
+                                                            data={employeeData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeEmployeeInfo}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={employeeInfo}
+                                                            bookingStartDate={bookingStartDate}
+                                                            bookingEndDate={bookingEndDate}
+                                                            initialDate={initialDate}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        {/* <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
                                                 if (newSortType.achievedamount === "ascending") {
@@ -3333,7 +3545,8 @@ function EmployeesThisMonthBooking() {
                                                     achievedamount: updatedSortType,
                                                 }));
                                                 handleSortAchievedAmount(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}>
+                                            <div className="d-flex align-items-center justify-content-between">
                                                 <div>ACHIEVED</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
@@ -3353,8 +3566,49 @@ function EmployeesThisMonthBooking() {
                                                         }}
                                                     />
                                                 </div>
-                                            </div></th>
-                                        <th style={{ cursor: "pointer" }}
+                                            </div>
+                                        </th> */}
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['achieved'] = el}>
+                                                    ACHIEVED
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('achieved') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("achieved")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("achieved")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'achieved' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableThisMonthBooking
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            redesignedData={redesignedData}
+                                                            data={employeeData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeEmployeeInfo}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={employeeInfo}
+                                                            bookingStartDate={bookingStartDate}
+                                                            bookingEndDate={bookingEndDate}
+                                                            initialDate={initialDate}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        {/* <th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
                                                 if (newSortType.targetratio === "ascending") {
@@ -3390,8 +3644,48 @@ function EmployeesThisMonthBooking() {
                                                         }}
                                                     />
                                                 </div>
-                                            </div></th>
-                                        <th style={{ cursor: "pointer" }}
+                                            </div></th> */}
+                                        <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['achievedratio'] = el}>
+                                                    ACHIEVED RATIO
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('achievedratio') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("achievedratio")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("achievedratio")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'achievedratio' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableThisMonthBooking
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            redesignedData={redesignedData}
+                                                            data={employeeData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeEmployeeInfo}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={employeeInfo}
+                                                            bookingStartDate={bookingStartDate}
+                                                            bookingEndDate={bookingEndDate}
+                                                            initialDate={initialDate}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
+                                        {/*<th style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
                                                 if (newSortType.lastbookingdate === "ascending") {
@@ -3428,7 +3722,47 @@ function EmployeesThisMonthBooking() {
                                                         }}
                                                     />
                                                 </div>
-                                            </div></th>
+                                            </div></th>*/}
+                                             <th>
+                                            <div className='d-flex align-items-center justify-content-center position-relative'>
+                                                <div ref={el => fieldRefs.current['lastbookingdate'] = el}>
+                                                    LAST BOOKING DATE
+                                                </div>
+                                                <div className='RM_filter_icon' style={{ color: "black" }}>
+                                                    {isActiveField('lastbookingdate') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("lastbookingdate")} />
+                                                    ) : (
+                                                        <BsFilter onClick={() => handleFilterClick("lastbookingdate")} />
+                                                    )}
+                                                </div>
+                                                {/* ---------------------filter component--------------------------- */}
+                                                {showFilterMenu && activeFilterField === 'lastbookingdate' && (
+                                                    <div
+                                                        ref={filterMenuRef}
+                                                        className="filter-menu"
+                                                        style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                    >
+                                                        <FilterTableThisMonthBooking
+                                                            //noofItems={setnoOfAvailableData}
+                                                            allFilterFields={setActiveFilterFields}
+                                                            filteredData={filteredData}
+                                                            //activeTab={"None"}
+                                                            employeeData={employeeData}
+                                                            redesignedData={redesignedData}
+                                                            data={employeeData}
+                                                            filterField={activeFilterField}
+                                                            onFilter={handleFilter}
+                                                            completeData={completeEmployeeInfo}
+                                                            showingMenu={setShowFilterMenu}
+                                                            dataForFilter={employeeInfo}
+                                                            bookingStartDate={bookingStartDate}
+                                                            bookingEndDate={bookingEndDate}
+                                                            initialDate={initialDate}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 {loading ? (
