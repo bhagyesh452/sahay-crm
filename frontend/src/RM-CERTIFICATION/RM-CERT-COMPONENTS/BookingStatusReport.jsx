@@ -8,13 +8,13 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
 
     //---------------- function for piew charts----------------------------
     const data_my = [
-        {value: general, label: 'General', color: '#1ac9bd'},
-        {value: inProcess, label: 'In Process', color: '#ffb900'},
-        {value: readyToSubmit, label: 'Ready To Submit', color: '#4299e1'},
-        {value: submitted, label: 'Submitted', color: '#1cba19'},
-        {value: approved, label: 'Approved', color: '#e65b5b'},
-        {value: hold, label: 'Hold', color: '#00d19d'},
-        {value: defaulter, label: 'Defaulter', color: '#ff81f0'},
+        { value: general, label: 'General', color: '#1ac9bd' },
+        // {value: inProcess, label: 'In Process', color: '#ffb900'},
+        { value: readyToSubmit, label: 'Ready To Submit', color: '#4299e1' },
+        { value: submitted, label: 'Submitted', color: '#1cba19' },
+        { value: approved, label: 'Approved', color: '#e65b5b' },
+        { value: hold, label: 'Hold', color: '#ffb900' },
+        { value: defaulter, label: 'Defaulter', color: '#ff81f0' },
     ];
 
     const size = {
@@ -44,13 +44,14 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
             <div className="dash-card">
                 <div className="dash-card-head">
                     <h2 className="m-0">
-                        Booking Statuses
+                        Booking Status Report
                     </h2>
                 </div>
                 <div className="dash-card-body">
                     <div className="row align-items-center">
                         <div className="col-sm-5 align-self-stretch">
                             <div className="call-dr-names mb-2">
+
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-1ac9bd">
@@ -63,7 +64,8 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                         {general}
                                     </div>
                                 </div>
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+
+                                {/* <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-ffb900">
                                         </div>
@@ -74,7 +76,8 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                     <div className="call-dr-num">
                                         {inProcess}
                                     </div>
-                                </div>
+                                </div> */}
+
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-4299e1">
@@ -87,6 +90,7 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                         {readyToSubmit}
                                     </div>
                                 </div>
+
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-1cba19">
@@ -99,6 +103,7 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                         {submitted}
                                     </div>
                                 </div>
+
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-e65b5b">
@@ -111,9 +116,10 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                         {approved}
                                     </div>
                                 </div>
+
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-00d19d">
+                                        <div className="color-dots clr-bg-ffb900">
                                         </div>
                                         <div className="call-dr-name">
                                             Hold
@@ -123,6 +129,7 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                         {hold}
                                     </div>
                                 </div>
+
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-ff81f0">
@@ -135,11 +142,13 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                         {defaulter}
                                     </div>
                                 </div>
+
                             </div>
                         </div>
+
                         <div className="col-sm-7 align-self-stretch">
                             <div className="call-dr-chart mt-1 ms-5">
-                                <div className="chart-container" style={{ width: '100%', height: '220px' }}>
+                                <div className="chart-container" style={{ width: '100%', height: '250px' }}>
                                     <PieChart series={[{ data: data_my, innerRadius: 80, labelComponent: null }]} {...size} slotProps={{
                                         legend: { hidden: true },
                                     }}>
@@ -148,6 +157,7 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

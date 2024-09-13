@@ -4,6 +4,8 @@ import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHead
 import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
 import BookingStatusReport from "../RM-CERT-COMPONENTS/BookingStatusReport";
 import InProcessReport from "../RM-CERT-COMPONENTS/InProcessReport";
+import AdminExecutiveBookingReport from "../../AdminExecutive/Components/AdminExecutiveBookingReport";
+import AdminExecutiveInProcessReport from "../../AdminExecutive/Components/AdminExecutiveInProcessReport";
 
 
 function RmCertificationDashboard() {
@@ -13,7 +15,7 @@ function RmCertificationDashboard() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [employeeData, setEmployeeData] = useState([]);
 
-  // Main Category Statuses
+  // Main Category Statuses for Admin-Head
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
   const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0);
@@ -23,7 +25,7 @@ function RmCertificationDashboard() {
   const [totalDocumentsHold, setTotalDocumentsHold] = useState(0);
   const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
 
-  // Inporcess Sub Category Statuses
+  // Inporcess Sub Category Statuses for Admin-Head
   const [callBriefPending, setCallBriefPending] = useState(0);
   const [dscPending, setDscPending] = useState(0);
   const [clientNotResponding, setClientNotResponding] = useState(0);
@@ -31,24 +33,45 @@ function RmCertificationDashboard() {
   const [working, setWorking] = useState(0);
   const [needToCall, setNeedToCall] = useState(0);
 
+  // Main Category Statuses for Admin-Executive
+  const [isAdminExecutive, setIsAdminExecutive] = useState(false);
+  const [totalDocumentsForAdminExecutive, setTotalDocumentsForAdminExecutive] = useState(0);
+  const [totalDocumentsGeneralForAdminExecutive, setTotalDocumentsGeneralForAdminExecutive] = useState(0);
+  const [totalDocumentsProcessForAdminExecutive, setTotalDocumentsProcessForAdminExecutive] = useState(0);
+  const [totalDocumentsApprovedForAdminExecutive, setTotalDocumentsApprovedForAdminExecutive] = useState(0);
+  const [totalDocumentsHoldForAdminExecutive, setTotalDocumentsHoldForAdminExecutive] = useState(0);
+  const [totalDocumentsDefaulterForAdminExecutive, setTotalDocumentsDefaulterForAdminExecutive] = useState(0);
+
+  // Inporcess Sub Category Statuses for Admin-Executive
+  const [clientNotRespondingForAdminExecutive, setClientNotRespondingForAdminExecutive] = useState(0);
+  const [needToCallForAdminExecutive, setNeedToCallForAdminExecutive] = useState(0);
+  const [documentsPendingForAdminExecutive, setDocumentsPendingForAdminExecutive] = useState(0);
+  const [workingForAdminExecutive, setWorkingForAdminExecutive] = useState(0);
+  const [applicationPendingForAdminExecutive, setApplicationPendingForAdminExecutive] = useState(0);
+  const [kycPendingForAdminExecutive, setKycPendingForAdminExecutive] = useState(0);
+  const [kycRejectedForAdminExecutive, setKycRejectedForAdminExecutive] = useState(0);
+  const [kycIncompleteForAdminExecutive, setKycIncompleteForAdminExecutive] = useState(0);
+
   useEffect(() => {
     document.title = `AdminHead-Sahay-CRM`;
   }, []);
 
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
-  console.log(rmCertificationUserId);
+  // console.log(rmCertificationUserId);
 
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
-      console.log(tempData);
+      // console.log(tempData);
       const userData = tempData.find((item) => item._id === rmCertificationUserId);
-      console.log(userData);
+      // console.log(userData);
       setEmployeeData(userData);
       fetchRMServicesData();
       fetchInProcessData();
+      fetchAdminExecutiveData();
+      fetchAdminExecutiveInProcessData();
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -73,7 +96,7 @@ function RmCertificationDashboard() {
         totalDocumentsDefaulter,
 
       } = response.data;
-      console.log("Booking data is :", response.data)
+      // console.log("Admin head booking data is :", response.data);
 
       setTotalDocuments(totalDocuments);
       setTotalDocumentsGeneral(totalDocumentsGeneral);
@@ -97,7 +120,7 @@ function RmCertificationDashboard() {
       });
 
       const { data, totalPages } = servicesResponse.data;
-      console.log("Inprocess data is :", data)
+      // console.log("Admin head inprocess data is :", data);
 
       setCallBriefPending(data.filter((item) => item.subCategoryStatus === "Call Done Brief Pending").length);
       setDscPending(data.filter((item) => item.subCategoryStatus === "All Done DSC Pending").length);
@@ -111,9 +134,66 @@ function RmCertificationDashboard() {
     }
   };
 
+  const fetchAdminExecutiveData = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/rm-services/adminexecutivedata`);
+
+      const {
+        data,
+        totalPages,
+        totalDocuments,
+        totalDocumentsGeneral,
+        totalDocumentsApproved,
+        totalDocumentsHold,
+        totalDocumentsDefaulter,
+        totalDocumentsProcess,
+
+      } = response.data;
+      // console.log("Admin executive booking data is :", response.data);
+
+      setIsAdminExecutive(true);
+      setTotalDocumentsForAdminExecutive(totalDocuments);
+      setTotalDocumentsGeneralForAdminExecutive(totalDocumentsGeneral);
+      setTotalDocumentsApprovedForAdminExecutive(totalDocumentsApproved);
+      setTotalDocumentsHoldForAdminExecutive(totalDocumentsHold);
+      setTotalDocumentsDefaulterForAdminExecutive(totalDocumentsDefaulter);
+      setTotalDocumentsProcessForAdminExecutive(totalDocumentsProcess);
+    } catch (error) {
+      console.error("Error fetching booking data", error.message);
+    }
+  };
+
+  const fetchAdminExecutiveInProcessData = async (searchQuery = "", page = 1) => {
+    let params = { search: searchQuery, page, activeTab: "Process" };
+
+    try {
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
+        params: params
+      });
+
+      const { data, totalPages } = servicesResponse.data;
+      // console.log("Admin executive inprocess data is :", data);
+
+      setIsAdminExecutive(true);
+      setClientNotRespondingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Client Not Responding").length);
+      setNeedToCallForAdminExecutive(data.filter((item) => item.subCategoryStatus === " Need To Call").length);
+      setDocumentsPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Call Done Docs Pending").length);
+      setWorkingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Working").length);
+      setApplicationPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Application Pending").length);
+      setKycPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Pending").length);
+      setKycRejectedForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Rejected").length);
+      setKycIncompleteForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Incomplete").length);
+
+    } catch (error) {
+      console.error("Error fetching in process data :", error);
+    }
+  };
+
   useEffect(() => {
-    fetchRMServicesData(); // Fetch data initially
+    fetchRMServicesData();
     fetchInProcessData();
+    fetchAdminExecutiveData();
+    fetchAdminExecutiveInProcessData();
   }, [employeeData]);
 
   // console.log('employeeData', employeeData);
@@ -134,13 +214,26 @@ function RmCertificationDashboard() {
                     <BookingStatusReport general={totalDocumentsGeneral} inProcess={totalDocumentsProcess}
                       readyToSubmit={totalDocumentsReadyToSubmit} submitted={totalDocumentsSubmitted} approved={totalDocumentsApproved}
                       hold={totalDocumentsHold} defaulter={totalDocumentsDefaulter} total={totalDocuments} />
+
+                    <div className="my-4">
+                      <AdminExecutiveBookingReport general={totalDocumentsGeneralForAdminExecutive} inProcess={totalDocumentsProcessForAdminExecutive}
+                        approved={totalDocumentsApprovedForAdminExecutive} hold={totalDocumentsHoldForAdminExecutive}
+                        defaulter={totalDocumentsDefaulterForAdminExecutive} total={totalDocumentsForAdminExecutive} isAdminExecutive={isAdminExecutive} />
+                    </div>
                   </div>
 
                   {/* In process status report */}
                   <div className="col-sm-6 col-md-6 col-lg-6">
-                    <InProcessReport totalInProcess={totalDocumentsProcess} callBriefPending={callBriefPending}
-                      dscPending={dscPending} clientNotResponding={clientNotResponding}
-                      documentsPending={documentsPending} working={working} needToCall={needToCall} />
+                    <InProcessReport callBriefPending={callBriefPending} dscPending={dscPending}
+                      clientNotResponding={clientNotResponding} documentsPending={documentsPending}
+                      working={working} needToCall={needToCall} totalInProcess={totalDocumentsProcess} />
+
+                    <div className="my-4">
+                      <AdminExecutiveInProcessReport clientNotResponding={clientNotRespondingForAdminExecutive} needToCall={needToCallForAdminExecutive}
+                        documentsPending={documentsPendingForAdminExecutive} working={workingForAdminExecutive} applicationPending={applicationPendingForAdminExecutive}
+                        kycPending={kycPendingForAdminExecutive} kycRejected={kycRejectedForAdminExecutive} kycIncomplete={kycIncompleteForAdminExecutive}
+                        totalInProcess={totalDocumentsProcessForAdminExecutive} isAdminExecutive={isAdminExecutive} />
+                    </div>
                   </div>
                 </div>
 
