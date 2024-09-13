@@ -3,7 +3,7 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import { styled } from '@mui/material/styles';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 
-function InProcessReport({ callBriefPending, dscPending, clientNotResponding, documentsPending, working, needToCall, totalInProcess}) {
+function AdminExecutiveInProcessReport({ clientNotResponding, needToCall, documentsPending, working, applicationPending, kycPending, kycRejected, kycIncomplete, totalInProcess, isAdminExecutive }) {
 
     //---------------- function for piew charts----------------------------
     const data1 = [
@@ -11,12 +11,14 @@ function InProcessReport({ callBriefPending, dscPending, clientNotResponding, do
     ];
 
     const data2 = [
-        { value: callBriefPending, label: 'Call Done Brief Pending', color: '#1ac9bd'},
-        { value: dscPending, label: 'All Done DSC Pending', color: '#ffb900'},
-        { value: clientNotResponding, label: 'Client Not Responding', color: '#4299e1'},
-        { value: documentsPending, label: 'Documents Pending', color: '#1cba19'},
-        { value: working, label: 'Working', color: '#e65b5b'},
-        { value: needToCall, label: 'Need To Call', color: '#00d19d'},
+        { value: clientNotResponding, label: 'Client Not Responding', color: '#4299e1' },
+        { value: needToCall, label: 'Need To Call', color: '#00d19d' },
+        { value: documentsPending, label: 'Documents Pending', color: '#1cba19' },
+        { value: working, label: 'Working', color: '#e65b5b' },
+        { value: applicationPending, label: 'Application Pending', color: '#ff81f0' },
+        { value: kycPending, label: 'KYC Pending', color: '#ffb900' },
+        { value: kycRejected, label: 'KYC Rejected', color: '#ad77f8' },
+        { value: kycIncomplete, label: 'KYC Incomplete', color: '#3433ff' },
     ];
 
     const size = {
@@ -46,7 +48,7 @@ function InProcessReport({ callBriefPending, dscPending, clientNotResponding, do
             <div className="dash-card">
                 <div className="dash-card-head">
                     <h2 className="m-0">
-                        Inprocess Status Report
+                        {isAdminExecutive ? "Inprocess Status Report of Admin Executive" : "Inprocess Status Report"}
                     </h2>
                 </div>
                 <div className="dash-card-body">
@@ -54,32 +56,6 @@ function InProcessReport({ callBriefPending, dscPending, clientNotResponding, do
                         <div className="col-sm-5 align-self-stretch">
                             <div className="call-dr-names mb-2">
                                 
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-1ac9bd">
-                                        </div>
-                                        <div className="call-dr-name">
-                                            Call Done Brief Pending
-                                        </div>
-                                    </div>
-                                    <div className="call-dr-num">
-                                        {callBriefPending}
-                                    </div>
-                                </div>
-
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-ffb900">
-                                        </div>
-                                        <div className="call-dr-name">
-                                            All Done DSC Pending
-                                        </div>
-                                    </div>
-                                    <div className="call-dr-num">
-                                        {dscPending}
-                                    </div>
-                                </div>
-
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-4299e1">
@@ -90,6 +66,19 @@ function InProcessReport({ callBriefPending, dscPending, clientNotResponding, do
                                     </div>
                                     <div className="call-dr-num">
                                         {clientNotResponding}
+                                    </div>
+                                </div>
+
+                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div className="color-dots clr-bg-00d19d">
+                                        </div>
+                                        <div className="call-dr-name">
+                                            Need To Call
+                                        </div>
+                                    </div>
+                                    <div className="call-dr-num">
+                                        {needToCall}
                                     </div>
                                 </div>
 
@@ -121,14 +110,53 @@ function InProcessReport({ callBriefPending, dscPending, clientNotResponding, do
 
                                 <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
-                                        <div className="color-dots clr-bg-00d19d">
+                                        <div className="color-dots clr-bg-ff81f0">
                                         </div>
                                         <div className="call-dr-name">
-                                            Need To Call
+                                            Application Pending
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {needToCall}
+                                        {applicationPending}
+                                    </div>
+                                </div>
+
+                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div className="color-dots clr-bg-ffb900">
+                                        </div>
+                                        <div className="call-dr-name">
+                                            KYC Pending
+                                        </div>
+                                    </div>
+                                    <div className="call-dr-num">
+                                        {kycPending}
+                                    </div>
+                                </div>
+
+                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div className="color-dots clr-bg-ad77f8">
+                                        </div>
+                                        <div className="call-dr-name">
+                                            KYC Rejected
+                                        </div>
+                                    </div>
+                                    <div className="call-dr-num">
+                                        {kycRejected}
+                                    </div>
+                                </div>
+
+                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div className="color-dots clr-bg-3433ff">
+                                        </div>
+                                        <div className="call-dr-name">
+                                            KYC Incomplete
+                                        </div>
+                                    </div>
+                                    <div className="call-dr-num">
+                                        {kycIncomplete}
                                     </div>
                                 </div>
 
@@ -168,4 +196,4 @@ function InProcessReport({ callBriefPending, dscPending, clientNotResponding, do
     )
 }
 
-export default InProcessReport;
+export default AdminExecutiveInProcessReport;
