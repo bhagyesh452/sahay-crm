@@ -2496,11 +2496,15 @@ function EmployeeTeamLeads() {
                                                                                 )
                                                                             }
                                                                         >
-                                                                            <option value="Not Picked Up">
-                                                                                Not Picked Up
-                                                                            </option>
+                                                                            {bdmNewStatus !== "Interested" && bdmNewStatus !== "FollowUp" && (
+                                                                                <option value="Not Picked Up">
+                                                                                    Not Picked Up
+                                                                                </option>)}
                                                                             <option value="Busy">Busy </option>
-                                                                            <option value="Junk">Junk</option>
+                                                                            {bdmNewStatus !== "Interested" && bdmNewStatus !== "FollowUp" && (
+                                                                                <option value="Junk">
+                                                                                    Junk
+                                                                                </option>)}
                                                                             <option value="Not Interested">
                                                                                 Not Interested
                                                                             </option>

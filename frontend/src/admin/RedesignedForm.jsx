@@ -266,9 +266,6 @@ export default function RedesignedForm({
               setFourthTempRemarks(prev => [...prev, tempState]);
             }
           }
-
-
-
           return {
             ...service,
             serviceName: service.serviceName.includes("ISO Certificate")
@@ -685,7 +682,7 @@ export default function RedesignedForm({
             bookingSource: selectedValues,
             otherBookingSource: leadData.otherBookingSource,
           };
-
+          console.log("This is sending step 2", dataToSend);
           try {
             const response = await axios.post(
               `${secretKey}/bookings/redesigned-leadData/${companysName}/step2`,

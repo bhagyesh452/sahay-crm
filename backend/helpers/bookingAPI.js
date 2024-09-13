@@ -3671,6 +3671,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     }
 
     const tempNewData = { ...newData, lastActionDate: boomDate, bookingPublishDate: boomDate }
+    console.log("tempNewData",tempNewData)
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(tempNewData);
     const date = new Date();
