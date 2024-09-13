@@ -940,7 +940,7 @@ table.table.top_5_table tbody tr.myself td {
 .hr_emply_info_inner
 {
     background: #fafafb;
-    height: calc(100vh - 183px);
+    height: calc(100vh - 170px);
     overflow-y: auto;
 }
 .hr_employee_information
@@ -1322,7 +1322,8 @@ th.th-day {
 }
 .employee_e_info_tab_content
 {
-
+    overflow: auto;
+    height: calc(100vh - 388px);
 }
 @media (max-width: 1528px)
 {
@@ -1811,7 +1812,22 @@ th.th-day {
 }
 .slry-cal-view-hdr
 {
-    color: #10171e;
+    color: #5d6062;
+}
+.slry-cal-view-dtl-h
+{
+    font-size: 12px;
+    margin: 3px 0;
+}
+.slry-cal-view-dtl-b
+{
+    font-size: 12px;
+    margin: 3px 0;
+}
+.hr_Dtl_box {
+    height: calc(100vh - 154px);
+    margin: 0 !important;
+    overflow: hidden;
 }
 /* Sweep To Right */
 /* .sweep-to-right {

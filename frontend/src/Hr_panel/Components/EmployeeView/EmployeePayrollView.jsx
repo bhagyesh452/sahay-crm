@@ -10,8 +10,11 @@ import { BsCardHeading } from "react-icons/bs";
 
 
 
-function EmployeeViewPayrollView()
-{
+function EmployeeViewPayrollView({ data }) {
+    const formatSalary = (amount) => {
+        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+    };
+
     return (
         <div className="payrollViewMain mt-2">
             <div className="my-card mt-2" >
@@ -27,10 +30,10 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-6 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                123544789966
+                                {data.accountNo || "-"}
                             </div>
                         </div>
-                    </div>  
+                    </div>
                     <div className="row m-0  bdr-btm-eee">
                         <div className="col-4 pt-1 pb-1">
                             <div className="d-flex align-items-center">
@@ -42,7 +45,7 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-6 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                Nimeshkumar Parekh
+                                {data.nameAsPerBankRecord || "-"}
                             </div>
                         </div>
                     </div>
@@ -57,7 +60,7 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-6 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                9924283530
+                                {data.ifscCode || "-"}
                             </div>
                         </div>
                     </div>
@@ -76,10 +79,10 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-7 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                ₹ 50,000
+                                {data.salary ? `₹ ${formatSalary(data.salary)}` : "-"}
                             </div>
                         </div>
-                    </div>  
+                    </div>
                     <div className="row m-0  bdr-btm-eee">
                         <div className="col-5 pt-1 pb-1">
                             <div className="d-flex align-items-center">
@@ -91,7 +94,7 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-7 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                50%
+                                {data.firstMonthSalaryCondition ? `${data.firstMonthSalaryCondition}%` : "-"}
                             </div>
                         </div>
                     </div>
@@ -106,7 +109,7 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-7 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                ₹ 25,500
+                                {data.firstMonthSalary ? `₹ ${formatSalary(data.firstMonthSalary)}` : "-"}
                             </div>
                         </div>
                     </div>
@@ -125,11 +128,11 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-6 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                SLFKK5896S
+                                {data.panNumber || "-"}
                             </div>
                         </div>
-                    </div>  
-                    <div className="row m-0  bdr-btm-eee">
+                    </div>
+                    <div className="row m-0 bdr-btm-eee">
                         <div className="col-4 pt-1 pb-1">
                             <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
@@ -140,11 +143,11 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-6 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                5869234575
+                                {data.aadharNumber || "-"}
                             </div>
                         </div>
                     </div>
-                    <div className="row m-0">
+                    <div className="row m-0 bdr-btm-eee">
                         <div className="col-4 pt-1 pb-1">
                             <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
@@ -155,11 +158,11 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-6 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                55588666225
+                                {data.uanNumber || "-"}
                             </div>
                         </div>
                     </div>
-                    <div className="row m-0">
+                    <div className="row m-0 bdr-btm-eee">
                         <div className="col-4 pt-1 pb-1">
                             <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
@@ -170,7 +173,7 @@ function EmployeeViewPayrollView()
                         </div>
                         <div className="col-6 pt-1 pb-1 bdr-left-eee">
                             <div className="ep_info_t">
-                                55588666225
+                                {data.pfNumber || "-"}
                             </div>
                         </div>
                     </div>
