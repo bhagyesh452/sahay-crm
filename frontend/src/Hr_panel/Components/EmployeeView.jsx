@@ -63,6 +63,7 @@ function EmployeeView() {
   const [data, setdata] = useState([]);
   const [myInfo, setMyInfo] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
+  const [showProfileUploadWindow, setShowProfileUploadWindow] = useState(false);
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -100,27 +101,31 @@ function EmployeeView() {
   };
 
   const handleSubmit = async () => {
-    console.log("personalEmail", personal_email);
-    console.log("personalPhone", personal_number);
-    console.log("contactPerson", personal_contact_person);
-    console.log("personalAddress", personal_address);
-    try {
-      const response = await axios.post(`${secretKey}/employee/post-employee-detail-byhr/${userId}`, {
-        personal_email, personal_number, personal_contact_person, personal_address
-      },
-        {
-          headers: {
-            Authorization: `Bearer ${newtoken}`,
-          }
-        }
-      );
-      console.log("Response", response.data);
-      fetchEmployeeData();
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("profilePhoto", selectedFile);
 
-    } catch (error) {
-      console.error("Error Updating Employee Details", error);
+      try {
+        const response = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${data._id}`, formData, {
+          headers: {
+            // "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${newtoken}`,
+          },
+        });
+        console.log("File upload success:", response.data);
+        Swal.fire("Success", "Profile photo successfully uploaded","success");
+        const imageUrl = response.data.imageUrl;
+        setEmpImg1(imageUrl);
+        localStorage.setItem("empImg1", imageUrl);
+        fetchEmployeeData();
+        setShowProfileUploadWindow(false);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        Swal.fire("Error", "Error uploading profile photo", "error");
+      }
+    } else {
+      alert("No file selected.");
     }
-    closePopUp();
   };
 
   // function formatDateNew(timestamp) {
@@ -310,8 +315,8 @@ function EmployeeView() {
                         </div>
                         <div className="emply_e_card_profile_update">
                           <div className="emply_e_card_profile_update_inner">
-                            <MdOutlineCameraAlt className="emply_e_card_profile_update_icon" />
-                            <p className="m-0 emply_e_card_profile_update_text">Upload</p>
+                            <MdOutlineCameraAlt className="emply_e_card_profile_update_icon" onClick={() => setShowProfileUploadWindow(true)} />
+                            <p className="m-0 emply_e_card_profile_update_text" onClick={() => setShowProfileUploadWindow(true)}>Upload</p>
                           </div>
                         </div>
                       </label>
@@ -571,7 +576,7 @@ function EmployeeView() {
                       </div>
                     </div>
                     <div class="tab-pane fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView data={data}></EmployeeViewPayrollView>
+                      <EmployeeViewPayrollView data={data} />
                     </div>
                     <div class="tab-pane fade" id="Emergency_Contact">
                       <div className="my-card mt-2" >
@@ -688,10 +693,10 @@ function EmployeeView() {
                   </ul>
                   <div class="tab-content hr_eiinr_tab_content">
                     <div class="tab-pane heiitc_inner active" id="Attendance">
-                      <EmployeeViewAttendance />
+                      <EmployeeViewAttendance data={data} />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="SalaryCalculation">
-                      <SalaryCalculationView></SalaryCalculationView>
+                      <SalaryCalculationView />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="LeaveReport">...</div>
                     <div class="tab-pane heiitc_inner fade" id="CallingReport">...</div>
@@ -704,7 +709,59 @@ function EmployeeView() {
           </div>
         </div>
       </div>
+      {/* Profile upload dialog box */}
+      <Dialog
+        open={showProfileUploadWindow}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Upload Image
+          <IconButton
+            onClick={() => setShowProfileUploadWindow(false)}
+            style={{ float: "right" }}
+          >
+            <CloseIcon color="primary" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <div className="maincon">
+            <div
+              style={{ justifyContent: "space-between" }}
+              className="con1 d-flex"
+            >
+              <div
+                style={{ paddingTop: "9px" }}
+                className="uploadcsv"
+              >
+                <label
+                  style={{ margin: "0px 0px 6px 0px" }}
+                  htmlFor="fileInput"
+                >
+                  Upload Image File (JPG, PNG, JPEG)
+                </label>
+              </div>
+            </div>
+            <div
+              style={{ margin: "5px 0px 0px 0px" }}
+              className="form-control"
+            >
+              <input
+                type="file"
+                id="fileInput"
+                name="profilePhoto"
+                accept=".jpg, .jpeg, .png"
+                onChange={handleImageChange}
+              />
+            </div>
+          </div>
+        </DialogContent>
+        <Button onClick={handleSubmit} className="btn btn-primary">
+          Submit
+        </Button>
+      </Dialog>
     </div>
+
   );
 }
 

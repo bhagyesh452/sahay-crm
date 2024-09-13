@@ -152,7 +152,7 @@ function BookingStatusReport({ general, inProcess, readyToSubmit, submitted, app
                                     <PieChart series={[{ data: data_my, innerRadius: 80, labelComponent: null }]} {...size} slotProps={{
                                         legend: { hidden: true },
                                     }}>
-                                        <PieCenterLabel>Total: {total}</PieCenterLabel>
+                                        <PieCenterLabel>Total: {total - inProcess}</PieCenterLabel>
                                     </PieChart>
                                 </div>
                             </div>
