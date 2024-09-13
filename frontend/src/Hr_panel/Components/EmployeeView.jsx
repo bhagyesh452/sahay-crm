@@ -283,7 +283,7 @@ function EmployeeView() {
             </nav>
           </div>
         </div>
-        <div className="page-body rm_Dtl_box m-0">
+        <div className="page-body hr_Dtl_box m-0">
           <div className="container-xl">
             <div className="d-flex mt-1">
               <div className="emply_e_card">

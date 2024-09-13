@@ -32,7 +32,7 @@ function EmployeeViewAttendance()
                     </div>
                 </div>
             </div>
-            <div className="table table-responsive table-style-2 m-0" style={{height:"374px", overflow:"auto"}}>
+            <div className="table table-responsive table-style-2 m-0" style={{height:"calc(100vh - 307px)", overflow:"auto"}}>
                 <table className="table table-vcenter table-nowrap">
                     <thead>
                         <tr className="tr-sticky">
