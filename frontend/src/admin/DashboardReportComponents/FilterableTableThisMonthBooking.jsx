@@ -1016,6 +1016,14 @@ const FilterTableThisMonthBooking = ({
                             ? valueA - valueB  // Sort in ascending order
                             : valueB - valueA; // Sort in descending order
                     }
+                    if (column === 'lastbookingdate') {
+                        // Calculate LastBookingDate for sorting
+                        valueA = new Date(functionGetLastBookingDate(a.ename));
+                        valueB = new Date(functionGetLastBookingDate(b.ename));
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
+                    }
                     // Handle other types (string sorting, etc.)
                     if (typeof valueA === 'string' && typeof valueB === 'string') {
                         return sortOrder === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
@@ -1104,6 +1112,14 @@ const FilterTableThisMonthBooking = ({
                         valueA = Math.floor(calculateAchievedRatio(a.ename , a)) || 0;
                         valueB = Math.floor(calculateAchievedRatio(b.ename , b)) || 0;
                         console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
+                    }
+                     if (column === 'lastbookingdate') {
+                        // Calculate LastBookingDate for sorting
+                        valueA = new Date(functionGetLastBookingDate(a.ename));
+                        valueB = new Date(functionGetLastBookingDate(b.ename));
                         return sortOrder === 'oldest'
                             ? valueA - valueB  // Sort in ascending order
                             : valueB - valueA; // Sort in descending order

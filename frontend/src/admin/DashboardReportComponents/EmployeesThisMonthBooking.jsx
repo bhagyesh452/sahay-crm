@@ -3290,7 +3290,7 @@ function EmployeesThisMonthBooking() {
                         </div>
                     </div>
                     <div className="card-body">
-                        <div className="tbl-scroll" style={{width:"100%", height:"500px"}}>
+                        <div className="tbl-scroll" style={{ width: "100%", height: "500px" }}>
                             <table className="table-vcenter table-nowrap admin-dash-tbl w-100" style={{ maxHeight: "400px" }}>
                                 <thead className="admin-dash-tbl-thead">
                                     <tr  >
@@ -3722,8 +3722,9 @@ function EmployeesThisMonthBooking() {
                                                         }}
                                                     />
                                                 </div>
-                                            </div></th>*/}
-                                             <th>
+                                            </div>
+                                            </th>*/}
+                                        <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['lastbookingdate'] = el}>
                                                     LAST BOOKING DATE

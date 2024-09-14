@@ -11,15 +11,17 @@ const FilterableTableEmployeeDataReport = ({
     filterField,
     onFilter,
     completeData,
+    companyData,
     dataForFilter,
     activeFilters,
     allFilterFields,
     employeeData,
-    redesignedData,
+    companyDataTotal,
     showingMenu,
-    bookingStartDate,
-    bookingEndDate,
-    initialDate }) => {
+    mergedMethod,
+    fetchCompanyData
+   
+     }) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -27,47 +29,7 @@ const FilterableTableEmployeeDataReport = ({
 
 
     //-----------------------dateformats-------------------------------------
-    const formatDuration = (totalSeconds) => {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        return [
-            hours.toString().padStart(2, '0'),
-            minutes.toString().padStart(2, '0'),
-            seconds.toString().padStart(2, '0'),
-        ].join(':');
-    };
-    const formatDateTime = (dateTime) => {
-        // Remove the ' IST' part from the string (or any other timezone indicator)
-        const cleanedDateTime = dateTime.replace(' IST', '').replace(' UTC', '');
-
-        // Create a new Date object from the cleaned string
-        const date = new Date(cleanedDateTime);
-
-        // If the date is invalid, return the original string (as fallback)
-        if (isNaN(date.getTime())) {
-            return dateTime; // If it cannot parse the date, return the original value
-        }
-
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
-        const year = date.getFullYear();
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const seconds = date.getSeconds().toString().padStart(2, '0');
-
-        return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-    };
-    function formatDateFinal(timestamp) {
-        const date = new Date(timestamp);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    }
-
-
+   
     const handleSort = (order) => {
         if (order === "none") {
             setSortOrder(null); // Clear the sort order
@@ -82,13 +44,57 @@ const FilterableTableEmployeeDataReport = ({
     }, [sortOrder]);
 
 
-    
+
     useEffect(() => {
         const getValues = (dataSource) => {
-            
-            return dataSource.map(item => {
-              
-                return item[filterField]; // Return the filtered field's value
+            return dataSource.map(employee => {
+                // Find the corresponding company data by matching employee.ename to company._id
+                const companyInfo = companyData.find(company => company._id === employee.ename);
+
+                if (companyInfo) {
+                    // Look for each status in the statusCounts array of the companyInfo
+                    switch (filterField) {
+                        case 'Untouched': {
+                            const untouchedStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Untouched');
+                            return untouchedStatus ? untouchedStatus.count : null;
+                        }
+                        case 'Busy': {
+                            const busyStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Busy');
+                            return busyStatus ? busyStatus.count : null;
+                        }
+                        case 'Not Picked Up': {
+                            const notPickedUpStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Not Picked Up');
+                            return notPickedUpStatus ? notPickedUpStatus.count : null;
+                        }
+                        case 'Interested': {
+                            const interestedStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Interested');
+                            return interestedStatus ? interestedStatus.count : null;
+                        }
+                        case 'FollowUp': {
+                            const followupStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Followup');
+                            return followupStatus ? followupStatus.count : null;
+                        }
+                        case 'Junk': {
+                            const junkStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Junk');
+                            return junkStatus ? junkStatus.count : null;
+                        }
+                        case 'Matured': {
+                            const maturedStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Matured');
+                            return maturedStatus ? maturedStatus.count : null;
+                        }
+                        case 'Not Interested': {
+                            const maturedStatus = companyInfo.statusCounts?.find(statusObj => statusObj.status === 'Matured');
+                            return maturedStatus ? maturedStatus.count : null;
+                        }
+                        case 'ename': {
+                            return employee.ename ? employee.ename : null;
+                        }
+                        default: {
+                            return companyInfo[filterField]; // Return the value from company data for other fields
+                        }
+                    }
+                }
+                return null;
             }).filter(Boolean); // Filter out any falsy values (e.g., null)
         };
 
@@ -99,9 +105,8 @@ const FilterableTableEmployeeDataReport = ({
             const values = getValues(dataForFilter);
             setColumnValues([...new Set(values)]); // Set unique values
         }
-    }, [filterField, filteredData, dataForFilter, employeeData]);
+    }, [filterField, filteredData, dataForFilter, companyData]);
 
-    
     const handleCheckboxChange = (e) => {
         const value = e.target.value; // Checkbox value
         const valueAsString = String(value); // Convert to string for consistent comparison
@@ -124,97 +129,162 @@ const FilterableTableEmployeeDataReport = ({
         // Ensure filters is always an object
         const safeFilters = filters || {};
         let dataToSort;
-
+    
         // Combine all filters across different filter fields
         const allSelectedFilters = Object.values(safeFilters).flat();
+    
+        // Function to get status counts for the specified status
+        const getStatusCount = (companyInfo, status) => {
+            const statusObj = companyInfo?.statusCounts?.find(statusObj => statusObj.status === status);
+            return statusObj ? statusObj.count : null;
+        };
+    
         // Start with the data to be filtered
         if (filteredData && filteredData.length !== 0) {
-            dataToSort = filteredData.map(item => {
-                return {
-                    ...item,
-                    
-                };
-            });
-
+            dataToSort = filteredData.map(item => ({ ...item }));
+    
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
-                // Update the active filter fields array
-                allFilterFields(prevFields => {
-                    return [...prevFields, column];
-                });
-
-                dataToSort = dataToSort.filter(item => {
+                allFilterFields(prevFields => [...prevFields, column]);
+    
+                dataToSort = dataToSort.filter(employee => {
+                    const companyInfo = companyData.find(company => company._id === employee.ename);
+    
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                      
-                        return columnFilters.includes(String(item[column]));
+    
+                        // Special handling for each status
+                        switch (column) {
+                            case 'Untouched': {
+                                const untouchedCount = getStatusCount(companyInfo, 'Untouched');
+                                return columnFilters.includes(String(untouchedCount));
+                            }
+                            case 'Busy': {
+                                const busyCount = getStatusCount(companyInfo, 'Busy');
+                                return columnFilters.includes(String(busyCount));
+                            }
+                            case 'Not Picked Up': {
+                                const notPickedUpCount = getStatusCount(companyInfo, 'Not Picked Up');
+                                return columnFilters.includes(String(notPickedUpCount));
+                            }
+                            case 'Interested': {
+                                const interestedCount = getStatusCount(companyInfo, 'Interested');
+                                return columnFilters.includes(String(interestedCount));
+                            }
+                            case 'Followup': {
+                                const followupCount = getStatusCount(companyInfo, 'Followup');
+                                return columnFilters.includes(String(followupCount));
+                            }
+                            case 'Junk': {
+                                const junkCount = getStatusCount(companyInfo, 'Junk');
+                                return columnFilters.includes(String(junkCount));
+                            }
+                            case 'Matured': {
+                                const maturedCount = getStatusCount(companyInfo, 'Matured');
+                                return columnFilters.includes(String(maturedCount));
+                            }
+                            default: {
+                                return columnFilters.includes(String(employee[column]));
+                            }
+                        }
                     });
-
+    
                     return match;
                 });
             }
-
+    
             // Apply sorting based on `sortOrder` and the specified `column`
             if (sortOrder && column) {
                 dataToSort = dataToSort.sort((a, b) => {
                     let valueA = a[column];
                     let valueB = b[column];
-                    console.log("sortorder", sortOrder)
-                   
-                    // Handle other types (string sorting, etc.)
+    
+                    // Handle string sorting
                     if (typeof valueA === 'string' && typeof valueB === 'string') {
                         return sortOrder === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
-                    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+                    }
+                    // Handle number sorting
+                    else if (typeof valueA === 'number' && typeof valueB === 'number') {
                         return sortOrder === 'ascending' ? valueA - valueB : valueB - valueA;
                     }
                     return 0;
                 });
             }
         } else {
-            dataToSort = dataForFilter.map(item => {
-                return {
-                    ...item,
-                    
-                };
-            });
-
+            dataToSort = dataForFilter.map(item => ({ ...item }));
+    
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
-                allFilterFields(prevFields => {
-                    return [...prevFields, column];
-                });
-                dataToSort = dataToSort.filter(item => {
+                allFilterFields(prevFields => [...prevFields, column]);
+    
+                dataToSort = dataToSort.filter(employee => {
+                    const companyInfo = companyData.find(company => company._id === employee.ename);
+    
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-                      
-                        return columnFilters.includes(String(item[column]));
+    
+                        // Special handling for each status
+                        switch (column) {
+                            case 'Untouched': {
+                                const untouchedCount = getStatusCount(companyInfo, 'Untouched');
+                                return columnFilters.includes(String(untouchedCount));
+                            }
+                            case 'Busy': {
+                                const busyCount = getStatusCount(companyInfo, 'Busy');
+                                return columnFilters.includes(String(busyCount));
+                            }
+                            case 'Not Picked Up': {
+                                const notPickedUpCount = getStatusCount(companyInfo, 'Not Picked Up');
+                                return columnFilters.includes(String(notPickedUpCount));
+                            }
+                            case 'Interested': {
+                                const interestedCount = getStatusCount(companyInfo, 'Interested');
+                                return columnFilters.includes(String(interestedCount));
+                            }
+                            case 'Followup': {
+                                const followupCount = getStatusCount(companyInfo, 'Followup');
+                                return columnFilters.includes(String(followupCount));
+                            }
+                            case 'Junk': {
+                                const junkCount = getStatusCount(companyInfo, 'Junk');
+                                return columnFilters.includes(String(junkCount));
+                            }
+                            case 'Matured': {
+                                const maturedCount = getStatusCount(companyInfo, 'Matured');
+                                return columnFilters.includes(String(maturedCount));
+                            }
+                            default: {
+                                return columnFilters.includes(String(employee[column]));
+                            }
+                        }
                     });
+    
                     return match;
                 });
             }
-
+    
             // Apply sorting based on `sortOrder` and the specified `column`
             if (sortOrder && column) {
                 dataToSort = dataToSort.sort((a, b) => {
                     let valueA = a[column];
                     let valueB = b[column];
-                  
-                    // Handle other types (string sorting, etc.)
+    
+                    // Handle string sorting
                     if (typeof valueA === 'string' && typeof valueB === 'string') {
                         return sortOrder === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
-                    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+                    }
+                    // Handle number sorting
+                    else if (typeof valueA === 'number' && typeof valueB === 'number') {
                         return sortOrder === 'ascending' ? valueA - valueB : valueB - valueA;
                     }
                     return 0;
                 });
             }
         }
-
-        onFilter(dataToSort);
+    
+        onFilter(dataToSort); // Pass the filtered and sorted data back
     };
-
-
-
+    
     const handleSelectAll = () => {
         setSelectedFilters(prevFilters => {
             const isAllSelected = prevFilters[filterField]?.length === columnValues.length;
@@ -225,19 +295,16 @@ const FilterableTableEmployeeDataReport = ({
             };
         });
     };
-
+   
     const handleClearAll = async () => {
         setSelectedFilters(prevFilters => ({
             ...prevFilters,
             [filterField]: []
         }));
         onFilter(completeData);
+        //fetchCompanyData()
         allFilterFields([])
         showingMenu(false)
-        // noofItems(0)
-        // } catch (error) {
-        //     console.error("Error fetching complete data", error.message);
-        // }
     };
 
 
