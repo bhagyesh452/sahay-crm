@@ -20,8 +20,8 @@ const FilterableTableEmployeeDataReport = ({
     showingMenu,
     mergedMethod,
     fetchCompanyData
-   
-     }) => {
+
+}) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -29,7 +29,7 @@ const FilterableTableEmployeeDataReport = ({
 
 
     //-----------------------dateformats-------------------------------------
-   
+
     const handleSort = (order) => {
         if (order === "none") {
             setSortOrder(null); // Clear the sort order
@@ -129,30 +129,30 @@ const FilterableTableEmployeeDataReport = ({
         // Ensure filters is always an object
         const safeFilters = filters || {};
         let dataToSort;
-    
+
         // Combine all filters across different filter fields
         const allSelectedFilters = Object.values(safeFilters).flat();
-    
+
         // Function to get status counts for the specified status
         const getStatusCount = (companyInfo, status) => {
             const statusObj = companyInfo?.statusCounts?.find(statusObj => statusObj.status === status);
             return statusObj ? statusObj.count : null;
         };
-    
+
         // Start with the data to be filtered
         if (filteredData && filteredData.length !== 0) {
             dataToSort = filteredData.map(item => ({ ...item }));
-    
+
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
                 allFilterFields(prevFields => [...prevFields, column]);
-    
+
                 dataToSort = dataToSort.filter(employee => {
                     const companyInfo = companyData.find(company => company._id === employee.ename);
-    
+
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-    
+
                         // Special handling for each status
                         switch (column) {
                             case 'Untouched': {
@@ -188,41 +188,71 @@ const FilterableTableEmployeeDataReport = ({
                             }
                         }
                     });
-    
+
                     return match;
                 });
             }
-    
+
             // Apply sorting based on `sortOrder` and the specified `column`
             if (sortOrder && column) {
                 dataToSort = dataToSort.sort((a, b) => {
-                    let valueA = a[column];
-                    let valueB = b[column];
-    
+                    let valueA, valueB;
+
+                    // Compute status counts for sorting
+                    const getCountForSort = (item) => {
+                        switch (column) {
+                            case 'UntouchedCount':
+                                return getStatusCount(item.ename, 'Untouched');
+                            case 'BusyCount':
+                                return getStatusCount(item.ename, 'Busy');
+                            case 'NotPickedUpCount':
+                                return getStatusCount(item.ename, 'Not Picked Up');
+                            case 'InterestedCount':
+                                return getStatusCount(item.ename, 'Interested');
+                            case 'FollowupCount':
+                                return getStatusCount(item.ename, 'Followup');
+                            case 'JunkCount':
+                                return getStatusCount(item.ename, 'Junk');
+                            case 'MaturedCount':
+                                return getStatusCount(item.ename, 'Matured');
+                            default:
+                                return item[column] !== undefined && item[column] !== null ? item[column] : '';
+                        }
+                    };
+
+                    valueA = getCountForSort(a);
+                    valueB = getCountForSort(b);
+
                     // Handle string sorting
                     if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                        return sortOrder === 'ascending'
+                            ? valueA.localeCompare(valueB)
+                            : valueB.localeCompare(valueA);
                     }
                     // Handle number sorting
                     else if (typeof valueA === 'number' && typeof valueB === 'number') {
-                        return sortOrder === 'ascending' ? valueA - valueB : valueB - valueA;
+                        return sortOrder === 'ascending'
+                            ? valueA - valueB
+                            : valueB - valueA;
                     }
+                    // Handle any other type (as a fallback)
                     return 0;
                 });
             }
+
         } else {
             dataToSort = dataForFilter.map(item => ({ ...item }));
-    
+
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
                 allFilterFields(prevFields => [...prevFields, column]);
-    
+
                 dataToSort = dataToSort.filter(employee => {
                     const companyInfo = companyData.find(company => company._id === employee.ename);
-    
+
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
-    
+
                         // Special handling for each status
                         switch (column) {
                             case 'Untouched': {
@@ -258,33 +288,63 @@ const FilterableTableEmployeeDataReport = ({
                             }
                         }
                     });
-    
+
                     return match;
                 });
             }
-    
+
             // Apply sorting based on `sortOrder` and the specified `column`
             if (sortOrder && column) {
                 dataToSort = dataToSort.sort((a, b) => {
-                    let valueA = a[column];
-                    let valueB = b[column];
-    
+                    let valueA, valueB;
+
+                    // Compute status counts for sorting
+                    const getCountForSort = (item) => {
+                        switch (column) {
+                            case 'UntouchedCount':
+                                return getStatusCount(item.ename, 'Untouched');
+                            case 'BusyCount':
+                                return getStatusCount(item.ename, 'Busy');
+                            case 'NotPickedUpCount':
+                                return getStatusCount(item.ename, 'Not Picked Up');
+                            case 'InterestedCount':
+                                return getStatusCount(item.ename, 'Interested');
+                            case 'FollowupCount':
+                                return getStatusCount(item.ename, 'Followup');
+                            case 'JunkCount':
+                                return getStatusCount(item.ename, 'Junk');
+                            case 'MaturedCount':
+                                return getStatusCount(item.ename, 'Matured');
+                            default:
+                                return item[column] !== undefined && item[column] !== null ? item[column] : '';
+                        }
+                    };
+
+                    valueA = getCountForSort(a);
+                    valueB = getCountForSort(b);
+
                     // Handle string sorting
                     if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                        return sortOrder === 'ascending'
+                            ? valueA.localeCompare(valueB)
+                            : valueB.localeCompare(valueA);
                     }
                     // Handle number sorting
                     else if (typeof valueA === 'number' && typeof valueB === 'number') {
-                        return sortOrder === 'ascending' ? valueA - valueB : valueB - valueA;
+                        return sortOrder === 'ascending'
+                            ? valueA - valueB
+                            : valueB - valueA;
                     }
+                    // Handle any other type (as a fallback)
                     return 0;
                 });
             }
+
         }
-    
+
         onFilter(dataToSort); // Pass the filtered and sorted data back
     };
-    
+
     const handleSelectAll = () => {
         setSelectedFilters(prevFilters => {
             const isAllSelected = prevFilters[filterField]?.length === columnValues.length;
