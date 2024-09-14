@@ -295,7 +295,7 @@ const FilterableTableEmployeeDataReport = ({
             };
         });
     };
-   
+    console.log("completeData", completeData)
     const handleClearAll = async () => {
         setSelectedFilters(prevFilters => ({
             ...prevFilters,

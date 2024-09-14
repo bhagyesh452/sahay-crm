@@ -68,6 +68,26 @@ function EmployeeView() {
   const [myInfo, setMyInfo] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [showProfileUploadWindow, setShowProfileUploadWindow] = useState(false);
+  const [editField, setEditField] = useState("");
+
+  const [officialEmail, setOfficialEmail] = useState("");
+  const [officialNumber, setOfficialNumber] = useState("");
+  const [joiningDate, setJoiningDate] = useState("");
+  const [department, setDepartment] = useState("");
+  const [branchOffice, setBranchOffice] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [employmentType, setEmploymentType] = useState("");
+  const [reportingManager, setReportingManager] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [dob, setDob] = useState("");
+  const [gender, setGender] = useState("");
+  const [personalNumber, setPersonalNumber] = useState("");
+  const [personalEmail, setPersonalEmail] = useState("");
+  const [emergencyContactName, setEmergencyContactName] = useState("");
+  const [relationship, setRelationship] = useState("");
+  const [emergencyContactNumber, setEmergencyContactNumber] = useState("");
+  const [currentAddress, setCurrentAddress] = useState("");
+  const [permanentAddress, setPermanentAddress] = useState("");
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -83,10 +103,10 @@ function EmployeeView() {
   const [open, setOpen] = useState(false);
   const [editempinfo, setEditEmpInfo] = useState(false);
 
-  const [personal_email, setPersonalEmail] = useState('');
-  const [personal_number, setPersonalPhone] = useState('');
-  const [personal_contact_person, setContactPerson] = useState('');
-  const [personal_address, setPersonalAddress] = useState('');
+  // const [personal_email, setPersonalEmail] = useState('');
+  // const [personal_number, setPersonalPhone] = useState('');
+  // const [personal_contact_person, setContactPerson] = useState('');
+  // const [personal_address, setPersonalAddress] = useState('');
 
   useEffect(() => {
     const savedImage = localStorage.getItem("empImg1");
@@ -94,6 +114,42 @@ function EmployeeView() {
       setEmpImg1(savedImage);
     }
   }, []);
+
+  const departmentManagers = {
+    "Start-Up": [
+      "Mr. Ronak Kumar",
+      "Mr. Krunal Pithadia",
+      "Mr. Saurav Mevada",
+      "Miss. Dhruvi Gohel"
+    ],
+    HR: [
+      "Mr. Ronak Kumar",
+      "Mr. Krunal Pithadia",
+      "Mr. Saurav Mevada",
+      "Miss. Hiral Panchal"
+    ],
+    Operation: [
+      "Miss. Subhi Banthiya",
+      "Mr. Rahul Pancholi",
+      "Mr. Ronak Kumar",
+      "Mr. Nimesh Parekh"
+    ],
+    IT: ["Mr. Nimesh Parekh"],
+    Sales: [
+      "Mr. Vaibhav Acharya",
+      "Mr. Vishal Gohel"
+    ],
+    Others: ["Miss. Hiral Panchal"],
+  };
+
+  const renderManagerOptions = () => {
+    const managers = departmentManagers[data.department] || [];
+    return managers.map((manager, index) => (
+      <option key={index} value={manager}>
+        {manager}
+      </option>
+    ));
+  };
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -117,7 +173,7 @@ function EmployeeView() {
           },
         });
         console.log("File upload success:", response.data);
-        Swal.fire("Success", "Profile photo successfully uploaded","success");
+        Swal.fire("Success", "Profile photo successfully uploaded", "success");
         const imageUrl = response.data.imageUrl;
         setEmpImg1(imageUrl);
         localStorage.setItem("empImg1", imageUrl);
@@ -132,13 +188,17 @@ function EmployeeView() {
     }
   };
 
-  // function formatDateNew(timestamp) {
-  //   const date = new Date(timestamp);
-  //   const day = date.getDate().toString().padStart(2, "0");
-  //   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-  //   const year = date.getFullYear();
-  //   return `${day}/${month}/${year}`;
-  // }
+  function formatDate(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  const formatDateForInput = (date) => {
+    return date ? new Date(date).toISOString().split('T')[0] : "";
+  };
 
   function formatDateNew(timestamp) {
     const date = new Date(timestamp);
@@ -169,13 +229,13 @@ function EmployeeView() {
     }
   }
 
-  const handleCameraClick = () => {
-    setOpen(true);
-  };
+  // const handleCameraClick = () => {
+  //   setOpen(true);
+  // };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  // const handleClose = () => {
+  //   setOpen(false);
+  // };
 
   //-----------------fetching employee details----------------------------------
   const fetchEmployeeData = async () => {
@@ -188,10 +248,10 @@ function EmployeeView() {
       setEmployeeData(data);
 
       // set the personal details fields
-      setPersonalEmail(data.personal_email || '')
-      setPersonalPhone(data.personal_number || '');
-      setContactPerson(data.personal_contact_person || '');
-      setPersonalAddress(data.personal_address || '');
+      // setPersonalEmail(data.personal_email || '')
+      // setPersonalPhone(data.personal_number || '');
+      // setContactPerson(data.personal_contact_person || '');
+      // setPersonalAddress(data.personal_address || '');
 
       setdata(data);
     } catch (error) {
@@ -214,78 +274,108 @@ function EmployeeView() {
     fetchPersonalInfo();
   }, []);
 
-  // const today = new Date().toISOString().split('T')[0];
-
-  const events = [
-    {
-      title: 'Present',
-      start: '2024-07-02', // Static start date
-      end: '2024-07-03',   // Static end date (same day, all-day event)
-      allDay: true,
-      editable: false,     // Disable editing for this event
-    },
-    {
-      title: 'Present',
-      start: '2024-07-03', // Static start date
-      end: '2024-07-03',   // Static end date (same day, all-day event)
-      allDay: true,
-      editable: false,     // Disable editing for this event
-    },
-    {
-      title: 'Absent',
-      start: '2024-06-30', // Static start date
-      end: '2024-06-30',   // Static end date (same day, all-day event)
-      allDay: true,
-      editable: false,     // Disable editing for this event
-    }
-  ]
-
-  // Edit Employee Information from Hr
-  const functionEditEmployee = () => {
-    setEditEmpInfo(true);
-  }
-
-  const closePopUp = () => {
-    setEditEmpInfo(false);
-  }
-
-  // Handle form submission
-  const handlePersonalDetailsSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleSave = async () => {
+    const payload = {
+      officialEmail: officialEmail,
+      officialNo: officialNumber,
+      joiningDate: joiningDate,
+      department: department,
+      branch: branchOffice,
+      employeementType: employmentType,
+      manager: reportingManager,
+      empFullName: fullName,
+      dob: dob,
+      gender: gender,
+      personalPhoneNo: personalNumber,
+      personalEmail: personalEmail,
+      personName: emergencyContactName,
+      relationship: relationship,
+      personPhoneNo: emergencyContactNumber,
+      currentAddress: currentAddress,
+      permanentAddress: permanentAddress,
+    };
     try {
-      const response = await axios.put(
-        `${secretKey}/api/employee/personal-details/${userId}`,
-        {
-          personal_email,
-          personal_number,
-          personal_contact_person,
-          personal_address,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${newtoken}`,
-          },
-        }
-      );
-
-      console.log('Personal details updated successfully:', response.data);
-      Swal.fire({
-        title: 'Success!',
-        text: 'Personal details updated successfully.',
-        icon: 'success',
-      });
+      const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${userId}`, payload);
+      console.log("Updated details is :", res.data.data);
       fetchEmployeeData();
+      Swal.fire("Success", "Employee details updated successfully", "success");
     } catch (error) {
-      console.error('Error updating personal details:', error);
-      Swal.fire({
-        title: 'Error!',
-        text: 'Failed to update personal details.',
-        icon: 'error',
-      });
+      console.log("Error updating employee details :", error);
+      Swal.fire("Error", "Error updating employee details", "error");
     }
   };
 
+  // const today = new Date().toISOString().split('T')[0];
+
+  // const events = [
+  //   {
+  //     title: 'Present',
+  //     start: '2024-07-02', // Static start date
+  //     end: '2024-07-03',   // Static end date (same day, all-day event)
+  //     allDay: true,
+  //     editable: false,     // Disable editing for this event
+  //   },
+  //   {
+  //     title: 'Present',
+  //     start: '2024-07-03', // Static start date
+  //     end: '2024-07-03',   // Static end date (same day, all-day event)
+  //     allDay: true,
+  //     editable: false,     // Disable editing for this event
+  //   },
+  //   {
+  //     title: 'Absent',
+  //     start: '2024-06-30', // Static start date
+  //     end: '2024-06-30',   // Static end date (same day, all-day event)
+  //     allDay: true,
+  //     editable: false,     // Disable editing for this event
+  //   }
+  // ];
+
+  // Edit Employee Information from Hr
+  // const functionEditEmployee = () => {
+  //   setEditEmpInfo(true);
+  // }
+
+  // const closePopUp = () => {
+  //   setEditEmpInfo(false);
+  // }
+
+  // Handle form submission
+  // const handlePersonalDetailsSubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   try {
+  //     const response = await axios.put(
+  //       `${secretKey}/api/employee/personal-details/${userId}`,
+  //       {
+  //         personal_email,
+  //         personal_number,
+  //         personal_contact_person,
+  //         personal_address,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${newtoken}`,
+  //         },
+  //       }
+  //     );
+
+  //     console.log('Personal details updated successfully:', response.data);
+  //     Swal.fire({
+  //       title: 'Success!',
+  //       text: 'Personal details updated successfully.',
+  //       icon: 'success',
+  //     });
+  //     fetchEmployeeData();
+  //   } catch (error) {
+  //     console.error('Error updating personal details:', error);
+  //     Swal.fire({
+  //       title: 'Error!',
+  //       text: 'Failed to update personal details.',
+  //       icon: 'error',
+  //     });
+  //   }
+  // };
 
 
   return (
@@ -337,6 +427,7 @@ function EmployeeView() {
                         <div className="col p-0">
                           <div className="EP_Other_info">
                             <div className="EP_Other_info_body">
+
                               <div className="row m-0 bdr-btm-eee">
                                 <div className="col-5  pt-1 pb-1">
                                   <div className="d-flex align-items-center">
@@ -354,6 +445,7 @@ function EmployeeView() {
                                   </div>
                                 </div>
                               </div>
+
                               <div className="row m-0 bdr-btm-eee">
                                 <div className="col-5  pt-1 pb-1">
                                   <div className="d-flex align-items-center">
@@ -364,24 +456,35 @@ function EmployeeView() {
                                   </div>
                                 </div>
                                 <div className="col-7 pt-1 pb-1 bdr-left-eee">
-                                  <div className="d-flex align-items-center justify-content-between">
-                                    <div className="ep_info_t">
-                                      {data.email || "-"}
+                                  {editField !== "officialEmail" ? (
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <div className="ep_info_t">
+                                        {data.email || "-"}
+                                      </div>
+                                      <div className="ep_info_icon">
+                                        <MdOutlineEdit onClick={() => {
+                                          setOfficialEmail(data.email);
+                                          setEditField("officialEmail");
+                                        }} />
+                                      </div>
                                     </div>
-                                    <div className="ep_info_icon">
-                                      <MdOutlineEdit />
+                                  ) : (
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <div className="ep_info_form">
+                                        <input type="email" className="ep_info_input form-control"
+                                          value={officialEmail} onChange={(e) => setOfficialEmail(e.target.value)} />
+                                      </div>
+                                      <div className="ep_info_icon">
+                                        <FaRegSave onClick={() => {
+                                          setEditField("");
+                                          handleSave();
+                                        }} />
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="d-flex align-items-center justify-content-between d-none">
-                                    <div className="ep_info_form">
-                                      <input type="text" className="ep_info_input form-control" />
-                                    </div>
-                                    <div className="ep_info_icon">
-                                      <FaRegSave />
-                                    </div>
-                                  </div>
+                                  )}
                                 </div>
                               </div>
+
                               <div className="row m-0 bdr-btm-eee">
                                 <div className="col-5 pt-1 pb-1">
                                   <div className="d-flex align-items-center">
@@ -392,13 +495,35 @@ function EmployeeView() {
                                   </div>
                                 </div>
                                 <div className="col-7 pt-1 pb-1 bdr-left-eee">
-                                  <div className="">
-                                    <div className="ep_info_t">
-                                      {data.number || "-"}
+                                  {editField !== "officialNumber" ? (
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <div className="ep_info_t">
+                                        {data.number || "-"}
+                                      </div>
+                                      <div className="ep_info_icon">
+                                        <MdOutlineEdit onClick={() => {
+                                          setOfficialNumber(data.number);
+                                          setEditField("officialNumber");
+                                        }} />
+                                      </div>
                                     </div>
-                                  </div>
+                                  ) : (
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <div className="ep_info_form">
+                                        <input type="text" className="ep_info_input form-control"
+                                          value={officialNumber} onChange={(e) => setOfficialNumber(e.target.value)} />
+                                      </div>
+                                      <div className="ep_info_icon">
+                                        <FaRegSave onClick={() => {
+                                          setEditField("");
+                                          handleSave();
+                                        }} />
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
+
                               <div className="row m-0">
                                 <div className="col-5  pt-1 pb-1">
                                   <div className="d-flex align-items-center">
@@ -411,11 +536,35 @@ function EmployeeView() {
                                   </div>
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
-                                  <div className="">
-                                    <div className="ep_info_t">{data.jdate ? formatDateNew(data.jdate) : "-"}</div>
-                                  </div>
+                                  {editField !== "joiningDate" ? (
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <div className="ep_info_t">
+                                        {data.jdate ? formatDateNew(data.jdate) : "-"}
+                                      </div>
+                                      <div className="ep_info_icon">
+                                        <MdOutlineEdit onClick={() => {
+                                          setJoiningDate(formatDateForInput(data.jdate));
+                                          setEditField("joiningDate");
+                                        }} />
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <div className="ep_info_form">
+                                        <input type="date" className="ep_info_input form-control"
+                                          value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} />
+                                      </div>
+                                      <div className="ep_info_icon">
+                                        <FaRegSave onClick={() => {
+                                          setEditField("");
+                                          handleSave();
+                                        }} />
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
+
                             </div>
                           </div>
                         </div>
@@ -444,7 +593,8 @@ function EmployeeView() {
                           Employment Information
                         </div> */}
                         <div className="my-card-body">
-                          <div className="row m-0  bdr-btm-eee">
+
+                          <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
@@ -454,30 +604,43 @@ function EmployeeView() {
                               </div>
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
-                              <div className="d-flex align-items-center justify-content-between">
-                                <div className="ep_info_t">
-                                  {data.department || "-"}
+                              {editField !== "department" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.department || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setDepartment(data.department);
+                                      setEditField("department");
+                                    }} />
+                                  </div>
                                 </div>
-                                <div className="ep_info_icon">
-                                  <MdOutlineEdit />
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <select className="ep_info_select form-control"
+                                      value={department} onChange={(e) => setDepartment(e.target.value)}>
+                                      <option value="" disabled>--Select Department--</option>
+                                      <option value="Start-Up">Start-Up</option>
+                                      <option value="HR">HR</option>
+                                      <option value="Operation">Operation</option>
+                                      <option value="IT">IT</option>
+                                      <option value="Sales">Sales</option>
+                                      <option value="Others">Others</option>
+                                    </select>
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="d-flex align-items-center justify-content-between d-none">
-                                <div className="ep_info_form">
-                                  <select className="ep_info_select form-control">
-                                    <option disabled selected>--Select Department--</option>
-                                    <option value="1">Department 1</option>
-                                    <option value="2">Department 2</option>
-                                    <option value="3">Department 3</option>
-                                  </select>
-                                </div>
-                                <div className="ep_info_icon">
-                                  <FaRegSave />
-                                </div>
-                              </div>
-
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0  bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -487,12 +650,40 @@ function EmployeeView() {
                                 <div className="ep_info_h">Branch :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.branchOffice || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "branchOffice" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.branchOffice || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setBranchOffice(data.branchOffice);
+                                      setEditField("branchOffice");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <select className="ep_info_select form-control"
+                                      value={branchOffice} onChange={(e) => setBranchOffice(e.target.value)}>
+                                      <option value="" disabled>--Select Branch--</option>
+                                      <option value="Gota">Gota</option>
+                                      <option value="Sindhu Bhawan">Sindhu Bhawan</option>
+                                    </select>
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0  bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -502,12 +693,43 @@ function EmployeeView() {
                                 <div className="ep_info_h">Employment Type :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.employeementType || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "employmentType" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.employeementType || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setEmploymentType(data.employeementType);
+                                      setEditField("employmentType");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <select className="ep_info_select form-control"
+                                      value={employmentType} onChange={(e) => setEmploymentType(e.target.value)}>
+                                      <option value="" disabled>--Select Employment Type--</option>
+                                      <option value="Full-time">Full-time</option>
+                                      <option value="Part-time">Part-time</option>
+                                      <option value="Contract">Contract</option>
+                                      <option value="Intern">Intern</option>
+                                      <option value="Other">Other</option>
+                                    </select>
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -517,20 +739,52 @@ function EmployeeView() {
                                 <div className="ep_info_h">Reporting Manager :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.reportingManager || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "reportingManager" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.reportingManager || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setReportingManager(data.reportingManager);
+                                      setEditField("reportingManager");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <select className="ep_info_select form-control"
+                                      value={reportingManager} onChange={(e) => setReportingManager(e.target.value)}>
+                                      <option value="" disabled>--Select Manager--</option>
+                                      {data.department === "Sales" && data.newDesignation === "Floor Manager"
+                                        ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option>
+                                        : <>{renderManagerOptions()}</>
+                                      }
+                                    </select>
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                         </div>
                       </div>
+
                       <div className="my-card mt-2" >
                         {/* <div className="my-card-head">
                           Personal Information
                         </div> */}
                         <div className="my-card-body">
-                          <div className="row m-0  bdr-btm-eee">
+
+                          <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
@@ -539,12 +793,36 @@ function EmployeeView() {
                                 <div className="ep_info_h">Full Name :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.empFullName || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "empFullName" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.empFullName || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setFullName(data.empFullName);
+                                      setEditField("empFullName");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <input type="text" className="ep_info_input form-control"
+                                      value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -554,13 +832,37 @@ function EmployeeView() {
                                 <div className="ep_info_h">DOB :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.dob ? formatDateNew(data.dob) : "-"}
-                                {/* 2<sup>nd</sup> Dec 2024 */}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "dob" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.dob ? formatDateNew(data.dob) : "-"}
+                                    {/* 2<sup>nd</sup> Dec 2024 */}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setDob(formatDateForInput(data.dob));
+                                      setEditField("dob");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <input type="date" className="ep_info_input form-control"
+                                      value={dob} onChange={(e) => setDob(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1 ">
                               <div className="d-flex align-items-center">
@@ -570,12 +872,40 @@ function EmployeeView() {
                                 <div className="ep_info_h">Gender :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.gender || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "gender" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.gender || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setGender(data.gender);
+                                      setEditField("gender");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <select className="ep_info_select form-control"
+                                      value={gender} onChange={(e) => setGender(e.target.value)}>
+                                      <option value="" disabled>--Select Gender--</option>
+                                      <option value="Male">Male</option>
+                                      <option value="Female">Female</option>
+                                    </select>
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -585,12 +915,36 @@ function EmployeeView() {
                                 <div className="ep_info_h">Phone No :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.personal_number || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "personalNumber" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.personal_number || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setPersonalNumber(data.personal_number);
+                                      setEditField("personalNumber");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <input type="text" className="ep_info_input form-control"
+                                      value={personalNumber} onChange={(e) => setPersonalNumber(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -600,22 +954,50 @@ function EmployeeView() {
                                 <div className="ep_info_h">Email :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.personal_email || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "personalEmail" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.personal_email || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setPersonalEmail(data.personal_email);
+                                      setEditField("personalEmail");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <input type="email" className="ep_info_input form-control"
+                                      value={data.personal_email} onChange={(e) => setPersonalEmail(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                         </div>
                       </div>
                     </div>
+
+                    {/* Payroll Information Component */}
                     <div class="tab-pane fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView data={data} />
+                      <EmployeeViewPayrollView data={data} editField={editField} setEditField={setEditField} />
                     </div>
+
                     <div class="tab-pane fade" id="Emergency_Contact">
                       <div className="my-card mt-2" >
                         <div className="my-card-body">
-                          <div className="row m-0  bdr-btm-eee">
+
+                          <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
@@ -624,13 +1006,37 @@ function EmployeeView() {
                                 <div className="ep_info_h">Emergency Contact :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.personal_contact_person || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "emergencyContact" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.personal_contact_person || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setEmergencyContactName(data.personal_contact_person);
+                                      setEditField("emergencyContact");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <input type="text" className="ep_info_input form-control"
+                                      value={emergencyContactName} onChange={(e) => setEmergencyContactName(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
-                          <div className="row m-0  bdr-btm-eee">
+
+                          <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
                                 <div className="ep_info_icon clr-ffb900">
@@ -639,12 +1045,41 @@ function EmployeeView() {
                                 <div className="ep_info_h">Relationship  :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.personal_contact_person_relationship || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "relationship" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.personal_contact_person_relationship || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setRelationship(data.personal_contact_person_relationship);
+                                      setEditField("relationship");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <select className="ep_info_select form-control"
+                                      value={relationship} onChange={(e) => setRelationship(e.target.value)}>
+                                      <option value="" disabled>--Select Relationship--</option>
+                                      <option value="Father">Father</option>
+                                      <option value="Mother">Mother</option>
+                                      <option value="Spouse">Spouse</option>
+                                    </select>
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -654,16 +1089,42 @@ function EmployeeView() {
                                 <div className="ep_info_h">Contect No :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.personal_contact_person_number || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "emergencyContactNo" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.personal_contact_person_number || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setEmergencyContactNumber(data.personal_contact_person_number);
+                                      setEditField("emergencyContactNo");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <input type="text" className="ep_info_input form-control"
+                                      value={emergencyContactNumber} onChange={(e) => setEmergencyContactNumber(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                         </div>
                       </div>
+
                       <div className="my-card mt-2" >
                         <div className="my-card-body">
+
                           <div className="row m-0  bdr-btm-eee align-items-center">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -673,12 +1134,36 @@ function EmployeeView() {
                                 <div className="ep_info_h">Current Address :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.currentAddress || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "currentAddress" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.currentAddress || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setCurrentAddress(data.currentAddress);
+                                      setEditField("currentAddress");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <textarea className="ep_info_textarea form-control"
+                                      value={currentAddress} onChange={(e) => setCurrentAddress(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                           <div className="row m-0  bdr-btm-eee align-items-center">
                             <div className="col-4 pt-1 pb-1">
                               <div className="d-flex align-items-center">
@@ -688,12 +1173,36 @@ function EmployeeView() {
                                 <div className="ep_info_h">Permanent Address  :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.permanentAddress || "-"}
-                              </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "permanentAddress" ? (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_t">
+                                    {data.permanentAddress || "-"}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      setPermanentAddress(data.permanentAddress);
+                                      setEditField("permanentAddress");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <textarea className="ep_info_textarea form-control"
+                                      value={permanentAddress} onChange={(e) => setPermanentAddress(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
+
                         </div>
                       </div>
                     </div>
