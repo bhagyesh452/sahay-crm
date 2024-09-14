@@ -1041,25 +1041,25 @@ function ViewAttendance({ year, month, date }) {
                                                                                             </>
                                                                                         );
                                                                                     }
-                                                                                    // else if (
-                                                                                    //     (prevDayStatus === "Present" || nextDayStatus === "Half Day") ||
-                                                                                    //     (prevDayStatus === "Leave" && nextDayStatus === "Present") ||
-                                                                                    //     (prevDayStatus === "Half Day" && nextDayStatus === "Present") ||
-                                                                                    //     (prevDayStatus === "Present" && nextDayStatus === "Present") ||
-                                                                                    //     (prevDayStatus === "LC1" && nextDayStatus === "Present") ||
-                                                                                    //     (prevDayStatus === "LC2" && nextDayStatus === "Present") ||
-                                                                                    //     (prevDayStatus === "LC3" && nextDayStatus === "Present") ||
-                                                                                    //     (prevDayStatus === "Present" && nextDayStatus === "LC1") ||
-                                                                                    //     (prevDayStatus === "Present" && nextDayStatus === "LC2") ||
-                                                                                    //     (prevDayStatus === "Present" && nextDayStatus === "LC2")
-                                                                                    // ) {
-                                                                                    //     return (
-                                                                                    //         <>
-                                                                                    //             <div className="s-sunday">S</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
-                                                                                    //             <div className="d-none">{presentCount++}</div> {/* Increment leaveCount for Sunday */}
-                                                                                    //         </>
-                                                                                    //     );
-                                                                                    // }
+                                                                                    else if (
+                                                                                        (prevDayStatus === "Present" || nextDayStatus === "Half Day") ||
+                                                                                        (prevDayStatus === "Leave" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "Half Day" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "Present" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "LC1" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "LC2" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "LC3" && nextDayStatus === "Present") ||
+                                                                                        (prevDayStatus === "Present" && nextDayStatus === "LC1") ||
+                                                                                        (prevDayStatus === "Present" && nextDayStatus === "LC2") ||
+                                                                                        (prevDayStatus === "Present" && nextDayStatus === "LC2")
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <div className="s-sunday">S</div> {/* Fill Sunday with "SH" if both adjacent days are "Half-Day" */}
+                                                                                                <div className="d-none">{presentCount++}</div> {/* Increment leaveCount for Sunday */}
+                                                                                            </>
+                                                                                        );
+                                                                                    }
                                                                                     else {
                                                                                         return (<>
                                                                                             <div className="s-sunday">S</div>
@@ -1576,13 +1576,13 @@ function ViewAttendance({ year, month, date }) {
                                                                                         </>
                                                                                     );
                                                                                 } 
-                                                                                // else {
-                                                                                //     return (<>
-                                                                                //         <div className="s-sunday">S</div>
-                                                                                //         <div className="d-none">{presentCount++}</div>
+                                                                                else {
+                                                                                    return (<>
+                                                                                        <div className="s-sunday">S</div>
+                                                                                        {/* <div className="d-none">{presentCount++}</div> */}
 
-                                                                                //     </>) // Default Sunday fill with "S"
-                                                                                // }
+                                                                                    </>) // Default Sunday fill with "S"
+                                                                                }
                                                                             })()
                                                                         ) : (
                                                                             <button
