@@ -2122,7 +2122,7 @@ th.th-sticky1::after {
 .admin-dash-tbl-tfoot {
   position: sticky;
   bottom: -0.5px;
-  z-index: 0;
+  z-index: 1;
 }
 
 .admin-dash-tbl-tfoot td {
@@ -2408,7 +2408,60 @@ td input {
 {
   font-size: 11px;
 }
-
+.ep_info_icon
+{
+  cursor: pointer;
+  font-size: 12px;
+}
+.ep_info_form
+{
+  position: relative;
+}
+.ep_info_input.form-control
+{
+  border: none !important;
+}
+.ep_info_input.form-control:focus
+{
+  box-shadow: none !important;
+}
+.ep_info_input
+{
+  padding: 0;
+  height: fit-content;
+  border: none !important;
+  font-size: 11px;
+}
+.ep_info_select
+{
+  padding: 0 4px;
+  height: fit-content;
+  border: none !important;
+  font-size: 11px;
+}
+.ep_info_select.form-control
+{
+  border: none !important;
+}
+.ep_info_select.form-control:focus
+{
+  box-shadow: none !important;
+}
+.ep_info_textarea
+{
+  padding: 0;
+  height: fit-content;
+  border: none !important;
+  font-size: 11px;
+}
+.ep_info_textarea.form-control
+{
+  border: none !important;
+}
+.ep_info_textarea.form-control:focus
+{
+  box-shadow: none !important;
+}
 .EP_Other_info
 {
   

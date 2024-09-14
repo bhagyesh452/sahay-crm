@@ -46,6 +46,8 @@ import { IoCalendarClearOutline } from "react-icons/io5";
 import { FcBusinesswoman } from "react-icons/fc";
 import { PiPhoneCall } from "react-icons/pi";
 import { MdOutlineMailOutline } from "react-icons/md";
+import { MdOutlineEdit } from "react-icons/md";
+import { FaRegSave } from "react-icons/fa";
 import { color } from "@mui/system";
 import { FcBriefcase } from "react-icons/fc";
 import { IoCall } from "react-icons/io5";
@@ -359,10 +361,21 @@ function EmployeeView() {
                                     <div className="ep_info_h">Email :</div>
                                   </div>
                                 </div>
-                                <div className="col-7  pt-1 pb-1 bdr-left-eee">
-                                  <div className="">
+                                <div className="col-7 pt-1 pb-1 bdr-left-eee">
+                                  <div className="d-flex align-items-center justify-content-between">
                                     <div className="ep_info_t">
                                       {data.email || "-"}
+                                    </div>
+                                    <div className="ep_info_icon">
+                                      <MdOutlineEdit />
+                                    </div>
+                                  </div>
+                                  <div className="d-flex align-items-center justify-content-between d-none">
+                                    <div className="ep_info_form">
+                                      <input type="text" className="ep_info_input form-control" />
+                                    </div>
+                                    <div className="ep_info_icon">
+                                      <FaRegSave />
                                     </div>
                                   </div>
                                 </div>
@@ -438,10 +451,29 @@ function EmployeeView() {
                                 <div className="ep_info_h">Department :</div>
                               </div>
                             </div>
-                            <div className="col-6 pt-1 pb-1 bdr-left-eee">
-                              <div className="ep_info_t">
-                                {data.department || "-"}
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              <div className="d-flex align-items-center justify-content-between">
+                                <div className="ep_info_t">
+                                  {data.department || "-"}
+                                </div>
+                                <div className="ep_info_icon">
+                                  <MdOutlineEdit />
+                                </div>
                               </div>
+                              <div className="d-flex align-items-center justify-content-between d-none">
+                                <div className="ep_info_form">
+                                  <select className="ep_info_select form-control">
+                                    <option disabled selected>--Select Department--</option>
+                                    <option value="1">Department 1</option>
+                                    <option value="2">Department 2</option>
+                                    <option value="3">Department 3</option>
+                                  </select>
+                                </div>
+                                <div className="ep_info_icon">
+                                  <FaRegSave />
+                                </div>
+                              </div>
+
                             </div>
                           </div>
                           <div className="row m-0  bdr-btm-eee">
