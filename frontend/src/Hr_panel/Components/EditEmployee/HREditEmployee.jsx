@@ -198,7 +198,7 @@ export default function HREditEmployee() {
       "Mr. Vishal Gohel"
     ],
     Others: ["Miss. Hiral Panchal"],
-  }
+  };
 
   const renderDesignationOptions = () => {
     const designations = departmentDesignations[employeementInfo.department] || [];
