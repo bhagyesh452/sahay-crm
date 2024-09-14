@@ -26,7 +26,7 @@ const FilterTableThisMonthBooking = ({
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
- //-----------------------dateformats-------------------------------------
+    //-----------------------dateformats-------------------------------------
     const formatDuration = (totalSeconds) => {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -104,8 +104,8 @@ const FilterTableThisMonthBooking = ({
     ];
     const currentMonth = monthNames[initialDate.getMonth()];
     //const filteredMonth = monthNames[filteredDate.getMonth()]
-    
-    
+
+
     const functionCalculateMatured = (bdeName) => {
         const cleanString = (str) => {
             return str.replace(/\u00A0/g, ' ').trim();
@@ -790,14 +790,14 @@ const FilterTableThisMonthBooking = ({
                             const tempAmount = findService.withGST ? Math.floor(remainingObj.receivedPayment) / 1.18 : Math.floor(remainingObj.receivedPayment);
                             if (cleanString(moreObject.bdeName) === cleanString(moreObject.bdmName)) {
                                 remainingAmount += Math.floor(tempAmount);
-                              
+
                             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Close-by") {
                                 remainingAmount += Math.floor(tempAmount) / 2;
-                              
+
                             } else if (cleanString(moreObject.bdeName) !== cleanString(moreObject.bdmName) && moreObject.bdmType === "Supported-by") {
                                 if (cleanString(moreObject.bdeName) === cleanString(bdeName)) {
                                     remainingAmount += Math.floor(tempAmount);
-                                   
+
                                 }
                             }
                         }
@@ -831,9 +831,9 @@ const FilterTableThisMonthBooking = ({
     const calculateAchievedRatio = (ename, obj) => {
         const achievedValue = functionCalculateOnlyAchieved(ename);
         const totalAmount = functionGetOnlyAmount(obj);
-    
+
         if (totalAmount === 0) return 0; // Avoid division by zero
-    
+
         return ((achievedValue / totalAmount) * 100).toFixed(2);
     };
     function functionGetLastBookingDate(bdeName) {
@@ -870,10 +870,10 @@ const FilterTableThisMonthBooking = ({
 
         return tempBookingDate ? formatDateFinal(tempBookingDate) : "No Booking";
     }
-    
+
     useEffect(() => {
         const getValues = (dataSource) => {
-            console.log("dataSource", dataSource)
+            
             return dataSource.map(item => {
                 if (filterField === 'maturedcases') {
                     return functionCalculateMatured(item.ename); // Calculate matured cases for filtering
@@ -885,9 +885,9 @@ const FilterTableThisMonthBooking = ({
                     return functionCalculateAchievedAmount(item.ename); // Calculate matured cases for filtering
                 }
                 if (filterField === 'achievedratio') {
-                    return calculateAchievedRatio(item.ename , item); // Calculate matured cases for filtering
+                    return calculateAchievedRatio(item.ename, item); // Calculate matured cases for filtering
                 }
-                  if (filterField === 'lastbookingdate') {
+                if (filterField === 'lastbookingdate') {
                     return functionGetLastBookingDate(item.ename); // Calculate matured cases for filtering
                 }
                 return item[filterField]; // Return the filtered field's value
@@ -903,8 +903,7 @@ const FilterTableThisMonthBooking = ({
         }
     }, [filterField, filteredData, dataForFilter, employeeData]);
 
-    console.log("values", columnValues)
-
+    
     const handleCheckboxChange = (e) => {
         const value = e.target.value; // Checkbox value
         const valueAsString = String(value); // Convert to string for consistent comparison
@@ -927,7 +926,7 @@ const FilterTableThisMonthBooking = ({
         // Ensure filters is always an object
         const safeFilters = filters || {};
         let dataToSort;
-    
+
         // Combine all filters across different filter fields
         const allSelectedFilters = Object.values(safeFilters).flat();
         // Start with the data to be filtered
@@ -936,20 +935,20 @@ const FilterTableThisMonthBooking = ({
                 return {
                     ...item,
                     maturedCases: functionCalculateMatured(item.ename),
-                    Target:functionGetAmount(item),
-                    Achieved:functionCalculateAchievedAmount(item.ename),
-                    AchievedRatio:calculateAchievedRatio(item.ename , item),
-                    LastBookingDate:functionGetLastBookingDate(item.ename)
+                    Target: functionGetAmount(item),
+                    Achieved: functionCalculateAchievedAmount(item.ename),
+                    AchievedRatio: calculateAchievedRatio(item.ename, item),
+                    LastBookingDate: functionGetLastBookingDate(item.ename)
                 };
             });
-    
+
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
                 // Update the active filter fields array
                 allFilterFields(prevFields => {
                     return [...prevFields, column];
                 });
-    
+
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
@@ -965,39 +964,64 @@ const FilterTableThisMonthBooking = ({
                         if (column === 'achievedratio') {
                             return columnFilters.includes(item.AchievedRatio.toString()); // Filter based on matured cases
                         }
-                         if (column === 'lastbookingdate') {
+                        if (column === 'lastbookingdate') {
                             return columnFilters.includes(item.LastBookingDate.toString()); // Filter based on matured cases
                         }
                         return columnFilters.includes(String(item[column]));
                     });
-    
+
                     return match;
                 });
             }
-    
-            // Apply sorting based on sortOrder
+
+            // Apply sorting based on `sortOrder` and the specified `column`
             if (sortOrder && column) {
                 dataToSort = dataToSort.sort((a, b) => {
                     let valueA = a[column];
                     let valueB = b[column];
-            
-                    // Convert values to numbers if they are numeric strings
-                    if (!isNaN(valueA) && !isNaN(valueB)) {
-                        valueA = parseFloat(valueA);
-                        valueB = parseFloat(valueB);
+                    console.log("sortorder", sortOrder)
+                    if (column === 'maturedcases') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(functionCalculateMatured(a.ename)) || 0;
+                        valueB = Math.floor(functionCalculateMatured(b.ename)) || 0;
+                        console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
                     }
-            
-                    // Handle sorting of numeric values
-                    if (typeof valueA === 'number' && typeof valueB === 'number') {
-                        return sortOrder === 'oldest' ? valueA - valueB : valueB - valueA;
+                    if (column === 'target') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(functionGetOnlyAmount(a)) || 0;
+                        valueB = Math.floor(functionGetOnlyAmount(b)) || 0;
+                        console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
                     }
-            
-                    // Handle sorting of string values
+                    if (column === 'achieved') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(functionCalculateAchievedAmount(a.ename)) || 0;
+                        valueB = Math.floor(functionCalculateAchievedAmount(b.ename)) || 0;
+
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
+                    }
+                    if (column === 'achievedratio') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(calculateAchievedRatio(a.ename , a)) || 0;
+                        valueB = Math.floor(calculateAchievedRatio(b.ename , b)) || 0;
+                        console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
+                    }
+                    // Handle other types (string sorting, etc.)
                     if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'oldest' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                        return sortOrder === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+                        return sortOrder === 'ascending' ? valueA - valueB : valueB - valueA;
                     }
-            
-                    // If types don't match, return 0 to skip sorting for this pair
                     return 0;
                 });
             }
@@ -1006,14 +1030,14 @@ const FilterTableThisMonthBooking = ({
                 return {
                     ...item,
                     maturedCases: functionCalculateMatured(item.ename),
-                    Target:functionGetAmount(item), // Call calculateMaturedCases here
-                    Achieved:functionCalculateAchievedAmount(item.ename),// Call calculateMaturedCases here
-                    AchievedRatio:calculateAchievedRatio(item.ename , item),// Call calculateMaturedCases here
-                    LastBookingDate:functionGetLastBookingDate(item.ename)
+                    Target: functionGetAmount(item), // Call calculateMaturedCases here
+                    Achieved: functionCalculateAchievedAmount(item.ename),// Call calculateMaturedCases here
+                    AchievedRatio: calculateAchievedRatio(item.ename, item),// Call calculateMaturedCases here
+                    LastBookingDate: functionGetLastBookingDate(item.ename)
 
                 };
             });
-    
+
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
                 allFilterFields(prevFields => {
@@ -1042,39 +1066,63 @@ const FilterTableThisMonthBooking = ({
                     return match;
                 });
             }
-    
-            // Apply sorting based on sortOrder
+
+            // Apply sorting based on `sortOrder` and the specified `column`
             if (sortOrder && column) {
                 dataToSort = dataToSort.sort((a, b) => {
                     let valueA = a[column];
                     let valueB = b[column];
-            
-                    // Convert values to numbers if they are numeric strings
-                    if (!isNaN(valueA) && !isNaN(valueB)) {
-                        valueA = parseFloat(valueA);
-                        valueB = parseFloat(valueB);
+                    if (column === 'maturedcases') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(functionCalculateMatured(a.ename)) || 0;
+                        valueB = Math.floor(functionCalculateMatured(b.ename)) || 0;
+                        console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
                     }
-            
-                    // Handle sorting of numeric values
-                    if (typeof valueA === 'number' && typeof valueB === 'number') {
-                        return sortOrder === 'oldest' ? valueA - valueB : valueB - valueA;
+                    if (column === 'target') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(functionGetOnlyAmount(a)) || 0;
+                        valueB = Math.floor(functionGetOnlyAmount(b)) || 0;
+                        console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
                     }
-            
-                    // Handle sorting of string values
+                    if (column === 'achieved') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(functionCalculateAchievedAmount(a.ename)) || 0;
+                        valueB = Math.floor(functionCalculateAchievedAmount(b.ename)) || 0;
+                        console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
+                    }
+                    if (column === 'achievedratio') {
+                        // Sort based on achieved amount
+                        valueA = Math.floor(calculateAchievedRatio(a.ename , a)) || 0;
+                        valueB = Math.floor(calculateAchievedRatio(b.ename , b)) || 0;
+                        console.log("sortorder", sortOrder)
+                        return sortOrder === 'oldest'
+                            ? valueA - valueB  // Sort in ascending order
+                            : valueB - valueA; // Sort in descending order
+                    }
+                    // Handle other types (string sorting, etc.)
                     if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'oldest' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                        return sortOrder === 'ascending' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                    } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+                        return sortOrder === 'ascending' ? valueA - valueB : valueB - valueA;
                     }
-            
-                    // If types don't match, return 0 to skip sorting for this pair
                     return 0;
                 });
             }
         }
-    
+
         onFilter(dataToSort);
     };
-    
-    
+
+
 
     const handleSelectAll = () => {
         setSelectedFilters(prevFilters => {
@@ -1110,12 +1158,10 @@ const FilterTableThisMonthBooking = ({
                     onClick={(e) => handleSort("oldest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
-                        filterField === "Company Number" ||
-                        filterField === "caNumber" ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
-                        filterField === "pendingPayment" ? "Ascending" : "Sort A TO Z"}
+                    {filterField === "target" ||
+                        filterField === "achievedratio" ||
+                        filterField === "maturedcases" ||
+                        filterField === "achieved" ? "Ascending" : "Sort A TO Z"}
                 </div>
 
                 <div
@@ -1123,12 +1169,12 @@ const FilterTableThisMonthBooking = ({
                     onClick={(e) => handleSort("newest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
-                        filterField === "Company Number" ||
-                        filterField === "caNumber" ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
-                        filterField === "pendingPayment" ? "Descending" : "Sort Z TO A"}
+                    {filterField === "target" ||
+                
+                        filterField === "achievedratio" ||
+                        filterField === "maturedcases" ||
+                      
+                        filterField === "achieved" ? "Descending" : "Sort Z TO A"}
                 </div>
                 {/* <div className="inco-subFilter p-2"
                         onClick={(e) => handleSort("none")}>

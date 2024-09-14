@@ -61,7 +61,7 @@ function EmployeesThisMonthBooking() {
         remainingPaymentDate: "none"
     });
     const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [filteredData, setFilteredData] = useState([]);
+    const [filteredData, setFilteredData] = useState(employeeData);
     const [filterField, setFilterField] = useState("")
     const filterMenuRef = useRef(null); // Ref for the filter menu container
     const [activeFilterField, setActiveFilterField] = useState(null);
@@ -2980,7 +2980,7 @@ function EmployeesThisMonthBooking() {
 
     // console.log("Is date selected :", isDateSelectedInAdvancePayment);
 
-    // ----------------filter components----------------------------------
+
     // ------------------------------------filter functions-------------------------
     const handleFilter = (newData) => {
         setFilteredData(newData)
