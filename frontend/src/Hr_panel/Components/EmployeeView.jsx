@@ -61,6 +61,7 @@ import CallingReportView from "./EmployeeView/CallingReportView.jsx";
 function EmployeeView() {
 
   const { userId } = useParams();
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
   const personalUserId = localStorage.getItem("hrUserId");
 
   const { newtoken } = useParams();
@@ -88,8 +89,6 @@ function EmployeeView() {
   const [emergencyContactNumber, setEmergencyContactNumber] = useState("");
   const [currentAddress, setCurrentAddress] = useState("");
   const [permanentAddress, setPermanentAddress] = useState("");
-
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   const [empImg1, setEmpImg1] = useState(
     localStorage.getItem("empImg1") || "initial_image_url"
@@ -292,7 +291,7 @@ function EmployeeView() {
       relationship: relationship,
       personPhoneNo: emergencyContactNumber,
       currentAddress: currentAddress,
-      permanentAddress: permanentAddress,
+      permanentAddress: permanentAddress
     };
     try {
       const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${userId}`, payload);
@@ -463,6 +462,10 @@ function EmployeeView() {
                                       </div>
                                       <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
+                                          if (editField !== "") {
+                                            Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                            return;
+                                          }
                                           setOfficialEmail(data.email);
                                           setEditField("officialEmail");
                                         }} />
@@ -502,6 +505,10 @@ function EmployeeView() {
                                       </div>
                                       <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
+                                          if (editField !== "") {
+                                            Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                            return;
+                                          }
                                           setOfficialNumber(data.number);
                                           setEditField("officialNumber");
                                         }} />
@@ -543,6 +550,10 @@ function EmployeeView() {
                                       </div>
                                       <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
+                                          if (editField !== "") {
+                                            Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                            return;
+                                          }
                                           setJoiningDate(formatDateForInput(data.jdate));
                                           setEditField("joiningDate");
                                         }} />
@@ -611,6 +622,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setDepartment(data.department);
                                       setEditField("department");
                                     }} />
@@ -658,6 +673,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setBranchOffice(data.branchOffice);
                                       setEditField("branchOffice");
                                     }} />
@@ -701,6 +720,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setEmploymentType(data.employeementType);
                                       setEditField("employmentType");
                                     }} />
@@ -747,6 +770,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setReportingManager(data.reportingManager);
                                       setEditField("reportingManager");
                                     }} />
@@ -801,6 +828,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setFullName(data.empFullName);
                                       setEditField("empFullName");
                                     }} />
@@ -841,6 +872,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setDob(formatDateForInput(data.dob));
                                       setEditField("dob");
                                     }} />
@@ -880,6 +915,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setGender(data.gender);
                                       setEditField("gender");
                                     }} />
@@ -923,6 +962,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setPersonalNumber(data.personal_number);
                                       setEditField("personalNumber");
                                     }} />
@@ -962,6 +1005,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setPersonalEmail(data.personal_email);
                                       setEditField("personalEmail");
                                     }} />
@@ -990,7 +1037,7 @@ function EmployeeView() {
 
                     {/* Payroll Information Component */}
                     <div class="tab-pane fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView data={data} editField={editField} setEditField={setEditField} />
+                      <EmployeeViewPayrollView data={data} editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} />
                     </div>
 
                     <div class="tab-pane fade" id="Emergency_Contact">
@@ -1014,6 +1061,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setEmergencyContactName(data.personal_contact_person);
                                       setEditField("emergencyContact");
                                     }} />
@@ -1053,6 +1104,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setRelationship(data.personal_contact_person_relationship);
                                       setEditField("relationship");
                                     }} />
@@ -1097,6 +1152,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setEmergencyContactNumber(data.personal_contact_person_number);
                                       setEditField("emergencyContactNo");
                                     }} />
@@ -1142,6 +1201,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setCurrentAddress(data.currentAddress);
                                       setEditField("currentAddress");
                                     }} />
@@ -1181,6 +1244,10 @@ function EmployeeView() {
                                   </div>
                                   <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
                                       setPermanentAddress(data.permanentAddress);
                                       setEditField("permanentAddress");
                                     }} />
