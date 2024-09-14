@@ -54,6 +54,8 @@ import { IoCall } from "react-icons/io5";
 import EmployeeViewAttendance from "./EmployeeView/EmloyeeViewAttendance.jsx";
 import EmployeeViewPayrollView from "./EmployeeView/EmployeePayrollView.jsx";
 import SalaryCalculationView from "./EmployeeView/SalaryCalculationView.jsx";
+import LeaveReportView from "./EmployeeView/LeaveReportView.jsx";
+import CallingReportView from "./EmployeeView/CallingReportView.jsx";
 
 
 function EmployeeView() {
@@ -730,8 +732,12 @@ function EmployeeView() {
                     <div class="tab-pane heiitc_inner fade" id="SalaryCalculation">
                       <SalaryCalculationView />
                     </div>
-                    <div class="tab-pane heiitc_inner fade" id="LeaveReport">...</div>
-                    <div class="tab-pane heiitc_inner fade" id="CallingReport">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="LeaveReport">
+                      <LeaveReportView />
+                    </div>
+                    <div class="tab-pane heiitc_inner fade" id="CallingReport">
+                      <CallingReportView/>
+                    </div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
