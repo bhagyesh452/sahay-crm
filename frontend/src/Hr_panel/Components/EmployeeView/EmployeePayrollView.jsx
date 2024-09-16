@@ -14,10 +14,48 @@ import { FaRegSave } from "react-icons/fa";
 
 
 
-function EmployeeViewPayrollView({ data, editField, setEditField, fetchEmployeeData }) {
+function EmployeeViewPayrollView({ editField, setEditField }) {
 
     const { userId } = useParams();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+    const [data, setData] = useState([]);
+    const [accountNo, setAccountNo] = useState("");
+    const [nameAsPerBankRecord, setNameAsPerBankRecord] = useState("");
+    const [ifscCode, setIfscCode] = useState("");
+    const [salary, setSalary] = useState("");
+    const [firstMonthSalaryCondition, setFirstMonthSalaryCondition] = useState("");
+    const [firstMonthSalary, setFirstMonthSalary] = useState("");
+    const [panNumber, setPanNumber] = useState("");
+    const [aadharNumber, setAadharNumber] = useState("");
+    const [uanNumber, setUanNumber] = useState("");
+    const [pfNumber, setPfNumber] = useState("");
+
+    const fetchEmployeeData = async () => {
+        try {
+          const response = await axios.get(`${secretKey}/employee/einfo`);
+          console.log(response.data, userId);
+          const tempData = response.data;
+          const data = tempData.find((item) => item._id === userId);
+          console.log("Payroll Info is :", data);
+    
+          setData(data);
+          setAccountNo(data.accountNo);
+          setNameAsPerBankRecord(data.nameAsPerBankRecord);
+          setIfscCode(data.ifscCode);
+          setSalary(data.salary);
+          setFirstMonthSalaryCondition(data.firstMonthSalaryCondition);
+          setFirstMonthSalary(data.firstMonthSalary);
+          setPanNumber(data.panNumber);
+          setAadharNumber(data.aadharNumber);
+          setUanNumber(data.uanNumber);
+          setPfNumber(data.pfNumber);
+    
+        } catch (error) {
+          console.error("Error fetching employee data", error);
+        }
+      };
+
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
     };
@@ -39,17 +77,6 @@ function EmployeeViewPayrollView({ data, editField, setEditField, fetchEmployeeD
             setFirstMonthSalary(calculatedFirstMonthSalary);
         }
     };
-
-    const [accountNo, setAccountNo] = useState("");
-    const [nameAsPerBankRecord, setNameAsPerBankRecord] = useState("");
-    const [ifscCode, setIfscCode] = useState("");
-    const [salary, setSalary] = useState("");
-    const [firstMonthSalaryCondition, setFirstMonthSalaryCondition] = useState("");
-    const [firstMonthSalary, setFirstMonthSalary] = useState("");
-    const [panNumber, setPanNumber] = useState("");
-    const [aadharNumber, setAadharNumber] = useState("");
-    const [uanNumber, setUanNumber] = useState("");
-    const [pfNumber, setPfNumber] = useState("");
 
     const handleSave = async () => {
         const payload = {
@@ -75,6 +102,10 @@ function EmployeeViewPayrollView({ data, editField, setEditField, fetchEmployeeD
         }
     };
 
+    useEffect(() => {
+        fetchEmployeeData();
+    }, []);
+    
     return (
         <div className="payrollViewMain mt-2">
             <div className="my-card mt-2" >
@@ -289,7 +320,7 @@ function EmployeeViewPayrollView({ data, editField, setEditField, fetchEmployeeD
                                     <div className="ep_info_form">
                                         <select className="ep_info_select form-control"
                                             value={firstMonthSalaryCondition} onChange={(e) => handleSalaryConditionChange(e.target.value)}>
-                                            <option value="" disabled>--Select First Month Salary Condition--</option>
+                                            <option value="" selected>--Select First Month Salary Condition--</option>
                                             <option value="50">50%</option>
                                             <option value="75">75%</option>
                                             <option value="100">100%</option>
