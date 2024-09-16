@@ -300,16 +300,16 @@ function ViewAttendance({ year, month, date }) {
 
                 const inTimeMinutes = convertToMinutes(inTime);
                 const outTimeMinutes = convertToMinutes(outTime);
-                console.log("inTimeMinutes" , inTimeMinutes)
-                console.log("outTimeMinutes" , outTimeMinutes)
+                console.log("inTimeMinutes", inTimeMinutes)
+                console.log("outTimeMinutes", outTimeMinutes)
 
                 const startBoundary = convertToMinutes("10:00"); // 10:00 AM
                 const endBoundary = convertToMinutes("18:00"); // 6:00 PM
 
                 let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
                 let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
-                console.log("actualInTime" , actualInTime)
-                console.log("actualOutTime" , actualOutTime)
+                console.log("actualInTime", actualInTime)
+                console.log("actualOutTime", actualOutTime)
                 let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes for the break
 
                 // Ensure working minutes don't go negative
@@ -321,7 +321,7 @@ function ViewAttendance({ year, month, date }) {
             };
 
             const workingMinutes = calculateWorkingHours(inTime, outTime);
-     
+
             // Convert minutes back to HH:MM format for display
             const hours = Math.floor(workingMinutes / 60);
             const minutes = workingMinutes % 60;
@@ -410,7 +410,9 @@ function ViewAttendance({ year, month, date }) {
         // console.log("Payload is :", payload);
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
-            Swal.fire("Success", "Attendance Successfully Added/Updated", "success");
+            setInTime("");
+            setOutTime("");
+            Swal.fire("Success", "Attendance Cleared Succesfully", "success");
         } catch (error) {
             console.log("Error updating attendance record", error);
             Swal.fire("Error", "Error adding/updating attendance", "error");
@@ -701,15 +703,15 @@ function ViewAttendance({ year, month, date }) {
                                                             status === "LC2" ||
                                                             status === "LC3" ||
                                                             status === "LCH"
-                                                            ) {
+                                                        ) {
                                                             lchCount++;
-                                                           
+
                                                         }
                                                         // Count LC statuses separately if LCH is present
                                                         if (status === "LC1" ||
                                                             status === "LC2" ||
-                                                            status === "LC3" 
-                                                            ) {
+                                                            status === "LC3"
+                                                        ) {
                                                             lcCount++;
                                                             if (hasLCH) {
                                                                 lcStatusesAsPresent++;
@@ -1186,86 +1188,86 @@ function ViewAttendance({ year, month, date }) {
                                             const profilePhotoUrl = emp.profilePhoto?.length !== 0
                                                 ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                                 : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
-                                                const empAttendance = attendanceData[emp._id] || {};
+                                            const empAttendance = attendanceData[emp._id] || {};
                                             // let presentCount = 0;
                                             // let leaveCount = 0;
                                             // let halfDayCount = 0;
                                             // let lcCount = 0;
                                             const joiningDate = new Date(emp.jdate);
                                             let presentCount = 0;
-                                                let leaveCount = 0;
-                                                let halfDayCount = 0;
-                                                let lcCount = 0;
-                                                let hasLCH = false;
-                                                let lcStatusesAsPresent = 0;
-                                                let lchCount = 0;
+                                            let leaveCount = 0;
+                                            let halfDayCount = 0;
+                                            let lcCount = 0;
+                                            let hasLCH = false;
+                                            let lcStatusesAsPresent = 0;
+                                            let lchCount = 0;
 
-                                                // Initial pass to count all relevant statuses
-                                                for (const day of selectedMonthDays) {
-                                                    const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
-                                                    const attendanceDate = empAttendance[year]?.[month]?.[day] || {};
+                                            // Initial pass to count all relevant statuses
+                                            for (const day of selectedMonthDays) {
+                                                const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
+                                                const attendanceDate = empAttendance[year]?.[month]?.[day] || {};
 
-                                                    // Check if the day has attendance data
-                                                    if (attendanceDate) {
-                                                        const status = attendanceDate.status;
+                                                // Check if the day has attendance data
+                                                if (attendanceDate) {
+                                                    const status = attendanceDate.status;
 
-                                                        // Track if 'LCH' is present in the data
-                                                        if (status === "LCH") {
-                                                            hasLCH = true;
-                                                        }
+                                                    // Track if 'LCH' is present in the data
+                                                    if (status === "LCH") {
+                                                        hasLCH = true;
+                                                    }
 
-                                                        // Count statuses and log each 'Present' count
-                                                        if (status === "Present") {
-                                                            presentCount++;
-                                                            //console.log(`Present Count for ${formattedDate}: ${presentCount}`);
-                                                        }
-                                                        // Count LC statuses separately if LCH is present
-                                                        if (status === "LC1" ||
-                                                            status === "LC2" ||
-                                                            status === "LC3" ||
-                                                            status === "LCH"
-                                                            ) {
-                                                            lchCount++;
-                                                           
-                                                        }
-                                                        // Count LC statuses separately if LCH is present
-                                                        if (status === "LC1" ||
-                                                            status === "LC2" ||
-                                                            status === "LC3" 
-                                                            ) {
-                                                            lcCount++;
-                                                            if (hasLCH) {
-                                                                lcStatusesAsPresent++;
-                                                            }
-                                                        }
+                                                    // Count statuses and log each 'Present' count
+                                                    if (status === "Present") {
+                                                        presentCount++;
+                                                        //console.log(`Present Count for ${formattedDate}: ${presentCount}`);
+                                                    }
+                                                    // Count LC statuses separately if LCH is present
+                                                    if (status === "LC1" ||
+                                                        status === "LC2" ||
+                                                        status === "LC3" ||
+                                                        status === "LCH"
+                                                    ) {
+                                                        lchCount++;
 
-                                                        if (status === "Leave") {
-                                                            leaveCount++;
-                                                        }
-
-                                                        if (status === "Half Day" ||
-                                                            status === "LC1" ||
-                                                            status === "LC2" ||
-                                                            status === "LC3" ||
-                                                            status === "LCH") {
-                                                            halfDayCount++;
+                                                    }
+                                                    // Count LC statuses separately if LCH is present
+                                                    if (status === "LC1" ||
+                                                        status === "LC2" ||
+                                                        status === "LC3"
+                                                    ) {
+                                                        lcCount++;
+                                                        if (hasLCH) {
+                                                            lcStatusesAsPresent++;
                                                         }
                                                     }
+
+                                                    if (status === "Leave") {
+                                                        leaveCount++;
+                                                    }
+
+                                                    if (status === "Half Day" ||
+                                                        status === "LC1" ||
+                                                        status === "LC2" ||
+                                                        status === "LC3" ||
+                                                        status === "LCH") {
+                                                        halfDayCount++;
+                                                    }
                                                 }
+                                            }
 
-                                                // Adjust presentCount based on the presence of 'LCH'
-                                                if (hasLCH) {
-                                                    // Remove LC statuses counted as Present if LCH is found
-                                                    presentCount -= lcStatusesAsPresent;
+                                            // Adjust presentCount based on the presence of 'LCH'
+                                            if (hasLCH) {
+                                                // Remove LC statuses counted as Present if LCH is found
+                                                presentCount -= lcStatusesAsPresent;
 
-                                                    // Ensure that halfDayCount includes LC counts if LCH is present
-                                                    halfDayCount += lcCount;
+                                                // Ensure that halfDayCount includes LC counts if LCH is present
+                                                halfDayCount += lcCount;
 
-                                                    halfDayCount -= lcCount;
-                                                }
+                                                halfDayCount -= lcCount;
+                                            }
 
-                                                // Ensure that halfDayCount does not exceed the sum of distinct categories
-                                                halfDayCount = Math.min(halfDayCount, lcCount + (halfDayCount - lcCount));
+                                            // Ensure that halfDayCount does not exceed the sum of distinct categories
+                                            halfDayCount = Math.min(halfDayCount, lcCount + (halfDayCount - lcCount));
 
 
                                             return (
@@ -1578,7 +1580,7 @@ function ViewAttendance({ year, month, date }) {
                                                                                             <div className="d-none">{presentCount++}</div> {/* Increment leaveCount for Sunday */}
                                                                                         </>
                                                                                     );
-                                                                                } 
+                                                                                }
                                                                                 else {
                                                                                     return (<>
                                                                                         <div className="s-sunday">S</div>
@@ -1601,9 +1603,9 @@ function ViewAttendance({ year, month, date }) {
                                                             </td>
                                                         );
                                                     })}
-                                                   <td className='hr-sticky-action4'>
-                                                            {lchCount}
-                                                        </td>
+                                                    <td className='hr-sticky-action4'>
+                                                        {lchCount}
+                                                    </td>
                                                     <td className='hr-sticky-action3'>
                                                         {presentCount}
                                                     </td>
