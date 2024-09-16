@@ -2399,6 +2399,7 @@ td input {
   color: #474747;
   width: 18px;
 }
+
 .ep_info_h
 {
   font-size: 11px;
@@ -2461,6 +2462,20 @@ td input {
 .ep_info_textarea.form-control:focus
 {
   box-shadow: none !important;
+}
+.ep_info .ep_info_icon
+{
+  transition: .5s;
+  opacity: 0;
+}
+.ep_info:hover .ep_info_icon
+{
+  transition: .5s;
+  opacity: 1;
+}
+.ep_info:hover
+{
+
 }
 .EP_Other_info
 {
