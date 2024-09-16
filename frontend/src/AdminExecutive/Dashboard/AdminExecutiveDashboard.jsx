@@ -4,6 +4,7 @@ import AdminExecutiveHeader from "../Components/AdminExecutiveHeader";
 import AdminExecutiveNavbar from "../Components/AdminExecutiveNavbar";
 import AdminExecutiveBookingReport from "../Components/AdminExecutiveBookingReport";
 import AdminExecutiveInProcessReport from "../Components/AdminExecutiveInProcessReport";
+import AdminExecutiveApplicationSubmittedReport from "../Components/AdminExecutiveApplicationSubmittedReport";
 
 
 function AdminExecutiveDashboard() {
@@ -28,6 +29,8 @@ function AdminExecutiveDashboard() {
   const [documentsPending, setDocumentsPending] = useState(0);
   const [working, setWorking] = useState(0);
   const [applicationPending, setApplicationPending] = useState(0);
+
+  // Application Submitted Sub Category Statuses
   const [kycPending, setKycPending] = useState(0);
   const [kycRejected, setKycRejected] = useState(0);
   const [kycIncomplete, setKycIncomplete] = useState(0);
@@ -50,6 +53,7 @@ function AdminExecutiveDashboard() {
       setEmployeeData(userData);
       fetchAdminExecutiveData();
       fetchAdminExecutiveInProcessData();
+      fetchAdminExecutiveApplicationSubmittedData();
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -106,6 +110,23 @@ function AdminExecutiveDashboard() {
       setDocumentsPending(data.filter((item) => item.subCategoryStatus === "Call Done Docs Pending").length);
       setWorking(data.filter((item) => item.subCategoryStatus === "Working").length);
       setApplicationPending(data.filter((item) => item.subCategoryStatus === "Application Pending").length);
+
+    } catch (error) {
+      console.error("Error fetching in process data :", error);
+    }
+  };
+
+  const fetchAdminExecutiveApplicationSubmittedData = async (searchQuery = "", page = 1) => {
+    let params = { search: searchQuery, page, activeTab: "Application Submitted" };
+
+    try {
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
+        params: params
+      });
+
+      const { data, totalPages } = servicesResponse.data;
+      // console.log("Admin executive inprocess data is :", data);
+
       setKycPending(data.filter((item) => item.subCategoryStatus === "KYC Pending").length);
       setKycRejected(data.filter((item) => item.subCategoryStatus === "KYC Rejected").length);
       setKycIncomplete(data.filter((item) => item.subCategoryStatus === "KYC Incomplete").length);
@@ -118,6 +139,7 @@ function AdminExecutiveDashboard() {
   useEffect(() => {
     fetchAdminExecutiveData();
     fetchAdminExecutiveInProcessData();
+    fetchAdminExecutiveApplicationSubmittedData();
   }, [employeeData]);
 
   // console.log('employeeData', employeeData);
@@ -141,18 +163,23 @@ function AdminExecutiveDashboard() {
 
                 {/* Booking status report */}
                 <div className="row">
-                  <div className="col-sm-6 col-md-6 col-lg-6">
+                  <div className="col-sm-4 col-md-4 col-lg-4">
                     <AdminExecutiveBookingReport general={totalDocumentsGeneral} submitted={totalDocumentsApplicationSubmitted}
                       inProcess={totalDocumentsProcess} approved={totalDocumentsApproved} hold={totalDocumentsHold}
                       defaulter={totalDocumentsDefaulter} total={totalDocuments} />
                   </div>
 
                   {/* In process status report */}
-                  <div className="col-sm-6 col-md-6 col-lg-6">
+                  <div className="col-sm-4 col-md-4 col-lg-4">
                     <AdminExecutiveInProcessReport clientNotResponding={clientNotResponding} needToCall={needToCall}
                       documentsPending={documentsPending} working={working} applicationPending={applicationPending}
                       kycPending={kycPending} kycRejected={kycRejected} kycIncomplete={kycIncomplete}
                       totalInProcess={totalDocumentsProcess} />
+                  </div>
+
+                  <div className="col-sm-4 col-md-4 col-lg-4">
+                    <AdminExecutiveApplicationSubmittedReport kycPending={kycPending} kycRejected={kycRejected} 
+                    kycIncomplete={kycIncomplete} totalApplicationSubmitted={totalDocumentsApplicationSubmitted} />
                   </div>
                 </div>
 

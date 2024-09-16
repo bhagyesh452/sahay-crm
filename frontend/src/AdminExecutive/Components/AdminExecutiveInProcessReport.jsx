@@ -16,9 +16,9 @@ function AdminExecutiveInProcessReport({ clientNotResponding, needToCall, docume
         { value: documentsPending, label: 'Documents Pending', color: '#1cba19' },
         { value: working, label: 'Working', color: '#e65b5b' },
         { value: applicationPending, label: 'Application Pending', color: '#ff81f0' },
-        { value: kycPending, label: 'KYC Pending', color: '#ffb900' },
-        { value: kycRejected, label: 'KYC Rejected', color: '#ad77f8' },
-        { value: kycIncomplete, label: 'KYC Incomplete', color: '#3433ff' },
+        // { value: kycPending, label: 'KYC Pending', color: '#ffb900' },
+        // { value: kycRejected, label: 'KYC Rejected', color: '#ad77f8' },
+        // { value: kycIncomplete, label: 'KYC Incomplete', color: '#3433ff' },
     ];
 
     const size = {
@@ -121,7 +121,7 @@ function AdminExecutiveInProcessReport({ clientNotResponding, needToCall, docume
                                     </div>
                                 </div>
 
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                {/* <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-ffb900">
                                         </div>
@@ -132,9 +132,9 @@ function AdminExecutiveInProcessReport({ clientNotResponding, needToCall, docume
                                     <div className="call-dr-num">
                                         {kycPending}
                                     </div>
-                                </div>
+                                </div> */}
 
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                {/* <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-ad77f8">
                                         </div>
@@ -145,9 +145,9 @@ function AdminExecutiveInProcessReport({ clientNotResponding, needToCall, docume
                                     <div className="call-dr-num">
                                         {kycRejected}
                                     </div>
-                                </div>
+                                </div> */}
 
-                                <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
+                                {/* <div className="call-dr-card d-flex align-items-center justify-content-between mt-1 mb-1">
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="color-dots clr-bg-3433ff">
                                         </div>
@@ -158,7 +158,7 @@ function AdminExecutiveInProcessReport({ clientNotResponding, needToCall, docume
                                     <div className="call-dr-num">
                                         {kycIncomplete}
                                     </div>
-                                </div>
+                                </div> */}
 
                             </div>
                         </div>

@@ -213,7 +213,7 @@ const DscStatusDropdown = ({
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
-            mainCategoryStatus: "Defaulter"
+            mainCategoryStatus: "Application Submitted",
           });
         }
       }
@@ -379,6 +379,15 @@ const DscStatusDropdown = ({
             return "need_to_call";
           default:
             return "";
+        }
+      case "Application Submitted":
+        switch (subStatus) {
+          case "KYC Rejected":
+            return "need_to_call";
+          case "KYC Incomplete":
+            return "created-status";
+          case "Approved":
+            return "support-status";
         }
       case "Hold":
         switch (subStatus) {

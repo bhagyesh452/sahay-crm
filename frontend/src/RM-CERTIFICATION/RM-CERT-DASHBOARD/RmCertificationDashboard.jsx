@@ -6,7 +6,7 @@ import BookingStatusReport from "../RM-CERT-COMPONENTS/BookingStatusReport";
 import InProcessReport from "../RM-CERT-COMPONENTS/InProcessReport";
 import AdminExecutiveBookingReport from "../../AdminExecutive/Components/AdminExecutiveBookingReport";
 import AdminExecutiveInProcessReport from "../../AdminExecutive/Components/AdminExecutiveInProcessReport";
-
+import AdminExecutiveApplicationSubmittedReport from "../../AdminExecutive/Components/AdminExecutiveApplicationSubmittedReport";
 
 function RmCertificationDashboard() {
 
@@ -38,6 +38,7 @@ function RmCertificationDashboard() {
   const [totalDocumentsForAdminExecutive, setTotalDocumentsForAdminExecutive] = useState(0);
   const [totalDocumentsGeneralForAdminExecutive, setTotalDocumentsGeneralForAdminExecutive] = useState(0);
   const [totalDocumentsProcessForAdminExecutive, setTotalDocumentsProcessForAdminExecutive] = useState(0);
+  const [totalDocumentsApplicationSubmitted, setTotalDocumentsApplicationSubmitted] = useState(0);
   const [totalDocumentsApprovedForAdminExecutive, setTotalDocumentsApprovedForAdminExecutive] = useState(0);
   const [totalDocumentsHoldForAdminExecutive, setTotalDocumentsHoldForAdminExecutive] = useState(0);
   const [totalDocumentsDefaulterForAdminExecutive, setTotalDocumentsDefaulterForAdminExecutive] = useState(0);
@@ -48,6 +49,8 @@ function RmCertificationDashboard() {
   const [documentsPendingForAdminExecutive, setDocumentsPendingForAdminExecutive] = useState(0);
   const [workingForAdminExecutive, setWorkingForAdminExecutive] = useState(0);
   const [applicationPendingForAdminExecutive, setApplicationPendingForAdminExecutive] = useState(0);
+
+  // Application Submitted Sub Category Statuses for Admin-Executive
   const [kycPendingForAdminExecutive, setKycPendingForAdminExecutive] = useState(0);
   const [kycRejectedForAdminExecutive, setKycRejectedForAdminExecutive] = useState(0);
   const [kycIncompleteForAdminExecutive, setKycIncompleteForAdminExecutive] = useState(0);
@@ -72,6 +75,7 @@ function RmCertificationDashboard() {
       fetchInProcessData();
       fetchAdminExecutiveData();
       fetchAdminExecutiveInProcessData();
+      fetchAdminExecutiveApplicationSubmittedData();
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -143,6 +147,7 @@ function RmCertificationDashboard() {
         totalPages,
         totalDocuments,
         totalDocumentsGeneral,
+        totalDocumentsApplicationSubmitted,
         totalDocumentsApproved,
         totalDocumentsHold,
         totalDocumentsDefaulter,
@@ -154,6 +159,7 @@ function RmCertificationDashboard() {
       setIsAdminExecutive(true);
       setTotalDocumentsForAdminExecutive(totalDocuments);
       setTotalDocumentsGeneralForAdminExecutive(totalDocumentsGeneral);
+      setTotalDocumentsApplicationSubmitted(totalDocumentsApplicationSubmitted);
       setTotalDocumentsApprovedForAdminExecutive(totalDocumentsApproved);
       setTotalDocumentsHoldForAdminExecutive(totalDocumentsHold);
       setTotalDocumentsDefaulterForAdminExecutive(totalDocumentsDefaulter);
@@ -180,6 +186,23 @@ function RmCertificationDashboard() {
       setDocumentsPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Call Done Docs Pending").length);
       setWorkingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Working").length);
       setApplicationPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Application Pending").length);
+
+    } catch (error) {
+      console.error("Error fetching in process data :", error);
+    }
+  };
+
+  const fetchAdminExecutiveApplicationSubmittedData = async (searchQuery = "", page = 1) => {
+    let params = { search: searchQuery, page, activeTab: "Application Submitted" };
+
+    try {
+      const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
+        params: params
+      });
+
+      const { data, totalPages } = servicesResponse.data;
+      // console.log("Admin executive inprocess data is :", data);
+
       setKycPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Pending").length);
       setKycRejectedForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Rejected").length);
       setKycIncompleteForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Incomplete").length);
@@ -194,6 +217,7 @@ function RmCertificationDashboard() {
     fetchInProcessData();
     fetchAdminExecutiveData();
     fetchAdminExecutiveInProcessData();
+    fetchAdminExecutiveApplicationSubmittedData();
   }, [employeeData]);
 
   // console.log('employeeData', employeeData);
@@ -208,35 +232,43 @@ function RmCertificationDashboard() {
             <div className="row">
               <div className="col-sm-12 col-md-12 col-lg-12">
 
-                {/* Booking status report */}
                 <div className="row">
                   <div className="col-sm-6 col-md-6 col-lg-6">
+                    {/* Booking status report */}
                     <BookingStatusReport general={totalDocumentsGeneral} inProcess={totalDocumentsProcess}
                       readyToSubmit={totalDocumentsReadyToSubmit} submitted={totalDocumentsSubmitted} approved={totalDocumentsApproved}
                       hold={totalDocumentsHold} defaulter={totalDocumentsDefaulter} total={totalDocuments} />
-
-                    <div className="my-4">
-                      <AdminExecutiveBookingReport general={totalDocumentsGeneralForAdminExecutive} inProcess={totalDocumentsProcessForAdminExecutive}
-                        approved={totalDocumentsApprovedForAdminExecutive} hold={totalDocumentsHoldForAdminExecutive}
-                        defaulter={totalDocumentsDefaulterForAdminExecutive} total={totalDocumentsForAdminExecutive} isAdminExecutive={isAdminExecutive} />
-                    </div>
                   </div>
-
                   {/* In process status report */}
                   <div className="col-sm-6 col-md-6 col-lg-6">
                     <InProcessReport callBriefPending={callBriefPending} dscPending={dscPending}
                       clientNotResponding={clientNotResponding} documentsPending={documentsPending}
                       working={working} needToCall={needToCall} totalInProcess={totalDocumentsProcess} />
-
-                    <div className="my-4">
-                      <AdminExecutiveInProcessReport clientNotResponding={clientNotRespondingForAdminExecutive} needToCall={needToCallForAdminExecutive}
-                        documentsPending={documentsPendingForAdminExecutive} working={workingForAdminExecutive} applicationPending={applicationPendingForAdminExecutive}
-                        kycPending={kycPendingForAdminExecutive} kycRejected={kycRejectedForAdminExecutive} kycIncomplete={kycIncompleteForAdminExecutive}
-                        totalInProcess={totalDocumentsProcessForAdminExecutive} isAdminExecutive={isAdminExecutive} />
-                    </div>
                   </div>
                 </div>
 
+                <div className="row my-3">
+
+                  <div className="col-sm-4 col-md-4 col-lg-4">
+                    <AdminExecutiveBookingReport general={totalDocumentsGeneralForAdminExecutive} submitted={totalDocumentsApplicationSubmitted} inProcess={totalDocumentsProcessForAdminExecutive}
+                      approved={totalDocumentsApprovedForAdminExecutive} hold={totalDocumentsHoldForAdminExecutive}
+                      defaulter={totalDocumentsDefaulterForAdminExecutive} total={totalDocumentsForAdminExecutive} isAdminExecutive={isAdminExecutive} />
+                  </div>
+
+                  <div className="col-sm-4 col-md-4 col-lg-4">
+                    <AdminExecutiveInProcessReport clientNotResponding={clientNotRespondingForAdminExecutive} needToCall={needToCallForAdminExecutive}
+                      documentsPending={documentsPendingForAdminExecutive} working={workingForAdminExecutive} applicationPending={applicationPendingForAdminExecutive}
+                      kycPending={kycPendingForAdminExecutive} kycRejected={kycRejectedForAdminExecutive} kycIncomplete={kycIncompleteForAdminExecutive}
+                      totalInProcess={totalDocumentsProcessForAdminExecutive} isAdminExecutive={isAdminExecutive} />
+                  </div>
+
+                  <div className="col-sm-4 col-md-4 col-lg-4">
+                    <AdminExecutiveApplicationSubmittedReport kycPending={kycPendingForAdminExecutive} kycRejected={kycRejectedForAdminExecutive}
+                      kycIncomplete={kycIncompleteForAdminExecutive} totalApplicationSubmitted={totalDocumentsApplicationSubmitted}
+                      isAdminExecutive={isAdminExecutive} />
+                  </div>
+
+                </div>
               </div>
             </div>
           </div>
