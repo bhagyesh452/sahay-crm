@@ -60,7 +60,13 @@ router.get("/fetchServicesByDepartment/:activeDepartment", async (req, res) => {
     const { activeDepartment } = req.params; // Use query instead of params
     // console.log("Department name is :", activeDepartment);
     try {
-        const data = await DepartmentModel.find({ departmentName: activeDepartment });
+        const decodedDepartmentName = decodeURIComponent(activeDepartment);
+        const data = await DepartmentModel.find({
+            $or: [
+                { departmentName: decodedDepartmentName }, // Exact match
+                { departmentName: decodedDepartmentName.replace(/-/g, "/") } // Handle alternate names
+            ]
+        });
 
         if (!data) {
             return res.status(404).json({ result: false, message: "Department not found" });
