@@ -1087,6 +1087,10 @@ table.table.top_5_table tbody tr.myself td {
     text-transform: uppercase;
     border: none;
 }
+.attendance-date-tbl .disabled-field {
+    background: #e9ecef; /* Light gr ay background */
+    cursor: not-allowed; /* Change cursor to indicate disabled */
+}
 .p-present
 {
     height: 20px;

@@ -7,7 +7,6 @@ import { GiCheckMark } from "react-icons/gi";
 import Swal from 'sweetalert2';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-
 function ShowAttendanceForParticularEmployee({ year, month, id, name, open, close }) {
 
     // console.log("Id is :", id);
@@ -16,6 +15,11 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
     // console.log("Month is ", month);
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const officialHolidays = [
+        '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
+        '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
+        '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
+      ]        
 
     const convertToDateInputFormat = (selectedDate) => {
         if (!selectedDate) return '';
@@ -93,12 +97,76 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
         }
     };
 
-    const handleSubmit = async (id, empId, name, designation, department, branch, date, inTime, outTime, workingHours, status) => {
+    const handleSubmit = async (id, empId, name, designation, department, branch, date, inTime, outTime) => {
         console.log("Date is :", date)
         const selectedDate = new Date(date);
         const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
         // const formattedDate = date.toISOString().split('T')[0];
         console.log("Day is :", dayName)
+        let workingHours, status;
+
+        const convertToMinutes = (timeString) => {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+
+        const inTimeMinutes = convertToMinutes(inTime);
+        const outTimeMinutes = convertToMinutes(outTime);
+        const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
+        const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
+
+        const calculateWorkingHours = (inTime, outTime) => {
+            const convertToMinutes = (timeString) => {
+                const [hours, minutes] = timeString.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+
+            const formatToHHMM = (minutes) => {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
+            };
+
+            const inTimeMinutes = convertToMinutes(inTime);
+            const outTimeMinutes = convertToMinutes(outTime);
+            console.log("inTimeMinutes", inTimeMinutes)
+            console.log("outTimeMinutes", outTimeMinutes)
+
+            const startBoundary = convertToMinutes("10:00"); // 10:00 AM
+            const endBoundary = convertToMinutes("18:00"); // 6:00 PM
+
+            let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
+            let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
+            console.log("actualInTime", actualInTime)
+            console.log("actualOutTime", actualOutTime)
+            let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes for the break
+
+            // Ensure working minutes don't go negative
+            if (workingMinutes < 0) {
+                workingMinutes = 0;
+            }
+
+            return workingMinutes;
+        };
+
+        const workingMinutes = calculateWorkingHours(inTime, outTime);
+
+        // Convert minutes back to HH:MM format for display
+        const hours = Math.floor(workingMinutes / 60);
+        const minutes = workingMinutes % 60;
+        workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+        // console.log("intimeminutes", inTimeMinutes)
+        console.log("workingminutes", workingMinutes)
+        if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
+            status = "LC";
+        } else if (workingMinutes >= 420) { // 7 hours in minutes
+            status = "Present";
+        } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours
+            status = "Half Day";
+        } else {
+            status = "Leave";
+        }
 
         const payload = {
             id: id,
@@ -147,56 +215,10 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
         return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
 
     };
-
-    // const fetchAttendance = async () => {
-    //     setIsLoading(true);
-    //     try {
-    //         const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
-    //         const allAttendanceData = res.data.data;
-
-    //         const totalDays = new Date(year, new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1, 0).getDate();
-    //         const today = new Date().getDate();
-    //         const currentMonth = getCurrentMonthName();
-
-    //         const filteredData = [];
-
-    //         for (let date = 1; (!currentMonth ? date <= totalDays : date <= today); date++) {
-    //             allAttendanceData.forEach(employee => {
-    //                 if (employee._id === id) {  // Check for the specific employee ID
-    //                     employee.years.forEach(yearData => {
-    //                         if (yearData.year === year) {  // Check for the specific year
-    //                             yearData.months.forEach(monthData => {
-    //                                 if (monthData.month === month) {  // Check for the specific month
-    //                                     monthData.days.forEach(dayData => {
-    //                                         const { date, inTime, outTime, workingHours, status } = dayData;
-    //                                         filteredData.push({
-    //                                             employeeName: employee.employeeName,
-    //                                             designation: employee.designation,
-    //                                             department: employee.department,
-    //                                             branchOffice: employee.branchOffice,
-    //                                             date,
-    //                                             inTime,
-    //                                             outTime,
-    //                                             workingHours,
-    //                                             status
-    //                                         });
-    //                                     });
-    //                                 }
-    //                             });
-    //                         }
-    //                     });
-    //                 }
-    //             });
-    //         }
-    //         filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
-    //         setAttendanceData(filteredData);
-    //     } catch (error) {
-    //         console.log("Error fetching attendance record", error);
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
-
+// Function to format date for checking official holidays
+const formatDateForHolidayCheck = (year, month, day) => {
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+};
     const getCurrentMonthName = () => {
         const months = [
             "January", "February", "March", "April", "May", "June",
@@ -205,6 +227,107 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
         const currentMonthIndex = new Date().getMonth();
         return months[currentMonthIndex];
     };
+
+    // const fetchAttendance = async () => {
+    //     setIsLoading(true);
+    //     try {
+    //         const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
+    //         const allAttendanceData = res.data.data;
+
+    //         const totalDays = new Date(year, new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1, 0).getDate();
+    //         const today = new Date().getDate(); // Current date of the month
+    //         const currentMonth = getCurrentMonthName();
+    //         const isCurrentMonth = month === currentMonth;
+    //         let name = "";
+    //         let designation = "";
+
+    //         const filteredData = [];
+    //         const filledDates = new Set(); // To track dates with existing data
+
+    //         // Collect all filled dates
+    //         allAttendanceData.forEach(employee => {
+    //             if (employee._id === id) {  // Check for the specific employee ID
+    //                 employee.years.forEach(yearData => {
+    //                     if (yearData.year === year) {  // Check for the specific year
+    //                         yearData.months.forEach(monthData => {
+    //                             if (monthData.month === month) {  // Check for the specific month
+    //                                 monthData.days.forEach(dayData => {
+    //                                     const { date: dayDate, inTime, outTime, workingHours, status } = dayData;
+
+    //                                     filledDates.add(dayDate); // Add filled date to the set
+
+    //                                     // Add data for the current month up to today or all data for past months
+    //                                     if (isCurrentMonth && dayDate <= today || !isCurrentMonth) {
+
+    //                                         name = employee.employeeName;
+    //                                         designation = employee.designation;
+
+    //                                         filteredData.push({
+    //                                             _id: employee._id,
+    //                                             employeeId: employee.employeeId,
+    //                                             employeeName: employee.employeeName,
+    //                                             designation: employee.designation,
+    //                                             department: employee.department,
+    //                                             branchOffice: employee.branchOffice,
+    //                                             date: dayDate,
+    //                                             inTime,
+    //                                             outTime,
+    //                                             workingHours,
+    //                                             status
+    //                                         });
+    //                                     }
+    //                                 });
+    //                             }
+    //                         });
+    //                     }
+    //                 });
+    //             }
+    //         });
+
+    //         // Include dates with no data in current month
+    //         if (isCurrentMonth) {
+    //             for (let date = 1; date <= today; date++) {
+    //                 if (!filledDates.has(date)) {
+    //                     filteredData.push({
+    //                         employeeName: name, // Example placeholder for missing data
+    //                         designation: designation,
+    //                         // department: '',
+    //                         // branchOffice: '',
+    //                         date: date,
+    //                         inTime: '',
+    //                         outTime: '',
+    //                         workingHours: '',
+    //                         status: ''
+    //                     });
+    //                 }
+    //             }
+    //         } else {
+    //             // For past months, include all days from 1 to totalDays
+    //             for (let date = 1; date <= totalDays; date++) {
+    //                 if (!filledDates.has(date)) {
+    //                     filteredData.push({
+    //                         employeeName: name, // Example placeholder for missing data
+    //                         designation: designation,
+    //                         // department: '',
+    //                         // branchOffice: '',
+    //                         date: date,
+    //                         inTime: '',
+    //                         outTime: '',
+    //                         workingHours: '',
+    //                         status: ''
+    //                     });
+    //                 }
+    //             }
+    //         }
+
+    //         filteredData.sort((a, b) => new Date(`${year}-${month}-${a.date}`) - new Date(`${year}-${month}-${b.date}`));
+    //         setAttendanceData(filteredData);
+    //     } catch (error) {
+    //         console.log("Error fetching attendance record", error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     const fetchAttendance = async () => {
         setIsLoading(true);
@@ -218,10 +341,9 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
             const isCurrentMonth = month === currentMonth;
             let name = "";
             let designation = "";
-            
+
             const filteredData = [];
             const filledDates = new Set(); // To track dates with existing data
-
             // Collect all filled dates
             allAttendanceData.forEach(employee => {
                 if (employee._id === id) {  // Check for the specific employee ID
@@ -236,7 +358,6 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
 
                                         // Add data for the current month up to today or all data for past months
                                         if (isCurrentMonth && dayDate <= today || !isCurrentMonth) {
-
                                             name = employee.employeeName;
                                             designation = employee.designation;
 
@@ -262,39 +383,177 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                 }
             });
 
-            // Include dates with no data in current month
-            if (isCurrentMonth) {
-                for (let date = 1; date <= today; date++) {
-                    if (!filledDates.has(date)) {
-                        filteredData.push({
-                            employeeName: name, // Example placeholder for missing data
-                            designation: designation,
-                            // department: '',
-                            // branchOffice: '',
-                            date: date,
-                            inTime: '',
-                            outTime: '',
-                            workingHours: '',
-                            status: ''
-                        });
+            // Function to find the previous working day
+            const findPrevWorkingDay = (year, month, startDay) => {
+                let currentDay = startDay;
+                let currentMonth = month;
+                let currentYear = year;
+
+                while (true) {
+                    if (currentDay < 1) {
+                        currentMonth--;
+                        if (currentMonth < 1) {
+                            currentMonth = 12;
+                            currentYear--;
+                        }
+                        const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+                        currentDay = daysInPrevMonth;
                     }
+
+                    const formattedDate = formatDateForHolidayCheck(currentYear, currentMonth, currentDay);
+                    const dateToCheck = new Date(currentYear, currentMonth - 1, currentDay);
+                    const isSunday = dateToCheck.getDay() === 0;
+                    const isHoliday = officialHolidays.includes(formattedDate);
+                    if (!isSunday && !isHoliday) {
+                        break;
+                    }
+                    currentDay--;
                 }
-            } else {
-                // For past months, include all days from 1 to totalDays
-                for (let date = 1; date <= totalDays; date++) {
-                    if (!filledDates.has(date)) {
-                        filteredData.push({
-                            employeeName: name, // Example placeholder for missing data
-                            designation: designation,
-                            // department: '',
-                            // branchOffice: '',
-                            date: date,
-                            inTime: '',
-                            outTime: '',
-                            workingHours: '',
-                            status: ''
-                        });
+                return { day: currentDay, month: currentMonth, year: currentYear };
+            };
+            // Function to find the next working day
+            const findNextWorkingDay = (year, month, startDay) => {
+                let currentDay = startDay;
+                let currentMonth = month;
+                let currentYear = year;
+
+                while (true) {
+                    const daysInCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
+                    if (currentDay > daysInCurrentMonth) {
+                        currentMonth++;
+                        if (currentMonth > 12) {
+                            currentMonth = 1;
+                            currentYear++;
+                        }
+                        currentDay = 1; // Reset to the first day of the next month
                     }
+
+                    const formattedDate = formatDateForHolidayCheck(currentYear, currentMonth, currentDay);
+                    const dateToCheck = new Date(currentYear, currentMonth - 1, currentDay);
+                    const isSunday = dateToCheck.getDay() === 0;
+                    const isHoliday = officialHolidays.includes(formattedDate);
+
+                    if (!isSunday && !isHoliday) {
+                        break;
+                    }
+
+                    currentDay++;
+                }
+
+                return { day: currentDay, month: currentMonth, year: currentYear };
+            };
+
+            // Logic to handle empty days for the current month
+            for (let date = 1; date <= (isCurrentMonth ? today : totalDays); date++) {
+                if (!filledDates.has(date)) {
+                    function getMonthName(monthNumber) {
+                        const monthNames = [
+                            "January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"
+                        ];
+
+                        return monthNames[monthNumber - 1]; // Subtract 1 since array indices start from 0
+                    }
+                    const monthNamesToNumbers = {
+                        "January": 1,
+                        "February": 2,
+                        "March": 3,
+                        "April": 4,
+                        "May": 5,
+                        "June": 6,
+                        "July": 7,
+                        "August": 8,
+                        "September": 9,
+                        "October": 10,
+                        "November": 11,
+                        "December": 12
+                    };
+                    const monthNumber = monthNamesToNumbers[month];
+                    const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${date < 10 ? '0' + date : date}`;
+                    const isSunday = new Date(`${year}-${month}-${date}`).getDay() === 0;
+                    const isHoliday = officialHolidays.includes(formattedDate);
+
+                    let status = ''; // Default status for empty days
+
+                    if (isSunday) {
+                        const prevWorkingDate = findPrevWorkingDay(year, monthNumber, date - 1);
+                        const nextWorkingDate = findNextWorkingDay(year, monthNumber, date + 1);
+
+                        // Fetch attendance status for the previous and next working day
+                        const prevDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+                            ?.find(yr => yr.year === prevWorkingDate.year)?.months
+                            ?.find(mn => mn.month === getMonthName(prevWorkingDate.month))?.days
+                            ?.find(d => d.date === prevWorkingDate.day)?.status;
+
+                        const nextDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+                            ?.find(yr => yr.year === nextWorkingDate.year)?.months
+                            ?.find(mn => mn.month === getMonthName(nextWorkingDate.month))?.days
+                            ?.find(d => d.date === nextWorkingDate.day)?.status;
+
+                        // Determine Sunday status
+                        if (
+                            (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                            (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                            (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                        ) {
+                            status = "Sunday Leave"; // Sunday Leave
+                        } else if (
+                            (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+                            (prevDayStatus === "LCH" && nextDayStatus === "LCH") ||
+                            (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
+                            (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
+                        ) {
+                            status = "Sunday Half Day"; // Sunday Half Day
+                        } else if (
+                            prevDayStatus === "Present" || nextDayStatus === "Present"
+                        ) {
+                            status = "Sunday Present"; // Sunday Present
+                        } else {
+                            status = "Sunday"; // Regular Sunday
+                        }
+                    } else if (isHoliday) {
+                        const prevWorkingDate = findPrevWorkingDay(year, monthNumber, date - 1);
+                        const nextWorkingDate = findNextWorkingDay(year, monthNumber, date + 1);
+
+                        // Fetch attendance status for the previous and next working day
+                        const prevDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+                            ?.find(yr => yr.year === prevWorkingDate.year)?.months
+                            ?.find(mn => mn.month === getMonthName(prevWorkingDate.month))?.days
+                            ?.find(d => d.date === prevWorkingDate.day)?.status;
+
+                        const nextDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+                            ?.find(yr => yr.year === nextWorkingDate.year)?.months
+                            ?.find(mn => mn.month === getMonthName(nextWorkingDate.month))?.days
+                            ?.find(d => d.date === nextWorkingDate.day)?.status;
+
+                        // Determine Sunday status
+                        if (
+                            (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+                            (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+                            (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+                        ) {
+                            status = "Official Holiday Leave"; // Sunday Leave
+                        } else if (
+                            (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+                            (prevDayStatus === "LCH" && nextDayStatus === "LCH") ||
+                            (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
+                            (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
+                        ) {
+                            status = "Official Holiday Half"; // Sunday Half Day
+                        } else {
+                            status = "Official Holiday"; // Regular Sunday
+                        }
+                    }
+
+                    filteredData.push({
+                        employeeName: name,
+                        designation: designation,
+                        date: date,
+                        inTime: '',
+                        outTime: '',
+                        workingHours: '',
+                        status: status
+                    });
                 }
             }
 
@@ -306,8 +565,8 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
             setIsLoading(false);
         }
     };
-    
-    
+
+
     useEffect(() => {
         fetchEmployees();
         fetchDeletedEmployees();
@@ -332,7 +591,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                     <div className="table table-responsive table-style-2 m-0">
                         <table className="table table-vcenter table-nowrap">
                             <thead>
-                                
+
                                 <tr className="tr-sticky">
                                     <th>Sr. No</th>
                                     <th>Employee Name</th>
@@ -362,25 +621,56 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                             ) : attendanceData.length !== 0 ? (
                                 <tbody>
                                     {attendanceData.map((emp, index) => {
-
+                                        const convertToMinutes = (timeString) => {
+                                            const [hours, minutes] = timeString.split(':').map(Number);
+                                            return hours * 60 + minutes;
+                                        };
+                                        //iconsole.log("attendanceData", attendanceData)
                                         const inTime = inputValues[emp.date]?.inTime || emp.inTime || "";
                                         const outTime = inputValues[emp.date]?.outTime || emp.outTime || "";
+                                        const inTimeMinutes = convertToMinutes(inTime);
+                                        const outTimeMinutes = convertToMinutes(outTime);
+                                        //console.log("inTimeMinutes", inTimeMinutes)
+                                        //console.log("outTimeMinutes", outTimeMinutes)
+
+                                        const startBoundary = convertToMinutes("10:00"); // 10:00 AM
+                                        const endBoundary = convertToMinutes("18:00"); // 6:00 PM
+                                        let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
+                                        let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
+                                        //console.log("actualInTime", actualInTime)
+                                        //console.log("actualOutTime", actualOutTime)
 
                                         // Calculate working hours only if both inTime and outTime are available
                                         const workingHours = calculateWorkingHours(inputValues[emp.date]?.inTime || emp.inTime, inputValues[emp.date]?.outTime || emp.outTime);
-
-                                        // Determine the status
-                                        let status;
+                                        const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
+                                        const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
+                                        // Initialize status from the attendance data (emp.status)
+                                        let status = emp.status || "No Data";
                                         const workingMinutes = (inputValues[emp.date]?.inTime || emp.inTime && inputValues[emp.date]?.outTime || emp.outTime) ? workingHours.split(':').reduce((acc, time) => (60 * acc) + +time) : 0;
-                                        if (workingMinutes >= 435) {
-                                            status = "Present";
-                                        } else if (workingMinutes >= 218 && workingMinutes <= 435) {
-                                            status = "Half Day";
-                                        } else if (workingMinutes <= 120) {
-                                            status = "Leave";
-                                        } else {
-                                            status = "Leave";
-                                        }
+                                        //console.log("workingminutes", workingMinutes)
+                                        // if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
+                                        //     status = "LC";
+                                        // } else if (workingMinutes >= 420) { // 7 hours in minutes
+                                        //     status = "Present";
+                                        // } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours
+                                        //     status = "Half Day";
+                                        // } else {
+                                        //     status = "Leave";
+                                        // }
+                                        // Function to check if a date is a Sunday
+                                        const isSunday = (year, month, day) => {
+                                            const date = new Date(year, month - 1, day);
+                                            return date.getDay() === 0;
+                                        };
+
+                                       
+                                        // Get the month number from the month name
+                                        const monthNumber = new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1;
+                                        const formattedDate = new Date(year, monthNumber - 1, emp.date);
+                                        const isDateSunday = isSunday(year, monthNumber, emp.date);
+                                        const formattedDateHoliday = formatDateForHolidayCheck(year, monthNumber, emp.date)
+                                        console.log("formatteddateholiday" , formattedDateHoliday)
+                                        const isOfficialHoliday = officialHolidays.includes(formattedDateHoliday)
 
                                         return (
                                             <tr key={index}>
@@ -417,10 +707,10 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                     <div className='attendance-date-tbl'>
                                                         <input
                                                             type="time"
-                                                            className='form-cantrol in-time'
+                                                            className={`form-control in-time ${isDateSunday || isDeleted || isOfficialHoliday ? 'disabled-field' : ''}`}
                                                             value={inTime}
                                                             onChange={(e) => handleInputChange(emp.date, 'inTime', e.target.value)}
-                                                            disabled={isDeleted}
+                                                            disabled={isDateSunday || isDeleted || isOfficialHoliday}
                                                         />
                                                     </div>
                                                 </td>
@@ -428,10 +718,11 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                     <div className='attendance-date-tbl'>
                                                         <input
                                                             type="time"
-                                                            className='form-cantrol out-time'
+                                                            className={`form-control out-time ${isDateSunday || isDeleted || isOfficialHoliday ? 'disabled-field' : ''}`}
                                                             value={outTime}
                                                             onChange={(e) => handleInputChange(emp.date, 'outTime', e.target.value)}
-                                                            disabled={isDeleted}
+                                                            disabled={isDateSunday || isDeleted || isOfficialHoliday}
+
                                                         />
                                                     </div>
                                                 </td>
@@ -452,8 +743,9 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                             convertToDateInputFormat(new Date(`${year}-${month}-${emp.date}`)),
                                                             inputValues[emp.date]?.inTime || emp.inTime,
                                                             inputValues[emp.date]?.outTime || emp.outTime,
-                                                            calculateWorkingHours(inputValues[emp.date]?.inTime || emp.inTime, inputValues[emp.date]?.outTime || emp.outTime),
-                                                            status)}>
+                                                            //calculateWorkingHours(inputValues[emp.date]?.inTime || emp.inTime, inputValues[emp.date]?.outTime || emp.outTime)
+                                                        )}
+                                                    >
                                                         <GiCheckMark />
                                                     </button>
                                                 </td>}
