@@ -743,6 +743,12 @@ router.get('/adminexecutivedata', async (req, res) => {
     }
     //console.log(activeTab)
     //console.log(response)
+
+    await AdminExecutiveModel.updateMany(
+      { subCategoryStatus: { $in: ["KYC Pending", "KYC Incomplete", "KYC Rejected"] } },
+      { $set: { mainCategoryStatus: "Application Submitted" } }
+    );
+    
     const totalDocuments = await AdminExecutiveModel.countDocuments(query);
     const totalDocumentsGeneral = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "General" });
     const totalDocumentsProcess = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
