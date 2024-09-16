@@ -217,7 +217,6 @@ router.post('/addAttendance', async (req, res) => {
                 } else {
                     // If status is LC, check how many LC entries already exist for the month
                     if (status === "LC") {
-                        // Check if the current day already has an LC status
                         let dayArray = monthArray.days.find(d => d.date === day);
 
                         if (dayArray && dayArray.status.startsWith("LC")) {
@@ -228,11 +227,20 @@ router.post('/addAttendance', async (req, res) => {
                             if (lcCount < 3) {
                                 status = `LC${lcCount + 1}`; // Increment the LC count up to LC3
                             } else {
-                                status = 'LCH'; // Set to LCH if LC count exceeds 3
+                                // If the LC count exceeds 3, set status to LCH
+                                status = 'LCH';
+
+                                // Convert all previous LC1, LC2, LC3 in the same month to LCH
+                                monthArray.days.forEach(d => {
+                                    if (d.status.startsWith("LC")) {
+                                        d.status = 'LCH'; // Convert all LC statuses to LCH
+                                    }
+                                });
                             }
                         }
                     }
 
+                    // Find the specific day array or create a new one
                     let dayArray = monthArray.days.find(d => d.date === day);
 
                     if (!dayArray) {
@@ -256,6 +264,7 @@ router.post('/addAttendance', async (req, res) => {
             }
         }
 
+        // Save the updated attendance record
         const savedAttendance = await attendance.save();
         res.status(200).json({ message: 'Attendance added/updated successfully', data: savedAttendance });
     } catch (error) {
@@ -263,6 +272,7 @@ router.post('/addAttendance', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
 
 
 

@@ -157,7 +157,12 @@ function RmofCertificationProcessPanel({
             if (res.updatedDocument) {
                 updateDocumentInState(res.updatedDocument);
             }
-
+        });
+        socket.on("lead-updated-by-admin", (res) => {
+            //console.log("res" , res)
+            if (res.updatedDocument) {
+                updateDocumentInState(res.updatedDocument);
+            }
         });
         return () => {
             socket.disconnect();

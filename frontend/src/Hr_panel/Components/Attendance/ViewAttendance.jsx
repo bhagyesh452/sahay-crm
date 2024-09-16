@@ -327,10 +327,11 @@ function ViewAttendance({ year, month, date }) {
             const hours = Math.floor(workingMinutes / 60);
             const minutes = workingMinutes % 60;
             workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+            console.log("workingHours" , workingHours)
 
             // console.log("intimeminutes", inTimeMinutes)
             console.log("workingminutes", workingMinutes)
-            if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
+            if ((inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) && (workingMinutes >= 420) ) {
                 status = "LC";
             } else if (workingMinutes >= 420) { // 7 hours in minutes
                 status = "Present";
@@ -729,11 +730,7 @@ function ViewAttendance({ year, month, date }) {
                                                             leaveCount++;
                                                         }
 
-                                                        if (status === "Half Day" ||
-                                                            status === "LC1" ||
-                                                            status === "LC2" ||
-                                                            status === "LC3" ||
-                                                            status === "LCH") {
+                                                        if (status === "Half Day" || status === "LCH") {
                                                             halfDayCount++;
                                                         }
                                                     }
@@ -944,7 +941,12 @@ function ViewAttendance({ year, month, date }) {
                                                                                             </>
                                                                                         );
                                                                                     } else {
-                                                                                        return <div className="s-sunday">OH</div>; // Default Sunday fill with "S"
+                                                                                        return (<>
+                                                                                            <div className="s-sunday">OH</div>
+                                                                                            {!isFutureDate && <div className="d-none">{presentCount++}</div>} 
+                                                                                        </>
+                                                                                        )
+                                                                                       
                                                                                     }
                                                                                 })()
                                                                             ) : selectedDate.getDay() === 0 ? ( // Logic for Sunday
@@ -1258,9 +1260,6 @@ function ViewAttendance({ year, month, date }) {
                                                     }
 
                                                     if (status === "Half Day" ||
-                                                        status === "LC1" ||
-                                                        status === "LC2" ||
-                                                        status === "LC3" ||
                                                         status === "LCH") {
                                                         halfDayCount++;
                                                     }

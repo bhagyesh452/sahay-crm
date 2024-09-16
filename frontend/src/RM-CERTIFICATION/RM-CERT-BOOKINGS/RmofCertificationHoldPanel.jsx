@@ -100,7 +100,7 @@ function RmofCertificationHoldPanel({ searchText, showFilter, totalFilteredData,
       reconnection: true,
       transports: ['websocket'],
     });
-
+    
     socket.on("rm-general-status-updated", (res) => {
       fetchData(searchText)
     });
@@ -142,15 +142,19 @@ function RmofCertificationHoldPanel({ searchText, showFilter, totalFilteredData,
       if (res.updatedDocument) {
         updateDocumentInState(res.updatedDocument);
       }
-
     });
     socket.on("adminexecutive-letter-updated", (res) => {
       //console.log("res" , res)
       if (res.updatedDocument) {
         updateDocumentInState(res.updatedDocument);
       }
-
     });
+    socket.on("lead-updated-by-admin", (res) => {
+      //console.log("res" , res)
+      if (res.updatedDocument) {
+          updateDocumentInState(res.updatedDocument);
+      }
+  });
 
     return () => {
       socket.disconnect();

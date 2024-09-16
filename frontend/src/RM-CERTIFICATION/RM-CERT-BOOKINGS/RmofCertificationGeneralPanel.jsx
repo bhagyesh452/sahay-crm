@@ -162,7 +162,18 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
             reconnection: true,
             transports: ['websocket'],
         });
-
+        const updateDocumentInState = (updatedDocument) => {
+            console.log(updatedDocument)
+            setRmServicesData(prevData => prevData.map(item =>
+                item._id === updatedDocument._id ? updatedDocument : item
+            ));
+            setcompleteRmData(prevData => prevData.map(item =>
+                item._id === updatedDocument._id ? updatedDocument : item
+            ));
+            setdataToFilter(prevData => prevData.map(item =>
+                item._id === updatedDocument._id ? updatedDocument : item
+            ));
+        };
         socket.on("rm-general-status-updated", (res) => {
             fetchData(searchText)
         });
@@ -182,7 +193,13 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
         socket.on("booking-updated", (res) => {
             fetchData(searchText)
         });
-
+        socket.on("lead-updated-by-admin", (res) => {
+            //console.log("res" , res)
+            if (res.updatedDocument) {
+                console.log("res" , res)
+                updateDocumentInState(res.updatedDocument);
+            }
+        });
 
         return () => {
             socket.disconnect();
