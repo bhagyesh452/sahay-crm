@@ -54,6 +54,8 @@ import { IoCall } from "react-icons/io5";
 import EmployeeViewAttendance from "./EmployeeView/EmloyeeViewAttendance.jsx";
 import EmployeeViewPayrollView from "./EmployeeView/EmployeePayrollView.jsx";
 import SalaryCalculationView from "./EmployeeView/SalaryCalculationView.jsx";
+import LeaveReportView from "./EmployeeView/LeaveReportView.jsx";
+import CallingReportView from "./EmployeeView/CallingReportView.jsx";
 
 
 function EmployeeView() {
@@ -74,7 +76,6 @@ function EmployeeView() {
   const [joiningDate, setJoiningDate] = useState("");
   const [department, setDepartment] = useState("");
   const [branchOffice, setBranchOffice] = useState("");
-  const [designation, setDesignation] = useState("");
   const [employmentType, setEmploymentType] = useState("");
   const [reportingManager, setReportingManager] = useState("");
   const [fullName, setFullName] = useState("");
@@ -251,6 +252,14 @@ function EmployeeView() {
       // setPersonalAddress(data.personal_address || '');
 
       setdata(data);
+      setDepartment(data.department);
+      setEmploymentType(data.employeementType);
+      setDob(data.dob);
+      setGender(data.gender);
+      setRelationship(data.relationship);
+      setCurrentAddress(data.currentAddress);
+      setPermanentAddress(data.permanentAddress);
+
     } catch (error) {
       console.error("Error fetching employee data", error);
     }
@@ -271,6 +280,13 @@ function EmployeeView() {
     fetchPersonalInfo();
   }, []);
 
+  const fullNameArray = fullName.split(" ");
+  // console.log("Full name array is :", fullNameArray);
+  // console.log("Full name is :", fullName);
+  let firstName = fullNameArray[0];
+  let middleName = fullNameArray[1];
+  let lastName = fullNameArray[2];
+
   const handleSave = async () => {
     const payload = {
       officialEmail: officialEmail,
@@ -280,7 +296,9 @@ function EmployeeView() {
       branch: branchOffice,
       employeementType: employmentType,
       manager: reportingManager,
-      empFullName: fullName,
+      firstName: firstName,
+      middleName: middleName,
+      lastName: lastName,
       dob: dob,
       gender: gender,
       personalPhoneNo: personalNumber,
@@ -454,7 +472,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7 pt-1 pb-1 bdr-left-eee">
                                   {editField !== "officialEmail" ? (
-                                    <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center justify-content-between ep_info">
                                       <div className="ep_info_t">
                                         {data.email || "-"}
                                       </div>
@@ -497,7 +515,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7 pt-1 pb-1 bdr-left-eee">
                                   {editField !== "officialNumber" ? (
-                                    <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center justify-content-between ep_info">
                                       <div className="ep_info_t">
                                         {data.number || "-"}
                                       </div>
@@ -542,7 +560,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   {editField !== "joiningDate" ? (
-                                    <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center justify-content-between ep_info">
                                       <div className="ep_info_t">
                                         {data.jdate ? formatDateNew(data.jdate) : "-"}
                                       </div>
@@ -614,7 +632,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "department" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.department || "-"}
                                   </div>
@@ -634,7 +652,7 @@ function EmployeeView() {
                                   <div className="ep_info_form">
                                     <select className="ep_info_select form-control"
                                       value={department} onChange={(e) => setDepartment(e.target.value)}>
-                                      <option value="" disabled>--Select Department--</option>
+                                      <option value="" selected>--Select Department--</option>
                                       <option value="Start-Up">Start-Up</option>
                                       <option value="HR">HR</option>
                                       <option value="Operation">Operation</option>
@@ -665,7 +683,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "branchOffice" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.branchOffice || "-"}
                                   </div>
@@ -685,7 +703,7 @@ function EmployeeView() {
                                   <div className="ep_info_form">
                                     <select className="ep_info_select form-control"
                                       value={branchOffice} onChange={(e) => setBranchOffice(e.target.value)}>
-                                      <option value="" disabled>--Select Branch--</option>
+                                      <option value="" selected>--Select Branch--</option>
                                       <option value="Gota">Gota</option>
                                       <option value="Sindhu Bhawan">Sindhu Bhawan</option>
                                     </select>
@@ -712,7 +730,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "employmentType" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.employeementType || "-"}
                                   </div>
@@ -732,7 +750,7 @@ function EmployeeView() {
                                   <div className="ep_info_form">
                                     <select className="ep_info_select form-control"
                                       value={employmentType} onChange={(e) => setEmploymentType(e.target.value)}>
-                                      <option value="" disabled>--Select Employment Type--</option>
+                                      <option value="" selected>--Select Employment Type--</option>
                                       <option value="Full-time">Full-time</option>
                                       <option value="Part-time">Part-time</option>
                                       <option value="Contract">Contract</option>
@@ -762,7 +780,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "reportingManager" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.reportingManager || "-"}
                                   </div>
@@ -782,7 +800,7 @@ function EmployeeView() {
                                   <div className="ep_info_form">
                                     <select className="ep_info_select form-control"
                                       value={reportingManager} onChange={(e) => setReportingManager(e.target.value)}>
-                                      <option value="" disabled>--Select Manager--</option>
+                                      <option value="" selected>--Select Manager--</option>
                                       {data.department === "Sales" && data.newDesignation === "Floor Manager"
                                         ? <option value="Mr. Ronak Kumar">Mr. Ronak Kumar</option>
                                         : <>{renderManagerOptions()}</>
@@ -820,7 +838,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "empFullName" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.empFullName || "-"}
                                   </div>
@@ -863,7 +881,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "dob" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.dob ? formatDateNew(data.dob) : "-"}
                                     {/* 2<sup>nd</sup> Dec 2024 */}
@@ -907,7 +925,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "gender" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.gender || "-"}
                                   </div>
@@ -927,7 +945,7 @@ function EmployeeView() {
                                   <div className="ep_info_form">
                                     <select className="ep_info_select form-control"
                                       value={gender} onChange={(e) => setGender(e.target.value)}>
-                                      <option value="" disabled>--Select Gender--</option>
+                                      <option value="" selected>--Select Gender--</option>
                                       <option value="Male">Male</option>
                                       <option value="Female">Female</option>
                                     </select>
@@ -954,7 +972,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "personalNumber" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_number || "-"}
                                   </div>
@@ -997,7 +1015,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "personalEmail" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_email || "-"}
                                   </div>
@@ -1035,7 +1053,7 @@ function EmployeeView() {
 
                     {/* Payroll Information Component */}
                     <div class="tab-pane fade" id="PayrollInformation">
-                      <EmployeeViewPayrollView data={data} editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} />
+                      <EmployeeViewPayrollView editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} />
                     </div>
 
                     <div class="tab-pane fade" id="Emergency_Contact">
@@ -1053,7 +1071,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "emergencyContact" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_contact_person || "-"}
                                   </div>
@@ -1096,7 +1114,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "relationship" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_relationship || "-"}
                                   </div>
@@ -1116,7 +1134,7 @@ function EmployeeView() {
                                   <div className="ep_info_form">
                                     <select className="ep_info_select form-control"
                                       value={relationship} onChange={(e) => setRelationship(e.target.value)}>
-                                      <option value="" disabled>--Select Relationship--</option>
+                                      <option value="" selected>--Select Relationship--</option>
                                       <option value="Father">Father</option>
                                       <option value="Mother">Mother</option>
                                       <option value="Spouse">Spouse</option>
@@ -1144,7 +1162,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "emergencyContactNo" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_number || "-"}
                                   </div>
@@ -1193,7 +1211,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "currentAddress" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.currentAddress || "-"}
                                   </div>
@@ -1236,7 +1254,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "permanentAddress" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.permanentAddress || "-"}
                                   </div>
@@ -1306,8 +1324,12 @@ function EmployeeView() {
                     <div class="tab-pane heiitc_inner fade" id="SalaryCalculation">
                       <SalaryCalculationView />
                     </div>
-                    <div class="tab-pane heiitc_inner fade" id="LeaveReport">...</div>
-                    <div class="tab-pane heiitc_inner fade" id="CallingReport">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="LeaveReport">
+                      <LeaveReportView />
+                    </div>
+                    <div class="tab-pane heiitc_inner fade" id="CallingReport">
+                      <CallingReportView/>
+                    </div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
@@ -1369,7 +1391,6 @@ function EmployeeView() {
         </Button>
       </Dialog>
     </div>
-
   );
 }
 

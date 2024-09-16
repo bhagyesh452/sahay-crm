@@ -746,6 +746,7 @@ router.get('/adminexecutivedata', async (req, res) => {
     const totalDocuments = await AdminExecutiveModel.countDocuments(query);
     const totalDocumentsGeneral = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "General" });
     const totalDocumentsProcess = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
+    const totalDocumentsApplicationSubmitted = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Application Submitted" });
     const totalDocumentsDefaulter = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
     const totalDocumentsHold = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
     const totalDocumentsApproved = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
@@ -755,6 +756,7 @@ router.get('/adminexecutivedata', async (req, res) => {
       totalDocuments,
       totalDocumentsGeneral,
       totalDocumentsProcess,
+      totalDocumentsApplicationSubmitted,
       totalDocumentsDefaulter,
       totalDocumentsHold,
       totalDocumentsApproved,
@@ -1503,7 +1505,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
     if (subCategoryStatus !== "Undo") {
       // Conditionally include dateOfChangingMainStatus
       if (
-        ["Process", "Approved", "Hold", "Defaulter"].includes(subCategoryStatus)
+        ["Process", "Approved", "Hold", "Defaulter","Application Submitted"].includes(subCategoryStatus)
       ) {
         updateFields.dateOfChangingMainStatus = new Date();
       }

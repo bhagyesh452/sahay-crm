@@ -25,6 +25,7 @@ import AdminExecutiveHeader from "../Components/AdminExecutiveHeader";
 import AdminExecutiveNavbar from "../Components/AdminExecutiveNavbar";
 import AdminExecutiveGeneralPanel from "./AdminExecutiveGeneralPanel";
 import AdminExecutiveProcessPanel from "./AdminExecutiveProcessPanel";
+import AdminExecutiveSubmittedPanel from "./AdminExecutiveSubmittedStatus";
 import AdminExecutiveHoldPanel from "./AdminExecutiveHoldPanel";
 import AdminExecutiveDefaulterPanel from "./AdminExecutiveDefaulterPanel";
 import AdminExecutiveApprovedPanel from "./AdminExecutiveApprovedPanel";
@@ -52,6 +53,7 @@ function AdminExecutiveMyBookings() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
   const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0);
+  const [totalDocumentsApplicationSubmitted, setTotalDocumentsApplicationSubmitted] = useState(0);
   const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
   const [totalDocumentsHold, setTotalDocumentsHold] = useState(0);
   const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0);
@@ -145,6 +147,7 @@ function AdminExecutiveMyBookings() {
         totalPages,
         totalDocumentsGeneral,
         totalDocumentsProcess,
+        totalDocumentsApplicationSubmitted,
         totalDocumentsDefaulter,
         totalDocumentsReadyToSubmit,
         totalDocumentsSubmitted,
@@ -162,11 +165,12 @@ function AdminExecutiveMyBookings() {
         // This is a pagination request
         setRmServicesData(prevData => [...prevData, ...data]);
       }
-      setTotalDocumentsProcess(totalDocumentsProcess)
-      setTotalDocumentsGeneral(totalDocumentsGeneral)
-      setTotalDocumentsDefaulter(totalDocumentsDefaulter)
-      setTotalDocumentsHold(totalDocumentsHold)
-      setTotalDocumentsApproved(totalDocumentsApproved)
+      setTotalDocumentsProcess(totalDocumentsProcess);
+      setTotalDocumentsApplicationSubmitted(totalDocumentsApplicationSubmitted);
+      setTotalDocumentsGeneral(totalDocumentsGeneral);
+      setTotalDocumentsDefaulter(totalDocumentsDefaulter);
+      setTotalDocumentsHold(totalDocumentsHold);
+      setTotalDocumentsApproved(totalDocumentsApproved);
       setTotalPages(totalPages); // Update total pages
     } catch (error) {
       console.error("Error fetching data", error.message);
@@ -327,6 +331,27 @@ function AdminExecutiveMyBookings() {
                       </a>
                     </li>
                     <li class="nav-item rm_task_section_navitem">
+                      <a
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#Submitted"
+                        onClick={() => setActiveTab("Application Submitted")}
+                      >
+                        <div className="d-flex align-items-center justify-content-between w-100">
+                          <div className="rm_txt_tsn">Submitted</div>
+                          <div className="rm_tsn_bdge">
+                            {totalDocumentsApplicationSubmitted}
+                            {/* {rmServicesData
+                              ? rmServicesData.filter(
+                                (item) =>
+                                  item.mainCategoryStatus === "Process"
+                              ).length
+                              : 0} */}
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li class="nav-item rm_task_section_navitem">
                       <a class="nav-link"
                         data-bs-toggle="tab"
                         href="#Approved"
@@ -400,6 +425,15 @@ function AdminExecutiveMyBookings() {
                   </div>
                   <div class="tab-pane" id="InProcess">
                     <AdminExecutiveProcessPanel
+                      showingFilterIcon={setShowNoOfFilteredData}
+                      totalFilteredData={activeTab === "InProcess" ? setNoOfData : () => { }}
+                      searchText={search}
+                      activeTab={activeTab}
+                      showFilter={showFilterIcon.InProcess}
+                    />
+                  </div>
+                  <div class="tab-pane" id="Submitted">
+                    <AdminExecutiveSubmittedPanel
                       showingFilterIcon={setShowNoOfFilteredData}
                       totalFilteredData={activeTab === "InProcess" ? setNoOfData : () => { }}
                       searchText={search}

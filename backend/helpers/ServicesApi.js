@@ -244,8 +244,9 @@ router.put("/updateDepartmentInServiceModel/:departmentName", async (req, res) =
     // console.log("UPdated department name in service model :", updatedDepartmentName);
 
     try {
+        const decodedDepartmentName = decodeURIComponent(departmentName);
         const updateDepartment = await ServicesModel.updateMany(
-            { departmentName: departmentName },
+            { departmentName: decodedDepartmentName },
             { $set: { departmentName: updatedDepartmentName } }
         );
         res.status(200).json({ result: true, message: "Department name updated successfully", data: updateDepartment });
@@ -263,8 +264,9 @@ router.put("/updateServiceInServiceModel/:serviceName", async (req, res) => {
     // console.log("Updated service name in department model :", updatedServiceName);
 
     try {
+        const decodedServiceName = decodeURIComponent(serviceName);
         const updateService = await ServicesModel.findOneAndUpdate(
-            { serviceName: serviceName },
+            { serviceName: decodedServiceName },
             { $set: { departmentName: updatedDepartmentName, serviceName: updatedServiceName } }
         );
         res.status(200).json({ result: true, message: "Service name updated successfully", data: updateService });

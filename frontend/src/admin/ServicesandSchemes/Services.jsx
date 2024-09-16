@@ -250,10 +250,11 @@ function Services() {
     const handleUpdateDepartment = async () => {
         // console.log("Updating department");
         try {
-            const res = await axios.put(`${secretKey}/department/updateDepartmentInDepartmentModel/${departmentName}`, {
+            const encodedDepartmentName = encodeURIComponent(departmentName);
+            const res = await axios.put(`${secretKey}/department/updateDepartmentInDepartmentModel/${encodedDepartmentName}`, {
                 updatedDepartmentName: updatedDepartmentName
             });
-            const res2 = await axios.put(`${secretKey}/services/updateDepartmentInServiceModel/${departmentName}`, {
+            const res2 = await axios.put(`${secretKey}/services/updateDepartmentInServiceModel/${encodedDepartmentName}`, {
                 updatedDepartmentName: updatedDepartmentName
             });
             // console.log("Department updated in department model :", res.data);
@@ -274,12 +275,13 @@ function Services() {
     const handleUpdateService = async () => {
         // console.log("Updating service");
         try {
-            const res = await axios.put(`${secretKey}/department/updateServiceInDepartmentModel/${serviceName}`, {
+            const encodedServiceName = encodeURIComponent(serviceName);
+            const res = await axios.put(`${secretKey}/department/updateServiceInDepartmentModel/${encodedServiceName}`, {
                 updatedDepartmentName: updatedDepartmentName,
                 updatedServiceName: updatedServiceName,
                 updatedServiceDescription: updatedServiceDescription
             });
-            const res2 = await axios.put(`${secretKey}/services/updateServiceInServiceModel/${serviceName}`, {
+            const res2 = await axios.put(`${secretKey}/services/updateServiceInServiceModel/${encodedServiceName}`, {
                 updatedDepartmentName: updatedDepartmentName,
                 updatedServiceName: updatedServiceName
             });
@@ -317,7 +319,7 @@ function Services() {
                 try {
                     const encodedServiceName = encodeURIComponent(serviceName);
                     const encodedDepartmentName = encodeURIComponent(departmentName);
-                    if(!serviceName) {
+                    if (!serviceName) {
                         const res = await axios.delete(`${secretKey}/department/deleteServiceFromDepartmentModelUsingDepartmentName/${encodedDepartmentName}`);
                         const res2 = await axios.delete(`${secretKey}/services/deleteServiceFromServiceModelUsingDepartmentName/${encodedDepartmentName}`);
                         // console.log("Department successfully deleted from department model using department name :", res.data.data);
@@ -393,7 +395,7 @@ function Services() {
 
     useEffect(() => {
         // if (serviceName) {
-            fetchServiceDetails();
+        fetchServiceDetails();
         // }
     }, [serviceName]);
 
@@ -889,6 +891,14 @@ function Services() {
                                                                 if (!serviceDetails) {
                                                                     Swal.fire("Info", "Please add service details before editing", "info");
                                                                     setShowUpdateOptions(false);
+                                                                    setDepartmentName("");
+                                                                    setUpdatedDepartmentName("");
+                                                                    setServiceName("");
+                                                                    setUpdatedServiceName("");
+                                                                    setServiceDescription("");
+                                                                    setUpdatedServiceDescription("");
+                                                                    setShowEditDepartment(false);
+                                                                    setShowEditService(false);
                                                                 } else {
                                                                     setShowEditServiceDetails(true);
                                                                     setShowUpdateOptions(false);

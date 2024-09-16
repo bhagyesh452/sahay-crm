@@ -1974,7 +1974,7 @@ function EmployeeDataReport() {
                                                 </div>
                                             </div>
                                         </th>
-                                        <th>
+                                        {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Junk'] = el}>
                                                     Junk
@@ -1986,7 +1986,6 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("Junk")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
                                                 {showFilterMenu && activeFilterField === 'Junk' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -2014,7 +2013,7 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
+                                        </th> */}
                                         <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {

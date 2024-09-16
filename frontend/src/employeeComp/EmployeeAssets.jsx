@@ -164,9 +164,10 @@ function EmployeeAssets() {
     };
 
     const fetchServices = async (departmentName) => {
+        const encodedDepartmentName = encodeURIComponent(departmentName); // Encode the department name to handle special characters like /
         try {
             setIsLoading(true);
-            const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment/${departmentName}`);
+            const res = await axios.get(`${secretKey}/department/fetchServicesByDepartment/${encodedDepartmentName}`);
             const data = res.data.data;
             setServices(data);
             // console.log(`Fetched services for ${departmentName}:`, data);

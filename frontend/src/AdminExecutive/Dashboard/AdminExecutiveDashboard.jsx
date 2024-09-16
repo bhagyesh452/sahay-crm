@@ -17,6 +17,7 @@ function AdminExecutiveDashboard() {
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
   const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0);
+  const [totalDocumentsApplicationSubmitted, setTotalDocumentsApplicationSubmitted] = useState(0);
   const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0);
   const [totalDocumentsHold, setTotalDocumentsHold] = useState(0);
   const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
@@ -67,6 +68,7 @@ function AdminExecutiveDashboard() {
         totalPages,
         totalDocuments,
         totalDocumentsGeneral,
+        totalDocumentsApplicationSubmitted,
         totalDocumentsApproved,
         totalDocumentsHold,
         totalDocumentsDefaulter,
@@ -77,6 +79,7 @@ function AdminExecutiveDashboard() {
 
       setTotalDocuments(totalDocuments);
       setTotalDocumentsGeneral(totalDocumentsGeneral);
+      setTotalDocumentsApplicationSubmitted(totalDocumentsApplicationSubmitted);
       setTotalDocumentsApproved(totalDocumentsApproved);
       setTotalDocumentsHold(totalDocumentsHold);
       setTotalDocumentsDefaulter(totalDocumentsDefaulter);
@@ -139,8 +142,8 @@ function AdminExecutiveDashboard() {
                 {/* Booking status report */}
                 <div className="row">
                   <div className="col-sm-6 col-md-6 col-lg-6">
-                    <AdminExecutiveBookingReport general={totalDocumentsGeneral} inProcess={totalDocumentsProcess}
-                      approved={totalDocumentsApproved} hold={totalDocumentsHold}
+                    <AdminExecutiveBookingReport general={totalDocumentsGeneral} submitted={totalDocumentsApplicationSubmitted}
+                      inProcess={totalDocumentsProcess} approved={totalDocumentsApproved} hold={totalDocumentsHold}
                       defaulter={totalDocumentsDefaulter} total={totalDocuments} />
                   </div>
 

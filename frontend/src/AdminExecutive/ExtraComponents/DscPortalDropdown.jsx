@@ -84,7 +84,7 @@ const DscPortalDropdown = ({
   return (
     <section className="rm_status_dropdown">
       <select
-        className={(mainStatus === "Approved") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={(mainStatus === "Approved" || mainStatus === "Application Submitted") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         aria-labelledby="dropdownMenuButton1"
         onChange={(e) => handleStatusChange(e.target.value)}

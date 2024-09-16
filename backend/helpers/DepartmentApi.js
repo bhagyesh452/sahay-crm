@@ -60,7 +60,13 @@ router.get("/fetchServicesByDepartment/:activeDepartment", async (req, res) => {
     const { activeDepartment } = req.params; // Use query instead of params
     // console.log("Department name is :", activeDepartment);
     try {
-        const data = await DepartmentModel.find({ departmentName: activeDepartment });
+        const decodedDepartmentName = decodeURIComponent(activeDepartment);
+        const data = await DepartmentModel.find({
+            $or: [
+                { departmentName: decodedDepartmentName }, // Exact match
+                { departmentName: decodedDepartmentName.replace(/-/g, "/") } // Handle alternate names
+            ]
+        });
 
         if (!data) {
             return res.status(404).json({ result: false, message: "Department not found" });
@@ -117,8 +123,9 @@ router.put("/updateDepartmentInDepartmentModel/:departmentName", async (req, res
     // console.log("UPdated department name in department model :", updatedDepartmentName);
 
     try {
+        const decodedDepartmentName = decodeURIComponent(departmentName);
         const updateDepartment = await DepartmentModel.updateMany(
-            { departmentName: departmentName },
+            { departmentName: decodedDepartmentName },
             { $set: { departmentName: updatedDepartmentName } }
         );
         res.status(200).json({result: true, message: "Department name updated successfully", data: updateDepartment});
@@ -137,8 +144,9 @@ router.put("/updateServiceInDepartmentModel/:serviceName", async (req, res) => {
     // console.log("Updated service description in department model :", updatedServiceDescription);
 
     try {
+        const decodedServiceName = decodeURIComponent(serviceName);
         const updateService = await DepartmentModel.findOneAndUpdate(
-            { serviceName: serviceName },
+            { serviceName: decodedServiceName },
             { $set: { departmentName: updatedDepartmentName, serviceName: updatedServiceName, serviceDescription: updatedServiceDescription } }
         );
         res.status(200).json({result: true, message: "Service name updated successfully", data: updateService});
