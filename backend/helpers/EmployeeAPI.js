@@ -366,7 +366,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
-  const { empFullName, department,firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, designation, oldDesignation, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, salary, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo } = req.body;
+  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, department, designation, oldDesignation, employeementType, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, salary, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo } = req.body;
   // console.log("Reqest file is :", req.files);
 
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
@@ -414,18 +414,19 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 
       ...(firstName || middleName || lastName) && {
         ename: `${firstName || ""} ${lastName || ""}`,
-        empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}` || empFullName
+        empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
-      ...(department && { department }),
       ...(dob && { dob }),
       ...(personalPhoneNo && { personal_number: personalPhoneNo }),
       ...(personalEmail && { personal_email: personalEmail }),
-
+      
       ...(officialNo && { number: officialNo }),
       ...(officialEmail && { email: officialEmail }),
       ...(joiningDate && { jdate: joiningDate }),
       ...(branch && { branchOffice: branch }),
       ...(manager && { reportingManager: manager }),
+      ...(department && { department: department }),
+      ...(employeementType && { employeementType: employeementType }),
       ...(designation && { newDesignation: designation }),
       ...(designation && { designation: newDesignation }),
       ...(designation && {
