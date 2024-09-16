@@ -1707,7 +1707,7 @@ function EmployeeDataReport() {
                                                 )}
                                             </div>
                                         </th>
-                                        {/* <th
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -1742,8 +1742,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
-                                        <th>
+                                        </th>
+                                        {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Untouched'] = el}>
                                                     Untouched
@@ -1755,7 +1755,7 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("Untouched")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
+                                           
                                                 {showFilterMenu && activeFilterField === 'Untouched' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -1783,8 +1783,8 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
-                                        {/* <th
+                                        </th> */}
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -1819,8 +1819,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
-                                        <th>
+                                        </th>
+                                        {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Busy'] = el}>
                                                     Busy
@@ -1832,7 +1832,7 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("Busy")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
+                                              
                                                 {showFilterMenu && activeFilterField === 'Busy' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -1860,8 +1860,8 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
-                                        {/* <th
+                                        </th> */}
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -1896,8 +1896,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
-                                        <th>
+                                        </th>
+                                        {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Not Picked Up'] = el}>
                                                     Not Picked Up
@@ -1909,7 +1909,7 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("Not Picked Up")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
+                                              
                                                 {showFilterMenu && activeFilterField === 'Not Picked Up' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -1937,8 +1937,8 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
-                                        {/* <th
+                                        </th> */}
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -1973,7 +1973,7 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
+                                        </th>
                                         <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Junk'] = el}>
@@ -2015,7 +2015,7 @@ function EmployeeDataReport() {
                                                 )}
                                             </div>
                                         </th>
-                                        {/* <th
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -2050,8 +2050,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
-                                        <th>
+                                        </th>
+                                        {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['FollowUp'] = el}>
                                                     Follow Up
@@ -2063,7 +2063,7 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("FollowUp")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
+                                              
                                                 {showFilterMenu && activeFilterField === 'FollowUp' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -2091,8 +2091,8 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
-                                        {/* <th
+                                        </th> */}
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -2127,8 +2127,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
-                                        <th>
+                                        </th>
+                                        {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Interested'] = el}>
                                                     Interested
@@ -2140,7 +2140,6 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("Interested")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
                                                 {showFilterMenu && activeFilterField === 'Interested' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -2168,8 +2167,8 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
-                                        {/* <th
+                                        </th> */}
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -2204,8 +2203,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
-                                        <th>
+                                        </th>
+                                        {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Not Interested'] = el}>
                                                     Not Interested
@@ -2217,7 +2216,7 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("Not Interested")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
+                                              
                                                 {showFilterMenu && activeFilterField === 'Not Interested' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -2245,8 +2244,8 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
-                                        {/* <th
+                                        </th> */}
+                                        <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -2281,8 +2280,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th> */}
-                                          <th>
+                                        </th>
+                                          {/* <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Matured'] = el}>
                                                 Matured
@@ -2294,7 +2293,7 @@ function EmployeeDataReport() {
                                                         <BsFilter onClick={() => handleFilterClick("Matured")} />
                                                     )}
                                                 </div>
-                                                {/* ---------------------filter component--------------------------- */}
+                                              
                                                 {showFilterMenu && activeFilterField === 'Matured' && (
                                                     <div
                                                         ref={filterMenuRef}
@@ -2322,7 +2321,7 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th>
+                                        </th> */}
                                         <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {

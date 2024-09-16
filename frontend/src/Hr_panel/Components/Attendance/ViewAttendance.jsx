@@ -318,7 +318,7 @@ function ViewAttendance({ year, month, date }) {
             };
 
             const workingMinutes = calculateWorkingHours(inTime, outTime);
-
+     
             // Convert minutes back to HH:MM format for display
             const hours = Math.floor(workingMinutes / 60);
             const minutes = workingMinutes % 60;
