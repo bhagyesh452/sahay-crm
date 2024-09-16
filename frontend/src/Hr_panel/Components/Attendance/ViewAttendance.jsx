@@ -300,14 +300,17 @@ function ViewAttendance({ year, month, date }) {
 
                 const inTimeMinutes = convertToMinutes(inTime);
                 const outTimeMinutes = convertToMinutes(outTime);
+                console.log("inTimeMinutes" , inTimeMinutes)
+                console.log("outTimeMinutes" , outTimeMinutes)
 
                 const startBoundary = convertToMinutes("10:00"); // 10:00 AM
                 const endBoundary = convertToMinutes("18:00"); // 6:00 PM
 
                 let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
                 let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
-
-                let workingMinutes = actualOutTime - actualInTime - 45; // Subtract 45 minutes for the break
+                console.log("actualInTime" , actualInTime)
+                console.log("actualOutTime" , actualOutTime)
+                let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes for the break
 
                 // Ensure working minutes don't go negative
                 if (workingMinutes < 0) {
@@ -328,9 +331,9 @@ function ViewAttendance({ year, month, date }) {
             console.log("workingminutes", workingMinutes)
             if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
                 status = "LC";
-            } else if (workingMinutes >= 420) { // 7 hours 15 minutes in minutes
+            } else if (workingMinutes >= 420) { // 7 hours in minutes
                 status = "Present";
-            } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours 15 minutes / 2 in minutes
+            } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours
                 status = "Half Day";
             } else {
                 status = "Leave";
@@ -691,7 +694,7 @@ function ViewAttendance({ year, month, date }) {
                                                         // Count statuses and log each 'Present' count
                                                         if (status === "Present") {
                                                             presentCount++;
-                                                            console.log(`Present Count for ${formattedDate}: ${presentCount}`);
+                                                            //console.log(`Present Count for ${formattedDate}: ${presentCount}`);
                                                         }
                                                         // Count LC statuses separately if LCH is present
                                                         if (status === "LC1" ||
@@ -741,9 +744,9 @@ function ViewAttendance({ year, month, date }) {
                                                 // Ensure that halfDayCount does not exceed the sum of distinct categories
                                                 halfDayCount = Math.min(halfDayCount, lcCount + (halfDayCount - lcCount));
 
-                                                console.log(`Final Present Count: ${presentCount}`);
-                                                console.log(`Final Leave Count: ${leaveCount}`);
-                                                console.log(`Final Half Day Count: ${halfDayCount}`);
+                                                // console.log(`Final Present Count: ${presentCount}`);
+                                                // console.log(`Final Leave Count: ${leaveCount}`);
+                                                // console.log(`Final Half Day Count: ${halfDayCount}`);
 
                                                 return (
                                                     <tr key={index}>
@@ -1214,7 +1217,7 @@ function ViewAttendance({ year, month, date }) {
                                                         // Count statuses and log each 'Present' count
                                                         if (status === "Present") {
                                                             presentCount++;
-                                                            console.log(`Present Count for ${formattedDate}: ${presentCount}`);
+                                                            //console.log(`Present Count for ${formattedDate}: ${presentCount}`);
                                                         }
                                                         // Count LC statuses separately if LCH is present
                                                         if (status === "LC1" ||
