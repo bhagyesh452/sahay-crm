@@ -2916,7 +2916,7 @@ td input {
 }
 .for_adminex_navtabs
 {
-  flex: 0 0 64% !important;
+  flex: 0 0 76% !important;
 }
 /* .rm_task_section_navitem
 {
@@ -3386,7 +3386,7 @@ td input {
   } 
   .for_adminex_navtabs
   {
-    flex: 0 0 65% !important;
+    flex: 0 0 78% !important;
   }
 }
 @media only screen and (max-width: 1527px) and (min-width: 1400px)
@@ -3397,7 +3397,7 @@ td input {
   } 
   .for_adminex_navtabs
   {
-    flex: 0 0 66% !important;
+    flex: 0 0 82% !important;
   }
 }
 @media only screen and (max-width:1399px) and (min-width: 1200px)
@@ -3412,7 +3412,7 @@ td input {
   }
   .for_adminex_navtabs
   {
-    flex: 0 0 66% !important;
+    flex: 0 0 80% !important;
   } 
 }
 @media only screen and (max-width:1199px) and (min-width: 50px)
