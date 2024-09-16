@@ -472,7 +472,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7 pt-1 pb-1 bdr-left-eee">
                                   {editField !== "officialEmail" ? (
-                                    <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center justify-content-between ep_info">
                                       <div className="ep_info_t">
                                         {data.email || "-"}
                                       </div>
@@ -515,7 +515,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7 pt-1 pb-1 bdr-left-eee">
                                   {editField !== "officialNumber" ? (
-                                    <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center justify-content-between ep_info">
                                       <div className="ep_info_t">
                                         {data.number || "-"}
                                       </div>
@@ -560,7 +560,7 @@ function EmployeeView() {
                                 </div>
                                 <div className="col-7  pt-1 pb-1 bdr-left-eee">
                                   {editField !== "joiningDate" ? (
-                                    <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center justify-content-between ep_info">
                                       <div className="ep_info_t">
                                         {data.jdate ? formatDateNew(data.jdate) : "-"}
                                       </div>
@@ -632,7 +632,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "department" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.department || "-"}
                                   </div>
@@ -683,7 +683,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "branchOffice" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.branchOffice || "-"}
                                   </div>
@@ -730,7 +730,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "employmentType" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.employeementType || "-"}
                                   </div>
@@ -780,7 +780,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "reportingManager" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.reportingManager || "-"}
                                   </div>
@@ -838,7 +838,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "empFullName" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.empFullName || "-"}
                                   </div>
@@ -881,7 +881,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "dob" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.dob ? formatDateNew(data.dob) : "-"}
                                     {/* 2<sup>nd</sup> Dec 2024 */}
@@ -925,7 +925,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "gender" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.gender || "-"}
                                   </div>
@@ -972,7 +972,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "personalNumber" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_number || "-"}
                                   </div>
@@ -1015,7 +1015,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "personalEmail" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_email || "-"}
                                   </div>
@@ -1071,7 +1071,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "emergencyContact" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_contact_person || "-"}
                                   </div>
@@ -1114,7 +1114,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "relationship" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_relationship || "-"}
                                   </div>
@@ -1162,7 +1162,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "emergencyContactNo" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_number || "-"}
                                   </div>
@@ -1211,7 +1211,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "currentAddress" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.currentAddress || "-"}
                                   </div>
@@ -1254,7 +1254,7 @@ function EmployeeView() {
                             </div>
                             <div className="col-8 pt-1 pb-1 bdr-left-eee">
                               {editField !== "permanentAddress" ? (
-                                <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
                                     {data.permanentAddress || "-"}
                                   </div>
