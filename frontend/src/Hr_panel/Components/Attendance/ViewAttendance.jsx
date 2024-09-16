@@ -17,6 +17,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
+import { formatDate } from 'date-fns';
 
 function ViewAttendance({ year, month, date }) {
 
@@ -604,6 +605,11 @@ function ViewAttendance({ year, month, date }) {
                                         {selectedMonthDays.map(day => {
                                             const fullDate = new Date(`${day}-${month}-${year}`); // Assuming month is 1-based (January is 1)
                                             const isSunday = fullDate.getDay() === 0;
+                                            // Format selected date for holiday check
+                                            const formattedSelectedDate = formatDateForHolidayCheck(year, monthNamesToNumbers[month], day);
+                                            // Check if selected date is an official holiday
+                                            const isHoliday = officialHolidays.includes(formattedSelectedDate);
+
                                             return (
                                                 <th className='th-day' key={day}>
                                                     <div className='d-flex align-items-center justify-content-between'>
@@ -612,8 +618,8 @@ function ViewAttendance({ year, month, date }) {
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
                                                             <FaRegCalendarPlus
-                                                                onClick={() => !isSunday && date(fullDate, gotaBranchEmployees)} // Disable onClick for Sundays
-                                                                style={{ color: isSunday ? 'gray' : 'inherit', cursor: isSunday ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
+                                                                onClick={() => (!isSunday && !isHoliday) && date(fullDate, gotaBranchEmployees)} // Disable onClick for Sundays
+                                                                style={{ color: (isSunday || isHoliday) ? 'gray' : 'inherit', cursor: (isSunday || isHoliday) ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
                                                             />
                                                         </div>
                                                     </div>
@@ -1068,7 +1074,7 @@ function ViewAttendance({ year, month, date }) {
                                                                                     else {
                                                                                         return (<>
                                                                                             <div className="s-sunday">S</div>
-                                                                                            {/* <div className="d-none">{presentCount++}</div> */}
+                                                                                            {!isFutureDate && <div className="d-none">{presentCount++}</div>}
 
                                                                                         </>) // Default Sunday fill with "S"
                                                                                     }
@@ -1131,6 +1137,11 @@ function ViewAttendance({ year, month, date }) {
                                         {selectedMonthDays.map(day => {
                                             const fullDate = new Date(`${day}-${month}-${year}`); // Assuming month is 1-based (January is 1)
                                             const isSunday = fullDate.getDay() === 0;
+                                             // Format selected date for holiday check
+                                             const formattedSelectedDate = formatDateForHolidayCheck(year, monthNamesToNumbers[month], day);
+                                             // Check if selected date is an official holiday
+                                             const isHoliday = officialHolidays.includes(formattedSelectedDate);
+ 
                                             return (
                                                 <th className='th-day' key={day}>
                                                     <div className='d-flex align-items-center justify-content-between'>
@@ -1139,8 +1150,8 @@ function ViewAttendance({ year, month, date }) {
                                                         </div>
                                                         <div className='view-attendance-th-icon'>
                                                             <FaRegCalendarPlus
-                                                                onClick={() => !isSunday && date(fullDate, sindhuBhawanBranchEmployees)} // Disable onClick for Sundays
-                                                                style={{ color: isSunday ? 'gray' : 'inherit', cursor: isSunday ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
+                                                                onClick={() => (!isSunday && !isHoliday) && date(fullDate, sindhuBhawanBranchEmployees)} // Disable onClick for Sundays
+                                                                style={{ color: (isSunday || isHoliday) ? 'gray' : 'inherit', cursor: (isSunday || isHoliday) ? 'not-allowed' : 'pointer' }} // Style adjustment for Sundays
                                                             />
                                                         </div>
                                                     </div>
@@ -1584,8 +1595,7 @@ function ViewAttendance({ year, month, date }) {
                                                                                 else {
                                                                                     return (<>
                                                                                         <div className="s-sunday">S</div>
-                                                                                        {/* <div className="d-none">{presentCount++}</div> */}
-
+                                                                                        {!isFutureDate && <div className="d-none">{presentCount++}</div>}
                                                                                     </>) // Default Sunday fill with "S"
                                                                                 }
                                                                             })()
@@ -1956,24 +1966,27 @@ function ViewAttendance({ year, month, date }) {
                 {!isDeleted &&
                     (
                         <div className='d-flex align-items-center'>
-
-                            <Button className="btn btn-success bdr-radius-none w-50" variant="contained"
-                                onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
-                                Submit
-                            </Button>
-
                             <Button className="btn btn-danger bdr-radius-none w-50" variant="contained"
                                 onClick={() => handleClear(id, employeeId, empName, designation, department, branchOffice, attendanceDate, inTime, outTime)}>
                                 Clear
                             </Button>
-
-
+                            <Button className="btn btn-success bdr-radius-none w-50" variant="contained"
+                                onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                                Submit
+                            </Button>
                         </div>
                     )
                 }
             </Dialog>
 
-            {showAttendanceForParticularEmployee && <ShowAttendanceForParticularEmployee year={year} month={month} id={id} name={empName} open={handleShowParticularEmployeeAttendance} close={handleCloseParticularEmployeeAttendance} />}
+            {showAttendanceForParticularEmployee &&
+                <ShowAttendanceForParticularEmployee
+                    year={year}
+                    month={month}
+                    id={id}
+                    name={empName}
+                    open={handleShowParticularEmployeeAttendance}
+                    close={handleCloseParticularEmployeeAttendance} />}
         </>
     )
 }

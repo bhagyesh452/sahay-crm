@@ -111,7 +111,23 @@ function AddAttendance({ year, month, date, employeeData }) {
     const [status, setStatus] = useState("");
 
     const [attendanceData, setAttendanceData] = useState({});
+    const officialHolidays = [
+        '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
+        '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
+        '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
+      ]  
+      const formatDateForHolidayCheck = (year, month, day) => {
+        return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    };
 
+    const getCurrentMonthName = () => {
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        const currentMonthIndex = new Date().getMonth();
+        return months[currentMonthIndex];
+    };
     const fetchEmployees = async () => {
         try {
             setIsLoading(true);
@@ -376,6 +392,242 @@ function AddAttendance({ year, month, date, employeeData }) {
         }
     };
 
+    // const fetchAttendance = async () => {
+    //     setIsLoading(true);
+    //     try {
+    //         const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
+    //         const allAttendanceData = res.data.data;
+
+    //         const totalDays = new Date(year, new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1, 0).getDate();
+    //         const today = new Date().getDate(); // Current date of the month
+    //         const currentMonth = getCurrentMonthName();
+    //         const isCurrentMonth = month === currentMonth;
+    //         let name = "";
+    //         let designation = "";
+
+    //         const filteredData = [];
+    //         const filledDates = new Set(); // To track dates with existing data
+    //         // Collect all filled dates
+    //         allAttendanceData.forEach(employee => {
+    //             if (employee._id === id) {  // Check for the specific employee ID
+    //                 employee.years.forEach(yearData => {
+    //                     if (yearData.year === year) {  // Check for the specific year
+    //                         yearData.months.forEach(monthData => {
+    //                             if (monthData.month === month) {  // Check for the specific month
+    //                                 monthData.days.forEach(dayData => {
+    //                                     const { date: dayDate, inTime, outTime, workingHours, status } = dayData;
+
+    //                                     filledDates.add(dayDate); // Add filled date to the set
+
+    //                                     // Add data for the current month up to today or all data for past months
+    //                                     if (isCurrentMonth && dayDate <= today || !isCurrentMonth) {
+    //                                         name = employee.employeeName;
+    //                                         designation = employee.designation;
+
+    //                                         filteredData.push({
+    //                                             _id: employee._id,
+    //                                             employeeId: employee.employeeId,
+    //                                             employeeName: employee.employeeName,
+    //                                             designation: employee.designation,
+    //                                             department: employee.department,
+    //                                             branchOffice: employee.branchOffice,
+    //                                             date: dayDate,
+    //                                             inTime,
+    //                                             outTime,
+    //                                             workingHours,
+    //                                             status
+    //                                         });
+    //                                     }
+    //                                 });
+    //                             }
+    //                         });
+    //                     }
+    //                 });
+    //             }
+    //         });
+
+    //         // Function to find the previous working day
+    //         const findPrevWorkingDay = (year, month, startDay) => {
+    //             let currentDay = startDay;
+    //             let currentMonth = month;
+    //             let currentYear = year;
+
+    //             while (true) {
+    //                 if (currentDay < 1) {
+    //                     currentMonth--;
+    //                     if (currentMonth < 1) {
+    //                         currentMonth = 12;
+    //                         currentYear--;
+    //                     }
+    //                     const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+    //                     currentDay = daysInPrevMonth;
+    //                 }
+
+    //                 const formattedDate = formatDateForHolidayCheck(currentYear, currentMonth, currentDay);
+    //                 const dateToCheck = new Date(currentYear, currentMonth - 1, currentDay);
+    //                 const isSunday = dateToCheck.getDay() === 0;
+    //                 const isHoliday = officialHolidays.includes(formattedDate);
+    //                 if (!isSunday && !isHoliday) {
+    //                     break;
+    //                 }
+    //                 currentDay--;
+    //             }
+    //             return { day: currentDay, month: currentMonth, year: currentYear };
+    //         };
+    //         // Function to find the next working day
+    //         const findNextWorkingDay = (year, month, startDay) => {
+    //             let currentDay = startDay;
+    //             let currentMonth = month;
+    //             let currentYear = year;
+
+    //             while (true) {
+    //                 const daysInCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
+    //                 if (currentDay > daysInCurrentMonth) {
+    //                     currentMonth++;
+    //                     if (currentMonth > 12) {
+    //                         currentMonth = 1;
+    //                         currentYear++;
+    //                     }
+    //                     currentDay = 1; // Reset to the first day of the next month
+    //                 }
+
+    //                 const formattedDate = formatDateForHolidayCheck(currentYear, currentMonth, currentDay);
+    //                 const dateToCheck = new Date(currentYear, currentMonth - 1, currentDay);
+    //                 const isSunday = dateToCheck.getDay() === 0;
+    //                 const isHoliday = officialHolidays.includes(formattedDate);
+
+    //                 if (!isSunday && !isHoliday) {
+    //                     break;
+    //                 }
+
+    //                 currentDay++;
+    //             }
+
+    //             return { day: currentDay, month: currentMonth, year: currentYear };
+    //         };
+
+    //         // Logic to handle empty days for the current month
+    //         for (let date = 1; date <= (isCurrentMonth ? today : totalDays); date++) {
+    //             if (!filledDates.has(date)) {
+    //                 function getMonthName(monthNumber) {
+    //                     const monthNames = [
+    //                         "January", "February", "March", "April", "May", "June",
+    //                         "July", "August", "September", "October", "November", "December"
+    //                     ];
+
+    //                     return monthNames[monthNumber - 1]; // Subtract 1 since array indices start from 0
+    //                 }
+    //                 const monthNamesToNumbers = {
+    //                     "January": 1,
+    //                     "February": 2,
+    //                     "March": 3,
+    //                     "April": 4,
+    //                     "May": 5,
+    //                     "June": 6,
+    //                     "July": 7,
+    //                     "August": 8,
+    //                     "September": 9,
+    //                     "October": 10,
+    //                     "November": 11,
+    //                     "December": 12
+    //                 };
+    //                 const monthNumber = monthNamesToNumbers[month];
+    //                 const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${date < 10 ? '0' + date : date}`;
+    //                 const isSunday = new Date(`${year}-${month}-${date}`).getDay() === 0;
+    //                 const isHoliday = officialHolidays.includes(formattedDate);
+
+    //                 let status = ''; // Default status for empty days
+
+    //                 if (isSunday) {
+    //                     const prevWorkingDate = findPrevWorkingDay(year, monthNumber, date - 1);
+    //                     const nextWorkingDate = findNextWorkingDay(year, monthNumber, date + 1);
+
+    //                     // Fetch attendance status for the previous and next working day
+    //                     const prevDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+    //                         ?.find(yr => yr.year === prevWorkingDate.year)?.months
+    //                         ?.find(mn => mn.month === getMonthName(prevWorkingDate.month))?.days
+    //                         ?.find(d => d.date === prevWorkingDate.day)?.status;
+
+    //                     const nextDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+    //                         ?.find(yr => yr.year === nextWorkingDate.year)?.months
+    //                         ?.find(mn => mn.month === getMonthName(nextWorkingDate.month))?.days
+    //                         ?.find(d => d.date === nextWorkingDate.day)?.status;
+
+    //                     // Determine Sunday status
+    //                     if (
+    //                         (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+    //                         (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+    //                         (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+    //                     ) {
+    //                         status = "Sunday Leave"; // Sunday Leave
+    //                     } else if (
+    //                         (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+    //                         (prevDayStatus === "LCH" && nextDayStatus === "LCH") ||
+    //                         (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
+    //                         (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
+    //                     ) {
+    //                         status = "Sunday Half Day"; // Sunday Half Day
+    //                     } else if (
+    //                         prevDayStatus === "Present" || nextDayStatus === "Present"
+    //                     ) {
+    //                         status = "Sunday Present"; // Sunday Present
+    //                     } else {
+    //                         status = "Sunday"; // Regular Sunday
+    //                     }
+    //                 } else if (isHoliday) {
+    //                     const prevWorkingDate = findPrevWorkingDay(year, monthNumber, date - 1);
+    //                     const nextWorkingDate = findNextWorkingDay(year, monthNumber, date + 1);
+
+    //                     // Fetch attendance status for the previous and next working day
+    //                     const prevDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+    //                         ?.find(yr => yr.year === prevWorkingDate.year)?.months
+    //                         ?.find(mn => mn.month === getMonthName(prevWorkingDate.month))?.days
+    //                         ?.find(d => d.date === prevWorkingDate.day)?.status;
+
+    //                     const nextDayStatus = allAttendanceData.find(emp => emp._id === id)?.years
+    //                         ?.find(yr => yr.year === nextWorkingDate.year)?.months
+    //                         ?.find(mn => mn.month === getMonthName(nextWorkingDate.month))?.days
+    //                         ?.find(d => d.date === nextWorkingDate.day)?.status;
+
+    //                     // Determine Sunday status
+    //                     if (
+    //                         (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+    //                         (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+    //                         (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+    //                     ) {
+    //                         status = "Official Holiday Leave"; // Sunday Leave
+    //                     } else if (
+    //                         (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+    //                         (prevDayStatus === "LCH" && nextDayStatus === "LCH") ||
+    //                         (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
+    //                         (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
+    //                     ) {
+    //                         status = "Official Holiday Half"; // Sunday Half Day
+    //                     } else {
+    //                         status = "Official Holiday"; // Regular Sunday
+    //                     }
+    //                 }
+
+    //                 filteredData.push({
+    //                     employeeName: name,
+    //                     designation: designation,
+    //                     date: date,
+    //                     inTime: '',
+    //                     outTime: '',
+    //                     workingHours: '',
+    //                     status: status
+    //                 });
+    //             }
+    //         }
+
+    //         filteredData.sort((a, b) => new Date(`${year}-${month}-${a.date}`) - new Date(`${year}-${month}-${b.date}`));
+    //         setAttendanceData(filteredData);
+    //     } catch (error) {
+    //         console.log("Error fetching attendance record", error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
     useEffect(() => {
         fetchEmployees();
         fetchAttendance();
@@ -449,7 +701,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                     : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
 
                                 const empAttendance = attendanceData[emp._id] || {};
-                                // console.log("Emp attendance is :", empAttendance);
+                                console.log("Emp attendance is :", empAttendance , emp.ename);
 
                                 const attendanceDate = empAttendance.attendanceDate || !date ? formattedDate : convertToDateInputFormat(date);
 
@@ -494,9 +746,10 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours 15 minutes / 2 in minutes
                                     status = "Half Day";
                                 } else {
-                                    status = "Leave";
+                                    status = "No Data";
                                 }
                                 console.log("status", status)
+                                
 
                                 return (
                                     <tr key={index}>

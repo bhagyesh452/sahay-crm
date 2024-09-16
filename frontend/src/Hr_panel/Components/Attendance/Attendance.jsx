@@ -149,8 +149,17 @@ function Attendance() {
                 </div>
                 <div className="page-body m-0">
                     <div className="container-xl mt-2">
-                        {(!showAddAttendance) && <ViewAttendance year={selectedYear} month={selectedMonth} date={fetchSelectedDate} />}
-                        {showAddAttendance && <AddAttendance year={selectedYear} month={selectedMonth} date={selectedDate} employeeData={employeeInfo} />}
+                        {(!showAddAttendance) && 
+                        <ViewAttendance 
+                        year={selectedYear}
+                         month={selectedMonth} 
+                         date={fetchSelectedDate} />}
+                        {showAddAttendance && 
+                        <AddAttendance 
+                        year={selectedYear} 
+                        month={selectedMonth} 
+                        date={selectedDate} 
+                        employeeData={employeeInfo} />}
                     </div>
                 </div>
             </div>

@@ -5885,8 +5885,6 @@ router.delete(
       //const companyObjectId = mongoose.Types.ObjectId(companyId);
       const leadForm = await RedesignedLeadformModel.findOne({ company: company })
       const bookingToRemove = leadForm.moreBookings.find(booking => {
-        
-
         return booking._id.toString() === companyId.toString();
       });
 
@@ -5902,23 +5900,12 @@ router.delete(
         });
         
       }
-
-
-
-    
       //console.log("servicesName" , serviceNames)
-
-
       const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(
         { company: company },
         { $pull: { moreBookings: { _id: companyId } } },
         { new: true }
       );
-
-
-
-
-
       if (!updatedLeadForm) {
         return res.status(404).send("Booking not found");
       }
