@@ -159,9 +159,10 @@ function EmployeeCompleteCallingReport() {
         const fetchEmployeeData = async () => {
             const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
             const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+            const urlEmployee = 'https://api1.callyzer.co/v2/call-log/employee-summary';
             // const employeeArray = [];
             // employeeArray.push(employeeData.number);
-            console.log(startTimestamp, endTimestamp)
+            //console.log(startTimestamp, endTimestamp)
 
             const body = {
                 "call_from": startTimestamp,

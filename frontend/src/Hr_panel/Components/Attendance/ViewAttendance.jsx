@@ -413,6 +413,7 @@ function ViewAttendance({ year, month, date }) {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
             setInTime("");
             setOutTime("");
+            setShowPopup(false);
             Swal.fire("Success", "Attendance Cleared Succesfully", "success");
         } catch (error) {
             console.log("Error updating attendance record", error);
@@ -1966,14 +1967,14 @@ function ViewAttendance({ year, month, date }) {
                 {!isDeleted &&
                     (
                         <div className='d-flex align-items-center'>
-                            <Button className="btn btn-danger bdr-radius-none w-50" variant="contained"
+                            <button className="btn btn-danger bdr-radius-none w-50" variant="contained"
                                 onClick={() => handleClear(id, employeeId, empName, designation, department, branchOffice, attendanceDate, inTime, outTime)}>
                                 Clear
-                            </Button>
-                            <Button className="btn btn-success bdr-radius-none w-50" variant="contained"
+                            </button>
+                            <button className="btn btn-success bdr-radius-none w-50" variant="contained"
                                 onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
                                 Submit
-                            </Button>
+                            </button>
                         </div>
                     )
                 }
