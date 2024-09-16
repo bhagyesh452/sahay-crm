@@ -3,11 +3,12 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import { styled } from '@mui/material/styles';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 
-function AdminExecutiveBookingReport({ general, inProcess, approved, hold, defaulter, total, isAdminExecutive }) {
+function AdminExecutiveBookingReport({ general, submitted, inProcess, approved, hold, defaulter, total, isAdminExecutive }) {
 
     //---------------- function for piew charts----------------------------
     const data_my = [
         { value: general, label: 'General', color: '#1ac9bd' },
+        // {value: submitted, label: 'Application Submitted', color: '#ffb900'},
         // {value: inProcess, label: 'In Process', color: '#ffb900'},
         { value: approved, label: 'Approved', color: '#e65b5b' },
         { value: hold, label: 'Hold', color: '#ffb900' },
@@ -67,11 +68,11 @@ function AdminExecutiveBookingReport({ general, inProcess, approved, hold, defau
                                         <div className="color-dots clr-bg-ffb900">
                                         </div>
                                         <div className="call-dr-name">
-                                            In Process
+                                            Application Submitted
                                         </div>
                                     </div>
                                     <div className="call-dr-num">
-                                        {inProcess}
+                                        {submitted}
                                     </div>
                                 </div> */}
 

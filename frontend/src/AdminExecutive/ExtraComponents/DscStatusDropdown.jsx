@@ -26,7 +26,7 @@ const DscStatusDropdown = ({
   letterStatus
 }) => {
 
-console.log("letterStatus" , letterStatus , companyName , subStatus)
+  console.log("letterStatus", letterStatus, companyName, subStatus)
 
 
 
@@ -58,11 +58,11 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
           dateOfChangingMainStatus: new Date(),
           movedFromMainCategoryStatus: movedFromMainCategoryStatus,
           movedToMainCategoryStatus: movedToMainCategoryStatus,
-          expenseReimbursementStatus:expenseReimbursementStatus,
+          expenseReimbursementStatus: expenseReimbursementStatus,
         });
         //console.log("movedfromstatus" , movedFromMainCategoryStatus , movedToMainCategoryStatus)
-      }else if (mainStatus === "Process") {
-         if (newStatus === "Defaulter") {
+      } else if (mainStatus === "Process") {
+        if (newStatus === "Defaulter") {
           movedFromMainCategoryStatus = "Process";
           movedToMainCategoryStatus = "Defaulter";
           response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
@@ -96,12 +96,12 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
 
             //mainCategoryStatus: "Defaulter",
           });
-        } else if (newStatus === "Approved") {
+        } else if (newStatus === "Application Submitted") {
           const conditions = {
-            letterStatus:letterStatus === "Not Started",
-            dscPortal:!dscPortal,
-            dscType:dscType === "Not Applicable",
-            dscValidity:!dscValidity
+            letterStatus: letterStatus === "Not Started",
+            dscPortal: !dscPortal,
+            dscType: dscType === "Not Applicable",
+            dscValidity: !dscValidity
 
             // industryAndSector: serviceName === "Start-Up India Certificate" && !industry && !sector,
             // contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
@@ -140,17 +140,17 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
             });
           } else {
             movedFromMainCategoryStatus = "Process";
-            movedToMainCategoryStatus = "Approved";
+            movedToMainCategoryStatus = "Application Submitted";
             response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
               companyName,
               serviceName,
               subCategoryStatus: newStatus,
-              mainCategoryStatus: "Approved",
+              mainCategoryStatus: "Application Submitted",
               previousMainCategoryStatus: "Process",
               previousSubCategoryStatus: newStatus,
               movedFromMainCategoryStatus: movedFromMainCategoryStatus,
               movedToMainCategoryStatus: movedToMainCategoryStatus,
-              approvalTime:new Date()
+              approvalTime: new Date()
             });
           }
         } else {
@@ -159,6 +159,61 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
             serviceName,
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Process"
+          });
+        }
+      } else if (mainStatus === "Application Submitted") {
+        if (newStatus === "Approved") {
+          movedFromMainCategoryStatus = "Application Submitted";
+          movedToMainCategoryStatus = "Approved";
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Approved",
+            previousMainCategoryStatus: "Application Submitted",
+            previousSubCategoryStatus: newStatus,
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus,
+          });
+        } else if (newStatus === "Hold") {
+          movedFromMainCategoryStatus = "Application Submitted";
+          movedToMainCategoryStatus = "Hold";
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Hold",
+            previousMainCategoryStatus: "Application Submitted",
+            previousSubCategoryStatus: newStatus,
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus,
+          });
+        } else if (newStatus === "Defaulter") {
+          movedFromMainCategoryStatus = "Application Submitted";
+          movedToMainCategoryStatus = "Defaulter";
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Defaulter",
+            previousMainCategoryStatus: "Application Submitted",
+            previousSubCategoryStatus: newStatus,
+            movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+            movedToMainCategoryStatus: movedToMainCategoryStatus,
+          });
+        } else if (newStatus === "Undo") {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            //mainCategoryStatus: "Defaulter",
+          });
+        } else {
+          response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
+            companyName,
+            serviceName,
+            subCategoryStatus: newStatus,
+            mainCategoryStatus: "Defaulter"
           });
         }
       }
@@ -190,7 +245,7 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
             subCategoryStatus: newStatus,
             //mainCategoryStatus: "Defaulter",
           });
-        }else {
+        } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
             companyName,
             serviceName,
@@ -234,7 +289,7 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Process"
           });
-        }else {
+        } else {
           response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
             companyName,
             serviceName,
@@ -293,7 +348,7 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
             return "support-status";
           case "Undo":
             return "need_to_call";
-            case "Application Pending":
+          case "Application Pending":
             return "untouched_status";
           default:
             return "";
@@ -325,33 +380,33 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
           default:
             return "";
         }
-        case "Hold":
-          switch (subStatus) {
-            case "Call Done Docs Pending":
-              return "untouched_status";
-            case "Client Not Responding":
-              return "cdbp-status";
-            case "Need To Call":
-              return "clnt_no_repond_status";
-            case "Working":
-              return "support-status";
-            case "Hold":
-              return "support-status";
-            case "KYC Pending":
-              return "support-status";
-            case "KYC Rejected":
-              return "need_to_call";
-            case "KYC Incomplete":
-              return "created-status";
-            case "Approved":
-              return "support-status";
-            case "Defaulter":
-              return "support-status";
-            case "Undo":
-              return "need_to_call";
-            default:
-              return "";
-          }
+      case "Hold":
+        switch (subStatus) {
+          case "Call Done Docs Pending":
+            return "untouched_status";
+          case "Client Not Responding":
+            return "cdbp-status";
+          case "Need To Call":
+            return "clnt_no_repond_status";
+          case "Working":
+            return "support-status";
+          case "Hold":
+            return "support-status";
+          case "KYC Pending":
+            return "support-status";
+          case "KYC Rejected":
+            return "need_to_call";
+          case "KYC Incomplete":
+            return "created-status";
+          case "Approved":
+            return "support-status";
+          case "Defaulter":
+            return "support-status";
+          case "Undo":
+            return "need_to_call";
+          default:
+            return "";
+        }
       default:
         return "";
     }
@@ -455,6 +510,15 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
             <li>
               <a
                 className="dropdown-item"
+                onClick={() => handleStatusChange("Application Submitted", "untouched_status")}
+                href="#"
+              >
+                Application Submitted
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
                 onClick={() => handleStatusChange("Working", "support-status")}
                 href="#"
               >
@@ -470,6 +534,23 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
                 Hold
               </a>
             </li>
+            <li>
+              <a className="dropdown-item" onClick={() => handleStatusChange('Defaulter', 'support-status')} href="#">
+                Defaulter
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Undo", "e_task_assign")}
+                href="#"
+              >
+                Undo
+              </a>
+            </li>
+          </ul>
+        ) : mainStatus === "Application Submitted" ? (
+          <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
             <li>
               <a
                 className="dropdown-item"
@@ -505,6 +586,15 @@ console.log("letterStatus" , letterStatus , companyName , subStatus)
             <li>
               <a className="dropdown-item" onClick={() => handleStatusChange('Defaulter', 'support-status')} href="#">
                 Defaulter
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Hold", "inprogress-status")}
+                href="#"
+              >
+                Hold
               </a>
             </li>
             <li>
