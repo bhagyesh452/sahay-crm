@@ -85,10 +85,10 @@ function ViewAttendance({ year, month, date }) {
     const [isOnLeave, setIsOnLeave] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
-
     const [id, setId] = useState("");
     const [employeeId, setEmployeeId] = useState("");
     const [empName, setEmpName] = useState("");
+    const [ename, setEname] = useState("");
     const [branchOffice, setBranchOffice] = useState("");
     const [designation, setDesignation] = useState("");
     const [department, setDepartment] = useState("");
@@ -96,6 +96,7 @@ function ViewAttendance({ year, month, date }) {
     const [dayName, setDayName] = useState("");
     const [workingHours, setWorkingHours] = useState("");
     const [status, setStatus] = useState("");
+    const [newStatus, setNewStatus] = useState("No Data");
     const [inTime, setInTime] = useState("");
     const [originalInTime, setOriginalInTime] = useState("");
     const [outTime, setOutTime] = useState("");
@@ -176,7 +177,11 @@ function ViewAttendance({ year, month, date }) {
         }
     };
 
-    const handleDayClick = (day, id, empName, empId, designation, department, branch, intime, outtime) => {
+    const handleAddManually=()=>{
+        console.log("chal rhi h")
+    }
+
+    const handleDayClick = (day, id, empName, empId, designation, department, branch, intime, outtime, ename) => {
 
         // Format the date as "DD-MM-YYYY"
         const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
@@ -197,10 +202,11 @@ function ViewAttendance({ year, month, date }) {
         setDepartment(department);
         setBranchOffice(branch);
         setDayName(dayName);
+        setEname(ename)
 
         const attendanceDetails = attendanceData[id]?.[year]?.[month]?.[day] || {};
         const status = attendanceDetails.status || "";
-
+        setNewStatus(status)
         // Disable In Time and Out Time based on status
         if (status === "Present" || status === "Leave" || status === "Half Day") {
             setDisableInTime(true);
@@ -542,6 +548,79 @@ function ViewAttendance({ year, month, date }) {
         return `${formattedDay}-${formattedMonth}-${year}`;
     };
 
+    const calculateWorkingHours = (inTime, outTime) => {
+        const convertToMinutes = (timeString) => {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+
+        const inTimeMinutes = convertToMinutes(inTime);
+        const outTimeMinutes = convertToMinutes(outTime);
+
+        const startBoundary = convertToMinutes("10:00"); // 10:00 AM
+        const endBoundary = convertToMinutes("18:00"); // 6:00 PM
+        const breakStart = convertToMinutes("13:00"); // 1:00 PM
+        const breakEnd = convertToMinutes("13:45"); // 1:45 PM
+
+        let actualInTime = Math.max(inTimeMinutes, startBoundary); // Adjust to startBoundary
+        let actualOutTime = Math.min(outTimeMinutes, endBoundary); // Adjust to endBoundary
+
+        let workingMinutes = actualOutTime - actualInTime;
+
+        if (actualInTime < breakEnd && actualOutTime > breakStart) {
+            const overlapStart = Math.max(actualInTime, breakStart);
+            const overlapEnd = Math.min(actualOutTime, breakEnd);
+            const breakOverlap = overlapEnd - overlapStart;
+            if (breakOverlap > 0) {
+                workingMinutes -= breakOverlap;
+            }
+        }
+
+        if (workingMinutes < 0) {
+            workingMinutes = 0;
+        }
+
+        return workingMinutes;
+    };
+
+    const updateStatus = (inTime, outTime) => {
+        const convertToMinutes = (timeString) => {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+
+        const inTimeMinutes = convertToMinutes(inTime);
+        const outTimeMinutes = convertToMinutes(outTime);
+
+        const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+        const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+        const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
+
+        const workingMinutes = calculateWorkingHours(inTime, outTime);
+
+        if (
+            (inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) ||
+            ((inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd) && workingMinutes >= 420)
+        ) {
+            return "LC";
+        } else if (workingMinutes >= 420) { // 7 hours
+            return "Present";
+        } else if (workingMinutes >= 210 && workingMinutes < 420) { // 3.5 hours to 7 hours
+            return "Half Day";
+        } else {
+            return "Leave";
+        }
+    };
+
+    useEffect(() => {
+        if (inTime && outTime) {
+            const status = updateStatus(inTime, outTime);
+            setNewStatus(status);
+        } else {
+            setNewStatus("No Data");
+        }
+    }, [inTime, outTime]);
+
 
     return (
         <>
@@ -815,7 +894,7 @@ function ViewAttendance({ year, month, date }) {
                                                             return (
                                                                 <td key={day}>
                                                                     <div
-                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                        onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime, emp.ename, emp.status)}
                                                                         className={`
                                                                    ${status === "Present" ? "p-present" : ""}
                                                                        ${status === "Half Day" ? "H-Halfday" : ""}
@@ -1082,7 +1161,7 @@ function ViewAttendance({ year, month, date }) {
                                                                             ) : (
                                                                                 <button
                                                                                     className={`${isFutureDate ? 'p-disabled' : 'p-add'}`}
-                                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice)}
+                                                                                    onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, emp.ename)}
                                                                                     disabled={isFutureDate} // Disable button for future dates
                                                                                 >
                                                                                     {day <= daysInMonth && <FaPlus />}
@@ -1835,7 +1914,9 @@ function ViewAttendance({ year, month, date }) {
             {/* Pop-up to be opened after click on plus button */}
             <Dialog className='My_Mat_Dialog' open={showPopup} fullWidth maxWidth="md">
                 <DialogTitle>
-                    {(originalInTime && originalOutTime || isDeleted) ? "Update attendance" : "Add attendance"}
+                    {(originalInTime && originalOutTime || isDeleted) ?
+                        `Update attendance for ${ename}` :
+                        `Add attendance for ${ename}`}
                     <IconButton style={{ float: "right" }} onClick={() => {
                         handleClosePopup();
                         setInTime("");
@@ -1850,7 +1931,7 @@ function ViewAttendance({ year, month, date }) {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <div className='row'>
-                                        <div className="col-lg-3">
+                                        {/* <div className="col-lg-3">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">Employee Name</label>
                                                 <input
@@ -1863,7 +1944,7 @@ function ViewAttendance({ year, month, date }) {
                                                 // onChange={(e) => handleInputChange("firstName", e.target.value)}
                                                 />
                                             </div>
-                                        </div>
+                                        </div> */}
 
                                         <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
@@ -1882,15 +1963,7 @@ function ViewAttendance({ year, month, date }) {
                                         <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">In Time</label>
-                                                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DemoContainer components={['TimePicker']}>
-                                                        <TimePicker
-                                                            // label="In Time"
-                                                            value={dayjs(inTime)}
-                                                            onChange={(newValue) => setInTime(newValue ? newValue.format('HH:mm') : '')}
-                                                        />
-                                                    </DemoContainer>
-                                                </LocalizationProvider> */}
+
                                                 <input
                                                     type="time"
                                                     name="inTime"
@@ -1909,15 +1982,6 @@ function ViewAttendance({ year, month, date }) {
                                         <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">Out Time</label>
-                                                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                    <DemoContainer components={['TimePicker']}>
-                                                        <TimePicker
-                                                            // label="Out Time"
-                                                            value={dayjs(outTime)}
-                                                            onChange={(newValue) => setOutTime(newValue ? newValue.format('HH:mm') : '')}
-                                                        />
-                                                    </DemoContainer>
-                                                </LocalizationProvider> */}
                                                 <input
                                                     type="time"
                                                     name="outTime"
@@ -1952,6 +2016,32 @@ function ViewAttendance({ year, month, date }) {
                                                     </label>
                                                 </div>
                                             </div>
+                                        </div>
+                                        {/* <div className="col-lg-1">
+                                            <label className="form-label mt-5 text-center">=</label>
+                                        </div> */}
+                                        <div className="col-lg-2">
+                                            <div className='attendance-date-tbl'>
+                                                <label className="form-label">Result</label>
+                                                <div className='leavecheck'>
+                                                    <label class="checkbox-alias" for="r1">
+                                                        <div className='d-flex align-items-center justify-content-center'>
+                                                            <div>{newStatus}</div>
+                                                        </div>
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-1">
+                                            <input
+                                                type="checkbox"
+                                                name="rGroup"
+                                                value="1"
+                                                id="r1"
+                                                onClick={handleAddManually}
+                                            />
                                         </div>
 
                                     </div>
