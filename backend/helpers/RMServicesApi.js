@@ -1613,8 +1613,10 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
               ? "Untouched"
               : company.previousSubCategoryStatus,
           mainCategoryStatus: company.previousMainCategoryStatus,
-          previousMainCategoryStatus: company.mainCategoryStatus,
-          previousSubCategoryStatus: company.subCategoryStatus,
+          // previousMainCategoryStatus: company.mainCategoryStatus,
+          // previousSubCategoryStatus: company.subCategoryStatus,
+          previousMainCategoryStatus: previousMainCategoryStatus,
+          previousSubCategoryStatus: previousSubCategoryStatus,
           lastActionDate: new Date(),
           approvalTime: company.approvalTime,
           dateOfChangingMainStatus: company.dateOfChangingMainStatus,

@@ -11,6 +11,8 @@ const DscStatusDropdown = ({
   mainStatus,
   subStatus,
   setNewSubStatus,
+  previousMainStatus,
+  previousSubStatus,
   companyName,
   serviceName,
   refreshData,
@@ -28,7 +30,7 @@ const DscStatusDropdown = ({
 
   console.log("letterStatus", letterStatus, companyName, subStatus)
 
-
+  console.log("object")
 
   // State to manage the selected status and the corresponding CSS class
   const [status, setStatus] = useState(subStatus);
@@ -71,7 +73,7 @@ const DscStatusDropdown = ({
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter",
             previousMainCategoryStatus: "Process",
-            previousSubCategoryStatus: newStatus,
+            previousSubCategoryStatus: previousSubStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
@@ -84,7 +86,7 @@ const DscStatusDropdown = ({
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Hold",
             previousMainCategoryStatus: "Process",
-            previousSubCategoryStatus: newStatus,
+            previousSubCategoryStatus: previousSubStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
@@ -92,9 +94,10 @@ const DscStatusDropdown = ({
           response = await axios.post(`${secretKey}/rm-services/update-substatus-adminexecutive`, {
             companyName,
             serviceName,
-            subCategoryStatus: newStatus,
-
-            //mainCategoryStatus: "Defaulter",
+            subCategoryStatus: "Untouched",
+            mainCategoryStatus: "General",
+            previousMainCategoryStatus: "General",
+            previousSubCategoryStatus: "Untouched",
           });
         } else if (newStatus === "Application Submitted") {
           const conditions = {
@@ -147,7 +150,7 @@ const DscStatusDropdown = ({
               subCategoryStatus: newStatus,
               mainCategoryStatus: "Application Submitted",
               previousMainCategoryStatus: "Process",
-              previousSubCategoryStatus: newStatus,
+              previousSubCategoryStatus: previousSubStatus,
               movedFromMainCategoryStatus: movedFromMainCategoryStatus,
               movedToMainCategoryStatus: movedToMainCategoryStatus,
               approvalTime: new Date()
@@ -184,7 +187,7 @@ const DscStatusDropdown = ({
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Hold",
             previousMainCategoryStatus: "Application Submitted",
-            previousSubCategoryStatus: newStatus,
+            previousSubCategoryStatus: previousSubStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
@@ -197,7 +200,7 @@ const DscStatusDropdown = ({
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Defaulter",
             previousMainCategoryStatus: "Application Submitted",
-            previousSubCategoryStatus: newStatus,
+            previousSubCategoryStatus: previousSubStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
@@ -238,7 +241,7 @@ const DscStatusDropdown = ({
             subCategoryStatus: newStatus,
             mainCategoryStatus: "Hold",
             previousMainCategoryStatus: "Defaulter",
-            previousSubCategoryStatus: newStatus,
+            previousSubCategoryStatus: previousSubStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
@@ -282,7 +285,7 @@ const DscStatusDropdown = ({
             subCategoryStatus: newStatus,
             mainCategoryStatus: newStatus,
             previousMainCategoryStatus: "Hold",
-            previousSubCategoryStatus: newStatus,
+            previousSubCategoryStatus: previousSubStatus,
             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
             movedToMainCategoryStatus: movedToMainCategoryStatus,
           });
@@ -392,6 +395,8 @@ const DscStatusDropdown = ({
             return "created-status";
           case "Approved":
             return "support-status";
+          case "Application Submitted":
+            return "submited-status";
         }
       case "Hold":
         switch (subStatus) {
@@ -564,6 +569,15 @@ const DscStatusDropdown = ({
           </ul>
         ) : mainStatus === "Application Submitted" ? (
           <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Application Submitted", "submited-status")}
+                href="#"
+              >
+                Application Submitted
+              </a>
+            </li>
             <li>
               <a
                 className="dropdown-item"

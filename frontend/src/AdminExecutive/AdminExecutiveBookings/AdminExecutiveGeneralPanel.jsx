@@ -91,8 +91,10 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
     // };
 
     const fetchData = async (searchQuery = "", page = 1, isFilter = false) => {
+        
         setOpenBacdrop(true);
         try {
+            console.log("Fetched data :");
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === adminExecutiveUserId);
             setEmployeeData(userData);
@@ -101,7 +103,6 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
 
             // If filtering is active, extract companyName and serviceName from filteredData
             if (isFilter && filteredData && filteredData.length > 0) {
-                console.log("yahan chal rha", isFilter)
                 const companyNames = filteredData.map(item => item["Company Name"]).join(',');
                 const serviceNames = filteredData.map(item => item.serviceName).join(',');
 
@@ -115,6 +116,7 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
             });
 
             const { data, totalPages } = servicesResponse.data;
+            console.log("yahan chal rha", data)
 
 
             if (page === 1) {
@@ -163,7 +165,7 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
             transports: ['websocket'],
         });
 
-        socket.on("adminexectuive-general-status-updated", (res) => {
+        socket.on("adminexecutive-general-status-updated", (res) => {
             fetchData(searchText)
         });
 
@@ -195,6 +197,7 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
         if (filteredData && filteredData.length > 0) {
             fetchData(searchText, 1, true)
         } else {
+            console.log("API Not Called");
             fetchData(searchText, page, false);
         }
     };
