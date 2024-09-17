@@ -1489,6 +1489,10 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
     companyName,
     serviceName,
     subCategoryStatus,
+    letterStatus,
+    dscPortal,
+    dscType,
+    dscValidity,
     mainCategoryStatus,
     previousMainCategoryStatus,
     previousSubCategoryStatus,
@@ -1591,7 +1595,6 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
 
         //console.log("history" , createCompany)
       }
-
       // Emit socket event
       socketIO.emit("adminexecutive-general-status-updated", {
         updatedDocument: updateCompanyRm
@@ -1617,10 +1620,14 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
           dateOfChangingMainStatus: company.dateOfChangingMainStatus,
           Remarks: [],
           dscStatus: "Not Started",
-          letterStatus: "Not Started",
-          dscPortal: "Drashti Thakkar",
-          dscType: "Not Applicable",
-          dscValidity: "",
+          // letterStatus: "Not Started",
+          letterStatus: letterStatus,
+          // dscPortal: "Drashti Thakkar",
+          dscPortal: dscPortal,
+          // dscType: "Not Applicable",
+          dscType: dscType,
+          // dscValidity: "",
+          dscValidity: dscValidity,
           portalCharges: "",
           chargesPaidVia: "",
           expenseReimbursementStatus: "",
@@ -1629,7 +1636,6 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
         },
         { new: true }
       );
-
       const updateCompanyRm = await RMCertificationModel.findOneAndUpdate(
         {
           ["Company Name"]: companyName,
