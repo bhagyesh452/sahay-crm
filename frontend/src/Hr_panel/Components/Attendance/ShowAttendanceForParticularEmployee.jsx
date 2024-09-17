@@ -19,7 +19,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
         '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
         '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
         '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
-      ]        
+    ]
 
     const convertToDateInputFormat = (selectedDate) => {
         if (!selectedDate) return '';
@@ -129,16 +129,16 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
 
             const inTimeMinutes = convertToMinutes(inTime);
             const outTimeMinutes = convertToMinutes(outTime);
-            console.log("inTimeMinutes", inTimeMinutes)
-            console.log("outTimeMinutes", outTimeMinutes)
+            // console.log("inTimeMinutes", inTimeMinutes)
+            // console.log("outTimeMinutes", outTimeMinutes)
 
             const startBoundary = convertToMinutes("10:00"); // 10:00 AM
             const endBoundary = convertToMinutes("18:00"); // 6:00 PM
 
             let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
             let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
-            console.log("actualInTime", actualInTime)
-            console.log("actualOutTime", actualOutTime)
+            // console.log("actualInTime", actualInTime)
+            // console.log("actualOutTime", actualOutTime)
             let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes for the break
 
             // Ensure working minutes don't go negative
@@ -157,7 +157,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
         workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
 
         // console.log("intimeminutes", inTimeMinutes)
-        console.log("workingminutes", workingMinutes)
+        // console.log("workingminutes", workingMinutes)
         if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
             status = "LC";
         } else if (workingMinutes >= 420) { // 7 hours in minutes
@@ -196,14 +196,23 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
 
     const calculateWorkingHours = (inTime, outTime) => {
         if (!inTime || !outTime) return "00:00"; // Ensure both times are available
+        const convertToMinutes = (timeString) => {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
 
         const [inHours, inMinutes] = inTime.split(':').map(Number);
         const [outHours, outMinutes] = outTime.split(':').map(Number);
 
         const inTimeMinutes = inHours * 60 + inMinutes;
         const outTimeMinutes = outHours * 60 + outMinutes;
+        const startBoundary = convertToMinutes("10:00"); // 10:00 AM
+        const endBoundary = convertToMinutes("18:00"); // 6:00 PM
 
-        let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
+        let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
+        let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
+
+        let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes by default
 
         if (workingMinutes < 0) {
             workingMinutes += 24 * 60; // Adjust for overnight shifts
@@ -215,10 +224,10 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
         return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
 
     };
-// Function to format date for checking official holidays
-const formatDateForHolidayCheck = (year, month, day) => {
-    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-};
+    // Function to format date for checking official holidays
+    const formatDateForHolidayCheck = (year, month, day) => {
+        return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    };
     const getCurrentMonthName = () => {
         const months = [
             "January", "February", "March", "April", "May", "June",
@@ -663,13 +672,13 @@ const formatDateForHolidayCheck = (year, month, day) => {
                                             return date.getDay() === 0;
                                         };
 
-                                       
+
                                         // Get the month number from the month name
                                         const monthNumber = new Date(Date.parse(`${month} 1, ${year}`)).getMonth() + 1;
                                         const formattedDate = new Date(year, monthNumber - 1, emp.date);
                                         const isDateSunday = isSunday(year, monthNumber, emp.date);
                                         const formattedDateHoliday = formatDateForHolidayCheck(year, monthNumber, emp.date)
-                                        console.log("formatteddateholiday" , formattedDateHoliday)
+                                        console.log("formatteddateholiday", formattedDateHoliday)
                                         const isOfficialHoliday = officialHolidays.includes(formattedDateHoliday)
 
                                         return (

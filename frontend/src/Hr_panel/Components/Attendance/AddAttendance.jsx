@@ -115,8 +115,8 @@ function AddAttendance({ year, month, date, employeeData }) {
         '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
         '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
         '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
-      ]  
-      const formatDateForHolidayCheck = (year, month, day) => {
+    ]
+    const formatDateForHolidayCheck = (year, month, day) => {
         return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     };
 
@@ -220,7 +220,7 @@ function AddAttendance({ year, month, date, employeeData }) {
             status: updatedData.status
         };
 
-        console.log("Payload is :", payload);
+
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
             Swal.fire("Success", "Attendance Successfully Added/Updated", "success");
@@ -284,7 +284,7 @@ function AddAttendance({ year, month, date, employeeData }) {
             Swal.fire("error", "Error adding/updating attendance", "error");
         }
         fetchAttendance();
-        console.log("Data to be send :", payload);
+
     };
 
     // const calculateWorkingHours = (inTime, outTime) => {
@@ -333,13 +333,13 @@ function AddAttendance({ year, month, date, employeeData }) {
         // Adjust inTime and outTime to fit within 10:00 AM to 6:00 PM
         const actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10:00 AM, set it to 10:00 AM
         const actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6:00 PM, set it to 6:00 PM
-        console.log("inTimeMinutes", inTimeMinutes)
-        console.log("outTimeMinutes", outTimeMinutes)
-        console.log("actualInTime", actualInTime)
-        console.log("actualOutTime", actualOutTime)
+        // console.log("inTimeMinutes", inTimeMinutes)
+        // console.log("outTimeMinutes", outTimeMinutes)
+        // console.log("actualInTime", actualInTime)
+        // console.log("actualOutTime", actualOutTime)
         // Calculate working minutes and subtract 45 minutes for break
         let workingMinutes = actualOutTime - actualInTime;
-        console.log("workingminutes", workingMinutes)
+        //console.log("workingminutes", workingMinutes)
         // Ensure workingMinutes are not negative
         if (workingMinutes < 0) {
             workingMinutes = 0;
@@ -701,7 +701,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                     : emp.gender === "Male" ? MaleEmployee : FemaleEmployee;
 
                                 const empAttendance = attendanceData[emp._id] || {};
-                                console.log("Emp attendance is :", empAttendance , emp.ename);
+                                //console.log("Emp attendance is :", empAttendance, emp.ename);
 
                                 const attendanceDate = empAttendance.attendanceDate || !date ? formattedDate : convertToDateInputFormat(date);
 
@@ -737,7 +737,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 // Determine the status
                                 let status;
                                 const workingMinutes = (inTime && outTime) ? workingHours.split(':').reduce((acc, time) => (60 * acc) + +time) : 0;
-                                console.log("intimeminutes", inTimeMinutes)
+                                //console.log("intimeminutes", inTimeMinutes)
 
                                 if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
                                     status = "LC";
@@ -748,8 +748,8 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 } else {
                                     status = "No Data";
                                 }
-                                console.log("status", status)
-                                
+                                console.log("workinghours", workingHours)
+
 
                                 return (
                                     <tr key={index}>

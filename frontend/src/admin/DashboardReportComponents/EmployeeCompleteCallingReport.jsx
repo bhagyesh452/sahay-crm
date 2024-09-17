@@ -159,10 +159,7 @@ function EmployeeCompleteCallingReport() {
         const fetchEmployeeData = async () => {
             const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
             const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-            const urlEmployee = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-            // const employeeArray = [];
-            // employeeArray.push(employeeData.number);
-            //console.log(startTimestamp, endTimestamp)
+            const urlEmployee = 'https://api1.callyzer.co/v2/employee/get';
 
             const body = {
                 "call_from": startTimestamp,
@@ -173,10 +170,16 @@ function EmployeeCompleteCallingReport() {
                 // "working_hour_to": "20:59",
                 // "is_exclude_numbers": true
             }
+            const bodyEmployee = {
+                "emp_numbers": employeeArray,
+                // "working_hour_from": "00:00",
+                // "working_hour_to": "20:59",
+                // "is_exclude_numbers": true
+            }
 
             try {
                 setLoading(true)
-                const response = await fetch(url, {
+                const response = await fetch(urlEmployee, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${apiKey}`,
@@ -184,12 +187,27 @@ function EmployeeCompleteCallingReport() {
                     },
                     body: JSON.stringify(body)
                 });
+                const response2 = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bodyEmployee)
+                });
 
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
                 }
+                if (!response2.ok) {
+                    const errorData = await response2.json();
+                    throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+                }
                 const data = await response.json();
+                const newData = await response2.json();
+
+                console.log(newData)
 
                 setTotalCalls(data.result);
                 setFilteredTotalCalls(data.result)
