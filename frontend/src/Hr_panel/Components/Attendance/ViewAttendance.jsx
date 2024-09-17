@@ -292,35 +292,49 @@ function ViewAttendance({ year, month, date }) {
                     const [hours, minutes] = timeString.split(':').map(Number);
                     return hours * 60 + minutes;
                 };
-
+            
                 const formatToHHMM = (minutes) => {
                     const hours = Math.floor(minutes / 60);
                     const mins = minutes % 60;
                     return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
                 };
-
+            
                 const inTimeMinutes = convertToMinutes(inTime);
                 const outTimeMinutes = convertToMinutes(outTime);
-                console.log("inTimeMinutes", inTimeMinutes)
-                console.log("outTimeMinutes", outTimeMinutes)
-
+            
                 const startBoundary = convertToMinutes("10:00"); // 10:00 AM
                 const endBoundary = convertToMinutes("18:00"); // 6:00 PM
-
+            
+                const breakStart = convertToMinutes("13:00"); // 1:00 PM
+                const breakEnd = convertToMinutes("13:45"); // 1:45 PM
+            
+                // Adjust inTime and outTime to respect the work boundaries
                 let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
                 let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
-                console.log("actualInTime", actualInTime)
-                console.log("actualOutTime", actualOutTime)
-                let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes for the break
-
+            
+                // Calculate working time before considering the break
+                let workingMinutes = actualOutTime - actualInTime;
+            
+                // Subtract break time if inTime or outTime overlap with the break period
+                if (actualInTime < breakEnd && actualOutTime > breakStart) {
+                    // If inTime is before the break end and outTime is after break start, subtract the overlap
+                    const overlapStart = Math.max(actualInTime, breakStart);
+                    const overlapEnd = Math.min(actualOutTime, breakEnd);
+                    const breakOverlap = overlapEnd - overlapStart;
+                    
+                    // Ensure breakOverlap is only subtracted if it's positive
+                    if (breakOverlap > 0) {
+                        workingMinutes -= breakOverlap;
+                    }
+                }
+            
                 // Ensure working minutes don't go negative
                 if (workingMinutes < 0) {
                     workingMinutes = 0;
                 }
-
+            
                 return workingMinutes;
             };
-
             const workingMinutes = calculateWorkingHours(inTime, outTime);
 
             // Convert minutes back to HH:MM format for display
@@ -702,7 +716,10 @@ function ViewAttendance({ year, month, date }) {
                                                         }
 
                                                         // Count statuses and log each 'Present' count
-                                                        if (status === "Present") {
+                                                        if (status === "Present"||
+                                                            status === "LC1" ||
+                                                            status === "LC2" ||
+                                                            status === "LC3") {
                                                             presentCount++;
                                                             //console.log(`Present Count for ${formattedDate}: ${presentCount}`);
                                                         }
@@ -739,7 +756,7 @@ function ViewAttendance({ year, month, date }) {
                                                 // Adjust presentCount based on the presence of 'LCH'
                                                 if (hasLCH) {
                                                     // Remove LC statuses counted as Present if LCH is found
-                                                    presentCount -= lcStatusesAsPresent;
+                                                    presentCount -= lcCount;
 
                                                     // Ensure that halfDayCount includes LC counts if LCH is present
                                                     halfDayCount += lcCount;

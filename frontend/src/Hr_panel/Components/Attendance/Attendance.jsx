@@ -23,7 +23,6 @@ function Attendance() {
     const [employee, setEmployee] = useState([]);
     const [myInfo, setMyInfo] = useState([]);
     const [employeeInfo, setEmployeeInfo] = useState([]);
-
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
     const [selectedDate, setSelectedDate] = useState("");

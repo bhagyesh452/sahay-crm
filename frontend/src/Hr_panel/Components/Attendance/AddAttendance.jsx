@@ -329,6 +329,8 @@ function AddAttendance({ year, month, date, employeeData }) {
         // Define boundaries for 10:00 AM and 6:00 PM
         const startBoundary = convertToMinutes("10:00");
         const endBoundary = convertToMinutes("18:00");
+        const breakStart = convertToMinutes("13:00"); // 1:00 PM
+        const breakEnd = convertToMinutes("13:45"); // 1:45 PM
 
         // Adjust inTime and outTime to fit within 10:00 AM to 6:00 PM
         const actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10:00 AM, set it to 10:00 AM
@@ -339,6 +341,17 @@ function AddAttendance({ year, month, date, employeeData }) {
         // console.log("actualOutTime", actualOutTime)
         // Calculate working minutes and subtract 45 minutes for break
         let workingMinutes = actualOutTime - actualInTime;
+        if (actualInTime < breakEnd && actualOutTime > breakStart) {
+            // If inTime is before the break end and outTime is after break start, subtract the overlap
+            const overlapStart = Math.max(actualInTime, breakStart);
+            const overlapEnd = Math.min(actualOutTime, breakEnd);
+            const breakOverlap = overlapEnd - overlapStart;
+
+            // Ensure breakOverlap is only subtracted if it's positive
+            if (breakOverlap > 0) {
+                workingMinutes -= breakOverlap;
+            }
+        }
         //console.log("workingminutes", workingMinutes)
         // Ensure workingMinutes are not negative
         if (workingMinutes < 0) {
@@ -739,17 +752,22 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 const workingMinutes = (inTime && outTime) ? workingHours.split(':').reduce((acc, time) => (60 * acc) + +time) : 0;
                                 //console.log("intimeminutes", inTimeMinutes)
 
-                                if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
-                                    status = "LC";
-                                } else if (workingMinutes >= 420) { // 7 hours 15 minutes in minutes
-                                    status = "Present";
-                                } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours 15 minutes / 2 in minutes
-                                    status = "Half Day";
+                                if (!inTime || !outTime) {
+                                    status = "NoData";
+                                } else if ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && (workingMinutes >= 420)) {
+                                    status = "LC"; // Late but complete (LC)
+                                } else if (workingMinutes >= 420) { 
+                                    status = "Present"; // Full day present (7 hours)
+                                } else if (workingMinutes >= 210 && workingMinutes < 420) { 
+                                    status = "Half Day"; // Half day
+                                } else if (workingMinutes < 210) {
+                                    status = "Leave"; // Less than half day, considered leave
                                 } else {
-                                    status = "No Data";
+                                    status = "NoData"; // Fallback if none of the above conditions match
                                 }
-                                console.log("workinghours", workingHours)
-
+                                console.log("workingMinutes", workingMinutes)
+                                console.log("workingHours", workingHours)
+                                console.log("status", status)
 
                                 return (
                                     <tr key={index}>

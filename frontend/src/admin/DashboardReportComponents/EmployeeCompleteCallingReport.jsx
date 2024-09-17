@@ -155,6 +155,98 @@ function EmployeeCompleteCallingReport() {
     let employeeArray = []
     employeeArray.push(employeeData.number);
 
+    // useEffect(() => {
+    //     const fetchEmployeeData = async () => {
+    //         const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+    //         const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+    //         const urlEmployee = 'https://api1.callyzer.co/v2/employee/get';
+
+    //         const body = {
+    //             "call_from": startTimestamp,
+    //             "call_to": endTimestamp,
+    //             "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+    //             "emp_numbers": employeeArray,
+    //             // "working_hour_from": "00:00",
+    //             // "working_hour_to": "20:59",
+    //             // "is_exclude_numbers": true
+    //         }
+    //         // Helper function to serialize arrays correctly in the query string
+    //         function buildQueryParams(params) {
+    //             const query = new URLSearchParams();
+
+    //             // Loop over the params object and build query string
+    //             for (const key in params) {
+    //                 if (Array.isArray(params[key])) {
+    //                     // If the param is an array, append each element individually
+    //                     params[key].forEach(value => {
+    //                         query.append(`${key}[]`, value);
+    //                     });
+    //                 } else {
+    //                     query.append(key, params[key]);
+    //                 }
+    //             }
+
+    //             return query.toString();
+    //         }
+    //         // Your query parameters object
+    //         const queryParamsObject = {
+    //             "emp_numbers": ['9054102434'],
+    //             "emp_tags": [],
+    //             "emp_name": 'deepak soni',
+    //             "emp_codes": [],
+    //             "page_no": 1,
+    //             "page_size": 2
+    //         };
+    //         // Build query string from the object
+    //         const queryParams = buildQueryParams(queryParamsObject);
+    //         try {
+    //             setLoading(true)
+    //             const response = await fetch(url, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Authorization': `Bearer ${apiKey}`,
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //                 body: JSON.stringify(body)
+    //             });
+    //             const response2 = await fetch(`${urlEmployee}?${queryParams}`, {
+    //                 method: 'GET',
+    //                 headers: {
+    //                     'Authorization': `Bearer ${apiKey}`,
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             });
+
+    //             if (!response.ok) {
+    //                 const errorData = await response.json();
+    //                 throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+    //             }
+    //             // if (!response2.ok) {
+    //             //     const errorData = await response2.json();
+    //             //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+    //             // }
+    //             const data = await response.json();
+    //             const newData = await response2.json();
+
+    //             console.log(newData)
+
+    //             setTotalCalls(data.result);
+    //             setFilteredTotalCalls(data.result)
+    //             setCompleteTotalCalls(data.result)
+
+    //             // setTotalCalls(data.result);
+    //             //console.log("data", data.result)
+
+    //         } catch (err) {
+
+    //             console.log(err)
+    //         } finally {
+    //             setLoading(false)
+    //         }
+    //     };
+    //     fetchEmployeeData();
+    // }, [employeeData]);
+
     useEffect(() => {
         const fetchEmployeeData = async () => {
             const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
@@ -165,26 +257,43 @@ function EmployeeCompleteCallingReport() {
                 "call_from": startTimestamp,
                 "call_to": endTimestamp,
                 "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-                "emp_numbers": employeeArray,
-                // "working_hour_from": "00:00",
-                // "working_hour_to": "20:59",
-                // "is_exclude_numbers": true
+                "emp_numbers": employeeArray
+            };
+
+            // Helper function to serialize arrays correctly in the query string
+            // Function to build the query string, handling arrays properly
+            function buildQueryParams(params) {
+                const query = new URLSearchParams();
+
+                for (const key in params) {
+                    if (Array.isArray(params[key]) && params[key].length > 0) {
+                        // If the param is an array and not empty, serialize as array format
+                        params[key].forEach(value => {
+                            query.append(`${key}[]`, value);
+                        });
+                    } else if (params[key] !== "") {
+                        // Append other params if not empty
+                        query.append(key, params[key]);
+                    }
+                }
+
+                return query.toString();
             }
-            // Assuming `employeeArray` is an array of employee numbers
-            const queryParams = new URLSearchParams({
-                emp_numbers: '9054102434',
-                emp_tags: '',
-                emp_name: '',
-                emp_codes: '',
-                page_no: 1,
-                page_size: 2
-              });
 
-           
+            const queryParamsObject = {
+                "emp_numbers": ['9054102434'],
+                "emp_tags": [],
+                "emp_name": 'deepak soni',
+                "emp_codes": [],
+                "page_no": 1,
+                "page_size": 2
+            };
 
-
+            const queryParams = buildQueryParams(queryParamsObject);
+            console.log(`${urlEmployee}?${queryParams}`);
             try {
-                setLoading(true)
+                setLoading(true);
+
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -193,45 +302,43 @@ function EmployeeCompleteCallingReport() {
                     },
                     body: JSON.stringify(body)
                 });
-                const response2 = await fetch(`${urlEmployee}?${queryParams.toString()}`, {
+
+                const response2 = await fetch(`${urlEmployee}?${queryParams}`, {
                     method: 'GET',
                     headers: {
-                      'Authorization': `Bearer ${apiKey}`,
-                      'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
                     }
-                  });
+                });
 
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
                 }
-                // if (!response2.ok) {
-                //     const errorData = await response2.json();
-                //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
-                // }
+
+                if (!response2.ok) {
+                    const errorData = await response2.json();
+                    throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+                }
+
                 const data = await response.json();
                 const newData = await response2.json();
 
-                console.log(newData)
+                console.log(newData);
 
                 setTotalCalls(data.result);
-                setFilteredTotalCalls(data.result)
-                setCompleteTotalCalls(data.result)
-
-                // setTotalCalls(data.result);
-                //console.log("data", data.result)
+                setFilteredTotalCalls(data.result);
+                setCompleteTotalCalls(data.result);
 
             } catch (err) {
-
-                console.log(err)
+                console.error(err);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         };
+
         fetchEmployeeData();
-    }, [employeeData]);
-
-
+    }, [employeeData])
     const convertSecondsToHMS = (totalSeconds) => {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
