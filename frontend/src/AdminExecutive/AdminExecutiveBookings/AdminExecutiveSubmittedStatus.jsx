@@ -1029,215 +1029,222 @@ function AdminExecutiveSubmittedPanel({ searchText, showFilter, activeTab, total
                         <tbody>
                             {rmServicesData &&
                                 rmServicesData.length !== 0 &&
-                                rmServicesData.map((obj, index) => (
-                                    <tr key={index}>
-                                        <td className="rm-sticky-left-1">
-                                            <div className="rm_sr_no">{index + 1}</div>
-                                        </td>
-                                        <td className="rm-sticky-left-2">
-                                            <b>{obj["Company Name"]}</b>
-                                        </td>
-                                        <td>
-                                            <div className="d-flex align-items-center justify-content-center wApp">
-                                                <div>{obj["Company Number"]}</div>
-                                                <a
-                                                    href={`https://wa.me/${obj["Company Number"]}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        marginLeft: "10px",
-                                                        lineHeight: "14px",
-                                                        fontSize: "14px",
+                                rmServicesData.map((obj, index) => {
+                                    let previousMainCategoryStatus = obj.mainCategoryStatus;
+                                    let previousSubCategoryStatus = obj.subCategoryStatus;
+                                    // console.log("Previous sub category status in submitted tab :", previousSubCategoryStatus);
+                                    return (
+                                        <tr key={index}>
+                                            <td className="rm-sticky-left-1">
+                                                <div className="rm_sr_no">{index + 1}</div>
+                                            </td>
+                                            <td className="rm-sticky-left-2">
+                                                <b>{obj["Company Name"]}</b>
+                                            </td>
+                                            <td>
+                                                <div className="d-flex align-items-center justify-content-center wApp">
+                                                    <div>{obj["Company Number"]}</div>
+                                                    <a
+                                                        href={`https://wa.me/${obj["Company Number"]}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            marginLeft: "10px",
+                                                            lineHeight: "14px",
+                                                            fontSize: "14px",
+                                                        }}
+                                                    >
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>{obj["Company Email"]}</td>
+                                            <td>
+                                                <div className="d-flex align-items-center justify-content-center wApp">
+                                                    <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
+                                                    <a
+                                                        href={`https://wa.me/${obj.caNumber}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            marginLeft: "10px",
+                                                            lineHeight: "14px",
+                                                            fontSize: "14px",
+                                                        }}
+                                                    >
+                                                        <FaWhatsapp />
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>{obj.serviceName}</td>
+                                            <td>
+                                                <div>
+                                                    {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                        <DscLetterStatusDropdown
+                                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                            mainStatus={obj.mainCategoryStatus}
+                                                            subStatus={obj.subCategoryStatus}
+                                                            companyName={obj["Company Name"]}
+                                                            serviceName={obj.serviceName}
+                                                            refreshData={refreshData}
+                                                            letterStatus={
+                                                                obj.letterStatus ? obj.letterStatus : ""
+                                                            }
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                        <DscStatusDropdown
+                                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                            mainStatus={obj.mainCategoryStatus}
+                                                            subStatus={obj.subCategoryStatus}
+                                                            setNewSubStatus={setNewStatusProcess}
+                                                            previousMainStatus={previousMainCategoryStatus}
+                                                            previousSubStatus={previousSubCategoryStatus}
+                                                            companyName={obj["Company Name"]}
+                                                            serviceName={obj.serviceName}
+                                                            refreshData={refreshData}
+                                                            letterStatus={obj.letterStatus}
+                                                            dscType={obj.dscType}
+                                                            dscValidity={obj.dscValidity ? obj.dscValidity : ""}
+                                                            dscPortal={obj.dscPortal ? obj.dscPortal : ""}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <DscRemarks
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
+                                                    historyRemarks={obj.Remarks}
+                                                />
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                        <DscPortalDropdown
+                                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                            mainStatus={obj.mainCategoryStatus}
+                                                            subStatus={obj.subCategoryStatus}
+                                                            companyName={obj["Company Name"]}
+                                                            serviceName={obj.serviceName}
+                                                            refreshData={refreshData}
+                                                            dscPortal={obj.dscPortal}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                        <DscTypeDropdown
+                                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                            mainStatus={obj.mainCategoryStatus}
+                                                            subStatus={obj.subCategoryStatus}
+                                                            companyName={obj["Company Name"]}
+                                                            serviceName={obj.serviceName}
+                                                            refreshData={refreshData}
+                                                            dscType={obj.dscType}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                                                        <DscValidityDropdown
+                                                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                            mainStatus={obj.mainCategoryStatus}
+                                                            subStatus={obj.subCategoryStatus}
+                                                            companyName={obj["Company Name"]}
+                                                            serviceName={obj.serviceName}
+                                                            refreshData={refreshData}
+                                                            dscValidity={obj.dscValidity}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <DscPhoneNo
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
+                                                    dscPhoneNo={
+                                                        obj.dscPhoneNo
+                                                            ? obj.dscPhoneNo
+                                                            : obj["Company Number"]
+                                                    }
+                                                />
+                                            </td>
+                                            <td>
+                                                <DscEmailId
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
+                                                    dscEmailId={
+                                                        obj.dscEmailId ? obj.dscEmailId : obj["Company Email"]
+                                                    }
+                                                />
+                                            </td>
+                                            <td>
+                                                <DscPortalCharges
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
+                                                    dscPortalCharges={obj.portalCharges}
+                                                />
+                                            </td>
+                                            <td>
+                                                <DscChargesPaidVia
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
+                                                    chargesPaidVia={obj.chargesPaidVia}
+                                                    mainStatus={obj.mainCategoryStatus}
+                                                />
+                                            </td>
+                                            <td>
+                                                <DscExpanceReimbursement
+                                                    key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                                                    mainStatus={obj.mainCategoryStatus}
+                                                    subStatus={obj.subCategoryStatus}
+                                                    companyName={obj["Company Name"]}
+                                                    serviceName={obj.serviceName}
+                                                    refreshData={refreshData}
+                                                    dscExpenseStatus={obj.expenseReimbursementStatus}
+                                                    expenseDate={obj.expenseReimbursementDate}
+                                                />
+                                            </td>
+                                            <td>
+                                                {formatDatePro(obj.bookingDate)}
+                                            </td>
+                                            <td>{obj.bdeName}</td>
+                                            <td>{obj.bdmName}</td>
+                                            <td className="rm-sticky-action">
+                                                <button
+                                                    className="action-btn action-btn-primary"
+                                                    onClick={() => {
+                                                        handleRevokeCompanyToRecievedBox(
+                                                            obj["Company Name"],
+                                                            obj.serviceName
+                                                        );
                                                     }}
                                                 >
-                                                    <FaWhatsapp />
-                                                </a>
-                                            </div>
-                                        </td>
-                                        <td>{obj["Company Email"]}</td>
-                                        <td>
-                                            <div className="d-flex align-items-center justify-content-center wApp">
-                                                <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
-                                                <a
-                                                    href={`https://wa.me/${obj.caNumber}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        marginLeft: "10px",
-                                                        lineHeight: "14px",
-                                                        fontSize: "14px",
-                                                    }}
-                                                >
-                                                    <FaWhatsapp />
-                                                </a>
-                                            </div>
-                                        </td>
-                                        <td>{obj.serviceName}</td>
-                                        <td>
-                                            <div>
-                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <DscLetterStatusDropdown
-                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                        mainStatus={obj.mainCategoryStatus}
-                                                        subStatus={obj.subCategoryStatus}
-                                                        companyName={obj["Company Name"]}
-                                                        serviceName={obj.serviceName}
-                                                        refreshData={refreshData}
-                                                        letterStatus={
-                                                            obj.letterStatus ? obj.letterStatus : ""
-                                                        }
-                                                    />
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <DscStatusDropdown
-                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                        mainStatus={obj.mainCategoryStatus}
-                                                        subStatus={obj.subCategoryStatus}
-                                                        setNewSubStatus={setNewStatusProcess}
-                                                        companyName={obj["Company Name"]}
-                                                        serviceName={obj.serviceName}
-                                                        refreshData={refreshData}
-                                                        letterStatus={obj.letterStatus}
-                                                        dscType={obj.dscType}
-                                                        dscValidity={obj.dscValidity ? obj.dscValidity : ""}
-                                                        dscPortal={obj.dscPortal ? obj.dscPortal : ""}
-                                                    />
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <DscRemarks
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                refreshData={refreshData}
-                                                historyRemarks={obj.Remarks}
-                                            />
-                                        </td>
-                                        <td>
-                                            <div>
-                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <DscPortalDropdown
-                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                        mainStatus={obj.mainCategoryStatus}
-                                                        subStatus={obj.subCategoryStatus}
-                                                        companyName={obj["Company Name"]}
-                                                        serviceName={obj.serviceName}
-                                                        refreshData={refreshData}
-                                                        dscPortal={obj.dscPortal}
-                                                    />
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <DscTypeDropdown
-                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                        mainStatus={obj.mainCategoryStatus}
-                                                        subStatus={obj.subCategoryStatus}
-                                                        companyName={obj["Company Name"]}
-                                                        serviceName={obj.serviceName}
-                                                        refreshData={refreshData}
-                                                        dscType={obj.dscType}
-                                                    />
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <DscValidityDropdown
-                                                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                        mainStatus={obj.mainCategoryStatus}
-                                                        subStatus={obj.subCategoryStatus}
-                                                        companyName={obj["Company Name"]}
-                                                        serviceName={obj.serviceName}
-                                                        refreshData={refreshData}
-                                                        dscValidity={obj.dscValidity}
-                                                    />
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <DscPhoneNo
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                refreshData={refreshData}
-                                                dscPhoneNo={
-                                                    obj.dscPhoneNo
-                                                        ? obj.dscPhoneNo
-                                                        : obj["Company Number"]
-                                                }
-                                            />
-                                        </td>
-                                        <td>
-                                            <DscEmailId
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                refreshData={refreshData}
-                                                dscEmailId={
-                                                    obj.dscEmailId ? obj.dscEmailId : obj["Company Email"]
-                                                }
-                                            />
-                                        </td>
-                                        <td>
-                                            <DscPortalCharges
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                refreshData={refreshData}
-                                                dscPortalCharges={obj.portalCharges}
-                                            />
-                                        </td>
-                                        <td>
-                                            <DscChargesPaidVia
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                refreshData={refreshData}
-                                                chargesPaidVia={obj.chargesPaidVia}
-                                                mainStatus={obj.mainCategoryStatus}
-                                            />
-                                        </td>
-                                        <td>
-                                            <DscExpanceReimbursement
-                                                key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                                                mainStatus={obj.mainCategoryStatus}
-                                                subStatus={obj.subCategoryStatus}
-                                                companyName={obj["Company Name"]}
-                                                serviceName={obj.serviceName}
-                                                refreshData={refreshData}
-                                                dscExpenseStatus={obj.expenseReimbursementStatus}
-                                                expenseDate={obj.expenseReimbursementDate}
-                                            />
-                                        </td>
-                                        <td>
-                                            {formatDatePro(obj.bookingDate)}
-                                        </td>
-                                        <td>{obj.bdeName}</td>
-                                        <td>{obj.bdmName}</td>
-                                        <td className="rm-sticky-action">
-                                            <button
-                                                className="action-btn action-btn-primary"
-                                                onClick={() => {
-                                                    handleRevokeCompanyToRecievedBox(
-                                                        obj["Company Name"],
-                                                        obj.serviceName
-                                                    );
-                                                }}
-                                            >
-                                                <FaRegEye />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                                    <FaRegEye />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                         </tbody>
                     </table>
                 ) : (

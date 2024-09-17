@@ -177,11 +177,11 @@ function AdminExecutiveDefaulterPanel({ searchText, showFilter, activeTab, total
       secretKey === "http://localhost:3001/api"
         ? io("http://localhost:3001")
         : io("wss://startupsahay.in", {
-            secure: true, // Use HTTPS
-            path: "/socket.io",
-            reconnection: true,
-            transports: ["websocket"],
-          });
+          secure: true, // Use HTTPS
+          path: "/socket.io",
+          reconnection: true,
+          transports: ["websocket"],
+        });
 
     socket.on("adminexecutive-general-status-updated", (res) => {
       fetchData(searchText);
@@ -206,22 +206,22 @@ function AdminExecutiveDefaulterPanel({ searchText, showFilter, activeTab, total
     const updateDocumentInState = (updatedDocument) => {
       console.log(updatedDocument)
       setRmServicesData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setcompleteRmData(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
       setdataToFilter(prevData => prevData.map(item =>
-          item._id === updatedDocument._id ? updatedDocument : item
+        item._id === updatedDocument._id ? updatedDocument : item
       ));
-  };
+    };
 
     socket.on("rmcert-letter-updated", (res) => {
       //console.log("res" , res)
       if (res.updatedDocumentAdmin) {
-          updateDocumentInState(res.updatedDocumentAdmin);
+        updateDocumentInState(res.updatedDocumentAdmin);
       }
-  });
+    });
 
     return () => {
       socket.disconnect();
@@ -230,11 +230,11 @@ function AdminExecutiveDefaulterPanel({ searchText, showFilter, activeTab, total
 
   const refreshData = () => {
     if (filteredData && filteredData.length > 0) {
-        fetchData(searchText, 1, true)
+      fetchData(searchText, 1, true)
     } else {
-        fetchData(searchText, page, false);
+      fetchData(searchText, page, false);
     }
-};
+  };
 
   // useEffect to fetch data on component mount
   useEffect(() => {
@@ -359,55 +359,55 @@ function AdminExecutiveDefaulterPanel({ searchText, showFilter, activeTab, total
   };
 
   //-------------------filter method-------------------------------
- //-------------------filter method-------------------------------
- const handleFilter = (newData) => {
-  setFilteredData(newData)
-  setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Defaulter"));
+  //-------------------filter method-------------------------------
+  const handleFilter = (newData) => {
+    setFilteredData(newData)
+    setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Defaulter"));
 
-};
+  };
 
-useEffect(() => {
-  if (noOfAvailableData) {
-    showingFilterIcon(true)
-    totalFilteredData(noOfAvailableData)
-  } else {
-    showingFilterIcon(false)
-    totalFilteredData(0)
-  }
+  useEffect(() => {
+    if (noOfAvailableData) {
+      showingFilterIcon(true)
+      totalFilteredData(noOfAvailableData)
+    } else {
+      showingFilterIcon(false)
+      totalFilteredData(0)
+    }
 
-}, [noOfAvailableData, activeTab])
-console.log("noofavaialabledata" , noOfAvailableData)
+  }, [noOfAvailableData, activeTab])
+  console.log("noofavaialabledata", noOfAvailableData)
 
-const handleFilterClick = (field) => {
-  if (activeFilterField === field) {
-    setShowFilterMenu(!showFilterMenu);
-    setIsScrollLocked(!showFilterMenu);
-  } else {
-    setActiveFilterField(field);
-    setShowFilterMenu(true);
-    setIsScrollLocked(true);
+  const handleFilterClick = (field) => {
+    if (activeFilterField === field) {
+      setShowFilterMenu(!showFilterMenu);
+      setIsScrollLocked(!showFilterMenu);
+    } else {
+      setActiveFilterField(field);
+      setShowFilterMenu(true);
+      setIsScrollLocked(true);
 
-    const rect = fieldRefs.current[field].getBoundingClientRect();
-    setFilterPosition({ top: rect.bottom, left: rect.left });
-  }
-};
-
-const isActiveField = (field) => activeFilterFields.includes(field);
-
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-      setShowFilterMenu(false);
-      setIsScrollLocked(false);
+      const rect = fieldRefs.current[field].getBoundingClientRect();
+      setFilterPosition({ top: rect.bottom, left: rect.left });
     }
   };
 
-  document.addEventListener('mousedown', handleClickOutside);
+  const isActiveField = (field) => activeFilterFields.includes(field);
 
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+        setShowFilterMenu(false);
+        setIsScrollLocked(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>
@@ -462,14 +462,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['Company Number'] = el}>Company Number</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('Company Number') ? (
+                      {isActiveField('Company Number') ? (
                         <FaFilter onClick={() => handleFilterClick("Company Number")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("Company Number")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'Company Number' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'Company Number' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -495,14 +495,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['Company Email'] = el}>Company Email</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('Company Email') ? (
+                      {isActiveField('Company Email') ? (
                         <FaFilter onClick={() => handleFilterClick("Company Email")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("Company Email")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'Company Email' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'Company Email' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -528,14 +528,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['caNumber'] = el}>CA Number</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('caNumber') ? (
+                      {isActiveField('caNumber') ? (
                         <FaFilter onClick={() => handleFilterClick("caNumber")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("caNumber")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'caNumber' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'caNumber' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -561,14 +561,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['serviceName'] = el}>Services Name</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('serviceName') ? (
+                      {isActiveField('serviceName') ? (
                         <FaFilter onClick={() => handleFilterClick("serviceName")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("serviceName")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'serviceName' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'serviceName' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -594,14 +594,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['letterStatus'] = el}>Letter Status</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('letterStatus') ? (
+                      {isActiveField('letterStatus') ? (
                         <FaFilter onClick={() => handleFilterClick("letterStatus")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("letterStatus")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'letterStatus' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'letterStatus' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -627,14 +627,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>DSC Status</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('subCategoryStatus') ? (
+                      {isActiveField('subCategoryStatus') ? (
                         <FaFilter onClick={() => handleFilterClick("subCategoryStatus")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("subCategoryStatus")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'subCategoryStatus' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -665,14 +665,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['dscPortal'] = el}>DSC Portal</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('dscPortal') ? (
+                      {isActiveField('dscPortal') ? (
                         <FaFilter onClick={() => handleFilterClick("dscPortal")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("dscPortal")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'dscPortal' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'dscPortal' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -698,7 +698,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['dscType'] = el}>DSC Type</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('dscType') ? (
+                      {isActiveField('dscType') ? (
                         <FaFilter onClick={() => handleFilterClick("dscType")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("dscType")} />
@@ -731,7 +731,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['dscValidity'] = el}>DSC Validity</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('dscValidity') ? (
+                      {isActiveField('dscValidity') ? (
                         <FaFilter onClick={() => handleFilterClick("dscValidity")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("dscValidity")} />
@@ -764,7 +764,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['dscPhoneNo'] = el}>DSC Phone No</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('dscPhoneNo') ? (
+                      {isActiveField('dscPhoneNo') ? (
                         <FaFilter onClick={() => handleFilterClick("dscPhoneNo")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("dscPhoneNo")} />
@@ -797,7 +797,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['dscEmailId'] = el}>DSC Email Id</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('dscEmailId') ? (
+                      {isActiveField('dscEmailId') ? (
                         <FaFilter onClick={() => handleFilterClick("dscEmailId")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("dscEmailId")} />
@@ -830,14 +830,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['portalCharges'] = el}>Portal Charges</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('portalCharges') ? (
+                      {isActiveField('portalCharges') ? (
                         <FaFilter onClick={() => handleFilterClick("portalCharges")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("portalCharges")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'portalCharges' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'portalCharges' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -863,7 +863,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['chargesPaidVia'] = el}>Charges Paid Via</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('chargesPaidVia') ? (
+                      {isActiveField('chargesPaidVia') ? (
                         <FaFilter onClick={() => handleFilterClick("chargesPaidVia")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("chargesPaidVia")} />
@@ -896,14 +896,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['expenseReimbursementStatus'] = el}>Reimbursement Status</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('expenseReimbursementStatus') ? (
+                      {isActiveField('expenseReimbursementStatus') ? (
                         <FaFilter onClick={() => handleFilterClick("expenseReimbursementStatus")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("expenseReimbursementStatus")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'expenseReimbursementStatus' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'expenseReimbursementStatus' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -929,7 +929,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['bookingDate'] = el}>Booking Date</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('bookingDate') ? (
+                      {isActiveField('bookingDate') ? (
                         <FaFilter onClick={() => handleFilterClick("bookingDate")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("bookingDate")} />
@@ -962,14 +962,14 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['bdeName'] = el}>BDE</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('bdeName') ? (
+                      {isActiveField('bdeName') ? (
                         <FaFilter onClick={() => handleFilterClick("bdeName")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("bdeName")} />
                       )}
                     </div>
-                     {/* {/* ---------------------filter component--------------------------- */}
-                     {showFilterMenu && activeFilterField === 'bdeName' && (
+                    {/* {/* ---------------------filter component--------------------------- */}
+                    {showFilterMenu && activeFilterField === 'bdeName' && (
                       <div
                         ref={filterMenuRef}
                         className="filter-menu"
@@ -995,7 +995,7 @@ useEffect(() => {
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['bdmName'] = el}>BDM</div>
                     <div className="RM_filter_icon">
-                    {isActiveField('bdmName') ? (
+                      {isActiveField('bdmName') ? (
                         <FaFilter onClick={() => handleFilterClick("bdmName")} />
                       ) : (
                         <BsFilter onClick={() => handleFilterClick("bdmName")} />
@@ -1030,207 +1030,214 @@ useEffect(() => {
             <tbody>
               {rmServicesData &&
                 rmServicesData.length !== 0 &&
-                rmServicesData.map((obj, index) => (
-                  <tr key={index}>
-                    <td className="rm-sticky-left-1">
-                      <div className="rm_sr_no">{index + 1}</div>
-                    </td>
-                    <td className="rm-sticky-left-2">
-                      <b>{obj["Company Name"]}</b>
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center justify-content-center wApp">
-                        <div>{obj["Company Number"]}</div>
-                        <a
-                          href={`https://wa.me/${obj["Company Number"]}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            marginLeft: "10px",
-                            lineHeight: "14px",
-                            fontSize: "14px",
-                          }}
-                        >
-                          <FaWhatsapp />
-                        </a>
-                      </div>
-                    </td>
-                    <td>{obj["Company Email"]}</td>
-                    <td>
-                      <div className="d-flex align-items-center justify-content-center wApp">
-                        <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
-                        <a
-                          href={`https://wa.me/${obj.caNumber}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            marginLeft: "10px",
-                            lineHeight: "14px",
-                            fontSize: "14px",
-                          }}
-                        >
-                          <FaWhatsapp />
-                        </a>
-                      </div>
-                    </td>
-                    <td>{obj.serviceName}</td>
-                    <td>
-                      <div>
-                        {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                          <DscLetterStatusDropdown
-                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                            mainStatus={obj.mainCategoryStatus}
-                            subStatus={obj.subCategoryStatus}
-                            companyName={obj["Company Name"]}
-                            serviceName={obj.serviceName}
-                            refreshData={refreshData}
-                            letterStatus={
-                              obj.letterStatus ? obj.letterStatus : ""
-                            }
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                          <DscStatusDropdown
-                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                            mainStatus={obj.mainCategoryStatus}
-                            subStatus={obj.subCategoryStatus}
-                            setNewSubStatus={setNewStatusDefaulter}
-                            companyName={obj["Company Name"]}
-                            serviceName={obj.serviceName}
-                            refreshData={refreshData}
-                            letterStatus={obj.letterStatus}
-                            dscType={obj.dscType}
-                            dscValidity={obj.dscValidity ? obj.dscValidity : ""}
-                            dscPortal={obj.dscPortal ? obj.dscPortal : ""}
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <DscRemarks
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        historyRemarks={obj.Remarks}
-                      />
-                    </td>
-                    <td>
-                      <div>
-                        {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                          <DscPortalDropdown
-                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                            mainStatus={obj.mainCategoryStatus}
-                            subStatus={obj.subCategoryStatus}
-                            companyName={obj["Company Name"]}
-                            serviceName={obj.serviceName}
-                            refreshData={refreshData}
-                            dscPortal={obj.dscPortal}
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                          <DscTypeDropdown
-                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                            mainStatus={obj.mainCategoryStatus}
-                            subStatus={obj.subCategoryStatus}
-                            companyName={obj["Company Name"]}
-                            serviceName={obj.serviceName}
-                            refreshData={refreshData}
-                            dscType={obj.dscType}
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                          <DscValidityDropdown
-                            key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                            mainStatus={obj.mainCategoryStatus}
-                            subStatus={obj.subCategoryStatus}
-                            companyName={obj["Company Name"]}
-                            serviceName={obj.serviceName}
-                            refreshData={refreshData}
-                            dscValidity={obj.dscValidity}
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <DscPhoneNo
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        dscPhoneNo={
-                          obj.dscPhoneNo
-                            ? obj.dscPhoneNo
-                            : obj["Company Number"]
-                        }
-                      />
-                    </td>
-                    <td>
-                      <DscEmailId
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        dscEmailId={
-                          obj.dscEmailId ? obj.dscEmailId : obj["Company Email"]
-                        }
-                      />
-                    </td>
-                    <td>
-                      <DscPortalCharges
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        dscPortalCharges={obj.portalCharges}
-                      />
-                    </td>
-                    <td>
-                      <DscChargesPaidVia
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        chargesPaidVia={obj.chargesPaidVia}
-                        mainStatus={obj.mainCategoryStatus}
-                      />
-                    </td>
-                    <td>
-                      <DscExpanceReimbursement
-                        key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
-                        mainStatus={obj.mainCategoryStatus}
-                        subStatus={obj.subCategoryStatus}
-                        companyName={obj["Company Name"]}
-                        serviceName={obj.serviceName}
-                        refreshData={refreshData}
-                        dscExpenseStatus={obj.expenseReimbursementStatus}
-                        expenseDate={obj.expenseReimbursementDate}
-                      />
-                    </td>
-                    <td>
-                      {formatDatePro(obj.bookingDate)}
-                    </td>
-                    <td>{obj.bdeName}</td>
-                    <td>{obj.bdmName}</td>
-                    <td className="rm-sticky-action">
-                      <button className="action-btn action-btn-primary">
-                        <FaRegEye />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                rmServicesData.map((obj, index) => {
+                  let previousMainCategoryStatus = obj.mainCategoryStatus;
+                  let previousSubCategoryStatus = obj.subCategoryStatus;
+                  // console.log("Previous sub category status in submitted tab :", previousSubCategoryStatus);
+                  return (
+                    <tr key={index}>
+                      <td className="rm-sticky-left-1">
+                        <div className="rm_sr_no">{index + 1}</div>
+                      </td>
+                      <td className="rm-sticky-left-2">
+                        <b>{obj["Company Name"]}</b>
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-center wApp">
+                          <div>{obj["Company Number"]}</div>
+                          <a
+                            href={`https://wa.me/${obj["Company Number"]}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              marginLeft: "10px",
+                              lineHeight: "14px",
+                              fontSize: "14px",
+                            }}
+                          >
+                            <FaWhatsapp />
+                          </a>
+                        </div>
+                      </td>
+                      <td>{obj["Company Email"]}</td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-center wApp">
+                          <div>{obj.caCase === "Yes" ? obj.caNumber : "N/A"}</div>
+                          <a
+                            href={`https://wa.me/${obj.caNumber}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              marginLeft: "10px",
+                              lineHeight: "14px",
+                              fontSize: "14px",
+                            }}
+                          >
+                            <FaWhatsapp />
+                          </a>
+                        </div>
+                      </td>
+                      <td>{obj.serviceName}</td>
+                      <td>
+                        <div>
+                          {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                            <DscLetterStatusDropdown
+                              key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                              mainStatus={obj.mainCategoryStatus}
+                              subStatus={obj.subCategoryStatus}
+                              companyName={obj["Company Name"]}
+                              serviceName={obj.serviceName}
+                              refreshData={refreshData}
+                              letterStatus={
+                                obj.letterStatus ? obj.letterStatus : ""
+                              }
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                            <DscStatusDropdown
+                              key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                              mainStatus={obj.mainCategoryStatus}
+                              subStatus={obj.subCategoryStatus}
+                              setNewSubStatus={setNewStatusDefaulter}
+                              previousMainStatus={previousMainCategoryStatus}
+                              previousSubStatus={previousSubCategoryStatus}
+                              companyName={obj["Company Name"]}
+                              serviceName={obj.serviceName}
+                              refreshData={refreshData}
+                              letterStatus={obj.letterStatus}
+                              dscType={obj.dscType}
+                              dscValidity={obj.dscValidity ? obj.dscValidity : ""}
+                              dscPortal={obj.dscPortal ? obj.dscPortal : ""}
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <DscRemarks
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          historyRemarks={obj.Remarks}
+                        />
+                      </td>
+                      <td>
+                        <div>
+                          {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                            <DscPortalDropdown
+                              key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                              mainStatus={obj.mainCategoryStatus}
+                              subStatus={obj.subCategoryStatus}
+                              companyName={obj["Company Name"]}
+                              serviceName={obj.serviceName}
+                              refreshData={refreshData}
+                              dscPortal={obj.dscPortal}
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                            <DscTypeDropdown
+                              key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                              mainStatus={obj.mainCategoryStatus}
+                              subStatus={obj.subCategoryStatus}
+                              companyName={obj["Company Name"]}
+                              serviceName={obj.serviceName}
+                              refreshData={refreshData}
+                              dscType={obj.dscType}
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          {obj.mainCategoryStatus && obj.subCategoryStatus && (
+                            <DscValidityDropdown
+                              key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                              mainStatus={obj.mainCategoryStatus}
+                              subStatus={obj.subCategoryStatus}
+                              companyName={obj["Company Name"]}
+                              serviceName={obj.serviceName}
+                              refreshData={refreshData}
+                              dscValidity={obj.dscValidity}
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <DscPhoneNo
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          dscPhoneNo={
+                            obj.dscPhoneNo
+                              ? obj.dscPhoneNo
+                              : obj["Company Number"]
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DscEmailId
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          dscEmailId={
+                            obj.dscEmailId ? obj.dscEmailId : obj["Company Email"]
+                          }
+                        />
+                      </td>
+                      <td>
+                        <DscPortalCharges
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          dscPortalCharges={obj.portalCharges}
+                        />
+                      </td>
+                      <td>
+                        <DscChargesPaidVia
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          chargesPaidVia={obj.chargesPaidVia}
+                          mainStatus={obj.mainCategoryStatus}
+                        />
+                      </td>
+                      <td>
+                        <DscExpanceReimbursement
+                          key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
+                          mainStatus={obj.mainCategoryStatus}
+                          subStatus={obj.subCategoryStatus}
+                          companyName={obj["Company Name"]}
+                          serviceName={obj.serviceName}
+                          refreshData={refreshData}
+                          dscExpenseStatus={obj.expenseReimbursementStatus}
+                          expenseDate={obj.expenseReimbursementDate}
+                        />
+                      </td>
+                      <td>
+                        {formatDatePro(obj.bookingDate)}
+                      </td>
+                      <td>{obj.bdeName}</td>
+                      <td>{obj.bdmName}</td>
+                      <td className="rm-sticky-action">
+                        <button className="action-btn action-btn-primary">
+                          <FaRegEye />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         ) : (
