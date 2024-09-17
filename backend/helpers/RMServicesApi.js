@@ -548,7 +548,7 @@ router.get('/rm-sevicesgetrequest', async (req, res) => {
         .skip(skip)
         .limit(parseInt(limit));
     }
-    
+
     const totalDocuments = await RMCertificationModel.countDocuments(query);
 
     const totalDocumentsGeneral = await RMCertificationModel.countDocuments({ ...query, mainCategoryStatus: "General" });
@@ -746,9 +746,16 @@ router.get('/adminexecutivedata', async (req, res) => {
 
     await AdminExecutiveModel.updateMany(
       { subCategoryStatus: { $in: ["KYC Pending", "KYC Incomplete", "KYC Rejected"] } },
-      { $set: { mainCategoryStatus: "Application Submitted" } }
+      {
+        $set:
+        {
+          mainCategoryStatus: "Application Submitted",
+          previousMainCategoryStatus: "Process",
+          previousSubCategoryStatus: "Process"
+        }
+      }
     );
-    
+
     const totalDocuments = await AdminExecutiveModel.countDocuments(query);
     const totalDocumentsGeneral = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "General" });
     const totalDocumentsProcess = await AdminExecutiveModel.countDocuments({ ...query, mainCategoryStatus: "Process" });
@@ -874,7 +881,7 @@ router.get("/search-booking-data", async (req, res) => {
     const data = await RedesignedLeadformModel.find(query)
       .skip(skip)
       .limit(limit);
-   
+
     // console.log("data", data);
     res.status(200).json({
       data,
@@ -1069,7 +1076,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
     try {
       const companyName = req.params.CompanyName;
       const { rmServicesMainBooking, rmServicesMoreBooking } = req.body;
-    
+
       const socketIO = req.io;
       //console.log("rmservicesmainbooking", rmServicesMainBooking);
       //console.log("rmservicesmorebooking", rmServicesMoreBooking);
@@ -1077,7 +1084,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
       const document = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
       });
-  
+
 
       if (!document) {
         console.error("Document not found");
@@ -1091,7 +1098,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
           ...rmServicesMainBooking,
         ])
       );
-  
+
       document.servicesTakenByRmOfCertification = uniqueMainServices;
 
       // Iterate through moreBookings and update only relevant objects
@@ -1117,7 +1124,7 @@ router.post("/postrmselectedservicestobookings/:CompanyName",
 
       // Save the updated document
       const updatedDocument = await document.save();
-    
+
 
       // if (!updatedDocument) {
       //   console.error("Failed to save the updated document");
@@ -1511,7 +1518,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
     if (subCategoryStatus !== "Undo") {
       // Conditionally include dateOfChangingMainStatus
       if (
-        ["Process", "Approved", "Hold", "Defaulter","Application Submitted"].includes(subCategoryStatus)
+        ["Process", "Approved", "Hold", "Defaulter", "Application Submitted"].includes(subCategoryStatus)
       ) {
         updateFields.dateOfChangingMainStatus = new Date();
       }
@@ -2866,7 +2873,7 @@ router.post(`/post-enable-industry/`, async (req, res) => {
 
 router.post(`/post-disasble-industry/`, async (req, res) => {
   const { companyName, serviceName, isIndustryEnabled } = req.body;
- 
+
   const socketIO = req.io;
   try {
     const company = await RMCertificationModel.findOneAndUpdate(
@@ -3705,11 +3712,11 @@ router.post('/upload-approved-data', async (req, res) => {
   try {
     const updates = data.map(async (item) => {
       try {
-     
+
         const parsedSubmittedOn = item["Submitted On Date"]
           ? excelSerialToJSDate(item["Submitted On Date"])
           : undefined;
-          const parsedBookingDate = item["Booking Date"]
+        const parsedBookingDate = item["Booking Date"]
           ? excelSerialToJSDate(item["Booking Date"])
           : undefined;
 
@@ -3799,7 +3806,7 @@ router.post('/upload-approved-data', async (req, res) => {
 router.delete('/delete-directuploadedleads', async (req, res) => {
   try {
     const result = await RMCertificationModel.deleteMany({ "isUploadedDirect": true });
-    
+
     // Sending response after deletion
     res.status(200).json({ message: 'Leads deleted successfully', deletedCount: result.deletedCount });
   } catch (error) {
