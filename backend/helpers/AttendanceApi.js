@@ -359,7 +359,7 @@ router.post('/addAttendance', async (req, res) => {
                         }]
                     });
                 } else {
-                   //If status is LC, check how many LC entries already exist for the month
+                    //If status is LC, check how many LC entries already exist for the month
                     if (status === "LC") {
                         let dayArray = monthArray.days.find(d => d.date === day);
 
@@ -402,14 +402,27 @@ router.post('/addAttendance', async (req, res) => {
                         dayArray.status = status;
                     }
                     // After clearing, re-check the number of LC statuses for the month
-                    const lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
-                    if (lcEntries.length === 3) {
-                        // If exactly 3 LC entries exist, reset them to LC1, LC2, and LC3
-                        lcEntries.forEach((entry, index) => {
-                            entry.status = `LC${index + 1}`;
-                        });
-                    } else if (lcEntries.length > 3) {
-                        // If more than 3 LC entries exist, set all to LCH
+                    let lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
+                    // If status is LC, re-assign LC numbers (LC1, LC2, LC3)
+                    if (status === "LC") {
+                        const lcCount = lcEntries.length;
+                        if (lcCount < 3) {
+                            status = `LC${lcCount + 1}`;
+                        } else {
+                            status = 'LCH'; // If LC count exceeds 3, set to LCH
+                            lcEntries.forEach(d => {
+                                d.status = 'LCH'; // Update all previous LC entries to LCH
+                            });
+                        }
+                    }
+                    // Recalculate the LC statuses if an LC was cleared or updated
+                    lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
+                    lcEntries.forEach((entry, index) => {
+                        entry.status = `LC${index + 1}`; // Reassign LC statuses in sequence
+                    });
+
+                    // If LC entries exceed 3, set them all to LCH
+                    if (lcEntries.length > 3) {
                         lcEntries.forEach(entry => {
                             entry.status = 'LCH';
                         });
