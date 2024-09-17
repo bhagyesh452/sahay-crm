@@ -111,11 +111,11 @@ function AddAttendance({ year, month, date, employeeData }) {
     const [status, setStatus] = useState("");
 
     const [attendanceData, setAttendanceData] = useState({});
-    const officialHolidays = [
-        '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
-        '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
-        '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
-    ]
+    // const officialHolidays = [
+    //     '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
+    //     '2024-07-07','2024-08-19', '2024-10-12',
+    //     '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
+    // ]
     const formatDateForHolidayCheck = (year, month, day) => {
         return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     };
@@ -329,6 +329,8 @@ function AddAttendance({ year, month, date, employeeData }) {
         // Define boundaries for 10:00 AM and 6:00 PM
         const startBoundary = convertToMinutes("10:00");
         const endBoundary = convertToMinutes("18:00");
+        const breakStart = convertToMinutes("13:00"); // 1:00 PM
+        const breakEnd = convertToMinutes("13:45"); // 1:45 PM
 
         // Adjust inTime and outTime to fit within 10:00 AM to 6:00 PM
         const actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10:00 AM, set it to 10:00 AM
@@ -339,6 +341,17 @@ function AddAttendance({ year, month, date, employeeData }) {
         // console.log("actualOutTime", actualOutTime)
         // Calculate working minutes and subtract 45 minutes for break
         let workingMinutes = actualOutTime - actualInTime;
+        if (actualInTime < breakEnd && actualOutTime > breakStart) {
+            // If inTime is before the break end and outTime is after break start, subtract the overlap
+            const overlapStart = Math.max(actualInTime, breakStart);
+            const overlapEnd = Math.min(actualOutTime, breakEnd);
+            const breakOverlap = overlapEnd - overlapStart;
+
+            // Ensure breakOverlap is only subtracted if it's positive
+            if (breakOverlap > 0) {
+                workingMinutes -= breakOverlap;
+            }
+        }
         //console.log("workingminutes", workingMinutes)
         // Ensure workingMinutes are not negative
         if (workingMinutes < 0) {
@@ -628,6 +641,7 @@ function AddAttendance({ year, month, date, employeeData }) {
     //         setIsLoading(false);
     //     }
     // };
+
     useEffect(() => {
         fetchEmployees();
         fetchAttendance();
@@ -726,7 +740,10 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 const outTimeMinutes = convertToMinutes(outTime);
                                 const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
                                 const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
-
+                                // Define the boundaries for the new "LC" condition
+                                const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+                                const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+                                const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
                                 // console.log("Emp attendance details :", attendanceDetails);
 
                                 // Calculate working hours only if both inTime and outTime are available
@@ -739,17 +756,24 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 const workingMinutes = (inTime && outTime) ? workingHours.split(':').reduce((acc, time) => (60 * acc) + +time) : 0;
                                 //console.log("intimeminutes", inTimeMinutes)
 
-                                if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
-                                    status = "LC";
-                                } else if (workingMinutes >= 420) { // 7 hours 15 minutes in minutes
-                                    status = "Present";
-                                } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours 15 minutes / 2 in minutes
-                                    status = "Half Day";
+                                if (!inTime || !outTime) {
+                                    status = "NoData";
+                                } else if 
+                                 ((inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
+                                ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
+                                    status = "LC"; // Late but complete (LC)
+                                } else if (workingMinutes >= 420) {
+                                    status = "Present"; // Full day present (7 hours)
+                                } else if (workingMinutes >= 210 && workingMinutes < 420) {
+                                    status = "Half Day"; // Half day
+                                } else if (workingMinutes < 210) {
+                                    status = "Leave"; // Less than half day, considered leave
                                 } else {
-                                    status = "No Data";
+                                    status = "NoData"; // Fallback if none of the above conditions match
                                 }
-                                console.log("workinghours", workingHours)
-
+                                console.log("workingMinutes", workingMinutes)
+                                console.log("workingHours", workingHours)
+                                console.log("status", status)
 
                                 return (
                                     <tr key={index}>
@@ -845,7 +869,8 @@ function AddAttendance({ year, month, date, employeeData }) {
                                         <td>
                                             <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
                                                 (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
-                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : "badge-half-day"
+                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : 
+                                                    (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" :"badge-half-day"
 
                                                 }`}>
                                                 {attendanceDetails.status || status}

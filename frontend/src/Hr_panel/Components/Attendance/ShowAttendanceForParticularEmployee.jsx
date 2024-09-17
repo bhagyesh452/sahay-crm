@@ -17,7 +17,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const officialHolidays = [
         '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
-        '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
+        '2024-07-07', '2024-08-19', '2024-10-12',
         '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
     ]
 
@@ -134,23 +134,39 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
 
             const startBoundary = convertToMinutes("10:00"); // 10:00 AM
             const endBoundary = convertToMinutes("18:00"); // 6:00 PM
+            const breakStart = convertToMinutes("13:00"); // 1:00 PM
+            const breakEnd = convertToMinutes("13:45"); // 1:45 PM
 
             let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
             let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
             // console.log("actualInTime", actualInTime)
             // console.log("actualOutTime", actualOutTime)
             let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes for the break
+            // Subtract break time if inTime or outTime overlap with the break period
+            if (actualInTime < breakEnd && actualOutTime > breakStart) {
+                // If inTime is before the break end and outTime is after break start, subtract the overlap
+                const overlapStart = Math.max(actualInTime, breakStart);
+                const overlapEnd = Math.min(actualOutTime, breakEnd);
+                const breakOverlap = overlapEnd - overlapStart;
 
+                // Ensure breakOverlap is only subtracted if it's positive
+                if (breakOverlap > 0) {
+                    workingMinutes -= breakOverlap;
+                }
+            }
             // Ensure working minutes don't go negative
             if (workingMinutes < 0) {
                 workingMinutes = 0;
             }
 
             return workingMinutes;
-        };
+        };  
 
         const workingMinutes = calculateWorkingHours(inTime, outTime);
-
+        // Define the boundaries for the new "LC" condition
+        const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+        const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+        const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
         // Convert minutes back to HH:MM format for display
         const hours = Math.floor(workingMinutes / 60);
         const minutes = workingMinutes % 60;
@@ -158,7 +174,9 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
 
         // console.log("intimeminutes", inTimeMinutes)
         // console.log("workingminutes", workingMinutes)
-        if (inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) {
+        if (
+            (inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
+            ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
             status = "LC";
         } else if (workingMinutes >= 420) { // 7 hours in minutes
             status = "Present";
@@ -196,33 +214,55 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
 
     const calculateWorkingHours = (inTime, outTime) => {
         if (!inTime || !outTime) return "00:00"; // Ensure both times are available
+
         const convertToMinutes = (timeString) => {
             const [hours, minutes] = timeString.split(':').map(Number);
             return hours * 60 + minutes;
         };
 
-        const [inHours, inMinutes] = inTime.split(':').map(Number);
-        const [outHours, outMinutes] = outTime.split(':').map(Number);
+        const formatToHHMM = (minutes) => {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
+        };
 
-        const inTimeMinutes = inHours * 60 + inMinutes;
-        const outTimeMinutes = outHours * 60 + outMinutes;
-        const startBoundary = convertToMinutes("10:00"); // 10:00 AM
-        const endBoundary = convertToMinutes("18:00"); // 6:00 PM
+        const inTimeMinutes = convertToMinutes(inTime);
+        const outTimeMinutes = convertToMinutes(outTime);
 
-        let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
-        let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
+        // Define boundaries for 10:00 AM and 6:00 PM
+        const startBoundary = convertToMinutes("10:00");
+        const endBoundary = convertToMinutes("18:00");
+        const breakStart = convertToMinutes("13:00"); // 1:00 PM
+        const breakEnd = convertToMinutes("13:45"); // 1:45 PM
 
-        let workingMinutes = actualOutTime - actualInTime; // Subtract 45 minutes by default
+        // Adjust inTime and outTime to fit within 10:00 AM to 6:00 PM
+        const actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10:00 AM, set it to 10:00 AM
+        const actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6:00 PM, set it to 6:00 PM
+        // console.log("inTimeMinutes", inTimeMinutes)
+        // console.log("outTimeMinutes", outTimeMinutes)
+        // console.log("actualInTime", actualInTime)
+        // console.log("actualOutTime", actualOutTime)
+        // Calculate working minutes and subtract 45 minutes for break
+        let workingMinutes = actualOutTime - actualInTime;
+        if (actualInTime < breakEnd && actualOutTime > breakStart) {
+            // If inTime is before the break end and outTime is after break start, subtract the overlap
+            const overlapStart = Math.max(actualInTime, breakStart);
+            const overlapEnd = Math.min(actualOutTime, breakEnd);
+            const breakOverlap = overlapEnd - overlapStart;
 
+            // Ensure breakOverlap is only subtracted if it's positive
+            if (breakOverlap > 0) {
+                workingMinutes -= breakOverlap;
+            }
+        }
+        //console.log("workingminutes", workingMinutes)
+        // Ensure workingMinutes are not negative
         if (workingMinutes < 0) {
-            workingMinutes += 24 * 60; // Adjust for overnight shifts
+            workingMinutes = 0;
         }
 
-        // Convert minutes back to HH:MM format
-        const hours = Math.floor(workingMinutes / 60);
-        const minutes = workingMinutes % 60;
-        return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-
+        // Convert working minutes back to HH:MM format
+        return formatToHHMM(workingMinutes);
     };
     // Function to format date for checking official holidays
     const formatDateForHolidayCheck = (year, month, day) => {
