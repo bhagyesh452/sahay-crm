@@ -170,16 +170,22 @@ function EmployeeCompleteCallingReport() {
                 // "working_hour_to": "20:59",
                 // "is_exclude_numbers": true
             }
-            const bodyEmployee = {
-                "emp_numbers": employeeArray,
-                // "working_hour_from": "00:00",
-                // "working_hour_to": "20:59",
-                // "is_exclude_numbers": true
-            }
+            // Assuming `employeeArray` is an array of employee numbers
+            const queryParams = new URLSearchParams({
+                emp_numbers: '9054102434',
+                emp_tags: '',
+                emp_name: '',
+                emp_codes: '',
+                page_no: 1,
+                page_size: 2
+              });
+
+           
+
 
             try {
                 setLoading(true)
-                const response = await fetch(urlEmployee, {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${apiKey}`,
@@ -187,23 +193,22 @@ function EmployeeCompleteCallingReport() {
                     },
                     body: JSON.stringify(body)
                 });
-                const response2 = await fetch(url, {
-                    method: 'POST',
+                const response2 = await fetch(`${urlEmployee}?${queryParams.toString()}`, {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bodyEmployee)
-                });
+                      'Authorization': `Bearer ${apiKey}`,
+                      'Content-Type': 'application/json'
+                    }
+                  });
 
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
                 }
-                if (!response2.ok) {
-                    const errorData = await response2.json();
-                    throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
-                }
+                // if (!response2.ok) {
+                //     const errorData = await response2.json();
+                //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+                // }
                 const data = await response.json();
                 const newData = await response2.json();
 
@@ -390,7 +395,7 @@ function EmployeeCompleteCallingReport() {
     // --------------------function to download pdf report----------------
     const handleDownloadPDF = () => {
         const doc = new jsPDF('l', 'mm', [297, 210]); // 'p' for portrait, 'mm' for units in millimeters, 'a4' for paper size
-    
+
         // Add a heading
         doc.setFontSize(16);
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -398,17 +403,17 @@ function EmployeeCompleteCallingReport() {
         const titleWidth = doc.getStringUnitWidth(title) * doc.internal.scaleFactor;
         const titleX = (pageWidth - titleWidth) / 2.3;
         doc.text(title, titleX, 22); // Title centered horizontally at position (titleX, 22)
-    
+
         // Define columns including Serial No
-        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Unique Clients","Total Duration",  "Last Synced At"];
-        
+        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Unique Clients", "Total Duration", "Last Synced At"];
+
         // Map rows data
         const rows = totalcalls.filter(employee => employeeData
             .some(obj => Number(obj.number) === Number(employee.emp_number)))
             .map((call, index) => {
                 // Find branch name based on emp_number
                 const branch = employeeData.find(employee => Number(employee.number) === Number(call.emp_number))?.branchOffice || '-';
-    
+
                 return [
                     index + 1, // Serial number
                     call.emp_name || '-',
@@ -419,7 +424,7 @@ function EmployeeCompleteCallingReport() {
                     formatDate(call.last_call_log.synced_at) || "00:00:00"// Ensure formatDate is defined
                 ];
             });
-    
+
         // Add table with customized styles
         doc.autoTable({
             head: [columns],
@@ -444,22 +449,22 @@ function EmployeeCompleteCallingReport() {
                 doc.rect(10, 10, pageWidth - 20, pageHeight - 20); // Draw border with margins
             }
         });
-    
+
         // Save the PDF
         doc.save('employee-calls-report.pdf');
     };
 
     const handleDownloadExcel = () => {
         // Define the columns
-        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls","Unique Clients", "Total Duration",  "Last Synced At"];
-      
+        const columns = ["Serial No", "Employee Name", "Branch Name", "Total Calls", "Unique Clients", "Total Duration", "Last Synced At"];
+
         // Map rows data
         const rows = totalcalls.filter(employee => employeeData
             .some(obj => Number(obj.number) === Number(employee.emp_number)))
             .map((call, index) => {
                 // Find branch name based on emp_number
                 const branch = employeeData.find(employee => Number(employee.number) === Number(call.emp_number))?.branchOffice || '-';
-      
+
                 return [
                     index + 1, // Serial number
                     call.emp_name || '-',
@@ -470,18 +475,18 @@ function EmployeeCompleteCallingReport() {
                     formatDate(call.last_call_log.synced_at) || "00:00:00" // Ensure formatDate is defined
                 ];
             });
-      
+
         // Combine columns and rows
         const worksheetData = [columns, ...rows];
-      
+
         // Create a new workbook and add the worksheet
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(worksheetData);
         XLSX.utils.book_append_sheet(wb, ws, 'Employee Calls Report');
-      
+
         // Write the Excel file and trigger download
         XLSX.writeFile(wb, 'employee-calls-report.xlsx');
-      };
+    };
 
 
     return (
@@ -495,13 +500,13 @@ function EmployeeCompleteCallingReport() {
                             </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
-                        <div>
+                            <div>
                                 <button className="btn btn-primary mr-1"
                                     onClick={handleDownloadExcel}
                                 >
                                     Download CSV
                                 </button>
-                                
+
                             </div>
                             <div>
                                 <button className="btn btn-primary mr-1"
@@ -509,7 +514,7 @@ function EmployeeCompleteCallingReport() {
                                 >
                                     Download PDF
                                 </button>
-                              
+
                             </div>
                             <div className="data-filter">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
