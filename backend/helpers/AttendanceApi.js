@@ -129,6 +129,150 @@ const router = express.Router();
 //     }
 // });
 
+// router.post('/addAttendance', async (req, res) => {
+//     const {
+//         id,
+//         employeeId,
+//         ename,
+//         designation,
+//         department,
+//         branchOffice,
+//         attendanceDate,
+//         dayName,
+//         inTime,
+//         outTime,
+//         workingHours,
+//         status: originalStatus // Rename the incoming status to avoid conflict
+//     } = req.body;
+
+//     try {
+//         const selectedDate = new Date(attendanceDate);
+//         const year = selectedDate.getFullYear();
+//         const month = selectedDate.toLocaleString('default', { month: 'long' });
+//         const day = selectedDate.getDate();
+
+//         // Find the existing attendance record
+//         let attendance = await attendanceModel.findById(id);
+
+//         let status = originalStatus; // Use a `let` variable for status to allow reassignment
+
+//         if (!attendance) {
+//             // Create a new attendance record if none exists
+//             attendance = new attendanceModel({
+//                 _id: id,
+//                 employeeId: employeeId,
+//                 employeeName: ename,
+//                 designation: designation,
+//                 department: department,
+//                 branchOffice: branchOffice,
+//                 years: [{
+//                     year: year,
+//                     months: [{
+//                         month: month,
+//                         days: [{
+//                             date: day,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
+//                             status: status === "LC" ? "LC1" : status // Initialize with LC1 if status is LC
+//                         }]
+//                     }]
+//                 }]
+//             });
+//         } else {
+//             // Find the year in the existing attendance record
+//             let yearArray = attendance.years.find(y => y.year === year);
+
+//             if (!yearArray) {
+//                 attendance.years.push({
+//                     year: year,
+//                     months: [{
+//                         month: month,
+//                         days: [{
+//                             date: day,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
+//                             status: status === "LC" ? "LC1" : status // Initialize with LC1 if status is LC
+//                         }]
+//                     }]
+//                 });
+//             } else {
+//                 let monthArray = yearArray.months.find(m => m.month === month);
+
+//                 if (!monthArray) {
+//                     yearArray.months.push({
+//                         month: month,
+//                         days: [{
+//                             date: day,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
+//                             status: status === "LC" ? "LC1" : status // Initialize with LC1 if status is LC
+//                         }]
+//                     });
+//                 } else {
+//                     // If status is LC, check how many LC entries already exist for the month
+//                     if (status === "LC") {
+//                         let dayArray = monthArray.days.find(d => d.date === day);
+
+//                         if (dayArray && dayArray.status.startsWith("LC")) {
+//                             // If the day already has an LC status, do not increment the count
+//                             status = dayArray.status;
+//                         } else {
+//                             const lcCount = monthArray.days.filter(d => d.status.startsWith("LC")).length;
+//                             if (lcCount < 3) {
+//                                 status = `LC${lcCount + 1}`; // Increment the LC count up to LC3
+//                             } else {
+//                                 // If the LC count exceeds 3, set status to LCH
+//                                 status = 'LCH';
+
+//                                 // Convert all previous LC1, LC2, LC3 in the same month to LCH
+//                                 monthArray.days.forEach(d => {
+//                                     if (d.status.startsWith("LC")) {
+//                                         d.status = 'LCH'; // Convert all LC statuses to LCH
+//                                     }
+//                                 });
+//                             }
+//                         }
+//                     }
+
+//                     // Find the specific day array or create a new one
+//                     let dayArray = monthArray.days.find(d => d.date === day);
+
+//                     if (!dayArray) {
+//                         monthArray.days.push({
+//                             date: day,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
+//                             status: status
+//                         });
+//                     } else {
+//                         // Update the existing day with the new status
+//                         dayArray.dayName = dayName;
+//                         dayArray.inTime = inTime;
+//                         dayArray.outTime = outTime;
+//                         dayArray.workingHours = workingHours;
+//                         dayArray.status = status;
+//                     }
+//                 }
+//             }
+//         }
+
+//         // Save the updated attendance record
+//         const savedAttendance = await attendance.save();
+//         res.status(200).json({ message: 'Attendance added/updated successfully', data: savedAttendance });
+//     } catch (error) {
+//         console.error('Error adding/updating attendance:', error);
+//         res.status(500).json({ message: 'Server error' });
+//     }
+// });
+
 router.post('/addAttendance', async (req, res) => {
     const {
         id,
@@ -154,7 +298,7 @@ router.post('/addAttendance', async (req, res) => {
         // Find the existing attendance record
         let attendance = await attendanceModel.findById(id);
 
-        let status = originalStatus; // Use a `let` variable for status to allow reassignment
+        let status = originalStatus; // Use a let variable for status to allow reassignment
 
         if (!attendance) {
             // Create a new attendance record if none exists
@@ -215,32 +359,6 @@ router.post('/addAttendance', async (req, res) => {
                         }]
                     });
                 } else {
-                    // If status is LC, check how many LC entries already exist for the month
-                    if (status === "LC") {
-                        let dayArray = monthArray.days.find(d => d.date === day);
-
-                        if (dayArray && dayArray.status.startsWith("LC")) {
-                            // If the day already has an LC status, do not increment the count
-                            status = dayArray.status;
-                        } else {
-                            const lcCount = monthArray.days.filter(d => d.status.startsWith("LC")).length;
-                            if (lcCount < 3) {
-                                status = `LC${lcCount + 1}`; // Increment the LC count up to LC3
-                            } else {
-                                // If the LC count exceeds 3, set status to LCH
-                                status = 'LCH';
-
-                                // Convert all previous LC1, LC2, LC3 in the same month to LCH
-                                monthArray.days.forEach(d => {
-                                    if (d.status.startsWith("LC")) {
-                                        d.status = 'LCH'; // Convert all LC statuses to LCH
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                    // Find the specific day array or create a new one
                     let dayArray = monthArray.days.find(d => d.date === day);
 
                     if (!dayArray) {
@@ -253,12 +371,43 @@ router.post('/addAttendance', async (req, res) => {
                             status: status
                         });
                     } else {
-                        // Update the existing day with the new status
-                        dayArray.dayName = dayName;
+                        // Clear the day's attendance if the status is empty
                         dayArray.inTime = inTime;
                         dayArray.outTime = outTime;
                         dayArray.workingHours = workingHours;
                         dayArray.status = status;
+                    }
+
+                    // If status is LC, check how many LC entries already exist for the month
+                    if (status === "LC") {
+                        const lcCount = monthArray.days.filter(d => d.status.startsWith("LC")).length;
+                        if (lcCount < 3) {
+                            status = `LC${lcCount + 1}`; // Increment the LC count up to LC3
+                        } else {
+                            // If the LC count exceeds 3, set status to LCH
+                            status = 'LCH';
+
+                            // Convert all previous LC1, LC2, LC3 in the same month to LCH
+                            monthArray.days.forEach(d => {
+                                if (d.status.startsWith("LC")) {
+                                    d.status = 'LCH'; // Convert all LC statuses to LCH
+                                }
+                            });
+                        }
+                    }
+
+                    // After clearing, re-check the number of LC statuses for the month
+                    const lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
+                    if (lcEntries.length === 3) {
+                        // If exactly 3 LC entries exist, reset them to LC1, LC2, and LC3
+                        lcEntries.forEach((entry, index) => {
+                            entry.status = `LC${index + 1}`;
+                        });
+                    } else if (lcEntries.length > 3) {
+                        // If more than 3 LC entries exist, set all to LCH
+                        lcEntries.forEach(entry => {
+                            entry.status = 'LCH';
+                        });
                     }
                 }
             }
@@ -272,7 +421,6 @@ router.post('/addAttendance', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-
 
 
 

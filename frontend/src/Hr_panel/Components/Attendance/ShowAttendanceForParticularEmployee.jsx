@@ -17,7 +17,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const officialHolidays = [
         '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
-        '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
+        '2024-07-07', '2024-08-19', '2024-10-12',
         '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
     ]
 
@@ -160,10 +160,13 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
             }
 
             return workingMinutes;
-        };
+        };  
 
         const workingMinutes = calculateWorkingHours(inTime, outTime);
-
+        // Define the boundaries for the new "LC" condition
+        const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+        const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+        const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
         // Convert minutes back to HH:MM format for display
         const hours = Math.floor(workingMinutes / 60);
         const minutes = workingMinutes % 60;
@@ -171,7 +174,9 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
 
         // console.log("intimeminutes", inTimeMinutes)
         // console.log("workingminutes", workingMinutes)
-        if ((inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) && (workingMinutes >= 420)) {
+        if (
+            (inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
+            ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
             status = "LC";
         } else if (workingMinutes >= 420) { // 7 hours in minutes
             status = "Present";

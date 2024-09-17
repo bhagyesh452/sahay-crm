@@ -4086,6 +4086,10 @@ border: 1px solid #ffefc6 !important;
 .badge-half-day {
   background-color: #2094c2;
 }
+.badge-LC {
+  background: #fff9c8;
+  color: #78721b;
+}
 
 .no_data_table
 {

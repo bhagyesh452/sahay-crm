@@ -269,83 +269,73 @@ function ViewAttendance({ year, month, date }) {
             workingHours = "00:00";
             status = "Leave";
         } else {
-            // const workingHours = calculateWorkingHours(inTime, outTime);
-            // const calculateWorkingHours = (inTime, outTime) => {
-            //     const [inHours, inMinutes] = inTime.split(':').map(Number);
-            //     const [outHours, outMinutes] = outTime.split(':').map(Number);
-
-
-            //     const inTimeMinutes = inHours * 60 + inMinutes;
-            //     const outTimeMinutes = outHours * 60 + outMinutes;
-
-            //     let workingMinutes = outTimeMinutes - inTimeMinutes - 45; // Subtract 45 minutes by default
-
-            //     if (workingMinutes < 0) {
-            //         workingMinutes += 24 * 60; // Adjust for overnight shifts
-            //     }
-
-            //     return workingMinutes;
-            // };
 
             const calculateWorkingHours = (inTime, outTime) => {
                 const convertToMinutes = (timeString) => {
                     const [hours, minutes] = timeString.split(':').map(Number);
                     return hours * 60 + minutes;
                 };
-            
+
                 const formatToHHMM = (minutes) => {
                     const hours = Math.floor(minutes / 60);
                     const mins = minutes % 60;
                     return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
                 };
-            
+
                 const inTimeMinutes = convertToMinutes(inTime);
                 const outTimeMinutes = convertToMinutes(outTime);
-            
+
                 const startBoundary = convertToMinutes("10:00"); // 10:00 AM
                 const endBoundary = convertToMinutes("18:00"); // 6:00 PM
-            
+
                 const breakStart = convertToMinutes("13:00"); // 1:00 PM
                 const breakEnd = convertToMinutes("13:45"); // 1:45 PM
-            
+
+
                 // Adjust inTime and outTime to respect the work boundaries
                 let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
                 let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
-            
+
                 // Calculate working time before considering the break
                 let workingMinutes = actualOutTime - actualInTime;
-            
+
                 // Subtract break time if inTime or outTime overlap with the break period
                 if (actualInTime < breakEnd && actualOutTime > breakStart) {
                     // If inTime is before the break end and outTime is after break start, subtract the overlap
                     const overlapStart = Math.max(actualInTime, breakStart);
                     const overlapEnd = Math.min(actualOutTime, breakEnd);
                     const breakOverlap = overlapEnd - overlapStart;
-                    
+
                     // Ensure breakOverlap is only subtracted if it's positive
                     if (breakOverlap > 0) {
                         workingMinutes -= breakOverlap;
                     }
                 }
-            
+
                 // Ensure working minutes don't go negative
                 if (workingMinutes < 0) {
                     workingMinutes = 0;
                 }
-            
+
                 return workingMinutes;
             };
             const workingMinutes = calculateWorkingHours(inTime, outTime);
+            // Define the boundaries for the new "LC" condition
+            const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+            const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+            const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
 
             // Convert minutes back to HH:MM format for display
             const hours = Math.floor(workingMinutes / 60);
             const minutes = workingMinutes % 60;
             workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-            console.log("workingHours" , workingHours)
+            console.log("workingHours", workingHours)
 
             // console.log("intimeminutes", inTimeMinutes)
             console.log("workingminutes", workingMinutes)
-            if ((inTimeMinutes >= comparisonTimeEarly & inTimeMinutes <= comparisonTimeLate) && (workingMinutes >= 420) ) {
+            if (
+                (inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
+                ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
                 status = "LC";
             } else if (workingMinutes >= 420) { // 7 hours in minutes
                 status = "Present";
@@ -395,16 +385,6 @@ function ViewAttendance({ year, month, date }) {
         // Define the new attendance data based on the checkbox state
         const updatedData = { inTime: "", outTime: "", workingHours: "", status: "" };
 
-        // Update the local state
-        // setAttendanceData(prevState => ({
-        //     ...prevState,
-        //     [empId]: {
-        //         ...prevState[empId],
-        //         ...updatedData
-        //     }
-        // }));
-
-        // Prepare the payload for the API request
         const selectedDate = new Date(date);
         const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
 
@@ -552,7 +532,7 @@ function ViewAttendance({ year, month, date }) {
 
     const officialHolidays = [
         '14-01-2024', '15-01-2024', '24-03-2024', '25-03-2024',
-        '07-07-2024', "10-08-2024", "09-08-2024", '19-08-2024', '12-10-2024', '31-10-2024',
+        '07-07-2024', '19-08-2024', '12-10-2024', '31-10-2024',
         '01-11-2024', '02-11-2024', '03-11-2024', '04-11-2024', '05-11-2024'
     ];
 
@@ -716,7 +696,7 @@ function ViewAttendance({ year, month, date }) {
                                                         }
 
                                                         // Count statuses and log each 'Present' count
-                                                        if (status === "Present"||
+                                                        if (status === "Present" ||
                                                             status === "LC1" ||
                                                             status === "LC2" ||
                                                             status === "LC3") {
@@ -960,10 +940,10 @@ function ViewAttendance({ year, month, date }) {
                                                                                     } else {
                                                                                         return (<>
                                                                                             <div className="s-sunday">OH</div>
-                                                                                            {!isFutureDate && <div className="d-none">{presentCount++}</div>} 
+                                                                                            {!isFutureDate && <div className="d-none">{presentCount++}</div>}
                                                                                         </>
                                                                                         )
-                                                                                       
+
                                                                                     }
                                                                                 })()
                                                                             ) : selectedDate.getDay() === 0 ? ( // Logic for Sunday
@@ -1157,11 +1137,11 @@ function ViewAttendance({ year, month, date }) {
                                         {selectedMonthDays.map(day => {
                                             const fullDate = new Date(`${day}-${month}-${year}`); // Assuming month is 1-based (January is 1)
                                             const isSunday = fullDate.getDay() === 0;
-                                             // Format selected date for holiday check
-                                             const formattedSelectedDate = formatDateForHolidayCheck(year, monthNamesToNumbers[month], day);
-                                             // Check if selected date is an official holiday
-                                             const isHoliday = officialHolidays.includes(formattedSelectedDate);
- 
+                                            // Format selected date for holiday check
+                                            const formattedSelectedDate = formatDateForHolidayCheck(year, monthNamesToNumbers[month], day);
+                                            // Check if selected date is an official holiday
+                                            const isHoliday = officialHolidays.includes(formattedSelectedDate);
+
                                             return (
                                                 <th className='th-day' key={day}>
                                                     <div className='d-flex align-items-center justify-content-between'>

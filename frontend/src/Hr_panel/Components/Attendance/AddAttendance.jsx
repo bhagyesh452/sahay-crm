@@ -111,11 +111,11 @@ function AddAttendance({ year, month, date, employeeData }) {
     const [status, setStatus] = useState("");
 
     const [attendanceData, setAttendanceData] = useState({});
-    const officialHolidays = [
-        '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
-        '2024-07-07', '2024-08-10', '2024-08-09', '2024-08-19', '2024-10-12',
-        '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
-    ]
+    // const officialHolidays = [
+    //     '2024-01-14', '2024-01-15', '2024-03-24', '2024-03-25',
+    //     '2024-07-07','2024-08-19', '2024-10-12',
+    //     '2024-10-31', '2024-11-01', '2024-11-02', '2024-11-03', '2024-11-04', '2024-11-05'
+    // ]
     const formatDateForHolidayCheck = (year, month, day) => {
         return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     };
@@ -641,6 +641,7 @@ function AddAttendance({ year, month, date, employeeData }) {
     //         setIsLoading(false);
     //     }
     // };
+
     useEffect(() => {
         fetchEmployees();
         fetchAttendance();
@@ -739,7 +740,10 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 const outTimeMinutes = convertToMinutes(outTime);
                                 const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
                                 const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
-
+                                // Define the boundaries for the new "LC" condition
+                                const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+                                const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+                                const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
                                 // console.log("Emp attendance details :", attendanceDetails);
 
                                 // Calculate working hours only if both inTime and outTime are available
@@ -754,11 +758,13 @@ function AddAttendance({ year, month, date, employeeData }) {
 
                                 if (!inTime || !outTime) {
                                     status = "NoData";
-                                } else if ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && (workingMinutes >= 420)) {
+                                } else if 
+                                 ((inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
+                                ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
                                     status = "LC"; // Late but complete (LC)
-                                } else if (workingMinutes >= 420) { 
+                                } else if (workingMinutes >= 420) {
                                     status = "Present"; // Full day present (7 hours)
-                                } else if (workingMinutes >= 210 && workingMinutes < 420) { 
+                                } else if (workingMinutes >= 210 && workingMinutes < 420) {
                                     status = "Half Day"; // Half day
                                 } else if (workingMinutes < 210) {
                                     status = "Leave"; // Less than half day, considered leave
@@ -863,7 +869,8 @@ function AddAttendance({ year, month, date, employeeData }) {
                                         <td>
                                             <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
                                                 (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
-                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : "badge-half-day"
+                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : 
+                                                    (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" :"badge-half-day"
 
                                                 }`}>
                                                 {attendanceDetails.status || status}
