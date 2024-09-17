@@ -206,6 +206,10 @@ const DscStatusDropdown = ({
             companyName,
             serviceName,
             subCategoryStatus: newStatus,
+            letterStatus: letterStatus,
+            dscPortal: dscPortal,
+            dscType: dscType,
+            dscValidity: dscValidity,
             //mainCategoryStatus: "Defaulter",
           });
         } else {
