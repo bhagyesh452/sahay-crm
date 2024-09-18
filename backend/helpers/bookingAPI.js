@@ -3233,6 +3233,7 @@ router.post(
           let seedConditionalPage = ""; // Initialize as a string
 
           // Add logic to determine the content of seedConditionalPage
+          if (serviceNamesArray.length > 0) {
           if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
             seedConditionalPage = `
     <p class="Declaration_text_data">
@@ -3339,7 +3340,7 @@ router.post(
       </div>
     </section>
   </div>`;
-          }
+          }}
 
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
@@ -3400,7 +3401,8 @@ router.post(
             "Private Limited Company Incorporation",
             "OPC Private Limited Company Incorporation",
             "LLP Company Incorporation",
-            "MSME Hackathon 4.0 Application"
+            "MSME Hackathon 4.0 Application",
+            "MSME Hackathon 4.0"
           ];
 
           const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
@@ -5613,6 +5615,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     let seedConditionalPage = ""; // Initialize as a string
 
     // Add logic to determine the content of seedConditionalPage
+    if (serviceNamesArray.length > 0) {
     if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
       seedConditionalPage = `
       <div class="PDF_main">
@@ -5747,7 +5750,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
       </div>
     </section>
   </div>`;
-    }
+    }}
 
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
@@ -5803,6 +5806,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
       "OPC Private Limited Company Incorporation",
       "LLP Company Incorporation",
       "MSME Hackathon 4.0 Application",
+      "MSME Hackathon 4.0"
     ];
 
     const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
