@@ -155,80 +155,24 @@ function EmployeeCompleteCallingReport() {
     let employeeArray = []
     employeeArray.push(employeeData.number);
 
-    useEffect(() => {
-        const fetchEmployeeData = async () => {
-            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-            const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-            const urlEmployee = 'https://api1.callyzer.co/v2/employee/get';
-
-            const body = {
-                "call_from": startTimestamp,
-                "call_to": endTimestamp,
-                "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-                "emp_numbers": employeeArray,
-                // "working_hour_from": "00:00",
-                // "working_hour_to": "20:59",
-                // "is_exclude_numbers": true
-            }
-
-            try {
-                setLoading(true)
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-                }
-                // if (!response2.ok) {
-                //     const errorData = await response2.json();
-                //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
-                // }
-                const data = await response.json();
-
-
-
-
-                setTotalCalls(data.result);
-                setFilteredTotalCalls(data.result)
-                setCompleteTotalCalls(data.result)
-
-                // setTotalCalls(data.result);
-                //console.log("data", data.result)
-
-            } catch (err) {
-
-                console.log(err)
-            } finally {
-                setLoading(false)
-            }
-        };
-        fetchEmployeeData();
-    }, [employeeData]);
-
     // useEffect(() => {
     //     const fetchEmployeeData = async () => {
     //         const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
     //         const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+    //         const urlEmployee = 'https://api1.callyzer.co/v2/employee/get';
 
     //         const body = {
     //             "call_from": startTimestamp,
     //             "call_to": endTimestamp,
     //             "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-    //             "emp_numbers": employeeArray
-    //         };
-    //         console.log("body", JSON.stringify(body));
+    //             "emp_numbers": employeeArray,
+    //             // "working_hour_from": "00:00",
+    //             // "working_hour_to": "20:59",
+    //             // "is_exclude_numbers": true
+    //         }
 
     //         try {
-    //             setLoading(true);
-
-    //             // POST request to the call-log API
+    //             setLoading(true)
     //             const response = await fetch(url, {
     //                 method: 'POST',
     //                 headers: {
@@ -238,81 +182,138 @@ function EmployeeCompleteCallingReport() {
     //                 body: JSON.stringify(body)
     //             });
 
-    //             // Check for errors in the POST request
     //             if (!response.ok) {
     //                 const errorData = await response.json();
     //                 throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
     //             }
-
-    //             // Process the POST response
+    //             // if (!response2.ok) {
+    //             //     const errorData = await response2.json();
+    //             //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+    //             // }
     //             const data = await response.json();
+
+
+
+
     //             setTotalCalls(data.result);
-    //             setFilteredTotalCalls(data.result);
-    //             setCompleteTotalCalls(data.result);
+    //             setFilteredTotalCalls(data.result)
+    //             setCompleteTotalCalls(data.result)
 
-    //             // Construct the query parameters
-    //             const queryParamsObject = {
-    //                 "emp_numbers": ["9054102434"],
-    //             };
-
-    //             // Convert queryParamsObject to query string
-    //             const queryParams = new URLSearchParams(queryParamsObject).toString();
-    //             // const fullUrl = `${urlEmployee}?${queryParams}`;
-    //             // console.log("queryParamas", queryParams);
-    //             // console.log("fullUrl", fullUrl);
-
-    //             // // GET request to the employee API
-    //             // const response2 = await fetch(fullUrl, {
-    //             //     method: 'GET', // Use GET for querying data
-    //             //     headers: {
-    //             //         'Authorization': `Bearer ${apiKey}`,
-    //             //         'Content-Type': 'application/json'
-    //             //     }
-    //             // });
-    //             const urlEmployee = "https://api1.callyzer.co/v2/employee/get"
-    //             const empNumbers = ["9054102434", "1234567890", "9876543210"];
-    //             //const urlEmployee = `https://api1.callyzer.co/v2/employee/get?emp_numbers=${JSON.stringify(empNumbers)}`;
-
-    //             // const response2 = await axios({
-    //             //     method: 'get',
-    //             //     url: 'https://api1.callyzer.co/v2/employee/get',
-    //             //     headers: {
-    //             //         'Authorization': `Bearer ${apiKey}`,
-
-    //             //         'Content-Type': 'application/json'
-    //             //     },
-    //             //     data: JSON.stringify(queryParamsObject)
-    //             // });
-    //             const response2 = fetch(urlEmployee, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json'
-    //                 },
-    //                 body: JSON.stringify(queryParamsObject)
-    //             })
-    //             .then(response => response.json())
-    //             .then(data => console.log('Data from external API:', data))
-    //             .catch(error => console.error('Error:', error));
-
-    //             // Check for errors in the GET request
-    //             if (!response2.ok) {
-    //                 const errorData = await response2.json();
-    //                 throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
-    //             }
-
-    //             // Process the GET response
-    //             const newData = await response2.json();
-    //             console.log(newData);
+    //             // setTotalCalls(data.result);
+    //             //console.log("data", data.result)
 
     //         } catch (err) {
-    //             console.log(err);
+
+    //             console.log(err)
     //         } finally {
-    //             setLoading(false);
+    //             setLoading(false)
     //         }
     //     };
-
     //     fetchEmployeeData();
     // }, [employeeData]);
+
+    useEffect(() => {
+        const fetchEmployeeData = async () => {
+            const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+            const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+
+            const body = {
+                "call_from": startTimestamp,
+                "call_to": endTimestamp,
+                "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+                "emp_numbers": employeeArray
+            };
+            console.log("body", JSON.stringify(body));
+
+            try {
+                setLoading(true);
+
+                // POST request to the call-log API
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                // Check for errors in the POST request
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+                }
+
+                // Process the POST response
+                const data = await response.json();
+                setTotalCalls(data.result);
+                setFilteredTotalCalls(data.result);
+                setCompleteTotalCalls(data.result);
+
+                // Construct the query parameters
+                const queryParamsObject = {
+                    "emp_numbers": ["9054102434"],
+                };
+
+                // Convert queryParamsObject to query string
+                const queryParams = new URLSearchParams(queryParamsObject).toString();
+                const urlEmployee = "https://api1.callyzer.co/v2/employee/get"
+                const empNumbers = ["9054102434", "1234567890", "9876543210"];
+                // const fullUrl = `${urlEmployee}?${queryParams}`;
+                // console.log("queryParamas", queryParams);
+                // console.log("fullUrl", fullUrl);
+
+                // // GET request to the employee API
+                // const response2 = await fetch(fullUrl, {
+                //     method: 'GET', // Use GET for querying data
+                //     headers: {
+                //         'Authorization': `Bearer ${apiKey}`,
+                //         'Content-Type': 'application/json'
+                //     }
+                // });
+                //const urlEmployee = `https://api1.callyzer.co/v2/employee/get?emp_numbers=${JSON.stringify(empNumbers)}`;
+
+                // const response2 = await axios({
+                //     method: 'get',
+                //     url: 'https://api1.callyzer.co/v2/employee/get',
+                //     headers: {
+                //         'Authorization': `Bearer ${apiKey}`,
+
+                //         'Content-Type': 'application/json'
+                //     },
+                //     data: JSON.stringify(queryParamsObject)
+                // });
+                const response2 = fetch(`/${secretKey}/fetch-api-data`, {
+                    method: 'POST',
+                    headers: {
+                        
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(queryParamsObject)
+                })
+                .then(response => response.json())
+                .then(data => console.log('Data from external API:', data))
+                .catch(error => console.error('Error:', error));
+
+                // Check for errors in the GET request
+                if (!response2.ok) {
+                    const errorData = await response2.json();
+                    throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+                }
+
+                // Process the GET response
+                const newData = await response2.json();
+                console.log(newData);
+
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEmployeeData();
+    }, [employeeData]);
 
 
 

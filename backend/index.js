@@ -47,7 +47,7 @@ const { sendMail3 } = require("./helpers/sendMail3");
 const { sendMail4 } = require("./helpers/sendMail4");
 const pdfAttachment = path.join("./helpers/src", './MITC.pdf');
 const HTMLtoDOCX = require('html-to-docx');
-//const axios = require('axios');
+const axios = require('axios');
 const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
@@ -423,7 +423,7 @@ app.post("/api/rmoffundinglogin", async (req, res) => {
 
 // -----------------calling api request---------------------
 
-app.post('/fetch-api-data', async (req, res) => {
+app.post('/api/fetch-api-data', async (req, res) => {
   const { name, age } = req.body;
 
   // External API URL (without query parameters)
