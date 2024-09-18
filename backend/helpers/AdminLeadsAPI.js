@@ -129,26 +129,181 @@ router.get('/', async function (req, res) {
 // });
 
 // -----------------update-leads-button-function-for emergency-use-only------------
+// router.post('/update-ename', async (req, res) => {
+//   const data = req.body;
+
+//   try {
+//     const updates = data.map(async (item) => {
+//       const { 'Company Name': companyName } = item;
+//       await CompanyModel.updateOne(
+//         { "Company Name": companyName },
+//         {
+//           $set:
+//           {
+//             ename: ename,
+//             "Company Number": item["Company Number"],
+//             "Company Email": item["Company Email"],
+//             "Company Incorporation Date  ": item["Company Incorporation Date"] ? new Date(item["Company Incorporation Date"]) : new Date(),
+//             City: item["City"],
+//             State: item["State"],
+//             Status: item["Status"],
+//             Remarks: item["Remarks"],
+//             AssignDate: new Date()
+//           }
+//         }
+//       );
+//     });
+
+//     await Promise.all(updates);
+
+//     res.status(200).json({ message: 'Ename updated successfully' });
+//   } catch (error) {
+//     console.error('Error updating ename:', error);
+//     res.status(500).json({ error: 'Failed to update ename' });
+//   }
+// });
+
+// router.post('/update-ename', async (req, res) => {
+//   const data = req.body;
+
+//   try {
+//     const updates = data.map(async (item) => {
+//       const { 'Company Name': companyName } = item;
+//       // Function to convert DD-MM-YYYY or Excel serial number to ISO format
+//       const convertToISODate = (dateValue) => {
+//         if (typeof dateValue === 'string') {
+//           // Handle string in DD-MM-YYYY format
+//           const [day, month, year] = dateValue.split('-');
+//           return new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+//         } else if (typeof dateValue === 'number') {
+//           // Handle Excel serial numbers
+//           const excelBaseDate = new Date(1900, 0, 1); // Excel base date: January 1, 1900
+//           return new Date(excelBaseDate.getTime() + (dateValue - 2) * 86400000); // Adjust for 2-day difference
+//         } else if (dateValue instanceof Date) {
+//           // If it's already a Date object
+//           return dateValue;
+//         }
+//         return new Date(); // Fallback to current date if dateValue is invalid
+//       };
+//       console.log(`Updating company: ${companyName} with data:`, item);
+//       // Check if the company exists, if not, create a new entry
+//       await CompanyModel.updateOne(
+//         { "Company Name": companyName }, // Condition to find the company
+        
+//         {
+//           $set: {
+//             ename: item['ename'] || '', // Default ename or update from data
+//             "Company Number": item["Company Number"] || '',
+//             "Company Email": item["Company Email"] || '',
+//             "Company Incorporation Date  ": item["Company Incorporation Date"] ? convertToISODate(item["Company Incorporation Date"]) : new Date(),
+//             City: item["City"] || '',
+//             State: item["State"] || '',
+//             Status: item["Status"] || '',
+//             Remarks: item["Remarks"] || '',
+//             AssignDate: new Date(),
+//             UploadDate:new Date()
+//           }
+//         },
+//         { upsert: true } // Insert a new document if no match is found
+//       );
+//     });
+
+//     // Wait for all updates or inserts to complete
+//     await Promise.all(updates);
+   
+
+//     res.status(200).json({ message: 'Ename updated or inserted successfully' });
+//   } catch (error) {
+//     console.error('Error updating or inserting ename:', error);
+//     res.status(500).json({ error: 'Failed to update or insert ename' });
+//   }
+// });
+
 router.post('/update-ename', async (req, res) => {
   const data = req.body;
 
   try {
-      const updates = data.map(async (item) => {
-          const { 'Company Name': companyName, ename } = item;
-          await CompanyModel.updateOne(
-              { "Company Name": companyName },
-              { $set: { ename : ename } }
-          );
+    const updates = data.map(async (item) => {
+      const { 'Company Name': companyName } = item;
+
+      // Function to convert DD-MM-YYYY or Excel serial number to ISO format
+      const convertToISODate = (dateValue) => {
+        if (typeof dateValue === 'string') {
+          // Handle string in DD-MM-YYYY format
+          const [day, month, year] = dateValue.split('-');
+          return new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+        } else if (typeof dateValue === 'number') {
+          // Handle Excel serial numbers
+          const excelBaseDate = new Date(1900, 0, 1); // Excel base date: January 1, 1900
+          return new Date(excelBaseDate.getTime() + (dateValue - 2) * 86400000); // Adjust for 2-day difference
+        } else if (dateValue instanceof Date) {
+          // If it's already a Date object
+          return dateValue;
+        }
+        return new Date(); // Fallback to current date if dateValue is invalid
+      };
+
+      // Parse the date if provided in either DD-MM-YYYY format or as a serial number
+      const companyIncorporationDate = item["Company Incorporation Date"]
+        ? convertToISODate(item["Company Incorporation Date"])
+        : new Date(); // Default to current date if not provided
+
+      // Logging the incoming item for debugging
+      console.log(`Updating company: ${companyName} with data:`, item);
+
+      // Update or insert the company
+      const updateResult = await CompanyModel.findOneAndUpdate(
+        { "Company Name": companyName }, // Condition to find the company
+        {
+          $set: {
+            ename: item['ename'] || '', // Default ename or update from data
+            "Company Number": item["Company Number"] || '',
+            "Company Email": item["Company Email"] || '',
+            "Company Incorporation Date  ": companyIncorporationDate,  // Use the converted date
+            City: item["City"] || '',
+            State: item["State"] || '',
+            Status: item["Status"] || '',
+            Remarks: item["Remarks"] || '',
+            AssignDate: new Date(),
+            UploadDate:new Date(),
+            isUploadedManually: true
+          }
+        },
+        { upsert: true, new: true } // Insert a new document if no match is found and return the updated/new doc
+      );
+
+      // After updating/creating the company, log it
+      console.log('Company updated or created:', updateResult);
+
+      // Create a new entry in RemarksHistory for this company
+      const newRemark = new RemarksHistory({
+        time: new Date().toLocaleTimeString(), // Set the current time
+        date: new Date().toISOString().split('T')[0], // Set the current date (ISO format)
+        companyID: updateResult._id, // Use the company's _id field
+        companyName: companyName, // Save the company name
+        remarks: item["Remarks"] || '', // Remarks from the input data
+        bdmName: item["bdmName"] || '', // Example, you can include more data if needed
+        bdmRemarks: item["bdmRemarks"] || '', 
+        bdeName: item["ename"] || '',
       });
 
-      await Promise.all(updates);
+      // Save the remarks history entry
+      await newRemark.save();
+      console.log(`Remarks history added for company: ${companyName}`);
+    });
 
-      res.status(200).json({ message: 'Ename updated successfully' });
+    // Wait for all updates and remarks to complete
+    await Promise.all(updates);
+
+    console.log('All companies and remarks updated/inserted successfully.');
+    res.status(200).json({ message: 'Ename and remarks updated or inserted successfully' });
   } catch (error) {
-      console.error('Error updating ename:', error);
-      res.status(500).json({ error: 'Failed to update ename' });
+    console.error('Error updating or inserting ename/remarks:', error);
+    res.status(500).json({ error: 'Failed to update or insert ename and remarks' });
   }
 });
+
+
 
 
 function formatDateFinal(timestamp) {
@@ -885,7 +1040,7 @@ router.post("/postAssignData", async (req, res) => {
       await model.bulkWrite(batch);
     }
   };
-console.log("selectedobjects" , selectedObjects)
+  console.log("selectedobjects", selectedObjects)
 
   // Bulk operations for CompanyModel
   const bulkOperationsCompany = selectedObjects.map((obj) => ({
@@ -933,7 +1088,7 @@ console.log("selectedobjects" , selectedObjects)
   // Bulk operations for LeadHistoryModel
   const bulkOperationsLeadHistory = selectedObjects.map((obj) => ({
     deleteOne: {
-      filter: {"Company Name": obj["Company Name"] }
+      filter: { "Company Name": obj["Company Name"] }
     }
   }));
 
@@ -955,7 +1110,7 @@ console.log("selectedobjects" , selectedObjects)
     }
   }));
 
-  
+
   try {
     // Perform bulk operations in parallel
     await Promise.all([
@@ -972,13 +1127,13 @@ console.log("selectedobjects" , selectedObjects)
       const existingUpdate = await RecentUpdatesModel.findOne({ "Company Name": obj["Company Name"] });
       if (!existingUpdate) {
         const newUpdate = new RecentUpdatesModel({
-          _id:obj._id,
+          _id: obj._id,
           title,
           "Company Name": obj["Company Name"],
           ename: employeeSelection,
-          oldStatus:"Untouched",
-          newStatus:"Untouched",
-          properDate:new Date(),
+          oldStatus: "Untouched",
+          newStatus: "Untouched",
+          properDate: new Date(),
           date,
           time
         });
@@ -1072,37 +1227,39 @@ router.post("/postExtractedData", async (req, res) => {
       executeBulkOperations(RedesignedLeadformModel, bulkOperationsRedesignedModel)
     ]);
     //socketIO.emit('data-assigned', { name: employeeSelection, length: dataSize });
-   // Process each selectedObject to check and update/create entries in RecentUpdatesModel
-   for (const obj of selectedObjects) {
-    const existingUpdate = await RecentUpdatesModel.findOne({ "Company Name": obj["Company Name"] });
+    // Process each selectedObject to check and update/create entries in RecentUpdatesModel
+    for (const obj of selectedObjects) {
+      const existingUpdate = await RecentUpdatesModel.findOne({ "Company Name": obj["Company Name"] });
 
-    if (existingUpdate) {
-      // Update the title if the company already exists
-      await RecentUpdatesModel.updateOne(
-        { "Company Name": obj["Company Name"] },
-        { $set: 
-          { 
-          title, 
-          date, 
-          time 
-        } }
-      );
-    } else {
-      // Create a new entry if the company doesn't exist
-      const newUpdate = new RecentUpdatesModel({
-        "Company Name": obj["Company Name"],
-        _id:obj._id,
-        title,
-        ename: obj.ename,
-        oldStatus:obj.Status,
-        newStatus:obj.Status,
-        properDate:new Date(),
-        date,
-        time
-      });
-      await newUpdate.save();
+      if (existingUpdate) {
+        // Update the title if the company already exists
+        await RecentUpdatesModel.updateOne(
+          { "Company Name": obj["Company Name"] },
+          {
+            $set:
+            {
+              title,
+              date,
+              time
+            }
+          }
+        );
+      } else {
+        // Create a new entry if the company doesn't exist
+        const newUpdate = new RecentUpdatesModel({
+          "Company Name": obj["Company Name"],
+          _id: obj._id,
+          title,
+          ename: obj.ename,
+          oldStatus: obj.Status,
+          newStatus: obj.Status,
+          properDate: new Date(),
+          date,
+          time
+        });
+        await newUpdate.save();
+      }
     }
-  }
 
     res.json({ message: "Data posted successfully" });
   } catch (error) {
@@ -1170,17 +1327,17 @@ router.delete("/deleteAdminSelectedLeads", async (req, res) => {
       ...company.toObject(), // Copy the company data
       deletedAt: new Date(), // Add a timestamp of deletion
     }));
-    
+
     if (deletedLeads.length > 0) {
       await DeletedLeadsModel.insertMany(deletedLeads); // Insert multiple documents
     }
 
     // Step 3: Perform deletion from CompanyModel
     await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
-    
+
     // Optional: Perform other deletions or updates as needed
     await TeamLeadsModel.deleteMany({ _id: { $in: selectedRows } });
-    
+
     const followModelResponse = await Promise.all(selectedRows.map(async (companyId) => {
       const company = await CompanyModel.findById(companyId);
       if (company) {
@@ -1188,7 +1345,7 @@ router.delete("/deleteAdminSelectedLeads", async (req, res) => {
       }
       return null;
     }));
-    
+
     res.status(200).json({
       message: "Rows deleted successfully and backup created successfully.",
     });
