@@ -266,7 +266,8 @@ router.post('/update-ename', async (req, res) => {
             Remarks: item["Remarks"] || '',
             AssignDate: new Date(),
             UploadDate:new Date(),
-            isUploadedManually: true
+            isUploadedManually: true,
+            UploadedBy:"Ronak Kumar"
           }
         },
         { upsert: true, new: true } // Insert a new document if no match is found and return the updated/new doc
