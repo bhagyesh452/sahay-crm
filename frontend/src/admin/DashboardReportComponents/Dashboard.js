@@ -33,6 +33,7 @@ import AdminEmployeePerformanceReport from "./AdminEmployeePerformanceReport.jsx
 import ServiceAnalysis from "./ServiceAnalysis.jsx";
 import { MdOutlineWeb } from "react-icons/md";
 import InterestedFollowLeadReport from "./InterestedFollowLeadReport.jsx";
+import EmployeesForwardedDataReportFromBackend from "./EmployeesForwardedDataReportFromBackend.jsx";
 
 
 
@@ -143,11 +144,20 @@ function Dashboard() {
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
+                                            <GrDocumentPerformance style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{ fontSize: "12px" }}>Performance Report</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(4)}
+                                />
+                                <Tab
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
                                             <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
                                             <span style={{ fontSize: "12px" }}>Service Analysis</span>
                                         </div>
                                     }
-                                    {...a11yProps(3)}
+                                    {...a11yProps(5)}
                                 />
                             </Tabs>
                         </Box>
@@ -160,11 +170,15 @@ function Dashboard() {
                         <CustomTabPanel value={value} index={2} className="mat-tab-inner">
                             <InterestedFollowLeadReport />
                             <EmployeesForwardedDataReport />
+                            {/* <EmployeesForwardedDataReportFromBackend /> */}
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3} className="mat-tab-inner">
                             <EmployeesProjectionSummary />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={4} className="mat-tab-inner">
+                            <AdminEmployeePerformanceReport />
+                        </CustomTabPanel>
+                        <CustomTabPanel value={value} index={5} className="mat-tab-inner">
                             <ServiceAnalysis />
                         </CustomTabPanel>
                     </div>

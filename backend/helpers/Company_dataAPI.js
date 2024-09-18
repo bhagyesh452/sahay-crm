@@ -343,16 +343,16 @@ router.put("/leads/:id", async (req, res) => {
 
     const existingData = await CompanyModel.findById(id);
     oldCompanyName = existingData["Company Name"];
-    
+
     const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-   
+
     // Update RMCertificationModel
     let updateRMCertificationCompanyDetails;
     if (existingData["Company Name"]) {
       updateRMCertificationCompanyDetails = await RMCertificationModel.updateMany(
-        { 
+        {
           $or: [
             { leadId: id },
             { "Company Name": oldCompanyName } // Fallback to company name
@@ -366,7 +366,7 @@ router.put("/leads/:id", async (req, res) => {
     let updateAdminExecutiveCompanyDetails;
     if (existingData["Company Name"]) {
       updateAdminExecutiveCompanyDetails = await AdminExecutiveModel.updateMany(
-        { 
+        {
           $or: [
             { leadId: id },
             { "Company Name": oldCompanyName } // Fallback to company name
@@ -382,7 +382,7 @@ router.put("/leads/:id", async (req, res) => {
       req.body
     );
 
-      // Prepare the new history record
+    // Prepare the new history record
     const newHistoryEntry = {
       title: `Name of ${existingData["Company Name"]} updated to ${req.body["Company Name"]}`,
       "Company Name": req.body["Company Name"],
@@ -2092,5 +2092,34 @@ router.get("/fetchLeads", async (req, res) => {
   }
 });
 
+router.get("/fetchForwaredLeads", async (req, res) => {
+  try {
+    const data = await CompanyModel.aggregate([
+      {
+        $match: {
+          ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
+          bdmAcceptStatus: { $in: ["Accept", "Pending"] } // Match "Accept" or "Pending" status
+        },
+      },
+      {
+        $group: {
+          _id: {
+            ename: "$ename",
+            bdmName: "$bdmName",
+          },
+          count: { $sum: 1 } // Count occurrences for each pair
+        },
+      },
+      // {
+      //   $sort: { count: -1 } // Optional: Sort by count in descending order
+      // }
+    ]);
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 module.exports = router;
