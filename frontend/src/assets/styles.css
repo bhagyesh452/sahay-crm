@@ -4072,23 +4072,47 @@ border: 1px solid #ffefc6 !important;
   display: inline-block;
   padding: 5px 10px;
   border-radius: 12px;
-  color: white;
 }
-
 .badge-under-probation {
   background-color: #ffc507;
 }
-
+.badge-leave
+{
+  background: #f93636;
+  font-weight: 600;
+  color: #ffeeee;
+  border: 1px solid #f93636;
+}
 .badge-completed {
-  background-color: #28a745;
+  background: #009402;
+  font-weight: 600;
+  color: #d1ffc8;
+  border: 1px solid #009402
 }
 
 .badge-half-day {
-  background-color: #2094c2;
+  color: #ffedc8;
+  font-weight: 600;
+  border: 1px solid #f18f0e;
+  background: #f18f0e;
 }
 .badge-LC {
-  background: #fff9c8;
-  color: #78721b;
+  background: #ffd92a;
+  font-weight: 600;
+  color: #565656;
+  border: 1px solid #ffd92a;
+}
+.badge-Nodata {
+  background: #e9ecef;
+  font-weight: 600;
+  color: #a4a4a4;
+  border: 1px solid #e9ecef;
+}
+.badge-Holiday {
+  background: #a6b2be;
+  font-weight: 600;
+  color: #ffffff;
+  border: 1px solid #a6b2be;
 }
 
 .no_data_table

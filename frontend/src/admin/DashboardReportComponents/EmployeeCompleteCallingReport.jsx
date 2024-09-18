@@ -170,36 +170,7 @@ function EmployeeCompleteCallingReport() {
     //             // "working_hour_to": "20:59",
     //             // "is_exclude_numbers": true
     //         }
-    //         // Helper function to serialize arrays correctly in the query string
-    //         function buildQueryParams(params) {
-    //             const query = new URLSearchParams();
 
-    //             // Loop over the params object and build query string
-    //             for (const key in params) {
-    //                 if (Array.isArray(params[key])) {
-    //                     // If the param is an array, append each element individually
-    //                     params[key].forEach(value => {
-    //                         query.append(`${key}[]`, value);
-    //                     });
-    //                 } else {
-    //                     query.append(key, params[key]);
-    //                 }
-    //             }
-
-    //             return query.toString();
-    //         }
-    //         // Your query parameters object
-    //         const queryParamsObject = {
-    //             emp_numbers: ['9054102434'],
-    //             emp_tags: [],
-    //             emp_name: 'deepak soni',
-    //             emp_codes: [],
-    //             page_no: 1,
-    //             page_size: 2
-    //         };
-    //         // Build query string from the object
-    //         const queryParams = buildQueryParams(queryParamsObject);
-    //         console.log("queryParams" , queryParams)
     //         try {
     //             setLoading(true)
     //             const response = await fetch(url, {
@@ -209,13 +180,6 @@ function EmployeeCompleteCallingReport() {
     //                     'Content-Type': 'application/json'
     //                 },
     //                 body: JSON.stringify(body)
-    //             });
-    //             const response2 = await fetch(`${urlEmployee}?${queryParams}`, {
-    //                 method: 'GET',
-    //                 headers: {
-    //                     'Authorization': `Bearer ${apiKey}`,
-    //                     'Content-Type': 'application/json'
-    //                 }
     //             });
 
     //             if (!response.ok) {
@@ -227,9 +191,9 @@ function EmployeeCompleteCallingReport() {
     //             //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
     //             // }
     //             const data = await response.json();
-    //             const newData = await response2.json();
 
-    //             console.log(newData)
+
+
 
     //             setTotalCalls(data.result);
     //             setFilteredTotalCalls(data.result)
@@ -252,34 +216,16 @@ function EmployeeCompleteCallingReport() {
         const fetchEmployeeData = async () => {
             const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
             const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-            const urlEmployee = 'https://api1.callyzer.co/v2/employee/get';
-    
+
             const body = {
                 "call_from": startTimestamp,
                 "call_to": endTimestamp,
                 "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
                 "emp_numbers": employeeArray
             };
-    
-            // Helper function to serialize arrays correctly in the query string
-            // Helper function to build JSON-like query params
-        function buildJsonQueryParams(params) {
-            const jsonString = JSON.stringify(params);
-            return encodeURIComponent(jsonString);  // Safely encode the JSON string
-        }
-    
-            // Your query parameters object for GET request
-            const queryParamsObject = {
-                "emp_numbers": ['9054102434'],
-            };
-    
-            // Build query string from the object
-            const queryParams = buildJsonQueryParams(queryParamsObject);
-            console.log("queryParams:", queryParams);
-    
             try {
                 setLoading(true);
-    
+
                 // POST request to the call-log API
                 const response = await fetch(url, {
                     method: 'POST',
@@ -289,47 +235,73 @@ function EmployeeCompleteCallingReport() {
                     },
                     body: JSON.stringify(body)
                 });
-    
-                // GET request to the employee API with query parameters
-                const response2 = await fetch(`${urlEmployee}?${queryParams}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-    
-                // Check for errors in both responses
+
+                // Check for errors in the POST request
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
                 }
-    
-                // if (!response2.ok) {
-                //     const errorData = await response2.json();
-                //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
-                // }
-    
-                // Process both responses
+
+                // Process the POST response
                 const data = await response.json();
-                const newData = await response2.json();
-    
-                console.log(newData);
-    
-                setTotalCalls(data.result);
-                setFilteredTotalCalls(data.result);
-                setCompleteTotalCalls(data.result);
-    
+                // setTotalCalls(data.result);
+                // setFilteredTotalCalls(data.result);
+                // setCompleteTotalCalls(data.result);
+
+                // Construct the query parameters
+                const queryParamsObject = {
+                    "emp_numbers": [],
+                };
+                let newData;
+                const response2 = await fetch(`${secretKey}/fetch-api-data`, {
+                    method: 'POST',
+                    headers: {
+
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(queryParamsObject)
+                })
+                try {
+                    const data = await response2.json();  // Await the response
+                    //console.log('Data from external API:', data);
+                    newData = data.result;  // Assign the data to newData
+                } catch (error) {
+                    console.error('Error:', error);  // Catch any errors
+                }
+                console.log("New Data:", newData);
+                // Assuming data.result from first response and newData from second have `emp_number` as common
+                const mergedData = data.result.map(emp => {
+                    const matchingEmp = newData.find(item => item.emp_number === emp.emp_number);
+                    if (matchingEmp) {
+                        return {
+                            ...emp, // Spread the fields from the first response
+                            last_sync_req_at: matchingEmp.last_sync_req_at // Add the field from second response
+                        };
+                    }
+                    return emp; // If no match, return the original object
+                });
+                // Check for errors in the GET request
+                if (!response2.ok) {
+                    const errorData = await response2.json();
+                    throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+                }
+                console.log("Merged Data:", mergedData);
+                setTotalCalls(mergedData);
+                setFilteredTotalCalls(mergedData);
+                setCompleteTotalCalls(mergedData);
             } catch (err) {
                 console.log(err);
             } finally {
                 setLoading(false);
             }
         };
-    
+
         fetchEmployeeData();
     }, [employeeData]);
-    
+
+
+
+
     const convertSecondsToHMS = (totalSeconds) => {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -907,7 +879,7 @@ function EmployeeCompleteCallingReport() {
                                                             <td>{obj.total_calls}</td>
                                                             <td>{obj.total_unique_clients}</td>
                                                             <td>{convertSecondsToHMS(obj.total_duration)}</td>
-                                                            <td>{formatDate(obj.last_call_log.synced_at)}</td>
+                                                            <td>{formatDate(obj.last_sync_req_at)}</td>
                                                         </tr>
                                                     ))}
                                         </tbody>

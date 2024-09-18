@@ -780,8 +780,9 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                 </td>
                                                 <td>
                                                     <span className={`badge ${(status) === "Present" ? "badge-completed" :
-                                                        (status) === "Leave" ? "badge-under-probation" :
-                                                            (status) === "Half Day" ? "badge-half-day" : ""
+                                                        (status) === "Leave" ? "badge-leave" :
+                                                            (status) === "Half Day" ? "badge-half-day" : 
+                                                            (status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" :"badge-Nodata"
                                                         }`}>
                                                         {status}
                                                     </span>

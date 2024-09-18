@@ -47,7 +47,7 @@ const { sendMail3 } = require("./helpers/sendMail3");
 const { sendMail4 } = require("./helpers/sendMail4");
 const pdfAttachment = path.join("./helpers/src", './MITC.pdf');
 const HTMLtoDOCX = require('html-to-docx');
-//const axios = require('axios');
+const axios = require('axios');
 const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
@@ -93,7 +93,7 @@ app.use(
     extended: true,
   })
 );
-app.use("/api/admin-leads",(req,res,next) =>{
+app.use("/api/admin-leads", (req, res, next) => {
   req.io = socketIO;
   next();
 }, AdminLeadsAPI);
@@ -102,25 +102,25 @@ app.use('/api/bookings', (req, res, next) => {
   req.io = socketIO;
   next();
 }, bookingsAPI);
-app.use('/api/company-data', (req,res,next)=>{
-req.io = socketIO;
-next();
-},companyAPI);
+app.use('/api/company-data', (req, res, next) => {
+  req.io = socketIO;
+  next();
+}, companyAPI);
 app.use('/api/requests', (req, res, next) => {
   req.io = socketIO;
   next();
 }, RequestAPI);
 app.use('/api/teams', TeamsAPI)
-app.use('/api/bdm-data', (req , res , next)=>{
+app.use('/api/bdm-data', (req, res, next) => {
   req.io = socketIO;
   next();
-} , bdmAPI)
+}, bdmAPI)
 app.use('/api/projection', ProjectionAPI)
 app.use('/api/employee', EmployeeAPI)
-app.use('/api/rm-services', (req , res , next)=>{
+app.use('/api/rm-services', (req, res, next) => {
   req.io = socketIO;
   next();
-} , RMServicesAPI)
+}, RMServicesAPI)
 app.use('/api/clientform', ClientAPI)
 app.use('/api/customer', CustomerAPI)
 app.use('/api/employeeDraft', EmployeeDraftAPI);
@@ -142,12 +142,12 @@ app.use('/api/services', ServicesAPI);
 //   cert: fs.readFileSync('/etc/letsencrypt/live/startupsahay.in/fullchain.pem'), 
 //   key: fs.readFileSync('/etc/letsencrypt/live/startupsahay.in/privkey.pem'), 
 // }, app);
-const http = require('http').createServer(app) 
+const http = require('http').createServer(app)
 var socketIO = require("socket.io")(http, {
   cors: {
     origin: " * ",
   },
-}); 
+});
 // const server = http.createServer(app);
 // const io = socketIo(server);
 
@@ -201,9 +201,9 @@ const storage = multer.diskStorage({
     }
     else if (file.fieldname === "DirectorAdharCard" || file.fieldname === "DirectorPassportPhoto") {
       destinationPath = `ClientDocuments/${companyName}/DirectorDocs`;
-    }  else {
+    } else {
       destinationPath = `ClientDocuments/${companyName}/OtherDocs`
-    } 
+    }
 
     // Create the directory if it doesn't exist
     if (!fs.existsSync(destinationPath)) {
@@ -377,7 +377,7 @@ app.post("/api/adminexecutivelogin", async (req, res) => {
     password: password,
   });
 
- 
+
   //console.log(user)
   if (!user) {
     // If user is not found
@@ -421,6 +421,36 @@ app.post("/api/rmoffundinglogin", async (req, res) => {
   }
 })
 
+// -----------------calling api request---------------------
+
+app.post('/api/fetch-api-data', async (req, res) => {
+  const { emp_numbers } = req.body;
+  //console.log("empnumber", emp_numbers)
+  // External API URL (without query parameters)
+  const externalApiUrl = " https://api1.callyzer.co/v2/employee/get"; // Assuming the external API expects the data in the body, not in the URL
+
+  try {
+    // Fetch data from the external API using axios with GET request and body
+    const apiKey = "bc4e10cf-23dd-47e6-a1a3-2dd889b6dd46";
+    const response = await axios({
+      method: 'GET',
+      url: externalApiUrl,
+      data: { emp_numbers }, // Send the data in the body of the GET request
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    // Send the response from the external API back to the client
+    // console.log(response.data)
+    res.status(200).json(response.data);
+  } catch (error) {
+    // Handle any errors
+    console.error('Error fetching data from external API:', error);
+    res.status(500).json({ error: 'Failed to fetch data from external API' });
+  }
+});
 
 
 
@@ -1522,7 +1552,7 @@ app.post("/api/undo", (req, res) => {
 //               color: black;
 //             "
 //           >
-            
+
 //           </div>
 //         </div>
 //         <div
@@ -2209,7 +2239,7 @@ app.post("/api/undo", (req, res) => {
 //                </div>
 //              </div>
 //            </div>
-           
+
 //            <div style="display: flex; flex-wrap: wrap">
 //              <div style="width: 100%">
 //                <div>
@@ -2417,10 +2447,10 @@ app.post("/api/undo", (req, res) => {
 app.get('/api/generate-pdf-client', async (req, res) => {
   try {
     let htmlNewTemplate = fs.readFileSync('./helpers/client_mail.html', 'utf-8');
-  
+
 
     // Ensure the directory exists
-   
+
     const pdfFilePath = `./TestDocs/test.pdf`;
     const options = {
       childProcessOptions: {
@@ -2434,7 +2464,7 @@ app.get('/api/generate-pdf-client', async (req, res) => {
       if (err) {
         console.error('Error generating PDF:', err);
         return res.status(500).send('Error generating PDF');
-      }else {
+      } else {
         console.log('Docx file created successfully');
         return res.status(200).send('Generated DOCX Successfully');
       }

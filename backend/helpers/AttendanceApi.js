@@ -359,6 +359,30 @@ router.post('/addAttendance', async (req, res) => {
                         }]
                     });
                 } else {
+                    //If status is LC, check how many LC entries already exist for the month
+                    if (status === "LC") {
+                        let dayArray = monthArray.days.find(d => d.date === day);
+
+                        if (dayArray && dayArray.status.startsWith("LC")) {
+                            // If the day already has an LC status, do not increment the count
+                            status = dayArray.status;
+                        } else {
+                            const lcCount = monthArray.days.filter(d => d.status.startsWith("LC")).length;
+                            if (lcCount < 3) {
+                                status = `LC${lcCount + 1}`; // Increment the LC count up to LC3
+                            } else {
+                                // If the LC count exceeds 3, set status to LCH
+                                status = 'LCH';
+
+                                // Convert all previous LC1, LC2, LC3 in the same month to LCH
+                                monthArray.days.forEach(d => {
+                                    if (d.status.startsWith("LC")) {
+                                        d.status = 'LCH'; // Convert all LC statuses to LCH
+                                    }
+                                });
+                            }
+                        }
+                    }
                     let dayArray = monthArray.days.find(d => d.date === day);
 
                     if (!dayArray) {
@@ -377,34 +401,28 @@ router.post('/addAttendance', async (req, res) => {
                         dayArray.workingHours = workingHours;
                         dayArray.status = status;
                     }
-
-                    // If status is LC, check how many LC entries already exist for the month
+                    // After clearing, re-check the number of LC statuses for the month
+                    let lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
+                    // If status is LC, re-assign LC numbers (LC1, LC2, LC3)
                     if (status === "LC") {
-                        const lcCount = monthArray.days.filter(d => d.status.startsWith("LC")).length;
+                        const lcCount = lcEntries.length;
                         if (lcCount < 3) {
-                            status = `LC${lcCount + 1}`; // Increment the LC count up to LC3
+                            status = `LC${lcCount + 1}`;
                         } else {
-                            // If the LC count exceeds 3, set status to LCH
-                            status = 'LCH';
-
-                            // Convert all previous LC1, LC2, LC3 in the same month to LCH
-                            monthArray.days.forEach(d => {
-                                if (d.status.startsWith("LC")) {
-                                    d.status = 'LCH'; // Convert all LC statuses to LCH
-                                }
+                            status = 'LCH'; // If LC count exceeds 3, set to LCH
+                            lcEntries.forEach(d => {
+                                d.status = 'LCH'; // Update all previous LC entries to LCH
                             });
                         }
                     }
+                    // Recalculate the LC statuses if an LC was cleared or updated
+                    lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
+                    lcEntries.forEach((entry, index) => {
+                        entry.status = `LC${index + 1}`; // Reassign LC statuses in sequence
+                    });
 
-                    // After clearing, re-check the number of LC statuses for the month
-                    const lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
-                    if (lcEntries.length === 3) {
-                        // If exactly 3 LC entries exist, reset them to LC1, LC2, and LC3
-                        lcEntries.forEach((entry, index) => {
-                            entry.status = `LC${index + 1}`;
-                        });
-                    } else if (lcEntries.length > 3) {
-                        // If more than 3 LC entries exist, set all to LCH
+                    // If LC entries exceed 3, set them all to LCH
+                    if (lcEntries.length > 3) {
                         lcEntries.forEach(entry => {
                             entry.status = 'LCH';
                         });
