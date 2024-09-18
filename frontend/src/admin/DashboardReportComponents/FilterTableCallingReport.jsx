@@ -94,9 +94,11 @@ const FilterTableCallingReport = ({
                     const durationInSeconds = item.total_duration; // Assuming duration is in seconds
                     return formatDuration(durationInSeconds); // Convert to hh:mm:ss
                 }
-                // Handle dynamic filtering for 'last_call_log.synced_at'
-                if (filterField === "last_call_log.synced_at") {
-                    return formatDateTime(item.last_call_log.synced_at); // Convert to DD-MM-YYYY HH:mm:ss
+                if (filterField === "last_sync_req_at") {
+                    const employeeExists = employeeData.some(
+                        (data) => Number(data.number) === Number(item.emp_number)
+                    );
+                    return employeeExists ? item.last_sync_req_at : null; // Return the employee name if exists
                 }
                 return item[filterField]; // Return the filtered field's value
             }).filter(Boolean); // Filter out any falsy values (e.g., null)
