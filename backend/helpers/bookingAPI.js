@@ -2635,8 +2635,7 @@ router.post(
             "Mudra Loan",
             "SIDBI Loan",
             "Incubation Support",
-            "MSME Hackathon 4.0",
-
+            // "MSME Hackathon 4.0",
           ];
           const AuthorizedName = newData.services.some((service) => {
             const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
@@ -2654,7 +2653,8 @@ router.post(
               "GST Registration Application Support",
               "Private Limited Company Incorporation",
               "OPC Private Limited Company Incorporation",
-              "LLP Company Incorporation"
+              "LLP Company Incorporation",
+              "MSME Hackathon 4.0",
             ];
             return tempServices.includes(service.serviceName);
           })
@@ -2671,6 +2671,7 @@ router.post(
             let privateLimitedCompany = "";
             let opcLimitedCompany = "";
             let llpCompany = "";
+            let msmeHackathon = "";
 
             for (let i = 0; i < newData.services.length; i++) {
               const service = newData.services[i];
@@ -2706,7 +2707,16 @@ router.post(
                 <p class="Declaration_text_data">
                   I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
                 </p>`;
-              } else if (service.serviceName === "Income Tax Exemption") {
+              } else if (service.serviceName === "MSME Hackathon 4.0") {
+                msmeHackathon += `${service.serviceName === "MSME Hackathon 4.0" ? "MSME Hackathon 4.0 Document Support Acknowledgement:" : service.serviceName + "Document Support Acknowledgement:"},`;
+                msmeHackathon += `
+                <p class="Declaration_text_data">
+                  I, ____________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
+                </p>
+                <p class="Declaration_text_data">
+                  START-UP SAHAY PRIVATE LIMITED has provided me with accurate information regarding the application and approval process. I also understand that the final decision on the application rests solely with the relevant government authorities, and START-UP SAHAY cannot influence the outcome of the application.
+                </p>`;
+              }else if (service.serviceName === "Income Tax Exemption") {
                 incomeTaxServices += `
                 <p class="Declaration_text_head mt-2">
                   <b>Income Tax Exemption Document Support Services Acknowledgement:</b>
@@ -2854,6 +2864,9 @@ router.post(
             }
             if (llpCompany !== "") {
               servicesHtml += llpCompany
+            }
+            if (msmeHackathon !== "") {
+              servicesHtml += msmeHackathon
             }
             return servicesHtml;
           };
@@ -4919,7 +4932,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "SIDBI Loan",
       "Incubation Support",
       "Chunauti",
-      "MSME Hackathon 4.0"
+      // "MSME Hackathon 4.0"
     ];
 
     const AuthorizedName = newData.services.some((service) => {
@@ -4937,7 +4950,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         "GST Registration Application Support",
         "Private Limited Company Incorporation",
         "OPC Private Limited Company Incorporation",
-        "LLP Company Incorporation"
+        "LLP Company Incorporation",
+        "MSME Hackathon 4.0",
       ];
       return tempServices.includes(service.serviceName);
     })
@@ -4954,6 +4968,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let privateLimitedCompany = "";
       let opcLimitedCompany = "";
       let llpCompany = "";
+      let msmeHackathon = "";
 
       for (let i = 0; i < newData.services.length; i++) {
         const service = newData.services[i];
@@ -4989,6 +5004,15 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             <p class="Declaration_text_data">
               I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>`;
+        }else if (service.serviceName === "MSME Hackathon 4.0") {
+          msmeHackathon += `${service.serviceName === "MSME Hackathon 4.0" ? "MSME Hackathon 4.0 Document Support Acknowledgement:" : service.serviceName + "Document Support Acknowledgement:"},`;
+          msmeHackathon += `
+          <p class="Declaration_text_data">
+            I, ____________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
+          </p>
+          <p class="Declaration_text_data">
+            START-UP SAHAY PRIVATE LIMITED has provided me with accurate information regarding the application and approval process. I also understand that the final decision on the application rests solely with the relevant government authorities, and START-UP SAHAY cannot influence the outcome of the application.
+          </p>`;
         } else if (service.serviceName === "Income Tax Exemption") {
           incomeTaxServices += `
             <p class="Declaration_text_head mt-2">
@@ -5136,6 +5160,9 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       if (llpCompany !== "") {
         servicesHtml += llpCompany
+      }
+      if (msmeHackathon !== "") {
+        servicesHtml += msmeHackathon
       }
       return servicesHtml;
     };
