@@ -137,7 +137,7 @@ router.post('/update-ename', async (req, res) => {
           const { 'Company Name': companyName, ename } = item;
           await CompanyModel.updateOne(
               { "Company Name": companyName },
-              { $set: { AssignDate : new Date() } }
+              { $set: { ename : ename } }
           );
       });
 

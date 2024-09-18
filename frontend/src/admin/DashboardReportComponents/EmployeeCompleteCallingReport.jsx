@@ -223,8 +223,6 @@ function EmployeeCompleteCallingReport() {
                 "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
                 "emp_numbers": employeeArray
             };
-            console.log("body", JSON.stringify(body));
-
             try {
                 setLoading(true);
 
@@ -246,65 +244,51 @@ function EmployeeCompleteCallingReport() {
 
                 // Process the POST response
                 const data = await response.json();
-                setTotalCalls(data.result);
-                setFilteredTotalCalls(data.result);
-                setCompleteTotalCalls(data.result);
+                // setTotalCalls(data.result);
+                // setFilteredTotalCalls(data.result);
+                // setCompleteTotalCalls(data.result);
 
                 // Construct the query parameters
                 const queryParamsObject = {
-                    "emp_numbers": ["9054102434"],
+                    "emp_numbers": [],
                 };
-
-                // Convert queryParamsObject to query string
-                const queryParams = new URLSearchParams(queryParamsObject).toString();
-                const urlEmployee = "https://api1.callyzer.co/v2/employee/get"
-                const empNumbers = ["9054102434", "1234567890", "9876543210"];
-                // const fullUrl = `${urlEmployee}?${queryParams}`;
-                // console.log("queryParamas", queryParams);
-                // console.log("fullUrl", fullUrl);
-
-                // // GET request to the employee API
-                // const response2 = await fetch(fullUrl, {
-                //     method: 'GET', // Use GET for querying data
-                //     headers: {
-                //         'Authorization': `Bearer ${apiKey}`,
-                //         'Content-Type': 'application/json'
-                //     }
-                // });
-                //const urlEmployee = `https://api1.callyzer.co/v2/employee/get?emp_numbers=${JSON.stringify(empNumbers)}`;
-
-                // const response2 = await axios({
-                //     method: 'get',
-                //     url: 'https://api1.callyzer.co/v2/employee/get',
-                //     headers: {
-                //         'Authorization': `Bearer ${apiKey}`,
-
-                //         'Content-Type': 'application/json'
-                //     },
-                //     data: JSON.stringify(queryParamsObject)
-                // });
-                const response2 = fetch(`/${secretKey}/fetch-api-data`, {
+                let newData;
+                const response2 = await fetch(`${secretKey}/fetch-api-data`, {
                     method: 'POST',
                     headers: {
-                        
+
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(queryParamsObject)
                 })
-                .then(response => response.json())
-                .then(data => console.log('Data from external API:', data))
-                .catch(error => console.error('Error:', error));
-
+                try {
+                    const data = await response2.json();  // Await the response
+                    //console.log('Data from external API:', data);
+                    newData = data.result;  // Assign the data to newData
+                } catch (error) {
+                    console.error('Error:', error);  // Catch any errors
+                }
+                console.log("New Data:", newData);
+                // Assuming data.result from first response and newData from second have `emp_number` as common
+                const mergedData = data.result.map(emp => {
+                    const matchingEmp = newData.find(item => item.emp_number === emp.emp_number);
+                    if (matchingEmp) {
+                        return {
+                            ...emp, // Spread the fields from the first response
+                            last_sync_req_at: matchingEmp.last_sync_req_at // Add the field from second response
+                        };
+                    }
+                    return emp; // If no match, return the original object
+                });
                 // Check for errors in the GET request
                 if (!response2.ok) {
                     const errorData = await response2.json();
                     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
                 }
-
-                // Process the GET response
-                const newData = await response2.json();
-                console.log(newData);
-
+                console.log("Merged Data:", mergedData);
+                setTotalCalls(mergedData);
+                setFilteredTotalCalls(mergedData);
+                setCompleteTotalCalls(mergedData);
             } catch (err) {
                 console.log(err);
             } finally {
@@ -895,7 +879,7 @@ function EmployeeCompleteCallingReport() {
                                                             <td>{obj.total_calls}</td>
                                                             <td>{obj.total_unique_clients}</td>
                                                             <td>{convertSecondsToHMS(obj.total_duration)}</td>
-                                                            <td>{formatDate(obj.last_call_log.synced_at)}</td>
+                                                            <td>{formatDate(obj.last_sync_req_at)}</td>
                                                         </tr>
                                                     ))}
                                         </tbody>
