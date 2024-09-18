@@ -28,10 +28,6 @@ const DscStatusDropdown = ({
   letterStatus
 }) => {
 
-  console.log("letterStatus", letterStatus, companyName, subStatus)
-
-  console.log("object")
-
   // State to manage the selected status and the corresponding CSS class
   const [status, setStatus] = useState(subStatus);
   const [statusClass, setStatusClass] = useState("");

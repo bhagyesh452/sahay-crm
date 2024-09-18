@@ -2714,7 +2714,7 @@ router.post(
                   <b>${service.serviceName} Document Support Acknowledgement Acknowledgement:</b>
                 </p>
                 <p class="Declaration_text_data">
-                  I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
+                  I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
                 </p>
                 <p class="Declaration_text_data">
                   START-UP SAHAY PRIVATE LIMITED has provided me with accurate information regarding the application and approval process. I also understand that the final decision on the application rests solely with the relevant government authorities, and START-UP SAHAY cannot influence the outcome of the application.
@@ -2879,7 +2879,8 @@ router.post(
             "Private Limited Company Incorporation",
             "OPC Private Limited Company Incorporation",
             "LLP Company Incorporation",
-            "MSME Hackathon 4.0"
+            "MSME Hackathon 4.0",
+            "MSME Hackathon 4.0 Application"
           ];
 
           // Check if there is only one service and if it matches one of the specified types
@@ -3341,6 +3342,7 @@ router.post(
     </section>
   </div>`;
           }}
+          
 
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
@@ -5089,7 +5091,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   <b>${service.serviceName} Document Support Acknowledgement Acknowledgement:</b>
                 </p>
           <p class="Declaration_text_data">
-            I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
+            I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
           </p>
           <p class="Declaration_text_data">
             START-UP SAHAY PRIVATE LIMITED has provided me with accurate information regarding the application and approval process. I also understand that the final decision on the application rests solely with the relevant government authorities, and START-UP SAHAY cannot influence the outcome of the application.
@@ -5252,7 +5254,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Private Limited Company Incorporation",
       "OPC Private Limited Company Incorporation",
       "LLP Company Incorporation",
-      "MSME Hackathon 4.0"
+      "MSME Hackathon 4.0",
+      "MSME Hackathon 4.0 Application"
     ];
 
     // Check if there is only one service and if it matches one of the specified types
@@ -5631,7 +5634,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
           <b>${renamedExtraServiceName}</b>
         </p>
 <p class="Declaration_text_data">
-I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________.
+I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________.
 </p>
 <p class="Declaration_text_data">
 I declare that all required documents for the MSME IDEA HACKATHON 4.0 application submission will be provided from MY SIDE. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
@@ -5673,7 +5676,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
           <b>${renamedExtraServiceName}</b>
         </p>
 <p class="Declaration_text_data">
-I,  ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________.
+I,  ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________.
 </p>
 <p class="Declaration_text_data">
 I declare that all required documents for the MSME IDEA HACKATHON 4.0 application submission will be provided from MY SIDE. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
