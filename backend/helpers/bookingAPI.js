@@ -3369,8 +3369,13 @@ router.post(
             ["nimesh@incscale.in", "bookings@startupsahay.com"] :
             [clientMail, "admin@startupsahay.com"]
           console.log("mainClientMail", mainClientMail)
-          const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/client/basic-form" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-    <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
+          const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+              <ol>
+                  <li> You will be prompted to enter the registered email ID you provided to Start-Up Sahay (the same email ID on which this email was sent).
+                  </li>
+                  <li>After entering the email ID, an OTP will be sent to you, which you will need to enter to access and fill the business input form.</li>
+              </ol>
+          <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
           pdf
             .create(filledHtml, options)
             .toFile(pdfFilePath, async (err, response) => {
@@ -3393,12 +3398,12 @@ router.post(
                           <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
                           <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                           <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                    <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
-
-                         ${draftHtml}
-                          <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-                          
+                          <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
                           <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
+                         ${draftHtml}
+                          <p>If you face any problem in opening the form link or filling out the form, please get in touch with Shubhi Banthiya - Relationship Manager at +919998992601.</p>
+                          
+                          
                           <div class="signature">
                               <div>Best regards,</div>
                               <div>${mailName} – Relationship Manager</div>
@@ -5657,8 +5662,14 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
       },
     };
 
-    const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/client/basic-form" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-                    <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
+    const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+    <p>Upon clicking the link:</p>                
+    <ol>
+        <li> You will be prompted to enter the registered email ID you provided to Start-Up Sahay (the same email ID on which this email was sent).
+        </li>
+        <li>After entering the email ID, an OTP will be sent to you, which you will need to enter to access and fill the business input form.</li>
+    </ol>
+    <p>If you face any problem in opening the form link or filling out the form, please get in touch with Shubhi Banthiya - Relationship Manager at +919998992601.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
     //console.log(clientMail)
@@ -5688,12 +5699,13 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
                     <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
                     <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
                     <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
+                    <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
                     ${draftHtml}
                     <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-                    <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
+                    
                     <div class="signature">
                         <div>Best regards,</div>
-                        <div>${mailName} – Relationship Manager</div>
+                        <div>${mailName} - Relationship Manager</div>
                         <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
                         <div>Start-Up Sahay Private Limited</div>
                     </div>
