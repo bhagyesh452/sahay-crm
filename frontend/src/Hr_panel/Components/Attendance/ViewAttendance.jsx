@@ -104,6 +104,9 @@ function ViewAttendance({ year, month, date }) {
     const [inTimeError, setInTimeError] = useState(""); // State for In Time error
     const [outTimeError, setOutTimeError] = useState(""); // State for Out Time error
     const [attendanceData, setAttendanceData] = useState({});
+    const [openStatusSelect, setOpenStatusSelect] = useState(false)
+    const [statusValue, setStatusValue] = useState("")
+    const [reasonValue, setReasonValue] = useState("")
 
     const handleShowParticularEmployeeAttendance = (id, name) => {
         setShowAttendanceForParticularEmployee(true);
@@ -149,6 +152,9 @@ function ViewAttendance({ year, month, date }) {
         setIsDeleted(false);
         setInTimeError("");
         setOutTimeError("");
+        setOpenStatusSelect(false);
+        setReasonValue("");
+        setStatusValue("");
     };
 
     const handleCheckboxChange = (e) => {
@@ -176,10 +182,6 @@ function ViewAttendance({ year, month, date }) {
             setDisableOutTime(false);
         }
     };
-
-    const handleAddManually=()=>{
-        console.log("chal rhi h")
-    }
 
     const handleDayClick = (day, id, empName, empId, designation, department, branch, intime, outtime, ename) => {
 
@@ -233,10 +235,16 @@ function ViewAttendance({ year, month, date }) {
     };
 
     const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
-
+        let workingHours, status ,reasonToSend;
         let hasError = false;
-
-        // Validate In Time
+        if(openStatusSelect){
+            inTime = "00:00";
+            outTime = "00:00";
+            workingHours = "00:00";
+            status = statusValue;
+            reasonToSend = reasonValue;
+        }else{
+            // Validate In Time
         if (!inTime) {
             setInTimeError("In Time is required");
             hasError = true;
@@ -256,9 +264,6 @@ function ViewAttendance({ year, month, date }) {
         if (hasError) {
             return;
         }
-
-        let workingHours, status;
-
         const convertToMinutes = (timeString) => {
             const [hours, minutes] = timeString.split(':').map(Number);
             return hours * 60 + minutes;
@@ -352,7 +357,7 @@ function ViewAttendance({ year, month, date }) {
             }
             // console.log("status", status)
         }
-
+        }
         const payload = {
             id: id,
             employeeId: empId,
@@ -365,7 +370,8 @@ function ViewAttendance({ year, month, date }) {
             inTime: inTime,
             outTime: outTime,
             workingHours: workingHours,
-            status: status
+            status: status,
+            reasonValue: reasonToSend ? reasonToSend : null
         };
 
         setShowPopup(false);
@@ -375,7 +381,9 @@ function ViewAttendance({ year, month, date }) {
         setOutTimeError("");
         setDisableInTime(true);
         setDisableOutTime(true);
-
+        setOpenStatusSelect(false);
+        setReasonValue("");
+        setStatusValue("");
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
             // console.log("Created attendance record is :", res.data);
@@ -415,6 +423,9 @@ function ViewAttendance({ year, month, date }) {
             setInTime("");
             setOutTime("");
             setShowPopup(false);
+            setOpenStatusSelect(false);
+            setReasonValue("");
+            setStatusValue("");
             Swal.fire("Success", "Attendance Cleared Succesfully", "success");
         } catch (error) {
             console.log("Error updating attendance record", error);
@@ -621,6 +632,13 @@ function ViewAttendance({ year, month, date }) {
         }
     }, [inTime, outTime]);
 
+    // -------------------------ADD STATUS MANUALLY FUNCTIONS-----------------------
+    const handleCheckboxChangeStatus = (e) => {
+        setOpenStatusSelect(e.target.checked); // Toggle the dropdown based on checkbox state
+    };
+
+    console.log("statusvalue", statusValue)
+    console.log("reasonvalue", reasonValue)
 
     return (
         <>
@@ -2044,10 +2062,38 @@ function ViewAttendance({ year, month, date }) {
                                                 name="rGroup"
                                                 value="1"
                                                 id="r1"
-                                                onClick={handleAddManually}
+                                                checked={openStatusSelect} // Bind checked value to state
+                                                onChange={handleCheckboxChangeStatus} // Handle checkbox state change
                                             />
-                                        </div>
 
+                                        </div>
+                                        {
+                                            openStatusSelect &&
+                                            (<>
+                                                <div className='col-lg-2 mr-1'>
+                                                    <select
+                                                        className="form-select mt-1 ml-1"
+                                                        value={statusValue}
+                                                        onChange={(e) => setStatusValue(e.target.value)}
+                                                    >
+                                                        <option value="" selected disabled>Select Status</option>
+                                                        <option value="Present">Present</option>
+                                                        <option value="Absent">Absent</option>
+                                                        <option value="Half Day">Half Day</option>
+                                                        <option value="LC">LC</option>
+                                                    </select>
+                                                </div>
+                                                <div className='col-lg-4 mr-1'>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control mt-1 ml-1"
+                                                        placeholder="Please Specify Reason"
+                                                        value={reasonValue}
+                                                        onChange={(e) => setReasonValue(e.target.value)}
+                                                    />
+                                                </div>
+                                            </>)
+                                        }
                                     </div>
                                 </div>
                             </div>

@@ -1095,7 +1095,7 @@ function EmployeePanel() {
       setDeletedEmployeeStatus(isDeletedEmployeeCompany)
       setNewBdeName(ename)
       console.log("is", isDeletedEmployeeCompany)
-      console.log("company" , company)
+      console.log("company", company)
       // let isDeletedEmployeeCompany = true
       if (!isDeletedEmployeeCompany) {
         console.log("formchal")
@@ -2775,13 +2775,14 @@ function EmployeePanel() {
         !selectedState &&
         !selectedNewCity &&
         !selectedYear &&
-        !selectedCompanyIncoDate
+        !selectedCompanyIncoDate &&
+        !selectedAssignDate
       ) {
         // If no filters are applied, reset the filter state and stop the backdrop
         setIsFilter(false);
       } else {
         // Update the employee data with the filtered results
-
+        // console.log("response.data", response.data)
         setFilteredData(response.data)
       }
     } catch (error) {
@@ -2791,7 +2792,7 @@ function EmployeePanel() {
       setOpenFilterDrawer(false);
     }
   };
-
+// console.log("filteredData", filteredData)
 
   const handleClearFilter = () => {
     setIsFilter(false)
@@ -3793,15 +3794,15 @@ function EmployeePanel() {
                                             }
                                           >
                                             {(dataStatus !== "Interested" && dataStatus !== "FollowUp") &&
-                                            (<>
-                                            <option value="Not Picked Up">
-                                                Not Picked Up
-                                              </option>
-                                               <option value="Junk">Junk</option>
-                                            </>
-                                          )}
+                                              (<>
+                                                <option value="Not Picked Up">
+                                                  Not Picked Up
+                                                </option>
+                                                <option value="Junk">Junk</option>
+                                              </>
+                                              )}
                                             <option value="Busy">Busy</option>
-                                           
+
                                             <option value="Not Interested">
                                               Not Interested
                                             </option>

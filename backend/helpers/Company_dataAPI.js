@@ -1497,12 +1497,8 @@ router.get('/filter-employee-leads', async (req, res) => {
     if (selectedStatus) baseQuery.Status = selectedStatus;
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
-    if (selectedAssignDate) {
-      baseQuery.AssignDate = {
-        $gte: new Date(selectedAssignDate).toISOString(),
-        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
-      };
-    }
+    console.log("selectedAssignDate", selectedAssignDate)
+   
     if (selectedYear) {
       if (monthIndex !== '0') {
 
@@ -1536,10 +1532,11 @@ router.get('/filter-employee-leads', async (req, res) => {
       };
     }
 
-    console.log(baseQuery);
+    // console.log("basequery" , baseQuery);
 
 
     const data = await CompanyModel.find(baseQuery).lean();
+    // console.log("data" , data.length)
 
     res.status(200).json(data);
   } catch (error) {
