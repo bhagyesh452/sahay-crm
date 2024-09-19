@@ -808,19 +808,19 @@ function EmployeeCompleteCallingReport() {
                                         </th>
                                         <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
-                                                <div ref={el => fieldRefs.current['last_call_log.synced_at'] = el}>
+                                                <div ref={el => fieldRefs.current['last_sync_req_at'] = el}>
                                                     Last Sync Time
                                                 </div>
 
                                                 <div className='RM_filter_icon' style={{ color: "black" }}>
-                                                    {isActiveField('last_call_log.synced_at') ? (
-                                                        <FaFilter onClick={() => handleFilterClick("last_call_log.synced_at")} />
+                                                    {isActiveField('last_sync_req_at') ? (
+                                                        <FaFilter onClick={() => handleFilterClick("last_sync_req_at")} />
                                                     ) : (
-                                                        <BsFilter onClick={() => handleFilterClick("last_call_log.synced_at")} />
+                                                        <BsFilter onClick={() => handleFilterClick("last_sync_req_at")} />
                                                     )}
                                                 </div>
                                                 {/* ---------------------filter component--------------------------- */}
-                                                {showFilterMenu && activeFilterField === 'last_call_log.synced_at' && (
+                                                {showFilterMenu && activeFilterField === 'last_sync_req_at' && (
                                                     <div
                                                         ref={filterMenuRef}
                                                         className="filter-menu"
@@ -879,7 +879,7 @@ function EmployeeCompleteCallingReport() {
                                                             <td>{obj.total_calls}</td>
                                                             <td>{obj.total_unique_clients}</td>
                                                             <td>{convertSecondsToHMS(obj.total_duration)}</td>
-                                                            <td>{formatDate(obj.last_sync_req_at)}</td>
+                                                            <td>{obj.last_sync_req_at}</td>
                                                         </tr>
                                                     ))}
                                         </tbody>

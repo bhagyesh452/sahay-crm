@@ -136,6 +136,9 @@ const CompanySchema = new mongoose.Schema({
   extractedDate:{
     type:Date
   },
+  isUploadedManually:{
+    type:Boolean,
+  }
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);

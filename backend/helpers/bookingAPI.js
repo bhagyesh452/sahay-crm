@@ -2635,8 +2635,7 @@ router.post(
             "Mudra Loan",
             "SIDBI Loan",
             "Incubation Support",
-            "MSME Hackathon 4.0",
-
+            // "MSME Hackathon 4.0",
           ];
           const AuthorizedName = newData.services.some((service) => {
             const tempServices = [...allowedServiceNames, "Income Tax Exemption"];
@@ -2654,7 +2653,8 @@ router.post(
               "GST Registration Application Support",
               "Private Limited Company Incorporation",
               "OPC Private Limited Company Incorporation",
-              "LLP Company Incorporation"
+              "LLP Company Incorporation",
+              "MSME Hackathon 4.0",
             ];
             return tempServices.includes(service.serviceName);
           })
@@ -2671,6 +2671,7 @@ router.post(
             let privateLimitedCompany = "";
             let opcLimitedCompany = "";
             let llpCompany = "";
+            let msmeHackathon = "";
 
             for (let i = 0; i < newData.services.length; i++) {
               const service = newData.services[i];
@@ -2705,6 +2706,18 @@ router.post(
                 </p>
                 <p class="Declaration_text_data">
                   I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+                </p>`;
+              } else if (service.serviceName === "MSME Hackathon 4.0") {
+                //msmeHackathon += `${service.serviceName === "MSME Hackathon 4.0" ? "MSME Hackathon 4.0 Document Support Acknowledgement:" : service.serviceName + "Document Support Acknowledgement:"},`;
+                msmeHackathon += `
+                <p class="Declaration_text_head mt-2">
+                  <b>${service.serviceName} Document Support Acknowledgement Acknowledgement:</b>
+                </p>
+                <p class="Declaration_text_data">
+                  I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
+                </p>
+                <p class="Declaration_text_data">
+                  START-UP SAHAY PRIVATE LIMITED has provided me with accurate information regarding the application and approval process. I also understand that the final decision on the application rests solely with the relevant government authorities, and START-UP SAHAY cannot influence the outcome of the application.
                 </p>`;
               } else if (service.serviceName === "Income Tax Exemption") {
                 incomeTaxServices += `
@@ -2855,6 +2868,9 @@ router.post(
             if (llpCompany !== "") {
               servicesHtml += llpCompany
             }
+            if (msmeHackathon !== "") {
+              servicesHtml += msmeHackathon
+            }
             return servicesHtml;
           };
 
@@ -2862,7 +2878,9 @@ router.post(
           const incorporationServices = [
             "Private Limited Company Incorporation",
             "OPC Private Limited Company Incorporation",
-            "LLP Company Incorporation"
+            "LLP Company Incorporation",
+            "MSME Hackathon 4.0",
+            "MSME Hackathon 4.0 Application"
           ];
 
           // Check if there is only one service and if it matches one of the specified types
@@ -3210,8 +3228,79 @@ router.post(
           }).join(" , ");
 
           // Generate the conditional page content
-          const seedConditionalPage = serviceNamesArray.length > 0 ?
-            `<div class="PDF_main">
+          const isMsmeHackathonOnly = newData.services.length === 1 && extraServiceName.has("MSME Hackathon 4.0 Application");
+          const isMsmeHackathonIncluded = extraServiceName.has("MSME Hackathon 4.0 Application");
+
+          let seedConditionalPage = ""; // Initialize as a string
+
+          // Add logic to determine the content of seedConditionalPage
+          if (serviceNamesArray.length > 0) {
+          if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
+            seedConditionalPage = `
+    <p class="Declaration_text_data">
+      I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________.
+    </p>
+    <p class="Declaration_text_data">
+      I declare that all required documents for the MSME IDEA HACKATHON 4.0 application submission will be provided from MY SIDE. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+    </p>
+    <p class="Declaration_text_data">
+                <b>Fees:</b>
+              </p>
+              <div class="Declaration_text_data">
+                <ul>
+                  <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+                  <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+                </ul>
+              </div>
+              <p class="Declaration_text_data">
+                <b>Acknowledgements:</b>
+              </p>
+              <div class="Declaration_text_data">
+                <ul>
+                  <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+                  <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+                  <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+                  <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+                </ul>
+              </div>`;
+          } else if (newData.services.length > 1 && newData.services.some(service => service.serviceName === "MSME Hackathon 4.0 Application")) {
+            seedConditionalPage = `
+    <p class="Declaration_text_data">
+      I,  ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________.
+    </p>
+    <p class="Declaration_text_data">
+      I declare that all required documents for the MSME IDEA HACKATHON 4.0 application submission will be provided from MY SIDE. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+    </p>
+     <p class="Declaration_text_data">
+          I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+        </p>
+        <p class="Declaration_text_data">
+          I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+        </p>
+   <p class="Declaration_text_data">
+                <b>Fees:</b>
+              </p>
+              <div class="Declaration_text_data">
+                <ul>
+                  <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+                  <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+                </ul>
+              </div>
+              <p class="Declaration_text_data">
+                <b>Acknowledgements:</b>
+              </p>
+              <div class="Declaration_text_data">
+                <ul>
+                  <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+                  <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+                  <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+                  <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+                </ul>
+              </div>`;
+          } else {
+            // Default logic if none of the above conditions are met
+            seedConditionalPage = `
+   <div class="PDF_main">
     <section>
       <div class="date_div">
         <p>Date : ${todaysDate}</p>
@@ -3251,9 +3340,9 @@ router.post(
         </div>
       </div>
     </section>
-  </div>` : '';
-
-
+  </div>`;
+          }}
+          
 
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
@@ -3276,7 +3365,6 @@ router.post(
             .replace("{{Company Number}}", newData["Company Number"])
             .replace("{{Conditional}}", conditional)
             .replace("{{Company Email}}", newData["Company Email"]);
-
 
           //   3("This is html file reading:-", filledHtml);
           const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
@@ -3315,7 +3403,8 @@ router.post(
             "Private Limited Company Incorporation",
             "OPC Private Limited Company Incorporation",
             "LLP Company Incorporation",
-            "MSME Hackathon 4.0 Application"
+            "MSME Hackathon 4.0 Application",
+            "MSME Hackathon 4.0"
           ];
 
           const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
@@ -3356,8 +3445,13 @@ router.post(
             ["nimesh@incscale.in", "bookings@startupsahay.com"] :
             [clientMail, "admin@startupsahay.com"]
           console.log("mainClientMail", mainClientMail)
-          const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/client/basic-form" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-    <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
+          const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+              <ol>
+                  <li> You will be prompted to enter the registered email ID you provided to Start-Up Sahay (the same email ID on which this email was sent).
+                  </li>
+                  <li>After entering the email ID, an OTP will be sent to you, which you will need to enter to access and fill the business input form.</li>
+              </ol>
+          <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
           pdf
             .create(filledHtml, options)
             .toFile(pdfFilePath, async (err, response) => {
@@ -3378,14 +3472,13 @@ router.post(
                           <p>Dear ${newData["Company Name"]},</p>
                           <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
                           <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
-                          <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
-                          <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-                    <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
-
-                         ${draftHtml}
-                          <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-                          
+                          <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement. Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                          <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
                           <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
+                         ${draftHtml}
+                          <p>If you face any problem in opening the form link or filling out the form, please get in touch with Shubhi Banthiya - Relationship Manager at +919998992601.</p>
+                          
+                          
                           <div class="signature">
                               <div>Best regards,</div>
                               <div>${mailName} – Relationship Manager</div>
@@ -4919,7 +5012,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "SIDBI Loan",
       "Incubation Support",
       "Chunauti",
-      "MSME Hackathon 4.0"
+      // "MSME Hackathon 4.0"
     ];
 
     const AuthorizedName = newData.services.some((service) => {
@@ -4937,7 +5030,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         "GST Registration Application Support",
         "Private Limited Company Incorporation",
         "OPC Private Limited Company Incorporation",
-        "LLP Company Incorporation"
+        "LLP Company Incorporation",
+        "MSME Hackathon 4.0",
       ];
       return tempServices.includes(service.serviceName);
     })
@@ -4954,6 +5048,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let privateLimitedCompany = "";
       let opcLimitedCompany = "";
       let llpCompany = "";
+      let msmeHackathon = "";
 
       for (let i = 0; i < newData.services.length; i++) {
         const service = newData.services[i];
@@ -4989,6 +5084,18 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
             <p class="Declaration_text_data">
               I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${service.serviceName}. They'll provide document creation and application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>`;
+        } else if (service.serviceName === "MSME Hackathon 4.0") {
+          //msmeHackathonArray += `${service.serviceName === "MSME Hackathon 4.0" ? "MSME Hackathon 4.0 Document Support Acknowledgement:" : service.serviceName + "Document Support Acknowledgement:"},`;
+          msmeHackathon += `
+          <p class="Declaration_text_head mt-2">
+                  <b>${service.serviceName} Document Support Acknowledgement Acknowledgement:</b>
+                </p>
+          <p class="Declaration_text_data">
+            I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________. Their services include document preparation and application support, for which they charge a fee. I understand that no government fees are involved in this process.
+          </p>
+          <p class="Declaration_text_data">
+            START-UP SAHAY PRIVATE LIMITED has provided me with accurate information regarding the application and approval process. I also understand that the final decision on the application rests solely with the relevant government authorities, and START-UP SAHAY cannot influence the outcome of the application.
+          </p>`;
         } else if (service.serviceName === "Income Tax Exemption") {
           incomeTaxServices += `
             <p class="Declaration_text_head mt-2">
@@ -5137,13 +5244,18 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       if (llpCompany !== "") {
         servicesHtml += llpCompany
       }
+      if (msmeHackathon !== "") {
+        servicesHtml += msmeHackathon
+      }
       return servicesHtml;
     };
     // Check if there is only one service and if it's one of the specified types
     const incorporationServices = [
       "Private Limited Company Incorporation",
       "OPC Private Limited Company Incorporation",
-      "LLP Company Incorporation"
+      "LLP Company Incorporation",
+      "MSME Hackathon 4.0",
+      "MSME Hackathon 4.0 Application"
     ];
 
     // Check if there is only one service and if it matches one of the specified types
@@ -5473,7 +5585,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
         extraServiceName.add("I-Create Application");
       } else if (service.serviceName === "DBS Grant Application") {
         extraServiceName.add("DBS Grant Application");
-      }else if (service.serviceName === "MSME Hackathon 4.0 Application") {
+      } else if (service.serviceName === "MSME Hackathon 4.0 Application") {
         extraServiceName.add("MSME Hackathon 4.0 Application");
       }
     });
@@ -5492,7 +5604,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
           return "I-Create Application Support";
         case "DBS Grant Application":
           return "DBS Grant Application Support";
-          case "MSME Hackathon 4.0 Application":
+        case "MSME Hackathon 4.0 Application":
           return "MSME Hackathon 4.0 Application Support";
         default:
           return "";
@@ -5500,48 +5612,148 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
     }).join(" , ");
 
     // Generate the conditional page content
-    const seedConditionalPage = serviceNamesArray.length > 0 ?
-      `<div class="PDF_main">
-<section>
-<div class="date_div">
-<p>Date : ${todaysDate}</p>
-</div>
-<div class="pdf_heading">
-<h3>Self Declaration</h3>
-</div>
-<div class="Declaration_text">
-<p class="Declaration_text_head mt-2">
-<b>${renamedExtraServiceName}</b>
+    const isMsmeHackathonOnly = newData.services.length === 1 && extraServiceName.has("MSME Hackathon 4.0 Application");
+    const isMsmeHackathonIncluded = extraServiceName.has("MSME Hackathon 4.0 Application");
+
+    let seedConditionalPage = ""; // Initialize as a string
+
+    // Add logic to determine the content of seedConditionalPage
+    if (serviceNamesArray.length > 0) {
+    if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
+      seedConditionalPage = `
+      <div class="PDF_main">
+      <section>
+       <div class="date_div">
+        <p>Date : ${todaysDate}</p>
+      </div>
+      <div class="pdf_heading">
+        <h3>Self Declaration</h3>
+      </div>
+      <div class="Declaration_text">
+        <p class="Declaration_text_head mt-2">
+          <b>${renamedExtraServiceName}</b>
+        </p>
+<p class="Declaration_text_data">
+I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________.
 </p>
 <p class="Declaration_text_data">
-I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+I declare that all required documents for the MSME IDEA HACKATHON 4.0 application submission will be provided from MY SIDE. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
 </p>
 <p class="Declaration_text_data">
-I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+          <b>Fees:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+            <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+          </ul>
+        </div>
+        <p class="Declaration_text_data">
+          <b>Acknowledgements:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+            <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+            <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+            <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+          </ul>
+        </div>
+        </section>
+        </div>`;
+    } else if (newData.services.length > 1 && newData.services.some(service => service.serviceName === "MSME Hackathon 4.0 Application")) {
+      seedConditionalPage = `
+      <div class="PDF_main">
+    <section>
+      <div class="date_div">
+        <p>Date : ${todaysDate}</p>
+      </div>
+      <div class="pdf_heading">
+        <h3>Self Declaration</h3>
+      </div>
+      <div class="Declaration_text">
+        <p class="Declaration_text_head mt-2">
+          <b>${renamedExtraServiceName}</b>
+        </p>
+<p class="Declaration_text_data">
+I,  ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ___________________________________________________________.
 </p>
 <p class="Declaration_text_data">
-<b>Fees:</b>
+I declare that all required documents for the MSME IDEA HACKATHON 4.0 application submission will be provided from MY SIDE. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
 </p>
-<div class="Declaration_text_data">
-<ul>
-  <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
-  <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
-</ul>
-</div>
+ <p class="Declaration_text_data">
+          I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+        </p>
+        <p class="Declaration_text_data">
+          I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+        </p>
 <p class="Declaration_text_data">
-<b>Acknowledgements:</b>
-</p>
-<div class="Declaration_text_data">
-<ul>
-  <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
-  <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
-  <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
-  <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
-</ul>
-</div>
-</div>
-</section>
-</div>` : '';
+          <b>Fees:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+            <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+          </ul>
+        </div>
+        <p class="Declaration_text_data">
+          <b>Acknowledgements:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+            <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+            <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+            <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+          </ul>
+        </div>
+        </section>
+        </div>`;
+    } else {
+      // Default logic if none of the above conditions are met
+      seedConditionalPage = `
+ <div class="PDF_main">
+    <section>
+      <div class="date_div">
+        <p>Date : ${todaysDate}</p>
+      </div>
+      <div class="pdf_heading">
+        <h3>Self Declaration</h3>
+      </div>
+      <div class="Declaration_text">
+        <p class="Declaration_text_head mt-2">
+          <b>${renamedExtraServiceName}</b>
+        </p>
+        <p class="Declaration_text_data">
+          I, the Director of ${newData["Company Name"]}, hereby engage START-UP SAHAY PRIVATE LIMITED for ${renamedExtraServiceName}.
+        </p>
+        <p class="Declaration_text_data">
+          I declare that all required documents for the ${renamedExtraServiceName} will be provided by ${newData["Company Name"]}. The role of START-UP SAHAY PRIVATE LIMITED will be to assist in submitting the application, either online or offline, to the concerned department.
+        </p>
+        <p class="Declaration_text_data">
+          <b>Fees:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>I understand and agree that there is a fee for the application submission service, which is separate from any government fees.</li>
+            <li>I acknowledge that I have paid the fees for the application submission service only and will not demand any changes or corrections in the provided documents by my side. If any changes or corrections are required as per concerned scheme, I have no objection to paying the extra fees as decided by both parties.</li>
+          </ul>
+        </div>
+        <p class="Declaration_text_data">
+          <b>Acknowledgements:</b>
+        </p>
+        <div class="Declaration_text_data">
+          <ul>
+            <li>The approval of the application is solely at the discretion of the concerned department/authorities, and START-UP SAHAY PRIVATE LIMITED has not provided any guarantees regarding the approval of the application.</li>
+            <li>Due to government regulations and the nature of the portal, the process may take longer than initially expected. I accept that this is a common occurrence with government scheme-related processes.</li>
+            <li>I understand that in case of rejection or incompletion of the application due to deficiencies in the provided documents or issues with my product/services, START-UP SAHAY PRIVATE LIMITED will not be held responsible. Their role is limited to assisting in the submission of the application.</li>
+            <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>`;
+    }}
 
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
@@ -5597,6 +5809,7 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
       "OPC Private Limited Company Incorporation",
       "LLP Company Incorporation",
       "MSME Hackathon 4.0 Application",
+      "MSME Hackathon 4.0"
     ];
 
     const includesRelevantService = relevantServices.some(service => extraServiceName.has(service));
@@ -5630,8 +5843,14 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
       },
     };
 
-    const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/client/basic-form" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-                    <p>If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>` : ``;
+    const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+    <p>Upon clicking the link:</p>                
+    <ol>
+        <li> You will be prompted to enter the registered email ID you provided to Start-Up Sahay (the same email ID on which this email was sent).
+        </li>
+        <li>After entering the email ID, an OTP will be sent to you, which you will need to enter to access and fill the business input form.</li>
+    </ol>
+    <p>If you face any problem in opening the form link or filling out the form, please get in touch with Shubhi Banthiya - Relationship Manager at +919998992601.</p>` : ``;
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
     //console.log(clientMail)
@@ -5658,15 +5877,15 @@ I declare that all required documents for the ${renamedExtraServiceName} will be
                     <p>Dear ${newData["Company Name"]},</p>
                     <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
                     <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
-                    <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
-                    <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                    <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement. Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
                     <p>Please note that this Self-Declaration document must be signed and stamped without any modifications from your end. Suppose any changes are made to the terms and conditions before signing. In that case, the original terms and conditions provided by Start-Up Sahay Private Limited will be considered as agreed upon, and any alterations made by your side will be deemed invalid.</p>
+                    <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
                     ${draftHtml}
                     <p>Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-                    <p><b>Note:</b> Please ensure to mention the authorized person's name and designation for clarity and completeness at service receiver section. You may write it with a pen as well, no issues with that.</p>
+                    
                     <div class="signature">
                         <div>Best regards,</div>
-                        <div>${mailName} – Relationship Manager</div>
+                        <div>${mailName} - Relationship Manager</div>
                         <div> ${mailName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601"}</div>
                         <div>Start-Up Sahay Private Limited</div>
                     </div>

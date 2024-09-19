@@ -870,7 +870,8 @@ function AddAttendance({ year, month, date, employeeData }) {
                                             <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
                                                 (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
                                                     (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" : 
-                                                    (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" :"badge-half-day"
+                                                    (attendanceDetails.status || status) === "Sunday Leave" ? "badge-Holiday" :
+                                                    (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" :"badge-Nodata"
 
                                                 }`}>
                                                 {attendanceDetails.status || status}
