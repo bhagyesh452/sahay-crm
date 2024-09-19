@@ -54,6 +54,7 @@ function CustomerForm() {
     const [relevantDocs, setRelevantDocs] = useState("");
     const [directorsDocuments, setDirectorsDocuments] = useState([]);
     const [id, setId] = useState("");
+    const [isChecked, setIsChecked] = useState(false);
 
     const fetchCompanyData = async () => {
         try {
@@ -109,6 +110,10 @@ function CustomerForm() {
         IsMainDirector: false,
     };
 
+    const handleCheckboxChange = () =>{
+        setIsChecked(!isChecked);
+    };
+    
     const [formData, setFormData] = useState({
         CompanyName: localStorage.getItem("companyName"),
         CompanyEmail: localStorage.getItem("companyEmail"),
@@ -757,6 +762,11 @@ function CustomerForm() {
                 ] = `Select Director Gender for Director ${index + 1}`;
             }
         });
+
+        if(!isChecked){
+            Swal.fire("Error!","Please accept Terms and Conditions","error");
+            return;
+        }
 
         setErrors(newErrors);
 
@@ -2515,6 +2525,11 @@ function CustomerForm() {
                                 </div>
                             </div>
                             {renderDirectorFields()}
+                        </div>
+                        
+                        <div className="mt-2">
+                            <input type="checkbox" name="condition" id="" onChange={handleCheckboxChange}/>
+                            <a href={`${secretKey}/customer/fetchTermsAndConditions`} target="_blank" className="ms-2">Yes, I Agree Terms and Conditions</a>
                         </div>
 
                         <div className="row">

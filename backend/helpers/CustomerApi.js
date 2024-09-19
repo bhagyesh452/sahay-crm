@@ -283,7 +283,7 @@ router.post('/save-company-data',
             console.error('Error saving data:', error);
             res.status(500).json({ result: false, message: 'Error saving data', error: error.message });
         }
-});
+    });
 
 // router.post('/save-company-data',
 //     upload.fields([
@@ -353,6 +353,7 @@ router.get('/fetch-company-data/:companyName', async (req, res) => {
     }
 });
 
+// Fetching customer documents :
 router.get('/fetch-documents/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -367,5 +368,24 @@ router.get('/fetch-documents/:id', async (req, res) => {
     }
 });
 
+// Fetching terms and condition documents :
+router.get("/fetchTermsAndConditions", (req, res) => {
+    const pdfPath = path.join(
+        __dirname,
+        `./src/MITC.pdf`
+    );
+    
+    console.log("PDF path is :", pdfPath);
+
+    // Check if the file exists
+    fs.access(pdfPath, fs.constants.F_OK, (err) => {
+        if (err) {
+            // console.error(err);
+            return res.status(404).json({ error: "File not found" });
+        }
+        // If the file exists, send it
+        res.sendFile(pdfPath);
+    });
+});
 
 module.exports = router;

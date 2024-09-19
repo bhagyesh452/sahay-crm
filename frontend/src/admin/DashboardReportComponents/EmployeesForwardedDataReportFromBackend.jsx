@@ -59,29 +59,38 @@ function EmployeesForwardedDataReportFromBackend() {
     const [followUpLeads, setFollowUpLeads] = useState([]);
     const [employeeTotalAmount, setEmployeeTotalAmount] = useState({});
 
+    const formatSalary = (amount) => {
+        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+    };
+
     const fetchDataFromBackend = async () => {
         try {
-            const res = await axios.get(`${secretKey}/company-data/fetchForwaredLeads`)
+            const res = await axios.get(`${secretKey}/company-data/fetchForwaredLeads`);
             setBackendData(res.data);
-            console.log("Data from backend :", res.data);
+            // console.log("Data from backend :", res.data);
 
             const stats = {};
 
             res.data.forEach(item => {
-                const { ename, bdmName } = item._id;
-                const count = item.count;
-
-                // Update forwarded cases (ename)
-                if (!stats[ename]) {
-                    stats[ename] = { forwarded: 0, received: 0 };
+                const { name, forwardedCases, receivedCases, designation, branchOffice } = item;
+                
+                // Update forwarded cases for BDEs
+                if (designation === "BDE") {
+                    if (!stats[name]) {
+                        stats[name] = { forwarded: 0, received: 0 };
+                    }
+                    stats[name].forwarded += forwardedCases;
+                    stats[name].branchOffice = branchOffice;
                 }
-                stats[ename].forwarded += count;
 
-                // Update received cases (bdmName)
-                if (!stats[bdmName]) {
-                    stats[bdmName] = { forwarded: 0, received: 0 };
+                // Update received cases for BDMs
+                if (designation === "BDM") {
+                    if (!stats[name]) {
+                        stats[name] = { forwarded: 0, received: 0 };
+                    }
+                    stats[name].received += receivedCases;
+                    stats[name].branchOffice = branchOffice;
                 }
-                stats[bdmName].received += count;
             });
 
             setEmployeeStats(stats);
@@ -94,7 +103,7 @@ function EmployeesForwardedDataReportFromBackend() {
         try {
             const res = await axios.get(`${secretKey}/company-data/fetchForwardedLeadsAmount`);
             setFollowUpLeads(res.data);
-            console.log("Follow up data from backend :", res.data);
+            // console.log("Follow up data from backend :", res.data);
 
             const totalAmountData = {};
 
@@ -1528,6 +1537,7 @@ function EmployeesForwardedDataReportFromBackend() {
                                     <tr>
                                         <th>Sr.No</th>
                                         <th>BDE/BDM Name</th>
+                                        <th>Branch Name</th>
                                         <th>Forwarded Cases</th>
                                         <th>Received Cases</th>
                                         <th>Forwarded Case Projection</th>
@@ -1544,10 +1554,11 @@ function EmployeesForwardedDataReportFromBackend() {
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
                                                 <td>{name}</td>
-                                                <td>{stats.forwarded}</td>
-                                                <td>{stats.received}</td>
-                                                <td>{`₹ ${projectionData.forwardedProjection.toFixed(2)}` || '₹ 0'}</td>
-                                                <td>{`₹ ${projectionData.receivedProjection.toFixed(2)}` || '₹ 0'}</td>
+                                                <td>{stats.branchOffice}</td>
+                                                <td>{stats.forwarded || '0'}</td>
+                                                <td>{stats.received || '0'}</td>
+                                                <td>{`₹ ${formatSalary(projectionData.forwardedProjection.toFixed(2))}` || '₹ 0'}</td>
+                                                <td>{`₹ ${formatSalary(projectionData.receivedProjection.toFixed(2))}` || '₹ 0'}</td>
                                                 <td>-</td>
                                                 <td>-</td>
                                             </tr>
