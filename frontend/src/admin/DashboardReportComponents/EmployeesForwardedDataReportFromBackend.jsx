@@ -56,6 +56,8 @@ function EmployeesForwardedDataReportFromBackend() {
     const [bdeResegnedData, setBdeRedesignedData] = useState([])
     const [backendData, setBackendData] = useState([]);
     const [employeeStats, setEmployeeStats] = useState({});
+    const [followUpLeads, setFollowUpLeads] = useState([]);
+    const [employeeTotalAmount, setEmployeeTotalAmount] = useState({});
 
     const fetchDataFromBackend = async () => {
         try {
@@ -88,10 +90,41 @@ function EmployeesForwardedDataReportFromBackend() {
         }
     };
 
+    const fetchForwardedLeadsData = async () => {
+        try {
+            const res = await axios.get(`${secretKey}/company-data/fetchForwardedLeadsAmount`);
+            setFollowUpLeads(res.data);
+            console.log("Follow up data from backend :", res.data);
+
+            const totalAmountData = {};
+
+            // Process each entry from the backend
+            res.data.forEach((item) => {
+                const { name, designation, totalAmount } = item;
+
+                // Initialize the object for the employee if it doesn't exist
+                if (!totalAmountData[name]) {
+                    totalAmountData[name] = { forwardedProjection: 0, receivedProjection: 0 };
+                }
+
+                // Add the total amount to either forwarded or received projection
+                if (designation === "BDE") {
+                    totalAmountData[name].forwardedProjection += totalAmount;
+                } else if (designation === "BDM") {
+                    totalAmountData[name].receivedProjection += totalAmount;
+                }
+            });
+
+            setEmployeeTotalAmount(totalAmountData);
+        } catch (error) {
+            console.log("Error fetching follow up data:", error);
+        }
+    };
+
     useEffect(() => {
         fetchDataFromBackend();
+        fetchForwardedLeadsData();
     }, []);
-
 
     // --------------------------date formats--------------------------------------------
     function formatDateFinal(timestamp) {
@@ -1497,17 +1530,29 @@ function EmployeesForwardedDataReportFromBackend() {
                                         <th>BDE/BDM Name</th>
                                         <th>Forwarded Cases</th>
                                         <th>Received Cases</th>
+                                        <th>Forwarded Case Projection</th>
+                                        <th>Recieved Case Projection</th>
+                                        <th>Matured Cases</th>
+                                        <th>Generated Revenue</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {Object.entries(employeeStats).map(([name, stats], index) => (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{name}</td>
-                                            <td>{stats.forwarded}</td>
-                                            <td>{stats.received}</td>
-                                        </tr>
-                                    ))}
+                                    {Object.entries(employeeStats).map(([name, stats], index) => {
+                                        const projectionData = employeeTotalAmount[name] || { forwardedProjection: 0, receivedProjection: 0 };
+
+                                        return (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{name}</td>
+                                                <td>{stats.forwarded}</td>
+                                                <td>{stats.received}</td>
+                                                <td>{`₹ ${projectionData.forwardedProjection.toFixed(2)}` || '₹ 0'}</td>
+                                                <td>{`₹ ${projectionData.receivedProjection.toFixed(2)}` || '₹ 0'}</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
