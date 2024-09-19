@@ -86,7 +86,7 @@ function CallingReportView({ employeeInformation }) {
     };
     const fetchEmployeeInfo = async () => {
         try {
-            setLoading(true);
+            //setLoading(true);
 
             // Fetch data using fetch and axios
             const response = await fetch(`${secretKey}/employee/einfo`);
@@ -123,9 +123,7 @@ function CallingReportView({ employeeInformation }) {
 
         } catch (error) {
             console.error(`Error Fetching Employee Data `, error);
-        } finally {
-            setLoading(false);
-        }
+        } 
     };
     useEffect(() => {
         fetchEmployeeInfo()
@@ -236,6 +234,10 @@ function CallingReportView({ employeeInformation }) {
 
         return totalSeconds >= targetSeconds ? "Achieved" : "Failed";
     }
+    const formatDateToDDMMYYYY = (date) => {
+        const [year, month, day] = date.split('-');
+        return `${day}-${month}-${year}`;
+    };
 
 
     return (
@@ -274,17 +276,21 @@ function CallingReportView({ employeeInformation }) {
                             </tr>
                         </thead>
                         {loading ? (
-                            <tbody>
-                                <div className="LoaderTDSatyle w-100">
-                                    <ClipLoader
-                                        color="lightgrey"
-                                        loading={true}
-                                        size={30}
-                                        aria-label="Loading Spinner"
-                                        data-testid="loader"
-                                    />
-                                </div>
-                            </tbody>
+                           <tbody>
+                           <tr>
+                             <td colSpan="7" >
+                               <div className="LoaderTDSatyle w-100" >
+                                 <ClipLoader
+                                   color="lightgrey"
+                                   loading
+                                   size={30}
+                                   aria-label="Loading Spinner"
+                                   data-testid="loader"
+                                 />
+                               </div>
+                             </td>
+                           </tr>
+                         </tbody>
                         ) : dailyData && dailyData.length !== 0 ?
                             (<tbody>
                                 {dailyData.map((item, index) => {
@@ -294,7 +300,7 @@ function CallingReportView({ employeeInformation }) {
                                     return (
                                         <tr>
                                             <td>{index + 1}</td>
-                                            <td>{item.date}</td>
+                                            <td>{formatDateToDDMMYYYY(item.date)}</td>
                                             <td>{item.total_unique_clients}</td>
                                             <td>{item.total_calls}</td>
                                             <td>{convertSecondsToHMS(item.total_duration)}</td>
