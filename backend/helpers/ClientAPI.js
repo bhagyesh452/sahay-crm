@@ -1336,7 +1336,7 @@ router.put(
                                     <div style="height: 100%;font-size:12px;">Director's Passport Size Photo</div>
                                 </div>
                                 <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
-                                    <div style="height: 100%;font-size:12px;">${DirectorPassportPhoto[index].originalname
+                                    <div style="height: 100%;font-size:12px;">${DirectorPassportPhoto[index]?.originalname
             }</div>
                                 </div>
                             </div>
@@ -1345,7 +1345,7 @@ router.put(
                                     <div style="height: 100%;font-size:12px;">Director's Aadhaar Card </div>
                                 </div>
                                 <div style="width: 70%;align-self: stretch;border: 1px solid #ccc; padding: 8px;background: #fff;">
-                                    <div style="height: 100%;font-size:12px;">${DirectorAdharCard[index].originalname
+                                    <div style="height: 100%;font-size:12px;">${DirectorAdharCard[index]?.originalname
             }</div>
                                 </div>
                             </div>

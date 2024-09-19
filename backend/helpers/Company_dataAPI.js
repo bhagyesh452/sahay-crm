@@ -2127,6 +2127,73 @@ router.get("/fetchLeads", async (req, res) => {
 // });
 
 
+// router.get("/fetchForwaredLeads", async (req, res) => {
+//   try {
+//     const data = await CompanyModel.aggregate([
+//       {
+//         $match: {
+//           ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
+//           bdmAcceptStatus: { $in: ["Accept", "Pending"] } // Match "Accept" or "Pending" status
+//         },
+//       },
+//       // Join with Employee collection for 'ename'
+//       {
+//         $lookup: {
+//           from: "newemployeeinfos", // Employee collection
+//           localField: "ename", // CompanyModel's 'ename'
+//           foreignField: "ename", // newemployeeinfos' 'ename'
+//           as: "employeeDetailsEname" // Output field for joined data from 'ename'
+//         }
+//       },
+//       // Unwind the employeeDetailsEname array to access individual employee details for 'ename'
+//       {
+//         $unwind: "$employeeDetailsEname"
+//       },
+//       // Join with Employee collection for 'bdmName'
+//       {
+//         $lookup: {
+//           from: "newemployeeinfos", // Employee collection
+//           localField: "bdmName", // CompanyModel's 'bdmName'
+//           foreignField: "ename", // newemployeeinfos' 'ename' (assuming the BDM's name is stored as 'ename')
+//           as: "employeeDetailsBdmName" // Output field for joined data from 'bdmName'
+//         }
+//       },
+//       // Unwind the employeeDetailsBdmName array to access individual employee details for 'bdmName'
+//       {
+//         $unwind: "$employeeDetailsBdmName"
+//       },
+//       // Filter only Sales Executive and Sales Manager designations for both ename and bdmName
+//       {
+//         $match: {
+//           $or: [
+//             { "employeeDetailsEname.designation": { $in: ["Sales Executive", "Sales Manager"] } },
+//             { "employeeDetailsBdmName.designation": { $in: ["Sales Executive", "Sales Manager"] } }
+//           ]
+//         }
+//       },
+//       // Group by ename and bdmName and count occurrences
+//       {
+//         $group: {
+//           _id: {
+//             ename: "$ename",
+//             bdmName: "$bdmName",
+//           },
+//           count: { $sum: 1 } // Count occurrences for each pair
+//         },
+//       },
+//       // Optional sorting by count
+//       // {
+//       //   $sort: { count: -1 } // Sort by count in descending order
+//       // }
+//     ]);
+
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 router.get("/fetchForwaredLeads", async (req, res) => {
   try {
     const data = await CompanyModel.aggregate([
@@ -2134,7 +2201,7 @@ router.get("/fetchForwaredLeads", async (req, res) => {
         $match: {
           ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
           bdmAcceptStatus: { $in: ["Accept", "Pending"] } // Match "Accept" or "Pending" status
-        },
+        }
       },
       // Join with Employee collection for 'ename'
       {
@@ -2145,30 +2212,13 @@ router.get("/fetchForwaredLeads", async (req, res) => {
           as: "employeeDetailsEname" // Output field for joined data from 'ename'
         }
       },
-      // Unwind the employeeDetailsEname array to access individual employee details for 'ename'
-      {
-        $unwind: "$employeeDetailsEname"
-      },
       // Join with Employee collection for 'bdmName'
       {
         $lookup: {
           from: "newemployeeinfos", // Employee collection
           localField: "bdmName", // CompanyModel's 'bdmName'
-          foreignField: "ename", // newemployeeinfos' 'ename' (assuming the BDM's name is stored as 'ename')
+          foreignField: "ename", // newemployeeinfos' 'ename'
           as: "employeeDetailsBdmName" // Output field for joined data from 'bdmName'
-        }
-      },
-      // Unwind the employeeDetailsBdmName array to access individual employee details for 'bdmName'
-      {
-        $unwind: "$employeeDetailsBdmName"
-      },
-      // Filter only Sales Executive and Sales Manager designations for both ename and bdmName
-      {
-        $match: {
-          $or: [
-            { "employeeDetailsEname.designation": { $in: ["Sales Executive", "Sales Manager"] } },
-            { "employeeDetailsBdmName.designation": { $in: ["Sales Executive", "Sales Manager"] } }
-          ]
         }
       },
       // Group by ename and bdmName and count occurrences
@@ -2177,17 +2227,53 @@ router.get("/fetchForwaredLeads", async (req, res) => {
           _id: {
             ename: "$ename",
             bdmName: "$bdmName",
+            branchOfficeBDE: "$employeeDetailsEname.branchOffice", // Get branchOffice for BDE
+            branchOfficeBDM: "$employeeDetailsBdmName.branchOffice" // Get branchOffice for BDM
           },
-          count: { $sum: 1 } // Count occurrences for each pair
-        },
+          forwardedCount: { $sum: { $cond: [{ $ne: [{ $size: "$employeeDetailsEname" }, 0] }, 1, 0] } },
+          receivedCount: { $sum: { $cond: [{ $ne: [{ $size: "$employeeDetailsBdmName" }, 0] }, 1, 0] } }
+        }
       },
-      // Optional sorting by count
-      // {
-      //   $sort: { count: -1 } // Sort by count in descending order
-      // }
+      // Group by 'ename' and 'bdmName' to accumulate counts
+      {
+        $group: {
+          _id: {
+            ename: "$_id.ename",
+            bdmName: "$_id.bdmName",
+            branchOfficeBDE: "$_id.branchOfficeBDE",
+            branchOfficeBDM: "$_id.branchOfficeBDM"
+          },
+          forwardedCases: { $sum: "$forwardedCount" },
+          receivedCases: { $sum: "$receivedCount" }
+        }
+      },
+      // Prepare the final output
+      {
+        $project: {
+          _id: 0,
+          bdeName: "$_id.ename",
+          bdmName: "$_id.bdmName",
+          branchOfficeBDE: "$_id.branchOfficeBDE", // Include branchOffice for BDE
+          branchOfficeBDM: "$_id.branchOfficeBDM", // Include branchOffice for BDM
+          forwardedCases: 1,
+          receivedCases: 1
+        }
+      }
     ]);
 
-    res.send(data);
+    // Format the data to include designation information
+    const formattedData = data.map((item) => {
+      let result = [];
+      if (item.bdeName && item.forwardedCases !== 0) {
+        result.push({ name: item.bdeName, forwardedCases: item.forwardedCases, designation: "BDE", branchOffice: item.branchOfficeBDE[0] });
+      }
+      if (item.bdmName && item.receivedCases !== 0) {
+        result.push({ name: item.bdmName, receivedCases: item.receivedCases, designation: "BDM", branchOffice: item.branchOfficeBDM[0] });
+      }
+      return result;
+    }).flat();
+
+    res.send(formattedData);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
@@ -2252,9 +2338,6 @@ router.get("/fetchForwardedLeadsAmount", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
-
 
 
 module.exports = router;
