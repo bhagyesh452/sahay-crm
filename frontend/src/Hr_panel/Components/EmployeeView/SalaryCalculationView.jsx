@@ -135,11 +135,11 @@ function SalaryCalculationView() {
                 </div>
                 <div className='col-6 mt-3'>
                     <div className='bdr-btm-eee pb-2'>
-                        <h4 className='slry-cal-view-hdr mb-1'>Contributions</h4>
+                        <h4 className='slry-cal-view-hdr mb-1'>Deductions</h4>
                         <div className='slry-cal-view-dtl'>
                             <div className='d-flex align-items-center justify-content-between'>
                                 <div className='slry-cal-view-dtl-h'>
-                                    <p className='m-0'>PF Employee</p>
+                                    <p className='m-0'>Calling Leave / Late Coming</p>
                                 </div>
                                 <div className='slry-cal-view-dtl-b'>
                                     <p className='m-0'>₹ 1,737.00</p>
@@ -147,7 +147,7 @@ function SalaryCalculationView() {
                             </div>
                             <div className='d-flex align-items-center justify-content-between'>
                                 <div className='slry-cal-view-dtl-h'>
-                                    <p className='m-0'>PF - Employer</p>
+                                    <p className='m-0'>Unpaid Leave</p>
                                 </div>
                                 <div className='slry-cal-view-dtl-b'>
                                     <p className='m-0'>₹ 1,737.00</p>
@@ -155,7 +155,7 @@ function SalaryCalculationView() {
                             </div>
                             <div className='d-flex align-items-center justify-content-between'>
                                 <div className='slry-cal-view-dtl-h'>
-                                    <p className='m-0'><b>Total Contributions (B)</b></p>
+                                    <p className='m-0'><b>Total Deduction</b></p>
                                 </div>
                                 <div className='slry-cal-view-dtl-b'>
                                     <p className='m-0'><b>₹ 3,474.00</b></p>

@@ -556,7 +556,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                         } else if (
                             prevDayStatus === "Present" || nextDayStatus === "Present"
                         ) {
-                            status = "Sunday Present"; // Sunday Present
+                            status = "Sunday"; // Sunday Present
                         } else {
                             status = "Sunday"; // Regular Sunday
                         }

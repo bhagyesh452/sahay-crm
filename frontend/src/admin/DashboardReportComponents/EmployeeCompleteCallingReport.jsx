@@ -67,28 +67,28 @@ function EmployeeCompleteCallingReport() {
     const fieldRefs = useRef({});
     const [noOfAvailableData, setnoOfAvailableData] = useState(0)
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
-
+    const [loading, setLoading] = useState(false)
+    const [deletedEmployeeData, setDeletedEmployeeData] = useState([])
     // --------------------------date formats--------------------------------------------
-    function formatDateFinal(timestamp) {
-        const date = new Date(timestamp);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    }
+    // function formatDateFinal(timestamp) {
+    //     const date = new Date(timestamp);
+    //     const day = date.getDate().toString().padStart(2, "0");
+    //     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    //     const year = date.getFullYear();
+    //     return `${day}/${month}/${year}`;
+    // }
 
-    function formatDateMonth(timestamp) {
-        const date = new Date(timestamp);
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-        const year = date.getFullYear();
-        return `${month}/${day}/${year}`;
-    }
+    // function formatDateMonth(timestamp) {
+    //     const date = new Date(timestamp);
+    //     const day = date.getDate().toString().padStart(2, "0");
+    //     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    //     const year = date.getFullYear();
+    //     return `${month}/${day}/${year}`;
+    // }
 
 
     //----------------------fetching employees info--------------------------------------
-    const [loading, setLoading] = useState(false)
-    const [deletedEmployeeData, setDeletedEmployeeData] = useState([])
+   
 
 
     const fetchEmployeeInfo = async () => {
@@ -135,10 +135,9 @@ function EmployeeCompleteCallingReport() {
         }
     };
     useEffect(() => {
-        //fetchRedesignedBookings();
+        
         fetchEmployeeInfo()
-        // fetchCompanyData()
-        //fetchFollowUpData();
+        
     }, []);
 
 
@@ -154,63 +153,6 @@ function EmployeeCompleteCallingReport() {
 
     let employeeArray = []
     employeeArray.push(employeeData.number);
-
-    // useEffect(() => {
-    //     const fetchEmployeeData = async () => {
-    //         const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-    //         const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-    //         const urlEmployee = 'https://api1.callyzer.co/v2/employee/get';
-
-    //         const body = {
-    //             "call_from": startTimestamp,
-    //             "call_to": endTimestamp,
-    //             "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-    //             "emp_numbers": employeeArray,
-    //             // "working_hour_from": "00:00",
-    //             // "working_hour_to": "20:59",
-    //             // "is_exclude_numbers": true
-    //         }
-
-    //         try {
-    //             setLoading(true)
-    //             const response = await fetch(url, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Authorization': `Bearer ${apiKey}`,
-    //                     'Content-Type': 'application/json'
-    //                 },
-    //                 body: JSON.stringify(body)
-    //             });
-
-    //             if (!response.ok) {
-    //                 const errorData = await response.json();
-    //                 throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-    //             }
-    //             // if (!response2.ok) {
-    //             //     const errorData = await response2.json();
-    //             //     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
-    //             // }
-    //             const data = await response.json();
-
-
-
-
-    //             setTotalCalls(data.result);
-    //             setFilteredTotalCalls(data.result)
-    //             setCompleteTotalCalls(data.result)
-
-    //             // setTotalCalls(data.result);
-    //             //console.log("data", data.result)
-
-    //         } catch (err) {
-
-    //             console.log(err)
-    //         } finally {
-    //             setLoading(false)
-    //         }
-    //     };
-    //     fetchEmployeeData();
-    // }, [employeeData]);
 
     useEffect(() => {
         const fetchEmployeeData = async () => {
