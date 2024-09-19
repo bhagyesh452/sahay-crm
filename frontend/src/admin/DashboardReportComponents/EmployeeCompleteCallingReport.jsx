@@ -433,7 +433,7 @@ function EmployeeCompleteCallingReport() {
                     call.total_calls || 0,
                     call.total_unique_clients || 0,
                     convertSecondsToHMS(call.total_duration) || '00:00:00',
-                    formatDate(call.last_call_log.synced_at) || "00:00:00"// Ensure formatDate is defined
+                    call.last_sync_req_at || "00:00:00"// Ensure formatDate is defined
                 ];
             });
 
@@ -484,7 +484,7 @@ function EmployeeCompleteCallingReport() {
                     call.total_calls || 0,
                     call.total_unique_clients || 0,
                     convertSecondsToHMS(call.total_duration) || '00:00:00',
-                    formatDate(call.last_call_log.synced_at) || "00:00:00" // Ensure formatDate is defined
+                    call.obj.last_sync_req_at || "00:00:00" // Ensure formatDate is defined
                 ];
             });
 

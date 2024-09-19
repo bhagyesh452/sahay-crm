@@ -205,9 +205,10 @@ function CallingReportView({ employeeInformation }) {
         if (employeeInformation.number) {
             const startDate = new Date(); // Set your desired start date
             startDate.setDate(1); // Set to the first day of the month
-            const endDate = new Date(startDate);
-            endDate.setMonth(endDate.getMonth() + 1);
-            endDate.setDate(0); // Set to the last day of the month
+            const endDate = new Date(); // Set to today's date (current date)
+            // const endDate = new Date(startDate);
+            // endDate.setMonth(endDate.getMonth() + 1);
+            // endDate.setDate(0); // Set to the last day of the month
 
             fetchMonthlyData(startDate, endDate);
         }

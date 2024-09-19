@@ -169,7 +169,7 @@ function EmployeeDataReport() {
         setMergedDataForFilter(merged); // Update mergedData state
     };
 
-    console.log("mergedData", mergedData)
+    // console.log("mergedData", mergedData)
     //const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 
     useEffect(() => {
@@ -1707,7 +1707,7 @@ function EmployeeDataReport() {
                                                 )}
                                             </div>
                                         </th>
-                                        <th
+                                        {/* <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let newSortType;
@@ -1742,8 +1742,8 @@ function EmployeeDataReport() {
                                                     />
                                                 </div>
                                             </div>
-                                        </th>
-                                        {/* <th>
+                                        </th> */}
+                                        <th>
                                             <div className='d-flex align-items-center justify-content-center position-relative'>
                                                 <div ref={el => fieldRefs.current['Untouched'] = el}>
                                                     Untouched
@@ -1783,7 +1783,7 @@ function EmployeeDataReport() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </th> */}
+                                        </th>
                                         <th
                                             style={{ cursor: "pointer" }}
                                             onClick={(e) => {

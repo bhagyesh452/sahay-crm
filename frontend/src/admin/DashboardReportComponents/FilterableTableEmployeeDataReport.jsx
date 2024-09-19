@@ -126,224 +126,86 @@ const FilterableTableEmployeeDataReport = ({
     };
 
     const applyFilters = (filters, column) => {
-        // Ensure filters is always an object
         const safeFilters = filters || {};
-        let dataToSort;
-
-        // Combine all filters across different filter fields
-        const allSelectedFilters = Object.values(safeFilters).flat();
-
-        // Function to get status counts for the specified status
+        let dataToSort = filteredData && filteredData.length !== 0 ? [...filteredData] : [...dataForFilter];
+    
+        // Function to get status count for a specific company and status
         const getStatusCount = (companyInfo, status) => {
             const statusObj = companyInfo?.statusCounts?.find(statusObj => statusObj.status === status);
             return statusObj ? statusObj.count : null;
         };
-
-        // Start with the data to be filtered
-        if (filteredData && filteredData.length !== 0) {
-            dataToSort = filteredData.map(item => ({ ...item }));
-
-            // Apply filters if there are selected filters
-            if (allSelectedFilters.length > 0) {
-                allFilterFields(prevFields => [...prevFields, column]);
-
-                dataToSort = dataToSort.filter(employee => {
-                    const companyInfo = companyData.find(company => company._id === employee.ename);
-
-                    const match = Object.keys(safeFilters).every(column => {
-                        const columnFilters = safeFilters[column];
-
-                        // Special handling for each status
-                        switch (column) {
-                            case 'Untouched': {
-                                const untouchedCount = getStatusCount(companyInfo, 'Untouched');
-                                return columnFilters.includes(String(untouchedCount));
-                            }
-                            case 'Busy': {
-                                const busyCount = getStatusCount(companyInfo, 'Busy');
-                                return columnFilters.includes(String(busyCount));
-                            }
-                            case 'Not Picked Up': {
-                                const notPickedUpCount = getStatusCount(companyInfo, 'Not Picked Up');
-                                return columnFilters.includes(String(notPickedUpCount));
-                            }
-                            case 'Interested': {
-                                const interestedCount = getStatusCount(companyInfo, 'Interested');
-                                return columnFilters.includes(String(interestedCount));
-                            }
-                            case 'Followup': {
-                                const followupCount = getStatusCount(companyInfo, 'Followup');
-                                return columnFilters.includes(String(followupCount));
-                            }
-                            case 'Junk': {
-                                const junkCount = getStatusCount(companyInfo, 'Junk');
-                                return columnFilters.includes(String(junkCount));
-                            }
-                            case 'Matured': {
-                                const maturedCount = getStatusCount(companyInfo, 'Matured');
-                                return columnFilters.includes(String(maturedCount));
-                            }
-                            default: {
-                                return columnFilters.includes(String(employee[column]));
-                            }
+    
+        // Apply filters if any are selected
+        if (Object.keys(safeFilters).length > 0) {
+            allFilterFields(prevFields => [...prevFields, column]);
+    
+            dataToSort = dataToSort.filter(employee => {
+                const companyInfo = companyData.find(company => company._id === employee.ename);
+                return companyInfo && Object.keys(safeFilters).every(column => {
+                    const columnFilters = safeFilters[column];
+    
+                    // Special handling for statuses
+                    switch (column) {
+                        case 'Untouched':
+                        case 'Busy':
+                        case 'Not Picked Up':
+                        case 'Interested':
+                        case 'Followup':
+                        case 'Junk':
+                        case 'Matured': {
+                            const count = getStatusCount(companyInfo, column);
+                            return columnFilters.includes(String(count));
                         }
-                    });
-
-                    return match;
-                });
-            }
-
-            // Apply sorting based on `sortOrder` and the specified `column`
-            if (sortOrder && column) {
-                dataToSort = dataToSort.sort((a, b) => {
-                    let valueA, valueB;
-
-                    // Compute status counts for sorting
-                    const getCountForSort = (item) => {
-                        switch (column) {
-                            case 'UntouchedCount':
-                                return getStatusCount(item.ename, 'Untouched');
-                            case 'BusyCount':
-                                return getStatusCount(item.ename, 'Busy');
-                            case 'NotPickedUpCount':
-                                return getStatusCount(item.ename, 'Not Picked Up');
-                            case 'InterestedCount':
-                                return getStatusCount(item.ename, 'Interested');
-                            case 'FollowupCount':
-                                return getStatusCount(item.ename, 'Followup');
-                            case 'JunkCount':
-                                return getStatusCount(item.ename, 'Junk');
-                            case 'MaturedCount':
-                                return getStatusCount(item.ename, 'Matured');
-                            default:
-                                return item[column] !== undefined && item[column] !== null ? item[column] : '';
-                        }
-                    };
-
-                    valueA = getCountForSort(a);
-                    valueB = getCountForSort(b);
-
-                    // Handle string sorting
-                    if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'ascending'
-                            ? valueA.localeCompare(valueB)
-                            : valueB.localeCompare(valueA);
+                        default:
+                            return columnFilters.includes(String(employee[column]));
                     }
-                    // Handle number sorting
-                    else if (typeof valueA === 'number' && typeof valueB === 'number') {
-                        return sortOrder === 'ascending'
-                            ? valueA - valueB
-                            : valueB - valueA;
-                    }
-                    // Handle any other type (as a fallback)
-                    return 0;
                 });
-            }
-
-        } else {
-            dataToSort = dataForFilter.map(item => ({ ...item }));
-
-            // Apply filters if there are selected filters
-            if (allSelectedFilters.length > 0) {
-                allFilterFields(prevFields => [...prevFields, column]);
-
-                dataToSort = dataToSort.filter(employee => {
-                    const companyInfo = companyData.find(company => company._id === employee.ename);
-
-                    const match = Object.keys(safeFilters).every(column => {
-                        const columnFilters = safeFilters[column];
-
-                        // Special handling for each status
-                        switch (column) {
-                            case 'Untouched': {
-                                const untouchedCount = getStatusCount(companyInfo, 'Untouched');
-                                return columnFilters.includes(String(untouchedCount));
-                            }
-                            case 'Busy': {
-                                const busyCount = getStatusCount(companyInfo, 'Busy');
-                                return columnFilters.includes(String(busyCount));
-                            }
-                            case 'Not Picked Up': {
-                                const notPickedUpCount = getStatusCount(companyInfo, 'Not Picked Up');
-                                return columnFilters.includes(String(notPickedUpCount));
-                            }
-                            case 'Interested': {
-                                const interestedCount = getStatusCount(companyInfo, 'Interested');
-                                return columnFilters.includes(String(interestedCount));
-                            }
-                            case 'Followup': {
-                                const followupCount = getStatusCount(companyInfo, 'Followup');
-                                return columnFilters.includes(String(followupCount));
-                            }
-                            case 'Junk': {
-                                const junkCount = getStatusCount(companyInfo, 'Junk');
-                                return columnFilters.includes(String(junkCount));
-                            }
-                            case 'Matured': {
-                                const maturedCount = getStatusCount(companyInfo, 'Matured');
-                                return columnFilters.includes(String(maturedCount));
-                            }
-                            default: {
-                                return columnFilters.includes(String(employee[column]));
-                            }
-                        }
-                    });
-
-                    return match;
-                });
-            }
-
-            // Apply sorting based on `sortOrder` and the specified `column`
-            if (sortOrder && column) {
-                dataToSort = dataToSort.sort((a, b) => {
-                    let valueA, valueB;
-
-                    // Compute status counts for sorting
-                    const getCountForSort = (item) => {
-                        switch (column) {
-                            case 'UntouchedCount':
-                                return getStatusCount(item.ename, 'Untouched');
-                            case 'BusyCount':
-                                return getStatusCount(item.ename, 'Busy');
-                            case 'NotPickedUpCount':
-                                return getStatusCount(item.ename, 'Not Picked Up');
-                            case 'InterestedCount':
-                                return getStatusCount(item.ename, 'Interested');
-                            case 'FollowupCount':
-                                return getStatusCount(item.ename, 'Followup');
-                            case 'JunkCount':
-                                return getStatusCount(item.ename, 'Junk');
-                            case 'MaturedCount':
-                                return getStatusCount(item.ename, 'Matured');
-                            default:
-                                return item[column] !== undefined && item[column] !== null ? item[column] : '';
-                        }
-                    };
-
-                    valueA = getCountForSort(a);
-                    valueB = getCountForSort(b);
-
-                    // Handle string sorting
-                    if (typeof valueA === 'string' && typeof valueB === 'string') {
-                        return sortOrder === 'ascending'
-                            ? valueA.localeCompare(valueB)
-                            : valueB.localeCompare(valueA);
-                    }
-                    // Handle number sorting
-                    else if (typeof valueA === 'number' && typeof valueB === 'number') {
-                        return sortOrder === 'ascending'
-                            ? valueA - valueB
-                            : valueB - valueA;
-                    }
-                    // Handle any other type (as a fallback)
-                    return 0;
-                });
-            }
-
+            });
         }
-
-        onFilter(dataToSort); // Pass the filtered and sorted data back
+    
+        // Sorting logic
+        if (sortOrder && column) {
+            dataToSort = dataToSort.sort((a, b) => {
+                const companyA = companyData.find(company => company._id === a.ename);
+                const companyB = companyData.find(company => company._id === b.ename);
+    
+                let valueA, valueB;
+    
+                // Compute status counts for sorting
+                const getCountForSort = (company, column) => {
+                    if (!company) return '';
+                    switch (column) {
+                        case 'UntouchedCount': return getStatusCount(company, 'Untouched');
+                        case 'BusyCount': return getStatusCount(company, 'Busy');
+                        case 'NotPickedUpCount': return getStatusCount(company, 'Not Picked Up');
+                        case 'InterestedCount': return getStatusCount(company, 'Interested');
+                        case 'FollowupCount': return getStatusCount(company, 'Followup');
+                        case 'JunkCount': return getStatusCount(company, 'Junk');
+                        case 'MaturedCount': return getStatusCount(company, 'Matured');
+                        default: return company[column] !== undefined && company[column] !== null ? company[column] : '';
+                    }
+                };
+    
+                valueA = getCountForSort(companyA, column);
+                valueB = getCountForSort(companyB, column);
+    
+                // Handle sorting logic
+                if (typeof valueA === 'string' && typeof valueB === 'string') {
+                    return sortOrder === 'ascending'
+                        ? valueA.localeCompare(valueB)
+                        : valueB.localeCompare(valueA);
+                } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+                    return sortOrder === 'ascending' ? valueA - valueB : valueB - valueA;
+                } else {
+                    return 0;
+                }
+            });
+        }
+    
+        // Pass the filtered and sorted data back
+        onFilter(dataToSort);
     };
+    
 
     const handleSelectAll = () => {
         setSelectedFilters(prevFilters => {
@@ -355,7 +217,6 @@ const FilterableTableEmployeeDataReport = ({
             };
         });
     };
-    console.log("completeData", completeData)
     const handleClearAll = async () => {
         setSelectedFilters(prevFilters => ({
             ...prevFilters,
@@ -376,12 +237,15 @@ const FilterableTableEmployeeDataReport = ({
                     onClick={(e) => handleSort("oldest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
-                        filterField === "Company Number" ||
-                        filterField === "caNumber" ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
-                        filterField === "achieved" ? "Ascending" : "Sort A TO Z"}
+                    {
+                        filterField === "Untouched" ||
+                            filterField === "Not Interested" ||
+                            filterField === "Junk" ||
+                            filterField === "Interested" ||
+                            filterField === "FollowUp" ||
+                            filterField === "Matured" ?
+                            "Ascending" : "Sort A TO Z"
+                    }
                 </div>
 
                 <div
@@ -389,12 +253,15 @@ const FilterableTableEmployeeDataReport = ({
                     onClick={(e) => handleSort("newest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
-                        filterField === "Company Number" ||
-                        filterField === "caNumber" ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
-                        filterField === "achieved" ? "Descending" : "Sort Z TO A"}
+                    {
+                        filterField === "Untouched" ||
+                            filterField === "Not Interested" ||
+                            filterField === "Junk" ||
+                            filterField === "Interested" ||
+                            filterField === "FollowUp" ||
+                            filterField === "Matured" ?
+                            "Descending" : "Sort Z TO A"
+                    }
                 </div>
                 {/* <div className="inco-subFilter p-2"
                         onClick={(e) => handleSort("none")}>
