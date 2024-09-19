@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { type } = require("os");
 
 const attendanceSchema = new mongoose.Schema({
     employeeId: {
@@ -53,6 +54,10 @@ const attendanceSchema = new mongoose.Schema({
                     // enum: ['Present', 'Leave', 'Half Day'],
                     default: null 
                     // required: true
+                },
+                reasonValue:{
+                    type: String,
+                    default: null
                 }
             }]
         }]

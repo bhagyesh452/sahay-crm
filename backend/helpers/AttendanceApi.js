@@ -286,9 +286,10 @@ router.post('/addAttendance', async (req, res) => {
         inTime,
         outTime,
         workingHours,
-        status: originalStatus // Rename the incoming status to avoid conflict
+        status: originalStatus ,// Rename the incoming status to avoid conflict
+        reasonValue
     } = req.body;
-
+    const reason = reasonValue ? reasonValue : "";
     try {
         const selectedDate = new Date(attendanceDate);
         const year = selectedDate.getFullYear();
@@ -319,7 +320,8 @@ router.post('/addAttendance', async (req, res) => {
                             inTime: inTime,
                             outTime: outTime,
                             workingHours: workingHours,
-                            status: status === "LC" ? "LC1" : status // Initialize with LC1 if status is LC
+                            status: status === "LC" ? "LC1" : status ,
+                            reasonValue: reason// Initialize with LC1 if status is LC
                         }]
                     }]
                 }]
@@ -339,7 +341,8 @@ router.post('/addAttendance', async (req, res) => {
                             inTime: inTime,
                             outTime: outTime,
                             workingHours: workingHours,
-                            status: status === "LC" ? "LC1" : status // Initialize with LC1 if status is LC
+                            status: status === "LC" ? "LC1" : status ,// Initialize with LC1 if status is LC
+                            reasonValue: reason
                         }]
                     }]
                 });
@@ -355,7 +358,9 @@ router.post('/addAttendance', async (req, res) => {
                             inTime: inTime,
                             outTime: outTime,
                             workingHours: workingHours,
-                            status: status === "LC" ? "LC1" : status // Initialize with LC1 if status is LC
+                            status: status === "LC" ? "LC1" : status, // Initialize with LC1 if status is LC
+                            reasonValue: reason
+                        
                         }]
                     });
                 } else {
@@ -392,7 +397,8 @@ router.post('/addAttendance', async (req, res) => {
                             inTime: inTime,
                             outTime: outTime,
                             workingHours: workingHours,
-                            status: status
+                            status: status,
+                            reasonValue: reason
                         });
                     } else {
                         // Clear the day's attendance if the status is empty
@@ -400,6 +406,8 @@ router.post('/addAttendance', async (req, res) => {
                         dayArray.outTime = outTime;
                         dayArray.workingHours = workingHours;
                         dayArray.status = status;
+                        dayArray.reasonValue= reason;
+
                     }
                     // After clearing, re-check the number of LC statuses for the month
                     let lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
