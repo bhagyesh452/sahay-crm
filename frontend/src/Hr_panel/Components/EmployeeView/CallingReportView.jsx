@@ -27,26 +27,33 @@ function CallingReportView() {
                         <tr className="tr-sticky">
                             <th>Sr. No</th>
                             <th>Date</th>
-                            <th>Outgoing</th>
-                            <th>Incoming</th>
-                            <th>Missed</th>
-                            <th>Rejected</th>
+                            {/* <th>Outgoing</th>
+                            <th>Incoming</th> */}
                             <th>Unique Clients</th>
                             <th>Total</th>
                             <th>Call Duration</th>
+                            <th>Target</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>1</td>
                             <td>01 Jun 2024</td>
-                            <td>34 Calls</td>
-                            <td>3 Calls</td>
-                            <td>1 Calls</td>
-                            <td>0 Calls</td>
+                            <td>27 Calls</td>
+                            <td>35 Calls</td>
+                            <td>02:57:40</td>
+                            <td>02:00:00</td>
+                            <td><span className='badge badge-completed'>Achieved</span></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>01 Jun 2024</td>
                             <td>27 Calls</td>
                             <td>35 Calls</td>
                             <td>00:57:40</td>
+                            <td>02:00:00</td>
+                            <td><span className='badge badge-leave'>Failed</span></td>
                         </tr>
                     </tbody>
                 </table>
