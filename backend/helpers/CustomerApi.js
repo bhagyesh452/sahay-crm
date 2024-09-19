@@ -67,8 +67,14 @@ router.post("/send-otp", async (req, res) => {
     // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // Set expiration time (10 minutes from now)
+    const expirationTime = Date.now() + 10 * 60 * 1000; // 10 minutes in milliseconds
+
+    // Store OTP with expiration timestamp
+    otpStorage[email] = { otp, expiresAt: expirationTime };
+
     // Store OTP with email
-    otpStorage[email] = otp;
+    // otpStorage[email] = otp;
 
     // Configure nodemailer
     let transporter;
@@ -96,11 +102,39 @@ router.post("/send-otp", async (req, res) => {
 
 // Verify otp :
 router.post("/verify-otp", (req, res) => {
+    // const { email, otp } = req.body;
+
+    // if (otpStorage[email] === otp) {
+    //     // Generate JWT token
+    //     const token = jwt.sign({ email }, secretKey, { expiresIn: '1h' });
+    //     res.status(200).json({ message: 'OTP verified', token });
+    // } else {
+    //     res.status(400).send('Invalid OTP');
+    // }
+
+    // Valid otp for 10 Minutes :
     const { email, otp } = req.body;
 
-    if (otpStorage[email] === otp) {
+    const otpData = otpStorage[email];
+
+    // Check if OTP exists
+    if (!otpData) {
+        return res.status(400).send('OTP not found');
+    }
+
+    const { otp: storedOtp, expiresAt } = otpData;
+
+    // Check if the OTP has expired
+    if (Date.now() > expiresAt) {
+        delete otpStorage[email]; // Optionally remove expired OTP
+        return res.status(400).send('OTP has expired');
+    }
+
+    // Verify OTP
+    if (storedOtp === otp) {
         // Generate JWT token
         const token = jwt.sign({ email }, secretKey, { expiresIn: '1h' });
+        delete otpStorage[email]; // Optionally remove OTP after successful verification
         res.status(200).json({ message: 'OTP verified', token });
     } else {
         res.status(400).send('Invalid OTP');
@@ -374,7 +408,7 @@ router.get("/fetchTermsAndConditions", (req, res) => {
         __dirname,
         `./src/MITC.pdf`
     );
-    
+
     console.log("PDF path is :", pdfPath);
 
     // Check if the file exists

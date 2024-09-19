@@ -1953,20 +1953,6 @@ function ViewAttendance({ year, month, date }) {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <div className='row'>
-                                        {/* <div className="col-lg-3">
-                                            <div className='attendance-date-tbl'>
-                                                <label className="form-label">Employee Name</label>
-                                                <input
-                                                    type="text"
-                                                    name="empName"
-                                                    className="form-control date-f mt-1"
-                                                    placeholder="Employee name"
-                                                    value={empName}
-                                                    disabled
-                                                // onChange={(e) => handleInputChange("firstName", e.target.value)}
-                                                />
-                                            </div>
-                                        </div> */}
 
                                         <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
@@ -2018,7 +2004,7 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
                                         </div>
-                                        <div className="col-lg-1">
+                                        <div className="col-lg-1 p-0">
                                             <label className="form-label mt-5 text-center">OR</label>
                                         </div>
                                         <div className="col-lg-2">
@@ -2042,37 +2028,49 @@ function ViewAttendance({ year, month, date }) {
                                         {/* <div className="col-lg-1">
                                             <label className="form-label mt-5 text-center">=</label>
                                         </div> */}
-                                        <div className="col-lg-2">
+                                        <div className="col-lg-3">
                                             <div className='attendance-date-tbl'>
-                                                <label className="form-label">Result</label>
-                                                <div className='leavecheck'>
-                                                    <label class="checkbox-alias" for="r1">
-                                                        <div className='d-flex align-items-center justify-content-center'>
-                                                            <div>{newStatus}</div>
+                                                
+                                                <div className="d-flex align-items-center">
+                                                    <div className='eql-symbol'>
+                                                        <b>=</b>
+                                                    </div>
+                                                    <div>
+                                                        <label className="form-label">Result</label>
+                                                        <div className='leavecheck'>
+                                                            <label class="checkbox-alias" for="r1">
+                                                                <div className='d-flex align-items-center justify-content-center'>
+                                                                    <div>{newStatus}</div>
+                                                                </div>
+                                                            </label>
                                                         </div>
-                                                    </label>
-
+                                                    </div>
+                                                </div>
+                                                <div className='d-flex align-items-center overpowercheck'>
+                                                    <input
+                                                        type="checkbox"
+                                                        name="rGroup"
+                                                        value="1"
+                                                        id="r1"
+                                                        checked={openStatusSelect} // Bind checked value to state
+                                                        onChange={handleCheckboxChangeStatus} // Handle checkbox state change
+                                                    />
+                                                    <div style={{fontSize: "10px", marginLeft: "4px"}}>
+                                                        Do you want to change the status?
+                                                    </div>
                                                 </div>
 
                                             </div>
                                         </div>
-                                        <div className="col-lg-1">
-                                            <input
-                                                type="checkbox"
-                                                name="rGroup"
-                                                value="1"
-                                                id="r1"
-                                                checked={openStatusSelect} // Bind checked value to state
-                                                onChange={handleCheckboxChangeStatus} // Handle checkbox state change
-                                            />
-
-                                        </div>
                                         {
                                             openStatusSelect &&
                                             (<>
-                                                <div className='col-lg-2 mr-1'>
+                                               <div className='col-lg-12'>
+                                                <hr className='mt-3 mb-3'></hr>
+                                               </div>
+                                                <div className='col-lg-6'>
                                                     <select
-                                                        className="form-select mt-1 ml-1"
+                                                        className="form-select"
                                                         value={statusValue}
                                                         onChange={(e) => setStatusValue(e.target.value)}
                                                     >
@@ -2083,14 +2081,13 @@ function ViewAttendance({ year, month, date }) {
                                                         <option value="LC">LC</option>
                                                     </select>
                                                 </div>
-                                                <div className='col-lg-4 mr-1'>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control mt-1 ml-1"
+                                                <div className='col-lg-6'>
+                                                    <textarea
+                                                        className="form-control"
                                                         placeholder="Please Specify Reason"
-                                                        value={reasonValue}
+                                                        value={reasonValue} rows={"1"}
                                                         onChange={(e) => setReasonValue(e.target.value)}
-                                                    />
+                                                    ></textarea>
                                                 </div>
                                             </>)
                                         }

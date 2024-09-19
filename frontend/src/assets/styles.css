@@ -4161,3 +4161,13 @@ border: 1px solid #ffefc6 !important;
 div#table-default td {
   height: 28px !important;
 }
+.eql-symbol
+{
+  margin-right: 12px;
+  margin-top: 24px;
+}
+.overpowercheck
+{
+  margin-left: 24px;
+  margin-top: 6px;
+}

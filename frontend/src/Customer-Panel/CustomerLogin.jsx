@@ -11,8 +11,30 @@ function CustomerLogin() {
     const [otp, setOtp] = useState("");
     const [showOtpTextBox, setShowOtpTextBox] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [otpValidTill, setOtpValidTill] = useState(0); // Timer state in seconds
 
     const navigate = useNavigate();
+
+    const startOtpTimer = () => {
+        const expiryTime = 10 * 60; // 10 minutes in seconds
+        setOtpValidTill(expiryTime);
+
+        const timerInterval = setInterval(() => {
+            setOtpValidTill((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timerInterval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    };
+
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    };
 
     const validateEmail = (email) => {
         const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -32,8 +54,10 @@ function CustomerLogin() {
             return;
         }
 
+
         try {
             const response2 = await axios.get(`${secretKey}/customer/fetch-lead-from-email/${email}`);
+            startOtpTimer(); // Start the timer
 
             if (response2.status === 200) {
                 console.log("Fetched data is:", response2.data.data);
@@ -56,7 +80,6 @@ function CustomerLogin() {
             } else {
                 setShowOtpTextBox(false);
                 Swal.fire("Error!", "This Email is not registered...Please login through registered Email", "error");
-
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
@@ -134,6 +157,9 @@ function CustomerLogin() {
                                                     placeholder="Enter your OTP here"
                                                     autoComplete="off"
                                                 />
+                                                <p className="text-black-50 mt-1">
+                                                    OTP valid till : {otpValidTill > 0 ? formatTime(otpValidTill) : 'Expired'}
+                                                </p>
                                             </>
                                             }
                                         </div>

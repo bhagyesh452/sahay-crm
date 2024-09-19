@@ -177,7 +177,7 @@ function EmpNav({ userId, bdmWork }) {
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                       <IoNewspaperOutline style={{ height: "24px", width: "19px" }} />
                     </span>
-                    <span className="nav-link-title">Assets</span>
+                    <span className="nav-link-title">Schemes & Services</span>
                   </a>
 
                 </Link>
