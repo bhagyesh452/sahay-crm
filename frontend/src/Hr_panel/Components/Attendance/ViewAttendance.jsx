@@ -775,15 +775,18 @@ function ViewAttendance({ year, month, date }) {
                                                         }
 
                                                         // Count statuses and log each 'Present' count
-                                                        if (status === "Present" ||
+                                                        if (
+                                                            status === "Present" ||
                                                             status === "LC1" ||
                                                             status === "LC2" ||
-                                                            status === "LC3") {
+                                                            status === "LC3"
+                                                        ) {
                                                             presentCount++;
                                                             //console.log(`Present Count for ${formattedDate}: ${presentCount}`);
                                                         }
                                                         // Count LC statuses separately if LCH is present
-                                                        if (status === "LC1" ||
+                                                        if (
+                                                            status === "LC1" ||
                                                             status === "LC2" ||
                                                             status === "LC3" ||
                                                             status === "LCH"
@@ -792,7 +795,8 @@ function ViewAttendance({ year, month, date }) {
 
                                                         }
                                                         // Count LC statuses separately if LCH is present
-                                                        if (status === "LC1" ||
+                                                        if (
+                                                            status === "LC1" ||
                                                             status === "LC2" ||
                                                             status === "LC3"
                                                         ) {
