@@ -293,7 +293,7 @@ function EmployeeViewAttendance({ data }) {
                         inTime: '',
                         outTime: '',
                         workingHours: '',
-                        status: status
+                        status: status ? status : "No Data"
                     });
                 }
             }
@@ -442,12 +442,20 @@ function EmployeeViewAttendance({ data }) {
                                         </div>
                                     </td>
                                     <td>
-                                        {emp.workingHours}
+                                        {emp.workingHours ? emp.workingHours:"-" }
                                     </td>
                                     <td>
                                         <span className={`badge ${(emp.status) === "Present" ? "badge-completed" :
                                             (emp.status) === "Leave" ? "badge-under-probation" :
-                                                (emp.status) === "Half Day" ? "badge-half-day" : ""
+                                                (emp.status) === "Half Day" ? "badge-half-day" :
+                                                    (emp.status || emp.status) === "Half Day" ? "badge-half-day" :
+                                                        (emp.status ||emp.status) === "Sunday Leave" ||
+                                                        (emp.status || emp.status) === "Sunday Half Day" ||
+                                                            (emp.status || emp.status) === "Sunday" ||
+                                                            (emp.status || emp.status) === "Official Holiday Leave" ||
+                                                            (emp.status || emp.status) === "Official Holiday Half Day" ||
+                                                            (emp.status || emp.status) === "Official Holiday"? "badge-Holiday" :
+                                                            (emp.status.startsWith("LC") ||emp.status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
                                             }`}>
                                             {emp.status}
                                         </span>
