@@ -239,10 +239,10 @@ function EmployeeView() {
   const fetchEmployeeData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
-      console.log(response.data, userId);
+      // console.log(response.data, userId);
       const tempData = response.data;
       const data = tempData.find((item) => item._id === userId);
-      console.log(data);
+      // console.log(data);
       setEmployeeData(data);
 
       // set the personal details fields
@@ -1328,7 +1328,7 @@ function EmployeeView() {
                       <LeaveReportView />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="CallingReport">
-                      <CallingReportView/>
+                      <CallingReportView employeeInformation={data}/>
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
