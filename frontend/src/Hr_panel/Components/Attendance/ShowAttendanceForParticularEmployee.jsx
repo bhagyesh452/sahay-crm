@@ -588,7 +588,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                             (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
                             (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
                         ) {
-                            status = "Official Holiday Half"; // Sunday Half Day
+                            status = "Official Holiday Half Day"; // Sunday Half Day
                         } else {
                             status = "Official Holiday"; // Regular Sunday
                         }
@@ -782,6 +782,12 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                     <span className={`badge ${(status) === "Present" ? "badge-completed" :
                                                         (status) === "Leave" ? "badge-leave" :
                                                             (status) === "Half Day" ? "badge-half-day" : 
+                                                            (status) === "Sunday Leave"  || 
+                                                            (status) === "Sunday Half Day" || 
+                                                            (status) === "Sunday" ||
+                                                            (status) === "Official Holiday Leave" ||
+                                                            (status) === "Official Holiday Half Day" ||
+                                                            (status) === "Official Holiday" ? "badge-Holiday" :
                                                             (status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" :"badge-Nodata"
                                                         }`}>
                                                         {status}

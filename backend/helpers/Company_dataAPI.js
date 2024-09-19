@@ -1529,6 +1529,12 @@ router.get('/filter-employee-leads', async (req, res) => {
         $lt: new Date(new Date(selectedCompanyIncoDate).setDate(new Date(selectedCompanyIncoDate).getDate() + 1)).toISOString()
       };
     }
+    if (selectedAssignDate) {
+      baseQuery.AssignDate = {
+        $gte: new Date(selectedAssignDate).toISOString(),
+        $lt: new Date(new Date(selectedAssignDate).setDate(new Date(selectedAssignDate).getDate() + 1)).toISOString()
+      };
+    }
 
     console.log(baseQuery);
 
