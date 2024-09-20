@@ -213,7 +213,7 @@ function ViewAttendance({ year, month, date }) {
         const attendanceDetails = attendanceData[id]?.[year]?.[month]?.[day] || {};
         const status = attendanceDetails.status || "";
         const reason = attendanceDetails.reasonValue || "";
-        console.log("reason" , attendanceDetails)
+        //console.log("reason", attendanceDetails)
         const manualStatus = attendanceDetails.isAddedManually;
         setNewStatus(status)
         setReasonValue(reason);
@@ -246,7 +246,81 @@ function ViewAttendance({ year, month, date }) {
 
     const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
         let workingHours, status, reasonToSend, isAddedManually;
+        const convertToMinutes = (timeString) => {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+
+        const inTimeMinutes = convertToMinutes(inTime);
+        const outTimeMinutes = convertToMinutes(outTime);
+        const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
+        const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
+
+        const calculateWorkingHours = (inTime, outTime) => {
+            const convertToMinutes = (timeString) => {
+                const [hours, minutes] = timeString.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
+
+            const formatToHHMM = (minutes) => {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
+            };
+
+            const inTimeMinutes = convertToMinutes(inTime);
+            const outTimeMinutes = convertToMinutes(outTime);
+
+            const startBoundary = convertToMinutes("10:00"); // 10:00 AM
+            const endBoundary = convertToMinutes("18:00"); // 6:00 PM
+
+            const breakStart = convertToMinutes("13:00"); // 1:00 PM
+            const breakEnd = convertToMinutes("13:45"); // 1:45 PM
+
+
+            // Adjust inTime and outTime to respect the work boundaries
+            let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
+            let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
+
+            // Calculate working time before considering the break
+            let workingMinutes = actualOutTime - actualInTime;
+
+            // Subtract break time if inTime or outTime overlap with the break period
+            if (actualInTime < breakEnd && actualOutTime > breakStart) {
+                // If inTime is before the break end and outTime is after break start, subtract the overlap
+                const overlapStart = Math.max(actualInTime, breakStart);
+                const overlapEnd = Math.min(actualOutTime, breakEnd);
+                const breakOverlap = overlapEnd - overlapStart;
+
+                // Ensure breakOverlap is only subtracted if it's positive
+                if (breakOverlap > 0) {
+                    workingMinutes -= breakOverlap;
+                }
+            }
+
+            // Ensure working minutes don't go negative
+            if (workingMinutes < 0) {
+                workingMinutes = 0;
+            }
+
+            return workingMinutes;
+        };
+        const workingMinutes = calculateWorkingHours(inTime, outTime);
+        // Define the boundaries for the new "LC" condition
+        const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+        const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+        const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
+
+        // Convert minutes back to HH:MM format for display
+        const hours = Math.floor(workingMinutes / 60);
+        const minutes = workingMinutes % 60;
+        workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+        console.log("workingHours", workingHours)
+
+        // console.log("intimeminutes", inTimeMinutes)
+        console.log("workingminutes", workingMinutes)
         let hasError = false;
+
         if (openStatusSelect) {
             if (!statusValue) {
                 setStatusValueError("Status is required");
@@ -266,9 +340,9 @@ function ViewAttendance({ year, month, date }) {
             if (hasError) {
                 return;
             }
-            inTime = "00:00";
-            outTime = "00:00";
-            workingHours = "00:00";
+            inTime = inTime ? inTime : "00:00";
+            outTime = outTime ? outTime : "00:00";
+            workingHours = workingHours? workingHours : "00:00";
             status = statusValue;
             reasonToSend = reasonValue;
             isAddedManually = true;
@@ -293,86 +367,12 @@ function ViewAttendance({ year, month, date }) {
             if (hasError) {
                 return;
             }
-            const convertToMinutes = (timeString) => {
-                const [hours, minutes] = timeString.split(':').map(Number);
-                return hours * 60 + minutes;
-            };
-
-            const inTimeMinutes = convertToMinutes(inTime);
-            const outTimeMinutes = convertToMinutes(outTime);
-            const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
-            const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
-
             if (isOnLeave) {
                 inTime = "00:00";
                 outTime = "00:00";
                 workingHours = "00:00";
                 status = "Leave";
             } else {
-
-                const calculateWorkingHours = (inTime, outTime) => {
-                    const convertToMinutes = (timeString) => {
-                        const [hours, minutes] = timeString.split(':').map(Number);
-                        return hours * 60 + minutes;
-                    };
-
-                    const formatToHHMM = (minutes) => {
-                        const hours = Math.floor(minutes / 60);
-                        const mins = minutes % 60;
-                        return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
-                    };
-
-                    const inTimeMinutes = convertToMinutes(inTime);
-                    const outTimeMinutes = convertToMinutes(outTime);
-
-                    const startBoundary = convertToMinutes("10:00"); // 10:00 AM
-                    const endBoundary = convertToMinutes("18:00"); // 6:00 PM
-
-                    const breakStart = convertToMinutes("13:00"); // 1:00 PM
-                    const breakEnd = convertToMinutes("13:45"); // 1:45 PM
-
-
-                    // Adjust inTime and outTime to respect the work boundaries
-                    let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
-                    let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
-
-                    // Calculate working time before considering the break
-                    let workingMinutes = actualOutTime - actualInTime;
-
-                    // Subtract break time if inTime or outTime overlap with the break period
-                    if (actualInTime < breakEnd && actualOutTime > breakStart) {
-                        // If inTime is before the break end and outTime is after break start, subtract the overlap
-                        const overlapStart = Math.max(actualInTime, breakStart);
-                        const overlapEnd = Math.min(actualOutTime, breakEnd);
-                        const breakOverlap = overlapEnd - overlapStart;
-
-                        // Ensure breakOverlap is only subtracted if it's positive
-                        if (breakOverlap > 0) {
-                            workingMinutes -= breakOverlap;
-                        }
-                    }
-
-                    // Ensure working minutes don't go negative
-                    if (workingMinutes < 0) {
-                        workingMinutes = 0;
-                    }
-
-                    return workingMinutes;
-                };
-                const workingMinutes = calculateWorkingHours(inTime, outTime);
-                // Define the boundaries for the new "LC" condition
-                const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
-                const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
-                const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
-
-                // Convert minutes back to HH:MM format for display
-                const hours = Math.floor(workingMinutes / 60);
-                const minutes = workingMinutes % 60;
-                workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-                console.log("workingHours", workingHours)
-
-                // console.log("intimeminutes", inTimeMinutes)
-                console.log("workingminutes", workingMinutes)
                 if (
                     (inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
                     ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
@@ -488,7 +488,7 @@ function ViewAttendance({ year, month, date }) {
                         const { days } = monthData;
 
                         days.forEach(dayData => {
-                            const { date, inTime, outTime, workingHours, status,reasonValue,isAddedManually }= dayData;
+                            const { date, inTime, outTime, workingHours, status, reasonValue, isAddedManually } = dayData;
 
                             // Initialize year and month if not present
                             if (!attendanceMap[_id][yearData.year]) {
@@ -673,7 +673,7 @@ function ViewAttendance({ year, month, date }) {
         setOpenStatusSelect(e.target.checked); // Toggle the dropdown based on checkbox state
     };
 
-console.log(manuallyAdded);
+    //console.log(manuallyAdded);
 
     return (
         <>
@@ -931,7 +931,8 @@ console.log(manuallyAdded);
                                                             const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
                                                             const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
                                                             const newmanuallyAdded = attendanceData[emp._id]?.isAddedManually ?? attendanceDetails.isAddedManually ?? false; // Use nullish coalescing to default to false
-                                                            // console.log("newmanuallyAdded :", attendanceDetails.isAddedManually);
+                                                            const newReason = attendanceData[emp._id]?.reasonValue ?? attendanceDetails.reasonValue ?? ""; // Use nullish coalescing to default to false
+                                                            // console.log("newmanuallyAdded :",  attendanceDetails.reasonValue);
                                                             // console.log("attendanceDetails" , attendanceDetails)
 
 
@@ -939,12 +940,21 @@ console.log(manuallyAdded);
                                                                 <td key={day}>
                                                                     <div
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime, emp.ename, emp.status)}
-                                                                        className={`
-                                                                    ${status === "Present" && newmanuallyAdded === true 
-                                                                        ? "p-present OverP" // Add OverP class if isAddedManually is true
-                                                                        : status === "Present" 
-                                                                        ? "p-present" 
-                                                                        : ""}
+                                                                        title={`
+                                                                            ${status === "Present" && newmanuallyAdded === true
+                                                                                ? newReason // Add OverP class if isAddedManually is true
+                                                                                : ""}
+                                                                               ${status === "Half Day" && newmanuallyAdded === true ? newReason  :  ""}
+                                                                                    ${status === "Leave" && newmanuallyAdded === true ? newReason  : ""}
+                                                                                    ${status.startsWith("LC") && newmanuallyAdded === true ? newReason   : ""}
+                                                                                `.trim()}
+                                                                        className=
+                                                                        {`
+                                                                    ${status === "Present" && newmanuallyAdded === true
+                                                                                ? "p-present OverP" // Add OverP class if isAddedManually is true
+                                                                                : status === "Present"
+                                                                                    ? "p-present"
+                                                                                    : ""}
                                                                        ${status === "Half Day" && newmanuallyAdded === true ? "H-Halfday OverP" : status === "Half Day" ? "H-Halfday" : ""}
                                                                             ${status === "Leave" && newmanuallyAdded === true ? "l-leave OverP" : status === "Leave" ? "l-leave" : ""}
                                                                             ${status.startsWith("LC") && newmanuallyAdded === true ? "l-lc OverP" : status.startsWith("LC") ? "l-lc" : ""}
@@ -1465,17 +1475,26 @@ console.log(manuallyAdded);
                                                         const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
                                                         const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
                                                         const newmanuallyAdded = attendanceData[emp._id]?.isAddedManually ?? attendanceDetails.isAddedManually ?? false; // Use nullish coalescing to default to false
+                                                        const newReason = attendanceData[emp._id]?.reasonValue ?? attendanceDetails.reasonValue ?? ""; // Use nullish coalescing to default to false
 
                                                         return (
                                                             <td key={day}>
                                                                 <div
                                                                     onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
-                                                                    className={`
-                                                                        ${status === "Present" && newmanuallyAdded === true 
-                                                                            ? "p-present OverP" // Add OverP class if isAddedManually is true
-                                                                            : status === "Present" 
-                                                                            ? "p-present" 
+                                                                    title={`
+                                                                        ${status === "Present" && newmanuallyAdded === true
+                                                                            ? newReason // Add OverP class if isAddedManually is true
                                                                             : ""}
+                                                                           ${status === "Half Day" && newmanuallyAdded === true ? newReason  :  ""}
+                                                                                ${status === "Leave" && newmanuallyAdded === true ? newReason  : ""}
+                                                                                ${status.startsWith("LC") && newmanuallyAdded === true ? newReason   : ""}
+                                                                            `.trim()}
+                                                                    className={`
+                                                                        ${status === "Present" && newmanuallyAdded === true
+                                                                            ? "p-present OverP" // Add OverP class if isAddedManually is true
+                                                                            : status === "Present"
+                                                                                ? "p-present"
+                                                                                : ""}
                                                                            ${status === "Half Day" && newmanuallyAdded === true ? "H-Halfday OverP" : status === "Half Day" ? "H-Halfday" : ""}
                                                                                 ${status === "Leave" && newmanuallyAdded === true ? "l-leave OverP" : status === "Leave" ? "l-leave" : ""}
                                                                                 ${status.startsWith("LC") && newmanuallyAdded === true ? "l-lc OverP" : status.startsWith("LC") ? "l-lc" : ""}
