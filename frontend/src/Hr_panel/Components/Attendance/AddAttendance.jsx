@@ -728,7 +728,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                     inTime: "",
                                     outTime: "",
                                     workingHours: "",
-                                    status: ""
+                                    status: "",
                                 };
                                 const convertToMinutes = (timeString) => {
                                     const [hours, minutes] = timeString.split(':').map(Number);
@@ -736,6 +736,8 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 };
                                 const inTime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
                                 const outTime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+                                const newmanuallyAdded = attendanceData[emp._id]?.isAddedManually ?? attendanceDetails.isAddedManually ?? false; // Use nullish coalescing to default to false
+                                const newReason = attendanceData[emp._id]?.reasonValue ?? attendanceDetails.reasonValue ?? ""; // Use nullish coalescing to default to false
                                 const inTimeMinutes = convertToMinutes(inTime);
                                 const outTimeMinutes = convertToMinutes(outTime);
                                 const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
@@ -867,11 +869,22 @@ function AddAttendance({ year, month, date, employeeData }) {
                                             {attendanceDetails.workingHours || workingHours}
                                         </td>
                                         <td>
-                                            <div className='OverPStatus'>
+                                            <div
+                                                className=
+                                                {`
+                                         ${attendanceDetails.status || status === "Present" && newmanuallyAdded === true
+                                                        ? "OverPStatus" // Add OverP class if isAddedManually is true
+
+                                                        : ""}
+                                            ${attendanceDetails.status || status === "Half Day" && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                 ${attendanceDetails.status || status === "Leave" && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                 ${attendanceDetails.status || status.startsWith("LC") && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                             `.trim()}
+                                            >
                                                 <span className={`badge  ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
                                                     (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
                                                         (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" :
-                                                                (attendanceDetails.status || status) === "Sunday Leave" ||
+                                                            (attendanceDetails.status || status) === "Sunday Leave" ||
                                                                 (attendanceDetails.status || status) === "Sunday Half Day" ||
                                                                 (attendanceDetails.status || status) === "Sunday" ||
                                                                 (attendanceDetails.status || status) === "Official Holiday Leave" ||

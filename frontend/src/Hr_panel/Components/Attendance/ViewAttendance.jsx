@@ -247,7 +247,18 @@ function ViewAttendance({ year, month, date }) {
     const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
         let workingHours, status, reasonToSend, isAddedManually;
         const convertToMinutes = (timeString) => {
+            if (!timeString || typeof timeString !== 'string') {
+                console.error('Invalid time string:', timeString);
+                return null; // or handle the error as needed
+            }
+        
             const [hours, minutes] = timeString.split(':').map(Number);
+        
+            if (isNaN(hours) || isNaN(minutes)) {
+                console.error('Invalid time format:', timeString);
+                return null; // or handle the error as needed
+            }
+        
             return hours * 60 + minutes;
         };
 
@@ -258,7 +269,18 @@ function ViewAttendance({ year, month, date }) {
 
         const calculateWorkingHours = (inTime, outTime) => {
             const convertToMinutes = (timeString) => {
+                if (!timeString || typeof timeString !== 'string') {
+                    console.error('Invalid time string:', timeString);
+                    return null; // or handle the error as needed
+                }
+            
                 const [hours, minutes] = timeString.split(':').map(Number);
+            
+                if (isNaN(hours) || isNaN(minutes)) {
+                    console.error('Invalid time format:', timeString);
+                    return null; // or handle the error as needed
+                }
+            
                 return hours * 60 + minutes;
             };
 
@@ -2108,7 +2130,7 @@ function ViewAttendance({ year, month, date }) {
                                                         name="rGroup"
                                                         value="1"
                                                         id="r1"
-                                                        checked={openStatusSelect} // Bind checked value to state
+                                                        checked={manuallyAdded} // Bind checked value to state
                                                         onChange={handleCheckboxChangeStatus} // Handle checkbox state change
                                                     />
                                                     <div style={{ fontSize: "10px", marginLeft: "4px" }}>
@@ -2119,7 +2141,7 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                         </div>
                                         {
-                                            openStatusSelect &&
+                                           (manuallyAdded|| openStatusSelect) &&
                                             (<>
                                                 <div className='col-lg-12'>
                                                     <hr className='mt-3 mb-3'></hr>
