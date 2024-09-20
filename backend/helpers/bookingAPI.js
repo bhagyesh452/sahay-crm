@@ -3235,8 +3235,8 @@ router.post(
 
           // Add logic to determine the content of seedConditionalPage
           if (serviceNamesArray.length > 0) {
-          if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
-            seedConditionalPage = `
+            if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
+              seedConditionalPage = `
     <p class="Declaration_text_data">
       I, ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________.
     </p>
@@ -3263,8 +3263,8 @@ router.post(
                   <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
                 </ul>
               </div>`;
-          } else if (newData.services.length > 1 && newData.services.some(service => service.serviceName === "MSME Hackathon 4.0 Application")) {
-            seedConditionalPage = `
+            } else if (newData.services.length > 1 && newData.services.some(service => service.serviceName === "MSME Hackathon 4.0 Application")) {
+              seedConditionalPage = `
     <p class="Declaration_text_data">
       I,  ___________________________________________________________, hereby acknowledge that I have engaged with START-UP SAHAY PRIVATE LIMITED for assistance in applying for the MSME IDEA HACKATHON 4.0 scheme in the name of ____________________________________.
     </p>
@@ -3297,9 +3297,9 @@ router.post(
                   <li>Being unfamiliar with the application process, I authorize START-UP SAHAY PRIVATE LIMITED to submit the application on my behalf.</li>
                 </ul>
               </div>`;
-          } else {
-            // Default logic if none of the above conditions are met
-            seedConditionalPage = `
+            } else {
+              // Default logic if none of the above conditions are met
+              seedConditionalPage = `
    <div class="PDF_main">
     <section>
       <div class="date_div">
@@ -3341,8 +3341,9 @@ router.post(
       </div>
     </section>
   </div>`;
-          }}
-          
+            }
+          }
+
 
           const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
           const filledHtml = htmlNewTemplate
@@ -5619,8 +5620,8 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
     // Add logic to determine the content of seedConditionalPage
     if (serviceNamesArray.length > 0) {
-    if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
-      seedConditionalPage = `
+      if (newData.services.length === 1 && newData.services[0].serviceName === "MSME Hackathon 4.0 Application") {
+        seedConditionalPage = `
       <div class="PDF_main">
       <section>
        <div class="date_div">
@@ -5661,8 +5662,8 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
         </div>
         </section>
         </div>`;
-    } else if (newData.services.length > 1 && newData.services.some(service => service.serviceName === "MSME Hackathon 4.0 Application")) {
-      seedConditionalPage = `
+      } else if (newData.services.length > 1 && newData.services.some(service => service.serviceName === "MSME Hackathon 4.0 Application")) {
+        seedConditionalPage = `
       <div class="PDF_main">
     <section>
       <div class="date_div">
@@ -5709,9 +5710,9 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
         </div>
         </section>
         </div>`;
-    } else {
-      // Default logic if none of the above conditions are met
-      seedConditionalPage = `
+      } else {
+        // Default logic if none of the above conditions are met
+        seedConditionalPage = `
  <div class="PDF_main">
     <section>
       <div class="date_div">
@@ -5753,7 +5754,8 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
       </div>
     </section>
   </div>`;
-    }}
+      }
+    }
 
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
@@ -7125,6 +7127,108 @@ router.put("/updateDeletedBdmStatus/:ename", async (req, res) => {
     res.status(200).json({ message: "Updated successfully", result });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// API for fetching remaining expense report services :
+router.get("/fetchRemainingExpenseServices", async (req, res) => {
+  try {
+    const data = await RedesignedLeadformModel.aggregate([
+      {
+        $match: {
+          $or: [
+            {
+              'services.serviceName': {
+                $regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+              },
+              'services.expanse': { $exists: false }
+            },
+            {
+              'moreBookings.services.serviceName': {
+                $regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+              },
+              'moreBookings.services.expanse': { $exists: false }
+            }
+          ]
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          "Company Name": 1, // Include the company name
+          services: {
+            $map: {
+              input: {
+                $filter: {
+                  input: "$services",
+                  as: "service",
+                  cond: {
+                    $and: [
+                      { $eq: [{ $type: "$$service.serviceName" }, "string"] }, // Ensure serviceName is a string
+                      {
+                        $regexMatch: {
+                          input: "$$service.serviceName",
+                          regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+                        }
+                      },
+                      { $eq: [{ $ifNull: ["$$service.expanse", null] }, null] } // Ensure expanse does not exist
+                    ]
+                  }
+                }
+              },
+              as: "service",
+              in: {
+                serviceName: "$$service.serviceName", // Only return serviceName
+                totalAmount: "$totalAmount", // Extract totalAmount from services
+                receivedAmount: "$receivedAmount", // Extract receivedAmount from services
+                pendingAmount: "$pendingAmount" // Extract pendingAmount from services
+              }
+            }
+          },
+          moreBookings: {
+            $map: {
+              input: "$moreBookings",
+              as: "booking",
+              in: {
+                services: {
+                  $map: {
+                    input: {
+                      $filter: {
+                        input: "$$booking.services",
+                        as: "service",
+                        cond: {
+                          $and: [
+                            { $eq: [{ $type: "$$service.serviceName" }, "string"] },
+                            {
+                              $regexMatch: {
+                                input: "$$service.serviceName",
+                                regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+                              }
+                            },
+                            { $eq: [{ $ifNull: ["$$service.expanse", null] }, null] }
+                          ]
+                        }
+                      }
+                    },
+                    as: "service",
+                    in: {
+                      serviceName: "$$service.serviceName",
+                      totalAmount: "$$booking.totalAmount", // Extract totalAmount from services
+                      receivedAmount: "$$booking.receivedAmount", // Extract receivedAmount from services
+                      pendingAmount: "$$booking.pendingAmount" // Extract pendingAmount from services
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
   }
 });
 

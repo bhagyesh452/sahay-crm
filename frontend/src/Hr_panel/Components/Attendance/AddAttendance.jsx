@@ -867,20 +867,22 @@ function AddAttendance({ year, month, date, employeeData }) {
                                             {attendanceDetails.workingHours || workingHours}
                                         </td>
                                         <td>
-                                            <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
-                                                (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
-                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" :
-                                                            (attendanceDetails.status || status) === "Sunday Leave" ||
-                                                            (attendanceDetails.status || status) === "Sunday Half Day" ||
-                                                            (attendanceDetails.status || status) === "Sunday" ||
-                                                            (attendanceDetails.status || status) === "Official Holiday Leave" ||
-                                                            (attendanceDetails.status || status) === "Official Holiday Half Day" ||
-                                                            (attendanceDetails.status || status) === "Official Holiday" ? "badge-Holiday" :
-                                                            (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
+                                            <div className='OverPStatus'>
+                                                <span className={`badge  ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
+                                                    (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
+                                                        (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" :
+                                                                (attendanceDetails.status || status) === "Sunday Leave" ||
+                                                                (attendanceDetails.status || status) === "Sunday Half Day" ||
+                                                                (attendanceDetails.status || status) === "Sunday" ||
+                                                                (attendanceDetails.status || status) === "Official Holiday Leave" ||
+                                                                (attendanceDetails.status || status) === "Official Holiday Half Day" ||
+                                                                (attendanceDetails.status || status) === "Official Holiday" ? "badge-Holiday" :
+                                                                (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
 
-                                                }`}>
-                                                {attendanceDetails.status || status}
-                                            </span>
+                                                    }`}>
+                                                    {attendanceDetails.status || status}
+                                                </span>
+                                            </div>
                                         </td>
                                         {!emp.deletedDate && <td>
                                             <button type="submit" className="action-btn action-btn-primary" onClick={() =>
