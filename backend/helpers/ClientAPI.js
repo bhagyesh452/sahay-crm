@@ -1712,7 +1712,7 @@ router.put(
                   console.log("Email sent successfully");
                 }).catch((error) => {
                   console.error("Error sending email:", error);
-                });;
+                });
               }, 4000);
               //res.status(200).send('Generated Pdf Successfully');
             } catch (error) {

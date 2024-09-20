@@ -47,13 +47,13 @@ module.exports = defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-    // {
-    //   name: 'edge',
-    //   use: {
-    //     browserName: 'firefox', // Edge is based on Chromium, so use 'chromium' here
-    //     channel: 'msedge', // Specifies Microsoft Edge
-    //   },
-    // },
+    {
+      name: 'edge',
+      use: {
+        browserName: 'firefox', // Edge is based on Chromium, so use 'chromium' here
+        channel: 'msedge', // Specifies Microsoft Edge
+      },
+    },
 
     /* Test against mobile viewports. */
     // {
