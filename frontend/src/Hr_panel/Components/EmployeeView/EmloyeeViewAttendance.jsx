@@ -87,7 +87,7 @@ function EmployeeViewAttendance({ data }) {
                             yearData.months.forEach(monthData => {
                                 if (monthData.month === selectedMonth) {  // Check for the specific month
                                     monthData.days.forEach(dayData => {
-                                        const { date: dayDate, inTime, outTime, workingHours, status } = dayData;
+                                        const { date: dayDate, inTime, outTime, workingHours, status, reasonValue, isAddedManually } = dayData;
 
                                         filledDates.add(dayDate); // Add filled date to the set
 
@@ -108,7 +108,9 @@ function EmployeeViewAttendance({ data }) {
                                                 inTime,
                                                 outTime,
                                                 workingHours,
-                                                status
+                                                status,
+                                                reasonValue,
+                                                isAddedManually
                                             });
                                         }
                                     });
@@ -442,23 +444,48 @@ function EmployeeViewAttendance({ data }) {
                                         </div>
                                     </td>
                                     <td>
-                                        {emp.workingHours ? emp.workingHours:"-" }
+                                        {emp.workingHours ? emp.workingHours : "-"}
                                     </td>
                                     <td>
-                                        <span className={`badge ${(emp.status) === "Present" ? "badge-completed" :
-                                            (emp.status) === "Leave" ? "badge-under-probation" :
-                                                (emp.status) === "Half Day" ? "badge-half-day" :
-                                                    (emp.status || emp.status) === "Half Day" ? "badge-half-day" :
-                                                        (emp.status ||emp.status) === "Sunday Leave" ||
-                                                        (emp.status || emp.status) === "Sunday Half Day" ||
-                                                            (emp.status || emp.status) === "Sunday" ||
-                                                            (emp.status || emp.status) === "Official Holiday Leave" ||
-                                                            (emp.status || emp.status) === "Official Holiday Half Day" ||
-                                                            (emp.status || emp.status) === "Official Holiday"? "badge-Holiday" :
-                                                            (emp.status.startsWith("LC") ||emp.status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
-                                            }`}>
-                                            {emp.status}
-                                        </span>
+                                        <div   
+                                        className=
+                                                {`
+                                         ${(emp.status === "Present") && (emp.isAddedManually === true)? "OverPStatus" : ""}
+                                            ${(emp.status === "Half Day") && emp.isAddedManually === true ? "OverPStatus" : ""}
+                                                 ${(emp.status === "Leave") && emp.isAddedManually === true ? "OverPStatus" : ""}
+                                                 ${(emp.status.startsWith("LC")) && emp.isAddedManually === true ? "OverPStatus" : ""}
+                                             `.trim()}>
+                                            <span 
+                                             title={(() => {
+                                                if (emp.isAddedManually=== true) {
+                                                    if (( emp.status) === "Present") {
+                                                        return emp.reasonValue || "Manually marked as Present";
+                                                    } else if (( emp.status) === "Half Day") {
+                                                        return emp.reasonValue  || "Manually marked as Half Day";
+                                                    } else if (( emp.status) === "Leave") {
+                                                        return emp.reasonValue  || "Manually marked as Leave";
+                                                    } else if ((emp.status?.startsWith("LC"))) {
+                                                        return emp.reasonValue  || "Manually marked as LC (Late Complete)";
+                                                    }
+                                                }
+                                                return ""; // Default to an empty string if no condition matches
+                                            })()}
+                                            className={`badge ${(emp.status) === "Present" ? "badge-completed" :
+                                                (emp.status) === "Leave" ? "badge-under-probation" :
+                                                    (emp.status) === "Half Day" ? "badge-half-day" :
+                                                        (emp.status || emp.status) === "Half Day" ? "badge-half-day" :
+                                                            (emp.status || emp.status) === "Sunday Leave" ||
+                                                                (emp.status || emp.status) === "Sunday Half Day" ||
+                                                                (emp.status || emp.status) === "Sunday" ||
+                                                                (emp.status || emp.status) === "Official Holiday Leave" ||
+                                                                (emp.status || emp.status) === "Official Holiday Half Day" ||
+                                                                (emp.status || emp.status) === "Official Holiday" ? "badge-Holiday" :
+                                                                (emp.status.startsWith("LC") || emp.status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
+                                                }`}>
+                                                {emp.status}
+                                            </span>
+                                        </div>
+
                                     </td>
                                 </tr>
                             )
