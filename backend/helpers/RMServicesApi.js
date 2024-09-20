@@ -1297,10 +1297,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         { new: true }
       );
 
-      if (subCategoryStatus === "Approved") {
-        console.log("hello wworld");
-        runTestScript(companyName);
-      }
+      // if (subCategoryStatus === "Approved") {
+      //   console.log("hello wworld");
+      //   runTestScript(companyName);
+      // }
       //console.log("updatedcompany", updatedCompany);
       //console.log("submittedOn", submittedOn);
 
