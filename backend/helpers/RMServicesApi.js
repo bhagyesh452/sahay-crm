@@ -21,27 +21,29 @@ const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 const RMCertificationHistoryModel = require('../models/RMCerificationHistoryModel.js');
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const AdminExecutiveHistoryModel = require('../models/AdminExecutiveHistoryModel.js');
-
+//const companyName = process.env.COMPANY_NAME
 function runTestScript(companyName) {
-  //console.log("Company Name:", companyName);
+  console.log("Company Name:", companyName);
 
-  // Ensure the companyName is properly quoted to handle spaces or special characters
-  //const command = `npx playwright test C:/Users/shiva/OneDrive/Desktop/Sahay-crm/sahay-crm/backend/tests/copy.spec.js`;
+  //Ensure the companyName is properly quoted to handle spaces or special characters
+  const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
 
-  // exec(command, (error, stdout, stderr) => {
-  //   if (error) {
-  //     console.error(`Error executing script: ${error.message}`);
-  //     return;
-  //   }
-  //   if (stderr) {
-  //     console.error(`Script stderr: ${stderr}`);
-  //     return;
-  //   }
-  //   console.log(`Script stdout: ${stdout}`);
-  // });
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing script: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Script stderr: ${stderr}`);
+      return;
+    }
+    console.log(`Script stdout: ${stdout}`);
+  });
+  
 }
 
-//runTestScript("FUN BLAST INDIA LLP")
+//runTestScript(companyName)
+
 
 router.get("/redesigned-final-leadData-rm", async (req, res) => {
   try {
@@ -1554,16 +1556,16 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
         { new: true }
       );
 
-      // if(subCategoryStatus === "Approved"){
-      //   console.log("hello wworld")
-      //   runTestScript(companyName);
-      // }
-      //console.log("updatedcompany", updateCompanyRm);
+      if(subCategoryStatus === "Approved"){
+        console.log("hello world")
+        runTestScript(companyName);
+      }
+      console.log("updatedcompany", updateCompanyRm);
 
-      // if (!updatedCompany) {
-      //   console.error("Failed to save the updated document");
-      //   return res.status(400).json({ message: "Failed to save the updated document" });
-      // }
+      if (!updatedCompany) {
+        console.error("Failed to save the updated document");
+        return res.status(400).json({ message: "Failed to save the updated document" });
+      }
 
       // // Step 3: Find or create the history entry in RMCertificationHistoryModel
       let historyEntry = await AdminExecutiveHistoryModel.findOne({ ["Company Name"]: companyName, serviceName: serviceName });

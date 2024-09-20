@@ -287,9 +287,11 @@ router.post('/addAttendance', async (req, res) => {
         outTime,
         workingHours,
         status: originalStatus ,// Rename the incoming status to avoid conflict
-        reasonValue
+        reasonValue,
+        isAddedManually
     } = req.body;
     const reason = reasonValue ? reasonValue : "";
+    // console.log("req.body", req.body)
     try {
         const selectedDate = new Date(attendanceDate);
         const year = selectedDate.getFullYear();
@@ -321,7 +323,8 @@ router.post('/addAttendance', async (req, res) => {
                             outTime: outTime,
                             workingHours: workingHours,
                             status: status === "LC" ? "LC1" : status ,
-                            reasonValue: reason// Initialize with LC1 if status is LC
+                            reasonValue: reason,// Initialize with LC1 if status is LC
+                            isAddedManually:isAddedManually
                         }]
                     }]
                 }]
@@ -342,7 +345,8 @@ router.post('/addAttendance', async (req, res) => {
                             outTime: outTime,
                             workingHours: workingHours,
                             status: status === "LC" ? "LC1" : status ,// Initialize with LC1 if status is LC
-                            reasonValue: reason
+                            reasonValue: reason,
+                            isAddedManually:isAddedManually
                         }]
                     }]
                 });
@@ -359,7 +363,8 @@ router.post('/addAttendance', async (req, res) => {
                             outTime: outTime,
                             workingHours: workingHours,
                             status: status === "LC" ? "LC1" : status, // Initialize with LC1 if status is LC
-                            reasonValue: reason
+                            reasonValue: reason,
+                            isAddedManually:isAddedManually
                         
                         }]
                     });
@@ -398,7 +403,8 @@ router.post('/addAttendance', async (req, res) => {
                             outTime: outTime,
                             workingHours: workingHours,
                             status: status,
-                            reasonValue: reason
+                            reasonValue: reason,
+                            isAddedManually:isAddedManually
                         });
                     } else {
                         // Clear the day's attendance if the status is empty
@@ -407,6 +413,7 @@ router.post('/addAttendance', async (req, res) => {
                         dayArray.workingHours = workingHours;
                         dayArray.status = status;
                         dayArray.reasonValue= reason;
+                        dayArray.isAddedManually = isAddedManually !== undefined ? isAddedManually : dayArray.isAddedManually;
 
                     }
                     // After clearing, re-check the number of LC statuses for the month
@@ -441,6 +448,7 @@ router.post('/addAttendance', async (req, res) => {
 
         // Save the updated attendance record
         const savedAttendance = await attendance.save();
+        console.log(savedAttendance)
         res.status(200).json({ message: 'Attendance added/updated successfully', data: savedAttendance });
     } catch (error) {
         console.error('Error adding/updating attendance:', error);
