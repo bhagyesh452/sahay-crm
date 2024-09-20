@@ -58,6 +58,10 @@ const attendanceSchema = new mongoose.Schema({
                 reasonValue:{
                     type: String,
                     default: null
+                },
+                isAddedManually: {
+                    type: Boolean,
+                    default: false
                 }
             }]
         }]

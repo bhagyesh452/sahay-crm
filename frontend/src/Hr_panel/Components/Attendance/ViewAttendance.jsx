@@ -107,6 +107,8 @@ function ViewAttendance({ year, month, date }) {
     const [openStatusSelect, setOpenStatusSelect] = useState(false)
     const [statusValue, setStatusValue] = useState("")
     const [reasonValue, setReasonValue] = useState("")
+    const [statusValueError, setStatusValueError] = useState("")
+    const [reasonValueError, setReasonValueError] = useState("")
 
     const handleShowParticularEmployeeAttendance = (id, name) => {
         setShowAttendanceForParticularEmployee(true);
@@ -155,6 +157,8 @@ function ViewAttendance({ year, month, date }) {
         setOpenStatusSelect(false);
         setReasonValue("");
         setStatusValue("");
+        setStatusValueError("");
+        setReasonValueError("");
     };
 
     const handleCheckboxChange = (e) => {
@@ -182,7 +186,7 @@ function ViewAttendance({ year, month, date }) {
             setDisableOutTime(false);
         }
     };
-
+    const [manuallyAdded, setManuallyAdded] = useState(false)
     const handleDayClick = (day, id, empName, empId, designation, department, branch, intime, outtime, ename) => {
 
         // Format the date as "DD-MM-YYYY"
@@ -208,7 +212,13 @@ function ViewAttendance({ year, month, date }) {
 
         const attendanceDetails = attendanceData[id]?.[year]?.[month]?.[day] || {};
         const status = attendanceDetails.status || "";
+        const reason = attendanceDetails.reasonValue || "";
+        //console.log("reason", attendanceDetails)
+        const manualStatus = attendanceDetails.isAddedManually;
         setNewStatus(status)
+        setReasonValue(reason);
+        setStatusValue(status);
+        setManuallyAdded(manualStatus);
         // Disable In Time and Out Time based on status
         if (status === "Present" || status === "Leave" || status === "Half Day") {
             setDisableInTime(true);
@@ -235,35 +245,7 @@ function ViewAttendance({ year, month, date }) {
     };
 
     const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
-        let workingHours, status ,reasonToSend;
-        let hasError = false;
-        if(openStatusSelect){
-            inTime = "00:00";
-            outTime = "00:00";
-            workingHours = "00:00";
-            status = statusValue;
-            reasonToSend = reasonValue;
-        }else{
-            // Validate In Time
-        if (!inTime) {
-            setInTimeError("In Time is required");
-            hasError = true;
-        } else {
-            setInTimeError(""); // Clear the error if valid
-        }
-
-        // Validate Out Time
-        if (!outTime) {
-            setOutTimeError("Out Time is required");
-            hasError = true;
-        } else {
-            setOutTimeError(""); // Clear the error if valid
-        }
-
-        // If there's an error, do not proceed with submission
-        if (hasError) {
-            return;
-        }
+        let workingHours, status, reasonToSend, isAddedManually;
         const convertToMinutes = (timeString) => {
             const [hours, minutes] = timeString.split(':').map(Number);
             return hours * 60 + minutes;
@@ -274,89 +256,136 @@ function ViewAttendance({ year, month, date }) {
         const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
         const comparisonTimeLate = convertToMinutes("13:00"); // 1:00 PM
 
-        if (isOnLeave) {
-            inTime = "00:00";
-            outTime = "00:00";
-            workingHours = "00:00";
-            status = "Leave";
-        } else {
-
-            const calculateWorkingHours = (inTime, outTime) => {
-                const convertToMinutes = (timeString) => {
-                    const [hours, minutes] = timeString.split(':').map(Number);
-                    return hours * 60 + minutes;
-                };
-
-                const formatToHHMM = (minutes) => {
-                    const hours = Math.floor(minutes / 60);
-                    const mins = minutes % 60;
-                    return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
-                };
-
-                const inTimeMinutes = convertToMinutes(inTime);
-                const outTimeMinutes = convertToMinutes(outTime);
-
-                const startBoundary = convertToMinutes("10:00"); // 10:00 AM
-                const endBoundary = convertToMinutes("18:00"); // 6:00 PM
-
-                const breakStart = convertToMinutes("13:00"); // 1:00 PM
-                const breakEnd = convertToMinutes("13:45"); // 1:45 PM
-
-
-                // Adjust inTime and outTime to respect the work boundaries
-                let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
-                let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
-
-                // Calculate working time before considering the break
-                let workingMinutes = actualOutTime - actualInTime;
-
-                // Subtract break time if inTime or outTime overlap with the break period
-                if (actualInTime < breakEnd && actualOutTime > breakStart) {
-                    // If inTime is before the break end and outTime is after break start, subtract the overlap
-                    const overlapStart = Math.max(actualInTime, breakStart);
-                    const overlapEnd = Math.min(actualOutTime, breakEnd);
-                    const breakOverlap = overlapEnd - overlapStart;
-
-                    // Ensure breakOverlap is only subtracted if it's positive
-                    if (breakOverlap > 0) {
-                        workingMinutes -= breakOverlap;
-                    }
-                }
-
-                // Ensure working minutes don't go negative
-                if (workingMinutes < 0) {
-                    workingMinutes = 0;
-                }
-
-                return workingMinutes;
+        const calculateWorkingHours = (inTime, outTime) => {
+            const convertToMinutes = (timeString) => {
+                const [hours, minutes] = timeString.split(':').map(Number);
+                return hours * 60 + minutes;
             };
-            const workingMinutes = calculateWorkingHours(inTime, outTime);
-            // Define the boundaries for the new "LC" condition
-            const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
-            const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
-            const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
 
-            // Convert minutes back to HH:MM format for display
-            const hours = Math.floor(workingMinutes / 60);
-            const minutes = workingMinutes % 60;
-            workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-            console.log("workingHours", workingHours)
+            const formatToHHMM = (minutes) => {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${hours}:${mins < 10 ? '0' : ''}${mins}`;
+            };
 
-            // console.log("intimeminutes", inTimeMinutes)
-            console.log("workingminutes", workingMinutes)
-            if (
-                (inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
-                ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
-                status = "LC";
-            } else if (workingMinutes >= 420) { // 7 hours in minutes
-                status = "Present";
-            } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours
-                status = "Half Day";
-            } else {
-                status = "Leave";
+            const inTimeMinutes = convertToMinutes(inTime);
+            const outTimeMinutes = convertToMinutes(outTime);
+
+            const startBoundary = convertToMinutes("10:00"); // 10:00 AM
+            const endBoundary = convertToMinutes("18:00"); // 6:00 PM
+
+            const breakStart = convertToMinutes("13:00"); // 1:00 PM
+            const breakEnd = convertToMinutes("13:45"); // 1:45 PM
+
+
+            // Adjust inTime and outTime to respect the work boundaries
+            let actualInTime = Math.max(inTimeMinutes, startBoundary); // If inTime is earlier than 10 AM, consider it as 10:00
+            let actualOutTime = Math.min(outTimeMinutes, endBoundary); // If outTime is later than 6 PM, consider it as 6:00 PM
+
+            // Calculate working time before considering the break
+            let workingMinutes = actualOutTime - actualInTime;
+
+            // Subtract break time if inTime or outTime overlap with the break period
+            if (actualInTime < breakEnd && actualOutTime > breakStart) {
+                // If inTime is before the break end and outTime is after break start, subtract the overlap
+                const overlapStart = Math.max(actualInTime, breakStart);
+                const overlapEnd = Math.min(actualOutTime, breakEnd);
+                const breakOverlap = overlapEnd - overlapStart;
+
+                // Ensure breakOverlap is only subtracted if it's positive
+                if (breakOverlap > 0) {
+                    workingMinutes -= breakOverlap;
+                }
             }
-            // console.log("status", status)
-        }
+
+            // Ensure working minutes don't go negative
+            if (workingMinutes < 0) {
+                workingMinutes = 0;
+            }
+
+            return workingMinutes;
+        };
+        const workingMinutes = calculateWorkingHours(inTime, outTime);
+        // Define the boundaries for the new "LC" condition
+        const lateArrivalStart = convertToMinutes("10:01"); // 10:01 AM
+        const lateArrivalEnd = convertToMinutes("11:00");   // 11:00 AM
+        const endTimeBoundary = convertToMinutes("18:00");  // 6:00 PM
+
+        // Convert minutes back to HH:MM format for display
+        const hours = Math.floor(workingMinutes / 60);
+        const minutes = workingMinutes % 60;
+        workingHours = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+        console.log("workingHours", workingHours)
+
+        // console.log("intimeminutes", inTimeMinutes)
+        console.log("workingminutes", workingMinutes)
+        let hasError = false;
+
+        if (openStatusSelect) {
+            if (!statusValue) {
+                setStatusValueError("Status is required");
+                hasError = true;
+            } else {
+                setStatusValueError(""); // Clear the error if valid
+            }
+
+            if (!reasonValue) {
+                setReasonValueError("Reason is required");
+                hasError = true;
+            } else {
+                setReasonValueError(""); // Clear the error if valid
+            }
+
+            // If there's an error, stop the submission
+            if (hasError) {
+                return;
+            }
+            inTime = inTime ? inTime : "00:00";
+            outTime = outTime ? outTime : "00:00";
+            workingHours = workingHours? workingHours : "00:00";
+            status = statusValue;
+            reasonToSend = reasonValue;
+            isAddedManually = true;
+        } else {
+            // Validate In Time
+            if (!inTime) {
+                setInTimeError("In Time is required");
+                hasError = true;
+            } else {
+                setInTimeError(""); // Clear the error if valid
+            }
+
+            // Validate Out Time
+            if (!outTime) {
+                setOutTimeError("Out Time is required");
+                hasError = true;
+            } else {
+                setOutTimeError(""); // Clear the error if valid
+            }
+
+            // If there's an error, do not proceed with submission
+            if (hasError) {
+                return;
+            }
+            if (isOnLeave) {
+                inTime = "00:00";
+                outTime = "00:00";
+                workingHours = "00:00";
+                status = "Leave";
+            } else {
+                if (
+                    (inTimeMinutes >= lateArrivalStart && inTimeMinutes <= lateArrivalEnd && outTimeMinutes >= endTimeBoundary) || // New LC condition
+                    ((inTimeMinutes >= comparisonTimeEarly && inTimeMinutes <= comparisonTimeLate) && workingMinutes >= 420)) {
+                    status = "LC";
+                } else if (workingMinutes >= 420) { // 7 hours in minutes
+                    status = "Present";
+                } else if (workingMinutes >= 210 && workingMinutes < 420) { // 7 hours
+                    status = "Half Day";
+                } else {
+                    status = "Leave";
+                }
+                // console.log("status", status)
+            }
         }
         const payload = {
             id: id,
@@ -371,7 +400,8 @@ function ViewAttendance({ year, month, date }) {
             outTime: outTime,
             workingHours: workingHours,
             status: status,
-            reasonValue: reasonToSend ? reasonToSend : null
+            reasonValue: reasonToSend ? reasonToSend : null,
+            isAddedManually: isAddedManually,
         };
 
         setShowPopup(false);
@@ -384,6 +414,8 @@ function ViewAttendance({ year, month, date }) {
         setOpenStatusSelect(false);
         setReasonValue("");
         setStatusValue("");
+        setStatusValueError("");
+        setReasonValueError("");
         try {
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
             // console.log("Created attendance record is :", res.data);
@@ -426,6 +458,8 @@ function ViewAttendance({ year, month, date }) {
             setOpenStatusSelect(false);
             setReasonValue("");
             setStatusValue("");
+            setStatusValueError("");
+            setReasonValueError("");
             Swal.fire("Success", "Attendance Cleared Succesfully", "success");
         } catch (error) {
             console.log("Error updating attendance record", error);
@@ -454,7 +488,7 @@ function ViewAttendance({ year, month, date }) {
                         const { days } = monthData;
 
                         days.forEach(dayData => {
-                            const { date, inTime, outTime, workingHours, status } = dayData;
+                            const { date, inTime, outTime, workingHours, status, reasonValue, isAddedManually } = dayData;
 
                             // Initialize year and month if not present
                             if (!attendanceMap[_id][yearData.year]) {
@@ -470,6 +504,8 @@ function ViewAttendance({ year, month, date }) {
                                 outTime,
                                 workingHours,
                                 status,
+                                reasonValue,
+                                isAddedManually
                             };
                         });
                     });
@@ -637,8 +673,7 @@ function ViewAttendance({ year, month, date }) {
         setOpenStatusSelect(e.target.checked); // Toggle the dropdown based on checkbox state
     };
 
-    console.log("statusvalue", statusValue)
-    console.log("reasonvalue", reasonValue)
+    //console.log(manuallyAdded);
 
     return (
         <>
@@ -869,7 +904,6 @@ function ViewAttendance({ year, month, date }) {
 
                                                             const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
                                                             const { attendanceDate = formattedDate } = empAttendance;
-                                                            // console.log("empAttendance", empAttendance)
 
                                                             const currentYear = year; // Use the prop year instead of the current year
                                                             const currentMonth = month; // Use the prop month instead of the current month
@@ -893,35 +927,37 @@ function ViewAttendance({ year, month, date }) {
                                                                 workingHours: "",
                                                                 status: ""
                                                             };
-                                                            //console.log("attendancedetails" , attendanceDetails ,emp.ename)
-                                                            // if (attendanceDetails.status === "LC1" ||
-                                                            //     attendanceDetails.status === "LC2" ||
-                                                            //     attendanceDetails.status === "LC3" ||
-                                                            //     attendanceDetails.status === "LCH") lcCount++
-                                                            // if (attendanceDetails.status === "Present" ||
-                                                            //     attendanceDetails.status === "LC1" ||
-                                                            //     attendanceDetails.status === "LC2" ||
-                                                            //     attendanceDetails.status === "LC3") presentCount++;
-                                                            // if (attendanceDetails.status === "Leave") leaveCount++;
-                                                            // if (attendanceDetails.status === "Half Day" ||
-                                                            //     attendanceDetails.status === "LCH") halfDayCount++;
-
-                                                            // console.log("Emp attendance details :", attendanceDetails);
-
-
                                                             const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
                                                             const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
                                                             const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+                                                            const newmanuallyAdded = attendanceData[emp._id]?.isAddedManually ?? attendanceDetails.isAddedManually ?? false; // Use nullish coalescing to default to false
+                                                            const newReason = attendanceData[emp._id]?.reasonValue ?? attendanceDetails.reasonValue ?? ""; // Use nullish coalescing to default to false
+                                                            // console.log("newmanuallyAdded :",  attendanceDetails.reasonValue);
+                                                            // console.log("attendanceDetails" , attendanceDetails)
+
 
                                                             return (
                                                                 <td key={day}>
                                                                     <div
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime, emp.ename, emp.status)}
-                                                                        className={`
-                                                                   ${status === "Present" ? "p-present" : ""}
-                                                                       ${status === "Half Day" ? "H-Halfday" : ""}
-                                                                            ${status === "Leave" ? "l-leave" : ""}
-                                                                            ${status.startsWith("LC") ? "l-lc" : ""}
+                                                                        title={`
+                                                                            ${status === "Present" && newmanuallyAdded === true
+                                                                                ? newReason // Add OverP class if isAddedManually is true
+                                                                                : ""}
+                                                                               ${status === "Half Day" && newmanuallyAdded === true ? newReason  :  ""}
+                                                                                    ${status === "Leave" && newmanuallyAdded === true ? newReason  : ""}
+                                                                                    ${status.startsWith("LC") && newmanuallyAdded === true ? newReason   : ""}
+                                                                                `.trim()}
+                                                                        className=
+                                                                        {`
+                                                                    ${status === "Present" && newmanuallyAdded === true
+                                                                                ? "p-present OverP" // Add OverP class if isAddedManually is true
+                                                                                : status === "Present"
+                                                                                    ? "p-present"
+                                                                                    : ""}
+                                                                       ${status === "Half Day" && newmanuallyAdded === true ? "H-Halfday OverP" : status === "Half Day" ? "H-Halfday" : ""}
+                                                                            ${status === "Leave" && newmanuallyAdded === true ? "l-leave OverP" : status === "Leave" ? "l-leave" : ""}
+                                                                            ${status.startsWith("LC") && newmanuallyAdded === true ? "l-lc OverP" : status.startsWith("LC") ? "l-lc" : ""}
                                                                         `.trim()}
                                                                     >
                                                                         {status === "Present" ? "P" :
@@ -1438,17 +1474,31 @@ function ViewAttendance({ year, month, date }) {
                                                         const status = attendanceData[emp._id]?.status || attendanceDetails.status || "";
                                                         const intime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
                                                         const outtime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+                                                        const newmanuallyAdded = attendanceData[emp._id]?.isAddedManually ?? attendanceDetails.isAddedManually ?? false; // Use nullish coalescing to default to false
+                                                        const newReason = attendanceData[emp._id]?.reasonValue ?? attendanceDetails.reasonValue ?? ""; // Use nullish coalescing to default to false
 
                                                         return (
                                                             <td key={day}>
                                                                 <div
                                                                     onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime)}
+                                                                    title={`
+                                                                        ${status === "Present" && newmanuallyAdded === true
+                                                                            ? newReason // Add OverP class if isAddedManually is true
+                                                                            : ""}
+                                                                           ${status === "Half Day" && newmanuallyAdded === true ? newReason  :  ""}
+                                                                                ${status === "Leave" && newmanuallyAdded === true ? newReason  : ""}
+                                                                                ${status.startsWith("LC") && newmanuallyAdded === true ? newReason   : ""}
+                                                                            `.trim()}
                                                                     className={`
-                                                                   ${status === "Present" ? "p-present" : ""}
-                                                                       ${status === "Half Day" ? "H-Halfday" : ""}
-                                                                            ${status === "Leave" ? "l-leave" : ""}
-                                                                            ${status.startsWith("LC") ? "l-lc" : ""}
-                                                                        `.trim()}
+                                                                        ${status === "Present" && newmanuallyAdded === true
+                                                                            ? "p-present OverP" // Add OverP class if isAddedManually is true
+                                                                            : status === "Present"
+                                                                                ? "p-present"
+                                                                                : ""}
+                                                                           ${status === "Half Day" && newmanuallyAdded === true ? "H-Halfday OverP" : status === "Half Day" ? "H-Halfday" : ""}
+                                                                                ${status === "Leave" && newmanuallyAdded === true ? "l-leave OverP" : status === "Leave" ? "l-leave" : ""}
+                                                                                ${status.startsWith("LC") && newmanuallyAdded === true ? "l-lc OverP" : status.startsWith("LC") ? "l-lc" : ""}
+                                                                            `.trim()}
                                                                 >
                                                                     {status === "Present" ? "P" :
                                                                         status === "Half Day" ? "H" :
@@ -1953,20 +2003,6 @@ function ViewAttendance({ year, month, date }) {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <div className='row'>
-                                        {/* <div className="col-lg-3">
-                                            <div className='attendance-date-tbl'>
-                                                <label className="form-label">Employee Name</label>
-                                                <input
-                                                    type="text"
-                                                    name="empName"
-                                                    className="form-control date-f mt-1"
-                                                    placeholder="Employee name"
-                                                    value={empName}
-                                                    disabled
-                                                // onChange={(e) => handleInputChange("firstName", e.target.value)}
-                                                />
-                                            </div>
-                                        </div> */}
 
                                         <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
@@ -2018,14 +2054,18 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                             {outTimeError && <p className="text-danger">{outTimeError}</p>}
                                         </div>
-                                        <div className="col-lg-1">
+                                        <div className="col-lg-1 p-0">
                                             <label className="form-label mt-5 text-center">OR</label>
                                         </div>
                                         <div className="col-lg-2">
                                             <div className='attendance-date-tbl'>
                                                 <label className="form-label">On Leave</label>
                                                 <div className='leavecheck'>
-                                                    <input type="checkbox" name="rGroup" value="1" id="r1"
+                                                    <input
+                                                        type="checkbox"
+                                                        name="rGroup"
+                                                        value="1"
+                                                        id="r1"
                                                         checked={isOnLeave}
                                                         onChange={handleCheckboxChange}
                                                         disabled={disableOnLeave}
@@ -2042,55 +2082,77 @@ function ViewAttendance({ year, month, date }) {
                                         {/* <div className="col-lg-1">
                                             <label className="form-label mt-5 text-center">=</label>
                                         </div> */}
-                                        <div className="col-lg-2">
+                                        <div className="col-lg-3">
                                             <div className='attendance-date-tbl'>
-                                                <label className="form-label">Result</label>
-                                                <div className='leavecheck'>
-                                                    <label class="checkbox-alias" for="r1">
-                                                        <div className='d-flex align-items-center justify-content-center'>
-                                                            <div>{newStatus}</div>
+                                                <div className="d-flex align-items-center">
+                                                    <div className='eql-symbol'>
+                                                        <b>=</b>
+                                                    </div>
+                                                    <div>
+                                                        <label className="form-label">Result</label>
+                                                        <div className='leavecheck'>
+                                                            <label
+                                                                class="checkbox-alias"
+                                                            >
+                                                                <div
+                                                                    className='d-flex align-items-center justify-content-center'>
+                                                                    <div>{newStatus}</div>
+                                                                </div>
+                                                            </label>
                                                         </div>
-                                                    </label>
-
+                                                    </div>
+                                                </div>
+                                                <div className='d-flex align-items-center overpowercheck'>
+                                                    <input
+                                                        type="checkbox"
+                                                        name="rGroup"
+                                                        value="1"
+                                                        id="r1"
+                                                        checked={openStatusSelect} // Bind checked value to state
+                                                        onChange={handleCheckboxChangeStatus} // Handle checkbox state change
+                                                    />
+                                                    <div style={{ fontSize: "10px", marginLeft: "4px" }}>
+                                                        Do you want to change the status?
+                                                    </div>
                                                 </div>
 
                                             </div>
                                         </div>
-                                        <div className="col-lg-1">
-                                            <input
-                                                type="checkbox"
-                                                name="rGroup"
-                                                value="1"
-                                                id="r1"
-                                                checked={openStatusSelect} // Bind checked value to state
-                                                onChange={handleCheckboxChangeStatus} // Handle checkbox state change
-                                            />
-
-                                        </div>
                                         {
                                             openStatusSelect &&
                                             (<>
-                                                <div className='col-lg-2 mr-1'>
+                                                <div className='col-lg-12'>
+                                                    <hr className='mt-3 mb-3'></hr>
+                                                </div>
+                                                <div className='col-lg-6'>
                                                     <select
-                                                        className="form-select mt-1 ml-1"
+                                                        className="form-select"
                                                         value={statusValue}
-                                                        onChange={(e) => setStatusValue(e.target.value)}
+                                                        onChange={(e) => {
+                                                            setStatusValue(e.target.value)
+                                                            if (e.target.value) setStatusValueError(""); // Clear error when valid
+                                                        }}
                                                     >
                                                         <option value="" selected disabled>Select Status</option>
                                                         <option value="Present">Present</option>
-                                                        <option value="Absent">Absent</option>
+                                                        <option value="Leave">Leave</option>
                                                         <option value="Half Day">Half Day</option>
                                                         <option value="LC">LC</option>
                                                     </select>
+                                                    {statusValueError && <p className="text-danger">{statusValueError}</p>}
                                                 </div>
-                                                <div className='col-lg-4 mr-1'>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control mt-1 ml-1"
+                                                <div className='col-lg-6'>
+                                                    <textarea
+                                                        className="form-control"
                                                         placeholder="Please Specify Reason"
                                                         value={reasonValue}
-                                                        onChange={(e) => setReasonValue(e.target.value)}
-                                                    />
+                                                        rows={"1"}
+                                                        onChange={(e) => {
+                                                            setReasonValue(e.target.value)
+                                                            if (e.target.value) setReasonValueError(""); // Clear error when valid
+                                                        }}
+                                                    ></textarea>
+                                                    {reasonValueError && <p className="text-danger">{reasonValueError}</p>}
                                                 </div>
                                             </>)
                                         }
