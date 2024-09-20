@@ -2095,105 +2095,7 @@ router.get("/fetchLeads", async (req, res) => {
   }
 });
 
-// router.get("/fetchForwaredLeads", async (req, res) => {
-//   try {
-//     const data = await CompanyModel.aggregate([
-//       {
-//         $match: {
-//           ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
-//           bdmAcceptStatus: { $in: ["Accept", "Pending"] }, // Match "Accept" or "Pending" status
-//           isDeletedEmployeeCompany: false // Only include records where this is false
-//         },
-//       },
-//       {
-//         $group: {
-//           _id: {
-//             ename: "$ename",
-//             bdmName: "$bdmName",
-//           },
-//           count: { $sum: 1 } // Count occurrences for each pair
-//         },
-//       },
-//       {
-//         $sort: { count: -1 } // Optional: Sort by count in descending order
-//       }
-//     ]);
-
-//     res.send(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-
-// router.get("/fetchForwaredLeads", async (req, res) => {
-//   try {
-//     const data = await CompanyModel.aggregate([
-//       {
-//         $match: {
-//           ename: { $ne: "Not Alloted" }, // Filter out Not Alloted
-//           bdmAcceptStatus: { $in: ["Accept", "Pending"] } // Match "Accept" or "Pending" status
-//         },
-//       },
-//       // Join with Employee collection for 'ename'
-//       {
-//         $lookup: {
-//           from: "newemployeeinfos", // Employee collection
-//           localField: "ename", // CompanyModel's 'ename'
-//           foreignField: "ename", // newemployeeinfos' 'ename'
-//           as: "employeeDetailsEname" // Output field for joined data from 'ename'
-//         }
-//       },
-//       // Unwind the employeeDetailsEname array to access individual employee details for 'ename'
-//       {
-//         $unwind: "$employeeDetailsEname"
-//       },
-//       // Join with Employee collection for 'bdmName'
-//       {
-//         $lookup: {
-//           from: "newemployeeinfos", // Employee collection
-//           localField: "bdmName", // CompanyModel's 'bdmName'
-//           foreignField: "ename", // newemployeeinfos' 'ename' (assuming the BDM's name is stored as 'ename')
-//           as: "employeeDetailsBdmName" // Output field for joined data from 'bdmName'
-//         }
-//       },
-//       // Unwind the employeeDetailsBdmName array to access individual employee details for 'bdmName'
-//       {
-//         $unwind: "$employeeDetailsBdmName"
-//       },
-//       // Filter only Sales Executive and Sales Manager designations for both ename and bdmName
-//       {
-//         $match: {
-//           $or: [
-//             { "employeeDetailsEname.designation": { $in: ["Sales Executive", "Sales Manager"] } },
-//             { "employeeDetailsBdmName.designation": { $in: ["Sales Executive", "Sales Manager"] } }
-//           ]
-//         }
-//       },
-//       // Group by ename and bdmName and count occurrences
-//       {
-//         $group: {
-//           _id: {
-//             ename: "$ename",
-//             bdmName: "$bdmName",
-//           },
-//           count: { $sum: 1 } // Count occurrences for each pair
-//         },
-//       },
-//       // Optional sorting by count
-//       // {
-//       //   $sort: { count: -1 } // Sort by count in descending order
-//       // }
-//     ]);
-
-//     res.send(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
+// Fetch data for forwarded and received cases :
 router.get("/fetchForwaredLeads", async (req, res) => {
   try {
     const data = await CompanyModel.aggregate([
@@ -2280,6 +2182,7 @@ router.get("/fetchForwaredLeads", async (req, res) => {
   }
 });
 
+// Fetch data for forwarded and received case projection :
 router.get("/fetchForwardedLeadsAmount", async (req, res) => {
   try {
     const data = await ForwardedLeadsModel.aggregate([
@@ -2338,6 +2241,5 @@ router.get("/fetchForwardedLeadsAmount", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 module.exports = router;

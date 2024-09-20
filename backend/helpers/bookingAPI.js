@@ -24,6 +24,7 @@ const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const FollowUpModel = require('../models/FollowUp.js');
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
 const ObjectId = mongoose.Types.ObjectId;
+const ExpenseReportModel = require("../models/ExpenseReportModel");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -7226,7 +7227,73 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
       }
     ]);
 
-    res.json(data);
+    //   res.json(data);
+    // } catch (err) {
+    //   res.status(500).send({ error: err.message });
+    // }
+    // Process the fetched data and store it in ExpenseReportModel
+    const expenseReports = [];
+
+    // Process fetched data
+    for (const item of data) {
+      // Process services
+      if (item.services && item.services.length > 0) {
+        for (const service of item.services) {
+          // Check if the record already exists
+          const existingRecord = await ExpenseReportModel.findOne({
+            companyName: item["Company Name"],
+            serviceName: service.serviceName
+          });
+
+          // If the record doesn't exist, prepare it for insertion
+          if (!existingRecord) {
+            expenseReports.push({
+              companyName: item["Company Name"],
+              serviceName: service.serviceName,
+              totalPayment: service.totalAmount,
+              receivedPayment: service.receivedAmount,
+              remainingPayment: service.pendingAmount
+            });
+          }
+        }
+      }
+
+      // Process moreBookings services
+      if (item.moreBookings && item.moreBookings.length > 0) {
+        for (const booking of item.moreBookings) {
+          for (const service of booking.services) {
+            // Check if the record already exists
+            const existingRecord = await ExpenseReportModel.findOne({
+              companyName: item["Company Name"],
+              serviceName: service.serviceName
+            });
+
+            // If the record doesn't exist, prepare it for insertion
+            if (!existingRecord) {
+              expenseReports.push({
+                companyName: item["Company Name"],
+                serviceName: service.serviceName,
+                totalPayment: service.totalAmount,
+                receivedPayment: service.receivedAmount,
+                remainingPayment: service.pendingAmount
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // Insert new records into the ExpenseReportModel
+    if (expenseReports.length > 0) {
+      await ExpenseReportModel.insertMany(expenseReports);
+    }
+
+    // Send response after storing data
+    res.json({
+      message: "Data fetched and stored successfully!",
+      insertedCount: expenseReports.length,
+      data
+    });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
