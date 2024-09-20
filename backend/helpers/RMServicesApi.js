@@ -22,7 +22,28 @@ const RMCertificationHistoryModel = require('../models/RMCerificationHistoryMode
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const AdminExecutiveHistoryModel = require('../models/AdminExecutiveHistoryModel.js');
 //const companyName = process.env.COMPANY_NAME
-function runTestScript(companyName) {
+// function runTestScript(companyName) {
+//   console.log("Company Name:", companyName);
+
+//   //Ensure the companyName is properly quoted to handle spaces or special characters
+//   const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+
+//   exec(command, (error, stdout, stderr) => {
+//     if (error) {
+//       console.error(`Error executing script: ${error.message}`);
+//       return;
+//     }
+//     if (stderr) {
+//       console.error(`Script stderr: ${stderr}`);
+//       return;
+//     }
+//     console.log(`Script stdout: ${stdout}`);
+//   });
+
+// }
+
+function runTestScript(companyName, socketIO) {
+
   console.log("Company Name:", companyName);
 
   //Ensure the companyName is properly quoted to handle spaces or special characters
@@ -31,15 +52,30 @@ function runTestScript(companyName) {
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing script: ${error.message}`);
+      socketIO.emit("test-script-output", {
+        companyName: companyName,
+        status: error,
+        message: error.message
+      })
       return;
     }
     if (stderr) {
       console.error(`Script stderr: ${stderr}`);
+      socketIO.emit("test-script-output", {
+        companyName: companyName,
+        status: "stderr",
+        message: stderr
+      })
       return;
     }
     console.log(`Script stdout: ${stdout}`);
+    socketIO.emit("test-script-output", {
+      companyName: companyName,
+      status: "success",
+      message: stdout
+    })
   });
-  
+
 }
 
 //runTestScript(companyName)
@@ -1235,6 +1271,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
 
   try {
     // Step 1: Find the company document in RMCertificationModel
+    let scriptResult = null;
     const findCompanyAdmin = await AdminExecutiveModel.findOne({
       ["Company Name"]: companyName,
       serviceName: serviceName,
@@ -1299,7 +1336,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
 
       // if (subCategoryStatus === "Approved") {
       //   console.log("hello wworld");
-      //   runTestScript(companyName);
+      //   scriptResult = await runTestScript(companyName, socketIO);
       // }
       //console.log("updatedcompany", updatedCompany);
       //console.log("submittedOn", submittedOn);
@@ -1355,6 +1392,9 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       res.status(200).json({
         message: "Document updated successfully",
         data: updatedCompany,
+        scriptResult: scriptResult
+          ? scriptResult.stdout || scriptResult.stderr || "No output"
+          : "No script executed", // Handle the case when no script is run
       });
     } else {
       // If subCategoryStatus is "Undo", update with previous statuses and no new date
@@ -1556,7 +1596,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
         { new: true }
       );
 
-      if(subCategoryStatus === "Approved"){
+      if (subCategoryStatus === "Approved") {
         console.log("hello world")
         runTestScript(companyName);
       }

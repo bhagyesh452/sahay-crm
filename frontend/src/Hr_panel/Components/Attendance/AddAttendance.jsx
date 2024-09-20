@@ -379,7 +379,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                         const { month, days } = monthData;
 
                         days.forEach(dayData => {
-                            const { date, inTime, outTime, workingHours, status } = dayData;
+                            const { date, inTime, outTime, workingHours, status,reasonValue,isAddedManually } = dayData;
 
                             if (!attendanceMap[_id][year]) {
                                 attendanceMap[_id][year] = {};
@@ -392,7 +392,9 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 inTime,
                                 outTime,
                                 workingHours,
-                                status
+                                status,
+                                reasonValue,
+                                isAddedManually
                             };
                         });
                     });
@@ -728,7 +730,7 @@ function AddAttendance({ year, month, date, employeeData }) {
                                     inTime: "",
                                     outTime: "",
                                     workingHours: "",
-                                    status: ""
+                                    status: "",
                                 };
                                 const convertToMinutes = (timeString) => {
                                     const [hours, minutes] = timeString.split(':').map(Number);
@@ -736,6 +738,11 @@ function AddAttendance({ year, month, date, employeeData }) {
                                 };
                                 const inTime = attendanceData[emp._id]?.inTime || attendanceDetails.inTime || "";
                                 const outTime = attendanceData[emp._id]?.outTime || attendanceDetails.outTime || "";
+                                const newmanuallyAdded = attendanceData[emp._id]?.isAddedManually ?? attendanceDetails.isAddedManually ?? false; // Use nullish coalescing to default to false
+                                
+                                // console.log("attendanceDetails", attendanceDetails)
+                                const newReason = attendanceData[emp._id]?.reasonValue ?? attendanceDetails.reasonValue ?? ""; // Use nullish coalescing to default to false
+                                // console.log("newmanuallyAdded :", newReason);
                                 const inTimeMinutes = convertToMinutes(inTime);
                                 const outTimeMinutes = convertToMinutes(outTime);
                                 const comparisonTimeEarly = convertToMinutes("10:01"); // 10:00 AM
@@ -867,20 +874,45 @@ function AddAttendance({ year, month, date, employeeData }) {
                                             {attendanceDetails.workingHours || workingHours}
                                         </td>
                                         <td>
-                                            <span className={`badge ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
-                                                (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
-                                                    (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" :
+                                            <div
+                                                className=
+                                                {`
+                                         ${(attendanceDetails.status || status === "Present") && newmanuallyAdded === true? "OverPStatus" : ""}
+                                            ${(attendanceDetails.status || status === "Half Day") && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                 ${(attendanceDetails.status || status === "Leave") && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                 ${(attendanceDetails.status || status.startsWith("LC")) && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                             `.trim()}
+                                            >
+                                                <span
+                                                 title={(() => {
+                                                    if (newmanuallyAdded === true) {
+                                                        if ((attendanceDetails.status || status) === "Present") {
+                                                            return newReason || "Manually marked as Present";
+                                                        } else if ((attendanceDetails.status || status) === "Half Day") {
+                                                            return newReason || "Manually marked as Half Day";
+                                                        } else if ((attendanceDetails.status || status) === "Leave") {
+                                                            return newReason || "Manually marked as Leave";
+                                                        } else if ((attendanceDetails.status?.startsWith("LC") || status?.startsWith("LC"))) {
+                                                            return newReason || "Manually marked as LC (Late Complete)";
+                                                        }
+                                                    }
+                                                    return ""; // Default to an empty string if no condition matches
+                                                })()}
+                                                 className={`badge  ${(attendanceDetails.status || status) === "Present" ? "badge-completed" :
+                                                    (attendanceDetails.status || status) === "Leave" ? "badge-under-probation" :
+                                                        (attendanceDetails.status || status) === "Half Day" ? "badge-half-day" :
                                                             (attendanceDetails.status || status) === "Sunday Leave" ||
-                                                            (attendanceDetails.status || status) === "Sunday Half Day" ||
-                                                            (attendanceDetails.status || status) === "Sunday" ||
-                                                            (attendanceDetails.status || status) === "Official Holiday Leave" ||
-                                                            (attendanceDetails.status || status) === "Official Holiday Half Day" ||
-                                                            (attendanceDetails.status || status) === "Official Holiday" ? "badge-Holiday" :
-                                                            (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
+                                                                (attendanceDetails.status || status) === "Sunday Half Day" ||
+                                                                (attendanceDetails.status || status) === "Sunday" ||
+                                                                (attendanceDetails.status || status) === "Official Holiday Leave" ||
+                                                                (attendanceDetails.status || status) === "Official Holiday Half Day" ||
+                                                                (attendanceDetails.status || status) === "Official Holiday" ? "badge-Holiday" :
+                                                                (attendanceDetails.status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
 
-                                                }`}>
-                                                {attendanceDetails.status || status}
-                                            </span>
+                                                    }`}>
+                                                    {attendanceDetails.status || status}
+                                                </span>
+                                            </div>
                                         </td>
                                         {!emp.deletedDate && <td>
                                             <button type="submit" className="action-btn action-btn-primary" onClick={() =>

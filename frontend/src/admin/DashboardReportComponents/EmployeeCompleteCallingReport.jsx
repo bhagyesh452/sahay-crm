@@ -304,11 +304,52 @@ function EmployeeCompleteCallingReport() {
                     throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
                 }
                 const data = await response.json();
+                // Construct the query parameters
+                const queryParamsObject = {
+                    "emp_numbers": [],
+                };
+                let newData;
+                const response2 = await fetch(`${secretKey}/fetch-api-data`, {
+                    method: 'POST',
+                    headers: {
 
-                setTotalCalls(data.result);
-                setFilteredTotalCalls(data.result)
-                setCompleteTotalCalls(data.result)
-                console.log("Data fetched:", data.result);
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(queryParamsObject)
+                })
+                try {
+                    const data = await response2.json();  // Await the response
+                    //console.log('Data from external API:', data);
+                    newData = data.result;  // Assign the data to newData
+                } catch (error) {
+                    console.error('Error:', error);  // Catch any errors
+                }
+                console.log("New Data:", newData);
+                // Assuming data.result from first response and newData from second have `emp_number` as common
+                const mergedData = data.result.map(emp => {
+                    const matchingEmp = newData.find(item => item.emp_number === emp.emp_number);
+                    if (matchingEmp) {
+                        return {
+                            ...emp, // Spread the fields from the first response
+                            last_sync_req_at: matchingEmp.last_sync_req_at // Add the field from second response
+                        };
+                    }
+                    return emp; // If no match, return the original object
+                });
+                // Check for errors in the GET request
+                if (!response2.ok) {
+                    const errorData = await response2.json();
+                    throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
+                }
+                console.log("Merged Data:", mergedData);
+                setTotalCalls(mergedData);
+                setFilteredTotalCalls(mergedData);
+                setCompleteTotalCalls(mergedData);
+
+                // setTotalCalls(data.result);
+                // setFilteredTotalCalls(data.result)
+                // setCompleteTotalCalls(data.result)
+                // console.log("Data fetched:", data.result);
 
             } catch (err) {
                 console.log(err);
@@ -484,7 +525,7 @@ function EmployeeCompleteCallingReport() {
                     call.total_calls || 0,
                     call.total_unique_clients || 0,
                     convertSecondsToHMS(call.total_duration) || '00:00:00',
-                    call.obj.last_sync_req_at || "00:00:00" // Ensure formatDate is defined
+                    call.last_sync_req_at || "00:00:00" // Ensure formatDate is defined
                 ];
             });
 

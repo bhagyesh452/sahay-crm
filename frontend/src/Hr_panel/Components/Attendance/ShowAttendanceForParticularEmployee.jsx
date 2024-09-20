@@ -160,7 +160,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
             }
 
             return workingMinutes;
-        };  
+        };
 
         const workingMinutes = calculateWorkingHours(inTime, outTime);
         // Define the boundaries for the new "LC" condition
@@ -401,7 +401,7 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                             yearData.months.forEach(monthData => {
                                 if (monthData.month === month) {  // Check for the specific month
                                     monthData.days.forEach(dayData => {
-                                        const { date: dayDate, inTime, outTime, workingHours, status } = dayData;
+                                        const { date: dayDate, inTime, outTime, workingHours, status,reasonValue,isAddedManually } = dayData;
 
                                         filledDates.add(dayDate); // Add filled date to the set
 
@@ -421,7 +421,9 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                 inTime,
                                                 outTime,
                                                 workingHours,
-                                                status
+                                                status,
+                                                reasonValue,
+                                                isAddedManually
                                             });
                                         }
                                     });
@@ -677,6 +679,10 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                         //iconsole.log("attendanceData", attendanceData)
                                         const inTime = inputValues[emp.date]?.inTime || emp.inTime || "";
                                         const outTime = inputValues[emp.date]?.outTime || emp.outTime || "";
+                                        const newmanuallyAdded = emp.isAddedManually ?? false; // Use nullish coalescing to default to false
+
+                                        // console.log("attendanceDetails", attendanceDetails)
+                                        const newReason = emp.reasonValue ?? ""; // Use nullish coalescing to default to false
                                         const inTimeMinutes = convertToMinutes(inTime);
                                         const outTimeMinutes = convertToMinutes(outTime);
                                         //console.log("inTimeMinutes", inTimeMinutes)
@@ -779,19 +785,44 @@ function ShowAttendanceForParticularEmployee({ year, month, id, name, open, clos
                                                     {workingHours}
                                                 </td>
                                                 <td>
-                                                    <span className={`badge ${(status) === "Present" ? "badge-completed" :
-                                                        (status) === "Leave" ? "badge-leave" :
-                                                            (status) === "Half Day" ? "badge-half-day" : 
-                                                            (status) === "Sunday Leave"  || 
-                                                            (status) === "Sunday Half Day" || 
-                                                            (status) === "Sunday" ||
-                                                            (status) === "Official Holiday Leave" ||
-                                                            (status) === "Official Holiday Half Day" ||
-                                                            (status) === "Official Holiday" ? "badge-Holiday" :
-                                                            (status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" :"badge-Nodata"
-                                                        }`}>
-                                                        {status}
-                                                    </span>
+                                                    <div
+                                                        className=
+                                                        {`
+                                              ${(status === "Present") && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                 ${(status === "Half Day") && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                      ${(status === "Leave") && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                      ${(status.startsWith("LC")) && newmanuallyAdded === true ? "OverPStatus" : ""}
+                                                  `.trim()}>
+                                                        <span
+                                                            title={(() => {
+                                                                if (newmanuallyAdded === true) {
+                                                                    if (( status) === "Present") {
+                                                                        return newReason || "Manually marked as Present";
+                                                                    } else if (( status) === "Half Day") {
+                                                                        return newReason || "Manually marked as Half Day";
+                                                                    } else if ((status) === "Leave") {
+                                                                        return newReason || "Manually marked as Leave";
+                                                                    } else if ((status?.startsWith("LC") || status?.startsWith("LC"))) {
+                                                                        return newReason || "Manually marked as LC (Late Complete)";
+                                                                    }
+                                                                }
+                                                                return ""; // Default to an empty string if no condition matches
+                                                            })()}
+                                                            className={`badge ${(status) === "Present" ? "badge-completed" :
+                                                                (status) === "Leave" ? "badge-leave" :
+                                                                    (status) === "Half Day" ? "badge-half-day" :
+                                                                        (status) === "Sunday Leave" ||
+                                                                            (status) === "Sunday Half Day" ||
+                                                                            (status) === "Sunday" ||
+                                                                            (status) === "Official Holiday Leave" ||
+                                                                            (status) === "Official Holiday Half Day" ||
+                                                                            (status) === "Official Holiday" ? "badge-Holiday" :
+                                                                            (status.startsWith("LC") || status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
+                                                                }`}>
+                                                            {status}
+                                                        </span>
+                                                    </div>
+
                                                 </td>
                                                 {!isDeleted && <td>
                                                     <button type="submit" className="action-btn action-btn-primary" onClick={() =>

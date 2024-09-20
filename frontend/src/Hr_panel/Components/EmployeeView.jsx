@@ -170,7 +170,7 @@ function EmployeeView() {
             Authorization: `Bearer ${newtoken}`,
           },
         });
-        console.log("File upload success:", response.data);
+        //console.log("File upload success:", response.data);
         Swal.fire("Success", "Profile photo successfully uploaded", "success");
         const imageUrl = response.data.imageUrl;
         setEmpImg1(imageUrl);
@@ -311,7 +311,7 @@ function EmployeeView() {
     };
     try {
       const res = await axios.put(`${secretKey}/employee/updateEmployeeFromId/${userId}`, payload);
-      console.log("Updated details is :", res.data.data);
+      //console.log("Updated details is :", res.data.data);
       fetchEmployeeData();
       Swal.fire("Success", "Employee details updated successfully", "success");
     } catch (error) {

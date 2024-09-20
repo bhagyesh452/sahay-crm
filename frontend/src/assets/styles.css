@@ -4185,5 +4185,22 @@ div#table-default td {
   left: 23px;
   top: -2px;
   background: #ff7c73;
-  z-index: 999999999;
+  z-index: 1;
+}
+.OverPStatus
+{
+  position: relative;
+}
+.OverPStatus::before {
+  position: absolute;
+  content: "";
+  width: 7px;
+  height: 7px;
+  color: rebeccapurple;
+  border-radius: 100px;
+  right: 2px;
+  top: -1px;
+  background: #fe7369;
+  z-index: 1;
+  border: 1px solid #fff;
 }
