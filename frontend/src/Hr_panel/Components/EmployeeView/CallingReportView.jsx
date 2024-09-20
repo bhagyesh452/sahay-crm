@@ -84,53 +84,8 @@ function CallingReportView({ employeeInformation }) {
         const [hours, minutes, seconds] = hms.split(':').map(Number);
         return hours * 3600 + minutes * 60 + seconds;
     };
-    const fetchEmployeeInfo = async () => {
-        try {
-            //setLoading(true);
-
-            // Fetch data using fetch and axios
-            const response = await fetch(`${secretKey}/employee/einfo`);
-            const response3 = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
-            const deletedData = response3.data;
-
-            // Filter by designations
-            const filteredData = data.filter(employee =>
-                employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
-            );
-            const filteredDeletedData = deletedData.filter(employee =>
-                employee.designation === "Sales Executive" || employee.designation === "Sales Manager"
-            );
-
-            // Combine data from both responses
-            const combinedForwardEmployeeData = [...filteredData, ...filteredDeletedData];
-
-            // Set state values
-            setDeletedEmployeeData(filteredDeletedData);
-            setEmployeeData(filteredData);
-            setEmployeeDataFilter(filteredData);
-            setEmployeeInfo(filteredData);
-            setForwardEmployeeData(combinedForwardEmployeeData); // Use combined data
-            setForwardEmployeeDataFilter(combinedForwardEmployeeData);
-            setForwardEmployeeDataNew(combinedForwardEmployeeData);
-            setEmployeeDataProjectionSummary(filteredData);
-
-        } catch (error) {
-            console.error(`Error Fetching Employee Data `, error);
-        } 
-    };
-    useEffect(() => {
-        fetchEmployeeInfo()
-    }, []);
-
     // Function to delay execution to handle rate limits
-    const delay = (s) => new Promise(resolve => setTimeout(resolve, s));
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     // Fetch data for a specific date and append the date field to each entry in the result
     const fetchDailyData = async (date) => {
@@ -198,6 +153,7 @@ function CallingReportView({ employeeInformation }) {
 
         setDailyData(data);
         setLoading(false);
+        setLoading(false)
     };
 
 
@@ -205,10 +161,10 @@ function CallingReportView({ employeeInformation }) {
         if (employeeInformation.number) {
             const startDate = new Date(); // Set your desired start date
             startDate.setDate(1); // Set to the first day of the month
-            const endDate = new Date(); // Set to today's date (current date)
-            // const endDate = new Date(startDate);
-            // endDate.setMonth(endDate.getMonth() + 1);
-            // endDate.setDate(0); // Set to the last day of the month
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth());
+            endDate.setDate(new Date().getDate()); // Set to the last day of the month
+            console.log(endDate)
 
             fetchMonthlyData(startDate, endDate);
         }
@@ -257,7 +213,22 @@ function CallingReportView({ employeeInformation }) {
                     </div>
                 </div>
                 <div className="d-flex align-items-center justify-content-start">
-                    <button className='btn action-btn-alert'>Not Achieved: 2</button>
+                    <button className='btn action-btn-alert'>
+                        Not Achieved:
+                        {dailyData && dailyData.length > 0 ? (
+                            // Map over dailyData and filter for "Failed" statuses
+                            dailyData.map((obj) => {
+                                const totalDuration = convertSecondsToHMS(obj.total_duration);
+                                const targetTime = getTargetTime(employeeInformation.jdate);
+
+                                return getTargetStatus(totalDuration, targetTime);
+                            })
+                                .reduce((totalFailed, status) => {
+                                    // Count how many are "Failed"
+                                    return status === "Failed" ? totalFailed + 1 : totalFailed;
+                                }, 0)
+                        ) : 0}
+                    </button>
                 </div>
             </div>
             <div className='pl-1 pr-1'>
@@ -277,21 +248,21 @@ function CallingReportView({ employeeInformation }) {
                             </tr>
                         </thead>
                         {loading ? (
-                           <tbody>
-                           <tr>
-                             <td colSpan="7" >
-                               <div className="LoaderTDSatyle w-100" >
-                                 <ClipLoader
-                                   color="lightgrey"
-                                   loading
-                                   size={30}
-                                   aria-label="Loading Spinner"
-                                   data-testid="loader"
-                                 />
-                               </div>
-                             </td>
-                           </tr>
-                         </tbody>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="7" >
+                                        <div className="LoaderTDSatyle w-100" >
+                                            <ClipLoader
+                                                color="lightgrey"
+                                                loading
+                                                size={30}
+                                                aria-label="Loading Spinner"
+                                                data-testid="loader"
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         ) : dailyData && dailyData.length !== 0 ?
                             (<tbody>
                                 {dailyData.map((item, index) => {
@@ -307,7 +278,7 @@ function CallingReportView({ employeeInformation }) {
                                             <td>{convertSecondsToHMS(item.total_duration)}</td>
                                             <td>{getTargetTime(employeeInformation.jdate)}</td>
                                             <td>
-                                            <span className={`badge ${badgeClass}`}>
+                                                <span className={`badge ${badgeClass}`}>
                                                     {getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
                                                 </span>
                                             </td>
