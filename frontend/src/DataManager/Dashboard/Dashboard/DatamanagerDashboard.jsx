@@ -34,7 +34,7 @@ import InterestedFollowLeadReport from "../../../admin/DashboardReportComponents
 import EmployeeCompleteCallingReport from "../../../admin/DashboardReportComponents/EmployeeCompleteCallingReport.jsx";
 import ServiceAnalysis from "../../../admin/DashboardReportComponents/ServiceAnalysis.jsx";
 import ExpenseReport from "./Expense/ExpenseReport.jsx";
-
+import { MdAddCall } from "react-icons/md";
 
 
 
@@ -163,7 +163,7 @@ function DatamanagerDashboard() {
                                 <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
-                                            <MdMedicalServices style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <MdAddCall style={{ height: "24px", width: "19px", marginRight: "5px" }} />
                                             <span style={{ fontSize: "12px" }}>Calling Report</span>
                                         </div>
                                     }

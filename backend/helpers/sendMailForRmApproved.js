@@ -7,20 +7,48 @@ const oAuth2Client = new google.auth.OAuth2({
     clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
     clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
     redirectUri: 'https://developers.google.com/oauthplayground' // Replace with your authorized redirect URI
-  });
+});
 
-  // Set your OAuth2 refresh token
+// Set your OAuth2 refresh token
 oAuth2Client.setCredentials({
     refresh_token: process.env.GOOGLE_REFRESH_TOKEN // Replace with your OAuth2 refresh token
-  });
+});
 
-  async function createTransporter() {
+async function createTransporter() {
     return nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-          
-      }
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            type: 'OAuth2',
+            user: 'alerts@startupsahay.com', // Replace with your Gmail email ID
+            clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
+            refreshToken: process.env.GOOGLE_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
+            accessToken: process.env.GOOGLE_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
+        }
     })
-  }
+}
+
+async function sendMailForRmApproved(
+    recipients,
+    subject,
+    text,
+    html,
+    certificate) {
+    const transporter = await createTransporter();
+    const info = await transporter.sendMail({
+        from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
+        to: recipients.join(', '),
+        replyTo: 'bookings@startupsahay.com',
+        subject,
+        text,
+        html,
+        attachments: certificate,
+      });
+
+    return info;
+
+}
+
+module.exports = { sendMailForRmApproved }
