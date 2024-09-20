@@ -30,7 +30,7 @@ function RmofCertificationHeader({ name, id, designation, empProfile, gender }) 
     // Listen for the 'welcome' event from the server
 
 
-   
+
     // socket.on("adminexecutive-letter-updated", (res) => {
     //   console.log("socketchala" , res.updatedDocument)
     //   if(res.updatedDocument){
@@ -38,13 +38,37 @@ function RmofCertificationHeader({ name, id, designation, empProfile, gender }) 
     //       { variant: "reportComplete" , 
     //         persist:true 
     //       });
-      
+
     //     const audioplayer = new Audio(notification_audio);
     //     audioplayer.play();
     //   }
     // });
-    
-    // Clean up the socket connection when the component unmounts
+
+    //Clean up the socket connection when the component unmounts
+    socket.on("test-script-output", (res) => {
+
+      if (res.status === "stderr") {
+        enqueueSnackbar(`No Record Found For ${res.companyName}`,
+          {
+            variant: "reportComplete",
+            persist: true
+          });
+
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+      }else if(res.status === "success"){
+        enqueueSnackbar(`Pdf Downloaded Successfully For ${res.companyName}`,
+          {
+            variant: "reportComplete",
+            persist: true
+          });
+
+        const audioplayer = new Audio(notification_audio);
+        audioplayer.play();
+        
+      }
+    });
+
     return () => {
       socket.disconnect();
     };
