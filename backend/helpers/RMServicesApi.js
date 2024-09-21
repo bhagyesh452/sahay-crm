@@ -42,7 +42,7 @@ function runTestScript(companyName) {
   
 }
 
-runTestScript("MWL FOODS LLP")
+// runTestScript("MWL FOODS LLP")
 
 
 router.get("/redesigned-final-leadData-rm", async (req, res) => {
