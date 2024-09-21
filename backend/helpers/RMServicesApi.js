@@ -52,10 +52,10 @@ function runTestScript(companyName, socketIO, companyEmail) {
   console.log("Company Name:", companyName, companyEmail);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
-  // const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
-  const command = `export COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
-
-
+  //const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+  const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
+  console.log(command)
+  
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing script: ${error.message}`);
@@ -562,12 +562,12 @@ router.get('/rm-sevicesgetrequest-complete', async (req, res) => {
       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
         .sort({ addedOn: -1 })
         .skip(skip)
-        .limit(parseInt(limit));
+        .limit(parseInt(limit)).lean();
     } else {
       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
         .sort({ dateOfChangingMainStatus: -1 })
         .skip(skip)
-        .limit(parseInt(limit));
+        .limit(parseInt(limit)).lean();
     }
 
     //console.log("response" , response)
@@ -3350,7 +3350,7 @@ router.post(
 router.post("/post-remarks-for-rmofcertification", async (req, res) => {
   const { currentCompanyName, currentServiceName, changeRemarks, updatedOn } =
     req.body;
-
+  const socketIO = req.io;
   try {
     const updateDocument = await RMCertificationModel.findOneAndUpdate(
       {
@@ -3371,7 +3371,9 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
     if (!updateDocument) {
       return res.status(404).json({ message: "Document not found" });
     }
-
+    socketIO.emit("rm-cert-remarks-updated", {
+      updatedDocument: updateDocument,
+    });
     res
       .status(200)
       .json({ message: "Remarks added successfully", data: updateDocument });
