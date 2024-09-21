@@ -23,6 +23,7 @@ function ExpenseReport() {
         try {
             const res = await axios.get(`${secretKey}/bookings/fetchRemainingExpenseServices`);
             // console.log("Expense report is :", res.data);
+            fetchExpenseReport();
         } catch (error) {
             console.log("Error fetching expesne report :", error);
         }

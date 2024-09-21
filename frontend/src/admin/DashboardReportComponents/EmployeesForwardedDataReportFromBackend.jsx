@@ -19,10 +19,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ClipLoader from "react-spinners/ClipLoader";
+import Nodata from '../../components/Nodata';
 
 
 function EmployeesForwardedDataReportFromBackend() {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+
     const [selectedValue, setSelectedValue] = useState("")
     const [finalEmployeeData, setFinalEmployeeData] = useState([])
     const [newSortType, setNewSortType] = useState({
@@ -54,17 +57,27 @@ function EmployeesForwardedDataReportFromBackend() {
     const [personName, setPersonName] = useState([])
     const [searchTermForwardData, setSearchTermForwardData] = useState("")
     const [bdeResegnedData, setBdeRedesignedData] = useState([])
+
+    const [isLoading, setIsLoading] = useState(true);
     const [backendData, setBackendData] = useState([]);
     const [employeeStats, setEmployeeStats] = useState({});
     const [followUpLeads, setFollowUpLeads] = useState([]);
     const [employeeTotalAmount, setEmployeeTotalAmount] = useState({});
+    const [maturedCaseData, setMaturedCaseData] = useState([]);
+    const [maturedTotals, setMaturedTotals] = useState({});
+    const [selectedBranch, setSelectedBranch] = useState(''); // State for selected branch
+    const [searchFromName, setSearchFromName] = useState(''); // State for search from name
+    const [employeeName, setEmployeeName] = useState([]);   // State for employee name
+    const [allEmployees, setAllEmployees] = useState([]); // To store all employee names for the dropdown
+    const [filteredEmployeeStats, setFilteredEmployeeStats] = useState([]);
 
     const formatSalary = (amount) => {
-        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+        return new Intl.NumberFormat('en-IN').format(amount);
     };
 
     const fetchDataFromBackend = async () => {
         try {
+            setIsLoading(true);
             const res = await axios.get(`${secretKey}/company-data/fetchForwaredLeads`);
             setBackendData(res.data);
             // console.log("Data from backend :", res.data);
@@ -73,7 +86,7 @@ function EmployeesForwardedDataReportFromBackend() {
 
             res.data.forEach(item => {
                 const { name, forwardedCases, receivedCases, designation, branchOffice } = item;
-                
+
                 // Update forwarded cases for BDEs
                 if (designation === "BDE") {
                     if (!stats[name]) {
@@ -94,13 +107,17 @@ function EmployeesForwardedDataReportFromBackend() {
             });
 
             setEmployeeStats(stats);
+            setAllEmployees(Object.keys(stats)); // Store all employee names for the dropdown
         } catch (error) {
             console.log("Error fetching data from backend :", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const fetchForwardedLeadsData = async () => {
         try {
+            setIsLoading(true);
             const res = await axios.get(`${secretKey}/company-data/fetchForwardedLeadsAmount`);
             setFollowUpLeads(res.data);
             // console.log("Follow up data from backend :", res.data);
@@ -127,13 +144,132 @@ function EmployeesForwardedDataReportFromBackend() {
             setEmployeeTotalAmount(totalAmountData);
         } catch (error) {
             console.log("Error fetching follow up data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchGeneraedTotalAmount = async () => {
+        try {
+            setIsLoading(true);
+            const res = await axios.get(`${secretKey}/company-data/fetchMaturedCases`);
+            setMaturedCaseData(res.data);
+            // console.log("Matured cases are :", res.data);
+
+            const totals = {};
+
+            res.data.forEach(item => {
+                const { ename, maturedCases, bdmName } = item;
+                const { maturedCase, services } = maturedCases;
+
+                // Initialize totals for the employee if not present
+                if (!totals[ename]) {
+                    totals[ename] = { maturedCases: 0, generatedRevenue: 0 };
+                }
+
+                if (bdmName && !totals[bdmName]) {
+                    totals[bdmName] = { maturedCases: 0, generatedRevenue: 0 };
+                }
+
+                // Add matured case counts
+                totals[ename].maturedCases += maturedCase;
+
+                services.forEach(service => {
+                    const { generatedReceivedAmount } = service;
+
+                    // If maturedCase is 0.5, split the revenue between ename and bdmName
+                    if (maturedCase === 0.5 && bdmName) {
+                        totals[ename].generatedRevenue += generatedReceivedAmount;
+                        totals[bdmName].generatedRevenue += generatedReceivedAmount;
+                    } else {
+                        // If maturedCase is 1, add full revenue to ename
+                        totals[ename].generatedRevenue += generatedReceivedAmount;
+                    }
+                });
+            });
+
+            setMaturedTotals(totals);
+        } catch (error) {
+            console.log("Error fetching generated total amount:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchDataFromBackend();
         fetchForwardedLeadsData();
+        fetchGeneraedTotalAmount();
     }, []);
+
+    // Function to filter data based on the selected branch and search term
+    const filterEmployeeStats = () => {
+        const filteredStats = Object.entries(employeeStats).filter(([name, stats]) => {
+            const matchesBranch = selectedBranch === "" || stats.branchOffice === selectedBranch;
+            const matchesSearchTerm = searchFromName === "" || name.toLowerCase().includes(searchFromName.toLowerCase());
+            const matchesSelectedEmployee = employeeName.length === 0 || employeeName.includes(name);
+            return matchesBranch && matchesSearchTerm && matchesSelectedEmployee;
+        });
+
+        setFilteredEmployeeStats(filteredStats); // Update state with filtered data
+    };
+
+    // Initialize totals for footer
+    let totalForwardedCases = 0;
+    let totalReceivedCases = 0;
+    let totalForwardedProjection = 0;
+    let totalReceivedProjection = 0;
+    let totalMaturedCases = 0;
+    let totalGeneratedRevenue = 0;
+
+    // Sorting logic for 'Forwarded Cases'
+    const handleSortForwardedCases = (sortType) => {
+        const sortedStats = [...filteredEmployeeStats]; // Create a copy to sort
+        if (sortType === "ascending") {
+            sortedStats.sort((a, b) => (a[1].forwarded || 0) - (b[1].forwarded || 0));
+        } else if (sortType === "descending") {
+            sortedStats.sort((a, b) => (b[1].forwarded || 0) - (a[1].forwarded || 0));
+        }
+        // console.log("Sorted data :", sortedStats.map(item => item[1]));
+        setFilteredEmployeeStats(sortedStats); // Update state with sorted data
+    };
+
+    const handleSortReceivedCases = (sortType) => {
+        const sortedStats = [...filteredEmployeeStats]; // Create a copy to sort
+        if (sortType === "ascending") {
+            sortedStats.sort((a, b) => (a[1].received || 0) - (b[1].received || 0));
+        } else if (sortType === "descending") {
+            sortedStats.sort((a, b) => (b[1].received || 0) - (a[1].received || 0));
+        }
+        // console.log("Sorted data :", sortedStats.map(item => item[1]));
+        setFilteredEmployeeStats(sortedStats); // Update state with sorted data
+    };
+
+    // Sorting Handler for Forwarded Cases Column
+    const handleColumnSort = (column) => {
+        let updatedSortType;
+        if (newSortType[column] === "ascending") {
+            updatedSortType = "descending";
+        } else if (newSortType[column] === "descending") {
+            updatedSortType = "none";
+        } else {
+            updatedSortType = "ascending";
+        }
+
+        setNewSortType((prevData) => ({
+            ...prevData,
+            [column]: updatedSortType,
+        }));
+
+        if (column === 'forwardedcase') handleSortForwardedCases(updatedSortType);
+        if (column === 'receivedcase') handleSortReceivedCases(updatedSortType);
+    };
+
+    // Call filterEmployeeStats when dependencies change
+    useEffect(() => {
+        filterEmployeeStats();
+    }, [employeeStats, selectedBranch, searchFromName, employeeName]);
+
 
     // --------------------------date formats--------------------------------------------
     function formatDateFinal(timestamp) {
@@ -286,37 +422,7 @@ function EmployeesForwardedDataReportFromBackend() {
     //-------- filter branch office function-------------------------------------
 
 
-    const handleFilterForwardCaseBranchOffice = (branchName) => {
-        if (branchName === "none") {
-            setForwardEmployeeData(forwardEmployeeDataFilter)
-            setCompanyDataTotal(companyDataFilter)
-            setfollowData(followDataFilter)
-            setTeamLeadsData(teamLeadsDataFilter)
-        } else {
-            const filteredData = forwardEmployeeDataNew.filter(obj => obj.branchOffice === branchName);
 
-            //console.log("kuch to h" , filteredData , followDataFilter)
-
-            const filteredFollowDataforwarded = followDataFilter.filter((obj) =>
-                forwardEmployeeDataNew.some((empObj) =>
-                    empObj.branchOffice === branchName)
-            )
-            //console.log(filteredFollowData)
-            const filteredCompanyData = companyDataFilter.filter(obj => (
-                (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
-                forwardEmployeeDataNew.some(empObj => empObj.branchOffice === branchName && empObj.ename === obj.ename)
-            ));
-
-            const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) => forwardEmployeeDataNew.some((empObj) => empObj.branchOffice === branchName && (empObj.ename === obj.ename || empObj.ename === obj.bdmName)))
-
-
-            setForwardEmployeeData(filteredData)
-            setCompanyDataTotal(filteredCompanyData)
-            setfollowData(filteredFollowDataforwarded)
-            setFollowDataNew(filteredFollowDataforwarded)
-            setTeamLeadsData(filteredTeamLeadsData)
-        }
-    }
 
     //------------------------fetching follow data-------------------------------------------
 
@@ -508,116 +614,6 @@ function EmployeesForwardedDataReportFromBackend() {
     };
 
     // ------------------------------sorting function employees forwardede data report----------------------------------
-
-    const handleSortForwardedCases = (sortByForwarded) => {
-        //console.log(sortByForwarded, "case");
-        setNewSortType((prevData) => ({
-            ...prevData,
-            forwardedcase:
-                prevData.forwardedcase === 'ascending'
-                    ? 'descending'
-                    : prevData.forwardedcase === 'descending'
-                        ? 'none'
-                        : 'ascending',
-        }));
-
-        switch (sortByForwarded) {
-            case 'ascending':
-                //console.log("yahan chala ascending");
-                const companyDataAscending = {};
-                companyDataTotal.forEach((company) => {
-                    if (company.bdmAcceptStatus === 'Pending' || company.bdmAcceptStatus === 'Accept') {
-                        companyDataAscending[company.ename] = (companyDataAscending[company.ename] || 0) + 1;
-                    }
-                });
-                forwardEmployeeData.sort((a, b) => {
-                    const countA = companyDataAscending[a.ename] || 0;
-                    const countB = companyDataAscending[b.ename] || 0;
-                    return countA - countB;
-                });
-                break; // Add break statement here
-
-            case 'descending':
-                //console.log("yahan chala descending");
-                const companyDataDescending = {};
-                companyDataTotal.forEach((company) => {
-                    if (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === 'Accept') {
-                        companyDataDescending[company.ename] = (companyDataDescending[company.ename] || 0) + 1;
-                    }
-                });
-                forwardEmployeeData.sort((a, b) => {
-                    const countA = companyDataDescending[a.ename] || 0;
-                    const countB = companyDataDescending[b.ename] || 0;
-                    return countB - countA;
-                });
-                break; // Add break statement here
-
-            case "none":
-                //console.log("yahan chala none");
-                if (finalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setForwardEmployeeData(finalEmployeeData);
-                }
-                break; // Add break statement here
-
-            default:
-                break;
-        }
-    };
-    const handleSortRecievedCase = (sortByForwarded) => {
-        console.log(sortByForwarded, "case");
-        setNewSortType((prevData) => ({
-            ...prevData,
-            recievedcase:
-                prevData.recievedcase === 'ascending'
-                    ? 'descending'
-                    : prevData.recievedcase === 'descending'
-                        ? 'none'
-                        : 'ascending',
-        }));
-
-        switch (sortByForwarded) {
-            case 'ascending':
-                //console.log("yahan chala ascending");
-                const companyDataAscending = {};
-                teamLeadsData.forEach((company) => {
-                    if (company.bdmName) {
-                        companyDataAscending[company.bdmName] = (companyDataAscending[company.bdmName] || 0) + 1;
-                    }
-                });
-                forwardEmployeeData.sort((a, b) => {
-                    const countA = companyDataAscending[a.ename] || 0;
-                    const countB = companyDataAscending[b.ename] || 0;
-                    return countA - countB;
-                });
-                break; // Add break statement here
-
-            case 'descending':
-                //console.log("yahan chala descending");
-                const companyDataDescending = {};
-                teamLeadsData.forEach((company) => {
-                    if (company.bdmName) {
-                        companyDataDescending[company.bdmName] = (companyDataDescending[company.bdmName] || 0) + 1;
-                    }
-                });
-                forwardEmployeeData.sort((a, b) => {
-                    const countA = companyDataDescending[a.ename] || 0;
-                    const countB = companyDataDescending[b.ename] || 0;
-                    return countB - countA;
-                });
-                break; // Add break statement here
-
-            case "none":
-                //console.log("yahan chala none");
-                if (finalEmployeeData.length > 0) {
-                    // Restore to previous state
-                    setForwardEmployeeData(finalEmployeeData);
-                }
-                break; // Add break statement here
-            default:
-                break;
-        }
-    };
 
     const handleSortForwardedProjectionCase = (sortByForwarded) => {
         // Sort the followData array based on totalPayment for each ename
@@ -1092,6 +1088,7 @@ function EmployeesForwardedDataReportFromBackend() {
                                 Employees Forwaded Data Report From Backend
                             </h2>
                         </div>
+
                         <div className="d-flex align-items-center pr-1">
                             <div className="filter-booking d-flex align-items-center">
                                 <div className="filter-booking mr-1 d-flex align-items-center">
@@ -1100,6 +1097,7 @@ function EmployeesForwardedDataReportFromBackend() {
                                             Export CSV
                                         </button>
                                     </div>
+
                                     <div className="filter-title mr-1">
                                         <h2 className="m-0">
                                             Filter Branch :
@@ -1109,25 +1107,18 @@ function EmployeesForwardedDataReportFromBackend() {
                                         <select
                                             className="form-select"
                                             id={`branch-filter`}
-                                            value={selectedValue}
-                                            onChange={(e) => {
-                                                setSelectedValue(e.target.value)
-                                                handleFilterForwardCaseBranchOffice(e.target.value)
-                                            }}
+                                            value={selectedBranch}
+                                            onChange={(e) => setSelectedBranch(e.target.value)}
                                         >
-                                            <option value="" disabled selected>
-                                                Select Branch
-                                            </option>
-
-                                            <option value={"Gota"}>Gota</option>
-                                            <option value={"Sindhu Bhawan"}>
-                                                Sindhu Bhawan
-                                            </option>
-                                            <option value={"none"}>None</option>
+                                            <option value="" disabled selected>Select Branch</option>
+                                            <option value="Gota">Gota</option>
+                                            <option value="Sindhu Bhawan">Sindhu Bhawan</option>
+                                            <option value="">None</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+
                             <div class="input-icon mr-1">
                                 <span class="input-icon-addon">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -1137,16 +1128,15 @@ function EmployeesForwardedDataReportFromBackend() {
                                     </svg>
                                 </span>
                                 <input
-                                    value={searchTermForwardData}
-                                    onChange={(e) =>
-                                        debouncedFilterSearchForwardData(e.target.value)
-                                    }
+                                    value={searchFromName}
+                                    onChange={(e) => setSearchFromName(e.target.value)}
                                     className="form-control"
-                                    placeholder="Enter BDE Name..."
+                                    placeholder="Enter BDE/BDM Name..."
                                     type="text"
                                     name="bdeName-search"
                                     id="bdeName-search" />
                             </div>
+
                             <div className="data-filter">
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >
@@ -1184,6 +1174,7 @@ function EmployeesForwardedDataReportFromBackend() {
                                     </DemoContainer>
                                 </LocalizationProvider>
                             </div>
+
                             <div>
                                 <FormControl sx={{ ml: 1, minWidth: 200 }}>
                                     <InputLabel id="demo-select-small-label">Select Employee</InputLabel>
@@ -1192,20 +1183,13 @@ function EmployeesForwardedDataReportFromBackend() {
                                         labelId="demo-multiple-name-label"
                                         id="demo-multiple-name"
                                         multiple
-                                        value={personName}
-                                        onChange={(event) => {
-                                            setPersonName(event.target.value)
-                                            handleSelectForwardedEmployeeData(event.target.value)
-                                        }}
+                                        value={employeeName}
+                                        onChange={(e) => setEmployeeName(e.target.value)}
                                         input={<OutlinedInput label="Name" />}
                                         MenuProps={MenuProps}
                                     >
-                                        {options.map((name) => (
-                                            <MenuItem
-                                                key={name}
-                                                value={name}
-                                                style={getStyles(name, personName, theme)}
-                                            >
+                                        {allEmployees.map((name) => (
+                                            <MenuItem key={name} value={name}>
                                                 {name}
                                             </MenuItem>
                                         ))}
@@ -1214,323 +1198,9 @@ function EmployeesForwardedDataReportFromBackend() {
                             </div>
                         </div>
                     </div>
+
                     <div className='card-body'>
                         <div className="row tbl-scroll">
-                            {/* <table className="table-vcenter table-nowrap admin-dash-tbl">
-                                <thead className="admin-dash-tbl-thead">
-                                    <tr>
-                                        <th>
-                                            Sr.No
-                                        </th>
-                                        <th>BDE/BDM Name</th>
-                                        <th >Branch Name</th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.forwardedcase === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.forwardedcase === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    forwardedcase: updatedSortType,
-                                                }));
-                                                handleSortForwardedCases(updatedSortType);
-                                            }}
-                                        >
-                                            <div className="d-flex align-items-center justify-content-between">
-                                                <div>Forwarded Cases</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.forwardedcase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.forwardedcase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.recievedcase === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.recievedcase === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    recievedcase: updatedSortType,
-                                                }));
-                                                handleSortRecievedCase(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>Recieved Cases</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.recievedcase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.recievedcase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.forwardedprojectioncase === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.forwardedprojectioncase === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    forwardedprojectioncase: updatedSortType,
-                                                }));
-                                                handleSortForwardedProjectionCase(updatedSortType);
-                                            }}>
-                                            <div className="d-flex align-items-center justify-content-between">
-                                                <div>Forwarded Case Projection</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.forwardedprojectioncase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.forwardedprojectioncase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.recievedprojectioncase === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.recievedprojectioncase === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    recievedprojectioncase: updatedSortType,
-                                                }));
-                                                handleSortRecievedProjectionCase(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>Recieved Case Projection</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.recievedprojectioncase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.recievedprojectioncase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <th style={{ cursor: 'pointer' }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.maturedcase === 'ascending') {
-                                                    updatedSortType = 'descending';
-                                                } else if (newSortType.maturedcase === 'descending') {
-                                                    updatedSortType = 'none'
-                                                } else {
-                                                    updatedSortType = 'ascending'
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    maturedcase: updatedSortType,
-                                                }));
-                                                handleSortMaturedCases(updatedSortType)
-                                            }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>Matured Case</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.recievedprojectioncase === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.recievedprojectioncase === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div></th>
-                                        <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                                let updatedSortType;
-                                                if (newSortType.generatedrevenue === "ascending") {
-                                                    updatedSortType = "descending";
-                                                } else if (newSortType.generatedrevenue === "descending") {
-                                                    updatedSortType
-                                                        = "none";
-                                                } else {
-                                                    updatedSortType = "ascending";
-                                                }
-                                                setNewSortType((prevData) => ({
-                                                    ...prevData,
-                                                    generatedrevenue: updatedSortType,
-                                                }));
-                                                handleSortRedesignedData(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
-                                                <div>Generated Revenue</div>
-                                                <div className="short-arrow-div">
-                                                    <ArrowDropUpIcon className="up-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.generatedrevenue === "descending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                    <ArrowDropDownIcon className="down-short-arrow"
-                                                        style={{
-                                                            color:
-                                                                newSortType.generatedrevenue === "ascending"
-                                                                    ? "black"
-                                                                    : "#9d8f8f",
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                {loading ?
-                                    (<tbody>
-                                        <tr>
-                                            <td colSpan="12">
-                                                <div className="LoaderTDSatyle">
-                                                    <ClipLoader
-                                                        color="lightgrey"
-                                                        loading
-                                                        size={30}
-                                                        aria-label="Loading Spinner"
-                                                        data-testid="loader"
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>) :
-                                    (<tbody>
-                                        {forwardEmployeeData.length !== 0 &&
-                                            forwardEmployeeData.map((obj, index) => (
-                                                <tr key={`row-${index}`}>
-                                                    <td style={{
-                                                        color: "black",
-                                                        textDecoration: "none",
-                                                    }} >{index + 1}</td>
-                                                    <td >{obj.ename}</td>
-                                                    <td>{obj.branchOffice}</td>
-                                                    <td >
-                                                        {companyDataTotal.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
-                                                    </td>
-                                                    <td >
-                                                        {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
-                                                    </td>
-                                                    <td>
-                                                        {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`}
-
-                                                    </td>
-
-                                                    <td>
-                                                        ₹{functionCalculateTotalProjectionRecieved(obj.ename)}
-                                                    </td>
-
-                                                    <td>
-                                                        {functionCalculateGeneratedMaturedCase(obj.ename)}
-                                                    </td>
-                                                    <td>₹ {Math.round(functionCalculateGeneratedRevenue(obj.ename)).toLocaleString()}</td>
-                                                </tr>
-                                            ))}
-                                    </tbody>)}
-                                <tfoot className="admin-dash-tbl-tfoot">
-                                    <tr>
-                                        <td
-                                            colSpan="3"
-                                        >
-                                            Total
-                                        </td>
-                                        <td>
-                                            {companyDataTotal.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
-                                        </td>
-                                        <td>
-                                            {teamLeadsData.length}
-                                        </td>
-                                        <td>
-                                            ₹{generatedTotalProjection}
-                                        </td>
-                                        <td>
-                                            ₹{generatedTotalProjectionRecieved}
-                                        </td>
-                                        <td>
-                                            {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
-                                        </td>
-                                        <td>
-                                            ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table> */}
 
                             <table className="admin-dash-tbl">
                                 <thead className="admin-dash-tbl-thead">
@@ -1538,8 +1208,58 @@ function EmployeesForwardedDataReportFromBackend() {
                                         <th>Sr.No</th>
                                         <th>BDE/BDM Name</th>
                                         <th>Branch Name</th>
-                                        <th>Forwarded Cases</th>
-                                        <th>Received Cases</th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => handleColumnSort('forwardedcase')}
+                                        >
+                                            <div className="d-flex align-items-center justify-content-between">
+                                                <div>Forwarded Cases</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon
+                                                        className="up-short-arrow"
+                                                        style={{
+                                                            color: newSortType.forwardedcase === "descending"
+                                                                ? "black"
+                                                                : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon
+                                                        className="down-short-arrow"
+                                                        style={{
+                                                            color: newSortType.forwardedcase === "ascending"
+                                                                ? "black"
+                                                                : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => handleColumnSort('receivedcase')}
+                                        >
+                                            <div className="d-flex align-items-center justify-content-between">
+                                                <div>Received Cases</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon
+                                                        className="up-short-arrow"
+                                                        style={{
+                                                            color: newSortType.recievedcase === "descending"
+                                                                ? "black"
+                                                                : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon
+                                                        className="down-short-arrow"
+                                                        style={{
+                                                            color: newSortType.recievedcase === "ascending"
+                                                                ? "black"
+                                                                : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
                                         <th>Forwarded Case Projection</th>
                                         <th>Recieved Case Projection</th>
                                         <th>Matured Cases</th>
@@ -1547,31 +1267,79 @@ function EmployeesForwardedDataReportFromBackend() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {Object.entries(employeeStats).map(([name, stats], index) => {
-                                        const projectionData = employeeTotalAmount[name] || { forwardedProjection: 0, receivedProjection: 0 };
-
-                                        return (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{name}</td>
-                                                <td>{stats.branchOffice}</td>
-                                                <td>{stats.forwarded || '0'}</td>
-                                                <td>{stats.received || '0'}</td>
-                                                <td>{`₹ ${formatSalary(projectionData.forwardedProjection.toFixed(2))}` || '₹ 0'}</td>
-                                                <td>{`₹ ${formatSalary(projectionData.receivedProjection.toFixed(2))}` || '₹ 0'}</td>
-                                                <td>-</td>
-                                                <td>-</td>
+                                    <>
+                                        {isLoading ? (
+                                            <tr>
+                                                <td colSpan="12">
+                                                    <div className="LoaderTDSatyle">
+                                                        <ClipLoader
+                                                            color="lightgrey"
+                                                            loading
+                                                            size={30}
+                                                            aria-label="Loading Spinner"
+                                                            data-testid="loader"
+                                                        />
+                                                    </div>
+                                                </td>
                                             </tr>
-                                        );
-                                    })}
+                                        ) : (
+                                            <>
+                                                {filteredEmployeeStats.length > 0 ? (
+                                                    filteredEmployeeStats.map(([name, stats], index) => {
+                                                        const projectionData = employeeTotalAmount[name] || { forwardedProjection: 0, receivedProjection: 0 };
+                                                        const maturedData = maturedTotals[name] || { maturedCases: 0, generatedRevenue: 0 };
+
+                                                        // Update totals
+                                                        totalForwardedCases += stats.forwarded || 0;
+                                                        totalReceivedCases += stats.received || 0;
+                                                        totalForwardedProjection += projectionData.forwardedProjection;
+                                                        totalReceivedProjection += projectionData.receivedProjection;
+                                                        totalMaturedCases += maturedData.maturedCases;
+                                                        totalGeneratedRevenue += maturedData.generatedRevenue;
+
+                                                        return (
+                                                            <tr key={index}>
+                                                                <td>{index + 1}</td>
+                                                                <td>{name}</td>
+                                                                <td>{stats.branchOffice}</td>
+                                                                <td>{stats.forwarded || '0'}</td>
+                                                                <td>{stats.received || '0'}</td>
+                                                                <td>{`₹ ${formatSalary(projectionData.forwardedProjection.toFixed(2))}` || '₹ 0'}</td>
+                                                                <td>{`₹ ${formatSalary(projectionData.receivedProjection.toFixed(2))}` || '₹ 0'}</td>
+                                                                <td>{maturedData.maturedCases}</td>
+                                                                <td>{`₹ ${formatSalary(maturedData.generatedRevenue.toFixed(2))}` || '₹ 0'}</td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan="9"><Nodata /></td>
+                                                    </tr>
+                                                )}
+                                            </>
+                                        )}
+                                    </>
                                 </tbody>
+
+                                {filteredEmployeeStats.length > 0 && <tfoot className="admin-dash-tbl-tfoot">
+                                    <tr>
+                                        <td colSpan={3}>Total</td>
+                                        <td>{totalForwardedCases}</td>
+                                        <td>{totalReceivedCases}</td>
+                                        <td>{`₹ ${formatSalary(totalForwardedProjection.toFixed(2))}`}</td>
+                                        <td>{`₹ ${formatSalary(totalReceivedProjection.toFixed(2))}`}</td>
+                                        <td>{totalMaturedCases}</td>
+                                        <td>{`₹ ${formatSalary(totalGeneratedRevenue.toFixed(2))}`}</td>
+                                    </tr>
+                                </tfoot>}
                             </table>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default EmployeesForwardedDataReportFromBackend
+export default EmployeesForwardedDataReportFromBackend;

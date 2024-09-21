@@ -7132,8 +7132,174 @@ router.put("/updateDeletedBdmStatus/:ename", async (req, res) => {
 });
 
 // API for fetching remaining expense report services :
+// router.get("/fetchRemainingExpenseServices", async (req, res) => {
+//   try {
+//     const data = await RedesignedLeadformModel.aggregate([
+//       {
+//         $match: {
+//           $or: [
+//             {
+//               'services.serviceName': {
+//                 $regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+//               },
+//               'services.expanse': { $exists: false }
+//             },
+//             {
+//               'moreBookings.services.serviceName': {
+//                 $regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+//               },
+//               'moreBookings.services.expanse': { $exists: false }
+//             }
+//           ]
+//         }
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           "Company Name": 1, // Include the company name
+//           services: {
+//             $map: {
+//               input: {
+//                 $filter: {
+//                   input: "$services",
+//                   as: "service",
+//                   cond: {
+//                     $and: [
+//                       { $eq: [{ $type: "$$service.serviceName" }, "string"] }, // Ensure serviceName is a string
+//                       {
+//                         $regexMatch: {
+//                           input: "$$service.serviceName",
+//                           regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+//                         }
+//                       },
+//                       { $eq: [{ $ifNull: ["$$service.expanse", null] }, null] } // Ensure expanse does not exist
+//                     ]
+//                   }
+//                 }
+//               },
+//               as: "service",
+//               in: {
+//                 serviceName: "$$service.serviceName", // Only return serviceName
+//                 totalAmount: "$totalAmount", // Extract totalAmount from services
+//                 receivedAmount: "$receivedAmount", // Extract receivedAmount from services
+//                 pendingAmount: "$pendingAmount" // Extract pendingAmount from services
+//               }
+//             }
+//           },
+//           moreBookings: {
+//             $map: {
+//               input: "$moreBookings",
+//               as: "booking",
+//               in: {
+//                 services: {
+//                   $map: {
+//                     input: {
+//                       $filter: {
+//                         input: "$$booking.services",
+//                         as: "service",
+//                         cond: {
+//                           $and: [
+//                             { $eq: [{ $type: "$$service.serviceName" }, "string"] },
+//                             {
+//                               $regexMatch: {
+//                                 input: "$$service.serviceName",
+//                                 regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
+//                               }
+//                             },
+//                             { $eq: [{ $ifNull: ["$$service.expanse", null] }, null] }
+//                           ]
+//                         }
+//                       }
+//                     },
+//                     as: "service",
+//                     in: {
+//                       serviceName: "$$service.serviceName",
+//                       totalAmount: "$$booking.totalAmount", // Extract totalAmount from services
+//                       receivedAmount: "$$booking.receivedAmount", // Extract receivedAmount from services
+//                       pendingAmount: "$$booking.pendingAmount" // Extract pendingAmount from services
+//                     }
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     ]);
+
+//     //   res.json(data);
+//     // } catch (err) {
+//     //   res.status(500).send({ error: err.message });
+//     // }
+//     // Process the fetched data and store it in ExpenseReportModel
+//     const expenseReports = [];
+
+//     // Process fetched data
+//     for (const item of data) {
+//       // Process services
+//       if (item.services && item.services.length > 0) {
+//         for (const service of item.services) {
+//           // Check if the record already exists
+//           const existingRecord = await ExpenseReportModel.findOne({
+//             companyName: item["Company Name"],
+//             serviceName: service.serviceName
+//           });
+
+//           // If the record doesn't exist, prepare it for insertion
+//           if (!existingRecord) {
+//             expenseReports.push({
+//               companyName: item["Company Name"],
+//               serviceName: service.serviceName,
+//               totalPayment: service.totalAmount,
+//               receivedPayment: service.receivedAmount,
+//               remainingPayment: service.pendingAmount
+//             });
+//           }
+//         }
+//       }
+
+//       // Process moreBookings services
+//       if (item.moreBookings && item.moreBookings.length > 0) {
+//         for (const booking of item.moreBookings) {
+//           for (const service of booking.services) {
+//             // Check if the record already exists
+//             const existingRecord = await ExpenseReportModel.findOne({
+//               companyName: item["Company Name"],
+//               serviceName: service.serviceName
+//             });
+
+//             // If the record doesn't exist, prepare it for insertion
+//             if (!existingRecord) {
+//               expenseReports.push({
+//                 companyName: item["Company Name"],
+//                 serviceName: service.serviceName,
+//                 totalPayment: service.totalAmount,
+//                 receivedPayment: service.receivedAmount,
+//                 remainingPayment: service.pendingAmount
+//               });
+//             }
+//           }
+//         }
+//       }
+//     }
+
+//     // Insert new records into the ExpenseReportModel
+//     if (expenseReports.length > 0) {
+//       await ExpenseReportModel.insertMany(expenseReports);
+//     }
+
+//     // Send response after storing data
+//     res.json({ message: "Data fetched and stored successfully!", insertedCount: expenseReports.length, data });
+//   } catch (err) {
+//     res.status(500).send({ error: err.message });
+//   }
+// });
+
+
+
 router.get("/fetchRemainingExpenseServices", async (req, res) => {
   try {
+    // Step 1: Fetch data using aggregation
     const data = await RedesignedLeadformModel.aggregate([
       {
         $match: {
@@ -7156,7 +7322,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
       {
         $project: {
           _id: 0,
-          "Company Name": 1, // Include the company name
+          "Company Name": 1,
           services: {
             $map: {
               input: {
@@ -7165,24 +7331,24 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
                   as: "service",
                   cond: {
                     $and: [
-                      { $eq: [{ $type: "$$service.serviceName" }, "string"] }, // Ensure serviceName is a string
+                      { $eq: [{ $type: "$$service.serviceName" }, "string"] },
                       {
                         $regexMatch: {
                           input: "$$service.serviceName",
                           regex: /^(ISO Certificate|Start-Up India Certificate|IEC CODE Certificate|FSSAI Certificate|APEDA Certificate|Private Limited Company Incorporation|OPC Private Limited Company Incorporation|LLP Company Incorporation|Organization DSC|Director DSC|Website Development|App Design & Development|Web Application Development|Software Development|CRM Development|ERP Development|E-Commerce Website|GST Registration Application Support)/i
                         }
                       },
-                      { $eq: [{ $ifNull: ["$$service.expanse", null] }, null] } // Ensure expanse does not exist
+                      { $eq: [{ $ifNull: ["$$service.expanse", null] }, null] }
                     ]
                   }
                 }
               },
               as: "service",
               in: {
-                serviceName: "$$service.serviceName", // Only return serviceName
-                totalAmount: "$totalAmount", // Extract totalAmount from services
-                receivedAmount: "$receivedAmount", // Extract receivedAmount from services
-                pendingAmount: "$pendingAmount" // Extract pendingAmount from services
+                serviceName: "$$service.serviceName",
+                totalAmount: "$totalAmount",
+                receivedAmount: "$receivedAmount",
+                pendingAmount: "$pendingAmount"
               }
             }
           },
@@ -7214,9 +7380,9 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
                     as: "service",
                     in: {
                       serviceName: "$$service.serviceName",
-                      totalAmount: "$$booking.totalAmount", // Extract totalAmount from services
-                      receivedAmount: "$$booking.receivedAmount", // Extract receivedAmount from services
-                      pendingAmount: "$$booking.pendingAmount" // Extract pendingAmount from services
+                      totalAmount: "$$booking.totalAmount",
+                      receivedAmount: "$$booking.receivedAmount",
+                      pendingAmount: "$$booking.pendingAmount"
                     }
                   }
                 }
@@ -7227,34 +7393,33 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
       }
     ]);
 
-    //   res.json(data);
-    // } catch (err) {
-    //   res.status(500).send({ error: err.message });
-    // }
-    // Process the fetched data and store it in ExpenseReportModel
-    const expenseReports = [];
+    // Step 2: Delete only those records whose isDeleted is false
+    await ExpenseReportModel.deleteMany({ isDeleted: false });
 
-    // Process fetched data
+    // Step 3: Fetch companies that have isDeleted: true
+    const deletedCompanies = await ExpenseReportModel.find({ isDeleted: true }).select('companyName');
+
+    // Step 4: Prepare and insert new records, skipping companies marked as isDeleted: true
+    const expenseReports = [];
+    const deletedCompanyNames = deletedCompanies.map(company => company.companyName);
+
     for (const item of data) {
+      if (deletedCompanyNames.includes(item["Company Name"])) {
+        // Skip this company if it's marked as deleted
+        continue;
+      }
+
       // Process services
       if (item.services && item.services.length > 0) {
         for (const service of item.services) {
-          // Check if the record already exists
-          const existingRecord = await ExpenseReportModel.findOne({
+          expenseReports.push({
             companyName: item["Company Name"],
-            serviceName: service.serviceName
+            serviceName: service.serviceName,
+            totalPayment: service.totalAmount,
+            receivedPayment: service.receivedAmount,
+            remainingPayment: service.pendingAmount,
+            isDeleted: false
           });
-
-          // If the record doesn't exist, prepare it for insertion
-          if (!existingRecord) {
-            expenseReports.push({
-              companyName: item["Company Name"],
-              serviceName: service.serviceName,
-              totalPayment: service.totalAmount,
-              receivedPayment: service.receivedAmount,
-              remainingPayment: service.pendingAmount
-            });
-          }
         }
       }
 
@@ -7262,22 +7427,14 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
       if (item.moreBookings && item.moreBookings.length > 0) {
         for (const booking of item.moreBookings) {
           for (const service of booking.services) {
-            // Check if the record already exists
-            const existingRecord = await ExpenseReportModel.findOne({
+            expenseReports.push({
               companyName: item["Company Name"],
-              serviceName: service.serviceName
+              serviceName: service.serviceName,
+              totalPayment: service.totalAmount,
+              receivedPayment: service.receivedAmount,
+              remainingPayment: service.pendingAmount,
+              isDeleted: false
             });
-
-            // If the record doesn't exist, prepare it for insertion
-            if (!existingRecord) {
-              expenseReports.push({
-                companyName: item["Company Name"],
-                serviceName: service.serviceName,
-                totalPayment: service.totalAmount,
-                receivedPayment: service.receivedAmount,
-                remainingPayment: service.pendingAmount
-              });
-            }
           }
         }
       }
@@ -7288,12 +7445,8 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
       await ExpenseReportModel.insertMany(expenseReports);
     }
 
-    // Send response after storing data
-    res.json({
-      message: "Data fetched and stored successfully!",
-      insertedCount: expenseReports.length,
-      data
-    });
+    // Step 5: Send response
+    res.json({ message: "Data fetched, deleted old records with isDeleted: false, and stored new records successfully!", insertedCount: expenseReports.length });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }

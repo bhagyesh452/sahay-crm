@@ -1498,7 +1498,7 @@ router.get('/filter-employee-leads', async (req, res) => {
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
     console.log("selectedAssignDate", selectedAssignDate)
-   
+
     if (selectedYear) {
       if (monthIndex !== '0') {
 
@@ -2239,6 +2239,141 @@ router.get("/fetchForwardedLeadsAmount", async (req, res) => {
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Fetch data for matured cases and generated received amounts :
+router.get("/fetchMaturedCases", async (req, res) => {
+  try {
+    const maturedCompanies = await CompanyModel.aggregate([
+      {
+        $match: {
+          Status: 'Matured', // Filter companies with 'Matured' status
+        },
+      },
+      {
+        $lookup: {
+          from: 'redesignedleadforms',
+          let: { ename: '$ename', company: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$company', '$$company'] }, // Matching company ID
+                  ],
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                bdeName: 1,
+                bdmName: 1,
+                bdmType: 1,
+                moreBookings: 1,
+                services: 1, // Include services from parent array
+              },
+            },
+          ],
+          as: 'leadForms',
+        },
+      },
+      {
+        $addFields: {
+          maturedCases: {
+            $reduce: {
+              input: "$leadForms",
+              initialValue: {
+                count: 0,
+                services: [],
+              },
+              in: {
+                maturedCase: {
+                  $cond: [
+                    { $eq: ["$$this.bdmName", "$ename"] },
+                    { $add: ["$$value.count", 1] }, 
+                    {
+                      $cond: [
+                        { $eq: ["$$this.bdmType", "Close-by"] },
+                        { $add: ["$$value.count", 0.5] }, 
+                        { $add: ["$$value.count", 1] }
+                      ]
+                    }
+                  ]
+                },
+                services: {
+                  $concatArrays: [
+                    "$$value.services",
+                    {
+                      $map: {
+                        input: "$$this.services",
+                        as: "service",
+                        in: {
+                          serviceName: "$$service.serviceName",
+                          generatedReceivedAmount: {
+                            $cond: [
+                              { $eq: ["$$this.bdmName", "$ename"] },
+                              // "$$service.totalPaymentWOGST", // Full amount if ename matches bdmName
+                              "$$service.totalPaymentWOGST", // Full amount if ename matches bdmName
+                              {
+                                $cond: [
+                                  { $eq: ["$$this.bdmType", "Close-by"] },
+                                  { $divide: ["$$service.totalPaymentWOGST", 2] }, // Half amount if bdmType is Close-by
+                                  "$$service.totalPaymentWOGST" // Full amount if bdmType is Supported-by
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      $map: {
+                        input: "$$this.moreBookings",
+                        as: "booking",
+                        in: {
+                          serviceName: { $arrayElemAt: ["$$booking.services.serviceName", 0] },
+                          generatedReceivedAmount: {
+                            $cond: [
+                              { $eq: ["$$booking.bdmName", "$ename"] },
+                              "$$booking.generatedReceivedAmount", 
+                              {
+                                $cond: [
+                                  { $eq: ["$$booking.bdmType", "Close-by"] },
+                                  { $divide: ["$$booking.generatedReceivedAmount", 2] }, 
+                                  "$$booking.generatedReceivedAmount"
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          companyName: '$Company Name',
+          ename: 1,
+          bdeName: { $arrayElemAt: ["$leadForms.bdeName", 0] },
+          bdmName: { $arrayElemAt: ["$leadForms.bdmName", 0] },
+          bdmType: { $arrayElemAt: ["$leadForms.bdmType", 0] },
+          Status: 1,
+          maturedCases: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(maturedCompanies);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
