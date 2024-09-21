@@ -192,6 +192,12 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
           updateDocumentInState(res.updatedDocument);
       }
   });
+  socket.on("rm-cert-remarks-updated", (res) => {
+    //console.log("res" , res)
+    if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
+    }
+});
 
     return () => {
       socket.disconnect();
@@ -332,9 +338,9 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   }
 
   //------------------------Remarks Popup Section-----------------------------
-  const handleOpenRemarksPopup = async (companyName, serviceName) => {
-    console.log("RemarksPopup")
-  }
+  // const handleOpenRemarksPopup = async (companyName, serviceName) => {
+  //   console.log("RemarksPopup")
+  // }
   const functionCloseRemarksPopup = () => {
     setChangeRemarks('')
     setError('')
@@ -361,11 +367,11 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
         //console.log("response", response.data);
 
         if (response.status === 200) {
-          if (filteredData && filteredData.length > 0) {
-            fetchData(searchText, page, true);
-          } else {
-            fetchData(searchText, page, false);
-          }
+          // if (filteredData && filteredData.length > 0) {
+          //   fetchData(searchText, page, true);
+          // } else {
+          //   fetchData(searchText, page, false);
+          // }
           functionCloseRemarksPopup();
         }
       } else {
@@ -1675,10 +1681,6 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                               setCurrentCompanyName(obj["Company Name"]);
                               setCurrentServiceName(obj.serviceName);
                               setHistoryRemarks(obj.Remarks);
-                              handleOpenRemarksPopup(
-                                obj["Company Name"],
-                                obj.serviceName
-                              );
                             }}
                           >
                             <FaPencilAlt />
