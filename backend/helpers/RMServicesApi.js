@@ -6,9 +6,9 @@ dotenv.config();
 const { exec } = require("child_process");
 const { parse } = require('date-fns');
 const moment = require('moment');
-
+const path = require("path");
 app.use(express.json());
-
+const fs = require("fs");
 const CompanyModel = require("../models/Leads.js");
 const RemarksHistory = require("../models/RemarksHistory");
 const TeamLeadsModel = require("../models/TeamLeads.js");
@@ -21,28 +21,131 @@ const RedesignedLeadformModel = require('../models/RedesignedLeadform.js');
 const RMCertificationHistoryModel = require('../models/RMCerificationHistoryModel.js');
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const AdminExecutiveHistoryModel = require('../models/AdminExecutiveHistoryModel.js');
-//const companyName = process.env.COMPANY_NAME
-function runTestScript(companyName) {
-  console.log("Company Name:", companyName);
+const { sendMailForRmApproved } = require('../helpers/sendMailForRmApproved');
 
-  //Ensure the companyName is properly quoted to handle spaces or special characters
+
+
+
+//const companyName = process.env.COMPANY_NAME
+// function runTestScript(companyName) {
+//   console.log("Company Name:", companyName);
+
+//   //Ensure the companyName is properly quoted to handle spaces or special characters
+//   const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+
+//   exec(command, (error, stdout, stderr) => {
+//     if (error) {
+//       console.error(`Error executing script: ${error.message}`);
+//       return;
+//     }
+//     if (stderr) {
+//       console.error(`Script stderr: ${stderr}`);
+//       return;
+//     }
+//     console.log(`Script stdout: ${stdout}`);
+//   });
+
+// }
+
+
+
+function runTestScript(companyName, socketIO, companyEmail) {
+  console.log("Company Name:", companyName, companyEmail);
+
+  // Ensure the companyName is properly quoted to handle spaces or special characters
   const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing script: ${error.message}`);
+      socketIO.emit("test-script-output", {
+        companyName: companyName,
+        status: "error",
+        message: error.message
+      });
       return;
     }
     if (stderr) {
       console.error(`Script stderr: ${stderr}`);
+      socketIO.emit("test-script-output", {
+        companyName: companyName,
+        status: "stderr",
+        message: stderr
+      });
       return;
     }
-    console.log(`Script stdout: ${stdout}`);
-  });
-  
-}
 
-runTestScript("MWL FOODS LLP")
+    console.log(`Script stdout: ${stdout}`);
+    socketIO.emit("test-script-output", {
+      companyName: companyName,
+      status: "success",
+      message: stdout
+    });
+
+    // Now that the script has run successfully, find the generated PDF
+    const sanitizedCompanyName = companyName.replace(/\s+/g, '_');
+    const timestamp = new Date().toISOString().replace(/[-:.]/g, '_'); // Use your timestamp logic
+    const dirPath = path.join(__dirname, `../TestCertificates/${sanitizedCompanyName}`); // Path where PDF is stored
+    const pdfPath = path.join(dirPath, `${sanitizedCompanyName}_Certificate.pdf`);
+
+    // Ensure the file exists before sending the email
+    fs.access(pdfPath, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error(`PDF file not found: ${pdfPath}`);
+        return;
+      }
+
+      console.log(`PDF generated successfully at: ${pdfPath}`);
+
+      // Introduce a 4-second delay (4000 milliseconds) before sending the email
+      setTimeout(async () => {
+        try {
+          const attachments = [
+            {
+              filename: `${sanitizedCompanyName}_Certificate.pdf`,
+              path: pdfPath,
+            }
+          ];
+          const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html '; // Your validation link
+          const subject = `Congratulations! Your Start-Up India Certificate is Approved!`;
+          const text = `Dear ${companyName},\n\nPlease find attached the certificate generated for your company.\n\nBest regards,\nStart-Up Sahay Private Limited`
+          const html = `
+                  <p>Dear ${companyName},</p>
+                  <p>We are pleased to inform you that your Start-Up India Certificate has been successfully approved, and it is attached to this email for your reference. Congratulations on this important step in your startup journey!</p>
+                  <p>We would also like to take this opportunity to share more about our services. We operate and provide support in the following areas:</p>
+                  <ul>
+                  <li>Certification Services</li>
+                  <li>Fund Raising Support Services</li>
+                  <li>Documentation Services</li>
+                  <li>IT Services</li>
+                  <li>Business Registration</li>
+                  <li>Digital Marketing</li>
+                  </ul>
+                  <p>The detailed information about these services is available in attached company brochure of Start-Up Sahay. Whenever you have some time, please feel free to explore it.</p>
+                  <p>You can also verify your certification by visiting the official Start-Up India portal through this link: <a href="${validationLink}">Verify Start-Up Recognition</a></p>
+                  <p>If you are interested in any of our services, simply reply to this email or give us a call at 8347526407.</p>
+                  <p>Thank you for choosing Start-Up Sahay. We look forward to continuing to support you!</p>
+<p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
+                  `;
+
+          // Send email with the attachment
+          const emailInfo = await sendMailForRmApproved(
+            [companyEmail], // Recipients
+            subject,
+            text,
+            html,
+            attachments // Attachments array
+          );
+
+          console.log(`Email sent: ${emailInfo.messageId}`);
+        } catch (error) {
+          console.error(`Error sending email: ${error.message}`);
+        }
+      }, 4000); // Delay the email sending by 4 seconds (4000 ms)
+    });
+  });
+}
+// runTestScript("MWL FOODS LLP")
 
 
 router.get("/redesigned-final-leadData-rm", async (req, res) => {
@@ -1297,10 +1400,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         { new: true }
       );
 
-      // if (subCategoryStatus === "Approved") {
-      //   console.log("hello wworld");
-      //   runTestScript(companyName);
-      // }
+      if (subCategoryStatus === "Approved") {
+        console.log("hello wworld");
+        runTestScript(companyName, socketIO, company["Company Email"]);
+      }
       //console.log("updatedcompany", updatedCompany);
       //console.log("submittedOn", submittedOn);
 
@@ -1556,11 +1659,11 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
         { new: true }
       );
 
-      if(subCategoryStatus === "Approved"){
-        console.log("hello world")
-        runTestScript(companyName);
-      }
-    
+      // if(subCategoryStatus === "Approved"){
+      //   console.log("hello world")
+      //   runTestScript(companyName);
+      // }
+
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");
