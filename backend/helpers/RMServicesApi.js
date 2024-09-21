@@ -22,6 +22,7 @@ const RMCertificationHistoryModel = require('../models/RMCerificationHistoryMode
 const AdminExecutiveModel = require('../models/AdminExecutiveModel.js');
 const AdminExecutiveHistoryModel = require('../models/AdminExecutiveHistoryModel.js');
 const { sendMailForRmApproved } = require('../helpers/sendMailForRmApproved');
+const adminModel = require("../models/Admin.js");
 
 
 
@@ -48,12 +49,12 @@ const { sendMailForRmApproved } = require('../helpers/sendMailForRmApproved');
 
 
 
-function runTestScript(companyName, socketIO, companyEmail) {
+function runTestScript(companyName, socketIO, companyEmail ,bdeNumber) {
   console.log("Company Name:", companyName, companyEmail);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
-  // const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
-  const command = `export COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+  //const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+  const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
 
 
   exec(command, (error, stdout, stderr) => {
@@ -105,8 +106,13 @@ function runTestScript(companyName, socketIO, companyEmail) {
             {
               filename: `${sanitizedCompanyName}_Certificate.pdf`,
               path: pdfPath,
+            },
+            {
+              filename: 'Company_Brochure.pdf', // Static brochure name
+              path: path.join(__dirname, "src", "Company_Brochure.pdf"), // Adjust the path accordingly, // Path to the static brochure
             }
           ];
+          console.log(`Email attachments: ${JSON.stringify(attachments)}`);
           const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html '; // Your validation link
           const subject = `Congratulations! Your Start-Up India Certificate is Approved!`;
           const text = `Dear ${companyName},\n\nPlease find attached the certificate generated for your company.\n\nBest regards,\nStart-Up Sahay Private Limited`
@@ -124,7 +130,7 @@ function runTestScript(companyName, socketIO, companyEmail) {
                   </ul>
                   <p>The detailed information about these services is available in attached company brochure of Start-Up Sahay. Whenever you have some time, please feel free to explore it.</p>
                   <p>You can also verify your certification by visiting the official Start-Up India portal through this link: <a href="${validationLink}">Verify Start-Up Recognition</a></p>
-                  <p>If you are interested in any of our services, simply reply to this email or give us a call at 8347526407.</p>
+                  <p>If you are interested in any of our services, simply reply to this email or give us a call at ${bdeNumber}.</p>
                   <p>Thank you for choosing Start-Up Sahay. We look forward to continuing to support you!</p>
 <p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
                   `;
@@ -562,12 +568,12 @@ router.get('/rm-sevicesgetrequest-complete', async (req, res) => {
       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
         .sort({ addedOn: -1 })
         .skip(skip)
-        .limit(parseInt(limit));
+        .limit(parseInt(limit)).lean();
     } else {
       response = await RMCertificationModel.find({ ...query, mainCategoryStatus: activeTab })
         .sort({ dateOfChangingMainStatus: -1 })
         .skip(skip)
-        .limit(parseInt(limit));
+        .limit(parseInt(limit)).lean();
     }
 
     //console.log("response" , response)
@@ -603,7 +609,7 @@ router.get('/rm-sevicesgetrequest-complete', async (req, res) => {
 
 router.get('/rm-sevicesgetrequest', async (req, res) => {
   try {
-    const { search, page = 1, limit = 500, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+    const { search, page = 1, limit = 5000, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
 
     // Build query object
     let query = {};
@@ -1347,6 +1353,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       ["Company Name"]: companyName,
       serviceName: serviceName,
     });
+    const findBde = await adminModel.findOne({
+      ename:company.bdeName
+    });
+    console.log("findbde" , findBde)
 
     if (!company) {
       console.error("Company not found");
@@ -1372,7 +1382,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         updateFields.dateOfChangingMainStatus = new Date();
       }
 
-      // Step 2: Update the RMCertificationModel document
+      //Step 2: Update the RMCertificationModel document
       const updatedCompany = await RMCertificationModel.findOneAndUpdate(
         { ["Company Name"]: companyName, serviceName: serviceName },
         {
@@ -1403,10 +1413,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
 
       if (subCategoryStatus === "Approved") {
         console.log("hello wworld");
-        runTestScript(companyName, socketIO, company["Company Email"]);
+        const bdeNumber = findBde ? findBde.number : "8347526407";
+        runTestScript(companyName, socketIO, company["Company Email"] , bdeNumber);
       }
-      //console.log("updatedcompany", updatedCompany);
-      //console.log("submittedOn", submittedOn);
+      
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");
@@ -3350,7 +3360,7 @@ router.post(
 router.post("/post-remarks-for-rmofcertification", async (req, res) => {
   const { currentCompanyName, currentServiceName, changeRemarks, updatedOn } =
     req.body;
-
+  const socketIO = req.io;
   try {
     const updateDocument = await RMCertificationModel.findOneAndUpdate(
       {
@@ -3371,7 +3381,9 @@ router.post("/post-remarks-for-rmofcertification", async (req, res) => {
     if (!updateDocument) {
       return res.status(404).json({ message: "Document not found" });
     }
-
+    socketIO.emit("rm-cert-remarks-updated", {
+      updatedDocument: updateDocument,
+    });
     res
       .status(200)
       .json({ message: "Remarks added successfully", data: updateDocument });
