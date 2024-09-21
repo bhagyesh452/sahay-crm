@@ -44,7 +44,6 @@ const { sendMailForRmApproved } = require('../helpers/sendMailForRmApproved');
 //     }
 //     console.log(`Script stdout: ${stdout}`);
 //   });
-
 // }
 
 
@@ -53,7 +52,9 @@ function runTestScript(companyName, socketIO, companyEmail) {
   console.log("Company Name:", companyName, companyEmail);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
-  const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+  // const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+  const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
+
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
