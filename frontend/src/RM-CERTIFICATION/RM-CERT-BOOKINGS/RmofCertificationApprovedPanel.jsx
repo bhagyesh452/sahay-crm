@@ -367,11 +367,11 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
         //console.log("response", response.data);
 
         if (response.status === 200) {
-          // if (filteredData && filteredData.length > 0) {
-          //   fetchData(searchText, page, true);
-          // } else {
-          //   fetchData(searchText, page, false);
-          // }
+          if (filteredData && filteredData.length > 0) {
+            fetchData(searchText, page, true);
+          } else {
+            fetchData(searchText, page, false);
+          }
           functionCloseRemarksPopup();
         }
       } else {

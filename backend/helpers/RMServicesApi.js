@@ -49,13 +49,13 @@ const adminModel = require("../models/Admin.js");
 
 
 
-function runTestScript(companyName, socketIO, companyEmail ,bdeNumber) {
+function runTestScript(companyName, socketIO, companyEmail, bdeNumber,bdmNumber) {
   console.log("Company Name:", companyName, companyEmail);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
-  //const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+  //const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
   const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
-console.log(command)
+  console.log(command)
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
@@ -114,6 +114,7 @@ console.log(command)
           ];
           console.log(`Email attachments: ${JSON.stringify(attachments)}`);
           const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html '; // Your validation link
+          const number = bdmNumber ? `${bdeNumber} / ${bdmNumber}` : bdeNumber
           const subject = `Congratulations! Your Start-Up India Certificate is Approved!`;
           const text = `Dear ${companyName},\n\nPlease find attached the certificate generated for your company.\n\nBest regards,\nStart-Up Sahay Private Limited`
           const html = `
@@ -130,7 +131,7 @@ console.log(command)
                   </ul>
                   <p>The detailed information about these services is available in attached company brochure of Start-Up Sahay. Whenever you have some time, please feel free to explore it.</p>
                   <p>You can also verify your certification by visiting the official Start-Up India portal through this link: <a href="${validationLink}">Verify Start-Up Recognition</a></p>
-                  <p>If you are interested in any of our services, simply reply to this email or give us a call at ${bdeNumber}.</p>
+                  <p>If you are interested in any of our services, simply reply to this email or give us a call at ${number}.</p>
                   <p>Thank you for choosing Start-Up Sahay. We look forward to continuing to support you!</p>
 <p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
                   `;
@@ -1354,9 +1355,16 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       serviceName: serviceName,
     });
     const findBde = await adminModel.findOne({
-      ename:company.bdeName
+      ename: company.bdeName
     });
-    console.log("findbde" , findBde)
+    let findBdm;
+    if (company.bdeName !== company.bdmName) {
+      findBdm = await adminModel.findOne({
+        ename: company.bdmName
+      });
+    }
+
+    console.log("findBdm", findBdm); // Log outside the condition
 
     if (!company) {
       console.error("Company not found");
@@ -1414,9 +1422,10 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
       if (subCategoryStatus === "Approved") {
         console.log("hello wworld");
         const bdeNumber = findBde ? findBde.number : "8347526407";
-        runTestScript(companyName, socketIO, company["Company Email"] , bdeNumber);
+        const bdmNumber = findBdm ? findBdm.number : ""
+        runTestScript(companyName, socketIO, company["Company Email"], bdeNumber,bdmNumber);
       }
-      
+
 
       if (!updatedCompany) {
         console.error("Failed to save the updated document");
