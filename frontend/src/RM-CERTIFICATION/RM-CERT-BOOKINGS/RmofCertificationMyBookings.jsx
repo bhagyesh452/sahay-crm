@@ -278,7 +278,7 @@ function RmofCertificationMyBookings() {
                                         </b>
                                     </div>
                                 )}
-                                {/* <div className="d-flex align-item-center justify-content-between">
+                                <div className="d-flex align-item-center justify-content-between">
                                     <div>
                                         <input type="file" accept=".xlsx, .xls,.csv" onChange={handleFileUploadForChange} style={{ display: 'none' }} id="fileInput" />
                                         <button type="button" className="btn mybtn" onClick={() => document.getElementById('fileInput').click()}>
@@ -293,7 +293,7 @@ function RmofCertificationMyBookings() {
                                             Delete Approved Leads
                                         </button>
                                     </div>
-                                </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>
