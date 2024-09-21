@@ -55,7 +55,7 @@ function runTestScript(companyName, socketIO, companyEmail ,bdeNumber) {
   // Ensure the companyName is properly quoted to handle spaces or special characters
   //const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
   const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
-
+console.log(command)
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
