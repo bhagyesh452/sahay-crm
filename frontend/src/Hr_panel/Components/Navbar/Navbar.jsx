@@ -11,6 +11,8 @@ import { MdCoPresent } from "react-icons/md";
 import dashboardicon from '../../../dist/img/dashboardicon/dashboardico0n.jpg'
 import { BiBookContent } from "react-icons/bi";
 import { AiOutlineTeam } from "react-icons/ai";
+import { FcMoneyTransfer } from "react-icons/fc";
+import { GiReceiveMoney } from "react-icons/gi";
 
 
 
@@ -111,6 +113,24 @@ function Navbar({userId}) {
                                             <MdCoPresent style={{ width: "19px", height: "23px" }} />
                                             </span>
                                             <span className="nav-link-title">Attendance</span>
+                                        </a>
+                                    </Link>
+                                </li>
+                                <li className="nav-item"
+                                    class={
+                                        location.pathname === `/hr/employees/salarypage` ? "nav-item active" : "nav-item"
+                                    }>
+                                    <Link
+                                        style={{ textDecoration: "none", color: "black" }}
+                                        to={{
+                                            pathname: `/hr/employees/salarypage`,
+                                        }}
+                                    >
+                                        <a className="nav-link" href="./">
+                                            <span className="nav-link-icon d-md-none d-lg-inline-block">
+                                            <GiReceiveMoney style={{ width: "19px", height: "23px",color:"lightgray" }} />
+                                            </span>
+                                            <span className="nav-link-title">Salary</span>
                                         </a>
                                     </Link>
                                 </li>
