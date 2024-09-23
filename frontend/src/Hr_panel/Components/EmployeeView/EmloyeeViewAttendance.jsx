@@ -414,7 +414,7 @@ function EmployeeViewAttendance({ data }) {
                     <div className="areport clr-bg-light-1cba19 ml-1">
                         <div>P - {presentCount}</div>
                     </div>
-                    <div className="areport clr-bg-light-e65b5b">
+                    <div className="areport clr-bg-light-e65b5b ml-1">
                         <div>L - {leaveCount}</div>
                     </div>
                     <div className="areport clr-bg-light-ffb900 ml-1">
@@ -442,34 +442,45 @@ function EmployeeViewAttendance({ data }) {
                                     <td>{index + 1}</td>
                                     <td>
                                         <div className='attendance-date-tbl'>
-                                            <input
+                                            {/* <input
                                                 type="date"
                                                 className="form-control date-f"
                                                 value={convertToDateInputFormat(
                                                     new Date(selectedYear, new Date(Date.parse(`${selectedMonth} 1, ${selectedYear}`)).getMonth(), emp.date)
                                                 )}
                                                 readOnly
-                                            />
+                                            /> */}
+                                            <div className="form-control date-f text-center">
+                                                {convertToDateInputFormat(
+                                                    new Date(selectedYear, new Date(Date.parse(`${selectedMonth} 1, ${selectedYear}`)).getMonth(), emp.date)
+                                                )}
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div className='attendance-date-tbl'>
-                                            <input
+                                            {/* <input
                                                 type="time"
                                                 className='form-cantrol in-time'
                                                 value={emp.inTime}
                                                 readOnly
-                                            />
+                                            /> */}
+                                            <div className="form-cantrol in-time">
+                                                {emp.inTime ? emp.inTime : "-"}
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div className='attendance-date-tbl'>
-                                            <input
+                                            {/* <input
                                                 type="time"
                                                 className='form-cantrol out-time'
                                                 value={emp.outTime}
                                                 readOnly
-                                            />
+                                            /> */}
+                                            <div className="form-cantrol out-time">
+                                                {emp.outTime ? emp.outTime : "-" }
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
