@@ -7,6 +7,9 @@ const ExpenseReportSchema = new mongoose.Schema({
     serviceName: {
         type: String
     },
+    bookingDate: {
+        type: Date
+    },
     totalPayment: {
         type: String
     },

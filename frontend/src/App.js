@@ -63,6 +63,7 @@ import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
 import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
+import ExpenseReport from "./DataManager/Dashboard/Expense/ExpenseReport.jsx";
 import RMofCertification from "./RM-CERTIFICATION/RM-CERT-LOGIN/RMofCertification.jsx";
 import RmCertificationDashboard from "./RM-CERTIFICATION/RM-CERT-DASHBOARD/RmCertificationDashboard.jsx";
 import RMofFundingLogin from "./RM-FUNDING/RM-FUNDING-LOGIN/RMofFundingLogin.jsx";
@@ -179,6 +180,7 @@ function App() {
           <Route path="/dataanalyst/newEmployees" element={<DatamanagerNewEmployee />}></Route>
           <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />}></Route>
           <Route path="/dataanalyst/bookings" element={<ManagerBookings />}></Route>
+          <Route path="/dataanalyst/expensereport" element={<ExpenseReport />}></Route>
           <Route
             path="/datamanager/notification"
             element={<NotificationDM />}

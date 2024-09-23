@@ -1,10 +1,14 @@
 const ExpenseReportModel = require("../models/ExpenseReportModel");
 const express = require("express");
+const moment = require("moment");
 const router = express.Router();
 
 router.get("/fetchExpenseReports", async (req, res) => {
     try {
-        const { serviceName, companyName } = req.query;
+        const { serviceName, companyName, startDate, endDate } = req.query;
+
+        // console.log("Start date is :", startDate);
+        // console.log("End date is :", endDate);
 
         // Build the query object dynamically based on filter criteria
         let query = {};
@@ -18,6 +22,13 @@ router.get("/fetchExpenseReports", async (req, res) => {
         if (companyName) {
             query.companyName = {
                 $regex: new RegExp(companyName, "i") // Case-insensitive regex search
+            };
+        }
+
+        if (startDate && endDate) {
+            query.bookingDate = {
+                $gte: new Date(startDate),  // start date
+                $lte: new Date(endDate)     // end date
             };
         }
 
