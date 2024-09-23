@@ -2246,41 +2246,85 @@ router.delete('/deleteTodaysProjection/:id', async (req, res) => {
 router.post('/employee-calling/save', async (req, res) => {
   const {   
     emp_number, 
-    monthly_data,
+    monthly_data, // This is an array of daily data
     emp_code,
     emp_country_code,
     emp_name,
-    emp_tags } = req.body;
+    emp_tags
+  } = req.body;
+
+  const year = new Date().getFullYear(); // Get the current year (e.g., 2024)
+  const month = String(new Date().getMonth() + 1).padStart(2, '0'); // Get the current month as "01", "02", etc.
 
   try {
-    // Find the employee by number, or create a new record if not found
+    // Find the employee by number
     let employee = await CallingModel.findOne({ emp_number });
 
     if (!employee) {
-      // If employee doesn't exist, create a new one
-      employee = new CallingModel({ 
-        emp_number, 
-        monthly_data,
+      // If employee doesn't exist, create a new one with the current year and month data
+      employee = new CallingModel({
         emp_code,
         emp_country_code,
         emp_name,
-        emp_tags
-       });
+        emp_number,
+        emp_tags,
+        year: [{
+          year: String(year),
+          monthly_data: [{
+            month: month,
+            daily_data: monthly_data // Assuming daily_data is an array of daily call logs
+          }]
+        }]
+      });
     } else {
-      // If employee exists, update the monthly_data field
-      employee.monthly_data = monthly_data;
+      // If the employee exists, check if the year exists
+      const yearIndex = employee.year.findIndex(y => y.year === String(year));
+
+      if (yearIndex !== -1) {
+        // If the year exists, check if the month exists
+        const monthIndex = employee.year[yearIndex].monthly_data.findIndex(m => m.month === month);
+
+        if (monthIndex !== -1) {
+          // If the month exists, check if daily data for the same date already exists
+          monthly_data.forEach(newDailyData => {
+            const dateIndex = employee.year[yearIndex].monthly_data[monthIndex].daily_data.findIndex(d => d.date === newDailyData.date);
+            
+            if (dateIndex !== -1) {
+              // If the daily data for the same date exists, update the existing data
+              employee.year[yearIndex].monthly_data[monthIndex].daily_data[dateIndex] = newDailyData;
+            } else {
+              // If the date does not exist, append the new daily data
+              employee.year[yearIndex].monthly_data[monthIndex].daily_data.push(newDailyData);
+            }
+          });
+        } else {
+          // If the month does not exist, create a new month with the daily data
+          employee.year[yearIndex].monthly_data.push({
+            month: month,
+            daily_data: monthly_data
+          });
+        }
+      } else {
+        // If the year does not exist, add a new year with the current month's data
+        employee.year.push({
+          year: String(year),
+          monthly_data: [{
+            month: month,
+            daily_data: monthly_data
+          }]
+        });
+      }
     }
 
-    // Save the employee data in the database
-    const data = await employee.save();
-    console.log('Employee data saved:', data);
+    // Save or update the employee data
+    await employee.save();
 
-    // Send a success response
     res.status(200).json({ message: 'Data saved successfully' });
   } catch (error) {
     console.error('Error saving employee data:', error);
     res.status(500).json({ message: 'Error saving employee data', error: error.message });
   }
 });
+
 
 module.exports = router;

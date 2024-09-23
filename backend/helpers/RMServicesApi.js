@@ -1425,12 +1425,12 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         { new: true }
       );
 
-      // if (subCategoryStatus === "Approved") {
-      //   console.log("hello wworld");
-      //   const bdeNumber = findBde ? findBde.number : "8347526407";
-      //   const bdmNumber = findBdm ? findBdm.number : ""
-      //   runTestScript(companyName, socketIO, company["Company Email"],company.bdeName,company.bdmName, bdeNumber,bdmNumber);
-      // }
+      if (subCategoryStatus === "Approved") {
+        console.log("hello wworld");
+        const bdeNumber = findBde ? findBde.number : "8347526407";
+        const bdmNumber = findBdm ? findBdm.number : ""
+        runTestScript(companyName, socketIO, company["Company Email"],company.bdeName,company.bdmName, bdeNumber,bdmNumber);
+      }
 
 
       if (!updatedCompany) {
