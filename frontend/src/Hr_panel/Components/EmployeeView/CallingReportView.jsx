@@ -164,7 +164,7 @@ function CallingReportView({ employeeInformation }) {
             const endDate = new Date(startDate);
             endDate.setMonth(endDate.getMonth());
             endDate.setDate(new Date().getDate()); // Set to the last day of the month
-            console.log(endDate)
+            //console.log(endDate)
 
             fetchMonthlyData(startDate, endDate);
         }
