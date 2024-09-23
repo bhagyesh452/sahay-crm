@@ -58,7 +58,7 @@ function RmofCertificationMyBookings() {
     const [noOfFilteredData, setnoOfFilteredData] = useState(0);
     const [showNoOfFilteredData, setShowNoOfFilteredData] = useState(true);
     const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
-
+    const [completeEmployeeInfo, setcompleteEmployeeInfo] = useState([])
 
     useEffect(() => {
         document.title = `AdminHead-Sahay-CRM`;
@@ -107,6 +107,7 @@ function RmofCertificationMyBookings() {
             const userData = tempData.find((item) => item._id === rmCertificationUserId);
             //console.log(userData)
             setEmployeeData(userData);
+            setcompleteEmployeeInfo(tempData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
@@ -417,6 +418,7 @@ function RmofCertificationMyBookings() {
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.General}
+                                            completeEmployeeInfo={completeEmployeeInfo}
                                         />
                                     </div>
                                     <div class="tab-pane" id="InProcess">
@@ -426,6 +428,8 @@ function RmofCertificationMyBookings() {
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.InProcess}
+                                            completeEmployeeInfo={completeEmployeeInfo}
+
                                         />
                                     </div>
                                     <div class="tab-pane" id="ReadyToSubmit">
@@ -434,7 +438,9 @@ function RmofCertificationMyBookings() {
                                             totalFilteredData={activeTab === "ReadyToSubmit" ? setNoOfData : () => { }}
                                             activeTab={activeTab}
                                             searchText={search}
-                                            rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit} />
+                                            rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit}
+                                            completeEmployeeInfo={completeEmployeeInfo}
+                                             />
                                     </div>
                                     <div class="tab-pane" id="Submited">
                                         <RmofCertificationSubmittedPanel
@@ -442,7 +448,9 @@ function RmofCertificationMyBookings() {
                                             totalFilteredData={activeTab === "Submited" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.Submited} />
+                                            showFilter={showFilterIcon.Submited}
+                                            completeEmployeeInfo={completeEmployeeInfo}
+                                             />
                                     </div>
                                     <div class="tab-pane" id="Approved">
                                         <RmofCertificationApprovedPanel
@@ -451,6 +459,8 @@ function RmofCertificationMyBookings() {
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.Approved}
+                                            completeEmployeeInfo={completeEmployeeInfo}
+
                                         />
                                     </div>
                                     <div class="tab-pane" id="Hold">
@@ -460,6 +470,8 @@ function RmofCertificationMyBookings() {
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.Hold}
+                                            completeEmployeeInfo={completeEmployeeInfo}
+
                                         />
                                     </div>
                                     <div class="tab-pane" id="Defaulter">
@@ -468,7 +480,9 @@ function RmofCertificationMyBookings() {
                                             totalFilteredData={activeTab === "Defaulter" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
-                                            showFilter={showFilterIcon.Defaulter} />
+                                            showFilter={showFilterIcon.Defaulter}
+                                            completeEmployeeInfo={completeEmployeeInfo}
+                                             />
                                     </div>
                                 </div>
                             </div>

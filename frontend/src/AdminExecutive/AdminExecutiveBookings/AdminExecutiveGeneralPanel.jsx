@@ -23,7 +23,7 @@ import { FaFilter } from "react-icons/fa";
 //import FilterableTable from '../Extra-Components/FilterableTable';
 import StatusDropdownAdminExecutive from "../AdminExecutiveExtraComponents/StatusDropdownAdminExecutive"
 
-function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon }) {
+function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
     const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -910,14 +910,47 @@ function AdminExecutiveGeneralPanel({ searchText, showFilter, activeTab, totalFi
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
-
-                                                <div>{obj.bdeName}</div>
+                                                <div>
+                                                    {obj.bdeName}
+                                                    {
+                                                        completeEmployeeInfo
+                                                            .filter((employee) => employee.ename === obj.bdeName)
+                                                            .map((employee) => (
+                                                                <a
+                                                                    key={employee.number} // Add a unique key for rendering a list
+                                                                    href={`https://wa.me/${employee.number}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                                                >
+                                                                    <FaWhatsapp />
+                                                                </a>
+                                                            ))
+                                                    }
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
 
-                                                <div>{obj.bdmName}</div>
+                                                <div>
+                                                    {obj.bdmName}
+                                                {
+                                                        completeEmployeeInfo
+                                                            .filter((employee) => employee.ename === obj.bdmName)
+                                                            .map((employee) => (
+                                                                <a
+                                                                    key={employee.number} // Add a unique key for rendering a list
+                                                                    href={`https://wa.me/${employee.number}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                                                >
+                                                                    <FaWhatsapp />
+                                                                </a>
+                                                            ))
+                                                    }
+                                                </div>
                                             </div>
                                         </td>
                                         <td>₹ {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString('en-IN')}</td>

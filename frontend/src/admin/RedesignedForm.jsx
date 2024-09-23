@@ -175,7 +175,7 @@ export default function RedesignedForm({
       if (!data) {
         setCompleted({});
         setActiveStep(0);
-        setSelectedValues("");
+        setSelectedValues("CRM Data");
         setLeadData(defaultLeadData);
         return true;
       }
@@ -507,6 +507,7 @@ export default function RedesignedForm({
     fetchDataEmp();
     console.log("Fetch After Component Mount", leadData);
   }, []);
+
   useEffect(() => {
     // Create new services array based on totalServices
     {
@@ -981,10 +982,12 @@ export default function RedesignedForm({
             };
           });
 
+
           const tempLeadData = {
             ...leadData,
             services: servicestoSend
           }
+          console.log("tempLeadData-final going data", tempLeadData)
           const response = await axios.post(
             `${secretKey}/bookings/redesigned-final-leadData/${companysName}`,
             tempLeadData

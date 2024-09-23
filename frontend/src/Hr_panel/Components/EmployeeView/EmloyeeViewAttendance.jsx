@@ -16,6 +16,7 @@ function EmployeeViewAttendance({ data }) {
     const [halfDayCount, setHalfDayCount] = useState(0);
     const [lcCount, setLcCount] = useState(0);
     const [attendanceData, setAttendanceData] = useState([]);
+    const [months, setMonths] = useState([])
 
     const convertToDateInputFormat = (selectedDate) => {
         if (!selectedDate) return '';
@@ -27,6 +28,7 @@ function EmployeeViewAttendance({ data }) {
     };
 
     const handleYearChange = (e) => {
+        monthArray(Number(e.target.value));
         setSelectedYear(Number(e.target.value));
         setLeaveCount(0);
         setPresentCount(0);
@@ -43,10 +45,33 @@ function EmployeeViewAttendance({ data }) {
     };
 
     // Generate the years array starting from 2020 to the current year
-    const years = [];
-    for (let year = 2020; year <= currentYear; year++) {
-        years.push(year);
-    }
+    const years = ["2024", "2025"];
+    const monthArray = (selectedYear) => {
+        const months = [];
+        let date;
+
+        // Check if the selected year is the current year
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth(); // Get the current month (0-based)
+
+        if (selectedYear == currentYear) {
+            date = new Date(); // Start from the current date
+        } else {
+            // If it's a future year, start from January
+            date = new Date(selectedYear, 0); // 0 means January
+        }
+
+        // Loop through the months, starting from the calculated month
+        for (let month = date.getMonth(); month <= 11; month++) {
+            months.push(format(new Date(selectedYear, month), 'MMMM'));
+        }
+        setMonths(months);
+        return months;
+    };
+   
+    // for (let year = 2025; year <= currentYear; year--) {
+    //     years.push(year);
+    // }
 
     const getCurrentMonthName = () => {
         const months = [
@@ -288,15 +313,18 @@ function EmployeeViewAttendance({ data }) {
                         }
                     }
 
-                    filteredData.push({
-                        employeeName: name,
-                        designation: designation,
-                        date: date,
-                        inTime: '',
-                        outTime: '',
-                        workingHours: '',
-                        status: status ? status : "No Data"
-                    });
+                    if (status) {
+                        filteredData.push({
+                            employeeName: name,
+                            designation: designation,
+                            date: date,
+                            inTime: '',
+                            outTime: '',
+                            workingHours: '',
+                            status: status ? status : "No Data"
+                        });
+                    }
+
                 }
             }
 
@@ -304,7 +332,7 @@ function EmployeeViewAttendance({ data }) {
             setAttendanceData(filteredData);
             const presentDates = new Set(); // Use a Set to store unique dates
             let hasLCH = false;
-            console.log("filteredData :", filteredData);
+            //console.log("filteredData :", filteredData);
             let presentCount = 0;
             let lcCount = 0;
             let leaveCount = 0;
@@ -347,7 +375,7 @@ function EmployeeViewAttendance({ data }) {
             setLcCount(lcCount);
             setLeaveCount(leaveCount);
             setHalfDayCount(halfDayCount);
-            console.log("Present counted for these dates:", presentDates);
+            //console.log("Present counted for these dates:", presentDates);
         } catch (error) {
             console.log("Error fetching attendance record", error);
         }
@@ -355,8 +383,9 @@ function EmployeeViewAttendance({ data }) {
 
     useEffect(() => {
         fetchAttendance();
+        monthArray(selectedYear);
     }, [selectedYear, selectedMonth, data._id]);
-    console.log("presentcount", presentCount)
+
     return (
         <div className="mt-3">
             <div className='d-flex mb-3 align-items-center justify-content-between'>
@@ -372,7 +401,7 @@ function EmployeeViewAttendance({ data }) {
                     <div className='form-group ml-1'>
                         <select className='form-select' value={selectedMonth} onChange={handleMonthChange}>
                             <option disabled>--Select Month--</option>
-                            {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(month => (
+                            {months.map(month => (
                                 <option key={month} value={month}>{month}</option>
                             ))}
                         </select>
@@ -447,41 +476,41 @@ function EmployeeViewAttendance({ data }) {
                                         {emp.workingHours ? emp.workingHours : "-"}
                                     </td>
                                     <td>
-                                        <div   
-                                        className=
-                                                {`
-                                         ${(emp.status === "Present") && (emp.isAddedManually === true)? "OverPStatus" : ""}
+                                        <div
+                                            className=
+                                            {`
+                                         ${(emp.status === "Present") && (emp.isAddedManually === true) ? "OverPStatus" : ""}
                                             ${(emp.status === "Half Day") && emp.isAddedManually === true ? "OverPStatus" : ""}
                                                  ${(emp.status === "Leave") && emp.isAddedManually === true ? "OverPStatus" : ""}
                                                  ${(emp.status.startsWith("LC")) && emp.isAddedManually === true ? "OverPStatus" : ""}
                                              `.trim()}>
-                                            <span 
-                                             title={(() => {
-                                                if (emp.isAddedManually=== true) {
-                                                    if (( emp.status) === "Present") {
-                                                        return emp.reasonValue || "Manually marked as Present";
-                                                    } else if (( emp.status) === "Half Day") {
-                                                        return emp.reasonValue  || "Manually marked as Half Day";
-                                                    } else if (( emp.status) === "Leave") {
-                                                        return emp.reasonValue  || "Manually marked as Leave";
-                                                    } else if ((emp.status?.startsWith("LC"))) {
-                                                        return emp.reasonValue  || "Manually marked as LC (Late Complete)";
+                                            <span
+                                                title={(() => {
+                                                    if (emp.isAddedManually === true) {
+                                                        if ((emp.status) === "Present") {
+                                                            return emp.reasonValue || "Manually marked as Present";
+                                                        } else if ((emp.status) === "Half Day") {
+                                                            return emp.reasonValue || "Manually marked as Half Day";
+                                                        } else if ((emp.status) === "Leave") {
+                                                            return emp.reasonValue || "Manually marked as Leave";
+                                                        } else if ((emp.status?.startsWith("LC"))) {
+                                                            return emp.reasonValue || "Manually marked as LC (Late Complete)";
+                                                        }
                                                     }
-                                                }
-                                                return ""; // Default to an empty string if no condition matches
-                                            })()}
-                                            className={`badge ${(emp.status) === "Present" ? "badge-completed" :
-                                                (emp.status) === "Leave" ? "badge-under-probation" :
-                                                    (emp.status) === "Half Day" ? "badge-half-day" :
-                                                        (emp.status || emp.status) === "Half Day" ? "badge-half-day" :
-                                                            (emp.status || emp.status) === "Sunday Leave" ||
-                                                                (emp.status || emp.status) === "Sunday Half Day" ||
-                                                                (emp.status || emp.status) === "Sunday" ||
-                                                                (emp.status || emp.status) === "Official Holiday Leave" ||
-                                                                (emp.status || emp.status) === "Official Holiday Half Day" ||
-                                                                (emp.status || emp.status) === "Official Holiday" ? "badge-Holiday" :
-                                                                (emp.status.startsWith("LC") || emp.status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
-                                                }`}>
+                                                    return ""; // Default to an empty string if no condition matches
+                                                })()}
+                                                className={`badge ${(emp.status) === "Present" ? "badge-completed" :
+                                                    (emp.status) === "Leave" ? "badge-under-probation" :
+                                                        (emp.status) === "Half Day" ? "badge-half-day" :
+                                                            (emp.status || emp.status) === "Half Day" ? "badge-half-day" :
+                                                                (emp.status || emp.status) === "Sunday Leave" ||
+                                                                    (emp.status || emp.status) === "Sunday Half Day" ||
+                                                                    (emp.status || emp.status) === "Sunday" ||
+                                                                    (emp.status || emp.status) === "Official Holiday Leave" ||
+                                                                    (emp.status || emp.status) === "Official Holiday Half Day" ||
+                                                                    (emp.status || emp.status) === "Official Holiday" ? "badge-Holiday" :
+                                                                    (emp.status.startsWith("LC") || emp.status.startsWith("LC")) ? "badge-LC" : "badge-Nodata"
+                                                    }`}>
                                                 {emp.status}
                                             </span>
                                         </div>
