@@ -7399,37 +7399,42 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
     await ExpenseReportModel.deleteMany({ isDeleted: false });
 
     // Step 3: Fetch companies that have isDeleted: true
-    const deletedCompanies = await ExpenseReportModel.find({ isDeleted: true }).select('companyName');
+    const deletedCompanies = await ExpenseReportModel.find({ isDeleted: true }).select('companyName serviceName');
+    // console.log("Deleted company is :", deletedCompanies);
 
     // Step 4: Prepare and insert new records, skipping companies marked as isDeleted: true
     const expenseReports = [];
+
     const deletedCompanyNames = deletedCompanies.map(company => company.companyName);
+    // console.log("Company name array :", deletedCompanyNames);
+    
+    const deletedCompanyServiveName = deletedCompanies.map(company => company.serviceName);
+    // console.log("Service name array :", deletedCompanyServiveName);
 
     for (const item of data) {
-      if (deletedCompanyNames.includes(item["Company Name"])) {
-        // Skip this company if it's marked as deleted
-        continue;
-      }
+      // console.log("Item company is:", item["Company Name"]);
 
-      // Process services
+      const servicesData = item.services?.map((service) => service.serviceName);
+      // console.log("Item service is:", servicesData);
+      
+      const moreBookingsServices = item.moreBookings?.map((booking) =>
+        booking.services?.map((service) => service.serviceName)
+      );
+      // console.log("More booking service is:", moreBookingsServices);
+
+      // Function to check if a company and service are marked as deleted
+      const isDeletedCompanyAndService = (companyName, serviceName) => {
+        return deletedCompanies.some(
+          (deletedCompany) =>
+            deletedCompany.companyName === companyName &&
+            deletedCompany.serviceName === serviceName
+        );
+      };
+
       if (item.services && item.services.length > 0) {
         for (const service of item.services) {
-          expenseReports.push({
-            companyName: item["Company Name"],
-            serviceName: service.serviceName,
-            bookingDate: service.bookingDate,
-            totalPayment: service.totalAmount,
-            receivedPayment: service.receivedAmount,
-            remainingPayment: service.pendingAmount,
-            isDeleted: false
-          });
-        }
-      }
-
-      // Process moreBookings services
-      if (item.moreBookings && item.moreBookings.length > 0) {
-        for (const booking of item.moreBookings) {
-          for (const service of booking.services) {
+          if (!isDeletedCompanyAndService(item["Company Name"], service.serviceName)) {
+            // Only add if the service is not marked as deleted
             expenseReports.push({
               companyName: item["Company Name"],
               serviceName: service.serviceName,
@@ -7437,11 +7442,36 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
               totalPayment: service.totalAmount,
               receivedPayment: service.receivedAmount,
               remainingPayment: service.pendingAmount,
-              isDeleted: false
+              isDeleted: false,
             });
+          } else {
+            // console.log(`Skipping deleted service: ${service.serviceName} for company: ${item["Company Name"]}`);
           }
         }
       }
+    
+      // Process moreBookings services, skipping deleted companies/services
+      if (item.moreBookings && item.moreBookings.length > 0) {
+        for (const booking of item.moreBookings) {
+          for (const service of booking.services) {
+            if (!isDeletedCompanyAndService(item["Company Name"], service.serviceName)) {
+              // Only add if the service is not marked as deleted
+              expenseReports.push({
+                companyName: item["Company Name"],
+                serviceName: service.serviceName,
+                bookingDate: service.bookingDate,
+                totalPayment: service.totalAmount,
+                receivedPayment: service.receivedAmount,
+                remainingPayment: service.pendingAmount,
+                isDeleted: false,
+              });
+            } else {
+              console.log(`Skipping deleted moreBooking service: ${service.serviceName} for company: ${item["Company Name"]}`);
+            }
+          }
+        }
+      }
+
     }
 
     // Insert new records into the ExpenseReportModel

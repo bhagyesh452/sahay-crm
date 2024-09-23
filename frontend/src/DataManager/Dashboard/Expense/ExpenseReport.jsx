@@ -32,7 +32,7 @@ function ExpenseReport() {
     const [dateRange, setDateRange] = useState([null, null]);
 
     const formatSalary = (amount) => {
-        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+        return new Intl.NumberFormat('en-IN').format(amount);
     };
 
     const formatDate = (dateString) => {
