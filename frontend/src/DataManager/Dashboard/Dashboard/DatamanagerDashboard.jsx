@@ -173,7 +173,7 @@ function DatamanagerDashboard() {
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <FaWallet style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "12px" }}>Remainig Expense Report</span>
+                                            <span style={{ fontSize: "12px" }}>Remaining Expense Report</span>
                                         </div>
                                     }
                                     {...a11yProps(6)}
