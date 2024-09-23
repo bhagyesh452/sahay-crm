@@ -206,17 +206,36 @@ function ExpenseReport() {
                 <div className="page-header d-print-none">
                     <div className="container-xl my-2">
                         <div className="d-flex align-items-center justify-content-between">
+                            <div className="btn-group mr-2">
+                                <h2 className="m-0">
+                                    Expense Report
+                                </h2>
+                            </div>
                             <div className="d-flex align-items-center">
 
-                                <div className="btn-group mr-2">
-                                    <h2 className="m-0">
-                                        Expense Report
-                                    </h2>
+                                <div className="d-flex align-items-center mr-1">
+                                    <div class="input-icon ml-1">
+                                        <span class="input-icon-addon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                                <path d="M21 21l-6 -6"></path>
+                                            </svg>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            value={companyName}
+                                            onChange={(e) => setCompanyName(e.target.value)}
+                                            className="form-control search-cantrol mybtn"
+                                            placeholder="Enter Company Name"
+                                            name="bdeName-search"
+                                            id="bdeName-search" />
+                                    </div>
                                 </div>
 
                                 <div class="btn-group mr-1" role="group" aria-label="Basic example">
                                     <select
-                                        className="form-select"
+                                        className="form-select search-cantrol mybtn"
                                         id={`branch-filter`}
                                         onChange={(e) => setServiceName(e.target.value)}
                                     >
@@ -249,7 +268,7 @@ function ExpenseReport() {
                                                 with: '220px'
                                             }}  >
                                             <DateRangePicker
-                                                className="form-control my-date-picker form-control-sm p-0"
+                                                className="form-control my-date-picker search-cantrol form-control-sm p-0"
                                                 value={dateRange}
                                                 onChange={handleDateRangeChange}
                                                 slots={{ field: SingleInputDateRangeField }}
@@ -266,84 +285,65 @@ function ExpenseReport() {
                                         </DemoContainer>
                                     </LocalizationProvider>
                                 </div>
-
-                            </div>
-
-                            <div className="d-flex align-items-center">
-                                <div class="input-icon ml-1">
-                                    <span class="input-icon-addon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                            <path d="M21 21l-6 -6"></path>
-                                        </svg>
-                                    </span>
-                                    <input
-                                        type="text"
-                                        value={companyName}
-                                        onChange={(e) => setCompanyName(e.target.value)}
-                                        className="form-control search-cantrol mybtn"
-                                        placeholder="Enter Company Name"
-                                        name="bdeName-search"
-                                        id="bdeName-search" />
-                                </div>
                             </div>
 
                         </div>
                     </div>
                 </div>
 
-                <div className="card mx-6">
-                    <div className="card-body p-0">
-                        <div id="table-default"
-                            style={{
-                                overflowX: "auto",
-                                overflowY: "auto",
-                                maxHeight: "60vh",
-                            }}
-                        >
-                            <table
+                <div className='container-xl mt-3'>
+                    <div className="card">
+                        <div className="card-body p-0">
+                            <div id="table-default"
                                 style={{
-                                    width: "100%",
-                                    borderCollapse: "collapse",
-                                    border: "1px solid #ddd",
+                                    overflowX: "auto",
+                                    overflowY: "auto",
+                                    maxHeight: "60vh",
                                 }}
-                                className="table-vcenter table-nowrap "
                             >
+                                <table
+                                    style={{
+                                        width: "100%",
+                                        borderCollapse: "collapse",
+                                        border: "1px solid #ddd",
+                                    }}
+                                    className="table-vcenter table-nowrap "
+                                >
 
-                                <thead className="admin-dash-tbl-thead">
-                                    <tr className="tr-sticky">
-                                        <th>Sr. No</th>
-                                        <th>Company Name</th>
-                                        <th>Service Name</th>
-                                        <th>Booking Date</th>
-                                        <th>Total Payment</th>
-                                        <th>Received Payment</th>
-                                        <th>Remaining Payment</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {isLoading ? (
-                                        <tr>
-                                            <td colSpan="6">
-                                                <div className="LoaderTDSatyle w-100">
-                                                    <ClipLoader
-                                                        color="lightgrey"
-                                                        size={30}
-                                                        aria-label="Loading Spinner"
-                                                        data-testid="loader"
-                                                    />
-                                                </div>
-                                            </td>
+                                    <thead className="admin-dash-tbl-thead">
+                                        <tr className="tr-sticky">
+                                            <th>Sr. No</th>
+                                            <th>Company Name</th>
+                                            <th>Service Name</th>
+                                            <th>Booking Date</th>
+                                            <th>Total Payment</th>
+                                            <th>Received Payment</th>
+                                            <th>Remaining Payment</th>
+                                            <th>Action</th>
                                         </tr>
-                                    ) : (
-                                        renderRows()
-                                    )}
-                                </tbody>
+                                    </thead>
 
-                            </table>
+                                    <tbody>
+                                        {isLoading ? (
+                                            <tr>
+                                                <td colSpan="6">
+                                                    <div className="LoaderTDSatyle w-100">
+                                                        <ClipLoader
+                                                            color="lightgrey"
+                                                            size={30}
+                                                            aria-label="Loading Spinner"
+                                                            data-testid="loader"
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            renderRows()
+                                        )}
+                                    </tbody>
+
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
