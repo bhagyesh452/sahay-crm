@@ -2175,7 +2175,9 @@ router.get("/fetchForwaredLeads", async (req, res) => {
       return result;
     }).flat();
 
-    res.send(formattedData);
+    // Sort the formatted data by name in ascending order
+    const sortedData = formattedData.sort((a, b) => a.name.localeCompare(b.name));
+    res.send(sortedData);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });

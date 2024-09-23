@@ -7347,6 +7347,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
               in: {
                 serviceName: "$$service.serviceName",
                 totalAmount: "$totalAmount",
+                bookingDate: "$bookingDate",
                 receivedAmount: "$receivedAmount",
                 pendingAmount: "$pendingAmount"
               }
@@ -7380,6 +7381,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
                     as: "service",
                     in: {
                       serviceName: "$$service.serviceName",
+                      bookingDate: "$bookingDate",
                       totalAmount: "$$booking.totalAmount",
                       receivedAmount: "$$booking.receivedAmount",
                       pendingAmount: "$$booking.pendingAmount"
@@ -7415,6 +7417,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
           expenseReports.push({
             companyName: item["Company Name"],
             serviceName: service.serviceName,
+            bookingDate: service.bookingDate,
             totalPayment: service.totalAmount,
             receivedPayment: service.receivedAmount,
             remainingPayment: service.pendingAmount,
@@ -7430,6 +7433,7 @@ router.get("/fetchRemainingExpenseServices", async (req, res) => {
             expenseReports.push({
               companyName: item["Company Name"],
               serviceName: service.serviceName,
+              bookingDate: service.bookingDate,
               totalPayment: service.totalAmount,
               receivedPayment: service.receivedAmount,
               remainingPayment: service.pendingAmount,

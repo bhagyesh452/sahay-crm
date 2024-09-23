@@ -28,12 +28,9 @@ import EmployeesProjectionSummary from "../../../admin/DashboardReportComponents
 import { RiShareForward2Fill } from "react-icons/ri";
 import { RiDatabaseLine } from "react-icons/ri";
 import { MdMedicalServices } from "react-icons/md";
-import { FaWallet } from "react-icons/fa";
-import DataAnalystServiceAnalysis from "../ServiceAnalysis/DataAnalystServiceAnalysis.jsx";
 import InterestedFollowLeadReport from "../../../admin/DashboardReportComponents/InterestedFollowLeadReport.jsx"
 import EmployeeCompleteCallingReport from "../../../admin/DashboardReportComponents/EmployeeCompleteCallingReport.jsx";
 import ServiceAnalysis from "../../../admin/DashboardReportComponents/ServiceAnalysis.jsx";
-import ExpenseReport from "./Expense/ExpenseReport.jsx";
 import { MdAddCall } from "react-icons/md";
 
 
@@ -169,15 +166,6 @@ function DatamanagerDashboard() {
                                     }
                                     {...a11yProps(5)}
                                 />
-                                <Tab
-                                    label={
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                            <FaWallet style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "12px" }}>Remaining Expense Report</span>
-                                        </div>
-                                    }
-                                    {...a11yProps(6)}
-                                />
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0} className="mat-tab-inner">
@@ -198,9 +186,6 @@ function DatamanagerDashboard() {
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={5} className="mat-tab-inner">
                             <EmployeeCompleteCallingReport />
-                        </CustomTabPanel>
-                        <CustomTabPanel value={value} index={6} className="mat-tab-inner">
-                            <ExpenseReport />
                         </CustomTabPanel>
                     </div>
                 </div>
