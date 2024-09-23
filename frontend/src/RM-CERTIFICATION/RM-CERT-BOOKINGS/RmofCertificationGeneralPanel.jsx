@@ -21,7 +21,7 @@ import { FaFilter } from "react-icons/fa";
 
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
-function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon }) {
+function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -49,6 +49,14 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
+    
+
+
+
+
+
+
+
     // Fetch Data Function
 
     // const fetchData = async (searchQuery = "", page = 1, activeTab = "General") => {
@@ -91,13 +99,14 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
         try {
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
+           
             setEmployeeData(userData);
 
             let params = { search: searchQuery, page, activeTab: "General" };
 
             // If filtering is active, extract companyName and serviceName from filteredData
             if (isFilter && filteredData && filteredData.length > 0) {
-                console.log("yahan chal rha", isFilter)
+                //console.log("yahan chal rha", isFilter)
                 const companyNames = filteredData.map(item => item["Company Name"]).join(',');
                 const serviceNames = filteredData.map(item => item.serviceName).join(',');
 
@@ -131,8 +140,8 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
             setOpenBacdrop(false);
         }
     };
-    
-      
+   
+
     // useEffect(() => {
     //     const handleScroll = debounce(() => {
     //         const tableContainer = document.querySelector('#generalTable');
@@ -163,7 +172,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
             transports: ['websocket'],
         });
         const updateDocumentInState = (updatedDocument) => {
-            console.log(updatedDocument)
+            //console.log(updatedDocument)
             setRmServicesData(prevData => prevData.map(item =>
                 item._id === updatedDocument._id ? updatedDocument : item
             ));
@@ -196,7 +205,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
         socket.on("lead-updated-by-admin", (res) => {
             //console.log("res" , res)
             if (res.updatedDocument) {
-                console.log("res" , res)
+                console.log("res", res)
                 updateDocumentInState(res.updatedDocument);
             }
         });
@@ -379,14 +388,14 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
 
     useEffect(() => {
         if (noOfAvailableData) {
-          showingFilterIcon(true)
-          totalFilteredData(noOfAvailableData)
+            showingFilterIcon(true)
+            totalFilteredData(noOfAvailableData)
         } else {
-          showingFilterIcon(false)
-          totalFilteredData(0)
+            showingFilterIcon(false)
+            totalFilteredData(0)
         }
-    
-      }, [noOfAvailableData, activeTab])
+
+    }, [noOfAvailableData, activeTab])
 
 
     const handleFilterClick = (field) => {
@@ -421,9 +430,9 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
         }
     }, []);
 
-    
-    console.log("noofavaibaledatageneral" , noOfAvailableData)
-    console.log("rmservicesdatageneral" , rmServicesData)
+
+    //console.log("noofavaibaledatageneral" , noOfAvailableData)
+    //console.log("rmservicesdatageneral" , rmServicesData)
 
     return (
         <div>
@@ -840,7 +849,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu} dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -875,7 +884,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu} dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -910,7 +919,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                                         filterField={activeFilterField}
                                                         onFilter={handleFilter}
                                                         completeData={completeRmData}
-                                                        showingMenu={setShowFilterMenu}dataForFilter={dataToFilter}
+                                                        showingMenu={setShowFilterMenu} dataForFilter={dataToFilter}
                                                     />
                                                 </div>
                                             )}
@@ -974,14 +983,47 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
                                         <td>{obj.withDSC ? "Yes" : "No"}</td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
-
-                                                <div>{obj.bdeName}</div>
+                                                <div>
+                                                    {obj.bdeName}
+                                                    {
+                                                        completeEmployeeInfo
+                                                            .filter((employee) => employee.ename === obj.bdeName)
+                                                            .map((employee) => (
+                                                                <a
+                                                                    key={employee.number} // Add a unique key for rendering a list
+                                                                    href={`https://wa.me/${employee.number}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                                                >
+                                                                    <FaWhatsapp />
+                                                                </a>
+                                                            ))
+                                                    }
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
                                             <div className="d-flex align-items-center justify-content-center">
 
-                                                <div>{obj.bdmName}</div>
+                                                <div>
+                                                    {obj.bdmName}
+                                                {
+                                                        completeEmployeeInfo
+                                                            .filter((employee) => employee.ename === obj.bdmName)
+                                                            .map((employee) => (
+                                                                <a
+                                                                    key={employee.number} // Add a unique key for rendering a list
+                                                                    href={`https://wa.me/${employee.number}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                                                >
+                                                                    <FaWhatsapp />
+                                                                </a>
+                                                            ))
+                                                    }
+                                                </div>
                                             </div>
                                         </td>
                                         <td>₹ {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString('en-IN')}</td>

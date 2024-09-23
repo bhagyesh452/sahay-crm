@@ -60,6 +60,7 @@ function AdminExecutiveMyBookings() {
   const [noOfFilteredData, setnoOfFilteredData] = useState(0);
   const [showNoOfFilteredData, setShowNoOfFilteredData] = useState(true);
   const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false);
+  const [completeEmployeeInfo, setcompleteEmployeeInfo] = useState([])
 
   useEffect(() => {
     document.title = `AdminExecutive-Sahay-CRM`;
@@ -110,6 +111,7 @@ function AdminExecutiveMyBookings() {
       const userData = tempData.find(
         (item) => item._id === adminExecutiveUserId
       );
+      setcompleteEmployeeInfo(tempData);
       //console.log(userData)
       setEmployeeData(userData);
     } catch (error) {
@@ -155,7 +157,7 @@ function AdminExecutiveMyBookings() {
         totalDocumentsApproved,
 
       } = response.data;
-      console.log("response", response.data)
+      
 
       // If it's a search query, replace the data; otherwise, append for pagination
       if (page === 1) {
@@ -421,6 +423,7 @@ function AdminExecutiveMyBookings() {
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.General}
+                      completeEmployeeInfo={completeEmployeeInfo}
                     />
                   </div>
                   <div class="tab-pane" id="InProcess">
@@ -430,6 +433,7 @@ function AdminExecutiveMyBookings() {
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.InProcess}
+                      completeEmployeeInfo={completeEmployeeInfo}
                     />
                   </div>
                   <div class="tab-pane" id="Submitted">
@@ -439,6 +443,7 @@ function AdminExecutiveMyBookings() {
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.InProcess}
+                      completeEmployeeInfo={completeEmployeeInfo}
                     />
                   </div>
                   <div class="tab-pane" id="Approved">
@@ -448,6 +453,7 @@ function AdminExecutiveMyBookings() {
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.Approved}
+                      completeEmployeeInfo={completeEmployeeInfo}
                     />
                   </div>
                   <div class="tab-pane" id="Hold">
@@ -457,6 +463,7 @@ function AdminExecutiveMyBookings() {
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.Hold}
+                      completeEmployeeInfo={completeEmployeeInfo}
                     />
                   </div>
                   <div class="tab-pane" id="Defaulter">
@@ -466,6 +473,7 @@ function AdminExecutiveMyBookings() {
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.Defaulter}
+                      completeEmployeeInfo={completeEmployeeInfo}
                     />
                   </div>
                 </div>

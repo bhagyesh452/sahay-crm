@@ -285,7 +285,6 @@ function EmployeeDashboard() {
 
   useEffect(() => {
     setLoading(true);
-    //setuniqueArrayLoading(true) // Set loading to true when useEffect is triggered
     fetchEmployeeData().then(() => setLoading(false)); // Set loading to false after data is fetched
   }, [data]);
 
@@ -2526,22 +2525,6 @@ function EmployeeDashboard() {
     window.location.replace("/"); // Redirect to login page
   };
 
-  // const logout = () => {
-  //   localStorage.removeItem("newtoken");
-  //   console.log("Token removed after 1 minute");
-  //   window.location.replace("/");
-  // };
-  // useEffect(() => {
-  //   // Check if user is logged in
-  //   const token = localStorage.getItem("newtoken");
-  //   if (token) {
-  //     // Set timeout to log out user after 1 minute
-  //     const timer = setTimeout(logout, 60000); // 60000 milliseconds = 1 minute
-
-  //     // Clear timeout if the component unmounts
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, []); // Empty dependency array ensures this runs once when the component mounts
 
   return (
     <div className="admin-dashboard">

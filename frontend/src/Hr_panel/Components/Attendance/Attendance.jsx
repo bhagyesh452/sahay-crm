@@ -24,6 +24,7 @@ function Attendance() {
     const [myInfo, setMyInfo] = useState([]);
     const [employeeInfo, setEmployeeInfo] = useState([]);
     const [selectedYear, setSelectedYear] = useState(currentYear);
+    const [months, setMonths] = useState([])
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
     const [selectedDate, setSelectedDate] = useState("");
     const [showAddAttendance, setShowAddAttendance] = useState(false);
@@ -61,21 +62,37 @@ function Attendance() {
 
     const handleYearChange = (e) => {
         setSelectedYear(Number(e.target.value));
+        monthArray(Number(e.target.value));
     };
+    const monthArray =(year)=>{
+        const months = []
+        let date;
+        if(year === currentYear){
+            date = new Date();
+        }else{
+            date = new Date(year, 0);
+        }
+        for (let month = date.getMonth(); month <= 11; month++) {
+            months.push(format(new Date(selectedYear, month), 'MMMM'));
+        }
+        setMonths(months);
+        return months;
+    }
 
     const handleMonthChange = (e) => {
         setSelectedMonth(e.target.value);
     };
 
     // Generate the years array starting from 2020 to the current year
-    const years = [];
-    for (let year = 2020; year <= currentYear; year++) {
-        years.push(year);
-    }
+    const years = ["2024" , "2025"];
+    // for (let year = 2020; year <= currentYear; year++) {
+    //     years.push(year);
+    // }
 
     useEffect(() => {
         fetchEmployee();
         fetchPersonalInfo();
+        monthArray(currentYear);
     }, []);
 
     return (
@@ -98,7 +115,7 @@ function Attendance() {
                                 <div className='form-group ml-1'>
                                     <select className='form-select' value={selectedMonth} onChange={handleMonthChange}>
                                         <option disabled>--Select Month--</option>
-                                        {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(month => (
+                                        {months.map(month => (
                                             <option key={month} value={month}>{month}</option>
                                         ))}
                                     </select>

@@ -40,7 +40,7 @@ import { FaFilter } from "react-icons/fa";
 import FilterableTable from '../Extra-Components/FilterableTable';
 
 
-function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab }) {
+function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab, completeEmployeeInfo }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -88,14 +88,14 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
       const ampm = hours >= 12 ? "pm" : "am";
       const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
       const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
-      
+
       return `${formattedHours}:${formattedMinutes} ${ampm}`;
     }
-  
+
     // Handle invalid or empty input
     return "Invalid time";
   };
-  
+
 
   const formatTime = (dateString) => {
     //const dateString = "Sat Jun 29 2024 15:15:12 GMT+0530 (India Standard Time)";
@@ -189,15 +189,15 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
     socket.on("lead-updated-by-admin", (res) => {
       //console.log("res" , res)
       if (res.updatedDocument) {
-          updateDocumentInState(res.updatedDocument);
-      }
-  });
-  socket.on("rm-cert-remarks-updated", (res) => {
-    //console.log("res" , res)
-    if (res.updatedDocument) {
         updateDocumentInState(res.updatedDocument);
-    }
-});
+      }
+    });
+    socket.on("rm-cert-remarks-updated", (res) => {
+      //console.log("res" , res)
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
+      }
+    });
 
     return () => {
       socket.disconnect();
@@ -420,7 +420,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   // }, [showFilter]);
 
   const handleFilter = (newData) => {
-    
+
     setFilteredData(newData)
     setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Approved"));
   };
@@ -1877,12 +1877,47 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                       <td>{formatDatePro(obj.bookingDate)}</td>
                       <td>
                         <div className="d-flex align-items-center justify-content-center">
-                          <div>{obj.bdeName}</div>
+                          <div>
+                            {obj.bdeName}
+                            {
+                              completeEmployeeInfo
+                                .filter((employee) => employee.ename === obj.bdeName)
+                                .map((employee) => (
+                                  <a
+                                    key={employee.number} // Add a unique key for rendering a list
+                                    href={`https://wa.me/${employee.number}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                  >
+                                    <FaWhatsapp />
+                                  </a>
+                                ))
+                            }
+                          </div>
                         </div>
                       </td>
                       <td>
                         <div className="d-flex align-items-center justify-content-center">
-                          <div>{obj.bdmName}</div>
+
+                          <div>
+                            {obj.bdmName}
+                            {
+                              completeEmployeeInfo
+                                .filter((employee) => employee.ename === obj.bdmName)
+                                .map((employee) => (
+                                  <a
+                                    key={employee.number} // Add a unique key for rendering a list
+                                    href={`https://wa.me/${employee.number}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                  >
+                                    <FaWhatsapp />
+                                  </a>
+                                ))
+                            }
+                          </div>
                         </div>
                       </td>
                       <td>
