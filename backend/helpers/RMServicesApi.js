@@ -113,7 +113,7 @@ function runTestScript(companyName, socketIO, companyEmail,bdeName,bdmName, bdeN
               path: path.join(__dirname, "src", "Company_Brochure.pdf"), // Adjust the path accordingly, // Path to the static brochure
             }
           ];
-          console.log(`Email attachments: ${JSON.stringify(attachments)}`);
+          //console.log(`Email attachments: ${JSON.stringify(attachments)}`);
           const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html '; // Your validation link
           const number = bdmNumber ? bdmNumber : bdeNumber
           const subject = `Congratulations! Your Start-Up India Certificate is Approved!`;

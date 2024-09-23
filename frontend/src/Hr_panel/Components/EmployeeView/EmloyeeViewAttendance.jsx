@@ -68,7 +68,7 @@ function EmployeeViewAttendance({ data }) {
         setMonths(months);
         return months;
     };
-   
+
     // for (let year = 2025; year <= currentYear; year--) {
     //     years.push(year);
     // }
@@ -386,6 +386,13 @@ function EmployeeViewAttendance({ data }) {
         monthArray(selectedYear);
     }, [selectedYear, selectedMonth, data._id]);
 
+    const convertTo12HourFormat = (time) => {
+        let [hours, minutes] = time.split(':').map(Number); // Split and convert to numbers
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // Convert hour to 12-hour format
+        return `${hours}:${String(minutes).padStart(2, '0')} ${ampm}`; // Ensure minutes are always two digits
+    };
+
     return (
         <div className="mt-3">
             <div className='d-flex mb-3 align-items-center justify-content-between'>
@@ -465,8 +472,11 @@ function EmployeeViewAttendance({ data }) {
                                                 value={emp.inTime}
                                                 readOnly
                                             /> */}
-                                            <div className="form-cantrol in-time">
-                                                {emp.inTime ? emp.inTime : "-"}
+                                            <div className="form-control in-time">
+                                                {(() => {
+                                                    console.log('inTime:', emp.inTime); // Console log the inTime value
+                                                    return emp.inTime ? convertTo12HourFormat(emp.inTime) : "-"; // Display the inTime value or "-"
+                                                })()}
                                             </div>
                                         </div>
                                     </td>
@@ -479,7 +489,7 @@ function EmployeeViewAttendance({ data }) {
                                                 readOnly
                                             /> */}
                                             <div className="form-cantrol out-time">
-                                                {emp.outTime ? emp.outTime : "-" }
+                                                {emp.outTime ? convertTo12HourFormat(emp.outTime) : "-"}
                                             </div>
                                         </div>
                                     </td>
@@ -507,8 +517,16 @@ function EmployeeViewAttendance({ data }) {
                                                         } else if ((emp.status?.startsWith("LC"))) {
                                                             return emp.reasonValue || "Manually marked as LC (Late Complete)";
                                                         }
+                                                    } else {
+                                                        if (emp.status === "LCH") {
+                                                            return "Late Coming Half Day"
+                                                        } else if (emp.status === "LC1" || emp.status === "LC2" || emp.status === "LC3") {
+                                                            return "Late Coming"
+                                                        } else {
+                                                            return emp.status
+                                                        }
                                                     }
-                                                    return ""; // Default to an empty string if no condition matches
+
                                                 })()}
                                                 className={`badge ${(emp.status) === "Present" ? "badge-completed" :
                                                     (emp.status) === "Leave" ? "badge-under-probation" :
