@@ -12,6 +12,7 @@ const EmployeeHistory = require("../models/EmployeeHistory");
 const json2csv = require("json2csv").parse;
 const deletedEmployeeModel = require("../models/DeletedEmployee.js");
 const RedesignedLeadformModel = require("../models/RedesignedLeadform");
+const CallingModel = require("../models/EmployeeCallingData.js");
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -2239,6 +2240,46 @@ router.delete('/deleteTodaysProjection/:id', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ result: false, message: "Error deleting data :", error });
+  }
+});
+
+router.post('/employee-calling/save', async (req, res) => {
+  const {   
+    emp_number, 
+    monthly_data,
+    emp_code,
+    emp_country_code,
+    emp_name,
+    emp_tags } = req.body;
+
+  try {
+    // Find the employee by number, or create a new record if not found
+    let employee = await CallingModel.findOne({ emp_number });
+
+    if (!employee) {
+      // If employee doesn't exist, create a new one
+      employee = new CallingModel({ 
+        emp_number, 
+        monthly_data,
+        emp_code,
+        emp_country_code,
+        emp_name,
+        emp_tags
+       });
+    } else {
+      // If employee exists, update the monthly_data field
+      employee.monthly_data = monthly_data;
+    }
+
+    // Save the employee data in the database
+    const data = await employee.save();
+    console.log('Employee data saved:', data);
+
+    // Send a success response
+    res.status(200).json({ message: 'Data saved successfully' });
+  } catch (error) {
+    console.error('Error saving employee data:', error);
+    res.status(500).json({ message: 'Error saving employee data', error: error.message });
   }
 });
 

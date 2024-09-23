@@ -117,4 +117,4 @@ const EmployeeSchema = new mongoose.Schema({
 });
 
 const CallingModel = mongoose.model('CallingModel', EmployeeSchema);
-module.exports = EmployeeModel;
+module.exports = CallingModel;

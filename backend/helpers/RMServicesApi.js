@@ -54,7 +54,7 @@ function runTestScript(companyName, socketIO, companyEmail,bdeName,bdmName, bdeN
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
   //const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
-  // const command = `set COMPANY_NAME=${companyName}&& npx playwright test ../tests --project=chromium --headed`;
+  //const command = `set COMPANY_NAME=${companyName} && npx playwright test ../tests --project=chromium --headed`;
   const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
   console.log(command)
 
@@ -1425,12 +1425,12 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         { new: true }
       );
 
-      if (subCategoryStatus === "Approved") {
-        console.log("hello wworld");
-        const bdeNumber = findBde ? findBde.number : "8347526407";
-        const bdmNumber = findBdm ? findBdm.number : ""
-        runTestScript(companyName, socketIO, company["Company Email"],company.bdeName,company.bdmName, bdeNumber,bdmNumber);
-      }
+      // if (subCategoryStatus === "Approved") {
+      //   console.log("hello wworld");
+      //   const bdeNumber = findBde ? findBde.number : "8347526407";
+      //   const bdmNumber = findBdm ? findBdm.number : ""
+      //   runTestScript(companyName, socketIO, company["Company Email"],company.bdeName,company.bdmName, bdeNumber,bdmNumber);
+      // }
 
 
       if (!updatedCompany) {
