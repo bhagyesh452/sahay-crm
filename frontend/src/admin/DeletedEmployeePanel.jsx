@@ -80,23 +80,13 @@ function DeletedEmployeePanel({ searchValue }) {
   //--------------------fetching employee data-----------------
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+      const response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
+        params: { search: searchValue },
+      });
 
       // Set the retrieved data in the state
-
-      setFilteredData(response.data);
-      setData(response.data)
-      const result = response.data.filter((emp) => {
-        return (
-          emp.ename?.toLowerCase().includes(searchValue) ||
-          emp.number?.toString().includes(searchValue) ||
-          emp.email?.toLowerCase().includes(searchValue) ||
-          emp.newDesignation?.toLowerCase().includes(searchValue) ||
-          emp.branchOffice?.toLowerCase().includes(searchValue)
-        );
-      });
-      // console.log("Search result from deleted employee list is :", result);
-      setSearchResult(result);
+      // setFilteredData(response.data);
+      setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -106,7 +96,7 @@ function DeletedEmployeePanel({ searchValue }) {
     fetchData();
   }, [searchValue]);
 
-
+  // Old code handle search :
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -291,9 +281,9 @@ function DeletedEmployeePanel({ searchValue }) {
             </tbody>
           ) : (
             <>
-              {(searchValue ? searchResult : filteredData).length !== 0 ? (
+              {data.length !== 0 ? (
                 <tbody>
-                  {(searchValue ? searchResult : filteredData).map((item, index) => {
+                  {data.map((item, index) => {
                     const profilePhotoUrl = item.profilePhoto?.length !== 0
                       ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
                       : item.gender === "Male" ? MaleEmployee : FemaleEmployee;

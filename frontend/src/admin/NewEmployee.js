@@ -40,38 +40,40 @@ function NewEmployee() {
     const [deletedEmployee, setDeletedEmployee] = useState([]);
     const [addEmployeePopup, setAddEmployeePopup] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
-    const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
+    // const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
+    // const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
     const adminName = localStorage.getItem("adminName")
-    
+
     useEffect(() => {
         document.title = `Admin-Sahay-CRM`;
     }, []);
 
     const fetchEmployee = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/einfo`);
-            if(adminName === "Saurav" || adminName === "Krunal Pithadia"){
-                setEmployee(res.data.filter(obj=>obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));                              
-              }else{
-                setEmployee(res.data)              
-              }
-            // console.log("Fetched Employees are:", employeeData);
-            const result = res.data.filter((emp) => {
-                return (
-                    emp.ename?.toLowerCase().includes(searchValue) ||
-                    emp.number?.toString().includes(searchValue) ||
-                    emp.email?.toLowerCase().includes(searchValue) ||
-                    emp.newDesignation?.toLowerCase().includes(searchValue) ||
-                    emp.branchOffice?.toLowerCase().includes(searchValue)
-                );
+            const res = await axios.get(`${secretKey}/employee/einfo`, {
+                params: { search: searchValue } // send searchValue as query param
             });
+            if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+                setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+            } else {
+                setEmployee(res.data);
+            }
+            // console.log("Fetched Employees are:", employeeData);
+            // const result = res.data.filter((emp) => {
+            //     return (
+            //         emp.ename?.toLowerCase().includes(searchValue) ||
+            //         emp.number?.toString().includes(searchValue) ||
+            //         emp.email?.toLowerCase().includes(searchValue) ||
+            //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
+            //         emp.branchOffice?.toLowerCase().includes(searchValue)
+            //     );
+            // });
             // console.log("Search result from employee list is :", result);
-            if(adminName === "Saurav" || adminName === "Krunal Pithadia"){
-                setEmployeeSearchResult(result.filter(obj=>obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));                              
-              }else{
-                setEmployeeSearchResult(result)              
-              }
+            // if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+            //     setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+            // } else {
+            //     setEmployee(res.data);
+            // }
         } catch (error) {
             console.log("Error fetching employees data:", error);
         }
@@ -79,20 +81,22 @@ function NewEmployee() {
 
     const fetchDeletedEmployee = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+            const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
+                params: { search: searchValue } // send searchValue as query param
+            });
             setDeletedEmployee(res.data);
             // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
-            const result = res.data.filter((emp) => {
-                return (
-                    emp.ename?.toLowerCase().includes(searchValue) ||
-                    emp.number?.toString().includes(searchValue) ||
-                    emp.email?.toLowerCase().includes(searchValue) ||
-                    emp.newDesignation?.toLowerCase().includes(searchValue) ||
-                    emp.branchOffice?.toLowerCase().includes(searchValue)
-                );
-            });
-            // console.log("Search result from deleted employee list is :", result);
-            setDeletedEmployeeSearchResult(result);
+            // const result = res.data.filter((emp) => {
+            //     return (
+            //         emp.ename?.toLowerCase().includes(searchValue) ||
+            //         emp.number?.toString().includes(searchValue) ||
+            //         emp.email?.toLowerCase().includes(searchValue) ||
+            //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
+            //         emp.branchOffice?.toLowerCase().includes(searchValue)
+            //     );
+            // });
+            // // console.log("Search result from deleted employee list is :", result);
+            // setDeletedEmployeeSearchResult(result);
         } catch (error) {
             console.log("Error fetching employees data:", error);
         }
@@ -103,7 +107,7 @@ function NewEmployee() {
         fetchDeletedEmployee();
     }, [searchValue]);
 
-   
+
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -168,6 +172,7 @@ function NewEmployee() {
                                         <input className="form-control search-cantrol mybtn"
                                             placeholder="Search…" type="text" name="bdeName-search"
                                             id="bdeName-search"
+                                            value={searchValue}
                                             onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
                                         />
                                     </div>
@@ -197,7 +202,8 @@ function NewEmployee() {
                                                 Employees
                                             </div>
                                             <div className="rm_tsn_bdge">
-                                                {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0}
+                                                {/* {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0} */}
+                                                {employee.length || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -209,7 +215,8 @@ function NewEmployee() {
                                                 Deleted Employees
                                             </div>
                                             <div className="rm_tsn_bdge">
-                                                {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0}
+                                                {/* {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0} */}
+                                                {deletedEmployee.length || 0}
                                             </div>
                                         </div>
                                     </a>
