@@ -2413,5 +2413,17 @@ router.post('/employee-calling/save', async (req, res) => {
   }
 });
 
+router.get(`/employee-calling/:empId`, async (req, res) => {
+  try{
+    const data = await EmployeeCallingModel.find();
+
+    res.status(200).json({ message: 'Data fetched successfully', data: data });
+
+  }catch(error){
+    console.error('Error saving employee data:', error);
+    res.status(500).json({ message: 'Error saving employee data', error: error.message });
+  }
+})
+
 
 module.exports = router;
