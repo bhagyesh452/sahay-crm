@@ -9,11 +9,142 @@ import Avatar from '@mui/material/Avatar';
 import Notification from "../../Components/Notification/Notification.jsx";
 import MaleEmployee from "../../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../../static/EmployeeImg/woman.png";
+import axios from 'axios'
+import { useParams } from "react-router-dom";
 
 function Header({ name, id, designation, empProfile, gender }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
- 
+  const bdmUserId = useParams();
+  const [data, setData] = useState([])
+  const fetchData = async () => {
+    try {
+      console.log("kitni br fetch hua")
+      const response = await axios.get(`${secretKey}/employee/einfo`);
+      // Set the retrieved data in the state
+      const tempData = response.data;
+      
+      const userData = tempData.find((item) => item._id === bdmUserId.userId);
+      console.log("id" , bdmUserId)
+      console.log("tempdata" , userData)
+      setData(userData);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  const [error, setError] = useState(null);
+  const convertSecondsToHMS = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 3600 % 60;
+
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const fetchDailyData = async (date , employeeNumber) => {
+    const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+    const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+
+    const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
+    const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
+
+    const body = {
+        "call_from": startTimestamp,
+        "call_to": endTimestamp,
+        "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+        "emp_numbers": [employeeNumber]
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // Append the date field to each result
+        return data.result.map((entry) => ({
+            ...entry,
+            date: date // Add the date field
+        }));
+    } catch (err) {
+        console.error(err);
+        setError(err.message);
+        return null;
+    }
+};
+  const fetchMonthlyData = async (employeeNumber, startDate, endDate) => {
+    let currentDate = new Date(startDate);
+    const data = [];
+
+    while (currentDate <= endDate) {
+      const dateString = currentDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+      const dailyResult = await fetchDailyData(dateString, employeeNumber);
+      if (dailyResult) {
+        data.push(...dailyResult); // Push all daily results (with date field) into the array
+    }
+
+      currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      await delay(1000); // Wait for 1 second to respect the rate limit
+    }
+
+    return data;
+  };
+
+  const saveMonthlyDataToDatabase = async (employeeNumber, monthlyData) => {
+    try {
+      const response = await axios.post(`${secretKey}/employee/employee-calling/save`, {
+        emp_number: employeeNumber,
+        monthly_data: monthlyData,
+        emp_code:monthlyData[0].emp_code,
+        emp_country_code:monthlyData[0].emp_country_code,
+        emp_name: monthlyData[0].emp_name,
+        emp_tags:monthlyData[0].emp_tags,
+      });
   
+      // Check the HTTP status for success
+      if (response.status !== 200) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+  
+      console.log('Data saved successfully');
+    } catch (err) {
+      console.error('Error saving data:', err.message);
+    }
+  };
+  useEffect(() => {
+    if (data.number !== undefined) {
+      const startDate = new Date();
+      startDate.setDate(1); // Set to the first day of the month
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth());
+      endDate.setDate(new Date().getDate()); // Set to the last day of the month
+
+      const fetchAndSaveData = async () => {
+        const monthlyData = await fetchMonthlyData(data.number, startDate, endDate);
+        await saveMonthlyDataToDatabase(data.number, monthlyData);
+      };
+
+      fetchAndSaveData();
+    }
+  },[data]);
+
+  useEffect(()=>{
+    fetchData()
+  },[bdmUserId])
+  console.log("data" , data)
 
   return (
     <div>

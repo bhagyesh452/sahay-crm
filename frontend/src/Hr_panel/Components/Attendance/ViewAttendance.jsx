@@ -18,6 +18,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
 import { formatDate } from 'date-fns';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ViewAttendance({ year, month, date }) {
 
@@ -72,7 +74,7 @@ function ViewAttendance({ year, month, date }) {
     const currentDay = today.getDate();
     const currentMonth = today.getMonth() + 1; // JavaScript months are 0-based
     const currentYear = today.getFullYear();
-
+    const [openBacdrop, setOpenBacdrop] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
     const [gotaBranchEmployees, setGotaBranchEmployees] = useState([]);
     const [sindhuBhawanBranchEmployees, setSindhuBhawanBranchEmployees] = useState([]);
@@ -251,14 +253,14 @@ function ViewAttendance({ year, month, date }) {
                 console.error('Invalid time string:', timeString);
                 return null; // or handle the error as needed
             }
-        
+
             const [hours, minutes] = timeString.split(':').map(Number);
-        
+
             if (isNaN(hours) || isNaN(minutes)) {
                 console.error('Invalid time format:', timeString);
                 return null; // or handle the error as needed
             }
-        
+
             return hours * 60 + minutes;
         };
 
@@ -273,14 +275,14 @@ function ViewAttendance({ year, month, date }) {
                     console.error('Invalid time string:', timeString);
                     return null; // or handle the error as needed
                 }
-            
+
                 const [hours, minutes] = timeString.split(':').map(Number);
-            
+
                 if (isNaN(hours) || isNaN(minutes)) {
                     console.error('Invalid time format:', timeString);
                     return null; // or handle the error as needed
                 }
-            
+
                 return hours * 60 + minutes;
             };
 
@@ -364,7 +366,7 @@ function ViewAttendance({ year, month, date }) {
             }
             inTime = inTime ? inTime : "00:00";
             outTime = outTime ? outTime : "00:00";
-            workingHours = workingHours? workingHours : "00:00";
+            workingHours = workingHours ? workingHours : "00:00";
             status = statusValue;
             reasonToSend = reasonValue;
             isAddedManually = true;
@@ -439,14 +441,18 @@ function ViewAttendance({ year, month, date }) {
         setStatusValueError("");
         setReasonValueError("");
         try {
+            setOpenBacdrop(true);
             const res = await axios.post(`${secretKey}/attendance/addAttendance`, payload);
             // console.log("Created attendance record is :", res.data);
-            Swal.fire("success", "Attendance Successfully Added/Updated", "success");
+            //Swal.fire("success", "Attendance Successfully Added/Updated", "success");
         } catch (error) {
             console.log("Error adding attendance record", error);
             Swal.fire("error", "Error adding/updating attendance", "error");
+        } finally {
+            setOpenBacdrop(false);
+            fetchAttendance();
         }
-        fetchAttendance();
+
     };
 
     const handleClear = async (id, empId, name, designation, department, branch, date) => {
@@ -694,7 +700,9 @@ function ViewAttendance({ year, month, date }) {
     const handleCheckboxChangeStatus = (e) => {
         setOpenStatusSelect(e.target.checked); // Toggle the dropdown based on checkbox state
     };
-
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
     //console.log(manuallyAdded);
 
     return (
@@ -965,9 +973,9 @@ function ViewAttendance({ year, month, date }) {
                                                                             ${status === "Present" && newmanuallyAdded === true
                                                                                 ? newReason // Add OverP class if isAddedManually is true
                                                                                 : ""}
-                                                                               ${status === "Half Day" && newmanuallyAdded === true ? newReason  :  ""}
-                                                                                    ${status === "Leave" && newmanuallyAdded === true ? newReason  : ""}
-                                                                                    ${status.startsWith("LC") && newmanuallyAdded === true ? newReason   : ""}
+                                                                               ${status === "Half Day" && newmanuallyAdded === true ? newReason : ""}
+                                                                                    ${status === "Leave" && newmanuallyAdded === true ? newReason : ""}
+                                                                                    ${status.startsWith("LC") && newmanuallyAdded === true ? newReason : ""}
                                                                                 `.trim()}
                                                                         className=
                                                                         {`
@@ -1506,9 +1514,9 @@ function ViewAttendance({ year, month, date }) {
                                                                         ${status === "Present" && newmanuallyAdded === true
                                                                             ? newReason // Add OverP class if isAddedManually is true
                                                                             : ""}
-                                                                           ${status === "Half Day" && newmanuallyAdded === true ? newReason  :  ""}
-                                                                                ${status === "Leave" && newmanuallyAdded === true ? newReason  : ""}
-                                                                                ${status.startsWith("LC") && newmanuallyAdded === true ? newReason   : ""}
+                                                                           ${status === "Half Day" && newmanuallyAdded === true ? newReason : ""}
+                                                                                ${status === "Leave" && newmanuallyAdded === true ? newReason : ""}
+                                                                                ${status.startsWith("LC") && newmanuallyAdded === true ? newReason : ""}
                                                                             `.trim()}
                                                                     className={`
                                                                         ${status === "Present" && newmanuallyAdded === true
@@ -2129,7 +2137,7 @@ function ViewAttendance({ year, month, date }) {
                                                         name="rGroup"
                                                         value="1"
                                                         id="r1"
-                                                        checked={manuallyAdded} // Bind checked value to state
+                                                        checked={openStatusSelect || manuallyAdded} // Bind checked value to state
                                                         onChange={handleCheckboxChangeStatus} // Handle checkbox state change
                                                     />
                                                     <div style={{ fontSize: "10px", marginLeft: "4px" }}>
@@ -2140,7 +2148,7 @@ function ViewAttendance({ year, month, date }) {
                                             </div>
                                         </div>
                                         {
-                                           (manuallyAdded|| openStatusSelect) &&
+                                            (manuallyAdded || openStatusSelect) &&
                                             (<>
                                                 <div className='col-lg-12'>
                                                     <hr className='mt-3 mb-3'></hr>
@@ -2198,7 +2206,13 @@ function ViewAttendance({ year, month, date }) {
                     )
                 }
             </Dialog>
-
+            {/* --------------------------------backedrop------------------------- */}
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
             {showAttendanceForParticularEmployee &&
                 <ShowAttendanceForParticularEmployee
                     year={year}

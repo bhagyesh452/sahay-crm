@@ -407,13 +407,18 @@ router.post('/addAttendance', async (req, res) => {
                             isAddedManually:isAddedManually
                         });
                     } else {
-                        // Clear the day's attendance if the status is empty
-                        dayArray.inTime = inTime;
-                        dayArray.outTime = outTime;
-                        dayArray.workingHours = workingHours;
-                        dayArray.status = status;
-                        dayArray.reasonValue= reason;
-                        dayArray.isAddedManually = isAddedManually !== undefined ? isAddedManually : dayArray.isAddedManually;
+                        if (!inTime && !outTime && !workingHours && !status) {
+                            // If inTime, outTime, workingHours, and status are empty, remove the day
+                            monthArray.days = monthArray.days.filter(d => d.date !== day);
+                        } else {
+                            // Update existing day
+                            dayArray.inTime = inTime;
+                            dayArray.outTime = outTime;
+                            dayArray.workingHours = workingHours;
+                            dayArray.status = status;
+                            dayArray.reasonValue = reason;
+                            dayArray.isAddedManually = isAddedManually !== undefined ? isAddedManually : dayArray.isAddedManually;
+                        }
 
                     }
                     // After clearing, re-check the number of LC statuses for the month
