@@ -166,7 +166,7 @@ function CallingReportView({ employeeInformation }) {
                 const dailyData = data[0]?.year?.[0]?.monthly_data?.[0]?.daily_data;
     
                 if (dailyData) {
-                    setCallingData(dailyData); // Set the data only if it exists
+                    setCallingData(dailyData.sort((a, b) => new Date(a.date) - new Date(b.date))); // Set the data only if it exists
                     console.log("dailyData", dailyData);
                 } else {
                     console.error("Daily data is missing or not in the expected structure");
