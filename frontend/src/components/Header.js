@@ -29,6 +29,7 @@ function Header({ name, id, designation, empProfile, gender}) {
 
   const fetchData = async () => {
     try {
+      console.log("kitni br fetch hua")
       const response = await axios.get(`${secretKey}/employee/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
@@ -273,6 +274,7 @@ function Header({ name, id, designation, empProfile, gender}) {
   };
 
   // ----------------call logs component------------------
+  const [error, setError] = useState(null);
   const convertSecondsToHMS = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -283,48 +285,48 @@ function Header({ name, id, designation, empProfile, gender}) {
 
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const fetchDailyData = async (date, employeeNumber) => {
-    const apiKey = process.env.REACT_APP_API_KEY;
+  const fetchDailyData = async (date , employeeNumber) => {
+    const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
     const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
 
     const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
     const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
 
     const body = {
-      "call_from": startTimestamp,
-      "call_to": endTimestamp,
-      "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-      "emp_numbers": [employeeNumber]
+        "call_from": startTimestamp,
+        "call_to": endTimestamp,
+        "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+        "emp_numbers": [employeeNumber]
     };
 
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-      }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+        }
 
-      const data = await response.json();
+        const data = await response.json();
 
-      // Append the date field to each result
-      return data.result.map((entry) => ({
-        ...entry,
-        date: date // Add the date field
-      }));
+        // Append the date field to each result
+        return data.result.map((entry) => ({
+            ...entry,
+            date: date // Add the date field
+        }));
     } catch (err) {
-      console.error(err);
-      return null;
+        console.error(err);
+        setError(err.message);
+        return null;
     }
-  };
-
+};
   const fetchMonthlyData = async (employeeNumber, startDate, endDate) => {
     let currentDate = new Date(startDate);
     const data = [];

@@ -94,6 +94,18 @@ const DailyCallSchema = new mongoose.Schema({
     },
     call_logs: [CallLogSchema], // Array of call logs for this day
 });
+// Schema for monthly data, which stores daily data
+const MonthlySchema = new mongoose.Schema({
+    month: { type: String }, // Store month name or number (e.g., "January" or "01")
+    daily_data: [DailyCallSchema], // Array of daily data
+});
+
+// Schema for yearly data, which stores monthly data
+const YearSchema = new mongoose.Schema({
+    year: { type: String }, // Store year (e.g., "2024")
+    monthly_data: [MonthlySchema], // Array of monthly data
+});
+
 
 const EmployeeSchema = new mongoose.Schema({
     emp_code: {
@@ -113,7 +125,7 @@ const EmployeeSchema = new mongoose.Schema({
         type: Array,
         defauly:["Sales Executive" , "Sales Manager"]
     },
-    monthly_data: [DailyCallSchema], // Store daily call data for the month
+    year:[YearSchema],
 });
 
 const CallingModel = mongoose.model('CallingModel', EmployeeSchema);

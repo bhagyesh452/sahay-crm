@@ -54,7 +54,7 @@ function runTestScript(companyName, socketIO, companyEmail,bdeName,bdmName, bdeN
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
   //const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
-  //const command = `set COMPANY_NAME=${companyName} && npx playwright test ../tests --project=chromium --headed`;
+ 
   const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
   console.log(command)
 
@@ -113,7 +113,7 @@ function runTestScript(companyName, socketIO, companyEmail,bdeName,bdmName, bdeN
               path: path.join(__dirname, "src", "Company_Brochure.pdf"), // Adjust the path accordingly, // Path to the static brochure
             }
           ];
-          console.log(`Email attachments: ${JSON.stringify(attachments)}`);
+          //console.log(`Email attachments: ${JSON.stringify(attachments)}`);
           const validationLink = 'https://www.startupindia.gov.in/content/sih/en/startupgov/validate-startup-recognition.html '; // Your validation link
           const number = bdmNumber ? bdmNumber : bdeNumber
           const subject = `Congratulations! Your Start-Up India Certificate is Approved!`;
@@ -1425,12 +1425,12 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         { new: true }
       );
 
-      // if (subCategoryStatus === "Approved") {
-      //   console.log("hello wworld");
-      //   const bdeNumber = findBde ? findBde.number : "8347526407";
-      //   const bdmNumber = findBdm ? findBdm.number : ""
-      //   runTestScript(companyName, socketIO, company["Company Email"],company.bdeName,company.bdmName, bdeNumber,bdmNumber);
-      // }
+      if (subCategoryStatus === "Approved") {
+        console.log("hello wworld");
+        const bdeNumber = findBde ? findBde.number : "8347526407";
+        const bdmNumber = findBdm ? findBdm.number : ""
+        runTestScript(companyName, socketIO, company["Company Email"],company.bdeName,company.bdmName, bdeNumber,bdmNumber);
+      }
 
 
       if (!updatedCompany) {

@@ -279,6 +279,8 @@ function HrEmployees() {
     fetchPersonalInfo();
   }, []);
 
+ 
+
   return (
     <div>
       <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
