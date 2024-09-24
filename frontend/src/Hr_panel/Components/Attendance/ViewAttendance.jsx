@@ -923,7 +923,6 @@ function ViewAttendance({ year, month, date }) {
                                                             </div>
                                                         </td>
                                                         {selectedMonthDays.map(day => {
-
                                                             const formattedDate = `${year}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${day < 10 ? '0' + day : day}`;
                                                             const { attendanceDate = formattedDate } = empAttendance;
 

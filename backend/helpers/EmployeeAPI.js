@@ -2426,5 +2426,19 @@ router.post('/employee-calling/save', async (req, res) => {
   }
 });
 
+router.get(`/employee-calling-fetch/:number`, async (req, res) => {
+  const { number } = req.params; // Accessing the number directly from req.paramscd backen
+  console.log("number" , number , typeof(number))
+  try{
+    const data = await CallingModel.find({emp_number : String(number)});
+
+    res.status(200).json({ message: 'Data fetched successfully', data: data });
+
+  }catch(error){
+    console.error('Error saving employee data:', error);
+    res.status(500).json({ message: 'Error saving employee data', error: error.message });
+  }
+})
+
 
 module.exports = router;

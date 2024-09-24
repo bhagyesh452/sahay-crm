@@ -85,93 +85,117 @@ function CallingReportView({ employeeInformation }) {
         return hours * 3600 + minutes * 60 + seconds;
     };
     // Function to delay execution to handle rate limits
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    // const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    // Fetch data for a specific date and append the date field to each entry in the result
-    const fetchDailyData = async (date) => {
-        const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-        const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+    // // Fetch data for a specific date and append the date field to each entry in the result
+    // const fetchDailyData = async (date) => {
+    //     const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+    //     const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
 
-        const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
-        const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
+    //     const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
+    //     const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
 
-        const body = {
-            "call_from": startTimestamp,
-            "call_to": endTimestamp,
-            "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-            "emp_numbers": [employeeInformation.number]
-        };
+    //     const body = {
+    //         "call_from": startTimestamp,
+    //         "call_to": endTimestamp,
+    //         "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+    //         "emp_numbers": [employeeInformation.number]
+    //     };
 
+    //     try {
+    //         const response = await fetch(url, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${apiKey}`,
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(body)
+    //         });
+
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+    //         }
+
+    //         const data = await response.json();
+
+    //         // Append the date field to each result
+    //         return data.result.map((entry) => ({
+    //             ...entry,
+    //             date: date // Add the date field
+    //         }));
+    //     } catch (err) {
+    //         console.error(err);
+    //         setError(err.message);
+    //         return null;
+    //     }
+    // };
+
+    // // Fetch data for all days in a given month
+    // const fetchMonthlyData = async (startDate, endDate) => {
+    //     setLoading(true);
+    //     setError(null);
+
+    //     let currentDate = new Date(startDate);
+    //     const data = [];
+
+    //     while (currentDate <= endDate) {
+    //         const dateString = currentDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+    //         const dailyResult = await fetchDailyData(dateString);
+    //         if (dailyResult) {
+    //             data.push(...dailyResult); // Push all daily results (with date field) into the array
+    //         }
+
+    //         currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+    //         await delay(1000); // Wait for 1 second to respect the rate limit
+    //     }
+
+    //     setDailyData(data);
+    //     setLoading(false);
+        
+    // };
+    const [callingData, setCallingData] = useState([])
+    const fetchCallingDate = async () => {
         try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+            const response = await axios.get(`${secretKey}/employee/employee-calling-fetch/${employeeInformation.number}`);
+            const data = response.data.data;
+    
+            if (Array.isArray(data) && data.length > 0) {
+                // Safely access nested properties using optional chaining
+                const dailyData = data[0]?.year?.[0]?.monthly_data?.[0]?.daily_data;
+    
+                if (dailyData) {
+                    setCallingData(dailyData.sort((a, b) => new Date(a.date) - new Date(b.date))); // Set the data only if it exists
+                    console.log("dailyData", dailyData);
+                } else {
+                    console.error("Daily data is missing or not in the expected structure");
+                }
+            } else {
+                console.error("No data found for the employee");
             }
-
-            const data = await response.json();
-
-            // Append the date field to each result
-            return data.result.map((entry) => ({
-                ...entry,
-                date: date // Add the date field
-            }));
         } catch (err) {
-            console.error(err);
-            setError(err.message);
-            return null;
+            console.log("Error fetching calling data:", err);
         }
     };
+    
 
-    // Fetch data for all days in a given month
-    const fetchMonthlyData = async (startDate, endDate) => {
-        setLoading(true);
-        setError(null);
+    // useEffect(() => {
+    //     if (employeeInformation.number) {
+    //         const startDate = new Date(); // Set your desired start date
+    //         startDate.setDate(1); // Set to the first day of the month
+    //         const endDate = new Date(startDate);
+    //         endDate.setMonth(endDate.getMonth());
+    //         endDate.setDate(new Date().getDate()); // Set to the last day of the month
+    //         //console.log(endDate)
 
-        let currentDate = new Date(startDate);
-        const data = [];
+    //         fetchMonthlyData(startDate, endDate);
+    //     }
+        
+    // }, [employeeInformation]);
 
-        while (currentDate <= endDate) {
-            const dateString = currentDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
-
-            const dailyResult = await fetchDailyData(dateString);
-            if (dailyResult) {
-                data.push(...dailyResult); // Push all daily results (with date field) into the array
-            }
-
-            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-            await delay(1000); // Wait for 1 second to respect the rate limit
-        }
-
-        setDailyData(data);
-        setLoading(false);
-        setLoading(false)
-    };
-
-
-    useEffect(() => {
-        if (employeeInformation.number) {
-            const startDate = new Date(); // Set your desired start date
-            startDate.setDate(1); // Set to the first day of the month
-            const endDate = new Date(startDate);
-            endDate.setMonth(endDate.getMonth());
-            endDate.setDate(new Date().getDate()); // Set to the last day of the month
-            //console.log(endDate)
-
-            fetchMonthlyData(startDate, endDate);
-        }
-    }, [employeeInformation]);
-
-
-    console.log("dailyData", dailyData);
+    console.log("callingData", callingData)
+    //console.log("dailyData", dailyData);
     const getTargetTime = (joiningDate) => {
         // Parse the joining date to a Date object
         const joinDate = new Date(joiningDate);
@@ -196,6 +220,12 @@ function CallingReportView({ employeeInformation }) {
         return `${day}-${month}-${year}`;
     };
 
+    useEffect(()=>{
+        fetchCallingDate();
+    },[employeeInformation])
+
+
+
 
     return (
         <div className="calling-report-view mt-3">
@@ -215,9 +245,9 @@ function CallingReportView({ employeeInformation }) {
                 <div className="d-flex align-items-center justify-content-start">
                     <button className='btn action-btn-alert'>
                         Not Achieved:
-                        {dailyData && dailyData.length > 0 ? (
+                        {callingData && callingData.length > 0 ? (
                             // Map over dailyData and filter for "Failed" statuses
-                            dailyData.map((obj) => {
+                            callingData.map((obj) => {
                                 const totalDuration = convertSecondsToHMS(obj.total_duration);
                                 const targetTime = getTargetTime(employeeInformation.jdate);
 
@@ -263,9 +293,9 @@ function CallingReportView({ employeeInformation }) {
                                     </td>
                                 </tr>
                             </tbody>
-                        ) : dailyData && dailyData.length !== 0 ?
+                        ) : callingData && callingData.length !== 0 ?
                             (<tbody>
-                                {dailyData.map((item, index) => {
+                                {callingData.map((item, index) => {
                                     const targetTime = getTargetTime(employeeInformation.jdate);
                                     const status = getTargetStatus(convertSecondsToHMS(item.total_duration), targetTime);
                                     const badgeClass = status === "Achieved" ? 'badge-completed' : 'badge-leave';
@@ -288,7 +318,7 @@ function CallingReportView({ employeeInformation }) {
                                 }
 
                             </tbody>
-                            ) : (dailyData.length === 0 && !loading && (
+                            ) : (callingData.length === 0 && !loading && (
                                 <tbody>
                                     <tr>
                                         <td colSpan="7" style={{ textAlign: "center" }}>

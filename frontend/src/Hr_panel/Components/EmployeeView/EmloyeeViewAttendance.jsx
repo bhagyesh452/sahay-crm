@@ -392,6 +392,7 @@ function EmployeeViewAttendance({ data }) {
         hours = hours % 12 || 12; // Convert hour to 12-hour format
         return `${hours}:${String(minutes).padStart(2, '0')} ${ampm}`; // Ensure minutes are always two digits
     };
+    console.log("attendanceData", attendanceData);
 
     return (
         <div className="mt-3">
@@ -448,15 +449,7 @@ function EmployeeViewAttendance({ data }) {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>
-                                        <div className='attendance-date-tbl'>
-                                            {/* <input
-                                                type="date"
-                                                className="form-control date-f"
-                                                value={convertToDateInputFormat(
-                                                    new Date(selectedYear, new Date(Date.parse(`${selectedMonth} 1, ${selectedYear}`)).getMonth(), emp.date)
-                                                )}
-                                                readOnly
-                                            /> */}
+                                        <div className='attendance-date-tbl'>                                          
                                             <div className="form-control date-f text-center">
                                                 {convertToDateInputFormat(
                                                     new Date(selectedYear, new Date(Date.parse(`${selectedMonth} 1, ${selectedYear}`)).getMonth(), emp.date)
@@ -465,13 +458,7 @@ function EmployeeViewAttendance({ data }) {
                                         </div>
                                     </td>
                                     <td>
-                                        <div className='attendance-date-tbl'>
-                                            {/* <input
-                                                type="time"
-                                                className='form-cantrol in-time'
-                                                value={emp.inTime}
-                                                readOnly
-                                            /> */}
+                                        <div className='attendance-date-tbl'>                                          
                                             <div className="form-control in-time">
                                                 {(() => {
                                                     console.log('inTime:', emp.inTime); // Console log the inTime value
@@ -482,12 +469,6 @@ function EmployeeViewAttendance({ data }) {
                                     </td>
                                     <td>
                                         <div className='attendance-date-tbl'>
-                                            {/* <input
-                                                type="time"
-                                                className='form-cantrol out-time'
-                                                value={emp.outTime}
-                                                readOnly
-                                            /> */}
                                             <div className="form-cantrol out-time">
                                                 {emp.outTime ? convertTo12HourFormat(emp.outTime) : "-"}
                                             </div>

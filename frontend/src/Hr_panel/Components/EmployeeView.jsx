@@ -320,78 +320,7 @@ function EmployeeView() {
     }
   };
 
-  // const today = new Date().toISOString().split('T')[0];
-
-  // const events = [
-  //   {
-  //     title: 'Present',
-  //     start: '2024-07-02', // Static start date
-  //     end: '2024-07-03',   // Static end date (same day, all-day event)
-  //     allDay: true,
-  //     editable: false,     // Disable editing for this event
-  //   },
-  //   {
-  //     title: 'Present',
-  //     start: '2024-07-03', // Static start date
-  //     end: '2024-07-03',   // Static end date (same day, all-day event)
-  //     allDay: true,
-  //     editable: false,     // Disable editing for this event
-  //   },
-  //   {
-  //     title: 'Absent',
-  //     start: '2024-06-30', // Static start date
-  //     end: '2024-06-30',   // Static end date (same day, all-day event)
-  //     allDay: true,
-  //     editable: false,     // Disable editing for this event
-  //   }
-  // ];
-
-  // Edit Employee Information from Hr
-  // const functionEditEmployee = () => {
-  //   setEditEmpInfo(true);
-  // }
-
-  // const closePopUp = () => {
-  //   setEditEmpInfo(false);
-  // }
-
-  // Handle form submission
-  // const handlePersonalDetailsSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   try {
-  //     const response = await axios.put(
-  //       `${secretKey}/api/employee/personal-details/${userId}`,
-  //       {
-  //         personal_email,
-  //         personal_number,
-  //         personal_contact_person,
-  //         personal_address,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${newtoken}`,
-  //         },
-  //       }
-  //     );
-
-  //     console.log('Personal details updated successfully:', response.data);
-  //     Swal.fire({
-  //       title: 'Success!',
-  //       text: 'Personal details updated successfully.',
-  //       icon: 'success',
-  //     });
-  //     fetchEmployeeData();
-  //   } catch (error) {
-  //     console.error('Error updating personal details:', error);
-  //     Swal.fire({
-  //       title: 'Error!',
-  //       text: 'Failed to update personal details.',
-  //       icon: 'error',
-  //     });
-  //   }
-  // };
-
+  
 
   return (
     <div>

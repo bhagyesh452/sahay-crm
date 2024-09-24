@@ -128,7 +128,7 @@ function Navbar({userId}) {
                                     >
                                         <a className="nav-link" href="./">
                                             <span className="nav-link-icon d-md-none d-lg-inline-block">
-                                            <GiReceiveMoney style={{ width: "19px", height: "23px",color:"lightgray" }} />
+                                            <GiReceiveMoney style={{ width: "19px", height: "23px" }} />
                                             </span>
                                             <span className="nav-link-title">Salary</span>
                                         </a>
