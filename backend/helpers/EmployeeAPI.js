@@ -2413,9 +2413,11 @@ router.post('/employee-calling/save', async (req, res) => {
   }
 });
 
-router.get(`/employee-calling/:empId`, async (req, res) => {
+router.get(`/employee-calling-fetch/:number`, async (req, res) => {
+  const { number } = req.params; // Accessing the number directly from req.params
+  console.log("number" , number , typeof(number))
   try{
-    const data = await EmployeeCallingModel.find();
+    const data = await CallingModel.find({emp_number : String(number)});
 
     res.status(200).json({ message: 'Data fetched successfully', data: data });
 
