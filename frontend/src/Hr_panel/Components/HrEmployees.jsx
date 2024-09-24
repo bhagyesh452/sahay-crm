@@ -347,7 +347,6 @@ function HrEmployees() {
                         Deleted Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        {/* {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0} */}
                         {deletedEmployee.length || 0}
                       </div>
                     </div>

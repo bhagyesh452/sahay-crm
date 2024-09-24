@@ -665,7 +665,13 @@ router.get("/deletedemployeeinfo", async (req, res) => {
     }
 
     // Perform the search query
-    const data = await deletedEmployeeModel.find(filter);
+    let data;
+    if(!search){
+      data = await deletedEmployeeModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+    } else {
+      data = await deletedEmployeeModel.find(filter).lean();
+    }
+    // const data = await deletedEmployeeModel.find(filter);
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -742,6 +748,7 @@ router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
     }
 
     // console.log("Deleted data is :", dataToDelete);
+    // console.log("Reverted employee is :", dataToRevertBack);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -1955,7 +1962,13 @@ router.get("/einfo", async (req, res) => {
     }
 
     // Perform the search query
-    const data = await adminModel.find(filter);
+    let data;
+    if(!search){
+      data = await adminModel.find().lean();
+    } else {
+      data = await adminModel.find(filter).lean();
+    }
+    // const data = await adminModel.find(filter);
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
