@@ -443,7 +443,9 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`${secretKey}/employee/einfo`);
+      const response = await axios.get(`${secretKey}/employee/einfo`, {
+        params: { search: searchValue },
+      });
       // console.log("Fetched employees are :", response.data);
       // Set the retrieved data in the state
 
@@ -463,31 +465,28 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       setNewDesignation("");
       setBranchOffice("");
 
-      const result = response.data.filter((emp) => {
-        const mappedDesignation = searchValue.toLowerCase() === "bde"
-          ? "business development executive"
-          : searchValue.toLowerCase() === "bdm"
-            ? "business development manager"
-            : searchValue.toLowerCase();
+      // const result = response.data.filter((emp) => {
+      //   const mappedDesignation = searchValue.toLowerCase() === "bde"
+      //     ? "business development executive"
+      //     : searchValue.toLowerCase() === "bdm"
+      //       ? "business development manager"
+      //       : searchValue.toLowerCase();
 
-        return (
-          emp.ename?.toLowerCase().includes(searchValue.toLowerCase()) ||
-          emp.number?.toString().includes(searchValue) ||
-          emp.email?.toLowerCase().includes(searchValue.toLowerCase()) ||
-          emp.newDesignation?.toLowerCase().includes(mappedDesignation) ||
-          emp.branchOffice?.toLowerCase().includes(searchValue.toLowerCase()) ||
-          emp.department?.toLowerCase().includes(searchValue.toLowerCase())
-        );
-      });
+      //   return (
+      //     emp.ename?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      //     emp.number?.toString().includes(searchValue) ||
+      //     emp.email?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      //     emp.newDesignation?.toLowerCase().includes(mappedDesignation) ||
+      //     emp.branchOffice?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      //     emp.department?.toLowerCase().includes(searchValue.toLowerCase())
+      //   );
+      // });
 
       // console.log("Search result from employee list is :", result);
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-       
-        setSearchResult(result.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-
+        setSearchResult(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
       } else {
-       
-        setSearchResult(result)
+        setSearchResult(response.data);
       }
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -496,6 +495,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     }
   };
 
+  // Old code handle search :
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -509,11 +509,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     );
 
     if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
       setFilteredData(filtered.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-
     } else {
-     
       setFilteredData(filtered)
     }
   };
@@ -593,11 +590,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   useEffect(() => {
     // Fetch data from the Node.js server
     if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
       setFilteredData(data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-
     } else {
-     
       setFilteredData(data)
     }
     // Call the fetchData function
@@ -904,11 +898,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         a.ename.localeCompare(b.ename)
       );
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
         setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-  
       } else {
-       
         setFilteredData(sortedData)
       }
     } else {
@@ -921,16 +912,15 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         b.ename.localeCompare(a.ename)
       );
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
         setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-  
       } else {
-       
         setFilteredData(sortedData)
       }
     }
   };
+
   const adminName = localStorage.getItem("adminName")
+
   const sortDateByAddedOn = () => {
     if (sortedFormat.addedOn === "ascending") {
       setSortedFormat({
@@ -942,11 +932,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         a.AddedOn.localeCompare(b.AddedOn)
       );
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
         setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-  
       } else {
-       
         setFilteredData(sortedData)
       }
     } else {
@@ -959,15 +946,13 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         b.AddedOn.localeCompare(a.AddedOn)
       );
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
         setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-  
       } else {
-       
         setFilteredData(sortedData)
       }
     }
   };
+
   const sortDataByJoiningDate = () => {
     if (sortedFormat.jdate === "ascending") {
       setSortedFormat({
@@ -979,11 +964,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         (a, b) => new Date(a.jdate) - new Date(b.jdate)
       );
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
         setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-  
       } else {
-       
         setFilteredData(sortedData)
       }
     } else {
@@ -996,11 +978,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         (a, b) => new Date(b.jdate) - new Date(a.jdate)
       );
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-     
         setFilteredData(sortedData.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-  
       } else {
-       
         setFilteredData(sortedData)
       }
     }
@@ -1029,7 +1008,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
 
   // -------------------------------------------------    ADD Target Section   --------------------------------------------------
-
   const handleAddTarget = () => {
     const totalTargets = targetObjects;
     totalTargets.push(defaultObject);

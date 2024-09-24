@@ -34,15 +34,13 @@ function HrEmployees() {
   const [deletedData, setDeletedData] = useState([]);
   const [companyData, setCompanyData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
-  const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
 
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
   };
 
   const formatSalary = (amount) => {
-    return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
+    return new Intl.NumberFormat('en-IN').format(amount);
   };
 
   const formatDate = (dateString) => {
@@ -87,29 +85,11 @@ function HrEmployees() {
   const fetchEmployee = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employee/einfo`);
+      const res = await axios.get(`${secretKey}/employee/einfo`, {
+        params: { search: searchValue } // send searchValue as query param
+      });
       setEmployee(res.data);
       // console.log("Fetched Employees are:", res.data);
-
-      const result = res.data.filter((emp) => {
-        const mappedDesignation = searchValue.toLowerCase() === "bde" 
-          ? "business development executive" 
-          : searchValue.toLowerCase() === "bdm"
-          ? "business development manager"
-          : searchValue.toLowerCase();
-  
-        return (
-          emp.ename?.toLowerCase().includes(searchValue.toLowerCase()) ||
-          emp.number?.toString().includes(searchValue) ||
-          emp.email?.toLowerCase().includes(searchValue.toLowerCase()) ||
-          emp.newDesignation?.toLowerCase().includes(mappedDesignation) ||
-          emp.branchOffice?.toLowerCase().includes(searchValue.toLowerCase()) ||
-          emp.department?.toLowerCase().includes(searchValue.toLowerCase())
-        );
-      });
-      
-      // console.log("Search result from employee list is :", result);
-      setEmployeeSearchResult(result);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     } finally {
@@ -120,20 +100,10 @@ function HrEmployees() {
   const fetchDeletedEmployee = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-      setDeletedEmployee(res.data);
-      // console.log("Fetched Deleted Employees are:", res.data);
-      const result = res.data.filter((emp) => {
-        return (
-          emp.ename?.toLowerCase().includes(searchValue) ||
-          emp.number?.toString().includes(searchValue) ||
-          emp.email?.toLowerCase().includes(searchValue) ||
-          emp.newDesignation?.toLowerCase().includes(searchValue) ||
-          emp.branchOffice?.toLowerCase().includes(searchValue)
-        );
+      const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
+        params: { search: searchValue } // send searchValue as query param
       });
-      // console.log("Search result from deleted employee list is :", result);
-      setDeletedEmployeeSearchResult(result);
+      setDeletedEmployee(res.data);
     } catch (error) {
       console.log("Error fetching employees data:", error);
     } finally {
@@ -363,7 +333,7 @@ function HrEmployees() {
                         Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0}
+                        {employee.length || 0}
                       </div>
                     </div>
                   </a>
@@ -375,7 +345,8 @@ function HrEmployees() {
                         Deleted Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0}
+                        {/* {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0} */}
+                        {deletedEmployee.length || 0}
                       </div>
                     </div>
                   </a>
@@ -433,9 +404,9 @@ function HrEmployees() {
                         </tbody>
                       ) : (
                         <>
-                          {(searchValue ? employeeSearchResult : employee).length !== 0 ? (
+                          {employee.length !== 0 ? (
                             <tbody>
-                              {(searchValue ? employeeSearchResult : employee).map((emp, index) => {
+                              {employee.map((emp, index) => {
                                 const profilePhotoUrl = emp.profilePhoto?.length !== 0
                                   ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                   : emp.gender === "Male" ? EmpDfaullt : FemaleEmployee;
@@ -586,9 +557,9 @@ function HrEmployees() {
                       </tbody>
                     ) : (
                       <>
-                        {(searchValue ? deletedEmployeeSearchResult : deletedEmployee).length !== 0 ? (
+                        {deletedEmployee.length !== 0 ? (
                           <tbody>
-                            {(searchValue ? deletedEmployeeSearchResult : deletedEmployee).map((emp, index) => {
+                            {deletedEmployee.map((emp, index) => {
                               const profilePhotoUrl = emp.profilePhoto?.length !== 0
                                 ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
                                 : EmpDfaullt;
@@ -606,20 +577,20 @@ function HrEmployees() {
                                         />
                                       </div>
                                       <div className="">
-                                      {(() => {
-                                            // Split the item.ename string into an array of words based on spaces
-                                            const names = (emp.ename || "").trim().split(/\s+/);
+                                        {(() => {
+                                          // Split the item.ename string into an array of words based on spaces
+                                          const names = (emp.ename || "").trim().split(/\s+/);
 
-                                            // console.log("names", names);
+                                          // console.log("names", names);
 
-                                            // Check if there's only one name or multiple names
-                                            if (names.length === 1) {
-                                              return names[0]; // If there's only one name, return it as-is
-                                            }
+                                          // Check if there's only one name or multiple names
+                                          if (names.length === 1) {
+                                            return names[0]; // If there's only one name, return it as-is
+                                          }
 
-                                            // Return the first and last name, or an empty string if not available
-                                            return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                                          })()}
+                                          // Return the first and last name, or an empty string if not available
+                                          return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                        })()}
                                       </div>
                                     </div>
                                   </td>
@@ -685,7 +656,7 @@ function HrEmployees() {
                             <tr>
                               <td
                                 className="particular"
-                                colSpan="11"
+                                colSpan="12"
                                 style={{ textAlign: "center" }}
                               >
                                 <Nodata />
