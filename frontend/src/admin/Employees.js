@@ -242,8 +242,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         setFilteredData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
 
       } else {
-        setData(response.data)
-        setFilteredData(response.data)
+        setData(response.data);
+        setFilteredData(response.data);
       }
 
     } catch (error) {
@@ -454,8 +454,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         setFilteredData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
 
       } else {
-        setData(response.data)
-        setFilteredData(response.data)
+        setData(response.data);
+        setFilteredData(response.data);
       }
       setEmail("");
       setEname("");
@@ -592,7 +592,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
       setFilteredData(data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
     } else {
-      setFilteredData(data)
+      setFilteredData(data);
     }
     // Call the fetchData function
     fetchData();

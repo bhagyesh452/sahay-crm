@@ -188,7 +188,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
             const res = await axios.get(`${secretKey}/employee/einfo`);
             const employeeData = res.data;
             setEmployeeData(employeeData);
-            console.log("Fetched Employees are:", res.data)
+            // console.log("Fetched Employees are:", res.data);
         } catch (error) {
             console.log("Error fetching employees data:")
         }

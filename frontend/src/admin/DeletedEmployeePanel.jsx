@@ -373,7 +373,7 @@ function DeletedEmployeePanel({ searchValue }) {
                           <button
                             className="action-btn action-btn-success ml-1"
                             onClick={() => {
-                              const dataToRevertBack = filteredData.filter(obj => obj._id === item._id);
+                              const dataToRevertBack = data.filter(obj => obj._id === item._id);
                               handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
                             }}
                           >
