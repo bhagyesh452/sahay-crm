@@ -160,6 +160,14 @@ const yourSchema = new mongoose.Schema({
 });
 
 
+// Add indexes for search fields
+yourSchema.index({ ename: 1 });
+yourSchema.index({ number: 1 });
+yourSchema.index({ email: 1 });
+yourSchema.index({ branchOffice: 1 });
+yourSchema.index({ department: 1 });
+yourSchema.index({ newDesignation: 1 });
+
 
 // Create the model
 const adminModel = mongoose.model('newemployeeinfos', yourSchema);

@@ -50,9 +50,17 @@ function NewEmployee() {
 
     const fetchEmployee = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/einfo`, {
-                params: { search: searchValue } // send searchValue as query param
-            });
+            let res;
+            if (!searchValue) {
+                res = await axios.get(`${secretKey}/employee/einfo`);
+            } else {
+                res = await axios.get(`${secretKey}/employee/searchEmployee`, {
+                    params: { search: searchValue } // send searchValue as query param
+                });
+            }
+            // const res = await axios.get(`${secretKey}/employee/einfo`, {
+            //     params: { search: searchValue } // send searchValue as query param
+            // });
             if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
                 setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
             } else {
@@ -81,9 +89,17 @@ function NewEmployee() {
 
     const fetchDeletedEmployee = async () => {
         try {
-            const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
-                params: { search: searchValue } // send searchValue as query param
-            });
+            let res;
+            if (!searchValue) {
+                res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+            } else {
+                res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+                    params: { search: searchValue } // send searchValue as query param
+                });
+            }
+            // const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
+            //     params: { search: searchValue } // send searchValue as query param
+            // });
             setDeletedEmployee(res.data);
             // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
             // const result = res.data.filter((emp) => {

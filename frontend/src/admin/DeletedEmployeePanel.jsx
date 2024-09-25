@@ -80,15 +80,27 @@ function DeletedEmployeePanel({ searchValue }) {
   //--------------------fetching employee data-----------------
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
-        params: { search: searchValue },
-      });
+      setIsLoading(true);
+      let response;
+      if (!searchValue) {
+        response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+      } else {
+        response = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+          params: { search: searchValue } // send searchValue as query param
+        });
+      }
+      
+      // const response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
+      //   params: { search: searchValue },
+      // });
 
       // Set the retrieved data in the state
       // setFilteredData(response.data);
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -250,16 +262,16 @@ function DeletedEmployeePanel({ searchValue }) {
               <th>Branch</th>
               <th>Joining Date</th>
               {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan")
-                          &&
-                          <>
-              {/* <th>Probation Status</th> */}
-              <th>Added Date</th>
-              <th>Delete Date</th>
-              {/* <th>BDM Work</th> */}
-              <th>Action</th>
-              <th>Revoke Employee</th>
+                &&
+                <>
+                  {/* <th>Probation Status</th> */}
+                  <th>Added Date</th>
+                  <th>Delete Date</th>
+                  {/* <th>BDM Work</th> */}
+                  <th>Action</th>
+                  <th>Revoke Employee</th>
                 </>
-                }
+              }
             </tr>
           </thead>
 
@@ -349,38 +361,38 @@ function DeletedEmployeePanel({ searchValue }) {
                                 />
                               </Stack>
                             </td> */}
-                     
 
-                        {/* <td>₹ {formatSalary(item.salary || 0)}</td> */}
-                        <td>
-                          <button className="action-btn action-btn-primary">
-                            <Link
-                              style={{ textDecoration: "none", color: 'inherit' }}
-                              to={`/admin/employees/${item._id}`}
-                            >
-                              <FaRegEye />
-                            </Link>
-                          </button>
 
-                          <button
-                            className="action-btn action-btn-danger ml-1"
-                            onClick={() => handlePermanentDeleteEmployee(item._id)}
-                          >
-                            <AiFillDelete />
-                          </button>
-                        </td>
-                        <td>
-                          <button
-                            className="action-btn action-btn-success ml-1"
-                            onClick={() => {
-                              const dataToRevertBack = data.filter(obj => obj._id === item._id);
-                              handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
-                            }}
-                          >
-                            <TbRestore />
-                          </button>
-                        </td>
-                        </>
+                            {/* <td>₹ {formatSalary(item.salary || 0)}</td> */}
+                            <td>
+                              <button className="action-btn action-btn-primary">
+                                <Link
+                                  style={{ textDecoration: "none", color: 'inherit' }}
+                                  to={`/admin/employees/${item._id}`}
+                                >
+                                  <FaRegEye />
+                                </Link>
+                              </button>
+
+                              <button
+                                className="action-btn action-btn-danger ml-1"
+                                onClick={() => handlePermanentDeleteEmployee(item._id)}
+                              >
+                                <AiFillDelete />
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                className="action-btn action-btn-success ml-1"
+                                onClick={() => {
+                                  const dataToRevertBack = data.filter(obj => obj._id === item._id);
+                                  handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
+                                }}
+                              >
+                                <TbRestore />
+                              </button>
+                            </td>
+                          </>
                         }
                       </tr>
                     );
