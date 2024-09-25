@@ -326,13 +326,13 @@ function EmployeeProfile() {
   return (
     <div>
       <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
-      <EmpNav />
+      <EmpNav userId={data._id} bdmWork={data.bdmWork} />
       <div className="page-wrapper">
         <div className="page-header m-0">
           <div className="container-xl">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><Link to={`/employee-dashboard/${userId}`}>Employee</Link></li>
+                {/* <li class="breadcrumb-item"><Link to={`/employee-dashboard/${userId}`}>Employee</Link></li> */}
                 <li class="breadcrumb-item active" aria-current="page">Employee Profile</li>
               </ol>
             </nav>
@@ -406,7 +406,7 @@ function EmployeeProfile() {
                                       <div className="ep_info_t">
                                         {data.email || "-"}
                                       </div>
-                                      <div className="ep_info_icon">
+                                      {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                           if (editField !== "") {
                                             Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -415,7 +415,7 @@ function EmployeeProfile() {
                                           setOfficialEmail(data.email);
                                           setEditField("officialEmail");
                                         }} />
-                                      </div>
+                                      </div> */}
                                     </div>
                                   ) : (
                                     <div className="d-flex align-items-center justify-content-between">
@@ -449,7 +449,7 @@ function EmployeeProfile() {
                                       <div className="ep_info_t">
                                         {data.number || "-"}
                                       </div>
-                                      <div className="ep_info_icon">
+                                      {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                           if (editField !== "") {
                                             Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -458,7 +458,7 @@ function EmployeeProfile() {
                                           setOfficialNumber(data.number);
                                           setEditField("officialNumber");
                                         }} />
-                                      </div>
+                                      </div> */}
                                     </div>
                                   ) : (
                                     <div className="d-flex align-items-center justify-content-between">
@@ -494,7 +494,7 @@ function EmployeeProfile() {
                                       <div className="ep_info_t">
                                         {data.jdate ? formatDateNew(data.jdate) : "-"}
                                       </div>
-                                      <div className="ep_info_icon">
+                                      {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                           if (editField !== "") {
                                             Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -503,7 +503,7 @@ function EmployeeProfile() {
                                           setJoiningDate(formatDateForInput(data.jdate));
                                           setEditField("joiningDate");
                                         }} />
-                                      </div>
+                                      </div> */}
                                     </div>
                                   ) : (
                                     <div className="d-flex align-items-center justify-content-between">
@@ -566,7 +566,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.department || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -575,7 +575,7 @@ function EmployeeProfile() {
                                       setDepartment(data.department);
                                       setEditField("department");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -617,7 +617,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.branchOffice || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -626,7 +626,7 @@ function EmployeeProfile() {
                                       setBranchOffice(data.branchOffice);
                                       setEditField("branchOffice");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -664,7 +664,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.employeementType || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -673,7 +673,7 @@ function EmployeeProfile() {
                                       setEmploymentType(data.employeementType);
                                       setEditField("employmentType");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -714,7 +714,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.reportingManager || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -723,7 +723,7 @@ function EmployeeProfile() {
                                       setReportingManager(data.reportingManager);
                                       setEditField("reportingManager");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -772,7 +772,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.empFullName || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -781,7 +781,7 @@ function EmployeeProfile() {
                                       setFullName(data.empFullName);
                                       setEditField("empFullName");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -816,7 +816,7 @@ function EmployeeProfile() {
                                     {data.dob ? formatDateNew(data.dob) : "-"}
                                     {/* 2<sup>nd</sup> Dec 2024 */}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -825,7 +825,7 @@ function EmployeeProfile() {
                                       setDob(formatDateForInput(data.dob));
                                       setEditField("dob");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -859,7 +859,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.gender || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -868,7 +868,7 @@ function EmployeeProfile() {
                                       setGender(data.gender);
                                       setEditField("gender");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -906,7 +906,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.personal_number || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -915,7 +915,7 @@ function EmployeeProfile() {
                                       setPersonalNumber(data.personal_number);
                                       setEditField("personalNumber");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -949,7 +949,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.personal_email || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -958,7 +958,7 @@ function EmployeeProfile() {
                                       setPersonalEmail(data.personal_email);
                                       setEditField("personalEmail");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1005,7 +1005,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.personal_contact_person || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1014,7 +1014,7 @@ function EmployeeProfile() {
                                       setEmergencyContactName(data.personal_contact_person);
                                       setEditField("emergencyContact");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1048,7 +1048,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_relationship || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1057,7 +1057,7 @@ function EmployeeProfile() {
                                       setRelationship(data.personal_contact_person_relationship);
                                       setEditField("relationship");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1096,7 +1096,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_number || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1105,7 +1105,7 @@ function EmployeeProfile() {
                                       setEmergencyContactNumber(data.personal_contact_person_number);
                                       setEditField("emergencyContactNo");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1145,7 +1145,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.currentAddress || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1154,7 +1154,7 @@ function EmployeeProfile() {
                                       setCurrentAddress(data.currentAddress);
                                       setEditField("currentAddress");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1188,7 +1188,7 @@ function EmployeeProfile() {
                                   <div className="ep_info_t">
                                     {data.permanentAddress || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1197,7 +1197,7 @@ function EmployeeProfile() {
                                       setPermanentAddress(data.permanentAddress);
                                       setEditField("permanentAddress");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
