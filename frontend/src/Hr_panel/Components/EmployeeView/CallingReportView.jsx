@@ -29,7 +29,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable'; // Import jsPDF and jsPDF AutoTable for generating PDFs
 import * as XLSX from 'xlsx';
 import Nodata from '../../../components/Nodata';
-
+import { format } from 'date-fns';
 
 function CallingReportView({ employeeInformation }) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -84,87 +84,17 @@ function CallingReportView({ employeeInformation }) {
         const [hours, minutes, seconds] = hms.split(':').map(Number);
         return hours * 3600 + minutes * 60 + seconds;
     };
-    // Function to delay execution to handle rate limits
-    // const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    // // Fetch data for a specific date and append the date field to each entry in the result
-    // const fetchDailyData = async (date) => {
-    //     const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-    //     const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
-
-    //     const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
-    //     const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
-
-    //     const body = {
-    //         "call_from": startTimestamp,
-    //         "call_to": endTimestamp,
-    //         "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-    //         "emp_numbers": [employeeInformation.number]
-    //     };
-
-    //     try {
-    //         const response = await fetch(url, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Authorization': `Bearer ${apiKey}`,
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify(body)
-    //         });
-
-    //         if (!response.ok) {
-    //             const errorData = await response.json();
-    //             throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-    //         }
-
-    //         const data = await response.json();
-
-    //         // Append the date field to each result
-    //         return data.result.map((entry) => ({
-    //             ...entry,
-    //             date: date // Add the date field
-    //         }));
-    //     } catch (err) {
-    //         console.error(err);
-    //         setError(err.message);
-    //         return null;
-    //     }
-    // };
-
-    // // Fetch data for all days in a given month
-    // const fetchMonthlyData = async (startDate, endDate) => {
-    //     setLoading(true);
-    //     setError(null);
-
-    //     let currentDate = new Date(startDate);
-    //     const data = [];
-
-    //     while (currentDate <= endDate) {
-    //         const dateString = currentDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
-
-    //         const dailyResult = await fetchDailyData(dateString);
-    //         if (dailyResult) {
-    //             data.push(...dailyResult); // Push all daily results (with date field) into the array
-    //         }
-
-    //         currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-    //         await delay(1000); // Wait for 1 second to respect the rate limit
-    //     }
-
-    //     setDailyData(data);
-    //     setLoading(false);
-        
-    // };
     const [callingData, setCallingData] = useState([])
     const fetchCallingDate = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/employee-calling-fetch/${employeeInformation.number}`);
             const data = response.data.data;
-    
+
             if (Array.isArray(data) && data.length > 0) {
                 // Safely access nested properties using optional chaining
                 const dailyData = data[0]?.year?.[0]?.monthly_data?.[0]?.daily_data;
-    
+
                 if (dailyData) {
                     setCallingData(dailyData.sort((a, b) => new Date(a.date) - new Date(b.date))); // Set the data only if it exists
                     console.log("dailyData", dailyData);
@@ -178,21 +108,6 @@ function CallingReportView({ employeeInformation }) {
             console.log("Error fetching calling data:", err);
         }
     };
-    
-
-    // useEffect(() => {
-    //     if (employeeInformation.number) {
-    //         const startDate = new Date(); // Set your desired start date
-    //         startDate.setDate(1); // Set to the first day of the month
-    //         const endDate = new Date(startDate);
-    //         endDate.setMonth(endDate.getMonth());
-    //         endDate.setDate(new Date().getDate()); // Set to the last day of the month
-    //         //console.log(endDate)
-
-    //         fetchMonthlyData(startDate, endDate);
-    //     }
-        
-    // }, [employeeInformation]);
 
     console.log("callingData", callingData)
     //console.log("dailyData", dailyData);
@@ -220,10 +135,111 @@ function CallingReportView({ employeeInformation }) {
         return `${day}-${month}-${year}`;
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchCallingDate();
-    },[employeeInformation])
+    }, [employeeInformation])
 
+    // ------------------------filter functions------------------------------
+
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth(); // Get the current month (0-based)
+
+    const getCurrentMonthName = (monthIndex) => {
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        return months[monthIndex];
+    };
+
+    const [selectedYear, setSelectedYear] = useState(year);
+    const [months, setMonths] = useState([]); // Array of months to display in the dropdown
+    const [selectedMonth, setSelectedMonth] = useState(getCurrentMonthName(month));
+
+    // Function to generate the array of months based on the selected year
+    const generateMonthArray = (year) => {
+        const monthArray = [];
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth(); // Get the current month (0-based)
+
+        // If the selected year is the current year, show remaining months starting from the current month
+        if (year === currentYear) {
+            for (let m = currentMonth; m <= 11; m++) {
+                monthArray.push(format(new Date(year, m), 'MMMM'));
+            }
+        } else {
+            // For future years, show all 12 months
+            for (let m = 0; m <= 11; m++) {
+                monthArray.push(format(new Date(year, m), 'MMMM'));
+            }
+        }
+        setMonths(monthArray); // Update the months array
+    };
+
+    // On component mount, set the months array for the current year
+    useEffect(() => {
+        generateMonthArray(year); // Populate the months array when the component mounts
+    }, [year]);
+
+
+    const handleYearChange = (e) => {
+        const newYear = parseInt(e.target.value, 10);
+        setSelectedYear(newYear);
+        generateMonthArray(newYear); // Update the months based on the selected year
+
+        // If a new year is selected, reset to the first month of that year
+        setSelectedMonth(newYear === year ? getCurrentMonthName(month) : 'January');
+    };
+
+    const handleMonthChange = async (e) => {
+        const emp_number = employeeInformation.number;
+        const month = e.target.value;
+        const monthNamesToNumbers = {
+            "January": "01",
+            "February": "02",
+            "March": "03",
+            "April": "04",
+            "May": "05",
+            "June": "06",
+            "July": "07",
+            "August": "08",
+            "September": "09",
+            "October": "10",
+            "November": "11",
+            "December": "12"
+        };
+        const monthNumber = monthNamesToNumbers[month];
+
+        console.log("emp_number:", emp_number);
+        console.log("year:", selectedYear);
+        console.log("monthNumber:", monthNumber);
+
+        setSelectedMonth(month);
+
+        try {
+            const response = await axios.get(`${secretKey}/employee/employee-calling/filter`, {
+                params: {
+                    emp_number: emp_number,
+                    year: String(selectedYear),
+                    month: monthNumber,
+                },
+            });
+            console.log("response", response.data.data)
+            if (response.status === 200) {
+
+                const dailyData = response.data.data?.daily_data;
+
+                if (dailyData) {
+                    setCallingData(dailyData.sort((a, b) => new Date(a.date) - new Date(b.date))); // Sort by date
+                    console.log("Filtered dailyData", dailyData);
+                } else {
+                    console.error("Daily data is missing or not in the expected structure");
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching employee data:', error);
+        }
+    };
 
 
 
@@ -232,13 +248,25 @@ function CallingReportView({ employeeInformation }) {
             <div className='d-flex mb-3 align-items-center justify-content-between pl-1 pr-1'>
                 <div className='d-flex align-items-center justify-content-start'>
                     <div className='form-group'>
-                        <select className='form-select'>
-                            <option disabled selected>--Select Year--</option>
+                        <select className='form-select'
+                            value={selectedYear}
+                            onChange={handleYearChange}
+                        >
+                            {/* <option disabled value="" selected>--Select Year--</option> Default option */}
+                            <option value={2024}>2024</option>
+                            <option value={2025}>2025</option>
+
                         </select>
                     </div>
                     <div className='form-group ml-1'>
-                        <select className='form-select'>
-                            <option disabled selected>--Select Month--</option>
+                        <select className='form-select'
+                            value={selectedMonth}
+                            onChange={handleMonthChange}
+                        >
+                            {/* <option disabled value="" selected>--Select Month--</option> */}
+                            {months.map(month => (
+                                <option key={month} value={month}>{month}</option>
+                            ))}
                         </select>
                     </div>
                 </div>

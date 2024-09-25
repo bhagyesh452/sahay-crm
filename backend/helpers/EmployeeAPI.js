@@ -13,6 +13,11 @@ const json2csv = require("json2csv").parse;
 const deletedEmployeeModel = require("../models/DeletedEmployee.js");
 const RedesignedLeadformModel = require("../models/RedesignedLeadform");
 const CallingModel = require("../models/EmployeeCallingData.js");
+const cron = require('node-cron');
+const axios = require('axios');
+const fetch = require('node-fetch');
+const { previousDay } = require("date-fns");
+require('dotenv').config();
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -2452,6 +2457,89 @@ router.delete('/deleteTodaysProjection/:id', async (req, res) => {
   }
 });
 
+// -------------------calling api for employee profile----------------------
+// router.post('/employee-calling/save', async (req, res) => {
+//   const {
+//     emp_number,
+//     monthly_data, // This is an array of daily data
+//     emp_code,
+//     emp_country_code,
+//     emp_name,
+//     emp_tags
+//   } = req.body;
+
+//   const year = new Date().getFullYear(); // Get the current year (e.g., 2024)
+//   const month = String(new Date().getMonth() + 1).padStart(2, '0'); // Get the current month as "01", "02", etc.
+
+//   try {
+//     // Find the employee by number
+//     let employee = await CallingModel.findOne({ emp_number });
+
+//     if (!employee) {
+//       // If employee doesn't exist, create a new one with the current year and month data
+//       employee = new CallingModel({
+//         emp_code,
+//         emp_country_code,
+//         emp_name,
+//         emp_number,
+//         emp_tags,
+//         year: [{
+//           year: String(year),
+//           monthly_data: [{
+//             month: month,
+//             daily_data: monthly_data // Assuming daily_data is an array of daily call logs
+//           }]
+//         }]
+//       });
+//     } else {
+//       // If the employee exists, check if the year exists
+//       const yearIndex = employee.year.findIndex(y => y.year === String(year));
+
+//       if (yearIndex !== -1) {
+//         // If the year exists, check if the month exists
+//         const monthIndex = employee.year[yearIndex].monthly_data.findIndex(m => m.month === month);
+
+//         if (monthIndex !== -1) {
+//           // If the month exists, check if daily data for the same date already exists
+//           monthly_data.forEach(newDailyData => {
+//             const dateIndex = employee.year[yearIndex].monthly_data[monthIndex].daily_data.findIndex(d => d.date === newDailyData.date);
+
+//             if (dateIndex !== -1) {
+//               // If the daily data for the same date exists, update the existing data
+//               employee.year[yearIndex].monthly_data[monthIndex].daily_data[dateIndex] = newDailyData;
+//             } else {
+//               // If the date does not exist, append the new daily data
+//               employee.year[yearIndex].monthly_data[monthIndex].daily_data.push(newDailyData);
+//             }
+//           });
+//         } else {
+//           // If the month does not exist, create a new month with the daily data
+//           employee.year[yearIndex].monthly_data.push({
+//             month: month,
+//             daily_data: monthly_data
+//           });
+//         }
+//       } else {
+//         // If the year does not exist, add a new year with the current month's data
+//         employee.year.push({
+//           year: String(year),
+//           monthly_data: [{
+//             month: month,
+//             daily_data: monthly_data
+//           }]
+//         });
+//       }
+//     }
+
+//     // Save or update the employee data
+//     await employee.save();
+
+//     res.status(200).json({ message: 'Data saved successfully' });
+//   } catch (error) {
+//     console.error('Error saving employee data:', error);
+//     res.status(500).json({ message: 'Error saving employee data', error: error.message });
+//   }
+// });
 router.post('/employee-calling/save', async (req, res) => {
   const {
     emp_number,
@@ -2462,15 +2550,20 @@ router.post('/employee-calling/save', async (req, res) => {
     emp_tags
   } = req.body;
 
-  const year = new Date().getFullYear(); // Get the current year (e.g., 2024)
-  const month = String(new Date().getMonth() + 1).padStart(2, '0'); // Get the current month as "01", "02", etc.
+  // Extract the month and year from the incoming data
+  const incomingYear = monthly_data.length > 0 ? new Date(monthly_data[0].date).getFullYear() : null;
+  const incomingMonth = monthly_data.length > 0 ? String(new Date(monthly_data[0].date).getMonth() + 1).padStart(2, '0') : null; 
+
+  if (!incomingYear || !incomingMonth) {
+    return res.status(400).json({ message: 'Invalid data: Missing year or month in daily data' });
+  }
 
   try {
     // Find the employee by number
     let employee = await CallingModel.findOne({ emp_number });
 
     if (!employee) {
-      // If employee doesn't exist, create a new one with the current year and month data
+      // If employee doesn't exist, create a new one with the incoming year and month data
       employee = new CallingModel({
         emp_code,
         emp_country_code,
@@ -2478,20 +2571,20 @@ router.post('/employee-calling/save', async (req, res) => {
         emp_number,
         emp_tags,
         year: [{
-          year: String(year),
+          year: incomingYear.toString(),
           monthly_data: [{
-            month: month,
+            month: incomingMonth,
             daily_data: monthly_data // Assuming daily_data is an array of daily call logs
           }]
         }]
       });
     } else {
-      // If the employee exists, check if the year exists
-      const yearIndex = employee.year.findIndex(y => y.year === String(year));
+      // Check if the year exists
+      const yearIndex = employee.year.findIndex(y => y.year === incomingYear.toString());
 
       if (yearIndex !== -1) {
         // If the year exists, check if the month exists
-        const monthIndex = employee.year[yearIndex].monthly_data.findIndex(m => m.month === month);
+        const monthIndex = employee.year[yearIndex].monthly_data.findIndex(m => m.month === incomingMonth);
 
         if (monthIndex !== -1) {
           // If the month exists, check if daily data for the same date already exists
@@ -2509,16 +2602,16 @@ router.post('/employee-calling/save', async (req, res) => {
         } else {
           // If the month does not exist, create a new month with the daily data
           employee.year[yearIndex].monthly_data.push({
-            month: month,
+            month: incomingMonth,
             daily_data: monthly_data
           });
         }
       } else {
-        // If the year does not exist, add a new year with the current month's data
+        // If the year does not exist, add a new year with the incoming month's data
         employee.year.push({
-          year: String(year),
+          year: incomingYear.toString(),
           monthly_data: [{
-            month: month,
+            month: incomingMonth,
             daily_data: monthly_data
           }]
         });
@@ -2535,9 +2628,10 @@ router.post('/employee-calling/save', async (req, res) => {
   }
 });
 
+
+
 router.get(`/employee-calling-fetch/:number`, async (req, res) => {
   const { number } = req.params; // Accessing the number directly from req.paramscd backen
-  console.log("number", number, typeof (number))
   try {
     const data = await CallingModel.find({ emp_number: String(number) });
 
@@ -2549,5 +2643,182 @@ router.get(`/employee-calling-fetch/:number`, async (req, res) => {
   }
 })
 
+// Endpoint to fetch data for a specific employee, year, and month
+router.get('/employee-calling/filter', async (req, res) => {
+  const { emp_number, year, month } = req.query;
+  
+  console.log("emp_number:", emp_number);
+  console.log("year:", year);
+  console.log("month:", month);
+
+  try {
+    // Find the employee by number and filter by year and month
+    const employee = await CallingModel.findOne({
+      emp_number: String(emp_number),
+      'year.year': year,
+    });
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Find the specific month's data inside the year object
+    const yearData = employee.year.find(y => y.year === year);
+    if (!yearData) {
+      return res.status(404).json({ message: `No data found for the year ${year}` });
+    }
+
+    const monthlyData = yearData.monthly_data.find(m => m.month === month);
+    if (!monthlyData) {
+      return res.status(404).json({ message: `No data found for the month ${month}` });
+    }
+
+    // console.log("data", monthlyData);
+    res.status(200).json({ message: 'Data fetched successfully', data: monthlyData });
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    res.status(500).json({ message: 'Error fetching employee data', error: error.message });
+  }
+});
+
+
+// --------------cron function for calling report------------------------
+
+// Helper function to delay execution
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Fetch daily data for a specific time range (9:30 AM to 7:30 PM)
+const fetchDailyData = async (date, employeeNumber) => {
+  const apiKey = process.env.REACT_APP_API_KEY;
+  const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+
+  const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);  // 9:30 AM
+  const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);  // 7:30 PM
+
+  const body = {
+    "call_from": startTimestamp,
+    "call_to": endTimestamp,
+    "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+    "emp_numbers": [employeeNumber]
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+    // Append the date field to each result
+    return data.result.map((entry) => ({
+      ...entry,
+      date: dateString // Add the date field
+    }));
+  } catch (err) {
+    console.error('Error fetching daily data:', err.message);
+    return null;
+  }
+};
+
+// Save daily data to the database by appending to existing records
+// Save daily data to the database by appending to existing records under year -> month -> daily_data
+const saveDailyDataToDatabase = async (employeeNumber, dailyData) => {
+  try {
+    // Find the existing record for this employee
+    const existingRecord = await CallingModel.findOne({ emp_number: employeeNumber });
+
+    const date = new Date(dailyData[0].date); // Get the date from the daily data
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get month in 'MM' format
+
+    if (existingRecord) {
+      // Find or create the year object
+      let yearRecord = existingRecord.year.find(y => y.year === String(year));
+      if (!yearRecord) {
+        // If the year does not exist, create a new year entry
+        yearRecord = { year: String(year), monthly_data: [] };
+        existingRecord.year.push(yearRecord);
+      }
+
+      // Find or create the month object within the year
+      let monthRecord = yearRecord.monthly_data.find(m => m.month === month);
+      if (!monthRecord) {
+        // If the month does not exist, create a new month entry
+        monthRecord = { month: month, daily_data: [] };
+        yearRecord.monthly_data.push(monthRecord);
+      }
+
+      // Append the new daily data to the existing daily_data array
+      monthRecord.daily_data = [...monthRecord.daily_data, ...dailyData];
+      await existingRecord.save();
+    } else {
+      // If no existing record, create a new one
+      await CallingModel.create({
+        emp_number: employeeNumber,
+        year: [{
+          year: String(year),
+          monthly_data: [{
+            month: month,
+            daily_data: dailyData
+          }]
+        }]
+      });
+    }
+
+    console.log(`Data saved successfully for employee ${employeeNumber}`);
+  } catch (err) {
+    console.error(`Error saving data for employee ${employeeNumber}:`, err.message);
+  }
+};
+
+
+// Cron job to fetch and save data at 12 PM every day
+cron.schedule('0 12 * * *', async () => {  // Runs every day at 12 PM
+  console.log('Starting cron job to fetch and save previous day data for all employees');
+
+  try {
+    // Fetch all employees with a number field
+    const employees = await adminModel.find({ number: { $exists: true, $ne: null } });
+
+    if (employees.length === 0) {
+      console.log('No employees found with a number field');
+      return;
+    }
+
+    // Calculate the previous day
+    const previousDay = new Date();
+    previousDay.setDate(previousDay.getDate() - 1);
+
+    // Loop through each employee
+    for (const employee of employees) {
+      const employeeNumber = employee.number;
+      console.log(`Fetching data for employee: ${employeeNumber}`);
+
+      // Fetch data for the previous day
+      const dailyData = await fetchDailyData(previousDay, employeeNumber);
+      if (dailyData && dailyData.length > 0) {
+        await saveDailyDataToDatabase(employeeNumber, dailyData);
+      }
+
+      console.log(`Finished processing for employee: ${employeeNumber}`);
+      await delay(1000); // Optional delay between processing employees
+    }
+
+    console.log('Cron job finished');
+  } catch (err) {
+    console.error('Error fetching employee data:', err.message);
+  }
+});
 
 module.exports = router;

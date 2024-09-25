@@ -21,7 +21,7 @@ import { FaFilter } from "react-icons/fa";
 
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
-function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
+function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon, completeEmployeeInfo }) {
     const rmCertificationUserId = localStorage.getItem("rmCertificationUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -49,7 +49,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
     const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
     const fieldRefs = useRef({});
     const filterMenuRef = useRef(null); // Ref for the filter menu container
-    
+
 
 
 
@@ -99,7 +99,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
         try {
             const employeeResponse = await axios.get(`${secretKey}/employee/einfo`);
             const userData = employeeResponse.data.find((item) => item._id === rmCertificationUserId);
-           
+
             setEmployeeData(userData);
 
             let params = { search: searchQuery, page, activeTab: "General" };
@@ -140,7 +140,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
             setOpenBacdrop(false);
         }
     };
-   
+
 
     // useEffect(() => {
     //     const handleScroll = debounce(() => {
@@ -1008,7 +1008,7 @@ function RmofCertificationGeneralPanel({ searchText, showFilter, activeTab, tota
 
                                                 <div>
                                                     {obj.bdmName}
-                                                {
+                                                    {
                                                         completeEmployeeInfo
                                                             .filter((employee) => employee.ename === obj.bdmName)
                                                             .map((employee) => (

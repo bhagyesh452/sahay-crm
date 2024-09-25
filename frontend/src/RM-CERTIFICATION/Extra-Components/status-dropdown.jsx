@@ -501,6 +501,8 @@ const StatusDropdown = ({
             return "created-status";
           case "Need To Call":
             return "need_to_call";
+            case "Technical Issue":
+            return "e_task_assign";
           default:
             return "";
         }
@@ -568,82 +570,7 @@ const StatusDropdown = ({
 
 
 
-  // useEffect(() => {
-  //   //console.log("useEffect triggered");
-
-  //   const updateStatus = async () => {
-  //     if ( contentStatus === "Approved" && brochureStatus === "Approved") {
-  //       try {
-  //         //console.log("Updating status...");
-  //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: "Ready To Submit",
-  //           mainCategoryStatus: "Ready To Submit",
-  //           previousMainCategoryStatus: mainStatus,
-  //           previousSubCategoryStatus: status
-  //         });
-  //         ///console.log("Status updated successfully:", response.data);
-
-  //         if (response.status === 200) {
-  //           // Ensure refreshData is called correctly
-  //           //console.log("Calling refreshData");
-  //           await refreshData();
-  //         } else {
-  //           console.error("Failed to update status:", response.status);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error updating status:", error.message);
-  //       }
-  //     }
-  //   };
-
-  //   updateStatus();
-  // }, [contentStatus, brochureStatus ,tabStopCondition]);
-
-  // useEffect(() => {
-  //   // Function to update status
-  //   const updateStatus = async (newStatus, nextTab) => {
-  //     if (contentStatus === "Approved" && brochureStatus === "Approved") {
-  //       try {
-  //         // Log to verify that the function is called
-  //         console.log("Updating status...");
-
-  //         const response = await axios.post(`${secretKey}/rm-services/update-substatus-rmofcertification`, {
-  //           companyName,
-  //           serviceName,
-  //           subCategoryStatus: newStatus,
-  //           mainCategoryStatus: newStatus,
-  //           previousMainCategoryStatus: mainStatus,
-  //           previousSubCategoryStatus: status,
-  //           activeTab: nextTab
-  //         });
-
-  //         setActiveTab(nextTab);
-
-  //         // Log to verify the response
-  //         console.log("Status updated successfully:", response.data);
-
-  //         if (response.status === 200) {
-  //           // Ensure refreshData is called correctly
-  //           console.log("Calling refreshData");
-  //           await refreshData();
-  //         } else {
-  //           console.error("Failed to update status:", response.status);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error updating status:", error.message);
-  //       }
-  //     }
-  //   };
-
-  //   if (activeTabCurrent === "Submitted" || activeTabCurrent === "Process") {
-  //     updateStatus("Ready To Submit", "Ready To Submit");
-  //   } else if (activeTabCurrent === "ReadyToSubmit") {
-  //     updateStatus(status, "Submitted");
-  //   }
-  // }, [contentStatus, brochureStatus, activeTabCurrent,mainStatus]);
-
+  
 
 
 
@@ -792,6 +719,15 @@ const StatusDropdown = ({
                 href="#"
               >
                 Hold
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => handleStatusChange("Technical Issue", "e_task_assign")}
+                href="#"
+              >
+                Technical Issue
               </a>
             </li>
             <li>
