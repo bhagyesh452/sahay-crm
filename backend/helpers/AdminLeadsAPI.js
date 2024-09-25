@@ -1143,6 +1143,7 @@ router.post("/postAssignData", async (req, res) => {
     });
 
     await Promise.all(updatePromises);
+    console.log("Assigned data is :", updatePromises);
     res.json({ message: "Data posted successfully" });
   } catch (error) {
     console.error("Error posting assign data:", error);

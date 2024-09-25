@@ -1211,8 +1211,8 @@ function TestLeads() {
                 }
 
             } else if (selectedOption === "extractedData") {
-                //console.log("yahan chala")
                 //setEmployeeSelection("Extracted")
+                // console.log("Inside extracted data");
                 handleExtractData();
             } else {
                 return true;
@@ -1232,6 +1232,8 @@ function TestLeads() {
         console.log("currentDataStatus", currentDataStatus)
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
+        // console.log("Data to send is :", dataToSend);
+        
         try {
             setOpenBacdrop(true);
             setOpenAssignLeadsDialog(false);
@@ -1242,6 +1244,8 @@ function TestLeads() {
                 date,
                 time
             });
+
+            // console.log("Assigned data is :", response2.data);
 
             if (isFilter) {
                 handleFilterData(1, itemsPerPage);
@@ -1290,7 +1294,9 @@ function TestLeads() {
         //const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
-        console.log("length", dataToSend.length)
+        // console.log("length", dataToSend.length)
+        // console.log("Assigning extracted data from admin side :", dataToSend);
+
         try {
             setOpenBacdrop(true)
             setOpenAssignLeadsDialog(false)
@@ -1301,6 +1307,7 @@ function TestLeads() {
                 date,
                 time
             });
+            // console.log("Assigned data from admin side is :", response2.data);
 
             const response = await axios.post(`${secretKey}/requests/gDataByAdmin`, {
                 numberOfData: dataToSend.length,
