@@ -443,9 +443,17 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`${secretKey}/employee/einfo`, {
-        params: { search: searchValue },
-      });
+      let response;
+      if (!searchValue) {
+        response = await axios.get(`${secretKey}/employee/einfo`);
+      } else {
+        response = await axios.get(`${secretKey}/employee/searchEmployee`, {
+          params: { search: searchValue } // send searchValue as query param
+        });
+      }
+      // const response = await axios.get(`${secretKey}/employee/einfo`, {
+      //   params: { search: searchValue },
+      // });
       // console.log("Fetched employees are :", response.data);
       // Set the retrieved data in the state
 

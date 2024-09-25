@@ -85,9 +85,18 @@ function HrEmployees() {
   const fetchEmployee = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employee/einfo`, {
-        params: { search: searchValue } // send searchValue as query param
-      });
+      let res;
+      if (!searchValue) {
+        res = await axios.get(`${secretKey}/employee/einfo`);
+      } else {
+        res = await axios.get(`${secretKey}/employee/searchEmployee`, {
+          params: { search: searchValue } // send searchValue as query param
+        });
+      }
+      // const res = await axios.get(`${secretKey}/employee/einfo`, {
+      //   params: { search: searchValue } // send searchValue as query param
+      // });
+
       setEmployee(res.data);
       // console.log("Fetched Employees are:", res.data);
     } catch (error) {
@@ -279,7 +288,7 @@ function HrEmployees() {
     fetchPersonalInfo();
   }, []);
 
- 
+
 
   return (
     <div>

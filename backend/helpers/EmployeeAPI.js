@@ -623,6 +623,66 @@ router.put("/savedeletedemployee", upload.fields([
 router.get("/deletedemployeeinfo", async (req, res) => {
   try {
     // Destructure query parameters
+    // const { search } = req.query;
+    // console.log("Search query :", search);
+
+    // Create the filter object
+    // const filter = {};
+
+    // if (search) {
+    // Define search conditions
+    // const searchRegex = new RegExp(search, "i"); // case-insensitive search
+
+    // Map search terms for designation
+    //   let designationConditions = [];
+    //   if (search.toLowerCase() === "bd") {
+    //     // For BDE, match both Business Development Executive and Business Development Manager
+    //     designationConditions = [
+    //       { newDesignation: /Business Development Executive/i },
+    //       { newDesignation: /Business Development Manager/i }
+    //     ];
+    //   } else if (search.toLowerCase() === "bde") {
+    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
+    //   } else if (search.toLowerCase() === "bdm") {
+    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
+    //   } else if (search.toLowerCase() === "business development executive") {
+    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
+    //   } else if (search.toLowerCase() === "business development manager") {
+    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
+    //   } else {
+    //     designationConditions = [{ newDesignation: searchRegex }];
+    //   }
+
+    //   // Build the search query using $or
+    //   filter.$or = [
+    //     { ename: searchRegex },
+    //     { number: searchRegex },
+    //     { email: searchRegex },
+    //     { branchOffice: searchRegex },
+    //     { department: searchRegex },
+    //     ...designationConditions
+    //   ];
+    // }
+
+    // Perform the search query with projection
+    // let data;
+    // if(!search){
+    // Fetch all data when there's no search.
+    const data = await deletedEmployeeModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+    // } else {
+    //   // Search using filter
+    //   data = await deletedEmployeeModel.find(filter).lean();
+    // }
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/searchDeletedEmployeeInfo", async (req, res) => {
+  try {
+    // Destructure query parameters
     const { search } = req.query;
     // console.log("Search query :", search);
 
@@ -664,14 +724,9 @@ router.get("/deletedemployeeinfo", async (req, res) => {
       ];
     }
 
-    // Perform the search query
-    let data;
-    if(!search){
-      data = await deletedEmployeeModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
-    } else {
-      data = await deletedEmployeeModel.find(filter).lean();
-    }
-    // const data = await deletedEmployeeModel.find(filter);
+    // Perform the search query with projection
+    const data = await deletedEmployeeModel.find(filter).lean();
+
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -1920,6 +1975,66 @@ router.get('/achieved-details/:ename', async (req, res) => {
 router.get("/einfo", async (req, res) => {
   try {
     // Destructure query parameters
+    // const { search } = req.query;
+    // console.log("Search query :", search);
+
+    // Create the filter object
+    // const filter = {};
+
+    // if (search) {
+    //   // Define search conditions
+    //   const searchRegex = new RegExp(search, "i"); // case-insensitive search
+
+    //   // Map search terms for designation
+    //   let designationConditions = [];
+    //   if (search.toLowerCase() === "bd") {
+    //     // For BDE, match both Business Development Executive and Business Development Manager
+    //     designationConditions = [
+    //       { newDesignation: /Business Development Executive/i },
+    //       { newDesignation: /Business Development Manager/i }
+    //     ];
+    //   } else if (search.toLowerCase() === "bde") {
+    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
+    //   } else if (search.toLowerCase() === "bdm") {
+    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
+    //   } else if (search.toLowerCase() === "business development executive") {
+    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
+    //   } else if (search.toLowerCase() === "business development manager") {
+    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
+    //   } else {
+    //     designationConditions = [{ newDesignation: searchRegex }];
+    //   }
+
+    //   // Build the search query using $or
+    //   filter.$or = [
+    //     { ename: searchRegex },
+    //     { number: searchRegex },
+    //     { email: searchRegex },
+    //     { branchOffice: searchRegex },
+    //     { department: searchRegex },
+    //     ...designationConditions
+    //   ];
+    // }
+
+    // Perform the search query :
+    // let data;
+    // if(!search){
+    // Fetch all data when there's no search.
+    const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
+    // } else {
+    //   // Search using filter.
+    //   data = await adminModel.find(filter).lean();
+    // }
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/searchEmployee", async (req, res) => {
+  try {
+    // Destructure query parameters
     const { search } = req.query;
     // console.log("Search query :", search);
 
@@ -1961,14 +2076,8 @@ router.get("/einfo", async (req, res) => {
       ];
     }
 
-    // Perform the search query
-    let data;
-    if(!search){
-      data = await adminModel.find().lean();
-    } else {
-      data = await adminModel.find(filter).lean();
-    }
-    // const data = await adminModel.find(filter);
+    // Perform the search query:
+    const data = await adminModel.find(filter).lean();
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -2344,8 +2453,8 @@ router.delete('/deleteTodaysProjection/:id', async (req, res) => {
 });
 
 router.post('/employee-calling/save', async (req, res) => {
-  const {   
-    emp_number, 
+  const {
+    emp_number,
     monthly_data, // This is an array of daily data
     emp_code,
     emp_country_code,
@@ -2388,7 +2497,7 @@ router.post('/employee-calling/save', async (req, res) => {
           // If the month exists, check if daily data for the same date already exists
           monthly_data.forEach(newDailyData => {
             const dateIndex = employee.year[yearIndex].monthly_data[monthIndex].daily_data.findIndex(d => d.date === newDailyData.date);
-            
+
             if (dateIndex !== -1) {
               // If the daily data for the same date exists, update the existing data
               employee.year[yearIndex].monthly_data[monthIndex].daily_data[dateIndex] = newDailyData;
@@ -2428,13 +2537,13 @@ router.post('/employee-calling/save', async (req, res) => {
 
 router.get(`/employee-calling-fetch/:number`, async (req, res) => {
   const { number } = req.params; // Accessing the number directly from req.paramscd backen
-  console.log("number" , number , typeof(number))
-  try{
-    const data = await CallingModel.find({emp_number : String(number)});
+  console.log("number", number, typeof (number))
+  try {
+    const data = await CallingModel.find({ emp_number: String(number) });
 
     res.status(200).json({ message: 'Data fetched successfully', data: data });
 
-  }catch(error){
+  } catch (error) {
     console.error('Error saving employee data:', error);
     res.status(500).json({ message: 'Error saving employee data', error: error.message });
   }

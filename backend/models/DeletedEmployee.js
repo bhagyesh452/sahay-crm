@@ -157,5 +157,13 @@ const yourSchema = new mongoose.Schema({
   }
 })
 
+// Add indexes for search fields
+yourSchema.index({ ename: 1 });
+yourSchema.index({ number: 1 });
+yourSchema.index({ email: 1 });
+yourSchema.index({ branchOffice: 1 });
+yourSchema.index({ department: 1 });
+yourSchema.index({ newDesignation: 1 });
+
 const deletedEmployeeModel = mongoose.model('deletedemployeedetail', yourSchema)
 module.exports = deletedEmployeeModel;
