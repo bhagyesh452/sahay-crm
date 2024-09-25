@@ -227,7 +227,10 @@ const RMCertificationServicesSchema = new mongoose.Schema({
   },
   isUploadedDirect:{
     type:Boolean
-  }
+  },
+  emailSent:{
+    type:String,
+  },
 })
 
 const RMCertificationModel = mongoose.model("RmCertificationModel", RMCertificationServicesSchema)

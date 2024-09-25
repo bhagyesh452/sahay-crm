@@ -53,9 +53,9 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
   console.log("Company Name:", companyName, companyEmail);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
-  const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
+  //const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
 
-  //const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
+  const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
   console.log(command)
 
   exec(command, (error, stdout, stderr) => {
@@ -142,8 +142,18 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
 <p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
                   `;
           // Emit socket message indicating the email is in the process of being sent
+        let updatedcompany;
+        updatedcompany =await RMCertificationModel.findOneAndUpdate(
+            { _id: company._id },
+            {
+              emailSent: "Email Sending"
+            },
+            {
+              new: true
+            }
+          )
           socketIO.emit("test-script-email-output", {
-            updatedDocument:company,
+            updatedDocument: updatedcompany,
             companyName: companyName,
             status: "email_sending",
             message: "Processing email",
@@ -157,20 +167,39 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
             attachments // Attachments array
           );
 
+
+          updatedcompany = await RMCertificationModel.findOneAndUpdate(
+            { _id: company._id },
+            {
+              emailSent: "Email Sent"
+            },
+            {
+              new: true
+            }
+          )
           // Emit success message after email is sent
           socketIO.emit("test-script-email-output", {
-            updatedDocument:company,
+            updatedDocument: updatedcompany,
             companyName: companyName,
             status: "email_sent",
             message: `Email sent`,
           });
-
           console.log(`Email sent: ${emailInfo.messageId}`);
         } catch (error) {
           console.error(`Error sending email: ${error.message}`);
           // Emit error message if email sending fails
+         
+          updatedcompany = await RMCertificationModel.findOneAndUpdate(
+            { _id: company._id },
+            {
+              emailSent: "Email Error"
+            },
+            {
+              new: true
+            }
+          )
           socketIO.emit("test-script-email-output", {
-            updatedDocument:company,
+            updatedDocument: updatedcompany,
             companyName: companyName,
             status: "email_error",
             message: `Error sending email: ${error.message}`,
