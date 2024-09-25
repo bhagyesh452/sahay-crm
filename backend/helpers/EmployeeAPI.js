@@ -2076,6 +2076,20 @@ router.get("/searchEmployee", async (req, res) => {
       ];
     }
 
+    // const projection = {
+    //   ename: 1,
+    //   number: 1,
+    //   email: 1,
+    //   branchOffice: 1,
+    //   department: 1,
+    //   newDesignation: 1,
+    //   designation: 1,
+    //   AddedOn: 1,
+    //   Active: 1,
+    //   jdate: 1,
+    //   bdmWork: 1
+    // };
+
     // Perform the search query:
     const data = await adminModel.find(filter).lean();
     res.json(data);

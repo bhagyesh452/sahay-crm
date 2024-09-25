@@ -109,9 +109,18 @@ function HrEmployees() {
   const fetchDeletedEmployee = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
-        params: { search: searchValue } // send searchValue as query param
-      });
+      let res;
+      if(!searchValue){
+        res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+      }else{
+        res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+          params: { search: searchValue } // send searchValue as query param
+        });
+      }
+      // const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
+      //   params: { search: searchValue } // send searchValue as query param
+      // });
+      
       setDeletedEmployee(res.data);
     } catch (error) {
       console.log("Error fetching employees data:", error);
