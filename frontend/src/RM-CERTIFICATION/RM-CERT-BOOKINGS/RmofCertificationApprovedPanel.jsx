@@ -72,7 +72,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
   const [filterPosition, setFilterPosition] = useState({ top: 10, left: 5 });
   const fieldRefs = useRef({});
   const [noOfAvailableData, setnoOfAvailableData] = useState(0)
-
+  const [companyEmailStatuses, setCompanyEmailStatuses] = useState([]);
   function formatDateNew(inputDate) {
     const date = new Date(inputDate);
     const day = String(date.getUTCDate()).padStart(2, "0"); // Ensures day is two digits
@@ -130,6 +130,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
     document.title = `AdminHead-Sahay-CRM`;
   }, []);
 
+  const socketRef = useRef(null);
   useEffect(() => {
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
@@ -137,7 +138,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
       reconnection: true,
       transports: ['websocket'],
     });
-
+    socketRef.current = socket;
     socket.on("rm-general-status-updated", (res) => {
       fetchData(searchText)
     });
@@ -199,11 +200,42 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
       }
     });
 
+    socket.on("test-script-email-output", (res) => {
+      console.log("res", res)
+      setCompanyEmailStatuses(prevStatuses => {
+        // Check if the company already exists in the array
+        const existingIndex = prevStatuses.findIndex(
+          item => item._id === res.updatedDocument._id
+        );
+
+        if (existingIndex >= 0) {
+          console.log("chal")
+          // If the company exists, update its status
+          const updatedStatuses = [...prevStatuses];
+          updatedStatuses[existingIndex].status = res.status;
+          updatedStatuses[existingIndex].message = res.message;
+          return updatedStatuses;
+        } else {
+          // If it's a new company, add it to the array
+          return [
+            ...prevStatuses,
+            {
+              _id: res.updatedDocument._id,
+              companyName: res.companyName,
+              status: res.status,
+              message: res.message
+            }
+          ];
+        }
+      });
+    });
+
     return () => {
       socket.disconnect();
     };
   }, [newStatusProcess]);
 
+  console.log("emailstatus", companyEmailStatuses)
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -765,6 +797,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                       )}
                     </div>
                   </th>
+                  {/* <th>Email Sent Status</th> */}
                   <th>Remark</th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
@@ -1652,6 +1685,9 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             obj.subCategoryStatus}
                         </div>
                       </td>
+                      {/* <td>
+                        {companyEmailStatuses.find((newObj) => newObj._id === obj._id)?.message || 'No message'}
+                      </td> */}
                       <td className="td_of_remarks">
                         <div className="d-flex align-items-center justify-content-between wApp">
                           <div

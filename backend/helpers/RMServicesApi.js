@@ -49,13 +49,13 @@ const adminModel = require("../models/Admin.js");
 
 
 
-function runTestScript(companyName, socketIO, companyEmail,bdeName,bdmName, bdeNumber,bdmNumber) {
+function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bdeNumber, bdmNumber, company) {
   console.log("Company Name:", companyName, companyEmail);
 
   // Ensure the companyName is properly quoted to handle spaces or special characters
-  //const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
- 
-  const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
+  const command = `set "COMPANY_NAME=${companyName}" && npx playwright test ../tests --project=chromium --headed`;
+
+  //const command = `export COMPANY_NAME="${companyName}" && npx playwright test ../tests --project=chromium --headed`;
   console.log(command)
 
   exec(command, (error, stdout, stderr) => {
@@ -141,7 +141,13 @@ function runTestScript(companyName, socketIO, companyEmail,bdeName,bdmName, bdeN
                   <p>Thank you for choosing Start-Up Sahay. We look forward to continuing to support you!</p>
 <p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
                   `;
-
+          // Emit socket message indicating the email is in the process of being sent
+          socketIO.emit("test-script-email-output", {
+            updatedDocument:company,
+            companyName: companyName,
+            status: "email_sending",
+            message: "Processing email",
+          });
           // Send email with the attachment
           const emailInfo = await sendMailForRmApproved(
             [companyEmail], // Recipients
@@ -151,9 +157,24 @@ function runTestScript(companyName, socketIO, companyEmail,bdeName,bdmName, bdeN
             attachments // Attachments array
           );
 
+          // Emit success message after email is sent
+          socketIO.emit("test-script-email-output", {
+            updatedDocument:company,
+            companyName: companyName,
+            status: "email_sent",
+            message: `Email sent`,
+          });
+
           console.log(`Email sent: ${emailInfo.messageId}`);
         } catch (error) {
           console.error(`Error sending email: ${error.message}`);
+          // Emit error message if email sending fails
+          socketIO.emit("test-script-email-output", {
+            updatedDocument:company,
+            companyName: companyName,
+            status: "email_error",
+            message: `Error sending email: ${error.message}`,
+          });
         }
       }, 4000); // Delay the email sending by 4 seconds (4000 ms)
     });
@@ -1429,7 +1450,7 @@ router.post(`/update-substatus-rmofcertification/`, async (req, res) => {
         console.log("hello wworld");
         const bdeNumber = findBde ? findBde.number : "8347526407";
         const bdmNumber = findBdm ? findBdm.number : ""
-        runTestScript(companyName, socketIO, company["Company Email"],company.bdeName,company.bdmName, bdeNumber,bdmNumber);
+        runTestScript(companyName, socketIO, company["Company Email"], company.bdeName, company.bdmName, bdeNumber, bdmNumber, company);
       }
 
 

@@ -218,8 +218,8 @@ function ViewAttendance({ year, month, date }) {
         //console.log("reason", attendanceDetails)
         const manualStatus = attendanceDetails.isAddedManually;
         setNewStatus(status)
-        setReasonValue(reason);
-        setStatusValue(status);
+        setReasonValue(manualStatus ? reason : "");
+        setStatusValue(manualStatus ? status : "");
         setManuallyAdded(manualStatus);
         // Disable In Time and Out Time based on status
         if (status === "Present" || status === "Leave" || status === "Half Day") {
@@ -246,7 +246,7 @@ function ViewAttendance({ year, month, date }) {
         // console.log("Day name is :", dayName);
     };
 
-    const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
+    const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime, statusValue) => {
         let workingHours, status, reasonToSend, isAddedManually;
         const convertToMinutes = (timeString) => {
             if (!timeString || typeof timeString !== 'string') {
@@ -345,7 +345,7 @@ function ViewAttendance({ year, month, date }) {
         console.log("workingminutes", workingMinutes)
         let hasError = false;
 
-        if (openStatusSelect) {
+        if (openStatusSelect || manuallyAdded) {
             if (!statusValue) {
                 setStatusValueError("Status is required");
                 hasError = true;
@@ -370,6 +370,7 @@ function ViewAttendance({ year, month, date }) {
             status = statusValue;
             reasonToSend = reasonValue;
             isAddedManually = true;
+            console.log("statusvalue", statusValue)
         } else {
             // Validate In Time
             if (!inTime) {
@@ -427,6 +428,7 @@ function ViewAttendance({ year, month, date }) {
             reasonValue: reasonToSend ? reasonToSend : null,
             isAddedManually: isAddedManually,
         };
+        console.log("payload", payload)
 
         setShowPopup(false);
         setInTime("");
@@ -2158,11 +2160,13 @@ function ViewAttendance({ year, month, date }) {
                                                         className="form-select"
                                                         value={statusValue}
                                                         onChange={(e) => {
-                                                            setStatusValue(e.target.value)
+                                                            console.log("statusvalueidhr" , statusValue)
+                                                            setStatusValue(e.target.value);
+                                                            console.log("Status Value Changed to:", e.target.value); // Debugging
                                                             if (e.target.value) setStatusValueError(""); // Clear error when valid
                                                         }}
                                                     >
-                                                        <option value="" selected disabled>Select Status</option>
+                                                        <option value="" selected disabled>Select Status</option> {/* Default disabled option */}
                                                         <option value="Present">Present</option>
                                                         <option value="Leave">Leave</option>
                                                         <option value="Half Day">Half Day</option>
@@ -2170,6 +2174,7 @@ function ViewAttendance({ year, month, date }) {
                                                     </select>
                                                     {statusValueError && <p className="text-danger">{statusValueError}</p>}
                                                 </div>
+
                                                 <div className='col-lg-6'>
                                                     <textarea
                                                         className="form-control"
@@ -2199,7 +2204,7 @@ function ViewAttendance({ year, month, date }) {
                                 Clear
                             </button>
                             <button className="btn btn-success bdr-radius-none w-50" variant="contained"
-                                onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime)}>
+                                onClick={() => handleSubmit(id, employeeId, empName, designation, department, branchOffice, attendanceDate, dayName, inTime, outTime, statusValue)}>
                                 Submit
                             </button>
                         </div>

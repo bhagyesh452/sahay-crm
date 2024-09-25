@@ -68,7 +68,6 @@ function RmofCertificationHeader({ name, id, designation, empProfile, gender }) 
         
       }
     });
-
     return () => {
       socket.disconnect();
     };
