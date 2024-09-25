@@ -200,36 +200,43 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
       }
     });
 
+    // socket.on("test-script-email-output", (res) => {
+    //   console.log("res", res)
+    //   setCompanyEmailStatuses(prevStatuses => {
+    //     // Check if the company already exists in the array
+    //     const existingIndex = prevStatuses.findIndex(
+    //       item => item._id === res.updatedDocument._id
+    //     );
+
+    //     if (existingIndex >= 0) {
+          
+    //       // If the company exists, update its status
+    //       const updatedStatuses = [...prevStatuses];
+    //       updatedStatuses[existingIndex].status = res.status;
+    //       updatedStatuses[existingIndex].message = res.message;
+    //       return updatedStatuses;
+    //     } else {
+    //       // If it's a new company, add it to the array
+    //       return [
+    //         ...prevStatuses,
+    //         {
+    //           _id: res.updatedDocument._id,
+    //           companyName: res.companyName,
+    //           status: res.status,
+    //           message: res.message
+    //         }
+    //       ];
+    //     }
+    //   });
+    // });
+    
+    
     socket.on("test-script-email-output", (res) => {
-      console.log("res", res)
-      setCompanyEmailStatuses(prevStatuses => {
-        // Check if the company already exists in the array
-        const existingIndex = prevStatuses.findIndex(
-          item => item._id === res.updatedDocument._id
-        );
-
-        if (existingIndex >= 0) {
-          console.log("chal")
-          // If the company exists, update its status
-          const updatedStatuses = [...prevStatuses];
-          updatedStatuses[existingIndex].status = res.status;
-          updatedStatuses[existingIndex].message = res.message;
-          return updatedStatuses;
-        } else {
-          // If it's a new company, add it to the array
-          return [
-            ...prevStatuses,
-            {
-              _id: res.updatedDocument._id,
-              companyName: res.companyName,
-              status: res.status,
-              message: res.message
-            }
-          ];
-        }
-      });
+      //console.log("res" , res)
+      if (res.updatedDocument) {
+        updateDocumentInState(res.updatedDocument);
+      }
     });
-
     return () => {
       socket.disconnect();
     };
@@ -797,7 +804,7 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                       )}
                     </div>
                   </th>
-                  {/* <th>Email Sent Status</th> */}
+                  <th>Email Sent Status</th>
                   <th>Remark</th>
                   <th>
                     <div className='d-flex align-items-center justify-content-center position-relative'>
@@ -1685,9 +1692,10 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                             obj.subCategoryStatus}
                         </div>
                       </td>
-                      {/* <td>
-                        {companyEmailStatuses.find((newObj) => newObj._id === obj._id)?.message || 'No message'}
-                      </td> */}
+                      <td>
+                        {/* //{companyEmailStatuses.find((newObj) => newObj._id === obj._id)?.message || 'No message'} */}
+                        {obj.emailSent ? obj.emailSent : "No message"}
+                      </td>
                       <td className="td_of_remarks">
                         <div className="d-flex align-items-center justify-content-between wApp">
                           <div
