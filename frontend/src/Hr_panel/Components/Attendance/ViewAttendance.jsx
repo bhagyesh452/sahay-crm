@@ -217,6 +217,10 @@ function ViewAttendance({ year, month, date }) {
         const reason = attendanceDetails.reasonValue || "";
         //console.log("reason", attendanceDetails)
         const manualStatus = attendanceDetails.isAddedManually;
+        console.log("manualStatus", manualStatus)
+        console.log("sirfstatus", status)
+        // Log the status before setting it to statusValue
+        console.log("Setting statusValue to:", manualStatus ? status : "");
         setNewStatus(status)
         setReasonValue(manualStatus ? reason : "");
         setStatusValue(manualStatus ? status : "");
@@ -245,8 +249,8 @@ function ViewAttendance({ year, month, date }) {
         // console.log("Attendance date is :", formattedDate);
         // console.log("Day name is :", dayName);
     };
-
-    const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime, statusValue) => {
+    console.log("statusvaluesbahar", statusValue)
+    const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
         let workingHours, status, reasonToSend, isAddedManually;
         const convertToMinutes = (timeString) => {
             if (!timeString || typeof timeString !== 'string') {
@@ -2158,9 +2162,9 @@ function ViewAttendance({ year, month, date }) {
                                                 <div className='col-lg-6'>
                                                     <select
                                                         className="form-select"
-                                                        value={statusValue}
+                                                        value={["LC1", "LC2", "LC3", "LCH"].includes(statusValue) ? "LC" : statusValue} // Map LC1, LC2, LC3, LCH to LC
                                                         onChange={(e) => {
-                                                            console.log("statusvalueidhr" , statusValue)
+                                                            console.log("statusvalueidhr", statusValue)
                                                             setStatusValue(e.target.value);
                                                             console.log("Status Value Changed to:", e.target.value); // Debugging
                                                             if (e.target.value) setStatusValueError(""); // Clear error when valid
