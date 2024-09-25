@@ -170,10 +170,10 @@ router.put("/updateService/:serviceName/:id", upload.fields([
     try {
         const { serviceName } = req.params;
 
-        const { departmentName, objectives, benefits, requiredDocuments, eligibilityRequirements, process, deliverables, timeline, portfolio } = req.body;
+        const { departmentName, objectives, benefits, requiredDocuments, eligibilityRequirements, process, deliverables, timeline } = req.body;
 
         const teamInfo = req.body.teamInfo ? JSON.parse(req.body.teamInfo) : {};
-        const { employeeName, headName } = teamInfo;
+        const { employeeName, headName, portfolio } = teamInfo;
 
         if (!serviceName) {
             return res.status(400).json({ result: false, message: "Service name is required to update the service" });
@@ -215,7 +215,8 @@ router.put("/updateService/:serviceName/:id", upload.fields([
                 ...(employeeName && { employeeNames: Array.isArray(employeeName) ? employeeName : [employeeName] }),
                 ...(headName && { headNames: Array.isArray(headName) ? headName : [headName] })
             },
-            ...(portfolio && { portfolio: portfolio }),
+            // ...(portfolio && { portfolio: portfolio }),
+            ...(portfolio && { portfolio: Array.isArray(portfolio) ? portfolio : [portfolio] }),
             ...(documentDetails.length > 0 && { documents: documentDetails })
         };
 
