@@ -2798,7 +2798,7 @@ const saveDailyDataToDatabase = async (employeeNumber, dailyData) => {
 
 
 // Cron job to fetch and save data at 12 PM every day
-cron.schedule('0 12 * * *', async () => {  // Runs every day at 12 PM
+cron.schedule('20 10 * * *', async () => {  // Runs every day at 12 PM
   console.log('Starting cron job to fetch and save previous day data for all employees');
 
   try {
