@@ -449,7 +449,7 @@ function EmployeeViewAttendance({ data }) {
                             <th>Date</th>
                             <th>In Time</th>
                             <th>Out Time</th>
-                            <th>Working For</th>
+                            <th>Worked For</th>
                             <th>Status</th>
                         </tr>
                     </thead>
