@@ -31,13 +31,12 @@ import Employees from "./Employees.js";
 
 
 
-
-
-
 function NewEmployee() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [employee, setEmployee] = useState([]);
+    const [employeeLength, setEmployeeLength] = useState(0);
     const [deletedEmployee, setDeletedEmployee] = useState([]);
+    const [deletedEmployeeLength, setDeletedEmployeeLength] = useState(0);
     const [addEmployeePopup, setAddEmployeePopup] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     // const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
@@ -49,22 +48,18 @@ function NewEmployee() {
     }, []);
 
     const fetchEmployee = async () => {
+        const controller = new AbortController();
         try {
-            let res;
-            if (!searchValue) {
-                res = await axios.get(`${secretKey}/employee/einfo`);
-            } else {
-                res = await axios.get(`${secretKey}/employee/searchEmployee`, {
-                    params: { search: searchValue } // send searchValue as query param
-                });
-            }
-            // const res = await axios.get(`${secretKey}/employee/einfo`, {
-            //     params: { search: searchValue } // send searchValue as query param
-            // });
+            const res = await axios.get(`${secretKey}/employee/searchEmployee`, {
+                params: { search: searchValue }, // send searchValue as query param
+                signal: controller.signal
+            });
             if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-                setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+                setEmployee(res.data.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+                setEmployeeLength(res.data.length);
             } else {
-                setEmployee(res.data);
+                setEmployee(res.data.data);
+                setEmployeeLength(res.data.length);
             }
             // console.log("Fetched Employees are:", employeeData);
             // const result = res.data.filter((emp) => {
@@ -83,24 +78,31 @@ function NewEmployee() {
             //     setEmployee(res.data);
             // }
         } catch (error) {
+            // if (axios.isCancel(error)) {
+            //     console.log("Request canceled", error.message);
+            //     return;
+            // }
             console.log("Error fetching employees data:", error);
         }
+        // Cleanup code
+        return () => {
+            controller.abort();
+        };
     };
 
     const fetchDeletedEmployee = async () => {
         try {
-            let res;
-            if (!searchValue) {
-                res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-            } else {
-                res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-                    params: { search: searchValue } // send searchValue as query param
-                });
-            }
+
+            const res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+                params: { search: searchValue } // send searchValue as query param
+            });
+
             // const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
             //     params: { search: searchValue } // send searchValue as query param
             // });
             setDeletedEmployee(res.data);
+            setDeletedEmployeeLength(res.data.length);
+
             // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
             // const result = res.data.filter((emp) => {
             //     return (
@@ -219,7 +221,8 @@ function NewEmployee() {
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 {/* {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0} */}
-                                                {employee.length || 0}
+                                                {/* {employee.length || 0} */}
+                                                {employeeLength || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -232,7 +235,8 @@ function NewEmployee() {
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 {/* {(searchValue.length !== "" ? deletedEmployeeSearchResult : deletedEmployee).length || 0} */}
-                                                {deletedEmployee.length || 0}
+                                                {/* {deletedEmployee.length || 0} */}
+                                                {deletedEmployeeLength || 0}
                                             </div>
                                         </div>
                                     </a>
