@@ -98,6 +98,15 @@ const ContentWriterDropdown = ({ mainStatus, writername, subStatus, setNewSubSta
               Drashti Thakkar
             </a>
           </li> */}
+           <li>
+            <a
+              className="dropdown-item"
+              onClick={() => handleStatusChange("Kajal Patel", "e_task_assign")}
+              href="#"
+            >
+              Kajal Patel
+            </a>
+          </li>
           <li>
             <a
               className="dropdown-item"

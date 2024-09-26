@@ -429,6 +429,8 @@ function Header({ name, id, designation, empProfile, gender }) {
       fetchAndSaveData();
     }
   }, [data]);
+
+  
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
