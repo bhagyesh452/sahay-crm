@@ -79,29 +79,34 @@ function DeletedEmployeePanel({ searchValue }) {
 
   //--------------------fetching employee data-----------------
   const fetchData = async () => {
+    const controller = new AbortController();
     try {
       setIsLoading(true);
-      let response;
-      if (!searchValue) {
-        response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-      } else {
-        response = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-          params: { search: searchValue } // send searchValue as query param
-        });
-      }
-      
+      const response = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+        params: { search: searchValue }, // send searchValue as query param
+        signal: controller.signal
+      });
+
       // const response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
       //   params: { search: searchValue },
       // });
 
       // Set the retrieved data in the state
       // setFilteredData(response.data);
-      setData(response.data);
+      setData(response.data.data);
     } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log("Request canceled", error.message);
+        return;
+      }
       console.error("Error fetching data:", error.message);
     } finally {
       setIsLoading(false);
     }
+    // Cleanup code
+    return () => {
+      controller.abort();
+    };
   };
 
   useEffect(() => {

@@ -441,29 +441,23 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   });
 
   const fetchData = async () => {
+    const controller = new AbortController();
     try {
       setIsLoading(true);
-      let response;
-      if (!searchValue) {
-        response = await axios.get(`${secretKey}/employee/einfo`);
-      } else {
-        response = await axios.get(`${secretKey}/employee/searchEmployee`, {
-          params: { search: searchValue } // send searchValue as query param
-        });
-      }
-      // const response = await axios.get(`${secretKey}/employee/einfo`, {
-      //   params: { search: searchValue },
-      // });
+      const response = await axios.get(`${secretKey}/employee/searchEmployee`, {
+        params: { search: searchValue }, // send searchValue as query param
+        signal: controller.signal
+      });
       // console.log("Fetched employees are :", response.data);
       // Set the retrieved data in the state
 
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-        setData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-        setFilteredData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        setData(response.data.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        setFilteredData(response.data.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
 
       } else {
-        setData(response.data);
-        setFilteredData(response.data);
+        setData(response.data.data);
+        setFilteredData(response.data.data);
       }
       setEmail("");
       setEname("");
@@ -492,16 +486,39 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
       // console.log("Search result from employee list is :", result);
       if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-        setSearchResult(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        setSearchResult(response.data.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
       } else {
-        setSearchResult(response.data);
+        setSearchResult(response.data.data);
       }
     } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log("Request canceled", error.message);
+        return;
+      }
       console.error("Error fetching data:", error.message);
     } finally {
       setIsLoading(false);
     }
+    // Cleanup code
+    return () => {
+      controller.abort();
+    };
   };
+
+  // const fetchData = () => {
+  //   console.log("fetchEmployee called from react query");
+  //   return axios.get(`${secretKey}/employee/searchEmployee`, {
+  //     params: { search: searchValue }, // send searchValue as query param
+  //   })
+  // };
+
+  // const { data, isLoading } = useQuery("searchEmployee", fetchData);
+  // useEffect(() => {
+  //     setFilteredData(data); // Set the filtered data
+  // }, []);
+  // console.log("Fetched data is :", data);
+  // console.log("Filtered data is :", filteredData);
+
 
   // Old code handle search :
   const handleSearch = (e) => {
