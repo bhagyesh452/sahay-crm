@@ -322,30 +322,34 @@ function CallingReportView({ employeeInformation }) {
                                 </tr>
                             </tbody>
                         ) : callingData && callingData.length !== 0 ?
-                            (<tbody>
-                                {callingData.map((item, index) => {
-                                    const targetTime = getTargetTime(employeeInformation.jdate);
-                                    const status = getTargetStatus(convertSecondsToHMS(item.total_duration), targetTime);
-                                    const badgeClass = status === "Achieved" ? 'badge-completed' : 'badge-leave';
-                                    return (
-                                        <tr>
-                                            <td>{index + 1}</td>
-                                            <td>{formatDateToDDMMYYYY(item.date)}</td>
-                                            <td>{item.total_unique_clients}</td>
-                                            <td>{item.total_calls}</td>
-                                            <td>{convertSecondsToHMS(item.total_duration)}</td>
-                                            <td>{getTargetTime(employeeInformation.jdate)}</td>
-                                            <td>
-                                                <span className={`badge ${badgeClass}`}>
-                                                    {getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    )
-                                })
-                                }
+                            (
+                                <tbody>
+                                    {callingData.map((item, index) => {
+                                        const targetTime = getTargetTime(employeeInformation.jdate);
+                                        const status = getTargetStatus(convertSecondsToHMS(item.total_duration), targetTime);
+                                        const badgeClass = status === "Achieved" ? 'badge-completed' : 'badge-leave';
+                                        const dateObject = new Date(item.date);
+                                        const isSunday = dateObject.getDay() === 0;
+                                        {}
+                                        return (
+                                            <tr>
+                                                <td>{index + 1}</td>
+                                                <td>{formatDateToDDMMYYYY(item.date)}</td>
+                                                <td>{isSunday ? "Sunday" : item.total_unique_clients}</td>
+                                                <td>{item.total_calls}</td>
+                                                <td>{convertSecondsToHMS(item.total_duration)}</td>
+                                                <td>{getTargetTime(employeeInformation.jdate)}</td>
+                                                <td>
+                                                    <span className={`badge ${badgeClass}`}>
+                                                        {getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                    }
 
-                            </tbody>
+                                </tbody>
                             ) : (callingData.length === 0 && !loading && (
                                 <tbody>
                                     <tr>

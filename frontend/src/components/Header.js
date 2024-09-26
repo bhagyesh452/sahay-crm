@@ -313,12 +313,13 @@ function Header({ name, id, designation, empProfile, gender }) {
         throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
       }
 
-      const data = await response.json();
-
+    const data = await response.json();
+    const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+      
       // Append the date field to each result
       return data.result.map((entry) => ({
         ...entry,
-        date: date // Add the date field
+        date: dateString // Add the date field
       }));
     } catch (err) {
       console.error(err);
@@ -326,24 +327,24 @@ function Header({ name, id, designation, empProfile, gender }) {
       return null;
     }
   };
-  // const fetchMonthlyData = async (employeeNumber, startDate, endDate) => {
-  //   let currentDate = new Date(startDate);
-  //   const data = [];
+  const fetchMonthlyData = async (employeeNumber, startDate, endDate) => {
+    let currentDate = new Date(startDate);
+    const data = [];
 
-  //   while (currentDate <= endDate) {
-  //     const dateString = currentDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+    while (currentDate <= endDate) {
+      const dateString = currentDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
 
-  //     const dailyResult = await fetchDailyData(dateString, employeeNumber);
-  //     if (dailyResult) {
-  //       data.push(...dailyResult); // Push all daily results (with date field) into the array
-  //     }
+      const dailyResult = await fetchDailyData(dateString, employeeNumber);
+      if (dailyResult) {
+        data.push(...dailyResult); // Push all daily results (with date field) into the array
+      }
 
-  //     currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-  //     await delay(1000); // Wait for 1 second to respect the rate limit
-  //   }
+      currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      await delay(1000); // Wait for 1 second to respect the rate limit
+    }
 
-  //   return data;
-  // };
+    return data;
+  };
 
   // const saveMonthlyDataToDatabase = async (employeeNumber, monthlyData) => {
   //   try {
@@ -372,7 +373,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   //           startDate.setDate(1); // Set to the first day of the month
   //           const endDate = new Date(startDate);
   //           endDate.setMonth(endDate.getMonth());
-  //           endDate.setDate(new Date().getDate()-1); // Set to the last day of the month
+  //           endDate.setDate(new Date().getDate()-2); // Set to the last day of the month
   //     // Get the current date
   //     // const currentDate = new Date();
 
