@@ -399,7 +399,10 @@ function EmployeeViewAttendance({ data }) {
             <div className='d-flex mb-3 align-items-center justify-content-between'>
                 <div className='d-flex align-items-center justify-content-start'>
                     <div className='form-group'>
-                        <select className='form-select' value={selectedYear} onChange={handleYearChange}>
+                        <select className='form-select' 
+                        value={selectedYear} 
+                        onChange={handleYearChange}
+                        >
                             <option disabled>--Select Year--</option>
                             {years.map(year => (
                                 <option key={year} value={year}>{year}</option>

@@ -117,9 +117,12 @@ function RmofCertificationMyBookings() {
         try {
             setCurrentDataLoading(true);
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-                params: { search: searchQuery, page, activeTab: activeTab }
+                params: { 
+                    search: searchQuery, 
+                    page, 
+                    activeTab: activeTab
+                 }
             });
-
             const {
                 data,
                 totalPages,

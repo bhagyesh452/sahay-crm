@@ -644,7 +644,6 @@ function EmployeeSalaryView({ }) {
             <div className="container-xl mt-2">
               <div className="my-tab card-header">
               </div>
-
               <div class="tab-content card-body">
                 <div class="tab-pane active" id="Employees">
                   <div className="RM-my-booking-lists">
@@ -661,12 +660,12 @@ function EmployeeSalaryView({ }) {
                             <th>P</th>
                             <th>L</th>
                             <th>H</th>
-                            <th>LC</th>
-                            <th>LCH</th>
-                            <th>SL</th>
-                            <th>SH</th>
-                            <th>OHL</th>
-                            <th>OHH</th>
+                            {/* <th>LC</th>
+      <th>LCH</th>
+      <th>SL</th>
+      <th>SH</th>
+      <th>OHL</th>
+      <th>OHH</th> */}
                             <th>Deduction</th>
                             <th>Incentive</th>
                             <th>Gross Payable</th>
@@ -678,10 +677,11 @@ function EmployeeSalaryView({ }) {
                             <th>Payment</th>
                           </tr>
                         </thead>
+
                         {isLoading ? (
                           <tbody>
                             <tr>
-                              <td colSpan="11">
+                              <td colSpan="19">
                                 <div className="LoaderTDSatyle w-100">
                                   <ClipLoader
                                     color="lightgrey"
@@ -699,8 +699,14 @@ function EmployeeSalaryView({ }) {
                             {(searchValue ? employeeSearchResult : attendanceData).length !== 0 ? (
                               <tbody>
                                 {(searchValue ? employeeSearchResult : attendanceData).map((emp, index) => {
-                                  const profilePhotoUrl = emp.employeePhoto?.length !== 0
-                                    ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
+                                  const employeeRecord = employee.find((employee) => employee._id === emp.employeeId);
+                                
+                                  const profilePhotoUrl = employeeRecord && employeeRecord.profilePhoto?.length > 0
+                                    ? employeeRecord.profilePhoto[0]?.filename
+                                    : null;
+                              
+                                  const profilePhotoUrlFetch = profilePhotoUrl
+                                    ? `${secretKey}/employee/fetchProfilePhoto/${emp.employeeId}/${profilePhotoUrl}`
                                     : emp.gender === "Male" ? EmpDfaullt : FemaleEmployee;
 
                                   return (
@@ -708,52 +714,28 @@ function EmployeeSalaryView({ }) {
                                       <td>{index + 1}</td>
                                       <td>
                                         <div className="d-flex align-items-center">
-                                          {/* <div className="tbl-pro-img">
+                                          <div className="tbl-pro-img">
                                             <img
-                                              src={profilePhotoUrl}
+                                              src={profilePhotoUrlFetch}
                                               alt="Profile"
                                               className="profile-photo"
                                             />
-                                          </div> */}
+                                          </div>
                                           <div className="">
                                             {(() => {
-                                              // Split the item.ename string into an array of words based on spaces
                                               const names = (emp.employeeName || "").trim().split(/\s+/);
-
-                                              // console.log("names", names);
-
-                                              // Check if there's only one name or multiple names
-                                              if (names.length === 1) {
-                                                return names[0]; // If there's only one name, return it as-is
-                                              }
-
-                                              // Return the first and last name, or an empty string if not available
-                                              return `${names[0] || ""} ${names[names.length - 1] || ""}`;
+                                              return names.length === 1 ? names[0] : `${names[0]} ${names[names.length - 1]}`;
                                             })()}
                                           </div>
                                         </div>
                                       </td>
                                       <td>{emp.branchOffice || ""}</td>
                                       <td>₹ {formatSalary(emp.employeeSalary || 0)}</td>
-                                      <td>
-                                        {emp.workingDays ? emp.workingDays : 0}
-                                      </td>
+                                      <td>{emp.workingDays || 0}</td>
                                       <td>{formatDate(emp.employeeJoiningDate) || ""}</td>
-                                      <td>{emp.presentCount ? emp.presentCount : 0}</td>
-                                      <td>
-                                        {emp.leaveCount ? emp.leaveCount : 0}
-                                      </td>
-                                      <td>
-                                        {emp.halfDayCount ? emp.halfDayCount : 0}
-                                      </td>
-                                      <td>{emp.lcCount ? emp.lcCount : 0}</td>
-                                      <td>
-                                        {emp.lchCount ? emp.lchCount : 0}
-                                      </td>
-                                      <td>{emp.sundayLeaveCount ? emp.sundayLeaveCount : 0}</td>
-                                      <td>{emp.sundayHalfDayCount ? emp.sundayHalfDayCount : 0}</td>
-                                      <td>{emp.officialHolidayLeaveCount ? emp.officialHolidayLeaveCount : 0}</td>
-                                      <td>{emp.officialHolidayHalfDayCount ? emp.officialHolidayHalfDayCount : 0}</td>
+                                      <td>{emp.presentCount || 0}</td>
+                                      <td>{emp.leaveCount || 0}</td>
+                                      <td>{emp.halfDayCount || 0}</td>
                                       <td>-</td>
                                       <td>-</td>
                                       <td>-</td>
@@ -770,12 +752,10 @@ function EmployeeSalaryView({ }) {
                             ) : (
                               <tbody>
                                 <tr>
-                                  <td
-                                    className="particular"
-                                    colSpan="11"
-                                    style={{ textAlign: "center" }}
-                                  >
-                                    <Nodata />
+                                  <td colSpan="19" style={{ textAlign: "center" }}>
+                                    <div className="no_data_table_inner">
+                                      <Nodata />
+                                    </div>
                                   </td>
                                 </tr>
                               </tbody>
@@ -783,163 +763,12 @@ function EmployeeSalaryView({ }) {
                           </>
                         )}
                       </table>
+
                     </div>
                   </div>
                 </div>
 
-                <div class="tab-pane" id="DeletedEmployees">
-                  <div className="table table-responsive table-style-3 m-0">
-                    <table className="table table-vcenter table-nowrap">
-                      <thead>
-                        <tr className="tr-sticky">
-                          <th>Sr. No</th>
-                          <th>Employee Name</th>
-                          <th>Branch</th>
-                          <th>Department</th>
-                          <th>Designation</th>
-                          <th>Date Of Joining</th>
-                          <th>Monthly Salary</th>
-                          <th>Probation Status</th>
-                          <th>Official Number</th>
-                          <th>Official Email ID</th>
-                          <th>Action</th>
-                          <th>Revoke Employee</th>
-                        </tr>
-                      </thead>
-                      {isLoading ? (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11">
-                              <div className="LoaderTDSatyle w-100">
-                                <ClipLoader
-                                  color="lightgrey"
-                                  loading={true}
-                                  size={30}
-                                  aria-label="Loading Spinner"
-                                  data-testid="loader"
-                                />
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      ) : (
-                        <>
-                          {(searchValue ? deletedEmployeeSearchResult : deletedEmployee).length !== 0 ? (
-                            <tbody>
-                              {(searchValue ? deletedEmployeeSearchResult : deletedEmployee).map((emp, index) => {
-                                const profilePhotoUrl = emp.profilePhoto?.length !== 0
-                                  ? `${secretKey}/employee/fetchProfilePhoto/${emp._id}/${emp.profilePhoto?.[0]?.filename}`
-                                  : EmpDfaullt;
 
-                                return (
-                                  <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                      <div className="d-flex align-items-center">
-                                        <div className="tbl-pro-img">
-                                          <img
-                                            src={profilePhotoUrl}
-                                            alt="Profile"
-                                            className="profile-photo"
-                                          />
-                                        </div>
-                                        <div className="">
-                                          {(() => {
-                                            // Split the item.ename string into an array of words based on spaces
-                                            const names = (emp.ename || "").trim().split(/\s+/);
-
-                                            // console.log("names", names);
-
-                                            // Check if there's only one name or multiple names
-                                            if (names.length === 1) {
-                                              return names[0]; // If there's only one name, return it as-is
-                                            }
-
-                                            // Return the first and last name, or an empty string if not available
-                                            return `${names[0] || ""} ${names[names.length - 1] || ""}`;
-                                          })()}
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td>{emp.branchOffice || ""}</td>
-                                    <td>{emp.department || ""}</td>
-                                    <td>
-                                      {emp.newDesignation === "Business Development Executive" ? "BDE"
-                                        : emp.newDesignation === "Business Development Manager" ? "BDM"
-                                          : emp.newDesignation || ""}
-                                    </td>
-                                    <td>{formatDate(emp.jdate) || ""}</td>
-                                    <td>₹ {formatSalary(emp.salary || 0)}</td>
-                                    <td>
-                                      <span className={getBadgeClass(calculateProbationStatus(emp.jdate))}>
-                                        {calculateProbationStatus(emp.jdate)}
-                                      </span>
-                                    </td>
-                                    <td>
-                                      <a
-                                        target="_blank"
-                                        className="text-decoration-none text-dark"
-                                        href={`https://wa.me/91${emp.number}`}
-                                      >
-                                        {emp.number}
-                                        <FaWhatsapp className="text-success w-25 mb-1" />
-                                      </a>
-                                    </td>
-                                    <td>{emp.email || ""}</td>
-                                    <td>
-                                      <button className="action-btn action-btn-primary">
-                                        <Link
-                                          style={{ textDecoration: "none", color: 'inherit' }}
-                                          to={`/hr-employee-profile-details/${emp._id}`}
-                                        >
-                                          <FaRegEye />
-                                        </Link>
-                                      </button>
-
-                                      <button
-                                        className="action-btn action-btn-danger ml-1"
-                                        onClick={() => handlePermanentDeleteEmployee(emp._id)}
-                                      >
-                                        <AiFillDelete />
-                                      </button>
-                                    </td>
-                                    <td>
-                                      <button
-                                        className="action-btn action-btn-success ml-1"
-                                        onClick={() => {
-                                          const dataToRevertBack = deletedEmployee.filter(obj => obj._id === emp._id);
-                                          handleRevertBack(emp._id, emp.ename, dataToRevertBack);
-                                        }}
-                                      >
-                                        <TbRestore />
-                                      </button>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          ) : (
-                            <tbody>
-                              <tr>
-                                <td
-                                  className="particular"
-                                  colSpan="11"
-                                  style={{ textAlign: "center" }}
-                                >
-                                  <Nodata />
-                                </td>
-                              </tr>
-                            </tbody>
-                          )}
-                        </>
-                      )}
-                    </table>
-                  </div>
-                </div>
-
-                <div class="tab-pane" id="UpcommingEmployees">
-                  <h1>Upcoming Employees</h1>
-                </div>
               </div>
             </div>
           </div>

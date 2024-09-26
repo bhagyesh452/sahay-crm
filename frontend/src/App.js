@@ -91,6 +91,7 @@ import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
 import EmployeeInterestedCompanies from "./admin/EmployeeInterestestedCompanies.jsx";
 import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 import EmployeeSalaryView from "./Hr_panel/Components/Attendance/EmployeeSalaryView.jsx";
+import ApplicationForm from "./RecruiterPanel/ApplicationForm/ApplicationForm.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -272,6 +273,10 @@ function App() {
           <Route path="/hr/employees/attendance" element={<Attendance />} />
           <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
           <Route path='/hr/employees/salarypage' element={<EmployeeSalaryView />}></Route>
+
+          {/**********************************************  RecruiterPane  *******************************************************/}
+          <Route path="/recruiter/appynow/joinusform" element={<ApplicationForm />} />
+          
         </Routes>
 
       </BrowserRouter>

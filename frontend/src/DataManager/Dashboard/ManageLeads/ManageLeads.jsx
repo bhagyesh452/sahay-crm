@@ -838,7 +838,7 @@ function ManageLeads() {
         fetchData(1, latestSortCount);
         setEmployeeSelection("Not Alloted");
     }
-
+    console.log("selectedRows", selectedRows)
     const handleconfirmAssign = async () => {
         let selectedObjects = [];
 
@@ -892,7 +892,7 @@ function ManageLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const currentDataStatus = dataStatus;
-       
+
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
         // console.log("Data to send is :", dataToSend);
@@ -941,8 +941,14 @@ function ManageLeads() {
 
         const tempStatusData = dataStatus === "Unassigned" ? unAssignedData : assignedData;
         const tempFilter = (!isFilter && !isSearching) ? data : tempStatusData;
-        const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
-      
+        // const dataToSend = tempFilter.filter((row) => selectedRows.includes(row._id));
+        const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
+        const dataToSend = response.data;
+        console.log("dataToSend", dataToSend)
+        console.log("tempFilter", tempFilter)
+        console.log("data", data)
+        console.log("tempStatusData", tempStatusData)
+        
         try {
             const response = await axios.post(`${secretKey}/admin-leads/postAssignData`, {
                 employeeSelection,
@@ -951,7 +957,7 @@ function ManageLeads() {
                 date,
                 time
             });
-            // console.log("Assigned data from data analyst side is :", response.data);
+            console.log("Assigned data from data analyst side is :", response.data);
 
             if (isFilter) {
                 handleFilterData(1, itemsPerPage);
@@ -1300,7 +1306,7 @@ function ManageLeads() {
         if (selectedYear && selectedMonth) {
             monthIndex = months.indexOf(selectedMonth);
             setMonthIndex(monthIndex + 1)
-            
+
             const days = new Date(selectedYear, monthIndex + 1, 0).getDate();
             setDaysInMonth(Array.from({ length: days }, (_, i) => i + 1));
         } else {
@@ -1411,7 +1417,7 @@ function ManageLeads() {
     };
 
     const dataManagerName = localStorage.getItem("dataManagerName");
-  
+
 
     // console.log("User id is :", userId);
 
@@ -1433,7 +1439,7 @@ function ManageLeads() {
         <div>
             <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
             <Navbar name={dataManagerName} />
-           {!openInterestFollowPage && (<div className='page-wrapper'>
+            {!openInterestFollowPage && (<div className='page-wrapper'>
                 <div className="page-header d-print-none">
                     <div className="container-xl">
                         <div className="d-flex align-items-center justify-content-between">
@@ -1455,8 +1461,8 @@ function ManageLeads() {
                                         Assign Leads
                                     </button>
                                     <button type="button" className="btn mybtn" onClick={() => setOpenInterestFollowPage(true)}>
-                                            <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
-                                        </button>
+                                        <LiaPagerSolid className='mr-1' />Interested-FollowUp Leads
+                                    </button>
                                 </div>
                             </div>
                             <div className="d-flex align-items-center">
@@ -2204,7 +2210,7 @@ function ManageLeads() {
                     </div>
                 </div>
             </div>)
-}
+            }
             {/* -------------------- dialog to add leads---------------------------- */}
             <Dialog className='My_Mat_Dialog' open={openAddLeadsDialog} onClose={closeAddLeadsDialog} fullWidth maxWidth="md">
                 <DialogTitle>

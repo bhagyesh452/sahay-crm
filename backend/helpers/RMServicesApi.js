@@ -136,7 +136,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
                   <ol>
                   <li>${bdeName} - ${bdeNumber} And ${bdmName} - ${number} (Your points of contact for initiating the service)</li>
                   <li>Dhruvi Gohel - 9016928702 (Assisted with the certification process up to the issuance of your certificate)</li>
-                  <li>General Support - 9601618727 (For any other inquiries or general assistance)Feel free to reach out to any of them for additional support.</li>
+                  <li>General Support - 9601618727 (For any other inquiries or general assistance)</li>
                   </ol>
                   <p>Thank you for choosing Start-Up Sahay. We look forward to continuing to support you!</p>
 <p>Please find attached the certificate generated for your company.</p><p>Best regards,<br>Start-Up Sahay Private Limited</p>
