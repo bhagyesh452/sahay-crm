@@ -2566,7 +2566,7 @@ router.post('/employee-calling/save', async (req, res) => {
 
   // Extract the month and year from the incoming data
   const incomingYear = monthly_data.length > 0 ? new Date(monthly_data[0].date).getFullYear() : null;
-  const incomingMonth = monthly_data.length > 0 ? String(new Date(monthly_data[0].date).getMonth() + 1).padStart(2, '0') : null; 
+  const incomingMonth = monthly_data.length > 0 ? String(new Date(monthly_data[0].date).getMonth() + 1).padStart(2, '0') : null;
 
   if (!incomingYear || !incomingMonth) {
     return res.status(400).json({ message: 'Invalid data: Missing year or month in daily data' });
@@ -2660,7 +2660,7 @@ router.get(`/employee-calling-fetch/:number`, async (req, res) => {
 // Endpoint to fetch data for a specific employee, year, and month
 router.get('/employee-calling/filter', async (req, res) => {
   const { emp_number, year, month } = req.query;
-  
+
   console.log("emp_number:", emp_number);
   console.log("year:", year);
   console.log("month:", month);
@@ -2708,7 +2708,8 @@ const fetchDailyData = async (date, employeeNumber) => {
 
   const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);  // 9:30 AM
   const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);  // 7:30 PM
-
+  console.log("start", startTimestamp)
+  console.log("end", endTimestamp)
   const body = {
     "call_from": startTimestamp,
     "call_to": endTimestamp,
@@ -2798,7 +2799,7 @@ const saveDailyDataToDatabase = async (employeeNumber, dailyData) => {
 
 
 // Cron job to fetch and save data at 12 PM every day
-cron.schedule('20 10 * * *', async () => {  // Runs every day at 12 PM
+cron.schedule('34 10 * * *', async () => {  // Runs every day at 12 PM
   console.log('Starting cron job to fetch and save previous day data for all employees');
 
   try {
