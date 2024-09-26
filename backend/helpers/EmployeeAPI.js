@@ -2888,41 +2888,41 @@ const saveDailyDataToDatabase = async (employeeNumber, dailyData) => {
 
 
 // Cron job to fetch and save data at 12 PM every day
-cron.schedule('10-20 12 * * *', async () => {  // Runs every day at 12 PM
-  console.log('Starting cron job to fetch and save previous day data for all employees');
+// cron.schedule('10-20 12 * * *', async () => {  // Runs every day at 12 PM
+//   console.log('Starting cron job to fetch and save previous day data for all employees');
 
-  try {
-    // Fetch all employees with a number field
-    const employees = await adminModel.find({ number: { $exists: true, $ne: null } });
+//   try {
+//     // Fetch all employees with a number field
+//     const employees = await adminModel.find({ number: { $exists: true, $ne: null } });
 
-    if (employees.length === 0) {
-      console.log('No employees found with a number field');
-      return;
-    }
+//     if (employees.length === 0) {
+//       console.log('No employees found with a number field');
+//       return;
+//     }
 
-    // Calculate the previous day
-    const previousDay = new Date();
-    previousDay.setDate(previousDay.getDate() - 1);
+//     // Calculate the previous day
+//     const previousDay = new Date();
+//     previousDay.setDate(previousDay.getDate() - 1);
 
-    // Loop through each employee
-    for (const employee of employees) {
-      const employeeNumber = employee.number;
-      console.log(`Fetching data for employee: ${employeeNumber}`);
+//     // Loop through each employee
+//     for (const employee of employees) {
+//       const employeeNumber = employee.number;
+//       console.log(`Fetching data for employee: ${employeeNumber}`);
 
-      // Fetch data for the previous day
-      const dailyData = await fetchDailyData(previousDay, employeeNumber);
-      if (dailyData && dailyData.length > 0) {
-        await saveDailyDataToDatabase(employeeNumber, dailyData);
-      }
+//       // Fetch data for the previous day
+//       const dailyData = await fetchDailyData(previousDay, employeeNumber);
+//       if (dailyData && dailyData.length > 0) {
+//         await saveDailyDataToDatabase(employeeNumber, dailyData);
+//       }
 
-      console.log(`Finished processing for employee: ${employeeNumber}`);
-      await delay(1000); // Optional delay between processing employees
-    }
+//       console.log(`Finished processing for employee: ${employeeNumber}`);
+//       await delay(1000); // Optional delay between processing employees
+//     }
 
-    console.log('Cron job finished');
-  } catch (err) {
-    console.error('Error fetching employee data:', err.message);
-  }
-});
+//     console.log('Cron job finished');
+//   } catch (err) {
+//     console.error('Error fetching employee data:', err.message);
+//   }
+// });
 
 module.exports = router;

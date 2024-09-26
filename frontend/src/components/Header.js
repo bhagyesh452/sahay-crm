@@ -274,7 +274,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   };
 
   // ----------------call logs component------------------
-  // const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
   // const convertSecondsToHMS = (totalSeconds) => {
   //   const hours = Math.floor(totalSeconds / 3600);
   //   const minutes = Math.floor((totalSeconds % 3600) / 60);
