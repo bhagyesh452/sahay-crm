@@ -397,9 +397,9 @@ function ViewAttendance({ year, month, date }) {
                 return;
             }
             if (isOnLeave) {
-                inTime = "00:00";
-                outTime = "00:00";
-                workingHours = "00:00";
+                inTime = "";
+                outTime = "";
+                workingHours = "";
                 status = "Leave";
             } else {
                 if (

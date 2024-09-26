@@ -275,7 +275,7 @@ function App() {
           <Route path='/hr/employees/salarypage' element={<EmployeeSalaryView />}></Route>
 
           {/**********************************************  RecruiterPane  *******************************************************/}
-          <Route path="/recruiter/appynow/joinusform" element={<ApplicationForm />} />
+          <Route path="/recruiter/appynowform" element={<ApplicationForm />} />
           
         </Routes>
 
