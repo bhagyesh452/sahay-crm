@@ -283,49 +283,49 @@ function Header({ name, id, designation, empProfile, gender }) {
   //   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   // };
 
-  // const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  // const fetchDailyData = async (date, employeeNumber) => {
-  //   const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
-  //   const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
+  const fetchDailyData = async (date, employeeNumber) => {
+    const apiKey = process.env.REACT_APP_API_KEY; // Ensure this is set in your .env file
+    const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
 
-  //   const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
-  //   const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
-  //   const body = {
-  //     "call_from": startTimestamp,
-  //     "call_to": endTimestamp,
-  //     "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
-  //     "emp_numbers": [employeeNumber]
-  //   };
+    const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
+    const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
+    const body = {
+      "call_from": startTimestamp,
+      "call_to": endTimestamp,
+      "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
+      "emp_numbers": [employeeNumber]
+    };
 
-  //   try {
-  //     const response = await fetch(url, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': `Bearer ${apiKey}`,
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(body)
-  //     });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
 
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
-  //     }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
+      }
 
-  //     const data = await response.json();
+      const data = await response.json();
 
-  //     // Append the date field to each result
-  //     return data.result.map((entry) => ({
-  //       ...entry,
-  //       date: date // Add the date field
-  //     }));
-  //   } catch (err) {
-  //     console.error(err);
-  //     setError(err.message);
-  //     return null;
-  //   }
-  // };
+      // Append the date field to each result
+      return data.result.map((entry) => ({
+        ...entry,
+        date: date // Add the date field
+      }));
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      return null;
+    }
+  };
   // const fetchMonthlyData = async (employeeNumber, startDate, endDate) => {
   //   let currentDate = new Date(startDate);
   //   const data = [];
@@ -368,14 +368,19 @@ function Header({ name, id, designation, empProfile, gender }) {
   // };
   // useEffect(() => {
   //   if (data.number) {
+  //           const startDate = new Date();
+  //           startDate.setDate(1); // Set to the first day of the month
+  //           const endDate = new Date(startDate);
+  //           endDate.setMonth(endDate.getMonth());
+  //           endDate.setDate(new Date().getDate()-1); // Set to the last day of the month
   //     // Get the current date
-  //     const currentDate = new Date();
+  //     // const currentDate = new Date();
 
-  //     // Set to the start of the previous month
-  //     const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+  //     // // Set to the start of the previous month
+  //     // const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
 
-  //     // Set to the end of the previous month
-  //     const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+  //     // // Set to the end of the previous month
+  //     // const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 
   //     const fetchAndSaveData = async () => {
   //       const monthlyData = await fetchMonthlyData(data.number, startDate, endDate);
@@ -386,7 +391,43 @@ function Header({ name, id, designation, empProfile, gender }) {
   //   }
   // }, [data]);
 
+  const saveMonthlyDataToDatabase = async (employeeNumber, dailyData) => {
+    try {
+      const response = await axios.post(`${secretKey}/employee/employee-calling/save`, {
+        emp_number: employeeNumber,
+        monthly_data: dailyData,  // This will now only include the previous day's data
+        emp_code: dailyData[0].emp_code,
+        emp_country_code: dailyData[0].emp_country_code,
+        emp_name: dailyData[0].emp_name,
+        emp_tags: dailyData[0].emp_tags,
+      });
+  
+      if (response.status !== 200) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+  
+      console.log('Previous day data saved successfully');
+    } catch (err) {
+      console.error('Error saving data:', err.message);
+    }
+  };
 
+  useEffect(() => {
+    if (data.number) {
+      // Calculate the previous day
+      const previousDay = new Date();
+      previousDay.setDate(previousDay.getDate() - 1);
+  
+      const fetchAndSaveData = async () => {
+        const dailyData = await fetchDailyData(previousDay, data.number); // Fetch only for the previous day
+        if (dailyData) {
+          await saveMonthlyDataToDatabase(data.number, dailyData); // Save only the previous day's data
+        }
+      };
+  
+      fetchAndSaveData();
+    }
+  }, [data]);
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
