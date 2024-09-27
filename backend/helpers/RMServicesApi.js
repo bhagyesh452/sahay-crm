@@ -60,7 +60,7 @@ function runTestScript(companyName, socketIO, companyEmail, bdeName, bdmName, bd
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Error executing script: ${error.message}`);
+      console.error(`Error executing script: ${error.message}`);0
       socketIO.emit("test-script-output", {
         companyName: companyName,
         status: "error",

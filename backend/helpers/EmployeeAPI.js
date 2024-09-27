@@ -2227,7 +2227,7 @@ router.delete("/permanentDelete/:id", async (req, res) => {
 
 router.get("/einfo/:email/:password", async (req, res) => {
   const { email, password } = req.params;
-
+  console.log(email , password)
   try {
     const data = await adminModel.findOne({ email: email, password: password });
 

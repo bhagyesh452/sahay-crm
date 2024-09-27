@@ -1760,6 +1760,7 @@ function Received_booking_box() {
                             </>
                           )}
                         </ul>
+
                         <div class="tab-content rm_bkng_item_details">
                           {currentLeadform && (
                             <div
@@ -1768,6 +1769,7 @@ function Received_booking_box() {
                               }`}
                               id="Booking_1"
                             >
+                                {/* -------- Booking Details ---------*/}
                               <div className="mul-booking-card mt-2">
                                 <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                   <b>Booking Details:</b>
