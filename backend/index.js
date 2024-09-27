@@ -78,6 +78,7 @@ const { file } = require("googleapis/build/src/apis/file/index.js");
 const htmlDocx = require('html-docx-js');
 const RMServicesAPI = require("./helpers/RMServicesApi.js")
 const CustomerAPI = require("./helpers/CustomerApi.js")
+const RecruiterAPI = require("./helpers/recruitmentAPI.js")
 
 const { MongoClient } = require('mongodb');
 // const { Cashfree } = require('cashfree-pg');
@@ -132,6 +133,7 @@ app.use('/api/department', DepartmentAPI);
 app.use('/api/serviceDraft', ServicesDraftAPI);
 app.use('/api/services', ServicesAPI);
 app.use('/api/expense', ExpenseReportAPI);
+app.use('/api/recruiter', RecruiterAPI);
 
 
 // app.use(session({

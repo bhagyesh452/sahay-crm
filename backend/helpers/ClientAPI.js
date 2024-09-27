@@ -14,9 +14,7 @@ const { sendMail3 } = require("../helpers/sendMail3");
 const { sendMail4 } = require("../helpers/sendMail4");
 
 const userModel = require("../models/CompanyBusinessInput.js");
-const {
-  clouddebugger,
-} = require("googleapis/build/src/apis/clouddebugger/index.js");
+const { clouddebugger } = require("googleapis/build/src/apis/clouddebugger/index.js");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
