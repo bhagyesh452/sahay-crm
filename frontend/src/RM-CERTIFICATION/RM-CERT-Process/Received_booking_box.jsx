@@ -1642,6 +1642,7 @@ function Received_booking_box() {
                           </div>
                         </div>
                       </div>
+                       {/* --------If Multiple Booking (Bookign heading) ---------*/}
                       <div className="rm_all_bkng_right mt-3">
                         <ul className="nav nav-tabs rm_bkng_items align-items-center">
                           {currentLeadform &&

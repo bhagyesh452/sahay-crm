@@ -59,7 +59,6 @@ function ManagerBookings() {
   const [openOtherDocs, setOpenOtherDocs] = useState(false);
   const [activeIndexBooking, setActiveIndexBooking] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
-
   const [activeIndexMoreBookingServices, setActiveIndexMoreBookingServices] =
     useState(0);
   const [data, setData] = useState([]);
@@ -202,7 +201,7 @@ function ManagerBookings() {
       );
       const servicedata = servicesResponse.data;
       const newservicesdata = ExecutiveDataResponse.data;
-      console.log("rmdata", newservicesdata);
+    //  console.log ("rmdata", newservicesdata);
       setRmServicesData(servicedata);
       setAdminExecutiveData(newservicesdata);
     } catch (error) {
@@ -264,7 +263,7 @@ function ManagerBookings() {
     const latestBooking = bookingsWithDates.find(
       (booking) => booking.bookingDate.getTime() === latestDate.getTime()
     );
-    console.log("latestBooking", latestBooking.totalAmount);
+    // console.log("latestBooking", latestBooking.totalAmount);
     // Return the total amount for the latest booking (parse it to ensure it is a number)
     return latestBooking ? parseInt(latestBooking.totalAmount) : "0";
   };
@@ -381,7 +380,7 @@ function ManagerBookings() {
 
   const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
-    console.log(pathname);
+    // console.log(pathname);
     window.open(
       `${secretKey}/bookings/otherpdf/${companyName}/${pathname}`,
       "_blank"
@@ -403,7 +402,7 @@ function ManagerBookings() {
 
     if (confirmation.isConfirmed) {
       if (id) {
-        console.log("id", id);
+        // console.log("id", id);
         fetch(
           `${secretKey}/bookings/redesigned-delete-particular-booking/${company}/${id}`,
           {
@@ -424,7 +423,7 @@ function ManagerBookings() {
             console.error("Error during delete request:", error);
           });
       } else {
-        console.log("company", company);
+        // console.log("company", company);
         fetch(`${secretKey}/bookings/redesigned-delete-booking/${company}`, {
           method: "DELETE",
           headers: {
@@ -448,7 +447,7 @@ function ManagerBookings() {
     }
   };
 
-  console.log("rmservicesdata", rmServicesData);
+  // console.log("rmservicesdata", rmServicesData);
 
   // ----------------------------------------- Upload documents Section -----------------------------------------------------
 
@@ -475,7 +474,7 @@ function ManagerBookings() {
   const handleotherdocsAttachment = async () => {
     try {
       const files = selectedDocuments;
-      console.log(files);
+      // console.log(files);
 
       if (files.length === 0) {
         // No files selected
@@ -564,7 +563,7 @@ function ManagerBookings() {
     }
 
     if (existingObject) {
-      console.log("Existing Object", existingObject);
+      // console.log("Existing Object", existingObject);
       setRemainingObject({
         "Company Name": companyName,
         paymentCount: paymentNumber,
@@ -634,8 +633,8 @@ function ManagerBookings() {
       },
     });
     // Debug logs to check data
-    console.log("rmServicesData:", rmServicesData);
-    console.log("adminExecutiveData:", adminExecutiveData);
+    // console.log("rmServicesData:", rmServicesData);
+    // console.log("adminExecutiveData:", adminExecutiveData);
     const findCompany = rmServicesData.find(
       (company) =>
         company["Company Name"] === remainingObject["Company Name"] &&
@@ -646,9 +645,9 @@ function ManagerBookings() {
         company["Company Name"] === remainingObject["Company Name"] &&
         company.serviceName === remainingObject.serviceName
     );
-    console.log("findCompany", findCompanyAdmin);
+    // console.log("findCompany", findCompanyAdmin);
 
-    console.log("findCompany", findCompany);
+    // console.log("findCompany", findCompany);
     if (!tempUpdateMode) {
       try {
         const response = await axios.post(
@@ -670,7 +669,7 @@ function ManagerBookings() {
               pendingRecievedPaymentDate: remainingObject.paymentDate,
             }
           );
-          console.log("remaing payment", response2.data);
+          // console.log("remaing payment", response2.data);
         }
         if (findCompanyAdmin) {
           const response2 = await axios.post(
@@ -682,7 +681,7 @@ function ManagerBookings() {
               pendingRecievedPaymentDate: remainingObject.paymentDate,
             }
           );
-          console.log("remaing payment", response2.data);
+          // console.log("remaing payment", response2.data);
         }
         Swal.fire(
           "Payment Updated",
@@ -718,7 +717,7 @@ function ManagerBookings() {
               pendingRecievedPaymentDate: remainingObject.paymentDate,
             }
           );
-          console.log("remaing payment", response2.data);
+          // console.log("remaing payment", response2.data);
         }
         if (findCompanyAdmin) {
           const response2 = await axios.post(
@@ -730,7 +729,7 @@ function ManagerBookings() {
               pendingRecievedPaymentDate: remainingObject.paymentDate,
             }
           );
-          console.log("remaing payment", response2.data);
+          // console.log("remaing payment", response2.data);
         }
         Swal.fire(
           "Payment Updated",
@@ -758,7 +757,7 @@ function ManagerBookings() {
     return `${year}-${month}-${day}`;
   }
 
-  console.log("Remaining Object", remainingObject);
+  // console.log("Remaining Object", remainingObject);
   const [expanseObject, setExpanseObject] = useState({
     serviceName: "",
     bookingIndex: 0,
@@ -793,7 +792,7 @@ function ManagerBookings() {
   };
 
   const functionDeleteRemainingPayment = async (BookingIndex, serviceName) => {
-    console.log("ye ghus raha", BookingIndex, serviceName);
+    // console.log("ye ghus raha", BookingIndex, serviceName);
     const encodedServiceName = encodeURIComponent(serviceName);
     try {
       const response = await axios.delete(
@@ -1186,7 +1185,7 @@ function ManagerBookings() {
                       </div>
                     </div>
                     <div className="booking-deatils-body">
-                      {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
+                      {/* --------Basic Information Which is Common For all booking  ---------*/}
                       <div className="my-card mt-2">
                         <div className="my-card-head">
                           <div className="d-flex align-items-center justify-content-between">
@@ -1380,7 +1379,7 @@ function ManagerBookings() {
                           </div>
                         </div>
                       </div>
-                      {/* --------If Multipal Booking (Bookign heading) ---------*/}
+                      {/* --------If Multiple Booking (Bookign heading) ---------*/}
 
                       <div className="rm_all_bkng_right mt-3">
                         <ul className="nav nav-tabs rm_bkng_items align-items-center">
@@ -1510,7 +1509,7 @@ function ManagerBookings() {
                             >
                               {/* -------- Booking Details ---------*/}
                               <div className="mul-booking-card mt-2">
-                                {/* -------- Step 2 ---------*/}
+                               
                                 <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                   <b>Booking Details:</b>
                                   <div className="Services_Preview_action d-flex">
@@ -1931,10 +1930,7 @@ function ManagerBookings() {
                                                         obj.expanseDate
                                                           ? obj.expanseDate
                                                           : currentLeadform.bookingDate;
-                                                      console.log(
-                                                        "Formatting date:",
-                                                        dateToFormat
-                                                      );
+                                                     
                                                       return formatDatePro(
                                                         dateToFormat
                                                       );
@@ -3592,10 +3588,7 @@ function ManagerBookings() {
                                                           obj.expanseDate
                                                             ? obj.expanseDate
                                                             : currentLeadform.bookingDate;
-                                                        console.log(
-                                                          "Formatting date:",
-                                                          dateToFormat
-                                                        );
+                                                       
                                                         return formatDatePro(
                                                           dateToFormat
                                                         );
