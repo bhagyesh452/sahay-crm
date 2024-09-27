@@ -38,6 +38,13 @@ function CallingReportView({ employeeInformation }) {
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 3600 % 60;
 
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+    const convertSecondsToHMSNew = (totalSeconds) => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 3600 % 60;
+
         return `${String(hours).padStart(2, '0')}h:${String(minutes).padStart(2, '0')}m:${String(seconds).padStart(2, '0')}s`;
     };
 
@@ -83,6 +90,20 @@ function CallingReportView({ employeeInformation }) {
 
         // Determine the target time
         const targetTime = diffInMonths <= 1 ? "1:30:00" : "2:00:00";
+
+        return targetTime;
+    };
+
+    const getTargetTimeNew = (joiningDate) => {
+        // Parse the joining date to a Date object
+        const joinDate = new Date(joiningDate);
+        const today = new Date();
+
+        // Calculate the difference in months
+        const diffInMonths = (today.getFullYear() - joinDate.getFullYear()) * 12 + (today.getMonth() - joinDate.getMonth());
+
+        // Determine the target time
+        const targetTime = diffInMonths <= 1 ? "01h:30m:00s" : "02h:00m:00s";
 
         return targetTime;
     };
@@ -688,16 +709,16 @@ function CallingReportView({ employeeInformation }) {
                                                 <td>{formatDateToDDMMYYYY(item.date)}</td>
                                                 <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : item.total_unique_clients}</td>
                                                 <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : item.total_calls}</td>
-                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : convertSecondsToHMS(item.total_duration)}</td>
-                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : getTargetTime(employeeInformation.jdate)}</td>
+                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : convertSecondsToHMSNew(item.total_duration)}</td>
+                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : getTargetTimeNew(employeeInformation.jdate)}</td>
                                                 <td>
                                                     <span className={attendance && attendance.status === "Leave" ? "badge badge-under-probation" :
-                                                        attendance && attendance.status === "Sunday" ? "badge badge-sunday" :
+                                                        attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" ||attendance.status === "Sunday Leave") ? "badge badge-sunday" :
                                                             attendance && attendance.status === "Official Holiday" ? "badge badge-sunday" :
                                                                 `badge ${badgeClass}`}
                                                     >
-                                                        {attendance && attendance.status === "Sunday" ? "Sunday" :
-                                                            attendance && attendance.status === "Official Holiday" ? "Official Holiday" :
+                                                        {attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" ||attendance.status === "Sunday Leave") ? "Sunday" :
+                                                            attendance && (attendance.status === "Official Holiday" || attendance.status === "Official Holiday Half Day" || attendance.status === "Official Holiday Leave") ? "Official Holiday" :
                                                                 (attendance && attendance.status === "Leave") ? "Leave" :
                                                                     getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
                                                     </span>

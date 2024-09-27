@@ -937,7 +937,7 @@ function EmployeePerformance({ data }) {
 
 
     const functionGetOnlyAmount = (object) => {
-        if (object.targetDetails.length !== 0) {
+        if (object.targetDetails && object.targetDetails.length !== 0) {
             const foundObject = object.targetDetails.find(
                 (item) =>
                     Math.floor(item.year) === currentYear && item.month === currentMonth

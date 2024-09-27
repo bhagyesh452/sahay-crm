@@ -17,16 +17,29 @@ function EmployeeViewAttendance({ data }) {
     const [lcCount, setLcCount] = useState(0);
     const [attendanceData, setAttendanceData] = useState([]);
     const [months, setMonths] = useState([])
-
+    const monthNamesToNumbers = {
+        "January": 1,
+        "February": 2,
+        "March": 3,
+        "April": 4,
+        "May": 5,
+        "June": 6,
+        "July": 7,
+        "August": 8,
+        "September": 9,
+        "October": 10,
+        "November": 11,
+        "December": 12
+    };
     const convertToDateInputFormat = (selectedDate) => {
         if (!selectedDate) return '';
         const date = new Date(selectedDate);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        return `${day}-${month}-${year}`;
     };
-
+   
     const handleYearChange = (e) => {
         monthArray(Number(e.target.value));
         setSelectedYear(Number(e.target.value));
@@ -217,20 +230,7 @@ function EmployeeViewAttendance({ data }) {
 
                         return monthNames[monthNumber - 1]; // Subtract 1 since array indices start from 0
                     }
-                    const monthNamesToNumbers = {
-                        "January": 1,
-                        "February": 2,
-                        "March": 3,
-                        "April": 4,
-                        "May": 5,
-                        "June": 6,
-                        "July": 7,
-                        "August": 8,
-                        "September": 9,
-                        "October": 10,
-                        "November": 11,
-                        "December": 12
-                    };
+                    
                     const monthNumber = monthNamesToNumbers[selectedMonth];
                     const formattedDate = `${selectedYear}-${monthNumber < 10 ? '0' + monthNumber : monthNumber}-${date < 10 ? '0' + date : date}`;
                     const isSunday = new Date(`${selectedYear}-${selectedMonth}-${date}`).getDay() === 0;
@@ -393,6 +393,13 @@ function EmployeeViewAttendance({ data }) {
         return `${hours}:${String(minutes).padStart(2, '0')} ${ampm}`; // Ensure minutes are always two digits
     };
     console.log("attendanceData", attendanceData);
+    const formatDateToDDMMYYYYNew = (dateObject) => {
+        const day = String(dateObject.getDate()).padStart(2, '0');
+        const month = String(dateObject.getMonth() + 1).padStart(2, '0');
+        const year = dateObject.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
 
     return (
         <div className="mt-3">
@@ -442,12 +449,20 @@ function EmployeeViewAttendance({ data }) {
                             <th>Date</th>
                             <th>In Time</th>
                             <th>Out Time</th>
-                            <th>Working Hours</th>
+                            <th>Worked For</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {attendanceData.map((emp, index) => {
+                             const attendanceDate = `${selectedYear}-${monthNamesToNumbers[selectedMonth]}-${String(emp.date).padStart(2, '0')}`;
+                            const isSunday = new Date(attendanceDate).getDay() === 0;
+                            // Format the item date to DD-MM-YYYY for comparison with officialHolidays
+                            const formattedDate = formatDateForHolidayCheck(selectedYear, monthNamesToNumbers[selectedMonth], emp.date);
+
+                            // Check if the formatted date is in the officialHolidays array
+                            const isOfficialHoliday = officialHolidays.includes(formattedDate);
+                           
                             return (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
@@ -462,7 +477,7 @@ function EmployeeViewAttendance({ data }) {
                                     </td>
                                     <td>
                                         <div className='attendance-date-tbl'>                                          
-                                            <div className="form-control in-time">
+                                            <div className={(isSunday || isOfficialHoliday|| emp.status === "Leave") ? "" : `form-control in-time`}>
                                                 {(() => {
                                                     console.log('inTime:', emp.inTime); // Console log the inTime value
                                                     return emp.inTime ? convertTo12HourFormat(emp.inTime) : "-"; // Display the inTime value or "-"
@@ -472,7 +487,7 @@ function EmployeeViewAttendance({ data }) {
                                     </td>
                                     <td>
                                         <div className='attendance-date-tbl'>
-                                            <div className="form-cantrol out-time">
+                                            <div className={(isSunday || isOfficialHoliday || emp.status === "Leave") ? "" : `form-control out-time`}>
                                                 {emp.outTime ? convertTo12HourFormat(emp.outTime) : "-"}
                                             </div>
                                         </div>

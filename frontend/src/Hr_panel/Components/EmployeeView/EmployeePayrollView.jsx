@@ -126,7 +126,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.accountNo || "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your previos field before editing this field", "error");
@@ -135,7 +135,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setAccountNo(data.accountNo);
                                             setEditField("accountNo");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -169,7 +169,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.nameAsPerBankRecord || "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -178,7 +178,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setNameAsPerBankRecord(data.nameAsPerBankRecord);
                                             setEditField("nameAsPerBankRecord");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -212,7 +212,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.ifscCode || "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -221,7 +221,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setIfscCode(data.ifscCode);
                                             setEditField("ifscCode");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -261,7 +261,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.salary ? `₹ ${formatSalary(data.salary)}` : "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -270,7 +270,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setSalary(data.salary);
                                             setEditField("basicSalary");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -304,7 +304,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.firstMonthSalaryCondition ? `${data.firstMonthSalaryCondition}%` : "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -313,7 +313,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setFirstMonthSalaryCondition(data.firstMonthSalaryCondition);
                                             setEditField("firstMonthSalaryCondition");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -374,7 +374,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.panNumber || "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -383,7 +383,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setPanNumber(data.panNumber);
                                             setEditField("panNumber");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -417,7 +417,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.aadharNumber || "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -426,7 +426,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setAadharNumber(data.aadharNumber);
                                             setEditField("aadharNumber");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -460,7 +460,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.uanNumber || "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -469,7 +469,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setUanNumber(data.uanNumber);
                                             setEditField("uanNumber");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -503,7 +503,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                     <div className="ep_info_t">
                                         {data.pfNumber || "-"}
                                     </div>
-                                    <div className="ep_info_icon">
+                                    {/* <div className="ep_info_icon">
                                         <MdOutlineEdit onClick={() => {
                                             if (editField !== "") {
                                                 Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -512,7 +512,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
                                             setPfNumber(data.pfNumber);
                                             setEditField("pfNumber");
                                         }} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center justify-content-between">
