@@ -745,16 +745,8 @@ router.get("/searchDeletedEmployeeInfo", async (req, res) => {
     };
 
     // Perform the search query with projection
-    let data;
-    if (!search) {
-      // Fetch all data when there's no search.
-      data = await deletedEmployeeModel.find({}, projection).lean();
-    } else {
-      // Search using filter
-    data = await deletedEmployeeModel.find(filter, projection).lean();
-    }
-
-    res.json({data: data, length: data.length});
+    const data = await deletedEmployeeModel.find(filter, projection).lean();
+    res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
@@ -2119,16 +2111,8 @@ router.get("/searchEmployee", async (req, res) => {
     };
 
     // Perform the search query :
-    let data;
-    if (!search) {
-      // Fetch all data when there's no search.
-      data = await adminModel.find({}, projection).lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
-    } else {
-      // Search using filter.
-      data = await adminModel.find(filter, projection).lean();
-    }
-
-    res.json({data: data, length: data.length});
+    const data = await adminModel.find(filter, projection).lean();
+    res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });

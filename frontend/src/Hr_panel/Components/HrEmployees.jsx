@@ -83,60 +83,44 @@ function HrEmployees() {
   };
 
   const fetchEmployee = async () => {
-    const controller = new AbortController();
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employee/searchEmployee`, {
-        params: { search: searchValue }, // send searchValue as query param
-        signal: controller.signal
-      });
-      // const res = await axios.get(`${secretKey}/employee/einfo`, {
-      //   params: { search: searchValue } // send searchValue as query param
-      // });
+      let res;
+      if (!searchValue) {
+        res = await axios.get(`${secretKey}/employee/einfo`);
+      } else {
+        res = await axios.get(`${secretKey}/employee/searchEmployee`, {
+          params: { search: searchValue }, // send searchValue as query param
+        });
+      }
 
-      setEmployee(res.data.data);
+      setEmployee(res.data);
       // console.log("Fetched Employees are:", res.data);
     } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log("Request canceled", error.message);
-        return;
-      }
       console.log("Error fetching employees data:", error);
     } finally {
       setIsLoading(false);
     }
-    // Cleanup code
-    return () => {
-      controller.abort();
-    };
   };
 
   const fetchDeletedEmployee = async () => {
-    const controller = new AbortController();
     try {
       setIsLoading(true);
-      const res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-        params: { search: searchValue }, // send searchValue as query param
-        signal: controller.signal
-      });
-      // const res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`, {
-      //   params: { search: searchValue } // send searchValue as query param
-      // });
-
-      setDeletedEmployee(res.data.data);
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log("Request canceled", error.message);
-        return;
+      let res;
+      if (!searchValue) {
+        res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+      } else {
+        res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+          params: { search: searchValue }, // send searchValue as query param
+        });
       }
+
+      setDeletedEmployee(res.data);
+    } catch (error) {
       console.log("Error fetching employees data:", error);
     } finally {
       setIsLoading(false);
     }
-    // Cleanup code
-    return () => {
-      controller.abort();
-    };
   };
 
   const handledeletefromcompany = async (filteredCompanyData) => {

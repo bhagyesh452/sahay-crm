@@ -3791,7 +3791,7 @@ function EmployeesThisMonthBooking() {
                                                         .filter(
                                                             (item) =>
 
-                                                                item.targetDetails.length !== 0 &&
+                                                                item.targetDetails && item.targetDetails.length !== 0 &&
                                                                 item.targetDetails.find(
                                                                     (target) =>
                                                                         target.year === filteredYear.toString() &&

@@ -365,7 +365,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   //     console.log('Data saved successfully');
   //   } catch (err) {
   //     console.error('Error saving data:', err.message);
-  //   }
+  //   }  
   // };
   // useEffect(() => {
   //   if (data.number) {
