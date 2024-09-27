@@ -92,6 +92,8 @@ import EmployeeInterestedCompanies from "./admin/EmployeeInterestestedCompanies.
 import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 import EmployeeSalaryView from "./Hr_panel/Components/Attendance/EmployeeSalaryView.jsx";
 import ApplicationForm from "./RecruiterPanel/ApplicationForm/ApplicationForm.jsx";
+import RecruiterDashboard from "./RecruiterPanel/Dashboard/RecruiterDashboard.jsx";
+import RecruiterLogin from "./RecruiterPanel/Login/RecruiterLogin.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -105,6 +107,7 @@ function App() {
   const [adminExecutiveToken, setAdminExecutiveToken] = useState(localStorage.getItem("adminExecutiveToken" || null))
   const [rmoffundingToken, setrmoffundingToken] = useState(localStorage.getItem("rmoffundingToken" || null))
   const [hrToken, setHrToken] = useState(localStorage.getItem("HrToken") || null)
+  const [recruiterToken, setRecruiterToken] = useState(localStorage.getItem("recruiterToken") || null)
 
   return (
     <div className="App">
@@ -276,6 +279,9 @@ function App() {
 
           {/**********************************************  RecruiterPane  *******************************************************/}
           <Route path="/recruiter/appynowform" element={<ApplicationForm />} />
+          <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
+          <Route path="/recruiter/employeesbox/:userId" element={<RecruiterDashboard />} />
+          <Route path="/recruiter/login" element={<RecruiterLogin setRecruiterToken={setRecruiterToken} />}  />
           
         </Routes>
 
