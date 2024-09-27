@@ -15,6 +15,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { TbRestore } from "react-icons/tb";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
+import { useQuery } from "@tanstack/react-query";
 
 function HrEmployees() {
 
@@ -28,7 +29,7 @@ function HrEmployees() {
 
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [employee, setEmployee] = useState([]);
   const [deletedEmployee, setDeletedEmployee] = useState([]);
   const [deletedData, setDeletedData] = useState([]);
@@ -83,44 +84,118 @@ function HrEmployees() {
   };
 
   const fetchEmployee = async () => {
-    try {
-      setIsLoading(true);
-      let res;
-      if (!searchValue) {
-        res = await axios.get(`${secretKey}/employee/einfo`);
-      } else {
-        res = await axios.get(`${secretKey}/employee/searchEmployee`, {
-          params: { search: searchValue }, // send searchValue as query param
-        });
-      }
+    //   try {
+    //     setIsLoading(true);
+    //     let res;
+    //     if (!searchValue) {
+    //       res = await axios.get(`${secretKey}/employee/einfo`);
+    //     } else {
+    //       res = await axios.get(`${secretKey}/employee/searchEmployee`, {
+    //         params: { search: searchValue }, // send searchValue as query param
+    //       });
+    //     }
 
-      setEmployee(res.data);
-      // console.log("Fetched Employees are:", res.data);
-    } catch (error) {
-      console.log("Error fetching employees data:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    //     setEmployee(res.data);
+    //     // console.log("Fetched Employees are:", res.data);
+    //   } catch (error) {
+    //     console.log("Error fetching employees data:", error);
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
   };
 
-  const fetchDeletedEmployee = async () => {
-    try {
-      setIsLoading(true);
-      let res;
-      if (!searchValue) {
-        res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-      } else {
-        res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-          params: { search: searchValue }, // send searchValue as query param
-        });
-      }
+  // Fetch active employees
+  const { data: activeData, isLoading: isLoadingActive, isError: isErrorActive, refetch: refetchActive } = useQuery({
+    queryKey: ["activeEmployees"],
+    queryFn: () => axios.get(`${secretKey}/employee/einfo`),
+    staleTime: 5 * 60 * 1000, // Optional: Cache data for 5 minutes to avoid unnecessary requests
+    refetchInterval: 60 * 1000,  // Refetch every 1 minute
+  });
 
-      setDeletedEmployee(res.data);
-    } catch (error) {
-      console.log("Error fetching employees data:", error);
-    } finally {
-      setIsLoading(false);
+  // Active employees filtering and setting
+  useEffect(() => {
+    if (activeData?.data) {
+      const allEmployees = activeData.data;
+
+      if (searchValue) {
+        const filteredEmployees = allEmployees.filter((emp) => {
+          let designation = emp.newDesignation?.toLowerCase();
+          if (designation === "business development executive") {
+            designation = "bde";
+          } else if (designation === "business development manager") {
+            designation = "bdm";
+          }
+          return (
+            emp.ename?.toLowerCase().includes(searchValue) ||
+            emp.number?.toString().includes(searchValue) ||
+            emp.email?.toLowerCase().includes(searchValue) ||
+            emp.department?.toLowerCase().includes(searchValue) ||
+            designation.includes(searchValue) ||
+            emp.branchOffice?.toLowerCase().includes(searchValue)
+          );
+        });
+        setEmployee(filteredEmployees);
+      } else {
+        setEmployee(allEmployees); // Show all employees if no search value
+      }
     }
+  }, [activeData?.data, searchValue]);
+
+  // Fetch deleted employees
+  const { data: deletedEmployeeData, isLoading: isLoadingDeleted, isError: isErrorDeleted, refetch: refetchDeleted } = useQuery({
+    queryKey: ["deletedEmployees"],
+    queryFn: () => axios.get(`${secretKey}/employee/deletedemployeeinfo`), // Assuming this is your endpoint for deleted employees
+    staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+    refetchInterval: 60 * 1000,  // Refetch every 1 minute
+  });
+
+  // Deleted employees filtering and setting
+  useEffect(() => {
+    if (deletedEmployeeData?.data) {
+      const allDeletedEmployees = deletedEmployeeData.data;
+
+      if (searchValue) {
+        const filteredDeletedEmployees = allDeletedEmployees.filter((emp) => {
+          let designation = emp.newDesignation?.toLowerCase();
+          if (designation === "business development executive") {
+            designation = "bde";
+          } else if (designation === "business development manager") {
+            designation = "bdm";
+          }
+          return (
+            emp.ename?.toLowerCase().includes(searchValue) ||
+            emp.number?.toString().includes(searchValue) ||
+            emp.email?.toLowerCase().includes(searchValue) ||
+            emp.department?.toLowerCase().includes(searchValue) ||
+            designation.includes(searchValue) ||
+            emp.branchOffice?.toLowerCase().includes(searchValue)
+          );
+        });
+        setDeletedEmployee(filteredDeletedEmployees); // Set filtered deleted employees
+      } else {
+        setDeletedEmployee(allDeletedEmployees); // Show all deleted employees if no search value
+      }
+    }
+  }, [deletedEmployeeData?.data, searchValue]);
+
+  const fetchDeletedEmployee = async () => {
+    //   try {
+    //     setIsLoading(true);
+    //     let res;
+    //     if (!searchValue) {
+    //       res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+    //     } else {
+    //       res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+    //         params: { search: searchValue }, // send searchValue as query param
+    //       });
+    //     }
+
+    //     setDeletedEmployee(res.data);
+    //   } catch (error) {
+    //     console.log("Error fetching employees data:", error);
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
   };
 
   const handledeletefromcompany = async (filteredCompanyData) => {
@@ -175,8 +250,10 @@ function HrEmployees() {
 
           const updateBdmStatusResponse = await axios.put(`${secretKey}/bookings/updateDeletedBdmStatus/${ename}`);
           handledeletefromcompany(filteredCompanyData);
-          fetchEmployee();
-          fetchDeletedEmployee();
+          // fetchEmployee();
+          // fetchDeletedEmployee();
+          refetchActive();
+          refetchDeleted();
           Swal.fire(
             'Deleted!',
             'Employee has been deleted.',
@@ -219,8 +296,10 @@ function HrEmployees() {
           const response2 = await axios.put(`${secretKey}/employee/revertbackdeletedemployeeintomaindatabase`, {
             dataToRevertBack
           });
-          fetchDeletedEmployee();
-          fetchEmployee();
+          // fetchDeletedEmployee();
+          // fetchEmployee();
+          refetchActive();
+          refetchDeleted();
           // console.log("Deleted data is :", response.data);
           // console.log("Deleted data is :", response2.data);
           Swal.fire(
@@ -399,7 +478,7 @@ function HrEmployees() {
                           <th>Action</th>
                         </tr>
                       </thead>
-                      {isLoading ? (
+                      {isLoadingActive ? (
                         <tbody>
                           <tr>
                             <td colSpan="11">
@@ -552,7 +631,7 @@ function HrEmployees() {
                         <th>Revoke Employee</th>
                       </tr>
                     </thead>
-                    {isLoading ? (
+                    {isLoadingDeleted ? (
                       <tbody>
                         <tr>
                           <td colSpan="11">

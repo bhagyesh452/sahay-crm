@@ -8,7 +8,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
 
 
-function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeForEdit }) {
+function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeForEdit, refetch }) {
 
     if (!openForAdd) {
         // console.log("Emp id from dialog box :", empId);
@@ -435,6 +435,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                         text: "You have successfully updated the data!",
                         icon: "success",
                     });
+                    refetch();
 
                     if (companyData && companyData.length !== 0) {
                         // Assuming ename is part of dataToSend
@@ -483,6 +484,7 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                         text: "You have successfully added the data!",
                         icon: "success",
                     });
+                    refetch();
                 }
                 //console.log("datatosend", dataToSend);
             } catch {

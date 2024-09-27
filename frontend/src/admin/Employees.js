@@ -46,9 +46,10 @@ import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import AddEmployeeDialog from "./ExtraComponent/AddEmployeeDialog";
 
-function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup, searchValue }) {
+function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup, searchValue, employeeData, isLoading, refetchActive, refetchDeleted }) {
 
   // console.log("Search value from employee list is :", searchValue);
+  // console.log("Employee data is :", employeeData);
 
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -57,7 +58,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const [showPassword, setShowPassword] = useState(false);
   const [data, setData] = useState([]);
   const [cdata, setCData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState(employeeData || []);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [selectedDataId, setSelectedDataId] = useState("2024-01-03");
   const [bdeFields, setBdeFields] = useState([]);
@@ -79,7 +80,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   const [companyData, setCompanyData] = useState([]);
   const [errors, setErrors] = useState([]);
   const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [empId, setEmpId] = useState("");
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
@@ -369,7 +370,9 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
           // Refresh the data after successful deletion
           handledeletefromcompany(filteredCompanyData);
-          fetchData();
+          // fetchData();
+          refetchActive();
+          refetchDeleted();
           setDataToDelete([]);
 
           Swal.fire({
@@ -443,26 +446,26 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
   const fetchData = async () => {
     try {
-      setIsLoading(true);
-      let response;
-      if (!searchValue) {
-        response = await axios.get(`${secretKey}/employee/einfo`);
-      } else {
-        response = await axios.get(`${secretKey}/employee/searchEmployee`, {
-          params: { search: searchValue }, // send searchValue as query param
-        });
-      }
+      // setIsLoading(true);
+      // let response;
+      // if (!searchValue) {
+      const response = await axios.get(`${secretKey}/employee/einfo`);
+      // } else {
+      //   response = await axios.get(`${secretKey}/employee/searchEmployee`, {
+      //     params: { search: searchValue }, // send searchValue as query param
+      //   });
+      // }
         // console.log("Fetched employees are :", response.data);
         // Set the retrieved data in the state
 
-        if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-          setData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-          setFilteredData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        // if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+        //   setData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        //   setFilteredData(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
 
-        } else {
-          setData(response.data);
-          setFilteredData(response.data);
-        }
+        // } else {
+        //   setData(response.data);
+        //   setFilteredData(response.data);
+        // }
         setEmail("");
         setEname("");
         setNumber(0);
@@ -489,15 +492,13 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         // });
 
         // console.log("Search result from employee list is :", result);
-        if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-          setSearchResult(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-        } else {
-          setSearchResult(response.data);
-        }
+        // if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+        //   setSearchResult(response.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+        // } else {
+        //   setSearchResult(response.data);
+        // }
       } catch (error) {
         console.error("Error fetching data:", error.message);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -528,7 +529,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
       setIsUpdateMode(true);
       setCompanyData(cdata.filter((item) => item.ename === echangename));
       // Find the selected data object
-      const selectedData = data.find((item) => item._id === id);
+      const selectedData = employeeData.find((item) => item._id === id);
 
 
       setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
@@ -601,7 +602,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         setFilteredData(data);
       }
       // Call the fetchData function
-      fetchData();
+      // fetchData();
       fetchCData();
     }, [searchValue]);
 
@@ -1089,7 +1090,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         try {
           const response = await axios.put(`${secretKey}/employee/einfo/${employeeId}`, dataToUpdate);
           // console.log("Updated bdm status is :", response.data);
-          fetchData();
+          // fetchData();
+          refetchActive();
         } catch (error) {
           console.log("Errro updating bdm status :", error);
         }
@@ -1101,7 +1103,8 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
             bdmWork: true
           });
 
-          fetchData();
+          // fetchData();
+          refetchActive();
 
           //console.log(response.data)
           setTimeout(() => {
@@ -1180,9 +1183,11 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                   </td>
                 </tr>
               </tbody>
-            ) : (searchValue ? searchResult : filteredData).length !== 0 ? (
+            // ) : (searchValue ? searchResult : filteredData).length !== 0 ? (
+            ) : employeeData?.length !== 0 ? (
               <tbody className="table-tbody">
-                {(searchValue ? searchResult : filteredData).map((item, index) => {
+                {/* {(searchValue ? searchResult : filteredData).map((item, index) => { */}
+                {employeeData?.map((item, index) => {
                   const profilePhotoUrl = item.profilePhoto?.length !== 0
                     ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
                     : item.gender === "Male" ? MaleEmployee : FemaleEmployee;
@@ -1292,7 +1297,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                             </button>
                             <button className="action-btn action-btn-danger ml-1"
                               onClick={async () => {
-                                const dataToDelete = data.filter(obj => obj._id === item._id);
+                                const dataToDelete = employeeData.filter(obj => obj._id === item._id);
                                 setDataToDelete(dataToDelete);
                                 const filteredCompanyData = cdata.filter((obj) => obj.ename === item.ename);
                                 setCompanyDdata(filteredCompanyData);
@@ -1671,6 +1676,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
           closeForAdd={closeAddEmployeePopup}
           openForEdit={openEditPopup}
           closeForEdit={closepopup}
+          refetch={refetchActive}
         />
       </div>
     );

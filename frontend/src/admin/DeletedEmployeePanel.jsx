@@ -27,7 +27,7 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 
-function DeletedEmployeePanel({ searchValue }) {
+function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetchActive, refetchDeleted }) {
 
   // console.log("Search value from deleted employee is :", searchValue);
 
@@ -35,7 +35,7 @@ function DeletedEmployeePanel({ searchValue }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
 
   const formattedDate = (dateString) => {
@@ -80,7 +80,7 @@ function DeletedEmployeePanel({ searchValue }) {
   //--------------------fetching employee data-----------------
   const fetchData = async () => {
     try {
-      setIsLoading(true);
+      // setIsLoading(true);
       let response;
       if (!searchValue) {
         response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
@@ -96,7 +96,7 @@ function DeletedEmployeePanel({ searchValue }) {
     } catch (error) {
       console.error("Error fetching data:", error.message);
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   };
 
@@ -193,7 +193,9 @@ function DeletedEmployeePanel({ searchValue }) {
             `Employee ${name} has been reverted back.`,
             'success'
           );
-          fetchData()
+          // fetchData();
+          refetchActive();
+          refetchDeleted();
         } catch (error) {
           Swal.fire(
             'Error!',
@@ -226,7 +228,9 @@ function DeletedEmployeePanel({ searchValue }) {
             'Deleted!',
             'success'
           );
-          fetchData();
+          // fetchData();
+          refetchActive();
+          refetchDeleted();
         } catch (error) {
           console.error('Error deleting employee', error);
           Swal.fire({
@@ -289,9 +293,9 @@ function DeletedEmployeePanel({ searchValue }) {
             </tbody>
           ) : (
             <>
-              {data.length !== 0 ? (
+              {deletedEmployee.length !== 0 ? (
                 <tbody>
-                  {data.map((item, index) => {
+                  {deletedEmployee.map((item, index) => {
                     const profilePhotoUrl = item.profilePhoto?.length !== 0
                       ? `${secretKey}/employee/fetchProfilePhoto/${item._id}/${item.profilePhoto?.[0]?.filename}`
                       : item.gender === "Male" ? MaleEmployee : FemaleEmployee;
@@ -381,7 +385,8 @@ function DeletedEmployeePanel({ searchValue }) {
                               <button
                                 className="action-btn action-btn-success ml-1"
                                 onClick={() => {
-                                  const dataToRevertBack = data.filter(obj => obj._id === item._id);
+                                  const dataToRevertBack = deletedEmployee.filter(obj => obj._id === item._id);
+                                  console.log("Deleted employee data is :", dataToRevertBack);
                                   handleRevertBackEmployee(item._id, item.ename, dataToRevertBack);
                                 }}
                               >

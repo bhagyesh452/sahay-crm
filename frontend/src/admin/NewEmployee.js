@@ -25,8 +25,7 @@ import Team from './Team.js'
 import DeletedEmployeePanel from "./DeletedEmployeePanel.jsx";
 import { AiOutlineUserDelete } from "react-icons/ai";
 import Employees from "./Employees.js";
-
-
+import { useQuery } from "@tanstack/react-query";
 
 
 
@@ -44,75 +43,157 @@ function NewEmployee() {
         document.title = `Admin-Sahay-CRM`;
     }, []);
 
-    const fetchEmployee = async () => {
-        try {
-            let res;
-            if (!searchValue) {
-                res = await axios.get(`${secretKey}/employee/einfo`);
-            } else {
-                res = await axios.get(`${secretKey}/employee/searchEmployee`, {
-                    params: { search: searchValue }, // send searchValue as query param
-                });
-            }
-            if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-                setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-            } else {
-                setEmployee(res.data);
-            }
-            // const result = res.data.filter((emp) => {
-            //     return (
-            //         emp.ename?.toLowerCase().includes(searchValue) ||
-            //         emp.number?.toString().includes(searchValue) ||
-            //         emp.email?.toLowerCase().includes(searchValue) ||
-            //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
-            //         emp.branchOffice?.toLowerCase().includes(searchValue)
-            //     );
-            // });
-            // console.log("Search result from employee list is :", result);
-            // if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-            //     setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-            // } else {
-            //     setEmployee(res.data);
-            // }
-        } catch (error) {
-            console.log("Error fetching employees data:", error);
-        }
-    };
+    // const fetchEmployee = async () => {
+    //     try {
+    //         let res;
+    //         if (!searchValue) {
+    //             res = await axios.get(`${secretKey}/employee/einfo`);
+    //         } else {
+    //             res = await axios.get(`${secretKey}/employee/searchEmployee`, {
+    //                 params: { search: searchValue }, // send searchValue as query param
+    //             });
+    //         }
+    //         if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+    //             setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+    //         } else {
+    //             setEmployee(res.data);
+    //         }
+    //         // const result = res.data.filter((emp) => {
+    //         //     return (
+    //         //         emp.ename?.toLowerCase().includes(searchValue) ||
+    //         //         emp.number?.toString().includes(searchValue) ||
+    //         //         emp.email?.toLowerCase().includes(searchValue) ||
+    //         //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
+    //         //         emp.branchOffice?.toLowerCase().includes(searchValue)
+    //         //     );
+    //         // });
+    //         // console.log("Search result from employee list is :", result);
+    //         // if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+    //         //     setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+    //         // } else {
+    //         //     setEmployee(res.data);
+    //         // }
+    //     } catch (error) {
+    //         console.log("Error fetching employees data:", error);
+    //     }
+    // };
     // console.log("Employee data in new employee is :", employee);
 
-    const fetchDeletedEmployee = async () => {
-        try {
-            let res;
-            if (!searchValue) {
-                res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-            } else {
-                res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-                    params: { search: searchValue } // send searchValue as query param
-                });    
-            }
-            setDeletedEmployee(res.data);
+    // Fetch active employees
+    const { data: activeData, isLoading: isLoadingActive, isError: isErrorActive, refetch: refetchActive } = useQuery({
+        queryKey: ["activeEmployees"],
+        queryFn: () => axios.get(`${secretKey}/employee/einfo`),
+        staleTime: 5 * 60 * 1000, // Optional: Cache data for 5 minutes to avoid unnecessary requests
+        refetchInterval: 60 * 1000,  // Refetch every 1 minute
+    });
 
-            // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
-            // const result = res.data.filter((emp) => {
-            //     return (
-            //         emp.ename?.toLowerCase().includes(searchValue) ||
-            //         emp.number?.toString().includes(searchValue) ||
-            //         emp.email?.toLowerCase().includes(searchValue) ||
-            //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
-            //         emp.branchOffice?.toLowerCase().includes(searchValue)
-            //     );
-            // });
-            // // console.log("Search result from deleted employee list is :", result);
-            // setDeletedEmployeeSearchResult(result);
-        } catch (error) {
-            console.log("Error fetching employees data:", error);
-        }
-    };
-
+    // Active employees filtering and setting
     useEffect(() => {
-        fetchEmployee();
-        fetchDeletedEmployee();
-    }, [searchValue]);
+        if (activeData?.data) {
+            const allEmployees = activeData.data;
+
+            if (searchValue) {
+                const filteredEmployees = allEmployees.filter((emp) => {
+                    let designation = emp.newDesignation?.toLowerCase();
+                    if (designation === "business development executive") {
+                        designation = "bde";
+                    } else if (designation === "business development manager") {
+                        designation = "bdm";
+                    }
+                    return (
+                        emp.ename?.toLowerCase().includes(searchValue) ||
+                        emp.number?.toString().includes(searchValue) ||
+                        emp.email?.toLowerCase().includes(searchValue) ||
+                        emp.department?.toLowerCase().includes(searchValue) ||
+                        designation.includes(searchValue) ||
+                        emp.branchOffice?.toLowerCase().includes(searchValue)
+                    );
+                });
+
+                if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+                    const filteredByDesignation = filteredEmployees.filter(
+                        (obj) => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"
+                    );
+                    setEmployee(filteredByDesignation);
+                } else {
+                    setEmployee(filteredEmployees);
+                }
+            } else {
+                setEmployee(allEmployees); // Show all employees if no search value
+            }
+        }
+    }, [activeData?.data, searchValue]);
+
+    // Fetch deleted employees
+    const { data: deletedData, isLoading: isLoadingDeleted, isError: isErrorDeleted, refetch: refetchDeleted } = useQuery({
+        queryKey: ["deletedEmployees"],
+        queryFn: () => axios.get(`${secretKey}/employee/deletedemployeeinfo`), // Assuming this is your endpoint for deleted employees
+        staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+        refetchInterval: 60 * 1000,  // Refetch every 1 minute
+    });
+
+    // Deleted employees filtering and setting
+    useEffect(() => {
+        if (deletedData?.data) {
+            const allDeletedEmployees = deletedData.data;
+
+            if (searchValue) {
+                const filteredDeletedEmployees = allDeletedEmployees.filter((emp) => {
+                    let designation = emp.newDesignation?.toLowerCase();
+                    if (designation === "business development executive") {
+                        designation = "bde";
+                    } else if (designation === "business development manager") {
+                        designation = "bdm";
+                    }
+                    return (
+                        emp.ename?.toLowerCase().includes(searchValue) ||
+                        emp.number?.toString().includes(searchValue) ||
+                        emp.email?.toLowerCase().includes(searchValue) ||
+                        emp.department?.toLowerCase().includes(searchValue) ||
+                        designation.includes(searchValue) ||
+                        emp.branchOffice?.toLowerCase().includes(searchValue)
+                    );
+                });
+                setDeletedEmployee(filteredDeletedEmployees); // Set filtered deleted employees
+            } else {
+                setDeletedEmployee(allDeletedEmployees); // Show all deleted employees if no search value
+            }
+        }
+    }, [deletedData?.data, searchValue]);
+
+    // const fetchDeletedEmployee = async () => {
+    //     try {
+    //         let res;
+    //         if (!searchValue) {
+    //             res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+    //         } else {
+    //             res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+    //                 params: { search: searchValue } // send searchValue as query param
+    //             });
+    //         }
+    //         setDeletedEmployee(res.data);
+
+    //         // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
+    //         // const result = res.data.filter((emp) => {
+    //         //     return (
+    //         //         emp.ename?.toLowerCase().includes(searchValue) ||
+    //         //         emp.number?.toString().includes(searchValue) ||
+    //         //         emp.email?.toLowerCase().includes(searchValue) ||
+    //         //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
+    //         //         emp.branchOffice?.toLowerCase().includes(searchValue)
+    //         //     );
+    //         // });
+    //         // // console.log("Search result from deleted employee list is :", result);
+    //         // setDeletedEmployeeSearchResult(result);
+    //     } catch (error) {
+    //         console.log("Error fetching employees data:", error);
+    //     }
+    // };
+
+    // useEffect(() => {
+    // fetchEmployee();
+    // fetchDeletedEmployee();
+    // }, [searchValue]);
 
 
 
@@ -210,7 +291,7 @@ function NewEmployee() {
                                             </div>
                                             <div className="rm_tsn_bdge">
                                                 {/* {(searchValue.length !== "" ? employeeSearchResult : employee).length || 0} */}
-                                                {employee.length || 0}
+                                                {employee?.length || 0}
                                             </div>
                                         </div>
                                     </a>
@@ -249,10 +330,22 @@ function NewEmployee() {
                                     openAddEmployeePopup={addEmployeePopup}
                                     closeAddEmployeePopup={closeAddEmployeePopup}
                                     searchValue={searchValue}
+                                    employeeData={employee}
+                                    isLoading={isLoadingActive}
+                                    isError={isErrorActive}
+                                    refetchActive={refetchActive}
+                                    refetchDeleted={refetchDeleted}
                                 />
                             </div>
                             <div class="tab-pane" id="DeletedEmployees">
-                                <DeletedEmployeePanel searchValue={searchValue} />
+                                <DeletedEmployeePanel
+                                    searchValue={searchValue}
+                                    deletedEmployee={deletedEmployee}
+                                    isLoading={isLoadingDeleted}
+                                    isError={isErrorDeleted}
+                                    refetchActive={refetchActive}
+                                    refetchDeleted={refetchDeleted}
+                                />
                             </div>
                             <div class="tab-pane" id="UpcommingEmployees">
                                 <h1>Upcoming Employees</h1>
