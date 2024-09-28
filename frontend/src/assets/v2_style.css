@@ -1950,3 +1950,7 @@ th.th-day {
     letter-spacing: 2px;
     font-weight: 100;
 }
+.call-history td
+{
+    padding: 6px 7px !important;
+}

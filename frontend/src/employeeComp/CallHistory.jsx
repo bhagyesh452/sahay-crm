@@ -207,7 +207,7 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
                                         className={"nav-link active item-act"}
                                         data-bs-toggle="tab"
                                     >
-                                        Employee Calling History Report{" "}
+                                        Client's Calling History{" "}
                                         <span className="no_badge">{(searchValue ? searchResult : callHistory).length}</span>
                                     </a>
                                 </li>
@@ -221,7 +221,7 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
                                         overflowX: "auto",
                                         overflowY: "auto",
                                         maxHeight: "66vh",
-                                    }}
+                                    }} className='call-history'
                                 >
                                     <table
                                         style={{
