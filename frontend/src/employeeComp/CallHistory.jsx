@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { IoMdArrowBack } from "react-icons/io";
 import ClipLoader from "react-spinners/ClipLoader";
 import Nodata from '../components/Nodata';
+import { IconChevronRight, IconChevronLeft } from "@tabler/icons-react";
+import { IconButton } from "@mui/material";
 
 function CallHistory({ handleCloseHistory, clientNumber }) {
 
@@ -11,6 +13,8 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
     const [searchValue, setSearchValue] = useState("");
     const [callHistory, setCallHistory] = useState([]);
     const [searchResult, setSearchResult] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 100;
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -35,6 +39,13 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
 
         // Return formatted time string in 12-hour format with hours and minutes
         return `${hours}:${minutes} ${amOrPm}`;
+    };
+
+    const formatDuration = (duration) => {
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor((duration % 3600) / 60);
+        const seconds = duration % 60;
+        return `${hours.toString().padStart(2, '0')}h : ${minutes.toString().padStart(2, '0')}m : ${seconds.toString().padStart(2, '0')}s`;
     };
 
     const handleSearch = (searchQuery) => {
@@ -151,6 +162,12 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
         fetchEmployeeData();
     }, [clientNumber]);
 
+    // Calculate data for current page
+    const currentData = (searchValue ? searchResult : callHistory).slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage
+    );
+
     return (
         <div>
             <div className="page-wrapper">
@@ -207,7 +224,7 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
                                         className={"nav-link active item-act"}
                                         data-bs-toggle="tab"
                                     >
-                                        Employee Calling History Report{" "}
+                                        Client's Calling History{" "}
                                         <span className="no_badge">{(searchValue ? searchResult : callHistory).length}</span>
                                     </a>
                                 </li>
@@ -216,12 +233,13 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
 
                         <div className="card">
                             <div className="card-body p-0">
+
                                 <div
                                     style={{
                                         overflowX: "auto",
                                         overflowY: "auto",
                                         maxHeight: "66vh",
-                                    }}
+                                    }} className='call-history'
                                 >
                                     <table
                                         style={{
@@ -262,16 +280,16 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
                                         ) : (
                                             <>
                                                 <tbody>
-                                                    {(searchValue ? searchResult : callHistory).length > 0 ? (
-                                                        (searchValue ? searchResult : callHistory).map((item, index) => (
+                                                    {currentData.length > 0 ? (
+                                                        currentData.map((item, index) => (
                                                             <tr key={index} style={{ border: "1px solid #ddd" }}>
-                                                                <td className="td-sticky">{index + 1}</td>
+                                                                <td className="td-sticky">{currentPage * itemsPerPage + index + 1}</td>
                                                                 <td className="td-sticky1">{item.emp_name}</td>
                                                                 <td>{item.emp_number}</td>
                                                                 <td>{item.client_name} ({item.client_number})</td>
                                                                 <td>{formatDate(item.call_date)}</td>
                                                                 <td>{formatTime(item.call_time)}</td>
-                                                                <td>{item.duration}</td>
+                                                                <td>{formatDuration(item.duration)}</td>
                                                                 <td>{item.call_type}</td>
                                                             </tr>
                                                         ))
@@ -285,9 +303,41 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
                                                 </tbody>
                                             </>
                                         )}
-
                                     </table>
                                 </div>
+
+                                {/* Pagination controls */}
+                                {currentData.length > 0 && (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                        }}
+                                        className="pagination"
+                                    >
+                                        <IconButton
+                                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+                                            disabled={currentPage === 0}
+                                        >
+                                            <IconChevronLeft />
+                                        </IconButton>
+
+                                        <span>Page {currentPage + 1} of {Math.ceil((searchValue ? searchResult : callHistory).length / itemsPerPage)}</span>
+
+                                        <IconButton
+                                            onClick={() =>
+                                                setCurrentPage((prev) =>
+                                                    (prev + 1) * itemsPerPage < (searchValue ? searchResult : callHistory).length ? prev + 1 : prev
+                                                )
+                                            }
+                                            disabled={(currentPage + 1) * itemsPerPage >= (searchValue ? searchResult : callHistory).length}
+                                        >
+                                            <IconChevronRight />
+                                        </IconButton>
+                                    </div>
+                                )}
+
                             </div>
                         </div>
 
