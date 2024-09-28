@@ -75,6 +75,8 @@ import { GoPlusCircle } from "react-icons/go";
 import { jwtDecode } from "jwt-decode";
 import { MdPayment } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
+import CallHistory from "./CallHistory.jsx";
+import { LuHistory } from "react-icons/lu";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -129,7 +131,12 @@ function EmployeePanel() {
   const [isFilter, setIsFilter] = useState(false)
   const [openFilterDrawer, setOpenFilterDrawer] = useState(false);
   const [employeeName, setEmployeeName] = useState("");
+  const [showCallHistory, setShowCallHistory] = useState(false);
+  const [clientNumber, setClientNumber] = useState("");
 
+  const hanleCloseCallHistory = () => {
+    setShowCallHistory(false);
+  };
 
   const handleTogglePopup = () => {
     setIsOpen(false);
@@ -2792,7 +2799,7 @@ function EmployeePanel() {
       setOpenFilterDrawer(false);
     }
   };
-// console.log("filteredData", filteredData)
+  // console.log("filteredData", filteredData)
 
   const handleClearFilter = () => {
     setIsFilter(false)
@@ -3075,7 +3082,7 @@ function EmployeePanel() {
 
       {!formOpen && !editFormOpen && !addFormOpen && !editMoreOpen && (
         <>
-          <div className="page-wrapper">
+          {!showCallHistory ? <div className="page-wrapper">
             {BDMrequests && (
               <Dialog open={openbdmRequest}>
                 <DialogContent>
@@ -3708,6 +3715,9 @@ function EmployeePanel() {
                               dataStatus === "FollowUp") && (
                                 <th>Forward to BDM</th>
                               )}
+                            {(dataStatus === "Interested") && (
+                              <th>Call History</th>
+                            )}
                             {dataStatus === "Forwarded" &&
                               (dataStatus !== "Interested" ||
                                 dataStatus !== "FollowUp" ||
@@ -4186,6 +4196,21 @@ function EmployeePanel() {
                                       </td>
                                     </>
                                   )}
+
+                                {dataStatus === "Interested" && <td>
+                                  <LuHistory onClick={() => {
+                                    setShowCallHistory(true);
+                                    setClientNumber(company["Company Number"])
+                                  }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                    }}
+                                    color="grey"
+                                  />
+                                </td>}
+
                                 {dataStatus === "Forwarded" && (<>
                                   {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
                                   <td>{formatDateNew(company.bdeForwardDate)}</td>
@@ -4378,7 +4403,7 @@ function EmployeePanel() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />}
         </>
       )}
       {formOpen && (

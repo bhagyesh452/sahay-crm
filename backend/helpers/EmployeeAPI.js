@@ -685,73 +685,73 @@ router.get("/deletedemployeeinfo", async (req, res) => {
   }
 });
 
-router.get("/searchDeletedEmployeeInfo", async (req, res) => {
-  try {
-    // Destructure query parameters
-    const { search } = req.query;
-    // console.log("Search query :", search);
+// router.get("/searchDeletedEmployeeInfo", async (req, res) => {
+//   try {
+//     // Destructure query parameters
+//     const { search } = req.query;
+//     // console.log("Search query :", search);
 
-    // Create the filter object
-    const filter = {};
+//     // Create the filter object
+//     const filter = {};
 
-    if (search) {
-      // Define search conditions
-      const searchRegex = new RegExp(search, "i"); // case-insensitive search
+//     if (search) {
+//       // Define search conditions
+//       const searchRegex = new RegExp(search, "i"); // case-insensitive search
 
-      // Map search terms for designation
-      let designationConditions = [];
-      if (search.toLowerCase() === "bd") {
-        // For BDE, match both Business Development Executive and Business Development Manager
-        designationConditions = [
-          { newDesignation: /Business Development Executive/i },
-          { newDesignation: /Business Development Manager/i }
-        ];
-      } else if (search.toLowerCase() === "bde") {
-        designationConditions = [{ newDesignation: /Business Development Executive/i }];
-      } else if (search.toLowerCase() === "bdm") {
-        designationConditions = [{ newDesignation: /Business Development Manager/i }];
-      } else if (search.toLowerCase() === "business development executive") {
-        designationConditions = [{ newDesignation: /Business Development Executive/i }];
-      } else if (search.toLowerCase() === "business development manager") {
-        designationConditions = [{ newDesignation: /Business Development Manager/i }];
-      } else {
-        designationConditions = [{ newDesignation: searchRegex }];
-      }
+//       // Map search terms for designation
+//       let designationConditions = [];
+//       if (search.toLowerCase() === "bd") {
+//         // For BDE, match both Business Development Executive and Business Development Manager
+//         designationConditions = [
+//           { newDesignation: /Business Development Executive/i },
+//           { newDesignation: /Business Development Manager/i }
+//         ];
+//       } else if (search.toLowerCase() === "bde") {
+//         designationConditions = [{ newDesignation: /Business Development Executive/i }];
+//       } else if (search.toLowerCase() === "bdm") {
+//         designationConditions = [{ newDesignation: /Business Development Manager/i }];
+//       } else if (search.toLowerCase() === "business development executive") {
+//         designationConditions = [{ newDesignation: /Business Development Executive/i }];
+//       } else if (search.toLowerCase() === "business development manager") {
+//         designationConditions = [{ newDesignation: /Business Development Manager/i }];
+//       } else {
+//         designationConditions = [{ newDesignation: searchRegex }];
+//       }
 
-      // Build the search query using $or
-      filter.$or = [
-        { ename: searchRegex },
-        { number: searchRegex },
-        { email: searchRegex },
-        { branchOffice: searchRegex },
-        { department: searchRegex },
-        ...designationConditions
-      ];
-    }
+//       // Build the search query using $or
+//       filter.$or = [
+//         { ename: searchRegex },
+//         { number: searchRegex },
+//         { email: searchRegex },
+//         { branchOffice: searchRegex },
+//         { department: searchRegex },
+//         ...designationConditions
+//       ];
+//     }
 
-    const projection = {
-      profilePhoto: 1,
-      ename: 1,
-      number: 1,
-      email: 1,
-      branchOffice: 1,
-      department: 1,
-      newDesignation: 1,
-      designation: 1,
-      AddedOn: 1,
-      deletedDate: 1,
-      jdate: 1,
-      bdmWork: 1
-    };
+//     const projection = {
+//       profilePhoto: 1,
+//       ename: 1,
+//       number: 1,
+//       email: 1,
+//       branchOffice: 1,
+//       department: 1,
+//       newDesignation: 1,
+//       designation: 1,
+//       AddedOn: 1,
+//       deletedDate: 1,
+//       jdate: 1,
+//       bdmWork: 1
+//     };
 
-    // Perform the search query with projection
-    const data = await deletedEmployeeModel.find(filter, projection).lean();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     // Perform the search query with projection
+//     const data = await deletedEmployeeModel.find(filter, projection).lean();
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 router.delete("/deleteemployeedromdeletedemployeedetails/:id", async (req, res) => {
   const { id: itemId } = req.params; // Correct destructuring
@@ -822,7 +822,7 @@ router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
     }
 
     // console.log("Deleted data is :", dataToDelete);
-    // console.log("Reverted employee is :", dataToRevertBack);
+    console.log("Reverted employee is :", dataToRevertBack);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -2051,73 +2051,73 @@ router.get("/einfo", async (req, res) => {
   }
 });
 
-router.get("/searchEmployee", async (req, res) => {
-  try {
-    // Destructure query parameters
-    const { search } = req.query;
-    // console.log("Search query :", search);
+// router.get("/searchEmployee", async (req, res) => {
+//   try {
+//     // Destructure query parameters
+//     const { search } = req.query;
+//     // console.log("Search query :", search);
 
-    // Create the filter object
-    const filter = {};
+//     // Create the filter object
+//     const filter = {};
 
-    if (search) {
-      // Define search conditions
-      const searchRegex = new RegExp(search, "i"); // case-insensitive search
+//     if (search) {
+//       // Define search conditions
+//       const searchRegex = new RegExp(search, "i"); // case-insensitive search
 
-      // Map search terms for designation
-      let designationConditions = [];
-      if (search.toLowerCase() === "bd") {
-        // For BDE, match both Business Development Executive and Business Development Manager
-        designationConditions = [
-          { newDesignation: /Business Development Executive/i },
-          { newDesignation: /Business Development Manager/i }
-        ];
-      } else if (search.toLowerCase() === "bde") {
-        designationConditions = [{ newDesignation: /Business Development Executive/i }];
-      } else if (search.toLowerCase() === "bdm") {
-        designationConditions = [{ newDesignation: /Business Development Manager/i }];
-      } else if (search.toLowerCase() === "business development executive") {
-        designationConditions = [{ newDesignation: /Business Development Executive/i }];
-      } else if (search.toLowerCase() === "business development manager") {
-        designationConditions = [{ newDesignation: /Business Development Manager/i }];
-      } else {
-        designationConditions = [{ newDesignation: searchRegex }];
-      }
+//       // Map search terms for designation
+//       let designationConditions = [];
+//       if (search.toLowerCase() === "bd") {
+//         // For BDE, match both Business Development Executive and Business Development Manager
+//         designationConditions = [
+//           { newDesignation: /Business Development Executive/i },
+//           { newDesignation: /Business Development Manager/i }
+//         ];
+//       } else if (search.toLowerCase() === "bde") {
+//         designationConditions = [{ newDesignation: /Business Development Executive/i }];
+//       } else if (search.toLowerCase() === "bdm") {
+//         designationConditions = [{ newDesignation: /Business Development Manager/i }];
+//       } else if (search.toLowerCase() === "business development executive") {
+//         designationConditions = [{ newDesignation: /Business Development Executive/i }];
+//       } else if (search.toLowerCase() === "business development manager") {
+//         designationConditions = [{ newDesignation: /Business Development Manager/i }];
+//       } else {
+//         designationConditions = [{ newDesignation: searchRegex }];
+//       }
 
-      // Build the search query using $or
-      filter.$or = [
-        { ename: searchRegex },
-        { number: searchRegex },
-        { email: searchRegex },
-        { branchOffice: searchRegex },
-        { department: searchRegex },
-        ...designationConditions
-      ];
-    }
+//       // Build the search query using $or
+//       filter.$or = [
+//         { ename: searchRegex },
+//         { number: searchRegex },
+//         { email: searchRegex },
+//         { branchOffice: searchRegex },
+//         { department: searchRegex },
+//         ...designationConditions
+//       ];
+//     }
 
-    const projection = {
-      profilePhoto: 1,
-      ename: 1,
-      number: 1,
-      email: 1,
-      branchOffice: 1,
-      department: 1,
-      newDesignation: 1,
-      designation: 1,
-      AddedOn: 1,
-      Active: 1,
-      jdate: 1,
-      bdmWork: 1
-    };
+//     const projection = {
+//       profilePhoto: 1,
+//       ename: 1,
+//       number: 1,
+//       email: 1,
+//       branchOffice: 1,
+//       department: 1,
+//       newDesignation: 1,
+//       designation: 1,
+//       AddedOn: 1,
+//       Active: 1,
+//       jdate: 1,
+//       bdmWork: 1
+//     };
 
-    // Perform the search query :
-    const data = await adminModel.find(filter, projection).lean();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     // Perform the search query :
+//     const data = await adminModel.find(filter, projection).lean();
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 // 3. Update the Employee
