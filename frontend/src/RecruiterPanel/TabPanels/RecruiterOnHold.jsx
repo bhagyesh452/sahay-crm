@@ -27,9 +27,8 @@ import { FaFilter } from "react-icons/fa";
 import RecruiterStatusDropdown from "../ExtraComponents/RecruiterStatusDropdown";
 import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from react-icons
 import RecruiterInterviewStatus from "../ExtraComponents/RecruiterInterviewStatus";
-import RecruiterDisqualifiedDropdown from "../ExtraComponents/RecruiterDisqualifiedDropdown";
 
-function RecruiterDisqualified({
+function RecruiterOnHold({
     searchText,
     showFilter,
     onFilterToggle,
@@ -117,7 +116,7 @@ function RecruiterDisqualified({
             const userData = employeeResponse.data.find((item) => item._id === recruiterUserId);
             setEmployeeData(userData);
 
-            let params = { search: searchQuery, page, activeTab: "Disqualified" };
+            let params = { search: searchQuery, page, activeTab: "On Hold" };
 
             // If filtering is active, extract companyName and serviceName from filteredData
             if (isFilter && filteredData && filteredData.length > 0) {
@@ -199,6 +198,7 @@ function RecruiterDisqualified({
             }
         };
     }, [page, totalPages, filteredData]);
+
 
 
 
@@ -310,7 +310,7 @@ function RecruiterDisqualified({
     const handleFilter = (newData) => {
         console.log("newData", newData)
         setFilteredData(newData)
-        setRecruiterData(newData.filter(obj => obj.mainCategoryStatus === "Disqualified"));
+        setRecruiterData(newData.filter(obj => obj.mainCategoryStatus === "Process"));
     };
 
     useEffect(() => {
@@ -509,42 +509,6 @@ function RecruiterDisqualified({
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Status
-                                            </div>
-
-                                            {/* <div className='RM_filter_icon'>
-                                                {isActiveField('Company Email') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("Company Email")} />
-                                                ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("Company Email")} />
-                                                )}
-                                            </div> */}
-                                            {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'Company Email' && (
-                                                <div
-                                                    ref={filterMenuRef}
-                                                    className="filter-menu"
-                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                                                >
-                                                    <FilterableTable
-                                                        noofItems={setnoOfAvailableData}
-                                                        allFilterFields={setActiveFilterFields}
-                                                        filteredData={filteredData}
-                                                        activeTab={"General"}
-                                                        data={recruiterData}
-                                                        filterField={activeFilterField}
-                                                        onFilter={handleFilter}
-                                                        completeData={completeRmData}
-                                                        showingMenu={setShowFilterMenu}
-                                                        dataForFilter={dataToFilter}
-                                                    />
-                                                </div>
-                                            )} */}
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
-                                                Disqualification Reason
                                             </div>
 
                                             {/* <div className='RM_filter_icon'>
@@ -909,26 +873,17 @@ function RecruiterDisqualified({
                                                 )}
                                             </div>
                                         </td>
-                                        <td>
-                                            <div>
-                                                {obj.mainCategoryStatus && obj.subCategoryStatus && (
-                                                    <RecruiterDisqualifiedDropdown
-                                                        key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
-                                                        mainStatus={obj.mainCategoryStatus}
-                                                        subStatus={obj.subCategoryStatus}
-                                                        setNewSubStatus={setNewStatusProcess}
-                                                        empName={obj.empFullName}
-                                                        empEmail={obj.personal_email}
-                                                        refreshData={refreshData}
-                                                        disqualificationReason={obj.disqualificationReason ? obj.disqualificationReason : "Not Applicable"}
-                                                    />
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td></td>
-                                        <td>
-                                            
-                                        {obj.interViewStatus ? obj.interViewStatus : "Not Started"}
+                                        <td>{obj.interViewStatus ? obj.interViewStatus : "Not Started"}
+                                                {/* <RecruiterInterviewStatus
+                                                    key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                    mainStatus={obj.mainCategoryStatus}
+                                                    subStatus={obj.subCategoryStatus}
+                                                    setNewSubStatus={setNewStatusProcess}
+                                                    empName={obj.empFullName}
+                                                    empEmail={obj.personal_email}
+                                                    refreshData={refreshData}
+                                                    interViewStatus={obj.interViewStatus ? obj.interViewStatus :"Not Started"}
+                                                /> */}
                                             </td>
                                         <td className="td_of_remarks">
                                             <div className="d-flex align-items-center justify-content-between wApp">
@@ -1122,4 +1077,4 @@ function RecruiterDisqualified({
     );
 }
 
-export default RecruiterDisqualified;
+export default RecruiterOnHold;

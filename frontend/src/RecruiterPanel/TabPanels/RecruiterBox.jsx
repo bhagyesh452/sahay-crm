@@ -20,6 +20,10 @@ import RecruiterHeader from "../Components/RecuiterHeader";
 import RecruiterNavbar from "../Components/RecuiterNavbar";
 import RecruiterGeneral from "./RecruiterGeneral";
 import RecruiterUnderReview from "./RecuiterUndeReview";
+import RecruiterOnHold from "./RecruiterOnHold";
+import RecruiterDisqualified from "./RecruiterDisqualified";
+import RecruiterRejected from "./RecruiterRejected";
+import RecruiterSelected from "./RecruiterSelected";
 
 function RecruiterBox() {
     const recruiterUserId = localStorage.getItem("recruiterUserId")
@@ -43,11 +47,10 @@ function RecruiterBox() {
     const [totalPages, setTotalPages] = useState(0);
     const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
     const [totalDocumentsUnderReview, setTotalDocumentsUnderReview] = useState(0);
-    const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
-    const [totalDocumentsReadyToSubmit, setTotalDocumentsReadyToSubmit] = useState(0);
-    const [totalDocumentsSubmitted, setTotalDocumentsSubmitted] = useState(0);
-    const [totalDocumentsHold, setTotalDocumentsHold] = useState(0);
-    const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0);
+    const [totalDocumentsOnHold, setTotalDocumentsOnHold] = useState(0);
+    const [totalDocumentsDisqualified, setTotalDocumentsDisqualified] = useState(0);
+    const [totalDocumentsRejected, settotalDocumentsRejected] = useState(0);
+    const [totalDocumentsSelected, settotalDocumentsSelected] = useState(0);
     const [noOfFilteredData, setnoOfFilteredData] = useState(0);
     const [showNoOfFilteredData, setShowNoOfFilteredData] = useState(true);
     const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
@@ -97,22 +100,22 @@ function RecruiterBox() {
         try {
             setCurrentDataLoading(true);
             const response = await axios.get(`${secretKey}/recruiter/recruiter-data`, {
-                params: { 
-                    search: searchQuery, 
-                    page, 
+                params: {
+                    search: searchQuery,
+                    page,
                     activeTab: activeTab
-                 }
+                }
             });
             const {
                 data,
                 totalPages,
                 totalDocumentsGeneral,
                 totalDocumentsUnderReview,
-                totalDocumentsDefaulter,
-                totalDocumentsReadyToSubmit,
-                totalDocumentsSubmitted,
-                totalDocumentsHold,
-                totalDocumentsApproved,
+                totalDocumentsOnHold,
+                totalDocumentsDisqualified,
+                totalDocumentsRejected,
+                totalDocumentsSelected,
+                
 
             } = response.data;
             //console.log("response", response.data)
@@ -127,11 +130,11 @@ function RecruiterBox() {
             }
             setTotalDocumentsUnderReview(totalDocumentsUnderReview)
             setTotalDocumentsGeneral(totalDocumentsGeneral)
-            setTotalDocumentsDefaulter(totalDocumentsDefaulter)
-            setTotalDocumentsReadyToSubmit(totalDocumentsReadyToSubmit)
-            setTotalDocumentsSubmitted(totalDocumentsSubmitted)
-            setTotalDocumentsHold(totalDocumentsHold)
-            setTotalDocumentsApproved(totalDocumentsApproved)
+            setTotalDocumentsOnHold(totalDocumentsOnHold)
+            setTotalDocumentsDisqualified(totalDocumentsDisqualified)
+            settotalDocumentsRejected(totalDocumentsRejected)
+            settotalDocumentsSelected(totalDocumentsSelected)
+           
             setTotalPages(totalPages); // Update total pages
         } catch (error) {
             console.error("Error fetching data", error.message);
@@ -201,17 +204,16 @@ function RecruiterBox() {
                                             ? totalDocumentsGeneral
                                             : activeTab === "UnderReview"
                                                 ? totalDocumentsUnderReview
-                                                : activeTab === "ReadyToSubmit"
-                                                    ? totalDocumentsReadyToSubmit
-                                                    : activeTab === "Submited"
-                                                        ? totalDocumentsSubmitted
-                                                        : activeTab === "Approved"
-                                                            ? totalDocumentsApproved
-                                                            : activeTab === "Hold"
-                                                                ? totalDocumentsHold
-                                                                : activeTab === "Defaulter"
-                                                                    ? totalDocumentsDefaulter
-                                                                    : 0}
+                                                : activeTab === "On Hold"
+                                                    ? totalDocumentsOnHold
+                                                    : activeTab === "Disqualified"
+                                                        ? totalDocumentsDisqualified
+                                                        : activeTab === "Rejected"
+                                                            ? totalDocumentsRejected
+                                                            : activeTab === "Selected"
+                                                                ? totalDocumentsSelected
+
+                                                                : 0}
                                     </b>
                                 </div>
                             )}
@@ -259,35 +261,35 @@ function RecruiterBox() {
                                     </li>
                                     <li class="nav-item rm_task_section_navitem">
                                         <a class="nav-link" data-bs-toggle="tab" href="#ReadyToSubmit"
-                                            onClick={() => setActiveTab("onHold")}>
+                                            onClick={() => setActiveTab("on Hold")}>
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
                                                     On Hold
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0} */}
-                                                    {totalDocumentsReadyToSubmit}
+                                                    {totalDocumentsOnHold}
                                                 </div>
                                             </div>
                                         </a>
                                     </li>
                                     <li class="nav-item rm_task_section_navitem">
                                         <a class="nav-link" data-bs-toggle="tab" href="#Submited"
-                                            onClick={() => setActiveTab("Submited")}>
+                                            onClick={() => setActiveTab("Disqualified")}>
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
                                                     Disqualified
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0} */}
-                                                    {totalDocumentsSubmitted}
+                                                    {totalDocumentsDisqualified}
                                                 </div>
                                             </div>
                                         </a>
                                     </li>
                                     <li class="nav-item rm_task_section_navitem">
                                         <a class="nav-link" data-bs-toggle="tab" href="#Approved"
-                                            onClick={() => setActiveTab("Approved")}
+                                            onClick={() => setActiveTab("Rejected")}
                                         >
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
@@ -295,14 +297,14 @@ function RecruiterBox() {
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0} */}
-                                                    {totalDocumentsApproved}
+                                                    {totalDocumentsRejected}
                                                 </div>
                                             </div>
                                         </a>
                                     </li>
                                     <li class="nav-item rm_task_section_navitem">
                                         <a class="nav-link" data-bs-toggle="tab" href="#Hold"
-                                            onClick={() => setActiveTab("Hold")}
+                                            onClick={() => setActiveTab("Selected")}
                                         >
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
@@ -310,7 +312,7 @@ function RecruiterBox() {
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0} */}
-                                                    {totalDocumentsHold}
+                                                    {totalDocumentsSelected}
                                                 </div>
                                             </div>
                                         </a>
@@ -329,41 +331,41 @@ function RecruiterBox() {
                                         completeEmployeeInfo={completeEmployeeInfo}
                                     />
                                 </div>
-                             <div class="tab-pane" id="InProcess">
-                                        <RecruiterUnderReview
-                                            showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "UnderReview" ? setNoOfData : () => { }}
-                                            searchText={search}
-                                            activeTab={activeTab}
-                                            showFilter={showFilterIcon.InProcess}
-                                            completeEmployeeInfo={completeEmployeeInfo}
+                                <div class="tab-pane" id="InProcess">
+                                    <RecruiterUnderReview
+                                        showingFilterIcon={setShowNoOfFilteredData}
+                                        totalFilteredData={activeTab === "UnderReview" ? setNoOfData : () => { }}
+                                        searchText={search}
+                                        activeTab={activeTab}
+                                        showFilter={showFilterIcon.InProcess}
+                                        completeEmployeeInfo={completeEmployeeInfo}
 
-                                        />
-                                    </div>
-                                       {/* <div class="tab-pane" id="ReadyToSubmit">
-                                        <RmofCertificationReadyToSubmitPanel
+                                    />
+                                </div>
+                                <div class="tab-pane" id="ReadyToSubmit">
+                                    <RecruiterOnHold
+                                        showingFilterIcon={setShowNoOfFilteredData}
+                                        totalFilteredData={activeTab === "On Hold" ? setNoOfData : () => { }}
+                                        activeTab={activeTab}
+                                        searchText={search}
+                                        rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit}
+                                        completeEmployeeInfo={completeEmployeeInfo}
+                                    />
+                                </div>
+                                <div class="tab-pane" id="Submited">
+                                    <RecruiterDisqualified
+                                        showingFilterIcon={setShowNoOfFilteredData}
+                                        totalFilteredData={activeTab === "Disqualified" ? setNoOfData : () => { }}
+                                        searchText={search}
+                                        activeTab={activeTab}
+                                        showFilter={showFilterIcon.Submited}
+                                        completeEmployeeInfo={completeEmployeeInfo}
+                                    />
+                                </div>
+                                <div class="tab-pane" id="Approved">
+                                        <RecruiterRejected
                                             showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "ReadyToSubmit" ? setNoOfData : () => { }}
-                                            activeTab={activeTab}
-                                            searchText={search}
-                                            rmServicesData={rmServicesData} showFilter={showFilterIcon.ReadyToSubmit}
-                                            completeEmployeeInfo={completeEmployeeInfo}
-                                             />
-                                    </div>
-                                    <div class="tab-pane" id="Submited">
-                                        <RmofCertificationSubmittedPanel
-                                            showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "Submited" ? setNoOfData : () => { }}
-                                            searchText={search}
-                                            activeTab={activeTab}
-                                            showFilter={showFilterIcon.Submited}
-                                            completeEmployeeInfo={completeEmployeeInfo}
-                                             />
-                                    </div>
-                                    <div class="tab-pane" id="Approved">
-                                        <RmofCertificationApprovedPanel
-                                            showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "Approved" ? setNoOfData : () => { }}
+                                            totalFilteredData={activeTab === "Rejected" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.Approved}
@@ -372,9 +374,9 @@ function RecruiterBox() {
                                         />
                                     </div>
                                     <div class="tab-pane" id="Hold">
-                                        <RmofCertificationHoldPanel
+                                        <RecruiterSelected
                                             showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "Hold" ? setNoOfData : () => { }}
+                                            totalFilteredData={activeTab === "Selected" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.Hold}
@@ -382,16 +384,7 @@ function RecruiterBox() {
 
                                         />
                                     </div>
-                                    <div class="tab-pane" id="Defaulter">
-                                        <RmofCertificationDefaulterPanel
-                                            showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "Defaulter" ? setNoOfData : () => { }}
-                                            searchText={search}
-                                            activeTab={activeTab}
-                                            showFilter={showFilterIcon.Defaulter}
-                                            completeEmployeeInfo={completeEmployeeInfo}
-                                             />
-                                    </div> */}
+                                    
                             </div>
                         </div>
                     </div>

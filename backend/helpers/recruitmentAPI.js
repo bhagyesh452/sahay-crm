@@ -200,22 +200,22 @@ router.get('/recruiter-data', async (req, res) => {
 
     const totalDocumentsGeneral = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "General" });
     const totalDocumentsUnderReview = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "UnderReview" });
-    const totalDocumentsDefaulter = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
-    const totalDocumentsReadyToSubmit = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
-    const totalDocumentsSubmitted = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
-    const totalDocumentsHold = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
-    const totalDocumentsApproved = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+    const totalDocumentsOnHold = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "On Hold" });
+    const totalDocumentsDisqualified = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Disqualified" });
+    const totalDocumentsRejected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Rejected" });
+    const totalDocumentsSelected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Selected" });
+    //const totalDocuments = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
 
     res.status(200).json({
       data: response,
       totalDocuments,
       totalDocumentsGeneral,
       totalDocumentsUnderReview,
-      totalDocumentsDefaulter,
-      totalDocumentsReadyToSubmit,
-      totalDocumentsSubmitted,
-      totalDocumentsHold,
-      totalDocumentsApproved,
+      totalDocumentsOnHold,
+      totalDocumentsDisqualified,
+      totalDocumentsRejected,
+      totalDocumentsSelected,
+      //totalDocumentsApproved,
       currentPage: parseInt(page),
       totalPages: Math.ceil(totalDocuments / limit)
     });
@@ -319,7 +319,7 @@ router.post(`/update-substatus-recruiter/`, async (req, res) => {
         [
           "UnderReview",
           "Disqualified",
-          "onHold",
+          "On Hold",
           "Rejected",
           "Selected",
         ].includes(subCategoryStatus)
@@ -419,18 +419,55 @@ router.post(`/update-interview-recuitment/`, async (req, res) => {
     // Determine the update values based on the contentStatus and brochureStatus
     let updateFields = { interViewStatus: interViewStatus };
 
-    // if (contentStatus === "Approved") {
-    //   if (company.brochureStatus === "Approved") {
-    //     updateFields = {
-    //       ...updateFields,
-    //       mainCategoryStatus: "Ready To Submit",
-    //       subCategoryStatus: "Ready To Submit"
-    //     };
-    //   }
+    // Perform the update
+    const updatedCompany = await RecruitmentModel.findOneAndUpdate(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+      updateFields,
+      { new: true }
+    );
 
-    // }
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
 
-    //console.log("updateFields", updateFields);
+    // Send the response
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(`/update-disqualified-recuitment/`, async (req, res) => {
+  const { empName, empEmail, disqualificationReason } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await RecruitmentModel.findOne(
+      { 
+        empFullName: empName, 
+        personal_email: empEmail 
+      },
+  );
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { disqualificationReason: disqualificationReason };
 
     // Perform the update
     const updatedCompany = await RecruitmentModel.findOneAndUpdate(
