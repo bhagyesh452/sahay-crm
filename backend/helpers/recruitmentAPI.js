@@ -63,7 +63,7 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
       applicationSource,
       notes
     } = req.body;
-
+    const socketIO = req.io;
     // Validate required fields
     if (!empFullName || !personal_email || !personal_number || !appliedFor ||
       !qualification || !experience || !currentCTC || !expectedCTC || !applicationSource) {
@@ -89,7 +89,7 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
     });
 
     // Save the application to the database
-    await newApplication.save();
+    const savedApplicationData = await newApplication.save();
 
     // Define the path for the PDF
     setTimeout(() => {
@@ -123,10 +123,7 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
             html,
             attachments
           );
-          console.log(`Email sent: ${emailInfo.messageId}`);
-
-          // Send response after email is sent
-          return res.status(201).json({ message: 'Application submitted successfully and email sent.' });
+          console.log(`Email sent: ${emailInfo.messageId}`)
 
         } catch (emailError) {
           console.error('Error sending email:', emailError);
@@ -135,10 +132,330 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
       });
     }, 4000)
 
-
+    // Send response after email is sent
+    socketIO.emit('recruiter-application-submitted', { data: savedApplicationData });
+    return res.status(200).json({ message: 'Application submitted successfully and email sent.' });
   } catch (error) {
     console.error('Error submitting application:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+router.get('/recruiter-data', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 5000, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
+
+    // Build query object
+    let query = {};
+
+    if (search) {
+      const regex = new RegExp(search, 'i'); // Case-insensitive search
+      const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
+
+      query = {
+        $or: [
+          { "Company Name": regex }, // Match companyName field
+          { serviceName: regex },
+          { "Company Email": regex },
+          { bdeName: regex },
+          { bdmName: regex },
+          // Only include the number fields if numberSearch is a valid number
+          ...(isNaN(numberSearch) ? [] : [
+            { "Company Number": numberSearch }, // Match companyNumber field
+            { caNumber: numberSearch } // Match caNumber field
+          ])
+        ]
+      };
+    }
+
+    // Add filtering based on companyNames and serviceNames if provided
+    if (companyNames) {
+      const companyNamesArray = companyNames.split(','); // Convert to array
+      query["Company Name"] = { $in: companyNamesArray };
+    }
+
+    if (serviceNames) {
+      const serviceNamesArray = serviceNames.split(','); // Convert to array
+      query.serviceName = { $in: serviceNamesArray };
+    }
+
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await RecruitmentModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ fillingDate: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await RecruitmentModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
+
+    const totalDocuments = await RecruitmentModel.countDocuments(query);
+
+    const totalDocumentsGeneral = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsUnderReview = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "UnderReview" });
+    const totalDocumentsDefaulter = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Defaulter" });
+    const totalDocumentsReadyToSubmit = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Ready To Submit" });
+    const totalDocumentsSubmitted = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Submitted" });
+    const totalDocumentsHold = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Hold" });
+    const totalDocumentsApproved = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsUnderReview,
+      totalDocumentsDefaulter,
+      totalDocumentsReadyToSubmit,
+      totalDocumentsSubmitted,
+      totalDocumentsHold,
+      totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+router.get("/uploads/:ename/:filename", (req, res) => {
+  const filepath = req.params.filename;
+  const ename = req.params.ename;
+  const pdfPath = path.join(__dirname, `../RecruitmentApplicationForm/${ename}`, filepath);
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
+});
+
+router.post(`/update-substatus-recruiter-changegeneral/`, async (req, res) => {
+  const {
+    empName,
+    empEmail,
+    subCategoryStatus,
+    mainCategoryStatus,
+    previousMainCategoryStatus,
+    previousSubCategoryStatus,
+    dateOfChangingMainStatus,
+    movedFromMainCategoryStatus,
+    movedToMainCategoryStatus } = req.body;
+  const socketIO = req.io;
+
+  //console.log("here" , movedFromMainCategoryStatus,movedToMainCategoryStatus)
+
+  try {
+    const updatedCompany = await RecruitmentModel.findOneAndUpdate(
+      {
+        empFullName: empName,
+        personal_email: empEmail
+      },
+      {
+        subCategoryStatus: subCategoryStatus,
+        mainCategoryStatus: mainCategoryStatus,
+        lastActionDate: new Date(),
+        dateOfChangingMainStatus: dateOfChangingMainStatus, // Ensure this field is included
+        previousMainCategoryStatus: previousMainCategoryStatus,
+        previousSubCategoryStatus: previousSubCategoryStatus
+      },
+      { new: true }
+    );
+
+    socketIO.emit('recruiter-general-status-updated', { empFullName: empName });
+    res.status(200).json({ message: "Document updated successfully", data: updatedCompany });
+
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/update-substatus-recruiter/`, async (req, res) => {
+  const {
+    empName,
+    empEmail,
+    subCategoryStatus,
+    mainCategoryStatus,
+    previousMainCategoryStatus,
+    previousSubCategoryStatus,
+    movedFromMainCategoryStatus,
+    movedToMainCategoryStatus,
+  } = req.body;
+  const socketIO = req.io;
+  //console.log(req.body);
+
+  try {
+    // Step 1: Find the company document in RMCertificationModel
+    const company = await RecruitmentModel.findOne({
+      empFullName: empName,
+      personal_email: empEmail,
+    });
+   
+    if (!company) {
+      console.error("Company not found");
+      return res.status(400).json({ message: "Company not found" });
+    }
+
+    // Determine the submittedOn date
+    // let submittedOn = company.submittedOn;
+    let updateFields = {}; // Fields to be updated
+
+    if (subCategoryStatus !== "Undo") {
+      // Conditionally include dateOfChangingMainStatus
+      if (
+        [
+          "UnderReview",
+          "Disqualified",
+          "onHold",
+          "Rejected",
+          "Selected",
+        ].includes(subCategoryStatus)
+      ) {
+        updateFields.dateOfChangingMainStatus = new Date();
+      }
+
+      //Step 2: Update the RMCertificationModel document
+      const updatedCompany = await RecruitmentModel.findOneAndUpdate(
+        { empFullName: empName, personal_email: empEmail },
+        {
+          subCategoryStatus: subCategoryStatus,
+          mainCategoryStatus: mainCategoryStatus,
+          ...updateFields,
+          previousMainCategoryStatus: previousMainCategoryStatus,
+          previousSubCategoryStatus: previousSubCategoryStatus,
+        },
+        { new: true }
+      );
+
+     
+      if (!updatedCompany) {
+        console.error("Failed to save the updated document");
+        return res
+          .status(400)
+          .json({ message: "Failed to save the updated document" });
+      }
+      // Emit socket event
+      socketIO.emit("rm-general-status-updated", {
+        empFullName: updatedCompany.empFullName,
+        personal_email: updatedCompany.personal_email,
+      });
+      res.status(200).json({
+        message: "Document updated successfully",
+        data: updatedCompany,
+      });
+    } else {
+      // If subCategoryStatus is "Undo", update with previous statuses and no new date
+      const updatedCompany = await RecruitmentModel.findOneAndUpdate(
+        { empFullName: empName, personal_email: empEmail },
+        {
+          subCategoryStatus:
+            company.previousMainCategoryStatus === "General"
+              ? "Untouched"
+              : company.previousSubCategoryStatus,
+          mainCategoryStatus: company.previousMainCategoryStatus,
+          previousMainCategoryStatus: company.mainCategoryStatus,
+          previousSubCategoryStatus: company.subCategoryStatus,
+          lastActionDate: new Date(),
+          submittedOn: company.submittedOn,
+          dateOfChangingMainStatus: company.dateOfChangingMainStatus,
+          Remarks: [],
+          interViewStatus:""
+        },
+        { new: true }
+      );
+
+      if (!updatedCompany) {
+        console.error("Failed to save the updated document");
+        return res
+          .status(400)
+          .json({ message: "Failed to save the updated document" });
+      }
+
+      // Emit socket event
+      socketIO.emit('recruiter-general-status-updated', { empFullName: empName });
+      res.status(200).json({
+        message: "Document updated successfully",
+        data: updatedCompany,
+      });
+    }
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(`/update-interview-recuitment/`, async (req, res) => {
+  const { empName, empEmail, interViewStatus } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await RecruitmentModel.findOne(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+  );
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { interViewStatus: interViewStatus };
+
+    // if (contentStatus === "Approved") {
+    //   if (company.brochureStatus === "Approved") {
+    //     updateFields = {
+    //       ...updateFields,
+    //       mainCategoryStatus: "Ready To Submit",
+    //       subCategoryStatus: "Ready To Submit"
+    //     };
+    //   }
+
+    // }
+
+    //console.log("updateFields", updateFields);
+
+    // Perform the update
+    const updatedCompany = await RecruitmentModel.findOneAndUpdate(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

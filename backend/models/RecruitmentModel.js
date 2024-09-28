@@ -150,6 +150,14 @@ const RecruitmentSchema = new mongoose.Schema({
     exitDate: {
         type: Date,
     },
+    previousMainCategoryStaus:{
+        type:String,
+        default:""
+    },
+    previousSubCategoryStaus:{
+        type:String,
+        default:""
+    }
 
 });
 

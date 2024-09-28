@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useSyncExternalStore } from "react";
-import RmofCertificationHeader from "../RM-CERT-COMPONENTS/RmofCertificationHeader";
-import RmCertificationNavbar from "../RM-CERT-COMPONENTS/RmCertificationNavbar";
 import axios from 'axios';
 import { IoFilterOutline } from "react-icons/io5";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -19,7 +17,9 @@ import io from 'socket.io-client';
 import * as XLSX from "xlsx";
 import { LiaPagerSolid } from "react-icons/lia";
 import RecruiterHeader from "../Components/RecuiterHeader";
-import RecruiterNavbar from "../Components/RecruiterNavbar";
+import RecruiterNavbar from "../Components/RecuiterNavbar";
+import RecruiterGeneral from "./RecruiterGeneral";
+import RecruiterUnderReview from "./RecuiterUndeReview";
 
 function RecruiterBox() {
     const recruiterUserId = localStorage.getItem("recruiterUserId")
@@ -42,7 +42,7 @@ function RecruiterBox() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
-    const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0);
+    const [totalDocumentsUnderReview, setTotalDocumentsUnderReview] = useState(0);
     const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
     const [totalDocumentsReadyToSubmit, setTotalDocumentsReadyToSubmit] = useState(0);
     const [totalDocumentsSubmitted, setTotalDocumentsSubmitted] = useState(0);
@@ -54,41 +54,28 @@ function RecruiterBox() {
     const [completeEmployeeInfo, setcompleteEmployeeInfo] = useState([])
 
     useEffect(() => {
-        document.title = `AdminHead-Sahay-CRM`;
+        document.title = `Recruiter-Sahay-CRM`;
     }, []);
 
-    // useEffect(() => {
-    //     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
-    //         secure: true, // Use HTTPS
-    //         path: '/socket.io',
-    //         reconnection: true,
-    //         transports: ['websocket'],
-    //     });
+    useEffect(() => {
+        const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+            secure: true, // Use HTTPS
+            path: '/socket.io',
+            reconnection: true,
+            transports: ['websocket'],
+        });
 
-    //     socket.on("rm-general-status-updated", (res) => {
-    //         fetchRMServicesData(search)
-    //     });
+        socket.on("recruiter-general-status-updated", (res) => {
+            fetchRMServicesData(search)
+        });
+        socket.on("recruiter-application-submitted", (res) => {
+            fetchRMServicesData(search)
+        });
 
-    //     socket.on("rm-recievedamount-updated", (res) => {
-    //         fetchRMServicesData(search)
-    //     });
-
-    //     socket.on("rm-recievedamount-deleted", (res) => {
-    //         fetchRMServicesData(search)
-    //     });
-    //     socket.on("booking-deleted", (res) => {
-    //         fetchRMServicesData(search)
-    //     });
-
-    //     socket.on("booking-updated", (res) => {
-    //         fetchRMServicesData(search)
-    //     });
-
-
-    //     return () => {
-    //         socket.disconnect();
-    //     };
-    // }, []);
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
 
     const fetchData = async () => {
@@ -106,119 +93,73 @@ function RecruiterBox() {
         }
     };
 
-    // const fetchRMServicesData = async (searchQuery = "", page = 1) => {
-    //     try {
-    //         setCurrentDataLoading(true);
-    //         const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-    //             params: { 
-    //                 search: searchQuery, 
-    //                 page, 
-    //                 activeTab: activeTab
-    //              }
-    //         });
-    //         const {
-    //             data,
-    //             totalPages,
-    //             totalDocumentsGeneral,
-    //             totalDocumentsProcess,
-    //             totalDocumentsDefaulter,
-    //             totalDocumentsReadyToSubmit,
-    //             totalDocumentsSubmitted,
-    //             totalDocumentsHold,
-    //             totalDocumentsApproved,
+    const fetchRMServicesData = async (searchQuery = "", page = 1) => {
+        try {
+            setCurrentDataLoading(true);
+            const response = await axios.get(`${secretKey}/recruiter/recruiter-data`, {
+                params: { 
+                    search: searchQuery, 
+                    page, 
+                    activeTab: activeTab
+                 }
+            });
+            const {
+                data,
+                totalPages,
+                totalDocumentsGeneral,
+                totalDocumentsUnderReview,
+                totalDocumentsDefaulter,
+                totalDocumentsReadyToSubmit,
+                totalDocumentsSubmitted,
+                totalDocumentsHold,
+                totalDocumentsApproved,
 
-    //         } = response.data;
-    //         //console.log("response", response.data)
+            } = response.data;
+            //console.log("response", response.data)
 
-    //         // If it's a search query, replace the data; otherwise, append for pagination
-    //         if (page === 1) {
-    //             // This is either the first page load or a search operation
-    //             setRmServicesData(data);
-    //         } else {
-    //             // This is a pagination request
-    //             setRmServicesData(prevData => [...prevData, ...data]);
-    //         }
-    //         setTotalDocumentsProcess(totalDocumentsProcess)
-    //         setTotalDocumentsGeneral(totalDocumentsGeneral)
-    //         setTotalDocumentsDefaulter(totalDocumentsDefaulter)
-    //         setTotalDocumentsReadyToSubmit(totalDocumentsReadyToSubmit)
-    //         setTotalDocumentsSubmitted(totalDocumentsSubmitted)
-    //         setTotalDocumentsHold(totalDocumentsHold)
-    //         setTotalDocumentsApproved(totalDocumentsApproved)
-    //         setTotalPages(totalPages); // Update total pages
-    //     } catch (error) {
-    //         console.error("Error fetching data", error.message);
-    //     } finally {
-    //         setCurrentDataLoading(false);
-    //     }
-    // };
+            // If it's a search query, replace the data; otherwise, append for pagination
+            if (page === 1) {
+                // This is either the first page load or a search operation
+                setRmServicesData(data);
+            } else {
+                // This is a pagination request
+                setRmServicesData(prevData => [...prevData, ...data]);
+            }
+            setTotalDocumentsUnderReview(totalDocumentsUnderReview)
+            setTotalDocumentsGeneral(totalDocumentsGeneral)
+            setTotalDocumentsDefaulter(totalDocumentsDefaulter)
+            setTotalDocumentsReadyToSubmit(totalDocumentsReadyToSubmit)
+            setTotalDocumentsSubmitted(totalDocumentsSubmitted)
+            setTotalDocumentsHold(totalDocumentsHold)
+            setTotalDocumentsApproved(totalDocumentsApproved)
+            setTotalPages(totalPages); // Update total pages
+        } catch (error) {
+            console.error("Error fetching data", error.message);
+        } finally {
+            setCurrentDataLoading(false);
+        }
+    };
 
 
-    // useEffect(() => {
-    //     fetchRMServicesData("", page); // Fetch data initially
-    // }, [employeeData]);
+    useEffect(() => {
+        fetchRMServicesData("", page); // Fetch data initially
+    }, [employeeData]);
 
     // useEffect(() => {
     //     fetchRMServicesData(search, page); // Fetch data when search query changes
     // }, [search]);
 
-    // const handleSearchChange = (event) => {
-    //     setSearch(event.target.value); // Update search query state
-    // };
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value); // Update search query state
+    };
 
     useEffect(() => {
         fetchData();
     }, []);
 
-    // const setNoOfData = (number) => {
-    //     //console.log("number", number)
-    //     setnoOfFilteredData(number)
-    // }
-
-
-
-
-    //----------------------------function to upload excel sheet----------------------------
-    const handleFileUploadForChange = async (e) => {
-        const file = e.target.files[0];
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                const binaryStr = event.target.result;
-                const workbook = XLSX.read(binaryStr, { type: 'binary' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const data = XLSX.utils.sheet_to_json(worksheet);
-
-                try {
-                    // Send the data to the backend to update the ename
-                    const response = await axios.post(`${secretKey}/rm-services/upload-approved-data`, data);
-                    if (response.status === 200) {
-                        alert('Leads updated successfully!');
-                    } else {
-                        alert('Failed to update leads.');
-                    }
-                } catch (error) {
-                    console.error('Error uploading file:', error);
-                    alert('An error occurred while uploading the file.');
-                }
-            };
-
-            reader.readAsBinaryString(file);
-        }
-    };
-
-    const handleDeleteFile = async () => {
-        try {
-            const response = await axios.delete(`${secretKey}/rm-services/delete-directuploadedleads`)
-            if (response.status === 200) {
-                alert('Leads deleted successfully!');
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            alert('An error occurred while uploading the file.');
-        }
+    const setNoOfData = (number) => {
+        //console.log("number", number)
+        setnoOfFilteredData(number)
     }
 
 
@@ -258,8 +199,8 @@ function RecruiterBox() {
                                         {noOfFilteredData} /
                                         {activeTab === "General"
                                             ? totalDocumentsGeneral
-                                            : activeTab === "InProcess"
-                                                ? totalDocumentsProcess
+                                            : activeTab === "UnderReview"
+                                                ? totalDocumentsUnderReview
                                                 : activeTab === "ReadyToSubmit"
                                                     ? totalDocumentsReadyToSubmit
                                                     : activeTab === "Submited"
@@ -303,13 +244,13 @@ function RecruiterBox() {
                                         <a class="nav-link" data-bs-toggle="tab" href="#InProcess">
                                             <div className="d-flex align-items-center justify-content-between w-100"
                                                 onClick={() =>
-                                                    setActiveTab("InProcess")}
+                                                    setActiveTab("UnderReview")}
                                             >
                                                 <div className="rm_txt_tsn">
-                                                    In Process
+                                                    Under Review
                                                 </div>
                                                 <div className="rm_tsn_bdge">
-                                                    {totalDocumentsProcess}
+                                                    {totalDocumentsUnderReview}
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Process").length : 0} */}
 
                                                 </div>
@@ -318,10 +259,10 @@ function RecruiterBox() {
                                     </li>
                                     <li class="nav-item rm_task_section_navitem">
                                         <a class="nav-link" data-bs-toggle="tab" href="#ReadyToSubmit"
-                                            onClick={() => setActiveTab("ReadyToSubmit")}>
+                                            onClick={() => setActiveTab("onHold")}>
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
-                                                    Ready To Submit
+                                                    On Hold
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Ready To Submit").length : 0} */}
@@ -335,7 +276,7 @@ function RecruiterBox() {
                                             onClick={() => setActiveTab("Submited")}>
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
-                                                    Submited
+                                                    Disqualified
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Submitted").length : 0} */}
@@ -350,7 +291,7 @@ function RecruiterBox() {
                                         >
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
-                                                    Approved
+                                                    Rejected
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Approved").length : 0} */}
@@ -365,7 +306,7 @@ function RecruiterBox() {
                                         >
                                             <div className="d-flex align-items-center justify-content-between w-100">
                                                 <div className="rm_txt_tsn">
-                                                    Hold
+                                                    Selected
                                                 </div>
                                                 <div className="rm_tsn_bdge">
                                                     {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Hold").length : 0} */}
@@ -374,36 +315,24 @@ function RecruiterBox() {
                                             </div>
                                         </a>
                                     </li>
-                                    <li class="nav-item rm_task_section_navitem">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#Defaulter" onClick={() => setActiveTab("Defaulter")}>
-                                            <div className="d-flex align-items-center justify-content-between w-100">
-                                                <div className="rm_txt_tsn">
-                                                    Defaulter
-                                                </div>
-                                                <div className="rm_tsn_bdge">
-                                                    {/* {rmServicesData ? rmServicesData.filter(item => item.mainCategoryStatus === "Defaulter").length : 0} */}
-                                                    {totalDocumentsDefaulter}
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
+
                                 </ul>
                             </div>
-                            {/* <div class="tab-content card-body">
-                                    <div class="tab-pane active" id="General">
-                                        <RmofCertificationGeneralPanel
+                            <div class="tab-content card-body">
+                                <div class="tab-pane active" id="General">
+                                    <RecruiterGeneral
+                                        showingFilterIcon={setShowNoOfFilteredData}
+                                        totalFilteredData={activeTab === "General" ? setNoOfData : () => { }}
+                                        searchText={search}
+                                        activeTab={activeTab}
+                                        showFilter={showFilterIcon.General}
+                                        completeEmployeeInfo={completeEmployeeInfo}
+                                    />
+                                </div>
+                             <div class="tab-pane" id="InProcess">
+                                        <RecruiterUnderReview
                                             showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "General" ? setNoOfData : () => { }}
-                                            searchText={search}
-                                            activeTab={activeTab}
-                                            showFilter={showFilterIcon.General}
-                                            completeEmployeeInfo={completeEmployeeInfo}
-                                        />
-                                    </div>
-                                    <div class="tab-pane" id="InProcess">
-                                        <RmofCertificationProcessPanel
-                                            showingFilterIcon={setShowNoOfFilteredData}
-                                            totalFilteredData={activeTab === "InProcess" ? setNoOfData : () => { }}
+                                            totalFilteredData={activeTab === "UnderReview" ? setNoOfData : () => { }}
                                             searchText={search}
                                             activeTab={activeTab}
                                             showFilter={showFilterIcon.InProcess}
@@ -411,7 +340,7 @@ function RecruiterBox() {
 
                                         />
                                     </div>
-                                    <div class="tab-pane" id="ReadyToSubmit">
+                                       {/* <div class="tab-pane" id="ReadyToSubmit">
                                         <RmofCertificationReadyToSubmitPanel
                                             showingFilterIcon={setShowNoOfFilteredData}
                                             totalFilteredData={activeTab === "ReadyToSubmit" ? setNoOfData : () => { }}
@@ -462,8 +391,8 @@ function RecruiterBox() {
                                             showFilter={showFilterIcon.Defaulter}
                                             completeEmployeeInfo={completeEmployeeInfo}
                                              />
-                                    </div>
-                                </div> */}
+                                    </div> */}
+                            </div>
                         </div>
                     </div>
                 </div>

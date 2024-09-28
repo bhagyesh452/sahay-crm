@@ -133,7 +133,10 @@ app.use('/api/department', DepartmentAPI);
 app.use('/api/serviceDraft', ServicesDraftAPI);
 app.use('/api/services', ServicesAPI);
 app.use('/api/expense', ExpenseReportAPI);
-app.use('/api/recruiter', RecruiterAPI);
+app.use('/api/recruiter',(req,res,next)=>{
+  req.io = socketIO;
+  next();
+}, RecruiterAPI);
 
 
 // app.use(session({

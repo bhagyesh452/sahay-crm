@@ -97,6 +97,7 @@ function PaymentApprovalComponent() {
       if (data.assigned === "Approved" || data.assigned === "Rejected") {
         setAlreadyAssigned(true)
       }
+      console.log(attachmentFilename)
       // console.log("Fetched data is :", data);
       setEname(data.ename || "");
       setDesignation(data.designation || "");

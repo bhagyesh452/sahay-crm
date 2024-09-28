@@ -762,10 +762,13 @@ function ManageLeads() {
                 index = unAssignedData.findIndex((row) => row._id === id);
             } else if (dataStatus === 'Assigned') {
                 index = assignedData.findIndex((row) => row._id === id);
+            } else if (dataStatus === "Extracted") {
+                index = extractedData.findIndex((row) => row._id === id);
             }
         } else {
             index = data.findIndex((row) => row._id === id);
         }
+
         setStartRowIndex(index);
     };
 
@@ -781,6 +784,8 @@ function ManageLeads() {
                     dataSet = unAssignedData;
                 } else if (dataStatus === 'Assigned') {
                     dataSet = assignedData;
+                } else if (dataStatus === "Extracted") {
+                    dataSet = extractedData;
                 }
             } else {
                 dataSet = data;
@@ -795,6 +800,7 @@ function ManageLeads() {
                 for (let i = startIndex; i <= endIndex; i++) {
                     selectedRange.push(dataSet[i]._id);
                 }
+
                 setSelectedRows(selectedRange);
             }
         }

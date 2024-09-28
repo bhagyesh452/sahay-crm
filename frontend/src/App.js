@@ -94,6 +94,7 @@ import EmployeeSalaryView from "./Hr_panel/Components/Attendance/EmployeeSalaryV
 import ApplicationForm from "./RecruiterPanel/ApplicationForm/ApplicationForm.jsx";
 import RecruiterDashboard from "./RecruiterPanel/Dashboard/RecruiterDashboard.jsx";
 import RecruiterLogin from "./RecruiterPanel/Login/RecruiterLogin.jsx";
+import RecruiterBox from "./RecruiterPanel/TabPanels/RecruiterBox.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -280,7 +281,7 @@ function App() {
           {/**********************************************  RecruiterPane  *******************************************************/}
           <Route path="/recruiter/appynowform" element={<ApplicationForm />} />
           <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
-          <Route path="/recruiter/employeesbox/:userId" element={<RecruiterDashboard />} />
+          <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
           <Route path="/recruiter/login" element={<RecruiterLogin setRecruiterToken={setRecruiterToken} />}  />
           
         </Routes>

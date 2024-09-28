@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import img from "../../static/logo.jpg";
@@ -31,6 +31,8 @@ function ApplicationForm() {
         subCategoryStatus: "",
         lastActionDate: ""
     });
+    // Inside your component
+    const fileInputRef = useRef(null);
     // List of available options from the image
     const appliedForOptions = [
         { value: "Business Development Executive", label: "Business Development Executive" },
@@ -181,6 +183,11 @@ function ApplicationForm() {
                     subCategoryStatus: "",
                     lastActionDate: ""
                 });
+                // Reset the file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+            window.location.reload();
             }
         } catch (error) {
             // Handle submission error
@@ -430,26 +437,29 @@ function ApplicationForm() {
                                                 id="Brief"
                                                 name='notes'
                                                 onChange={handleInputChange}
+                                                value={employeeData.notes}
                                             ></textarea>
                                             {/* {formSubmitted && errors.CompanyName && (
                                                 <div style={{ color: "red" }}>{errors.CompanyName}</div>
                                             )} */}
                                         </div>
                                     </div>
-                                    <div className="col-lg-12">
-                                        <div className="form-group mt-2 mb-2">
-                                            <label>
-                                                Upload CV <span style={{ color: "red" }}>*</span>
-                                            </label>
-                                            <input
-                                                required
-                                                type="file"
-                                                className="form-control mt-1"
-                                                id="Company"
-                                                name="uploadedCV"  // Ensure the name matches the form state
-                                                onChange={handleInputChange}
-                                            />
-                                        </div>
+                                    <div className="form-group mt-2 mb-2">
+                                        <label>Upload CV <span style={{ color: "red" }}>*</span></label>
+                                        <input
+                                            required
+                                            type="file"
+                                            className="form-control mt-1"
+                                            id="Company"
+                                            name="uploadedCV"  // Ensure the name matches the form state
+                                            onChange={handleInputChange}
+                                            res={fileInputRef}
+                                        />
+                                        {employeeData.uploadedCV && employeeData.uploadedCV.length > 0 && (
+                                            <small className="form-text text-muted mt-2">
+                                                Selected File: {employeeData.uploadedCV[0].name}
+                                            </small>
+                                        )}
                                     </div>
                                     <div className="row">
                                         <div className="col-lg-12 text-center">
