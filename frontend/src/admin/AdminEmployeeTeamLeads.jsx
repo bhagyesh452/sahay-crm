@@ -82,7 +82,8 @@ import { TbFileExport } from "react-icons/tb";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { IoIosClose } from "react-icons/io";
 import { Country, State, City } from 'country-state-city';
-
+import CallHistory from "../employeeComp/CallHistory";
+import { LuHistory } from "react-icons/lu";
 
 
 
@@ -169,7 +170,13 @@ function AdminEmployeeTeamLeads() {
     const [selectedDate, setSelectedDate] = useState(0);
     const [monthIndex, setMonthIndex] = useState(0);
     const [daysInMonth, setDaysInMonth] = useState([]);
-    const [leadHistoryData, setLeadHistoryData] = useState([])
+    const [leadHistoryData, setLeadHistoryData] = useState([]);
+    const [showCallHistory, setShowCallHistory] = useState(false);
+    const [clientNumber, setClientNumber] = useState("");
+
+    const hanleCloseCallHistory = () => {
+        setShowCallHistory(false);
+    };
 
     const formatDateLeadHistory = (dateInput) => {
         console.log(dateInput)
@@ -1828,7 +1835,6 @@ function AdminEmployeeTeamLeads() {
             <Header />
             <Navbar />
             {!formOpen && <div className="page-wrapper">
-
                 <div style={{
                     margin: "3px 0px 1px 0px",
                 }} className="page-header d-print-none">
@@ -2077,7 +2083,8 @@ function AdminEmployeeTeamLeads() {
                         </Tabs>
                     </Box>
                 </div>
-                <div className="page-body" onCopy={(e) => {
+                
+                {!showCallHistory ? <div className="page-body" onCopy={(e) => {
                     e.preventDefault();
                 }}>
                     <div className="container-xl">
@@ -2625,6 +2632,7 @@ function AdminEmployeeTeamLeads() {
                                                 <th className="th-sticky1">Company Name</th>
                                                 <th>BDE Name</th>
                                                 <th>Company Number</th>
+                                                {bdmNewStatus !== "Untouched" && (<th>Call History</th>)}
                                                 <th>BDE Status</th>
                                                 {bdmNewStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
                                                 <th>BDE Remarks</th>
@@ -2704,13 +2712,10 @@ function AdminEmployeeTeamLeads() {
                                                             />
                                                         </td>
 
-                                                        <td className="td-sticky">
-                                                            {startIndex + index + 1}
-                                                        </td>
-                                                        <td className="td-sticky1">
-                                                            {company["Company Name"]}
-                                                        </td>
+                                                        <td className="td-sticky">{startIndex + index + 1}</td>
+                                                        <td className="td-sticky1">{company["Company Name"]}</td>
                                                         <td>{company.ename}</td>
+
                                                         <td>
                                                             <div className="d-flex align-items-center justify-content-between wApp">
                                                                 <div>{company["Company Number"]}</div>
@@ -2722,10 +2727,24 @@ function AdminEmployeeTeamLeads() {
                                                                 </a>
                                                             </div>
                                                         </td>
-                                                        <td>
-                                                            {company.Status}
-                                                        </td>
+
+                                                        {bdmNewStatus !== "Untouched" && <td>
+                                                            <LuHistory onClick={() => {
+                                                                setShowCallHistory(true);
+                                                                setClientNumber(company["Company Number"])
+                                                            }}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    width: "17px",
+                                                                    height: "17px",
+                                                                }}
+                                                                color="grey"
+                                                            />
+                                                        </td>}
+
+                                                        <td>{company.Status}</td>
                                                         {bdmNewStatus === "FollowUp" && (<td>{formatDateNew(company.bdmNextFollowUpDate)}</td>)}
+
                                                         <td>
                                                             <div
                                                                 key={company._id}
@@ -2766,6 +2785,7 @@ function AdminEmployeeTeamLeads() {
                                                                 </IconButton>
                                                             </div>
                                                         </td>
+
                                                         {(bdmNewStatus === "Interested" ||
                                                             bdmNewStatus === "FollowUp" ||
                                                             bdmNewStatus === "Matured" ||
@@ -2816,18 +2836,15 @@ function AdminEmployeeTeamLeads() {
                                                                             </IconButton>
                                                                         </div>
                                                                     </td>
-
                                                                 </>
                                                             )}
-                                                        <td>
-                                                            {formatDateNew(
-                                                                company["Company Incorporation Date  "]
-                                                            )}
-                                                        </td>
+
+                                                        <td>{formatDateNew(company["Company Incorporation Date  "])}</td>
                                                         <td>{company["City"]}</td>
                                                         <td>{company["State"]}</td>
                                                         <td>{company["Company Email"]}</td>
                                                         <td>{formatDateNew(company.bdeForwardDate)}</td>
+
                                                         {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                             <td>
                                                                 {company &&
@@ -2869,6 +2886,7 @@ function AdminEmployeeTeamLeads() {
                                                                     </IconButton>
                                                                 )}
                                                             </td>
+
                                                             <td>
                                                                 {(company.feedbackRemarks || company.feedbackPoints.length !== 0) ? (
                                                                     <IconButton>
@@ -2910,6 +2928,7 @@ function AdminEmployeeTeamLeads() {
                                                                 )}
                                                             </td>
                                                         </>)}
+
                                                         <td>
                                                             <button className='tbl-action-btn'
                                                                 onClick={() => {
@@ -2929,6 +2948,7 @@ function AdminEmployeeTeamLeads() {
                                                                 />
                                                             </button>
                                                         </td>
+
                                                         {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (
                                                             <>
                                                                 <td>
@@ -2937,7 +2957,6 @@ function AdminEmployeeTeamLeads() {
                                                                 <td>
                                                                     {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
                                                                 </td>
-
                                                             </>
                                                         )}
                                                     </tr>
@@ -2980,7 +2999,7 @@ function AdminEmployeeTeamLeads() {
                         </div>
                     </div>
 
-                </div>
+                </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />}
             </div>}
 
             {formOpen && maturedBooking && (

@@ -3043,6 +3043,10 @@ td input {
   border: 1px solid #e20808;
   color: #d60000;
 }
+.recruiter_selected_table
+{
+  width: 3800px !important;
+}
 .rm_table
 {
   width: 2300px !important;
