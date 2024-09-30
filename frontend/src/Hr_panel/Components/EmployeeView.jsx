@@ -533,13 +533,16 @@ function EmployeeView() {
                 <div className="mt-3">
                   <ul class="nav nav-tabs employee_e_info_tab">
                     <li class="nav-item">
-                      <a class="nav-link active" data-bs-toggle="tab" href="#eI">Employee Info</a>
+                      <a class="nav-link active" data-bs-toggle="tab" href="#eI">Your Info</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#Emergency_Contact">Emergency Contact</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Information</a>
+                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Details</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#BusinessCard">Business Card</a>
                     </li>
                   </ul>
 
@@ -1219,6 +1222,11 @@ function EmployeeView() {
                         </div>
                       </div>
                     </div>
+                    
+                    <div class="tab-pane heiitc_inner fade" id="BusinessCard">
+                      <BusinessCardView></BusinessCardView>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -1246,9 +1254,6 @@ function EmployeeView() {
                     <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link" data-bs-toggle="tab" href="#Settings">Settings</a>
                     </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#BusinessCard">Business Card</a>
-                    </li>
                   </ul>
                   <div class="tab-content hr_eiinr_tab_content">
                     <div class="tab-pane heiitc_inner active" id="Attendance">
@@ -1265,9 +1270,6 @@ function EmployeeView() {
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
-                    <div class="tab-pane heiitc_inner fade" id="BusinessCard">
-                      <BusinessCardView></BusinessCardView>
-                    </div>
                   </div>
                 </div>
               </div>
