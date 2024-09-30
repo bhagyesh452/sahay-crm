@@ -223,8 +223,8 @@ function RecruiterBox() {
                 <div className="page-body rm_Dtl_box m-0">
                     <div className="container-xl mt-2">
                         <div className="rm_main_card">
-                            <div className="my-tab card-header" style={{ marginBottom: "-2px" }}>
-                                <ul class="nav nav-tabs rm_task_section_navtabs nav-fill p-0">
+                            <div className="my-tab card-header for_adminex" style={{ marginBottom: "-2px" }}>
+                                <ul class="nav nav-tabs rm_task_section_navtabs for_adminex_navtabs nav-fill p-0">
                                     <li class="nav-item rm_task_section_navitem">
                                         <a class="nav-link active" data-bs-toggle="tab" href="#General"
                                             onClick={() =>
