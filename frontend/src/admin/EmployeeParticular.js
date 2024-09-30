@@ -66,6 +66,9 @@ import { IoIosClose } from "react-icons/io";
 import { RiShareForwardFill } from "react-icons/ri";
 import { Country, State, City } from 'country-state-city';
 import { format, parseISO } from 'date-fns';
+import CallHistory from "../employeeComp/CallHistory";
+import { LuHistory } from "react-icons/lu";
+
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -136,14 +139,17 @@ function EmployeeParticular() {
   const [newData, setNewData] = useState([]);
   const [branchName, setBranchName] = useState("");
   const [bdmName, setBdmName] = useState("Not Alloted");
-  const [leadHistoryData, setLeadHistoryData] = useState([])
+  const [leadHistoryData, setLeadHistoryData] = useState([]);
 
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
+  const [showCallHistory, setShowCallHistory] = useState(false);
+  const [clientNumber, setClientNumber] = useState("");
 
-
-
+  const hanleCloseCallHistory = () => {
+    setShowCallHistory(false);
+  };
 
   const formatDateLeadHistory = (dateInput) => {
     console.log(dateInput)
@@ -1865,10 +1871,7 @@ function EmployeeParticular() {
       <Header />
       <Navbar />
       <div className="page-wrapper">
-        <div
-          style={{
-            margin: "3px 0px 1px 0px",
-          }}
+        <div style={{ margin: "3px 0px 1px 0px", }}
           className="page-header d-print-none">
           <div className="container-xl">
             <div className="row g-2 align-items-center">
@@ -2093,103 +2096,112 @@ function EmployeeParticular() {
                     : "nav-link"
                 }
                 data-bs-toggle="tab"
-              ><Tab label={
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                  <span style={{ fontSize: "12px" }}>
-                    Leads </span>
-                </div>
-              } {...a11yProps(0)} /></a>
-              {bdmWorkOn && (<a
-                href="#tabs-activity-5"
-                onClick={() => {
-                  setCurrentTab("TeamLeads")
-                  window.location.pathname = `/admin/employeeleads/${id}`
-                }}
-                className={
-                  currentTab === "TeamLeads"
-                    ? "nav-link"
-                    : "nav-link"
-                }
-                data-bs-toggle="tab"
-              ><Tab
-                  label={
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                      <span style={{ fontSize: "12px" }}>
-                        Team Leads</span>
-                    </div>
+              >
+                <Tab label={
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                    <span style={{ fontSize: "12px" }}>
+                      Leads </span>
+                  </div>
+                } {...a11yProps(0)} />
+              </a>
+              
+              {bdmWorkOn && (
+                <a
+                  href="#tabs-activity-5"
+                  onClick={() => {
+                    setCurrentTab("TeamLeads")
+                    window.location.pathname = `/admin/employeeleads/${id}`
+                  }}
+                  className={
+                    currentTab === "TeamLeads"
+                      ? "nav-link"
+                      : "nav-link"
                   }
-                  {...a11yProps(1)}
-                /></a>)}
+                  data-bs-toggle="tab"
+                >
+                  <Tab
+                    label={
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                        <span style={{ fontSize: "12px" }}>
+                          Team Leads</span>
+                      </div>
+                    }
+                    {...a11yProps(1)}
+                  />
+                </a>
+              )}
             </Tabs>
           </Box>
         </div>
+
         {!openLogin && !AddForm && !EditForm && (
-          <div
-            onCopy={(e) => {
-              e.preventDefault();
-            }}
-            className="page-body"
-            style={{ marginTop: "0px " }}>
-            <div className="container-xl">
+          <>
+            {!showCallHistory ? <div
+              onCopy={(e) => {
+                e.preventDefault();
+              }}
+              className="page-body"
+              style={{ marginTop: "0px " }}>
+              <div className="container-xl">
 
-              <div className="d-flex align-items-center justify-content-between mb-2">
-                <div className="d-flex align-items-center">
-                  <div className="btn-group" role="group" aria-label="Basic example">
-                    <button type="button"
-                      className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
-                      onClick={() => setOpenFilterDrawer(true)}
-                    >
-                      <IoFilterOutline className='mr-1' /> Filter
-                    </button>
-                    <button type="button" className="btn mybtn"
-                      onClick={() => handleExportData()}
-                    >
-                      <TbFileExport className='mr-1' /> Export Leads
-                    </button>
-                    {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
-                      <MdOutlinePostAdd className='mr-1' />Assign Leads
-                    </button>)}
-                    <button type="button" className="btn mybtn"
-                      onClick={() => setOpenAssignToBdm(true)}
-                    >
-                      <RiShareForwardFill className='mr-1' /> Forward to BDM
-                    </button>
-                  </div>
-                </div>
-                <div className="d-flex align-items-center">
-                  {selectedRows.length !== 0 && (
-                    <div className="selection-data" >
-                      Total Data Selected : <b>{selectedRows.length}</b>
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <div className="d-flex align-items-center">
+                    <div className="btn-group" role="group" aria-label="Basic example">
+                      <button type="button"
+                        className={isFilter ? 'btn mybtn active' : 'btn mybtn'}
+                        onClick={() => setOpenFilterDrawer(true)}
+                      >
+                        <IoFilterOutline className='mr-1' /> Filter
+                      </button>
+                      <button type="button" className="btn mybtn"
+                        onClick={() => handleExportData()}
+                      >
+                        <TbFileExport className='mr-1' /> Export Leads
+                      </button>
+                      {selectedRows.length !== 0 && (<button type="button" className="btn mybtn" onClick={functionOpenAssign}>
+                        <MdOutlinePostAdd className='mr-1' />Assign Leads
+                      </button>)}
+                      <button type="button" className="btn mybtn"
+                        onClick={() => setOpenAssignToBdm(true)}
+                      >
+                        <RiShareForwardFill className='mr-1' /> Forward to BDM
+                      </button>
                     </div>
-                  )}
-                  <div class="input-icon ml-1">
-                    <span class="input-icon-addon">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                        <path d="M21 21l-6 -6"></path>
-                      </svg>
-                    </span>
-                    <input
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        handleSearch(e.target.value)
-                        //handleFilterSearch(e.target.value)
-                        //setCurrentPage(0);
-                      }}
-                      className="form-control search-cantrol mybtn"
-                      placeholder="Search…"
-                      type="text"
-                      name="bdeName-search"
-                      id="bdeName-search" />
+                  </div>
+                  <div className="d-flex align-items-center">
+                    {selectedRows.length !== 0 && (
+                      <div className="selection-data" >
+                        Total Data Selected : <b>{selectedRows.length}</b>
+                      </div>
+                    )}
+                    <div class="input-icon ml-1">
+                      <span class="input-icon-addon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                          <path d="M21 21l-6 -6"></path>
+                        </svg>
+                      </span>
+                      <input
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          handleSearch(e.target.value)
+                          //handleFilterSearch(e.target.value)
+                          //setCurrentPage(0);
+                        }}
+                        className="form-control search-cantrol mybtn"
+                        placeholder="Search…"
+                        type="text"
+                        name="bdeName-search"
+                        id="bdeName-search" />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* <div className="row g-2 align-items-center">
+                {/* <div className="row g-2 align-items-center">
                 <div className="col-2">
                   <div
                     className="form-control"
@@ -2443,7 +2455,7 @@ function EmployeeParticular() {
 
                
               </div> */}
-              {/* <div class="card-header my-tab">
+                {/* <div class="card-header my-tab">
                 <ul
                   class="nav nav-tabs card-header-tabs nav-fill p-0"
                   data-bs-toggle="tabs"
@@ -2484,430 +2496,728 @@ function EmployeeParticular() {
                   </li>
                 </ul>
               </div> */}
-              <div class="card-header my-tab">
-                <ul
-                  class="nav nav-tabs card-header-tabs nav-fill p-0"
-                  data-bs-toggle="tabs"
-                >
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      onClick={() => {
-                        setdataStatus("All");
-                        setCurrentPage(0);
-                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                        setEmployeeData(
-                          mappedData.filter(
-                            (obj) =>
-                              (obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched") && (
-                                obj.bdmAcceptStatus !== "Forwarded" ||
-                                obj.bdmAcceptStatus !== "Accept" ||
-                                obj.bdmAcceptStatus !== "Pending")
-                          ).sort(
-                            (a, b) =>
-                              new Date(b.lastActionDate) -
-                              new Date(a.lastActionDate)
-                          )
-                        );
-                      }}
-                      className={
-                        dataStatus === "All"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      General{" "}
-                      <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              (obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched") &&
-                              (obj.bdmAcceptStatus !== "Forwarded" &&
-                                obj.bdmAcceptStatus !== "Accept" &&
-                                obj.bdmAcceptStatus !== "Pending")
-                          ).length
-                        }
-                      </span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a
-                      href="#tabs-activity-5"
-                      onClick={() => {
-                        setdataStatus("Interested");
-                        setCurrentPage(0);
-                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                        setEmployeeData(
-                          mappedData.filter(
-                            (obj) =>
-                              obj.Status === "Interested" &&
-                              obj.bdmAcceptStatus === "NotForwarded"
-                          )
-                        );
-                      }}
-                      className={
-                        dataStatus === "Interested"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      <span>Interested </span>
-                      <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.Status === "Interested" &&
-                              obj.bdmAcceptStatus === "NotForwarded"
-                          ).length
-                        }
-                      </span>
-                    </a>
-                  </li>
-
-                  <li class="nav-item">
-                    <a
-                      href="#tabs-activity-5"
-                      onClick={() => {
-                        setdataStatus("FollowUp");
-                        setCurrentPage(0);
-                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                        setEmployeeData(
-                          mappedData.filter(
-                            (obj) =>
-                              obj.Status === "FollowUp" &&
-                              obj.bdmAcceptStatus === "NotForwarded"
-                          )
-                        );
-                      }}
-                      className={
-                        dataStatus === "FollowUp"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      <span>Follow Up </span>
-
-                      <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.Status === "FollowUp" &&
-                              obj.bdmAcceptStatus === "NotForwarded"
-                          ).length
-                        }
-                      </span>
-                    </a>
-                  </li>
-
-                  <li class="nav-item">
-                    <a
-                      href="#tabs-activity-5"
-                      onClick={() => {
-                        setdataStatus("Matured");
-                        setCurrentPage(0);
-                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                        setEmployeeData(
-                          mappedData
-                            .filter(
+                <div class="card-header my-tab">
+                  <ul
+                    class="nav nav-tabs card-header-tabs nav-fill p-0"
+                    data-bs-toggle="tabs"
+                  >
+                    <li class="nav-item data-heading">
+                      <a
+                        href="#tabs-home-5"
+                        onClick={() => {
+                          setdataStatus("All");
+                          setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
+                          setEmployeeData(
+                            mappedData.filter(
                               (obj) =>
-                                obj.Status === "Matured" &&
-                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                            )
-                            .sort(
+                                (obj.Status === "Busy" ||
+                                  obj.Status === "Not Picked Up" ||
+                                  obj.Status === "Untouched") && (
+                                  obj.bdmAcceptStatus !== "Forwarded" ||
+                                  obj.bdmAcceptStatus !== "Accept" ||
+                                  obj.bdmAcceptStatus !== "Pending")
+                            ).sort(
                               (a, b) =>
                                 new Date(b.lastActionDate) -
                                 new Date(a.lastActionDate)
                             )
-                        );
-                      }}
-                      className={
-                        dataStatus === "Matured"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      <span>Matured </span>
-                      <span className="no_badge">
-                        {" "}
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.Status === "Matured" &&
-                              (obj.bdmAcceptStatus === "NotForwarded" ||
-                                obj.bdmAcceptStatus === "Pending" ||
-                                obj.bdmAcceptStatus === "Accept")
-                          ).length
+                          );
+                        }}
+                        className={
+                          dataStatus === "All"
+                            ? "nav-link active item-act"
+                            : "nav-link"
                         }
-                      </span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a
-                      href="#tabs-activity-5"
-                      onClick={() => {
-                        setdataStatus("Forwarded");
-                        setCurrentPage(0);
-                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                        setEmployeeData(
-                          mappedData
-                            .filter(
+                        data-bs-toggle="tab"
+                      >
+                        General{" "}
+                        <span className="no_badge">
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                (obj.Status === "Busy" ||
+                                  obj.Status === "Not Picked Up" ||
+                                  obj.Status === "Untouched") &&
+                                (obj.bdmAcceptStatus !== "Forwarded" &&
+                                  obj.bdmAcceptStatus !== "Accept" &&
+                                  obj.bdmAcceptStatus !== "Pending")
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Interested");
+                          setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
+                          setEmployeeData(
+                            mappedData.filter(
+                              (obj) =>
+                                obj.Status === "Interested" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "Interested"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        <span>Interested </span>
+                        <span className="no_badge">
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                obj.Status === "Interested" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("FollowUp");
+                          setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
+                          setEmployeeData(
+                            mappedData.filter(
+                              (obj) =>
+                                obj.Status === "FollowUp" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "FollowUp"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        <span>Follow Up </span>
+
+                        <span className="no_badge">
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                obj.Status === "FollowUp" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Matured");
+                          setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
+                          setEmployeeData(
+                            mappedData
+                              .filter(
+                                (obj) =>
+                                  obj.Status === "Matured" &&
+                                  (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                              )
+                              .sort(
+                                (a, b) =>
+                                  new Date(b.lastActionDate) -
+                                  new Date(a.lastActionDate)
+                              )
+                          );
+                        }}
+                        className={
+                          dataStatus === "Matured"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        <span>Matured </span>
+                        <span className="no_badge">
+                          {" "}
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                obj.Status === "Matured" &&
+                                (obj.bdmAcceptStatus === "NotForwarded" ||
+                                  obj.bdmAcceptStatus === "Pending" ||
+                                  obj.bdmAcceptStatus === "Accept")
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Forwarded");
+                          setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
+                          setEmployeeData(
+                            mappedData
+                              .filter(
+                                (obj) =>
+                                  obj.bdmAcceptStatus !== "NotForwarded" &&
+                                  obj.Status !== "Not Interested" &&
+                                  obj.Status !== "Busy" &&
+                                  obj.Status !== "Junk" &&
+                                  obj.Status !== "Not Picked Up" &&
+                                  obj.Status !== "Matured"
+                              )
+                              .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+                          );
+                          //setdataStatus(obj.bdmAcceptStatus);
+                        }}
+                        className={
+                          dataStatus === "Forwarded"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Bdm Forwarded{" "}
+                        <span className="no_badge">
+                          {" "}
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                               (obj) =>
                                 obj.bdmAcceptStatus !== "NotForwarded" &&
-                                obj.Status !== "Not Interested" &&
-                                obj.Status !== "Busy" &&
-                                obj.Status !== "Junk" &&
-                                obj.Status !== "Not Picked Up" &&
+                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
                                 obj.Status !== "Matured"
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("NotInterested");
+                          setCurrentPage(0);
+                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
+                          setEmployeeData(
+                            mappedData.filter(
+                              (obj) =>
+                                (obj.Status === "Not Interested" ||
+                                  obj.Status === "Junk") &&
+                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                             )
-                            .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
-                        );
-                        //setdataStatus(obj.bdmAcceptStatus);
-                      }}
-                      className={
-                        dataStatus === "Forwarded"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      Bdm Forwarded{" "}
-                      <span className="no_badge">
-                        {" "}
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              obj.bdmAcceptStatus !== "NotForwarded" &&
-                              obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                              obj.Status !== "Matured"
-                          ).length
+                          );
+                        }}
+                        className={
+                          dataStatus === "NotInterested"
+                            ? "nav-link active item-act"
+                            : "nav-link"
                         }
-                      </span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a
-                      href="#tabs-activity-5"
-                      onClick={() => {
-                        setdataStatus("NotInterested");
-                        setCurrentPage(0);
-                        const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
-                        setEmployeeData(
-                          mappedData.filter(
-                            (obj) =>
-                              (obj.Status === "Not Interested" ||
-                                obj.Status === "Junk") &&
-                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                          )
-                        );
-                      }}
-                      className={
-                        dataStatus === "NotInterested"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      <span>Not Interested </span>
-                      <span className="no_badge">
-                        {
-                          ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
-                            (obj) =>
-                              (obj.Status === "Not Interested" ||
-                                obj.Status === "Junk") &&
-                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
-                          ).length
-                        }
-                      </span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div className="card">
-                <div className="card-body p-0">
-                  <div
-                    style={{
-                      overflowX: "auto",
-                      overflowY: "auto",
-                      maxHeight: "60vh",
-                    }}
-                  >
-                    <table
+                        data-bs-toggle="tab"
+                      >
+                        <span>Not Interested </span>
+                        <span className="no_badge">
+                          {
+                            ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
+                              (obj) =>
+                                (obj.Status === "Not Interested" ||
+                                  obj.Status === "Junk") &&
+                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card">
+                  <div className="card-body p-0">
+                    <div
                       style={{
-                        width: "100%",
-                        borderCollapse: "collapse",
-                        border: "1px solid #ddd",
+                        overflowX: "auto",
+                        overflowY: "auto",
+                        maxHeight: "60vh",
                       }}
-                      className="table-vcenter table-nowrap"
                     >
-                      <thead>
-                        <tr className="tr-sticky">
-                          <th>
-                            <input
-                              type="checkbox"
-                              checked={
-                                selectedRows.length === employeeData.length
-                              }
-                              onChange={() => handleCheckboxChange("all")}
-                            />
-                          </th>
+                      <table
+                        style={{
+                          width: "100%",
+                          borderCollapse: "collapse",
+                          border: "1px solid #ddd",
+                        }}
+                        className="table-vcenter table-nowrap"
+                      >
+                        <thead>
+                          <tr className="tr-sticky">
+                            <th>
+                              <input
+                                type="checkbox"
+                                checked={
+                                  selectedRows.length === employeeData.length
+                                }
+                                onChange={() => handleCheckboxChange("all")}
+                              />
+                            </th>
 
-                          <th className="th-sticky">Sr.No</th>
-                          <th className="th-sticky1">Company Name</th>
-                          <th>Company Number</th>
-                          {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
-                          {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
-                          {dataStatus === "Forwarded" && <th>BDM Status</th>}
-                          {dataStatus === "Forwarded" &&
-                            (dataStatus !== "Interested" ||
-                              dataStatus !== "FollowUp" ||
-                              dataStatus !== "Untouched" ||
-                              dataStatus !== "Matured" ||
-                              dataStatus !== "Not Interested") && (
-                              <th>BDM Remarks</th>
-                            )}
-                          {dataStatus === "FollowUp" && <th>Next FollowUp Date</th>}
-                          <th>
-                            Incorporation Date
-                            <FilterListIcon
-                              style={{
-                                height: "15px",
-                                width: "15px",
-                                cursor: "pointer",
-                                marginLeft: "4px",
-                              }}
-                              onClick={handleFilterIncoDate}
-                            />
-                            {openIncoDate && (
-                              <div className="inco-filter">
-                                <div
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSort("oldest")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  Oldest
-                                </div>
+                            <th className="th-sticky">Sr.No</th>
+                            <th className="th-sticky1">Company Name</th>
+                            <th>Company Number</th>
+                            <th>Call History</th>
+                            {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
+                            {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
+                            {dataStatus === "Forwarded" && <th>BDM Status</th>}
+                            {dataStatus === "Forwarded" &&
+                              (dataStatus !== "Interested" ||
+                                dataStatus !== "FollowUp" ||
+                                dataStatus !== "Untouched" ||
+                                dataStatus !== "Matured" ||
+                                dataStatus !== "Not Interested") && (
+                                <th>BDM Remarks</th>
+                              )}
+                            {dataStatus === "FollowUp" && <th>Next FollowUp Date</th>}
+                            <th>
+                              Incorporation Date
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={handleFilterIncoDate}
+                              />
+                              {openIncoDate && (
+                                <div className="inco-filter">
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("oldest")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Oldest
+                                  </div>
 
-                                <div
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSort("newest")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  Newest
-                                </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("newest")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Newest
+                                  </div>
 
-                                <div
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSort("none")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  None
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </th>
-                          <th>City</th>
-                          <th>State</th>
-                          <th>Company Email</th>
-                          <th>
-                            Assigned On
-                            <SwapVertIcon
-                              style={{
-                                height: "15px",
-                                width: "15px",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                const sortedData = [...employeeData].sort(
-                                  (a, b) => {
-                                    if (sortOrder === "asc") {
-                                      return b.AssignDate.localeCompare(
-                                        a.AssignDate
-                                      );
-                                    } else {
-                                      return a.AssignDate.localeCompare(
-                                        b.AssignDate
-                                      );
+                              )}
+                            </th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Company Email</th>
+                            <th>
+                              Assigned On
+                              <SwapVertIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  const sortedData = [...employeeData].sort(
+                                    (a, b) => {
+                                      if (sortOrder === "asc") {
+                                        return b.AssignDate.localeCompare(
+                                          a.AssignDate
+                                        );
+                                      } else {
+                                        return a.AssignDate.localeCompare(
+                                          b.AssignDate
+                                        );
+                                      }
                                     }
-                                  }
-                                );
-                                setEmployeeData(sortedData);
-                                setSortOrder(
-                                  sortOrder === "asc" ? "desc" : "asc"
-                                );
-                              }}
-                            />
-                          </th>
-                          {/* {(dataStatus === "Matured" && <th>Action</th>) || */}
-                          {(dataStatus === "FollowUp" && (<>
-                            <th>View Projection</th>
-                            <th>Status Modification Date</th>
-                            <th>Age</th>
-                          </>)) ||
-                            (dataStatus === "Interested" && (<>
+                                  );
+                                  setEmployeeData(sortedData);
+                                  setSortOrder(
+                                    sortOrder === "asc" ? "desc" : "asc"
+                                  );
+                                }}
+                              />
+                            </th>
+                            {/* {(dataStatus === "Matured" && <th>Action</th>) || */}
+                            {(dataStatus === "FollowUp" && (<>
                               <th>View Projection</th>
                               <th>Status Modification Date</th>
                               <th>Age</th>
-                            </>))}
-                          {dataStatus === "Forwarded" && (<>
-                            <th>BDM Name</th>
-                            <th>Forwarded Date</th>
-                            <th>Age</th>
-                          </>)}
+                            </>)) ||
+                              (dataStatus === "Interested" && (<>
+                                <th>View Projection</th>
+                                <th>Status Modification Date</th>
+                                <th>Age</th>
+                              </>))}
+                            {dataStatus === "Forwarded" && (<>
+                              <th>BDM Name</th>
+                              <th>Forwarded Date</th>
+                              <th>Age</th>
+                            </>)}
 
-                          {dataStatus === "Forwarded" &&
-                            (dataStatus !== "Interested" ||
-                              dataStatus !== "FollowUp" ||
-                              dataStatus !== "Untouched" ||
-                              dataStatus !== "Matured" ||
-                              dataStatus !== "Not Interested") && (<>
-                                <th>Feedback</th>
-                              </>)}
-                          {dataStatus === "Forwarded" && (
-                            <th>Action</th>
-                          )}
-                        </tr>
-                      </thead>
-                      {loading ? (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11"  >
-                              <div className="LoaderTDSatyle">
-                                <ClipLoader
-                                  color="lightgrey"
-                                  loading
-                                  size={35}
-                                  height="25"
-                                  width="25"
-                                  aria-label="Loading Spinner"
-                                  data-testid="loader"
-                                />
-                              </div>
-                            </td>
+                            {dataStatus === "Forwarded" &&
+                              (dataStatus !== "Interested" ||
+                                dataStatus !== "FollowUp" ||
+                                dataStatus !== "Untouched" ||
+                                dataStatus !== "Matured" ||
+                                dataStatus !== "Not Interested") && (<>
+                                  <th>Feedback</th>
+                                </>)}
+                            {dataStatus === "Forwarded" && (
+                              <th>Action</th>
+                            )}
                           </tr>
-                        </tbody>
-                      ) : (
-                        <>
-                          {/* {console.log("Current Data :", currentData)} */}
-                          {currentData.length !== 0 &&
-                            <tbody>
-                              {currentData.map((company, index) => {
-                                let matchingLeadHistory
-                                if (Array.isArray(leadHistoryData)) {
-                                  matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
-                                  // Do something with matchingLeadHistory
-                                } else {
-                                  console.error("leadHistoryData is not an array");
-                                }
-                                
-                                return (
+                        </thead>
+                        {loading ? (
+                          <tbody>
+                            <tr>
+                              <td colSpan="11"  >
+                                <div className="LoaderTDSatyle">
+                                  <ClipLoader
+                                    color="lightgrey"
+                                    loading
+                                    size={35}
+                                    height="25"
+                                    width="25"
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        ) : (
+                          <>
+                            {/* {console.log("Current Data :", currentData)} */}
+                            {currentData.length !== 0 &&
+                              <tbody>
+                                {currentData.map((company, index) => {
+                                  let matchingLeadHistory
+                                  if (Array.isArray(leadHistoryData)) {
+                                    matchingLeadHistory = leadHistoryData.find(leadHistory => leadHistory._id === company._id);
+                                    // Do something with matchingLeadHistory
+                                  } else {
+                                    console.error("leadHistoryData is not an array");
+                                  }
+
+                                  return (
+                                    <tr
+                                      key={index}
+                                      className={
+                                        selectedRows.includes(company._id)
+                                          ? "selected"
+                                          : ""
+                                      }
+                                      style={{ border: "1px solid #ddd" }}
+                                    >
+                                      <td
+                                        style={{
+                                          position: "sticky",
+                                          left: 0,
+                                          zIndex: 1,
+                                          background: "white",
+                                        }}>
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedRows.includes(
+                                            company._id
+                                          )}
+                                          onChange={(e) =>
+                                            handleCheckboxChange(company._id, e)
+                                          }
+                                          onMouseDown={() =>
+                                            handleMouseDown(company._id)
+
+                                          }
+                                          onMouseEnter={() =>
+                                            handleMouseEnter(company._id)
+                                          }
+                                          onMouseUp={handleMouseUp}
+                                        />
+                                      </td>
+
+                                      <td className="td-sticky">{startIndex + index + 1}</td>
+                                      <td className="td-sticky1">{company["Company Name"]}</td>
+                                      <td>{company["Company Number"]}</td>
+
+                                      <td>
+                                        <LuHistory onClick={() => {
+                                          setShowCallHistory(true);
+                                          setClientNumber(company["Company Number"])
+                                        }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="grey"
+                                        />
+                                      </td>
+                                      <td><span>{company["Status"]}</span></td>
+
+                                      <td>
+                                        <div
+                                          key={company._id}
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                          }}
+                                        >
+                                          <p
+                                            className="rematkText text-wrap m-0"
+                                            title={company.Remarks}
+                                          >
+                                            {company.Remarks}
+                                          </p>
+                                          <span>
+                                            <IconButton
+                                              onClick={() => {
+                                                functionopenpopupremarks(
+                                                  company._id,
+                                                  company.Status,
+                                                  company.ename
+                                                );
+                                              }}
+                                            >
+                                              <HiOutlineEye
+                                                style={{
+                                                  fontSize: "14px",
+                                                  color: "#fbb900",
+                                                }}
+                                              />
+                                            </IconButton>
+                                          </span>
+                                        </div>
+                                      </td>
+
+                                      {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
+                                      {dataStatus === "Forwarded" && (
+                                        <td>
+                                          {company.Status === "Interested" && (
+                                            <span>Interested</span>
+                                          )}
+                                          {company.Status === "FollowUp" && (
+                                            <span>FollowUp</span>
+                                          )}
+                                        </td>
+                                      )}
+
+                                      {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                        <td>
+                                          <div key={company._id}
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "space-between",
+                                              width: "100px",
+                                            }}>
+                                            <p
+                                              className="rematkText text-wrap m-0"
+                                              title={company.bdmRemarks}
+                                            >
+                                              {!company.bdmRemarks
+                                                ? "No Remarks"
+                                                : company.bdmRemarks}
+                                            </p>
+                                            <IconButton
+                                              onClick={() => {
+                                                functionopenpopupremarksBdm(
+                                                  company._id,
+                                                  company.Status,
+                                                  company["Company Name"],
+                                                  company.bdmName
+                                                );
+                                                //setOpenPopupByBdm(true);
+                                                //setCurrentRemarks(company.Remarks);
+                                                //setCompanyId(company._id);
+                                              }}
+                                            >
+                                              <IconEye
+                                                style={{
+                                                  width: "14px",
+                                                  height: "14px",
+                                                  color: "#d6a10c",
+                                                  cursor: "pointer",
+                                                }}
+                                              />
+                                            </IconButton>
+                                          </div>
+                                        </td>
+                                      )}
+
+                                      <td>{formatDateNew(company["Company Incorporation Date  "])}</td>
+                                      <td>{company["City"]}</td>
+                                      <td>{company["State"]}</td>
+                                      <td>{company["Company Email"]}</td>
+                                      <td>{formatDateNew(company["AssignDate"])}</td>
+
+                                      {(dataStatus === "FollowUp" ||
+                                        dataStatus === "Interested") && (
+                                          <td>
+                                            {company &&
+                                              projectionData &&
+                                              projectionData.some(
+                                                (item) =>
+                                                  item.companyName ===
+                                                  company["Company Name"]
+                                              ) ? (
+                                              <IconButton>
+                                                <HiOutlineEye
+                                                  onClick={() => {
+                                                    functionopenprojection(
+                                                      company["Company Name"]
+                                                    );
+                                                  }}
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    width: "17px",
+                                                    height: "17px",
+                                                    color: "fbb900",
+                                                  }}
+                                                />
+                                              </IconButton>
+                                            ) : (
+                                              <IconButton>
+                                                <HiOutlineEye
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    width: "17px",
+                                                    height: "17px",
+                                                  }}
+                                                  color="lightgrey"
+                                                />
+                                              </IconButton>
+                                            )}
+                                          </td>
+                                        )}
+
+                                      {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                        <>
+                                          <td>
+                                            {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
+                                          </td>
+                                          <td>
+                                            {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
+                                          </td>
+                                        </>
+                                      )}
+
+                                      {dataStatus === "Forwarded" && (<>
+                                        {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
+                                        <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                      </>)}
+
+                                      {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
+                                        (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
+                                          <td>
+                                            <IconButton onClick={() => {
+                                              handleViewFeedback(
+                                                company._id,
+                                                company["Company Name"],
+                                                company.feedbackRemarks,
+                                                company.feedbackPoints
+                                              )
+                                            }}>
+                                              <RiInformationLine style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }} color="#fbb900" />
+                                            </IconButton>
+                                          </td>
+                                        ) : (
+                                          <td>
+                                            <IconButton onClick={() => {
+                                              handleViewFeedback(
+                                                company._id,
+                                                company["Company Name"],
+                                                company.feedbackRemarks,
+                                                company.feedbackPoints
+                                              )
+                                            }}>
+                                              <RiInformationLine style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }} color="lightgrey" />
+                                            </IconButton>
+                                          </td>
+                                        )
+                                      ) : null}
+
+                                      {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                        <td>
+                                          <MdDeleteOutline
+                                            onClick={() => {
+                                              handleReverseAssign(
+                                                company._id,
+                                                company["Company Name"],
+                                                company.bdmAcceptStatus,
+                                                company.Status,
+                                                company.bdmName
+                                              )
+                                            }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                            color="#f70000"
+                                          />
+                                        </td>
+                                      )}
+                                    </tr>
+                                  )
+                                })}
+                              </tbody>
+                            }
+                          </>
+                        )}
+                        {companiesLoading ? (
+                          <tbody>
+                            <tr>
+                              <td colSpan="11">
+                                <div className="LoaderTDSatyle">
+                                  <ClipLoader
+                                    color="lightgrey"
+                                    loading
+                                    size={10}
+                                    height="25"
+                                    width="2"
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+
+                          </tbody>
+                        ) : (
+                          <>
+                            {dataStatus === "null" && companies.length !== 0 && (
+                              <tbody>
+                                {companies.map((company, index) => (
                                   <tr
                                     key={index}
                                     className={
@@ -2917,32 +3227,6 @@ function EmployeeParticular() {
                                     }
                                     style={{ border: "1px solid #ddd" }}
                                   >
-                                    <td
-                                      style={{
-                                        position: "sticky",
-                                        left: 0,
-                                        zIndex: 1,
-                                        background: "white",
-                                      }}>
-                                      <input
-                                        type="checkbox"
-                                        checked={selectedRows.includes(
-                                          company._id
-                                        )}
-                                        onChange={(e) =>
-                                          handleCheckboxChange(company._id, e)
-                                        }
-                                        onMouseDown={() =>
-                                          handleMouseDown(company._id)
-
-                                        }
-                                        onMouseEnter={() =>
-                                          handleMouseEnter(company._id)
-                                        }
-                                        onMouseUp={handleMouseUp}
-                                      />
-                                    </td>
-
                                     <td className="td-sticky">
                                       {startIndex + index + 1}
                                     </td>
@@ -2969,267 +3253,7 @@ function EmployeeParticular() {
                                           {company.Remarks}
                                         </p>
                                         <span>
-                                          <IconButton
-                                            onClick={() => {
-                                              functionopenpopupremarks(
-                                                company._id,
-                                                company.Status,
-                                                company.ename
-                                              );
-                                            }}
-                                          >
-                                            <HiOutlineEye
-                                              style={{
-                                                fontSize: "14px",
-                                                color: "#fbb900",
-                                              }}
-                                            />
-                                          </IconButton>
-                                        </span>
-                                      </div>
-                                    </td>
-                                    {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
-                                    {dataStatus === "Forwarded" && (
-                                      <td>
-                                        {company.Status === "Interested" && (
-                                          <span>Interested</span>
-                                        )}
-                                        {company.Status === "FollowUp" && (
-                                          <span>FollowUp</span>
-                                        )}
-                                      </td>
-                                    )}
-                                    {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
-                                      <td>
-                                        <div key={company._id}
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                            width: "100px",
-                                          }}>
-                                          <p
-                                            className="rematkText text-wrap m-0"
-                                            title={company.bdmRemarks}
-                                          >
-                                            {!company.bdmRemarks
-                                              ? "No Remarks"
-                                              : company.bdmRemarks}
-                                          </p>
-                                          <IconButton
-                                            onClick={() => {
-                                              functionopenpopupremarksBdm(
-                                                company._id,
-                                                company.Status,
-                                                company["Company Name"],
-                                                company.bdmName
-                                              );
-                                              //setOpenPopupByBdm(true);
-                                              //setCurrentRemarks(company.Remarks);
-                                              //setCompanyId(company._id);
-                                            }}
-                                          >
-                                            <IconEye
-                                              style={{
-                                                width: "14px",
-                                                height: "14px",
-                                                color: "#d6a10c",
-                                                cursor: "pointer",
-                                              }}
-                                            />
-                                          </IconButton>
-                                        </div>
-                                      </td>
-
-                                    )}
-                                    <td>
-                                      {formatDateNew(
-                                        company["Company Incorporation Date  "]
-                                      )}
-                                    </td>
-                                    <td>{company["City"]}</td>
-                                    <td>{company["State"]}</td>
-                                    <td>{company["Company Email"]}</td>
-                                    <td>{formatDateNew(company["AssignDate"])}</td>
-                                    {(dataStatus === "FollowUp" ||
-                                      dataStatus === "Interested") && (
-                                        <td>
-                                          {company &&
-                                            projectionData &&
-                                            projectionData.some(
-                                              (item) =>
-                                                item.companyName ===
-                                                company["Company Name"]
-                                            ) ? (
-                                            <IconButton>
-                                              <HiOutlineEye
-                                                onClick={() => {
-                                                  functionopenprojection(
-                                                    company["Company Name"]
-                                                  );
-                                                }}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  width: "17px",
-                                                  height: "17px",
-                                                  color: "fbb900",
-                                                }}
-                                              />
-                                            </IconButton>
-                                          ) : (
-                                            <IconButton>
-                                              <HiOutlineEye
-                                                style={{
-                                                  cursor: "pointer",
-                                                  width: "17px",
-                                                  height: "17px",
-                                                }}
-                                                color="lightgrey"
-                                              />
-                                            </IconButton>
-                                          )}
-                                        </td>
-                                      )}
-                                    {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
-                                      <>
-                                        <td>
-                                          {matchingLeadHistory ? `${formatDateLeadHistory(matchingLeadHistory.date)} || ${formatTime(matchingLeadHistory.time)}` : "-"}
-                                        </td>
-                                        <td>
-                                          {matchingLeadHistory ? timePassedSince(matchingLeadHistory.date) : "-"}
-                                        </td>
-
-                                      </>
-                                    )}
-                                    {dataStatus === "Forwarded" && (<>
-                                      {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
-                                      <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                    </>)}
-                                    {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
-                                      (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
-                                        <td>
-                                          <IconButton onClick={() => {
-                                            handleViewFeedback(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.feedbackRemarks,
-                                              company.feedbackPoints
-                                            )
-                                          }}>
-                                            <RiInformationLine style={{
-                                              cursor: "pointer",
-                                              width: "17px",
-                                              height: "17px",
-                                            }} color="#fbb900" />
-                                          </IconButton>
-                                        </td>
-                                      ) : (
-                                        <td>
-                                          <IconButton onClick={() => {
-                                            handleViewFeedback(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.feedbackRemarks,
-                                              company.feedbackPoints
-                                            )
-                                          }}>
-                                            <RiInformationLine style={{
-                                              cursor: "pointer",
-                                              width: "17px",
-                                              height: "17px",
-                                            }} color="lightgrey" />
-                                          </IconButton>
-                                        </td>
-                                      )
-                                    ) : null}
-                                    {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
-                                      <td>
-                                        <MdDeleteOutline
-                                          onClick={() => {
-                                            handleReverseAssign(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.bdmAcceptStatus,
-                                              company.Status,
-                                              company.bdmName
-                                            )
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="#f70000"
-                                        />
-                                      </td>
-                                    )}
-                                  </tr>
-                                )
-                              })}
-                            </tbody>
-                          }
-                        </>
-                      )}
-                      {companiesLoading ? (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11">
-                              <div className="LoaderTDSatyle">
-                                <ClipLoader
-                                  color="lightgrey"
-                                  loading
-                                  size={10}
-                                  height="25"
-                                  width="2"
-                                  aria-label="Loading Spinner"
-                                  data-testid="loader"
-                                />
-                              </div>
-                            </td>
-                          </tr>
-
-                        </tbody>
-                      ) : (
-                        <>
-                          {dataStatus === "null" && companies.length !== 0 && (
-                            <tbody>
-                              {companies.map((company, index) => (
-                                <tr
-                                  key={index}
-                                  className={
-                                    selectedRows.includes(company._id)
-                                      ? "selected"
-                                      : ""
-                                  }
-                                  style={{ border: "1px solid #ddd" }}
-                                >
-                                  <td className="td-sticky">
-                                    {startIndex + index + 1}
-                                  </td>
-                                  <td className="td-sticky1">
-                                    {company["Company Name"]}
-                                  </td>
-                                  <td>{company["Company Number"]}</td>
-                                  <td>
-                                    <span>{company["Status"]}</span>
-                                  </td>
-                                  <td>
-                                    <div
-                                      key={company._id}
-                                      style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                      }}
-                                    >
-                                      <p
-                                        className="rematkText text-wrap m-0"
-                                        title={company.Remarks}
-                                      >
-                                        {company.Remarks}
-                                      </p>
-                                      <span>
-                                        {/* <IconEye
+                                          {/* <IconEye
                                       onClick={() => {
                                         functionopenpopupremarks(
                                           company._id,
@@ -3243,59 +3267,59 @@ function EmployeeParticular() {
                                         cursor: "pointer",
                                       }}
                                     /> */}
-                                        <HiOutlineEye
-                                          style={{
-                                            fontSize: "15px",
-                                            color: "#fbb900",
-                                            //backgroundColor: "lightblue",
-                                            // Additional styles for the "View" button
-                                          }}
-                                          //className="btn btn-primary d-none d-sm-inline-block"
+                                          <HiOutlineEye
+                                            style={{
+                                              fontSize: "15px",
+                                              color: "#fbb900",
+                                              //backgroundColor: "lightblue",
+                                              // Additional styles for the "View" button
+                                            }}
+                                            //className="btn btn-primary d-none d-sm-inline-block"
+                                            onClick={() => {
+                                              functionopenpopupremarks(
+                                                company._id,
+                                                company.Status,
+                                                company.ename
+                                              );
+                                            }}
+                                          />
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      {formatDate(
+                                        company["Company Incorporation Date"]
+                                      )}
+                                    </td>
+                                    <td>{company["City"]}</td>
+                                    <td>{company["State"]}</td>
+                                    <td>{company["Company Email"]}</td>
+                                    <td>{formatDate(company["AssignDate"])}</td>
+                                    <td>
+                                      <IconButton>
+                                        <RiEditCircleFill
                                           onClick={() => {
-                                            functionopenpopupremarks(
-                                              company._id,
-                                              company.Status,
-                                              company.ename
+                                            functionopenAnchor();
+                                            setMaturedCompanyName(
+                                              company["Company Name"]
                                             );
                                           }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="lightgrey"
                                         />
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    {formatDate(
-                                      company["Company Incorporation Date"]
-                                    )}
-                                  </td>
-                                  <td>{company["City"]}</td>
-                                  <td>{company["State"]}</td>
-                                  <td>{company["Company Email"]}</td>
-                                  <td>{formatDate(company["AssignDate"])}</td>
-                                  <td>
-                                    <IconButton>
-                                      <RiEditCircleFill
-                                        onClick={() => {
-                                          functionopenAnchor();
-                                          setMaturedCompanyName(
-                                            company["Company Name"]
-                                          );
-                                        }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="lightgrey"
-                                      />
-                                    </IconButton>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          )}
-                        </>
-                      )}
-                      {/* {(isFilter || isSearch) && filteredData.length === 0 && (
+                                      </IconButton>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            )}
+                          </>
+                        )}
+                        {/* {(isFilter || isSearch) && filteredData.length === 0 && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
@@ -3305,63 +3329,64 @@ function EmployeeParticular() {
                         </tbody>
 
                       )} */}
-                      {currentData.length === 0 && !loading && (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11" className="p-2">
-                              <Nodata />
-                            </td>
-                          </tr>
-                        </tbody>
-                      )}
-                    </table>
-                  </div>
-                  {currentData.length !== 0 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                      className="pagination"
-                    >
-                      <IconButton
-                        onClick={() =>
-                          setCurrentPage((prevPage) =>
-                            Math.max(prevPage - 1, 0)
-                          )
-                        }
-                        disabled={currentPage === 0}
-                      >
-                        <IconChevronLeft />
-                      </IconButton>
-                      <span>
-                        Page {currentPage + 1} of{" "}
-                        {Math.ceil(employeeData.length / itemsPerPage)}
-                      </span>
-
-                      <IconButton
-                        onClick={() =>
-                          setCurrentPage((prevPage) =>
-                            Math.min(
-                              prevPage + 1,
-                              Math.ceil(employeeData.length / itemsPerPage) - 1
-                            )
-                          )
-                        }
-                        disabled={
-                          currentPage ===
-                          Math.ceil(employeeData.length / itemsPerPage) - 1
-                        }
-                      >
-                        <IconChevronRight />
-                      </IconButton>
+                        {currentData.length === 0 && !loading && (
+                          <tbody>
+                            <tr>
+                              <td colSpan="11" className="p-2">
+                                <Nodata />
+                              </td>
+                            </tr>
+                          </tbody>
+                        )}
+                      </table>
                     </div>
-                  )}
+                    {currentData.length !== 0 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                        className="pagination"
+                      >
+                        <IconButton
+                          onClick={() =>
+                            setCurrentPage((prevPage) =>
+                              Math.max(prevPage - 1, 0)
+                            )
+                          }
+                          disabled={currentPage === 0}
+                        >
+                          <IconChevronLeft />
+                        </IconButton>
+                        <span>
+                          Page {currentPage + 1} of{" "}
+                          {Math.ceil(employeeData.length / itemsPerPage)}
+                        </span>
+
+                        <IconButton
+                          onClick={() =>
+                            setCurrentPage((prevPage) =>
+                              Math.min(
+                                prevPage + 1,
+                                Math.ceil(employeeData.length / itemsPerPage) - 1
+                              )
+                            )
+                          }
+                          disabled={
+                            currentPage ===
+                            Math.ceil(employeeData.length / itemsPerPage) - 1
+                          }
+                        >
+                          <IconChevronRight />
+                        </IconButton>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />}
+          </>
         )}
 
         {/* Login Details */}
@@ -3388,6 +3413,7 @@ function EmployeeParticular() {
           )
         }
       </div>
+
       {/* ------------------------------- Assign data -------------------------- */}
       <Dialog
         open={openAssign}
@@ -3736,9 +3762,7 @@ function EmployeeParticular() {
         </DialogContent>
       </Dialog>
 
-
       {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
-
       <Dialog
         open={feedbackPopupOpen}
         onClose={closeFeedbackPopup}
@@ -3887,7 +3911,6 @@ function EmployeeParticular() {
                   textShadow: "none",
                   fontFamily: "sans-serif",
                   fontWeight: "400",
-
                   fontFamily: "Poppins, sans-serif",
                   margin: "10px 0px",
                 }}
@@ -3965,6 +3988,7 @@ function EmployeeParticular() {
           </div>
         </div>
       </Drawer>
+
       {/* //----------------leads filter drawer------------------------------- */}
       <Drawer
         style={{ top: "50px" }}
