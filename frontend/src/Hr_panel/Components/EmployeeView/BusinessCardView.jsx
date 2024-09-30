@@ -11,11 +11,11 @@ import { FaEarthAmericas } from "react-icons/fa6";
 
 function BusinessCardView() {
   return (
-    <div className="BusinessCardView" style={{ height: "calc(100vh - 240px)", overflow: "auto" }}>
+    <div className="BusinessCardView">
         <div className='d-flex align-items-center justify-content-center'>
-            <div className="BusinessCardBody mt-5">
+            <div className="BusinessCardBody mt-3">
                 <div className='BusinessCardheader'>
-                    <div className='d-flex align-items-center'>
+                    <div className='d-flex align-items-start'>
                         <div className='BusinessCardheaderIcon'>
                             <IoIosPerson />
                         </div>

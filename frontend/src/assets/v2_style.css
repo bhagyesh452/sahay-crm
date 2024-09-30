@@ -1840,12 +1840,12 @@ th.th-day {
 }
 .BusinessCardBody
 {
-    width: 525px;
-    height: 300px;
+    width: 475px;
+    height: 260px;
     background: #fff;
     background-image: url(../static/bg.png);
-    background-position: center -11px;
-    background-size: contain;
+    background-position: center 10px;
+    background-size: 100% 93%;
     background-repeat: no-repeat;
     border-radius: 6px;
     box-shadow: 2px 2px 10px -2px #b4b4b4;
@@ -1853,18 +1853,18 @@ th.th-day {
 }
 .BusinessCardheader
 {
-    padding: 22px 28px;
+    padding: 18px 22px;
 }
 .BusinessCardheaderIcon
 {
     background: #fbb918;
-    width: 22px;
+    width: 20px;
     text-align: center;
-    height: 32px;
-    line-height: 10px;
+    height: 30px;
+    line-height: 20px;
     border-radius: 0 0 100px 100px;
     padding-bottom: 9px;
-    font-size: 16px;
+    font-size: 14px;
     color: #ffff;
     position: relative;
     z-index: 1;
@@ -1874,7 +1874,7 @@ th.th-day {
     position: absolute;
     content: "";
     background: #fbb918;
-    width: 22px;
+    width: 20px;
     left: 0;
     top: -26px;
     height: 40px;
@@ -1882,54 +1882,61 @@ th.th-day {
 }
 .BusinessCardheaderName
 {
-    margin-left: 14px;
+    margin-left: 12px;
 }
 .BusinessCardheaderName h3
 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 400;
     text-transform: uppercase;
 }
 .BusinessCardheaderName p
 {
-    font-size: 12px;
+    font-size: 10px;
     letter-spacing: 2px;
 }
 .BusinessCardData
 {
-    padding: 10px 28px;
+    padding: 5px 18px;
 }
 .BusinessCardDetails
 {
     position: relative;
+    width: 62%;
 }
 .BusinessCardDetailsIcon
 {
-    width: 20px;
+    width: 18px;
     text-align: center;
-    font-size: 10px;
-    height: 20px;
+    font-size: 8px;
+    height: 18px;
     background: #fbb918;
     color: #fff;
     border-radius: 5px;
-    line-height: 17px;
-    margin-left: 2px;
+    line-height: 15px;
+    margin-left: 4px;
 }
 .BusinessCardDetailsText
 {
-    font-size: 11px;
-    margin-left: 15px;
+    font-size: 10px;
+    margin-left: 10px;
+    line-height: 12px;
 }
 .BusinessCardLogo
 {
-    width: 150px;
-    margin-left: 100px;
+    width: calc(100% - 62%);
     margin-top: -15px;
-}       
+    text-align: center;
+}    
+.BusinessCardLogo img
+{
+    width: 135px;
+    margin: 12px 0;
+}   
 .BusinessCardFooter
 {
-    padding: 0px 28px;
-    margin-top: 38px;
+    padding: 0px 23px;
+    margin-top: 37px;
 }
 .BusinessCardFooterIcon
 {
@@ -1938,14 +1945,14 @@ th.th-day {
     font-size: 10px;
     height: 20px;
     color: #fff;
-    line-height: 19px;
-    margin-left: 2px;
+    line-height: 17px;
+    margin-left: 1px;
 }
 .BusinessCardFooterText
 {
-    font-size: 11px;
+    font-size: 10px;
     color: #fff;
-    margin-left: 15px;
+    margin-left: 8px;
     line-height: 17px;
     letter-spacing: 2px;
     font-weight: 100;
