@@ -114,7 +114,8 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
           filename: `${req.file.originalname}`,
           path: pdfPath
         }];
-        const subject = `Congratulations! Your Application has been submitted!`;
+        const sendingDate = formatDatePro(new Date());
+        const subject = `Your Application has been submitted | Start-Up Sahay Private Limited | ${sendingDate}`;
         const html = `
           <p>Dear ${empFullName},</p>
           <p>We hope this email finds you well. We wanted to express our sincere gratitude for taking the time to apply for the Web/FullStack Developer position at Start-Up Sahay Private Limited. Your interest in our company and your application are greatly appreciated.</p>
@@ -155,8 +156,8 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
                       </p>                
           <p>Thank you once again for considering Start-Up Sahay Private Limited as your potential employer. We look forward to the possibility of working together and wish you the best of luck in your job search.</p>
           `;
-        const sendingDate = formatDatePro(new Date());
-        const subject2 = `${empFullName}| Job Application FormÂ |${sendingDate}`;
+        
+        const subject2 = `${empFullName} | Job Application Form | ${sendingDate}`;
         const html2 = `
         <h1>Applicant Data</h1>
         <p class="mt-2">
@@ -204,14 +205,14 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
           // Send email
           const emailInfo = await sendMailRecruiter(
             [personal_email],
-            subject2,
+            subject,
             "",
             html,
-            attachments
+            
           );
           const emailInfo2 = await sendMailResponseRecruiter(
             ["hr@startupsahay.com", "recruiter@startupsahay.com","shivangi@startupsahay.com"],
-            subject,
+            subject2,
             "",
             html2,
             attachments

@@ -531,7 +531,7 @@ function EmployeeView() {
                 </div>
 
                 <div className="mt-3">
-                  <ul class="nav nav-tabs employee_e_info_tab">
+                  <ul class="nav nav-tabs employee_e_info_tab" style={{fontSize:'12px'}}>
                     <li class="nav-item">
                       <a class="nav-link active" data-bs-toggle="tab" href="#eI">Your Info</a>
                     </li>

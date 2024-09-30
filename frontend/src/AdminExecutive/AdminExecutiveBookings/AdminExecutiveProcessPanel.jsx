@@ -758,7 +758,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                         <BsFilter onClick={() => handleFilterClick("dscEmailId")} />
                       )}
                     </div>
-                    {/* {/* ---------------------filter component--------------------------- */}
+                   {/* ---------------------filter component---------------------------  */}
                     {showFilterMenu && activeFilterField === 'dscEmailId' && (
                       <div
                         ref={filterMenuRef}
@@ -781,7 +781,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                     )}
                   </div>
                 </th>
-                <th>
+                {/* <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['portalCharges'] = el}>Portal Charges</div>
                     <div className="RM_filter_icon">
@@ -791,7 +791,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                         <BsFilter onClick={() => handleFilterClick("portalCharges")} />
                       )}
                     </div>
-                    {/* {/* ---------------------filter component--------------------------- */}
+                      ---------------------filter component--------------------------- 
                     {showFilterMenu && activeFilterField === 'portalCharges' && (
                       <div
                         ref={filterMenuRef}
@@ -824,7 +824,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                         <BsFilter onClick={() => handleFilterClick("chargesPaidVia")} />
                       )}
                     </div>
-                    {/* {/* ---------------------filter component--------------------------- */}
+                     ---------------------filter component---------------------------
                     {showFilterMenu && activeFilterField === 'chargesPaidVia' && (
                       <div
                         ref={filterMenuRef}
@@ -857,7 +857,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                         <BsFilter onClick={() => handleFilterClick("expenseReimbursementStatus")} />
                       )}
                     </div>
-                    {/* {/* ---------------------filter component--------------------------- */}
+                     ---------------------filter component---------------------------
                     {showFilterMenu && activeFilterField === 'expenseReimbursementStatus' && (
                       <div
                         ref={filterMenuRef}
@@ -879,7 +879,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                       </div>
                     )}
                   </div>
-                </th>
+                </th> */}
                 <th>
                   <div className="d-flex align-items-center justify-content-center position-relative">
                     <div ref={el => fieldRefs.current['bookingDate'] = el}>Booking Date</div>
@@ -1148,7 +1148,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           }
                         />
                       </td>
-                      <td>
+                      {/* <td>
                         <DscPortalCharges
                           key={`${obj["Company Name"]}-${obj.serviceName}`} // Unique key
                           companyName={obj["Company Name"]}
@@ -1178,7 +1178,7 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
                           dscExpenseStatus={obj.expenseReimbursementStatus}
                           expenseDate={obj.expenseReimbursementDate}
                         />
-                      </td>
+                      </td> */}
                       <td>
                         {formatDatePro(obj.bookingDate)}
                       </td>
