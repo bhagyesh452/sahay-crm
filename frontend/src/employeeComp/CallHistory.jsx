@@ -38,7 +38,7 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
         hours = hours % 12 || 12; // Convert 0 (midnight) or 12 (noon) to 12
 
         // Return formatted time string in 12-hour format with hours and minutes
-        return `${hours}:${minutes} ${amOrPm}`;
+        return `${hours < 10 ? '0' + hours : hours} : ${minutes} ${amOrPm}`;
     };
 
     const formatDuration = (duration) => {
@@ -224,7 +224,7 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
                                         className={"nav-link active item-act"}
                                         data-bs-toggle="tab"
                                     >
-                                        Client's Calling History{" "}
+                                        {clientNumber}'s Calling History{" "}
                                         <span className="no_badge">{(searchValue ? searchResult : callHistory).length}</span>
                                     </a>
                                 </li>
@@ -253,11 +253,11 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
                                             <tr className="tr-sticky">
                                                 <th className="th-sticky">Sr.No</th>
                                                 <th className="th-sticky1">Employee Name</th>
-                                                <th>Employee Number</th>
+                                                <th>Employee Number (From)</th>
                                                 <th>To Number</th>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Duration</th>
+                                                <th>Call Date</th>
+                                                <th>Call Time</th>
+                                                <th>Call Duration</th>
                                                 <th>Call Type</th>
                                             </tr>
                                         </thead>
