@@ -28,6 +28,7 @@ import RecruiterStatusDropdown from "../ExtraComponents/RecruiterStatusDropdown"
 import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from react-icons
 import RecruiterInterviewStatus from "../ExtraComponents/RecruiterInterviewStatus";
 import RecruiterDisqualifiedDropdown from "../ExtraComponents/RecruiterDisqualifiedDropdown";
+import RecruiterRemarks from "../ExtraComponents/RecruiterRemarks";
 
 function RecruiterDisqualified({
     searchText,
@@ -370,7 +371,7 @@ function RecruiterDisqualified({
         window.open(`${secretKey}/recruiter/uploads/${empFullName}/${filename}`, "_blank");
     }
 
-    console.log("onholddata" , recruiterData)
+    console.log("onholddata", recruiterData)
 
     return (
         <div>
@@ -581,6 +582,42 @@ function RecruiterDisqualified({
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Interview Staus
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('Company Email') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'Company Email' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
+                                                Interview Date
                                             </div>
 
                                             {/* <div className='RM_filter_icon'>
@@ -925,49 +962,31 @@ function RecruiterDisqualified({
                                                 )}
                                             </div>
                                         </td>
-                                        <td></td>
                                         <td>
-                                            
-                                        {obj.interViewStatus ? obj.interViewStatus : "Not Started"}
-                                            </td>
-                                        <td className="td_of_remarks">
-                                            <div className="d-flex align-items-center justify-content-between wApp">
-                                                <div
-                                                    className="My_Text_Wrap"
-                                                    title={
-                                                        obj.Remarks && obj.Remarks.length > 0
-                                                            ? obj.Remarks.sort(
-                                                                (a, b) =>
-                                                                    new Date(b.updatedOn) -
-                                                                    new Date(a.updatedOn)
-                                                            )[0].remarks
-                                                            : "No Remarks"
-                                                    }
-                                                >
-                                                    {obj.Remarks && obj.Remarks.length > 0
-                                                        ? obj.Remarks.sort(
-                                                            (a, b) =>
-                                                                new Date(b.updatedOn) -
-                                                                new Date(a.updatedOn)
-                                                        )[0].remarks
-                                                        : "No Remarks"}
-                                                </div>
-                                                <button
-                                                    className="td_add_remarks_btn"
-                                                    // onClick={() => {
-                                                    //     setOpenRemarksPopUp(true);
-                                                    //     setCurrentCompanyName(obj["Company Name"]);
-                                                    //     setCurrentServiceName(obj.serviceName);
-                                                    //     setHistoryRemarks(obj.Remarks);
-                                                    //     handleOpenRemarksPopup(
-                                                    //         obj["Company Name"],
-                                                    //         obj.serviceName
-                                                    //     );
-                                                    // }}
-                                                >
-                                                    <FaPencilAlt />
-                                                </button>
-                                            </div>
+                                            <RecruiterInterviewStatus
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                mainStatus={obj.mainCategoryStatus}
+                                                subStatus={obj.subCategoryStatus}
+                                                setNewSubStatus={setNewStatusProcess}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                interViewStatus={obj.interViewStatus ? obj.interViewStatus : "Not Started"}
+                                            />
+
+                                        </td>
+                                        <td>{obj.interViewDate ? formatDatePro(obj.interViewDate) : "Not Confirmed Yet"}</td>
+                                        <td>
+                                            <RecruiterRemarks
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                mainStatus={obj.mainCategoryStatus}
+                                                subStatus={obj.subCategoryStatus}
+                                                setNewSubStatus={setNewStatusProcess}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                historyRemarks={obj.Remarks}
+                                            />
                                         </td>
                                         <td>
                                             {obj.appliedFor}

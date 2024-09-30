@@ -256,56 +256,12 @@ function AdminExecutiveProcessPanel({ searchText, showFilter, activeTab, totalFi
   };
 
   // Remarks Popup Section
-  const handleOpenRemarksPopup = async (companyName, serviceName) => {
-    setCurrentCompanyName(companyName);
-    setCurrentServiceName(serviceName);
-    setOpenRemarksPopUp(true);
-
-    try {
-      const response = await axios.get(`${secretKey}/rm-services/get-remarks`, {
-        params: { companyName, serviceName },
-      });
-      setRemarksHistory(response.data);
-    } catch (error) {
-      console.error("Error fetching remarks", error.message);
-    }
-  };
+  
 
   const functionCloseRemarksPopup = () => {
     setOpenRemarksPopUp(false);
   };
 
-  const debouncedSetChangeRemarks = useCallback(
-    debounce((value) => {
-      setChangeRemarks(value);
-    }, 300),
-    []
-  );
-
-  const handleSubmitRemarks = async () => {
-    try {
-      const response = await axios.post(
-        `${secretKey}/rm-services/post-remarks-for-rmofcertification`,
-        {
-          currentCompanyName,
-          currentServiceName,
-          changeRemarks,
-          updatedOn: new Date(),
-        }
-      );
-      if (response.status === 200) {
-        fetchData(searchText);
-        functionCloseRemarksPopup();
-        Swal.fire(
-          "Remarks Added!",
-          "The remarks have been successfully added.",
-          "success"
-        );
-      }
-    } catch (error) {
-      console.log("Error Submitting Remarks", error.message);
-    }
-  };
 
   // ------------------------------------------------function to send service back to recieved box --------------------------------
 

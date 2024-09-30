@@ -18,38 +18,13 @@ const RecruiterDisqualifiedDropdown = ({ empName, empEmail, mainStatus, disquali
     setStatusClass(statusClass);
     try {
       let response;
-      if (mainStatus === "UnderReview") {
-        response = await axios.post(`${secretKey}/recruiter/update-disqualified-recuitment`, {
-          empName,
-          empEmail,
-          disqualificationReason: newStatus
-        });
-      } else if (mainStatus === "Disqualified") {
-        response = await axios.post(`${secretKey}/recruiter/update-disqualified-recuitment`, {
-          empName,
-          empEmail,
-          disqualificationReason: newStatus
-        });
-      } else if (mainStatus === "Rejected") {
-        response = await axios.post(`${secretKey}/recruiter/update-disqualified-recuitment`, {
-          empName,
-          empEmail,
-          disqualificationReason: newStatus
-        });
-      } else if (mainStatus === "Selected") {
-        response = await axios.post(`${secretKey}/recruiter/update-disqualified-recuitment`, {
-          empName,
-          empEmail,
-          disqualificationReason: newStatus
-        });
-      } else if (mainStatus === "On Hold") {
+       if (mainStatus === "Disqualified") {
         response = await axios.post(`${secretKey}/recruiter/update-disqualified-recuitment`, {
           empName,
           empEmail,
           disqualificationReason: newStatus
         });
       }
-
       refreshData();
       //console.log("Status updated successfully:", response.data);
     } catch (error) {
@@ -108,7 +83,7 @@ const RecruiterDisqualifiedDropdown = ({ empName, empEmail, mainStatus, disquali
       >
         <option value="" disabled>Select Disqualification Reason</option>
         <option value="Poor Communication">Poor Communication</option>
-        <option value="Insufficient Experience ">Insufficient Experience </option>
+        <option value="Insufficient Experience">Insufficient Experience</option>
         <option value="Background Check Issues( Caste/Competitors)">Background Check Issues( Caste/Competitors)</option>
         <option value="High Salary Expectations">High Salary Expectations</option>
         <option value="Out Of Age Criteria">Out Of Age Criteria</option>

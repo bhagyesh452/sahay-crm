@@ -496,4 +496,200 @@ router.post(`/update-disqualified-recuitment/`, async (req, res) => {
   }
 });
 
+router.post(`/post-save-interviewdate-recruiter/`, async (req, res) => {
+  const { empName, empEmail,value } = req.body;
+  //console.log("date", value);
+  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
+  const socketIO = req.io;
+  try {
+    const company = await RecruitmentModel.findOneAndUpdate(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+      {
+        interViewDate: new Date(value),
+      },
+      { new: true }
+    );
+    if (!company) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", data: company });
+  } catch (error) {
+    console.error("Error updating document:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/post-remarks-for-recruiter", async (req, res) => {
+  const { empName, empEmail,changeRemarks, updatedOn } = req.body;
+
+  try {
+    const updateDocument = await RecruitmentModel.findOneAndUpdate(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+      {
+        $push: {
+          Remarks: {
+            remarks: changeRemarks,
+            updatedOn: updatedOn,
+          },
+        },
+      },
+      { new: true } // Return the updated document
+    );
+
+    if (!updateDocument) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Remarks added successfully", data: updateDocument });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.delete("/delete-remark-recruiter", async (req, res) => {
+  const { remarks_id, empName, empEmail} = req.body;
+
+  try {
+    const company = await RecruitmentModel.findOne(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      });
+
+    if (!company) {
+      return res.status(404).json({ message: "Company or service not found" });
+    }
+
+    // Remove the specific remark from the array
+    const updatedRemarks = company.Remarks.filter(
+      (remark) => remark._id.toString() !== remarks_id
+    );
+
+    // Update the company document
+    await RecruitmentModel.updateOne(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+      { $set: { Remarks: updatedRemarks } }
+    );
+
+    res.status(200).json({ message: "Remark deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting remark:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.post(`/update-rejection-recuitment/`, async (req, res) => {
+  const { empName, empEmail, rejectionReason } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await RecruitmentModel.findOne(
+      { 
+        empFullName: empName, 
+        personal_email: empEmail 
+      },
+  );
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { rejectionReason: rejectionReason };
+
+    // Perform the update
+    const updatedCompany = await RecruitmentModel.findOneAndUpdate(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post(`/update-department-recuitment/`, async (req, res) => {
+  const { empName, empEmail, department } = req.body;
+  //console.log("contentStatus", contentStatus, companyName, serviceName)
+  const socketIO = req.io;
+
+  try {
+    // Find the company document
+    const company = await RecruitmentModel.findOne(
+      { 
+        empFullName: empName, 
+        personal_email: empEmail 
+      },
+  );
+
+    // Check if the company exists
+    if (!company) {
+      console.error("Company not found");
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Determine the update values based on the contentStatus and brochureStatus
+    let updateFields = { department: department };
+
+    // Perform the update
+    const updatedCompany = await RecruitmentModel.findOneAndUpdate(
+      { empFullName: empName, 
+        personal_email: empEmail 
+      },
+      updateFields,
+      { new: true }
+    );
+
+    // Check if the update was successful
+    if (!updatedCompany) {
+      console.error("Failed to save the updated document");
+      return res
+        .status(400)
+        .json({ message: "Failed to save the updated document" });
+    }
+
+    // Send the response
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", data: updatedCompany });
+  } catch (error) {
+    console.error("Error updating document:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 module.exports = router;
