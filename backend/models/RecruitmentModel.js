@@ -150,13 +150,13 @@ const RecruitmentSchema = new mongoose.Schema({
     exitDate: {
         type: Date,
     },
-    previousMainCategoryStaus:{
+    previousMainCategoryStatus:{
         type:String,
-        default:""
+        
     },
-    previousSubCategoryStaus:{
+    previousSubCategoryStatus:{
         type:String,
-        default:""
+       
     }
 
 });

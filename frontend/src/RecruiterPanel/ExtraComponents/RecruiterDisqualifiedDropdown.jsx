@@ -4,16 +4,11 @@ import "../../dist/css/tabler-payments.min.css?1684106062";
 import "../../dist/css/tabler-vendors.min.css?1684106062";
 import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
+import RecruiterDisqualified from "../TabPanels/RecruiterDisqualified";
 
 
-const RecruiterInterviewStatus = ({ 
-  empName, 
-  empEmail, 
-  mainStatus, 
-  interViewStatus,  
-  refreshData 
-}) => {
-  const [status, setStatus] = useState(interViewStatus);
+const RecruiterDisqualifiedDropdown = ({ empName, empEmail, mainStatus, disqualificationReason,  refreshData }) => {
+  const [status, setStatus] = useState(disqualificationReason);
   const [statusClass, setStatusClass] = useState("untouched_status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -23,14 +18,13 @@ const RecruiterInterviewStatus = ({
     setStatusClass(statusClass);
     try {
       let response;
-      if (mainStatus === "UnderReview") {
-        response = await axios.post(`${secretKey}/recruiter/update-interview-recuitment`, {
+       if (mainStatus === "Disqualified") {
+        response = await axios.post(`${secretKey}/recruiter/update-disqualified-recuitment`, {
           empName,
           empEmail,
-          interViewStatus: newStatus
+          disqualificationReason: newStatus
         });
       }
-
       refreshData();
       //console.log("Status updated successfully:", response.data);
     } catch (error) {
@@ -72,36 +66,33 @@ const RecruiterInterviewStatus = ({
 //   }, [contentStatus, writername]);
 
   useEffect(() => {
-    setStatusClass(getStatusClass(interViewStatus));
-  }, [interViewStatus]);
+    setStatusClass(getStatusClass(disqualificationReason));
+  }, [disqualificationReason]);
 
- console.log("interViewStatus", interViewStatus)
+ 
 
 
   return (
     <section className="rm_status_dropdown">
        <select
-        className={(mainStatus === "Disqualified" || mainStatus === "Selected" || mainStatus === "Rejected" || mainStatus === "On Hold") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={(mainStatus === "Approved" || mainStatus === "Application Submitted") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         aria-labelledby="dropdownMenuButton1"
         onChange={(e) => handleStatusChange(e.target.value)}
-        value={interViewStatus === "" ? "Not Applicable" :interViewStatus}
+        value={disqualificationReason}
       >
-        <option value="" disabled>Select Interview Status</option>
-        <option value="Not Applicable">Not Applicable</option>
-        <option value="Didn't Appear">Didn't Appear</option>
-        <option value="Canceled">Canceled</option>
-        <option value="Taken By Palak">Taken By Palak</option>
-        <option value="Taken By Hiral">Taken By Hiral</option>
-        <option value="Taken By Vaibhav">Taken By Vaibhav</option>
-        <option value="Taken By Mr. Rahul">Taken By Mr. Rahul</option>
-        <option value="Taken By Mr. Nimesh">Taken By Mr. Nimesh</option>
-        <option value="Taken By Palak & Mr. Nimesh">Taken By Palak & Mr. Nimesh</option>
-        <option value="Taken By Palak & Mr. Rahul">Taken By Palak & Mr. Rahul</option>
-        <option value="Taken By Palak & Mr. Vaibhav">Taken By Palak & Mr. Vaibhav</option>
+        <option value="" disabled>Select Disqualification Reason</option>
+        <option value="Poor Communication">Poor Communication</option>
+        <option value="Insufficient Experience">Insufficient Experience</option>
+        <option value="Background Check Issues( Caste/Competitors)">Background Check Issues( Caste/Competitors)</option>
+        <option value="High Salary Expectations">High Salary Expectations</option>
+        <option value="Out Of Age Criteria">Out Of Age Criteria</option>
+        <option value="Lack Of Required Skills">Lack Of Required Skills</option>
+        <option value="Qualification Shortfall">Qualification Shortfall</option>
+        <option value="Application Criteria Not Met">Application Criteria Not Met</option>
       </select>
     </section>
   );
 };
 
-export default RecruiterInterviewStatus;
+export default RecruiterDisqualifiedDropdown;
