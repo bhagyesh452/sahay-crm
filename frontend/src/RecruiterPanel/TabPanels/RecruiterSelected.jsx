@@ -392,7 +392,7 @@ function RecruiterSelected({
                         </Backdrop>
                     )}
                     {recruiterData.length > 0 ? (
-                        <table className="table table-vcenter table-nowrap rm_table">
+                        <table className="table table-vcenter table-nowrap recruiter_selected_table">
                             <thead>
                                 <tr className="tr-sticky">
                                     <th className="G_rm-sticky-left-1">
