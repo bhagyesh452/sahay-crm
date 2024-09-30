@@ -110,49 +110,8 @@ function CallHistory({ handleCloseHistory, clientNumber }) {
 
                 // Process the POST response
                 const data = await response.json();
-
-                // Construct the query parameters
-                const queryParamsObject = {
-                    "client_numbers": [],
-                };
-                let newData;
-                const response2 = await fetch(`${secretKey}/fetch-api-data`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(queryParamsObject)
-                });
-
-                try {
-                    setIsLoading(true);
-                    const data = await response2.json();  // Await the response
-                    //console.log('Data from external API:', data);
-                    newData = data.result;  // Assign the data to newData
-                } catch (error) {
-                    console.error('Error:', error);  // Catch any errors
-                }
-                // console.log("New Data:", newData);
-
-                // Assuming data.result from first response and newData from second have `emp_number` as common
-                const mergedData = data.result?.map(client => {
-                    const matchingClient = newData?.find(item => item.client_number === client.client_number);
-                    if (matchingClient) {
-                        return {
-                            ...client, // Spread the fields from the first response
-                            last_sync_req_at: matchingClient.last_sync_req_at // Add the field from second response
-                        };
-                    }
-                    return client; // If no match, return the original object
-                });
-                setCallHistory(mergedData);
-
-                // Check for errors in the GET request
-                if (!response2.ok) {
-                    const errorData = await response2.json();
-                    throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
-                }
-                // console.log("Merged Data:", mergedData);
+                setCallHistory(data.result);
+                // console.log("Calling history is :", data);
             } catch (err) {
                 console.log(err);
             } finally {
