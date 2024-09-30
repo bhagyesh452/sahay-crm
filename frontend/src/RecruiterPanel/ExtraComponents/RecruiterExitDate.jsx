@@ -5,16 +5,16 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 
 
-const RecruiterInterviewDate = ({
+const RecruiterExitDate = ({
     empName,
     empEmail,
     mainStatus,
-    interViewDate,
+    exitDate,
     refreshData
 }) => {
 
   
-    const [interViewDateNew, setInterViewDateNew] = useState(interViewDate ? new Date(interViewDate).toISOString().substring(0, 10) : "Not Confirmed Yet"); // Format date for input
+    const [exitDateNew, setexitDateNew] = useState(exitDate ? new Date(exitDate).toISOString().substring(0, 10) : "Not Confirmed Yet"); // Format date for input
   
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -33,7 +33,7 @@ const RecruiterInterviewDate = ({
         console.log("expensedate", fullDateTime);
 
         try {
-            const response = await axios.post(`${secretKey}/recruiter/post-save-interviewdate-recruiter`, {
+            const response = await axios.post(`${secretKey}/recruiter/post-save-exitDate-recruiter`, {
                 empName,
                 empEmail,
                 value: fullDateTime
@@ -55,10 +55,10 @@ const RecruiterInterviewDate = ({
                     <div className="remarks-input">
                         <input
                             style={{ width: "100%", borderRadius: "6px", padding: "3px 5px 4px 5px" }}
-                            value={interViewDateNew}
+                            value={exitDateNew}
                             type='date'
                             onChange={(e) => {
-                                setInterViewDateNew(e.target.value);
+                                setexitDateNew(e.target.value);
                                 handleSubmitExpenseDate(empName , empEmail, e.target.value);
                             }}
                         />
@@ -69,4 +69,4 @@ const RecruiterInterviewDate = ({
     );
 };
 
-export default RecruiterInterviewDate;
+export default RecruiterExitDate;

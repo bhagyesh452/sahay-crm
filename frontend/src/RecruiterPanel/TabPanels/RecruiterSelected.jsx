@@ -29,6 +29,14 @@ import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from rea
 import RecruiterInterviewStatus from "../ExtraComponents/RecruiterInterviewStatus";
 import RecruiterRemarks from "../ExtraComponents/RecruiterRemarks";
 import RecruiterDepartment from "../ExtraComponents/RecruiterDepartment";
+import RecruiterOfferedSalary from "../ExtraComponents/RecruiterOfferedSalary";
+import RecruiterSalaryConditions from "../ExtraComponents/RecruiterSalaryConditions";
+import RecruiterJoiningDate from "../ExtraComponents/RecruiterJoiningDate.jsx";
+import RecruiterAllocatedBranchDropdown from "../ExtraComponents/RecruiterAllocatedBranch.jsx";
+import RecruiterOfferLetterStatus from "../ExtraComponents/RecruiterOfferLetterStatus.jsx";
+import RecruiterDocumentsSubmitted from "../ExtraComponents/RecruiterDocumentsSubmitted.jsx";
+import RecruiterEmployementStatus from "../ExtraComponents/RecruiterEmployementStatus.jsx";
+import RecruiterExitDate from "../ExtraComponents/RecruiterExitDate.jsx";
 
 function RecruiterSelected({
     searchText,
@@ -92,7 +100,7 @@ function RecruiterSelected({
     }
 
     useEffect(() => {
-        document.title = `RMOFCERT-Sahay-CRM`;
+        document.title = `Recruiter-Sahay-CRM`;
     }, []);
 
     useEffect(() => {
@@ -867,6 +875,294 @@ function RecruiterSelected({
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                Offered Salary
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                1st Salary Condition
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                Joining Date
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                Allocated Branch
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                Offer Letter Status
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                Documents Submitted
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                Employement Status
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['expectedCTC'] = el}>
+                                                Exit Date
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('bdeName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("bdeName")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("bdeName")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'bdeName' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['applicationSource'] = el}>
                                                 Application Source
                                             </div>
@@ -965,14 +1261,14 @@ function RecruiterSelected({
                                         </td>
                                         <td>
                                             <RecruiterDepartment
-                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
-                                            mainStatus={obj.mainCategoryStatus}
-                                            subStatus={obj.subCategoryStatus}
-                                            setNewSubStatus={setNewStatusProcess}
-                                            empName={obj.empFullName}
-                                            empEmail={obj.personal_email}
-                                            refreshData={refreshData}
-                                            department={obj.department}
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                mainStatus={obj.mainCategoryStatus}
+                                                subStatus={obj.subCategoryStatus}
+                                                setNewSubStatus={setNewStatusProcess}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                department={obj.department}
                                             />
                                         </td>
                                         <td>{obj.qualification}</td>
@@ -984,6 +1280,98 @@ function RecruiterSelected({
                                         </td>
                                         <td>
                                             {obj.expectedCTC}
+                                        </td>
+                                        <td>
+                                            <RecruiterOfferedSalary
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                mainStatus={obj.mainCategoryStatus}
+                                                subStatus={obj.subCategoryStatus}
+                                                setNewSubStatus={setNewStatusProcess}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                offeredSalary={obj.offeredSalary}
+                                            />
+                                        </td>
+                                        <td>
+                                            <RecruiterSalaryConditions
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                mainStatus={obj.mainCategoryStatus}
+                                                subStatus={obj.subCategoryStatus}
+                                                setNewSubStatus={setNewStatusProcess}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                firstMonthSalaryCondition={obj.firstMonthSalaryCondition}
+                                            />
+                                        </td>
+                                        <td>
+                                            <RecruiterJoiningDate
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique ke
+                                                mainStatus={obj.mainCategoryStatus}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                joiningDate={obj.jdate || ""} // Default to empty string if jdate is undefined
+                                            />
+                                        </td>
+                                        <td>
+                                            <RecruiterAllocatedBranchDropdown 
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            branchOffice={obj.branchOffice}
+                                            />
+                                        </td>
+                                        <td>
+                                            <RecruiterOfferLetterStatus 
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            offerLetterStatus={obj.offerLetterStatus}
+                                            />
+                                        </td>
+                                        <td>
+                                            <RecruiterDocumentsSubmitted 
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            documentsSubmitted={obj.documentsSubmitted}
+                                            />
+                                        </td>
+                                        <td>
+                                            <RecruiterEmployementStatus 
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            employementStatus={obj.employementStatus}
+                                            />
+                                        </td>
+                                        <td>
+                                            <RecruiterExitDate
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique ke
+                                                mainStatus={obj.mainCategoryStatus}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                exitDate={obj.exitDate || ""} // Default to empty string if jdate is undefined
+                                            />
                                         </td>
                                         <td>{obj.applicationSource}</td>
                                         <td>
