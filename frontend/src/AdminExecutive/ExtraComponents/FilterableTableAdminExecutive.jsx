@@ -203,6 +203,16 @@ const FilterableTableAdminExecutive = ({
                         }
                     }
 
+                    // if (column === 'expenseReimbursementStatus') {
+                    //     const dateA = new Date(valueA);
+                    //     const dateB = new Date(valueB);
+                    //     if (sortOrder === 'oldest') {
+                    //         return dateA - dateB; // Sort from oldest to newest
+                    //     } else if (sortOrder === 'newest') {
+                    //         return dateB - dateA; // Sort from newest to oldest
+                    //     }
+                    // }
+
                     // Handle numeric fields
                     if (column === 'receivedPayment' || column === 'pendingPayment') {
                         valueA = valueA !== undefined ? valueA : 0;

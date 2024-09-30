@@ -34,8 +34,7 @@ async function sendMailRecruiter(
     recipients,
     subject,
     text,
-    html,
-    certificate) {
+    html) {
     const transporter = await createTransporter();
     const info = await transporter.sendMail({
         from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
@@ -44,7 +43,6 @@ async function sendMailRecruiter(
         subject,
         text,
         html,
-        attachments: certificate,
       });
 
     return info;
