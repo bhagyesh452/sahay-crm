@@ -157,7 +157,7 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
           <p>Thank you once again for considering Start-Up Sahay Private Limited as your potential employer. We look forward to the possibility of working together and wish you the best of luck in your job search.</p>
           `;
         
-        const subject2 = `${empFullName}| Job Application Form |${sendingDate}`;
+        const subject2 = `${empFullName} | Job Application Form | ${sendingDate}`;
         const html2 = `
         <h1>Applicant Data</h1>
         <p class="mt-2">

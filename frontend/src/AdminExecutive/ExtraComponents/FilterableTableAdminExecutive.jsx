@@ -203,7 +203,7 @@ const FilterableTableAdminExecutive = ({
                         }
                     }
 
-                    // if (column === 'bookingDate') {
+                    // if (column === 'expenseReimbursementStatus') {
                     //     const dateA = new Date(valueA);
                     //     const dateB = new Date(valueB);
                     //     if (sortOrder === 'oldest') {
