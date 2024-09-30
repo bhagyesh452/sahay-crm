@@ -121,7 +121,10 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
         fetchData(searchText, page);
     }, [searchText, page]);
 
-
+    useEffect(() => {
+        document.title = `Recruiter-Sahay-CRM`;
+    }, []);
+    
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
             secure: true, // Use HTTPS

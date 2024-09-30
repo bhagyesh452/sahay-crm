@@ -118,7 +118,7 @@ function RecruiterBox() {
                 
 
             } = response.data;
-            //console.log("response", response.data)
+            console.log("response", response.data)
 
             // If it's a search query, replace the data; otherwise, append for pagination
             if (page === 1) {

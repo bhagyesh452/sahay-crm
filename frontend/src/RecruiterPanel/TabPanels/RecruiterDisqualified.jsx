@@ -45,7 +45,7 @@ function RecruiterDisqualified({
     const [currentDataLoading, setCurrentDataLoading] = useState(false);
     const [isFilter, setIsFilter] = useState(false);
     const [recruiterData, setRecruiterData] = useState([]);
-    const [newStatusProcess, setNewStatusProcess] = useState("On Hold");
+    const [newStatusProcess, setNewStatusProcess] = useState("Disqualified");
     const [openRemarksPopUp, setOpenRemarksPopUp] = useState(false);
     const [currentCompanyName, setCurrentCompanyName] = useState("");
     const [currentServiceName, setCurrentServiceName] = useState("");
@@ -92,7 +92,7 @@ function RecruiterDisqualified({
     }
 
     useEffect(() => {
-        document.title = `RMOFCERT-Sahay-CRM`;
+        document.title = `Recruiter-Sahay-CRM`;
     }, []);
 
     useEffect(() => {
@@ -104,7 +104,7 @@ function RecruiterDisqualified({
         });
 
         socket.on("recruiter-general-status-updated", (res) => {
-            fetchData(searchText)
+            fetchData(searchText , page)
         });
         return () => {
             socket.disconnect();
@@ -208,6 +208,7 @@ function RecruiterDisqualified({
         if (filteredData && filteredData.length > 0) {
             fetchData(searchText, 1, true)
         } else {
+            console.log("API Not Called");
             fetchData(searchText, page, false);
         }
 
@@ -371,7 +372,7 @@ function RecruiterDisqualified({
         window.open(`${secretKey}/recruiter/uploads/${empFullName}/${filename}`, "_blank");
     }
 
-    console.log("onholddata", recruiterData)
+    console.log("disqualified", recruiterData)
 
     return (
         <div>

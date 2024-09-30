@@ -44,7 +44,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Disqualified",
                         previousMainCategoryStatus: "General",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: "Untouched",
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -57,7 +57,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "On Hold",
                         previousMainCategoryStatus: "General",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: "Untouched",
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -70,7 +70,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Rejected",
                         previousMainCategoryStatus: "General",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: "Untouched",
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -83,11 +83,11 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Selected",
                         previousMainCategoryStatus: "General",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: "Untouched",
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
-                }else if (newStatus === "Untouched") {
+                } else if (newStatus === "Untouched") {
                     movedFromMainCategoryStatus = "General";
                     movedToMainCategoryStatus = "General";
                     response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
@@ -96,7 +96,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "General",
                         previousMainCategoryStatus: "General",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: "Untouched",
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -107,7 +107,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "UnderReview",
                         previousMainCategoryStatus: "General",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: "Untouched",
                         dateOfChangingMainStatus: new Date(),
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus
@@ -277,7 +277,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Disqualified",
                         previousMainCategoryStatus: "UnderReview",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -290,7 +290,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Selected",
                         previousMainCategoryStatus: "UnderReview",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -303,11 +303,11 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "On Hold",
                         previousMainCategoryStatus: "UnderReview",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
-                }else if (newStatus === "Rejected") {
+                } else if (newStatus === "Rejected") {
                     movedFromMainCategoryStatus = "UnderReview";
                     movedToMainCategoryStatus = "Rejected";
                     response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
@@ -316,7 +316,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Rejected",
                         previousMainCategoryStatus: "UnderReview",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -328,11 +328,17 @@ const RecruiterStatusDropdown = ({
                         //mainCategoryStatus: "Defaulter",
                     });
                 } else {
+                    movedFromMainCategoryStatus = "General";
+                    movedToMainCategoryStatus = "UnderReview";
                     response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
                         empName,
                         empEmail,
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "UnderReview",
+                        movedFromMainCategoryStatus: movedFromMainCategoryStatus,
+                        movedToMainCategoryStatus: movedToMainCategoryStatus,
+                        previousMainCategoryStatus: "General",
+                        //previousSubCategoryStatus: newStatus,
                     });
                 }
             }
@@ -346,7 +352,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Disqualified",
                         previousMainCategoryStatus: "On Hold",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -360,11 +366,11 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Rejected",
                         previousMainCategoryStatus: "On Hold",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
-                }else if (newStatus === "Selected") {
+                } else if (newStatus === "Selected") {
                     movedFromMainCategoryStatus = "On Hold";
                     movedToMainCategoryStatus = "Selected";
                     response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
@@ -373,11 +379,11 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "Selected",
                         previousMainCategoryStatus: "On Hold",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
-                }else if (newStatus === "UnderReview") {
+                } else if (newStatus === "UnderReview") {
                     movedFromMainCategoryStatus = "On Hold";
                     movedToMainCategoryStatus = "UnderReview";
                     response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
@@ -386,7 +392,7 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         mainCategoryStatus: "UnderReview",
                         previousMainCategoryStatus: "On Hold",
-                        previousSubCategoryStatus: newStatus,
+                        //previousSubCategoryStatus: newStatus,
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
@@ -439,8 +445,8 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         //mainCategoryStatus: "Defaulter",
                     });
-                } 
-                 
+                }
+
             }
             else if (mainStatus === "Selected") {
                 if (newStatus === "Selected") {
@@ -457,8 +463,8 @@ const RecruiterStatusDropdown = ({
                         subCategoryStatus: newStatus,
                         //mainCategoryStatus: "Defaulter",
                     });
-                } 
-                 
+                }
+
             }
             refreshData();
             console.log("Status updated successfully:", response.data);
@@ -505,12 +511,12 @@ const RecruiterStatusDropdown = ({
                         return "support-status";
                     case "Selected":
                         return "ready_to_submit";
-                    
+
                     case "Undo":
                         return "inprogress-status";
                     case "On Hold":
                         return "dfaulter-status";
-                  
+
                     case "Rejected":
                         return "need_to_call";
                     default:
@@ -548,10 +554,10 @@ const RecruiterStatusDropdown = ({
                 switch (subStatus) {
                     case "Selected":
                         return "ready_to_submit";
-                        case "Didn't Joined":
-                            return "e_task_assign";
+                    case "Didn't Joined":
+                        return "e_task_assign";
                 }
-                
+
             default:
                 return "";
         }
@@ -657,7 +663,7 @@ const RecruiterStatusDropdown = ({
                                 onClick={() => handleStatusChange("InterView Scheduled", "cdbp-status")}
                                 href="#"
                             >
-                               InterView Scheduled
+                                InterView Scheduled
                             </a>
                         </li>
                         <li>
@@ -684,7 +690,7 @@ const RecruiterStatusDropdown = ({
                                 onClick={() => handleStatusChange("Switched Off", "support-status")}
                                 href="#"
                             >
-                               Switched Off
+                                Switched Off
                             </a>
                         </li>
                         <li>
@@ -693,7 +699,7 @@ const RecruiterStatusDropdown = ({
                                 onClick={() => handleStatusChange("Selected", "ready_to_submit")}
                                 href="#"
                             >
-                               Selected
+                                Selected
                             </a>
                         </li>
                         <li>
