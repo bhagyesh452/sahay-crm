@@ -2365,7 +2365,12 @@ function EmployeeTeamLeads() {
                                                         <th className="th-sticky">Sr.No</th>
                                                         <th className="th-sticky1">Company Name</th>
                                                         <th>BDE Name</th>
-                                                        {bdmNewStatus !== "Untouched" && (<th>Company Number</th>)}
+                                                        {bdmNewStatus !== "Untouched" && (
+                                                            <>
+                                                                <th>Company Number</th>
+                                                                <th>Call History</th>
+                                                            </>
+                                                        )}
                                                         <th>BDE Status</th>
                                                         <th>BDE Remarks</th>
                                                         {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
@@ -2395,7 +2400,6 @@ function EmployeeTeamLeads() {
                                                             <th>Add Feedback</th>
                                                         </>)
                                                         }
-                                                        <th>Call History</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2408,17 +2412,35 @@ function EmployeeTeamLeads() {
                                                             <td className="td-sticky1">{company["Company Name"]}</td>
                                                             <td>{company.ename}</td>
 
-                                                            {bdmNewStatus !== "Untouched" && (<td>
-                                                                <div className="d-flex align-items-center justify-content-between wApp">
-                                                                    <div>{company["Company Number"]}</div>
-                                                                    <a
-                                                                        target="_blank"
-                                                                        href={`https://wa.me/91${company["Company Number"]}`}
-                                                                    >
-                                                                        <FaWhatsapp />
-                                                                    </a>
-                                                                </div>
-                                                            </td>)}
+                                                            {bdmNewStatus !== "Untouched" && (
+                                                                <>
+                                                                    <td>
+                                                                        <div className="d-flex align-items-center justify-content-between wApp">
+                                                                            <div>{company["Company Number"]}</div>
+                                                                            <a
+                                                                                target="_blank"
+                                                                                href={`https://wa.me/91${company["Company Number"]}`}
+                                                                            >
+                                                                                <FaWhatsapp />
+                                                                            </a>
+                                                                        </div>
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <LuHistory onClick={() => {
+                                                                            setShowCallHistory(true);
+                                                                            setClientNumber(company["Company Number"])
+                                                                        }}
+                                                                            style={{
+                                                                                cursor: "pointer",
+                                                                                width: "17px",
+                                                                                height: "17px",
+                                                                            }}
+                                                                            color="grey"
+                                                                        />
+                                                                    </td>
+                                                                </>
+                                                            )}
                                                             <td>{company.Status}</td>
 
                                                             <td>
@@ -2751,19 +2773,6 @@ function EmployeeTeamLeads() {
                                                                     )}
                                                                 </td>
                                                             </>)}
-                                                            <td>
-                                                                <LuHistory onClick={() => {
-                                                                    setShowCallHistory(true);
-                                                                    setClientNumber(company["Company Number"])
-                                                                }}
-                                                                    style={{
-                                                                        cursor: "pointer",
-                                                                        width: "17px",
-                                                                        height: "17px",
-                                                                    }}
-                                                                    color="grey"
-                                                                />
-                                                            </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

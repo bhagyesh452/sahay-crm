@@ -3497,6 +3497,7 @@ function EmployeePanel() {
                             <th className="th-sticky">Sr.No</th>
                             <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
+                            <th>Call History</th>
                             {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
                             {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
                             {dataStatus === "Forwarded" && <th>BDM Status</th>}
@@ -3723,7 +3724,6 @@ function EmployeePanel() {
                                 dataStatus !== "Not Interested") && (
                                 <th>Feedback</th>
                               )}
-                            <th>Call History</th>
                           </tr>
                         </thead>
                         {loading ? (
@@ -3749,12 +3749,9 @@ function EmployeePanel() {
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}
                               >
-                                <td className="td-sticky">
-                                  {startIndex + index + 1}
-                                </td>
-                                <td className="td-sticky1">
-                                  {company["Company Name"]}
-                                </td>
+                                <td className="td-sticky">{startIndex + index + 1}</td>
+                                <td className="td-sticky1">{company["Company Name"]}</td>
+
                                 <td>
                                   <div className="d-flex align-items-center justify-content-between wApp">
                                     <div>{company["Company Number"]}</div>
@@ -3766,6 +3763,21 @@ function EmployeePanel() {
                                     </a>
                                   </div>
                                 </td>
+
+                                <td>
+                                  <LuHistory onClick={() => {
+                                    setShowCallHistory(true);
+                                    setClientNumber(company["Company Number"]);
+                                  }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                    }}
+                                    color="grey"
+                                  />
+                                </td>
+
                                 <td>
                                   {company["Status"] === "Matured" ? (
                                     <span>{company["Status"]}</span>
@@ -4324,19 +4336,6 @@ function EmployeePanel() {
                                     </td>
                                   )
                                 ) : null}
-                                <td>
-                                  <LuHistory onClick={() => {
-                                    setShowCallHistory(true);
-                                    setClientNumber(company["Company Number"]);
-                                  }}
-                                    style={{
-                                      cursor: "pointer",
-                                      width: "17px",
-                                      height: "17px",
-                                    }}
-                                    color="grey"
-                                  />
-                                </td>
                               </tr>
                             ))}
                           </tbody>
