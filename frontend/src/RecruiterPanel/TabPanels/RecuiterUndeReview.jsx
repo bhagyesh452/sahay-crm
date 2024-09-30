@@ -6,13 +6,6 @@ import axios from "axios";
 import io from "socket.io-client";
 import { Drawer, Icon, IconButton } from "@mui/material";
 import { FaPencilAlt } from "react-icons/fa";
-import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    FormHelperText,
-} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import debounce from "lodash/debounce";
 import Swal from "sweetalert2";
@@ -20,15 +13,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Nodata from "../../components/Nodata";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-
 import { BsFilter } from "react-icons/bs";
-
 import { FaFilter } from "react-icons/fa";
 import RecruiterStatusDropdown from "../ExtraComponents/RecruiterStatusDropdown";
 import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from react-icons
 import RecruiterInterviewStatus from "../ExtraComponents/RecruiterInterviewStatus";
 import RecruiterInterviewDate from "../ExtraComponents/RecruiterInterviewDate";
 import RecruiterRemarks from "../ExtraComponents/RecruiterRemarks";
+import RecruiterCallHistory from "../ExtraComponents/RecruiterCallHistory";
 
 function RecruiterUnderReview({
     searchText,
@@ -109,7 +101,7 @@ function RecruiterUnderReview({
 
             // If filtering is active, extract companyName and serviceName from filteredData
             if (isFilter && filteredData && filteredData.length > 0) {
-                console.log("yahan chal rha", isFilter)
+                //console.log("yahan chal rha", isFilter)
                 const companyNames = filteredData.map(item => item["Company Name"]).join(',');
                 const serviceNames = filteredData.map(item => item.serviceName).join(',');
 
@@ -123,7 +115,7 @@ function RecruiterUnderReview({
             });
 
             const { data, totalPages } = servicesResponse.data;
-            console.log("data", data)
+            //console.log("data", data)
 
             if (page === 1) {
                 setRecruiterData(data);
@@ -216,7 +208,7 @@ function RecruiterUnderReview({
     //-------------------filter method-------------------------------
 
     const handleFilter = (newData) => {
-        console.log("newData", newData)
+        //console.log("newData", newData)
         setFilteredData(newData)
         setRecruiterData(newData.filter(obj => obj.mainCategoryStatus === "Process"));
     };
@@ -772,6 +764,10 @@ function RecruiterUnderReview({
                                             )} */}
                                         </div>
                                     </th>
+                                    <th>Application Date</th>
+                                    <th>
+                                        Call History
+                                    </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['uploadedCv'] = el}>
@@ -866,6 +862,18 @@ function RecruiterUnderReview({
                                             {obj.expectedCTC}
                                         </td>
                                         <td>{obj.applicationSource}</td>
+                                        <td>{formatDatePro(obj.fillingDate)}</td>
+                                        <td><RecruiterCallHistory
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            clientNumber={obj.personal_number}
+
+                                        /></td>
                                         <td>
                                             {obj.uploadedCV && obj.uploadedCV.length > 0 ? (
                                                 <div onClick={() => handleDownload(obj.uploadedCV[0].filename, obj.empFullName)}>

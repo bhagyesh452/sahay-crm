@@ -472,7 +472,6 @@ router.post(`/update-substatus-recruiter/`, async (req, res) => {
           lastActionDate: new Date(),
           submittedOn: company.submittedOn,
           dateOfChangingMainStatus: company.dateOfChangingMainStatus,
-          Remarks: [],
           interViewStatus: ""
         },
         { new: true }

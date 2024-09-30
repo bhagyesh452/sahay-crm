@@ -81,46 +81,6 @@ const DscTypeDropdown = ({
 
   return (
     <section className="rm_status_dropdown">
-      {/* <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
-        <button
-          className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
-          type="button"
-          id="dropdownMenuButton1"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {status === "Not Applicable" ? " Select DSC Type" : status}
-        </button>
-        <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li>
-            <span className="dropdown-item disabled" style={{ cursor: 'not-allowed' }}>
-              Select DSC Type
-            </span>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('Only Signature', 'untouched_status')} href="#"
-            >
-              Only Signature
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('Only Encryption', 'cdbp-status')} href="#">
-              Only Encryption
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('Combo', 'clnt_no_repond_status')} href="#">
-              Combo
-            </a>
-          </li>
-        </ul>
-      </div> */}
       <select
         className={(mainStatus === "Approved" || mainStatus === "Application Submitted") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}

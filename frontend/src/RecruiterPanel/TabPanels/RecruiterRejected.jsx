@@ -30,6 +30,7 @@ import RecruiterInterviewStatus from "../ExtraComponents/RecruiterInterviewStatu
 import RecruiterDisqualifiedDropdown from "../ExtraComponents/RecruiterDisqualifiedDropdown";
 import RecruiterRejectionReasonDropdown from "../ExtraComponents/RecruiterRejectionReasonDropdown";
 import RecruiterRemarks from "../ExtraComponents/RecruiterRemarks";
+import RecruiterCallHistory from "../ExtraComponents/RecruiterCallHistory";
 
 function RecruiterRejected({
     searchText,
@@ -909,6 +910,10 @@ function RecruiterRejected({
                                             )} */}
                                         </div>
                                     </th>
+                                    <th>Application Date</th>
+                                    <th>
+                                        Call History
+                                    </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['uploadedCv'] = el}>
@@ -997,6 +1002,18 @@ function RecruiterRejected({
                                             {obj.expectedCTC}
                                         </td>
                                         <td>{obj.applicationSource}</td>
+                                        <td>{formatDatePro(obj.fillingDate)}</td>
+                                        <td><RecruiterCallHistory
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            clientNumber={obj.personal_number}
+
+                                        /></td>
                                         <td>
                                             {obj.uploadedCV && obj.uploadedCV.length > 0 ? (
                                                 <div onClick={() => handleDownload(obj.uploadedCV[0].filename, obj.empFullName)}>

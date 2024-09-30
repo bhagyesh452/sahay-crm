@@ -81,46 +81,6 @@ const DscValidityDropdown = ({
 
   return (
     <section className="rm_status_dropdown">
-      {/* <div className={mainStatus === "Approved" ? "disabled" : `dropdown custom-dropdown status_dropdown ${statusClass}`}>
-        <button
-          className="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between status__btn"
-          type="button"
-          id="dropdownMenuButton1"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {!status ? "Select Validity" : status}
-        </button>
-        <ul className="dropdown-menu status_change" aria-labelledby="dropdownMenuButton1">
-          <li>
-            <span className="dropdown-item disabled" style={{ cursor: 'not-allowed' }}>
-              Select Validity
-            </span>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('1 Years', 'untouched_status')} href="#"
-            >
-              1 Years
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('2 Years', 'cdbp-status')} href="#">
-              2 Years
-            </a>
-          </li>
-          <li>
-            <a className="dropdown-item"
-              onClick={() =>
-                handleStatusChange('3 Years', 'clnt_no_repond_status')} href="#">
-               3 Years
-            </a>
-          </li>
-        </ul>
-      </div> */}
        <select
                 className={(mainStatus === "Approved" || mainStatus === "Application Submitted") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
                 //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}

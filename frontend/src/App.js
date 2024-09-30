@@ -247,7 +247,7 @@ function App() {
           )}
 
           {/* <Route path="/*" element={<Navigate to="/employeelogin" />} /> */}
-          <Route
+          {/* <Route
             path="/processing/processing-login"
             element={<ProcessingLogin setProcessingToken={setProcessingToken} />}
           />
@@ -260,9 +260,9 @@ function App() {
           <Route path="/employeereport/:ename/:status" element={<StausInfo />} />
           <Route path="/interestedleadreport/:ename" element={<EmployeeInterestedCompanies />} />
           <Route path="/followupleadreport/:ename" element={<EmployeeFolowUpCompanies />} />
-          <Route path='/daterange' element={<MaterialUIPickers />} />
+          <Route path='/daterange' element={<MaterialUIPickers />} /> */}
           <Route path="*" element={<NotFound />} />
-          <Route path="/client/basic-form" element={<BasicForm />} />
+          {/* <Route path="/client/basic-form" element={<BasicForm />} /> */}
 
 
 

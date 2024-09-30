@@ -29,6 +29,7 @@ import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from rea
 import RecruiterInterviewStatus from "../ExtraComponents/RecruiterInterviewStatus";
 import RecruiterDisqualifiedDropdown from "../ExtraComponents/RecruiterDisqualifiedDropdown";
 import RecruiterRemarks from "../ExtraComponents/RecruiterRemarks";
+import RecruiterCallHistory from "../ExtraComponents/RecruiterCallHistory";
 
 function RecruiterDisqualified({
     searchText,
@@ -904,6 +905,10 @@ function RecruiterDisqualified({
                                             )} */}
                                         </div>
                                     </th>
+                                    <th>Application Date</th>
+                                    <th>
+                                        Call History
+                                    </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['uploadedCv'] = el}>
@@ -1004,6 +1009,18 @@ function RecruiterDisqualified({
                                             {obj.expectedCTC}
                                         </td>
                                         <td>{obj.applicationSource}</td>
+                                        <td>{formatDatePro(obj.fillingDate)}</td>
+                                        <td><RecruiterCallHistory
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            clientNumber={obj.personal_number}
+
+                                        /></td>
                                         <td>
                                             {obj.uploadedCV && obj.uploadedCV.length > 0 ? (
                                                 <div onClick={() => handleDownload(obj.uploadedCV[0].filename, obj.empFullName)}>
@@ -1030,114 +1047,7 @@ function RecruiterDisqualified({
                     )}
                 </div>
             </div>
-            {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
-
-            <Dialog
-                className="My_Mat_Dialog"
-                open={openRemarksPopUp}
-                onClose={functionCloseRemarksPopup}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>
-                    <span style={{ fontSize: "14px" }}>
-                        {currentCompanyName}'s Remarks
-                    </span>
-                    <IconButton
-                        onClick={functionCloseRemarksPopup}
-                        style={{ float: "right" }}
-                    >
-                        <CloseIcon color="primary"></CloseIcon>
-                    </IconButton>{" "}
-                </DialogTitle>
-                <DialogContent>
-                    <div className="remarks-content">
-                        {historyRemarks.length !== 0 &&
-                            historyRemarks.slice().map((historyItem) => (
-                                <div className="col-sm-12" key={historyItem._id}>
-                                    <div className="card RemarkCard position-relative">
-                                        <div className="d-flex justify-content-between">
-                                            <div className="reamrk-card-innerText">
-                                                <pre className="remark-text">{historyItem.remarks}</pre>
-                                            </div>
-                                            <div className="dlticon">
-                                                <DeleteIcon
-                                                    style={{
-                                                        cursor: "pointer",
-                                                        color: "#f70000",
-                                                        width: "14px",
-                                                    }}
-                                                    onClick={() => {
-                                                        handleDeleteRemarks(
-                                                            historyItem._id,
-                                                            historyItem.remarks
-                                                        );
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="d-flex card-dateTime justify-content-between">
-                                            <div className="date">
-                                                {new Date(historyItem.updatedOn).toLocaleDateString(
-                                                    "en-GB"
-                                                )}
-                                            </div>
-                                            <div className="time">
-                                                {new Date(historyItem.updatedOn).toLocaleTimeString(
-                                                    "en-GB",
-                                                    { hour: "2-digit", minute: "2-digit" }
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        {remarksHistory && remarksHistory.length === 0 && (
-                            <div class="card-footer">
-                                <div class="mb-3 remarks-input">
-                                    <textarea
-                                        placeholder="Add Remarks Here...  "
-                                        className="form-control"
-                                        id="remarks-input"
-                                        rows="3"
-                                        onChange={(e) => {
-                                            debouncedSetChangeRemarks(e.target.value);
-                                        }}
-                                    ></textarea>
-                                </div>
-                                {error && <FormHelperText error>{error}</FormHelperText>}
-                            </div>
-                        )}
-                    </div>
-                </DialogContent>
-                <button
-                    onClick={handleSubmitRemarks}
-                    type="submit"
-                    className="btn btn-primary bdr-radius-none"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </button>
-            </Dialog>
-
-            {/* ---------------------filter component---------------------------
-            {showFilterMenu && (
-                <div
-                    className="filter-menu"
-                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                >
-                    <FilterableTable
-                        data={recruiterData}
-                        filterField={filterField}
-                        onFilter={handleFilter}
-                        completeData={completeRmData}
-                        
-                        showingMenu={setShowFilterMenu}
-                        dataForFilter={dataToFilter}
-                    />
-                </div>
-            )} */}
+           
         </div>
     );
 }
