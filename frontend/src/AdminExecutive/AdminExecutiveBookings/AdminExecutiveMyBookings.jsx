@@ -61,6 +61,8 @@ function AdminExecutiveMyBookings() {
   const [showNoOfFilteredData, setShowNoOfFilteredData] = useState(true);
   const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false);
   const [completeEmployeeInfo, setcompleteEmployeeInfo] = useState([])
+  const [filteredData, setFilteredData] = useState([])
+  const [totalUnpaidCharges, setTotalUnpaidCharges] = useState(0);
 
   useEffect(() => {
     document.title = `AdminExecutive-Sahay-CRM`;
@@ -157,7 +159,7 @@ function AdminExecutiveMyBookings() {
         totalDocumentsApproved,
 
       } = response.data;
-      
+
 
       // If it's a search query, replace the data; otherwise, append for pagination
       if (page === 1) {
@@ -202,9 +204,19 @@ function AdminExecutiveMyBookings() {
     setSearch(event.target.value); // Update search query state
   };
   const setNoOfData = (number) => {
-    console.log("number", number)
     setnoOfFilteredData(number)
   }
+  // Function to calculate total portal charges for unpaid expenses
+  const calculateTotalPortalCharges = (data) => {
+    // Filter data to get only those with expenseReimbursementStatus === "Unpaid"
+    const unpaidData = data.filter(item => item.expenseReimbursementStatus === "Unpaid");
+
+    // Calculate total portal charges for unpaid data
+    const total = unpaidData.reduce((acc, item) => acc + (item.portalCharges || 0), 0);
+    setTotalUnpaidCharges(total);
+  };
+
+
 
   return (
     <div>
@@ -261,24 +273,34 @@ function AdminExecutiveMyBookings() {
                     />
                   </div>
                 </div>
-                {noOfFilteredData > 0 && (
-                  <div className="selection-data">
-                    Result : <b>
-                      {noOfFilteredData} /
-                      {activeTab === "General"
-                        ? totalDocumentsGeneral
-                        : activeTab === "InProcess"
-                          ? totalDocumentsProcess
-                          : activeTab === "Approved"
-                            ? totalDocumentsApproved
-                            : activeTab === "Hold"
-                              ? totalDocumentsHold
-                              : activeTab === "Defaulter"
-                                ? totalDocumentsDefaulter
-                                : 0}
-                    </b>
-                  </div>
-                )}
+                <div className="d-flex align-items-center">
+                  {noOfFilteredData > 0 && (
+                    <div className="selection-data">
+                      Result : <b>
+                        {noOfFilteredData} /
+                        {activeTab === "General"
+                          ? totalDocumentsGeneral
+                          : activeTab === "InProcess"
+                            ? totalDocumentsProcess
+                            : activeTab === "Approved"
+                              ? totalDocumentsApproved
+                              : activeTab === "Hold"
+                                ? totalDocumentsHold
+                                : activeTab === "Defaulter"
+                                  ? totalDocumentsDefaulter
+                                  : 0}
+                      </b>
+                    </div>
+                  )}
+                  {totalUnpaidCharges > 0 && (
+                    <div className="selection-data">
+                      Total Portal Charges : <b>
+                        {totalUnpaidCharges}
+                      </b>
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
           </div>
@@ -374,10 +396,10 @@ function AdminExecutiveMyBookings() {
                       </a>
                     </li>
                     <li class="nav-item rm_task_section_navitem">
-                      <a class="nav-link" 
-                      data-bs-toggle="tab" 
-                      href="#Hold"
-                      onClick={() => setActiveTab("Hold")}
+                      <a class="nav-link"
+                        data-bs-toggle="tab"
+                        href="#Hold"
+                        onClick={() => setActiveTab("Hold")}
                       >
                         <div className="d-flex align-items-center justify-content-between w-100">
                           <div className="rm_txt_tsn">Hold</div>
@@ -420,6 +442,7 @@ function AdminExecutiveMyBookings() {
                     <AdminExecutiveGeneralPanel
                       showingFilterIcon={setShowNoOfFilteredData}
                       totalFilteredData={activeTab === "General" ? setNoOfData : () => { }}
+                      totalFilteredDataPortal={activeTab === "General" ? calculateTotalPortalCharges : () => { }}
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.General}
@@ -430,6 +453,8 @@ function AdminExecutiveMyBookings() {
                     <AdminExecutiveProcessPanel
                       showingFilterIcon={setShowNoOfFilteredData}
                       totalFilteredData={activeTab === "InProcess" ? setNoOfData : () => { }}
+                      totalFilteredDataPortal={activeTab === "InProcess" ? calculateTotalPortalCharges : () => { }}
+
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.InProcess}
@@ -439,7 +464,8 @@ function AdminExecutiveMyBookings() {
                   <div class="tab-pane" id="Submitted">
                     <AdminExecutiveSubmittedPanel
                       showingFilterIcon={setShowNoOfFilteredData}
-                      totalFilteredData={activeTab === "InProcess" ? setNoOfData : () => { }}
+                      totalFilteredData={activeTab === "Submited" ? setNoOfData : () => { }}
+                      totalFilteredDataPortal={activeTab === "Submited" ? calculateTotalPortalCharges : () => { }}
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.InProcess}
@@ -450,6 +476,7 @@ function AdminExecutiveMyBookings() {
                     <AdminExecutiveApprovedPanel
                       showingFilterIcon={setShowNoOfFilteredData}
                       totalFilteredData={activeTab === "Approved" ? setNoOfData : () => { }}
+                      totalFilteredDataPortal={activeTab === "Approved" ? calculateTotalPortalCharges : () => { }}
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.Approved}
@@ -460,6 +487,7 @@ function AdminExecutiveMyBookings() {
                     <AdminExecutiveHoldPanel
                       showingFilterIcon={setShowNoOfFilteredData}
                       totalFilteredData={activeTab === "Hold" ? setNoOfData : () => { }}
+                      totalFilteredDataPortal={activeTab === "Hold" ? calculateTotalPortalCharges : () => { }}
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.Hold}
@@ -470,6 +498,7 @@ function AdminExecutiveMyBookings() {
                     <AdminExecutiveDefaulterPanel
                       showingFilterIcon={setShowNoOfFilteredData}
                       totalFilteredData={activeTab === "Defaulter" ? setNoOfData : () => { }}
+                      totalFilteredDataPortal={activeTab === "Defaulter" ? calculateTotalPortalCharges : () => { }}
                       searchText={search}
                       activeTab={activeTab}
                       showFilter={showFilterIcon.Defaulter}

@@ -36,7 +36,13 @@ import OtpInboxNo from "../ExtraComponents/OtpInboxNo";
 import FilterableTableAdminExecutive from '../ExtraComponents/FilterableTableAdminExecutive';
 import { FaFilter } from "react-icons/fa";
 
-function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
+function AdminExecutiveApprovedPanel({ searchText,
+  totalFilteredDataPortal,
+  showFilter,
+  activeTab,
+  totalFilteredData,
+  showingFilterIcon, completeEmployeeInfo
+}) {
   const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
   const [employeeData, setEmployeeData] = useState([]);
   const [rmServicesData, setRmServicesData] = useState([]);
@@ -354,9 +360,16 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
     if (noOfAvailableData) {
       showingFilterIcon(true)
       totalFilteredData(noOfAvailableData)
+      if (activeFilterField === "expenseReimbursementStatus") {
+        totalFilteredDataPortal(rmServicesData)
+      } else {
+        totalFilteredDataPortal([])
+      }
+
     } else {
       showingFilterIcon(false)
       totalFilteredData(0)
+      totalFilteredDataPortal([])
     }
 
   }, [noOfAvailableData, activeTab])
@@ -1213,50 +1226,50 @@ function AdminExecutiveApprovedPanel({ searchText, showFilter, activeTab, totalF
                       {formatDatePro(obj.bookingDate)}
                     </td>
                     <td>
-                                            <div className="d-flex align-items-center justify-content-center">
-                                                <div>
-                                                    {obj.bdeName}
-                                                    {
-                                                        completeEmployeeInfo
-                                                            .filter((employee) => employee.ename === obj.bdeName)
-                                                            .map((employee) => (
-                                                                <a
-                                                                    key={employee.number} // Add a unique key for rendering a list
-                                                                    href={`https://wa.me/${employee.number}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
-                                                                >
-                                                                    <FaWhatsapp />
-                                                                </a>
-                                                            ))
-                                                    }
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="d-flex align-items-center justify-content-center">
+                      <div className="d-flex align-items-center justify-content-center">
+                        <div>
+                          {obj.bdeName}
+                          {
+                            completeEmployeeInfo
+                              .filter((employee) => employee.ename === obj.bdeName)
+                              .map((employee) => (
+                                <a
+                                  key={employee.number} // Add a unique key for rendering a list
+                                  href={`https://wa.me/${employee.number}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                >
+                                  <FaWhatsapp />
+                                </a>
+                              ))
+                          }
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="d-flex align-items-center justify-content-center">
 
-                                                <div>
-                                                    {obj.bdmName}
-                                                {
-                                                        completeEmployeeInfo
-                                                            .filter((employee) => employee.ename === obj.bdmName)
-                                                            .map((employee) => (
-                                                                <a
-                                                                    key={employee.number} // Add a unique key for rendering a list
-                                                                    href={`https://wa.me/${employee.number}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
-                                                                >
-                                                                    <FaWhatsapp />
-                                                                </a>
-                                                            ))
-                                                    }
-                                                </div>
-                                            </div>
-                                        </td>
+                        <div>
+                          {obj.bdmName}
+                          {
+                            completeEmployeeInfo
+                              .filter((employee) => employee.ename === obj.bdmName)
+                              .map((employee) => (
+                                <a
+                                  key={employee.number} // Add a unique key for rendering a list
+                                  href={`https://wa.me/${employee.number}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                >
+                                  <FaWhatsapp />
+                                </a>
+                              ))
+                          }
+                        </div>
+                      </div>
+                    </td>
                     <td className="rm-sticky-action">
                       <button
                         className="action-btn action-btn-primary"

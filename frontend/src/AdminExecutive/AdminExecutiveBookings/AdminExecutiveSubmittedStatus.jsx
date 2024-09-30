@@ -36,7 +36,13 @@ import OtpInboxNo from "../ExtraComponents/OtpInboxNo";
 import FilterableTableAdminExecutive from '../ExtraComponents/FilterableTableAdminExecutive';
 import { FaFilter } from "react-icons/fa";
 
-function AdminExecutiveSubmittedPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
+function AdminExecutiveSubmittedPanel({ searchText,
+    totalFilteredDataPortal, 
+    showFilter, 
+    activeTab,
+    totalFilteredData, 
+    showingFilterIcon,completeEmployeeInfo 
+}) {
     const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
     const [employeeData, setEmployeeData] = useState([]);
     const [rmServicesData, setRmServicesData] = useState([]);
@@ -361,6 +367,7 @@ function AdminExecutiveSubmittedPanel({ searchText, showFilter, activeTab, total
 
     //-------------------filter method-------------------------------
     const handleFilter = (newData) => {
+        totalFilteredDataPortal(newData)
         setFilteredData(newData)
         setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Application Submitted"));
 
@@ -368,14 +375,21 @@ function AdminExecutiveSubmittedPanel({ searchText, showFilter, activeTab, total
 
     useEffect(() => {
         if (noOfAvailableData) {
-            showingFilterIcon(true)
-            totalFilteredData(noOfAvailableData)
+          showingFilterIcon(true)
+          totalFilteredData(noOfAvailableData)
+          if (activeFilterField === "expenseReimbursementStatus") {
+            totalFilteredDataPortal(rmServicesData)
+          } else {
+            totalFilteredDataPortal([])
+          }
+    
         } else {
-            showingFilterIcon(false)
-            totalFilteredData(0)
+          showingFilterIcon(false)
+          totalFilteredData(0)
+          totalFilteredDataPortal([])
         }
-
-    }, [noOfAvailableData, activeTab])
+    
+      }, [noOfAvailableData, activeTab])
 
     const handleFilterClick = (field) => {
         if (activeFilterField === field) {

@@ -35,7 +35,7 @@ import OtpVerificationStatus from "../ExtraComponents/OtpVerificationStatus";
 import FilterableTableAdminExecutive from '../ExtraComponents/FilterableTableAdminExecutive';
 import { FaFilter } from "react-icons/fa";
 
-function AdminExecutiveDefaulterPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
+function AdminExecutiveDefaulterPanel({ searchText,totalFilteredDataPortal, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
   const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
   const [employeeData, setEmployeeData] = useState([]);
   const [rmServicesData, setRmServicesData] = useState([]);
@@ -370,13 +370,19 @@ function AdminExecutiveDefaulterPanel({ searchText, showFilter, activeTab, total
     if (noOfAvailableData) {
       showingFilterIcon(true)
       totalFilteredData(noOfAvailableData)
+      if (activeFilterField === "expenseReimbursementStatus") {
+        totalFilteredDataPortal(rmServicesData)
+      } else {
+        totalFilteredDataPortal([])
+      }
+
     } else {
       showingFilterIcon(false)
       totalFilteredData(0)
+      totalFilteredDataPortal([])
     }
 
   }, [noOfAvailableData, activeTab])
-  console.log("noofavaialabledata", noOfAvailableData)
 
   const handleFilterClick = (field) => {
     if (activeFilterField === field) {

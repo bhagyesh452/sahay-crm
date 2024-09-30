@@ -38,7 +38,7 @@ import { FaFilter } from "react-icons/fa";
 
 
 
-function AdminExecutiveHoldPanel({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
+function AdminExecutiveHoldPanel({ searchText, totalFilteredDataPortal,showFilter, activeTab, totalFilteredData, showingFilterIcon,completeEmployeeInfo }) {
   const adminExecutiveUserId = localStorage.getItem("adminExecutiveUserId");
   const [employeeData, setEmployeeData] = useState([]);
   const [rmServicesData, setRmServicesData] = useState([]);
@@ -373,9 +373,16 @@ function AdminExecutiveHoldPanel({ searchText, showFilter, activeTab, totalFilte
     if (noOfAvailableData) {
       showingFilterIcon(true)
       totalFilteredData(noOfAvailableData)
+      if (activeFilterField === "expenseReimbursementStatus") {
+        totalFilteredDataPortal(rmServicesData)
+      } else {
+        totalFilteredDataPortal([])
+      }
+
     } else {
       showingFilterIcon(false)
       totalFilteredData(0)
+      totalFilteredDataPortal([])
     }
 
   }, [noOfAvailableData, activeTab])
