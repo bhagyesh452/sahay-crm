@@ -187,7 +187,8 @@ function ApplicationForm() {
             if (fileInputRef.current) {
                 fileInputRef.current.value = "";
             }
-            window.location.reload();
+             // Redirect to the Calendly link
+             window.location.href = "https://calendly.com/requirement-startupsahay/15min";
             }
         } catch (error) {
             // Handle submission error

@@ -6,7 +6,13 @@ import "../../dist/css/demo.min.css?1684106062";
 import axios from 'axios';
 
 
-const RecruiterInterviewStatus = ({ empName, empEmail, mainStatus, interViewStatus,  refreshData }) => {
+const RecruiterInterviewStatus = ({ 
+  empName, 
+  empEmail, 
+  mainStatus, 
+  interViewStatus,  
+  refreshData 
+}) => {
   const [status, setStatus] = useState(interViewStatus);
   const [statusClass, setStatusClass] = useState("untouched_status");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -18,30 +24,6 @@ const RecruiterInterviewStatus = ({ empName, empEmail, mainStatus, interViewStat
     try {
       let response;
       if (mainStatus === "UnderReview") {
-        response = await axios.post(`${secretKey}/recruiter/update-interview-recuitment`, {
-          empName,
-          empEmail,
-          interViewStatus: newStatus
-        });
-      } else if (mainStatus === "Disqualified") {
-        response = await axios.post(`${secretKey}/recruiter/update-interview-recuitment`, {
-          empName,
-          empEmail,
-          interViewStatus: newStatus
-        });
-      } else if (mainStatus === "Rejected") {
-        response = await axios.post(`${secretKey}/recruiter/update-interview-recuitment`, {
-          empName,
-          empEmail,
-          interViewStatus: newStatus
-        });
-      } else if (mainStatus === "Selected") {
-        response = await axios.post(`${secretKey}/recruiter/update-interview-recuitment`, {
-          empName,
-          empEmail,
-          interViewStatus: newStatus
-        });
-      } else if (mainStatus === "On Hold") {
         response = await axios.post(`${secretKey}/recruiter/update-interview-recuitment`, {
           empName,
           empEmail,
@@ -93,17 +75,17 @@ const RecruiterInterviewStatus = ({ empName, empEmail, mainStatus, interViewStat
     setStatusClass(getStatusClass(interViewStatus));
   }, [interViewStatus]);
 
- 
+ console.log("interViewStatus", interViewStatus)
 
 
   return (
     <section className="rm_status_dropdown">
        <select
-        className={(mainStatus === "Approved" || mainStatus === "Application Submitted") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
+        className={(mainStatus === "Disqualified" || mainStatus === "Selected" || mainStatus === "Rejected" || mainStatus === "On Hold") ? "disabled sec-indu-select sec-indu-select-white" : `form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         //className={`form-select sec-indu-select ${status === "" ? "sec-indu-select-white" : "sec-indu-select-gray"}`}
         aria-labelledby="dropdownMenuButton1"
         onChange={(e) => handleStatusChange(e.target.value)}
-        value={interViewStatus}
+        value={interViewStatus === "" ? "Not Applicable" :interViewStatus}
       >
         <option value="" disabled>Select Interview Status</option>
         <option value="Not Applicable">Not Applicable</option>

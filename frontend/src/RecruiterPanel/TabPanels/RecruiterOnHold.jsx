@@ -27,6 +27,7 @@ import { FaFilter } from "react-icons/fa";
 import RecruiterStatusDropdown from "../ExtraComponents/RecruiterStatusDropdown";
 import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from react-icons
 import RecruiterInterviewStatus from "../ExtraComponents/RecruiterInterviewStatus";
+import RecruiterRemarks from "../ExtraComponents/RecruiterRemarks";
 
 function RecruiterOnHold({
     searchText,
@@ -216,86 +217,6 @@ function RecruiterOnHold({
         return `${date}/${month}/${year}`
     }
 
-    //------------------------Remarks Popup Section-----------------------------
-    const handleOpenRemarksPopup = async (companyName, serviceName) => {
-        console.log("RemarksPopup")
-    }
-    const functionCloseRemarksPopup = () => {
-        setChangeRemarks('')
-        setError('')
-        setOpenRemarksPopUp(false)
-    }
-    const debouncedSetChangeRemarks = useCallback(
-        debounce((value) => {
-            setChangeRemarks(value);
-        }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
-        [] // Empty dependency array to ensure the function is memoized
-    );
-
-    const handleSubmitRemarks = async () => {
-        //console.log("changeremarks", changeRemarks)
-        try {
-            if (changeRemarks) {
-                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                    currentCompanyName,
-                    currentServiceName,
-                    changeRemarks,
-                    updatedOn: new Date()
-                });
-
-                //console.log("response", response.data);
-
-                if (response.status === 200) {
-                    if (filteredData && filteredData.length > 0) {
-                        fetchData(searchText, page, true);
-                    } else {
-                        fetchData(searchText, page, false);
-                    }
-                    functionCloseRemarksPopup();
-                    // Swal.fire(
-                    //     'Remarks Added!',
-                    //     'The remarks have been successfully added.',
-                    //     'success'
-                    // );
-                }
-            } else {
-                setError('Remarks Cannot Be Empty!')
-            }
-
-        } catch (error) {
-            console.log("Error Submitting Remarks", error.message);
-        }
-    };
-
-    const handleDeleteRemarks = async (remarks_id) => {
-        try {
-            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-            });
-            if (response.status === 200) {
-                if (filteredData && filteredData.length > 0) {
-                    fetchData(searchText, page, true);
-                } else {
-                    fetchData(searchText, page, false);
-                }
-
-                functionCloseRemarksPopup();
-            }
-            // Refresh the list
-        } catch (error) {
-            console.error("Error deleting remark:", error);
-        }
-    };
-
-
-
-    //--------------------function for industry change--------------------------
-
-    const handleIndustryChange = (industry, options) => {
-        setSelectedIndustry(industry);
-        setSectorOptions(options);
-    };
-
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
@@ -370,7 +291,7 @@ function RecruiterOnHold({
         window.open(`${secretKey}/recruiter/uploads/${empFullName}/${filename}`, "_blank");
     }
 
-    console.log("onholddata" , recruiterData)
+    console.log("onholddata", recruiterData)
 
     return (
         <div>
@@ -545,6 +466,42 @@ function RecruiterOnHold({
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
                                                 Interview Staus
+                                            </div>
+
+                                            {/* <div className='RM_filter_icon'>
+                                                {isActiveField('Company Email') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("Company Email")} />
+                                                ) : (
+                                                    <BsFilter onClick={() => handleFilterClick("Company Email")} />
+                                                )}
+                                            </div> */}
+                                            {/* ---------------------filter component--------------------------- */}
+                                            {/* {showFilterMenu && activeFilterField === 'Company Email' && (
+                                                <div
+                                                    ref={filterMenuRef}
+                                                    className="filter-menu"
+                                                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
+                                                >
+                                                    <FilterableTable
+                                                        noofItems={setnoOfAvailableData}
+                                                        allFilterFields={setActiveFilterFields}
+                                                        filteredData={filteredData}
+                                                        activeTab={"General"}
+                                                        data={recruiterData}
+                                                        filterField={activeFilterField}
+                                                        onFilter={handleFilter}
+                                                        completeData={completeRmData}
+                                                        showingMenu={setShowFilterMenu}
+                                                        dataForFilter={dataToFilter}
+                                                    />
+                                                </div>
+                                            )} */}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['subCategoryStatus'] = el}>
+                                                Interview Date
                                             </div>
 
                                             {/* <div className='RM_filter_icon'>
@@ -873,56 +830,30 @@ function RecruiterOnHold({
                                                 )}
                                             </div>
                                         </td>
-                                        <td>{obj.interViewStatus ? obj.interViewStatus : "Not Started"}
-                                                {/* <RecruiterInterviewStatus
-                                                    key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
-                                                    mainStatus={obj.mainCategoryStatus}
-                                                    subStatus={obj.subCategoryStatus}
-                                                    setNewSubStatus={setNewStatusProcess}
-                                                    empName={obj.empFullName}
-                                                    empEmail={obj.personal_email}
-                                                    refreshData={refreshData}
-                                                    interViewStatus={obj.interViewStatus ? obj.interViewStatus :"Not Started"}
-                                                /> */}
-                                            </td>
-                                        <td className="td_of_remarks">
-                                            <div className="d-flex align-items-center justify-content-between wApp">
-                                                <div
-                                                    className="My_Text_Wrap"
-                                                    title={
-                                                        obj.Remarks && obj.Remarks.length > 0
-                                                            ? obj.Remarks.sort(
-                                                                (a, b) =>
-                                                                    new Date(b.updatedOn) -
-                                                                    new Date(a.updatedOn)
-                                                            )[0].remarks
-                                                            : "No Remarks"
-                                                    }
-                                                >
-                                                    {obj.Remarks && obj.Remarks.length > 0
-                                                        ? obj.Remarks.sort(
-                                                            (a, b) =>
-                                                                new Date(b.updatedOn) -
-                                                                new Date(a.updatedOn)
-                                                        )[0].remarks
-                                                        : "No Remarks"}
-                                                </div>
-                                                <button
-                                                    className="td_add_remarks_btn"
-                                                    // onClick={() => {
-                                                    //     setOpenRemarksPopUp(true);
-                                                    //     setCurrentCompanyName(obj["Company Name"]);
-                                                    //     setCurrentServiceName(obj.serviceName);
-                                                    //     setHistoryRemarks(obj.Remarks);
-                                                    //     handleOpenRemarksPopup(
-                                                    //         obj["Company Name"],
-                                                    //         obj.serviceName
-                                                    //     );
-                                                    // }}
-                                                >
-                                                    <FaPencilAlt />
-                                                </button>
-                                            </div>
+                                        <td>
+                                            <RecruiterInterviewStatus
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                mainStatus={obj.mainCategoryStatus}
+                                                subStatus={obj.subCategoryStatus}
+                                                setNewSubStatus={setNewStatusProcess}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                interViewStatus={obj.interViewStatus ? obj.interViewStatus : "Not Started"}
+                                            />
+                                        </td>
+                                        <td>{obj.interViewDate ? formatDatePro(obj.interViewDate) : "Not Confirmed Yet"}</td>
+                                        <td>
+                                            <RecruiterRemarks
+                                                key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                                mainStatus={obj.mainCategoryStatus}
+                                                subStatus={obj.subCategoryStatus}
+                                                setNewSubStatus={setNewStatusProcess}
+                                                empName={obj.empFullName}
+                                                empEmail={obj.personal_email}
+                                                refreshData={refreshData}
+                                                historyRemarks={obj.Remarks}
+                                            />
                                         </td>
                                         <td>
                                             {obj.appliedFor}
@@ -965,114 +896,7 @@ function RecruiterOnHold({
                     )}
                 </div>
             </div>
-            {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
-
-            <Dialog
-                className="My_Mat_Dialog"
-                open={openRemarksPopUp}
-                onClose={functionCloseRemarksPopup}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>
-                    <span style={{ fontSize: "14px" }}>
-                        {currentCompanyName}'s Remarks
-                    </span>
-                    <IconButton
-                        onClick={functionCloseRemarksPopup}
-                        style={{ float: "right" }}
-                    >
-                        <CloseIcon color="primary"></CloseIcon>
-                    </IconButton>{" "}
-                </DialogTitle>
-                <DialogContent>
-                    <div className="remarks-content">
-                        {historyRemarks.length !== 0 &&
-                            historyRemarks.slice().map((historyItem) => (
-                                <div className="col-sm-12" key={historyItem._id}>
-                                    <div className="card RemarkCard position-relative">
-                                        <div className="d-flex justify-content-between">
-                                            <div className="reamrk-card-innerText">
-                                                <pre className="remark-text">{historyItem.remarks}</pre>
-                                            </div>
-                                            <div className="dlticon">
-                                                <DeleteIcon
-                                                    style={{
-                                                        cursor: "pointer",
-                                                        color: "#f70000",
-                                                        width: "14px",
-                                                    }}
-                                                    onClick={() => {
-                                                        handleDeleteRemarks(
-                                                            historyItem._id,
-                                                            historyItem.remarks
-                                                        );
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="d-flex card-dateTime justify-content-between">
-                                            <div className="date">
-                                                {new Date(historyItem.updatedOn).toLocaleDateString(
-                                                    "en-GB"
-                                                )}
-                                            </div>
-                                            <div className="time">
-                                                {new Date(historyItem.updatedOn).toLocaleTimeString(
-                                                    "en-GB",
-                                                    { hour: "2-digit", minute: "2-digit" }
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        {remarksHistory && remarksHistory.length === 0 && (
-                            <div class="card-footer">
-                                <div class="mb-3 remarks-input">
-                                    <textarea
-                                        placeholder="Add Remarks Here...  "
-                                        className="form-control"
-                                        id="remarks-input"
-                                        rows="3"
-                                        onChange={(e) => {
-                                            debouncedSetChangeRemarks(e.target.value);
-                                        }}
-                                    ></textarea>
-                                </div>
-                                {error && <FormHelperText error>{error}</FormHelperText>}
-                            </div>
-                        )}
-                    </div>
-                </DialogContent>
-                <button
-                    onClick={handleSubmitRemarks}
-                    type="submit"
-                    className="btn btn-primary bdr-radius-none"
-                    style={{ width: "100%" }}
-                >
-                    Submit
-                </button>
-            </Dialog>
-
-            {/* ---------------------filter component---------------------------
-            {showFilterMenu && (
-                <div
-                    className="filter-menu"
-                    style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
-                >
-                    <FilterableTable
-                        data={recruiterData}
-                        filterField={filterField}
-                        onFilter={handleFilter}
-                        completeData={completeRmData}
-                        
-                        showingMenu={setShowFilterMenu}
-                        dataForFilter={dataToFilter}
-                    />
-                </div>
-            )} */}
+            
         </div>
     );
 }

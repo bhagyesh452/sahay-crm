@@ -141,9 +141,11 @@ function EmployeePanel() {
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
+
   const loginwithgoogle = () => {
     window.open("http://localhost:6050/auth/google/callback");
   };
+
   function navigate(url) {
     window.location.href = url;
   }
@@ -3654,9 +3656,11 @@ function EmployeePanel() {
                                 </div>
                               )}
                             </th>
+
                             <th>City</th>
                             <th>State</th>
                             <th>Company Email</th>
+
                             <th>
                               Assigned Date
                               <SwapVertIcon
@@ -3686,24 +3690,20 @@ function EmployeePanel() {
                                 }}
                               />
                             </th>
+
                             {dataStatus === "Matured" && <><th>
                               Booking Date
                             </th>
                               <th>
                                 Publish Date
                               </th></>}
-
-
-                            {
-                              (dataStatus === "FollowUp" && (
-                                <th>Add Projection</th>
-                              )) ||
-                              (dataStatus === "Interested" && (
-                                <th>Add Projection</th>
-                              )) ||
-                              (dataStatus === "Matured" && (
-                                <th>Add Projection</th>
-                              ))}
+                            {(dataStatus === "FollowUp" && (
+                              <th>Add Projection</th>
+                            )) || (dataStatus === "Interested" && (
+                              <th>Add Projection</th>
+                            )) || (dataStatus === "Matured" && (
+                              <th>Add Projection</th>
+                            ))}
 
                             {dataStatus === "Forwarded" && (<>
                               <th>BDM Name</th>
@@ -3715,9 +3715,6 @@ function EmployeePanel() {
                               dataStatus === "FollowUp") && (
                                 <th>Forward to BDM</th>
                               )}
-                            {(dataStatus === "Interested") && (
-                              <th>Call History</th>
-                            )}
                             {dataStatus === "Forwarded" &&
                               (dataStatus !== "Interested" ||
                                 dataStatus !== "FollowUp" ||
@@ -3726,6 +3723,7 @@ function EmployeePanel() {
                                 dataStatus !== "Not Interested") && (
                                 <th>Feedback</th>
                               )}
+                            <th>Call History</th>
                           </tr>
                         </thead>
                         {loading ? (
@@ -4197,113 +4195,98 @@ function EmployeePanel() {
                                     </>
                                   )}
 
-                                {dataStatus === "Interested" && <td>
-                                  <LuHistory onClick={() => {
-                                    setShowCallHistory(true);
-                                    setClientNumber(company["Company Number"])
-                                  }}
-                                    style={{
-                                      cursor: "pointer",
-                                      width: "17px",
-                                      height: "17px",
-                                    }}
-                                    color="grey"
-                                  />
-                                </td>}
-
                                 {dataStatus === "Forwarded" && (<>
                                   {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
                                   <td>{formatDateNew(company.bdeForwardDate)}</td>
                                 </>)}
-                                {
-                                  dataStatus === "Forwarded" && (
-                                    <td>
-                                      {company.bdmAcceptStatus === "NotForwarded" ? (<>
 
-                                        <TiArrowForward
-                                          onClick={() => {
-                                            handleConfirmAssign(
+                                {dataStatus === "Forwarded" && (
+                                  <td>
+                                    {company.bdmAcceptStatus === "NotForwarded" ? (<>
+
+                                      <TiArrowForward
+                                        onClick={() => {
+                                          handleConfirmAssign(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.Status, // Corrected parameter name
+                                            company.ename,
+                                            company.bdmAcceptStatus
+                                          );
+                                        }}
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                        color="grey"
+                                      />
+                                    </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
+
+                                      <TiArrowBack
+                                        onClick={() => {
+                                          handleReverseAssign(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.bdmAcceptStatus,
+                                            company.Status,
+                                            company.bdmName
+                                          )
+                                        }}
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                        color="#fbb900"
+                                      />
+                                    </>) :
+                                      (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
+                                        <>
+                                          <TiArrowBack
+                                            onClick={() => handleRevertAcceptedCompany(
                                               company._id,
                                               company["Company Name"],
-                                              company.Status, // Corrected parameter name
-                                              company.ename,
-                                              company.bdmAcceptStatus
-                                            );
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="grey"
-                                        />
-                                      </>) : company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Forwarded" ? (<>
-
-                                        <TiArrowBack
-                                          onClick={() => {
-                                            handleReverseAssign(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.bdmAcceptStatus,
-                                              company.Status,
-                                              company.bdmName
-                                            )
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="#fbb900"
-                                        />
-                                      </>) :
-                                        (company.bdmAcceptStatus === "Accept" && !company.RevertBackAcceptedCompanyRequest) ? (
+                                              company.Status
+                                            )}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                            color="black" />
+                                        </>) :
+                                        (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
                                           <>
                                             <TiArrowBack
-                                              onClick={() => handleRevertAcceptedCompany(
-                                                company._id,
-                                                company["Company Name"],
-                                                company.Status
-                                              )}
                                               style={{
                                                 cursor: "pointer",
                                                 width: "17px",
                                                 height: "17px",
                                               }}
-                                              color="black" />
-                                          </>) :
-                                          (company.bdmAcceptStatus === 'Accept' && company.RevertBackAcceptedCompanyRequest === 'Send') ? (
-                                            <>
-                                              <TiArrowBack
-                                                style={{
-                                                  cursor: "pointer",
-                                                  width: "17px",
-                                                  height: "17px",
-                                                }}
-                                                color="lightgrey" />
-                                            </>) : (<>
-                                              <TiArrowForward
-                                                onClick={() => {
-                                                  // handleConfirmAssign(
-                                                  //   company._id,
-                                                  //   company["Company Name"],
-                                                  //   company.Status, // Corrected parameter name
-                                                  //   company.ename,
-                                                  //   company.bdmAcceptStatus
-                                                  // );
-                                                }}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  width: "17px",
-                                                  height: "17px",
-                                                }}
-                                                color="grey"
-                                              />
-                                            </>)}
-                                    </td>
+                                              color="lightgrey" />
+                                          </>) : (<>
+                                            <TiArrowForward
+                                              onClick={() => {
+                                                // handleConfirmAssign(
+                                                //   company._id,
+                                                //   company["Company Name"],
+                                                //   company.Status, // Corrected parameter name
+                                                //   company.ename,
+                                                //   company.bdmAcceptStatus
+                                                // );
+                                              }}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="grey"
+                                            />
+                                          </>)}
+                                  </td>
+                                )}
 
-                                  )
-                                }
                                 {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
                                   (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
                                     <td>
@@ -4341,6 +4324,19 @@ function EmployeePanel() {
                                     </td>
                                   )
                                 ) : null}
+                                <td>
+                                  <LuHistory onClick={() => {
+                                    setShowCallHistory(true);
+                                    setClientNumber(company["Company Number"]);
+                                  }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                    }}
+                                    color="grey"
+                                  />
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -4406,6 +4402,7 @@ function EmployeePanel() {
           </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />}
         </>
       )}
+
       {formOpen && (
         <>
           <RedesignedForm
@@ -4423,6 +4420,7 @@ function EmployeePanel() {
           />
         </>
       )}
+
       {editFormOpen && (
         <>
           <EditableLeadform
@@ -4438,6 +4436,7 @@ function EmployeePanel() {
           />
         </>
       )}
+
       {editMoreOpen && (
         <>
           <EditableMoreBooking
@@ -4454,6 +4453,7 @@ function EmployeePanel() {
           />
         </>
       )}
+
       {addFormOpen && (
         <>
           {" "}
