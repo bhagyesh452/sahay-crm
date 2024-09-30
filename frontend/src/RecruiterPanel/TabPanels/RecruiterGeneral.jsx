@@ -19,6 +19,7 @@ import FilterableTable from '../../RM-CERTIFICATION/Extra-Components/FilterableT
 import { FaFilter } from "react-icons/fa";
 import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from react-icons
 import RecruiterStatusDropdown from '../ExtraComponents/RecruiterStatusDropdown.jsx';
+import RecruiterCallHistory from '../ExtraComponents/RecruiterCallHistory.jsx';
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
 function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon, completeEmployeeInfo }) {
@@ -716,6 +717,10 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                             )} */}
                                         </div>
                                     </th>
+                                    <th>Application Date</th>
+                                    <th>
+                                        Call History
+                                    </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['uploadedCv'] = el}>
@@ -774,6 +779,18 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                             {obj.expectedCTC}
                                         </td>
                                         <td>{obj.applicationSource}</td>
+                                        <td>{formatDatePro(obj.fillingDate)}</td>
+                                        <td><RecruiterCallHistory
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            mainStatus={obj.mainCategoryStatus}
+                                            subStatus={obj.subCategoryStatus}
+                                            setNewSubStatus={setNewStatusProcess}
+                                            empName={obj.empFullName}
+                                            empEmail={obj.personal_email}
+                                            refreshData={refreshData}
+                                            clientNumber={obj.personal_number}
+
+                                        /></td>
                                         <td>
                                             {obj.uploadedCV && obj.uploadedCV.length > 0 ? (
                                                 <div onClick={() => handleDownload(obj.uploadedCV[0].filename, obj.empFullName)}>

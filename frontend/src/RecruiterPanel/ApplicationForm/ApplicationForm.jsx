@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import img from "../../static/logo.jpg";
@@ -12,6 +12,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 function ApplicationForm() {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const [openBacdrop, setOpenBacdrop] = useState(false);
     const [selectedAppliedFor, setSelectedAppliedFor] = useState("")
     const [employeeData, setemployeeData] = useState({
         empFullName: "",
@@ -150,6 +151,7 @@ function ApplicationForm() {
         console.log("formatDataToSend", formDataToSend);
         try {
             // Send the form data to your backend using Axios
+            setOpenBacdrop(true);
             const response = await axios.post(`${secretKey}/recruiter/application-form/save`, formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -184,11 +186,11 @@ function ApplicationForm() {
                     lastActionDate: ""
                 });
                 // Reset the file input
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
-             // Redirect to the Calendly link
-             window.location.href = "https://calendly.com/requirement-startupsahay/15min";
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
+                // Redirect to the Calendly link
+                window.location.href = "https://calendly.com/requirement-startupsahay/15min";
             }
         } catch (error) {
             // Handle submission error
@@ -197,6 +199,8 @@ function ApplicationForm() {
                 title: 'Submission Failed',
                 text: `There was an issue submitting the form. Error: ${error.message}`,
             });
+        } finally {
+            setOpenBacdrop(false);
         }
     };
 
@@ -221,10 +225,20 @@ function ApplicationForm() {
 
     return (
         <div className="basic-information-main">
+            {openBacdrop && (
+                <Backdrop
+                    sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={openBacdrop}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+            )}
             <div className="basic-info-page-header">
                 <div className="container-xl d-flex align-items-center justify-content-between">
                     <div className="basic-info-logo">
-                        <img src={img} alt="image" />
+                        <a href="https://www.startupsahay.com" rel="noopener noreferrer">
+                            <img src={img} alt="image" />
+                        </a>
                     </div>
                     <div className="go-web-btn">
                         <button className="btn btn-md btn-primary">
@@ -482,6 +496,7 @@ function ApplicationForm() {
             </div>
 
         </div>
+
     )
 }
 

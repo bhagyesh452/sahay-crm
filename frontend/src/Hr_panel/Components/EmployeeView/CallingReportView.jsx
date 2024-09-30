@@ -634,18 +634,28 @@ function CallingReportView({ employeeInformation }) {
                     <button className='btn action-btn-alert'>
                         Not Achieved:
                         {callingData && callingData.length > 0 ? (
-                            // Map over dailyData and filter for "Failed" statuses
-                            callingData.map((obj) => {
-                                const totalDuration = convertSecondsToHMS(obj.total_duration);
-                                const targetTime = getTargetTime(employeeInformation.jdate);
+                            // Map over callingData and filter out Sundays and official holidays
+                            callingData
+                                .filter((obj) => {
+                                    const dateObject = new Date(obj.date);
+                                    const formattedDate = formatDateToDDMMYYYYNew(dateObject);
+                                    const isSunday = dateObject.getDay() === 0;
+                                    const isOfficialHoliday = officialHolidays.includes(formattedDate);
 
-                                return getTargetStatus(totalDuration, targetTime);
-                            })
+                                    // Exclude Sundays and official holidays
+                                    return !isSunday && !isOfficialHoliday;
+                                })
+                                .map((obj) => {
+                                    const totalDuration = convertSecondsToHMS(obj.total_duration);
+                                    const targetTime = getTargetTime(employeeInformation.jdate);
+                                    return getTargetStatus(totalDuration, targetTime);
+                                })
                                 .reduce((totalFailed, status) => {
                                     // Count how many are "Failed"
                                     return status === "Failed" ? totalFailed + 1 : totalFailed;
                                 }, 0)
                         ) : 0}
+
                     </button>
                 </div>
             </div>
@@ -713,11 +723,11 @@ function CallingReportView({ employeeInformation }) {
                                                 <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : getTargetTimeNew(employeeInformation.jdate)}</td>
                                                 <td>
                                                     <span className={attendance && attendance.status === "Leave" ? "badge badge-under-probation" :
-                                                        attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" ||attendance.status === "Sunday Leave") ? "badge badge-sunday" :
+                                                        attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" || attendance.status === "Sunday Leave") ? "badge badge-sunday" :
                                                             attendance && attendance.status === "Official Holiday" ? "badge badge-sunday" :
                                                                 `badge ${badgeClass}`}
                                                     >
-                                                        {attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" ||attendance.status === "Sunday Leave") ? "Sunday" :
+                                                        {attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" || attendance.status === "Sunday Leave") ? "Sunday" :
                                                             attendance && (attendance.status === "Official Holiday" || attendance.status === "Official Holiday Half Day" || attendance.status === "Official Holiday Leave") ? "Official Holiday" :
                                                                 (attendance && attendance.status === "Leave") ? "Leave" :
                                                                     getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
