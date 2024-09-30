@@ -60,7 +60,8 @@ import { MdOutlinePostAdd } from "react-icons/md";
 import { MdOutlineDeleteSweep } from "react-icons/md";
 import { IoIosClose } from "react-icons/io";
 import { Country, State, City } from 'country-state-city';
-
+import { LuHistory } from "react-icons/lu";
+import CallHistory from "../../../employeeComp/CallHistory.jsx";
 
 function BdmLeads() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -260,6 +261,12 @@ function BdmLeads() {
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
   //console.log(userId);
+  const [showCallHistory, setShowCallHistory] = useState(false);
+  const [clientNumber, setClientNumber] = useState("");
+
+  const hanleCloseCallHistory = () => {
+    setShowCallHistory(false);
+  };
 
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
@@ -723,7 +730,7 @@ function BdmLeads() {
     //   // Now you can send these coordinates to your server for further processing
     // };
     // // console.log(localStorage.getItem("newtoken"), locationAccess);
-    
+
     if (userId !== localStorage.getItem("bdmUserId")) {
       localStorage.removeItem("bdmToken");
       window.location.replace("/bdmlogin");
@@ -861,7 +868,7 @@ function BdmLeads() {
 
     setIsFilter(false);
     setIsSearch(true);
-    
+
     const filtered = extraData.filter((company) => {
       const companyName = company["Company Name"];
       const companyNumber = company["Company Number"];
@@ -1935,7 +1942,7 @@ function BdmLeads() {
   const handleCloseIncoDate = () => {
     setOpenIncoDate(false);
   };
-  
+
   const handleMarktrue = async () => {
     try {
       // Assuming 'id' is the ID of the object you want to mark as read
@@ -2487,7 +2494,7 @@ function BdmLeads() {
       {
         !formOpen && !editFormOpen && !addFormOpen && (
           <>
-            <div className="page-wrapper">
+            {!showCallHistory ? <div className="page-wrapper">
               <div className="page-header d-print-none">
                 <div className="container-xl">
 
@@ -3216,7 +3223,7 @@ function BdmLeads() {
                           onClick={() => {
                             setdataStatus("Matured");
                             setCurrentPage(0);
-                          const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
+                            const mappedData = (isSearch || isFilter) ? filteredData : moreEmpData
                             setEmployeeData(
                               mappedData
                                 .filter(
@@ -3516,6 +3523,7 @@ function BdmLeads() {
                                 (dataStatus === "Interested" && (
                                   <th>Add Projection</th>
                                 ))}
+                              <th>Call History</th>
                             </tr>
                           </thead>
                           {loading ? (
@@ -3541,12 +3549,15 @@ function BdmLeads() {
                                   key={index}
                                   style={{ border: "1px solid #ddd" }}
                                 >
+
                                   <td className="td-sticky">
                                     {startIndex + index + 1}
                                   </td>
+
                                   <td className="td-sticky1">
                                     {company["Company Name"]}
                                   </td>
+
                                   <td>
                                     <div className="d-flex align-items-center justify-content-between wApp">
                                       <div>{company["Company Number"]}</div>
@@ -3555,6 +3566,7 @@ function BdmLeads() {
                                       </a>
                                     </div>
                                   </td>
+
                                   <td>
                                     {company["Status"] === "Matured" ? (
                                       <span>{company["Status"]}</span>
@@ -3584,10 +3596,10 @@ function BdmLeads() {
                                           )
                                         }
                                       >
-                                        {(dataStatus !== "Interested" && dataStatus !== "FollowUp" )&& 
-                                            <option value="Not Picked Up">
-                                              Not Picked Up
-                                            </option>}
+                                        {(dataStatus !== "Interested" && dataStatus !== "FollowUp") &&
+                                          <option value="Not Picked Up">
+                                            Not Picked Up
+                                          </option>}
                                         <option value="Busy">Busy </option>
                                         <option value="Junk">Junk</option>
                                         <option value="Not Interested">
@@ -3633,6 +3645,7 @@ function BdmLeads() {
                                       </select>
                                     )}
                                   </td>
+
                                   <td>
                                     <div
                                       key={company._id}
@@ -3677,6 +3690,7 @@ function BdmLeads() {
                                       company["Company Incorporation Date  "]
                                     )}
                                   </td>
+
                                   <td>{company["City"]}</td>
                                   <td>{company["State"]}</td>
                                   <td>{company["Company Email"]}</td>
@@ -3748,6 +3762,7 @@ function BdmLeads() {
                                   )}
                                   </td>
                                 )} */}
+
                                   {(dataStatus === "FollowUp" ||
                                     dataStatus === "Interested") && (
                                       <td>
@@ -3792,6 +3807,7 @@ function BdmLeads() {
                                         )}
                                       </td>
                                     )}
+
                                   {/* {dataStatus === "Matured" && (
                                     <>
                                       <td>
@@ -3874,6 +3890,20 @@ function BdmLeads() {
                                     </>
                                   )} */}
                                   {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
+
+                                  <td>
+                                    <LuHistory onClick={() => {
+                                      setShowCallHistory(true);
+                                      setClientNumber(company["Company Number"])
+                                    }}
+                                      style={{
+                                        cursor: "pointer",
+                                        width: "17px",
+                                        height: "17px",
+                                      }}
+                                      color="grey"
+                                    />
+                                  </td>
                                 </tr>
                               ))}
                             </tbody>
@@ -4029,7 +4059,7 @@ function BdmLeads() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />}
           </>
         )
       }
@@ -5357,10 +5387,10 @@ function BdmLeads() {
             </div>
             <div className="footer-Drawer d-flex justify-content-between align-items-center">
               <button className='filter-footer-btn btn-clear'
-              onClick={handleClearFilter}
+                onClick={handleClearFilter}
               >Clear Filter</button>
               <button className='filter-footer-btn btn-yellow'
-              onClick={handleFilterData}
+                onClick={handleFilterData}
               >Apply Filter</button>
             </div>
           </div>
