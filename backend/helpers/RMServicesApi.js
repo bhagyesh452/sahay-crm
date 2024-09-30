@@ -1813,7 +1813,7 @@ router.post(`/update-substatus-adminexecutive/`, async (req, res) => {
           dscValidity: dscValidity,
           portalCharges: "",
           chargesPaidVia: "",
-          expenseReimbursementStatus: "",
+          expenseReimbursementStatus: "Unpaid",
           tokenStoredInBox: "",
           courierStatus: "",
         },
