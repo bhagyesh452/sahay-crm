@@ -36,7 +36,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState([]);
+  // const [searchResult, setSearchResult] = useState([]);
 
   const formattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -70,39 +70,36 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
 
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(inputDate).toLocaleDateString(
-      "en-US",
-      options
-    );
+    const formattedDate = new Date(inputDate).toLocaleDateString("en-US",options);
     return formattedDate;
   }
 
   //--------------------fetching employee data-----------------
-  const fetchData = async () => {
-    try {
-      // setIsLoading(true);
-      let response;
-      if (!searchValue) {
-        response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-      } else {
-        response = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-          params: { search: searchValue }, // send searchValue as query param
-        });
-      }
+  // const fetchData = async () => {
+  //   try {
+  //     // setIsLoading(true);
+  //     let response;
+  //     if (!searchValue) {
+  //       response = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
+  //     } else {
+  //       response = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
+  //         params: { search: searchValue }, // send searchValue as query param
+  //       });
+  //     }
 
-      // Set the retrieved data in the state
-      // setFilteredData(response.data);
-      setData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    } finally {
-      // setIsLoading(false);
-    }
-  };
+  //     // Set the retrieved data in the state
+  //     // setFilteredData(response.data);
+  //     setData(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error.message);
+  //   } finally {
+  //     // setIsLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchData();
-  }, [searchValue]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, [searchValue]);
 
   // Old code handle search :
   const handleSearch = (e) => {
@@ -116,13 +113,12 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
       item.number.includes(query) ||
       item.branchOffice.toLowerCase().includes(query.toLowerCase())
     );
-
     setFilteredData(filtered);
   };
 
-  const adminName = localStorage.getItem("adminName")
-  // ----------------------------------------- material ui bdm work switch---------------------------------------
+  const adminName = localStorage.getItem("adminName");
 
+  // ----------------------------------------- material ui bdm work switch---------------------------------------
   const AntSwitch = styled(Switch)(({ theme }) => ({
     width: 28,
     height: 16,
@@ -165,10 +161,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
     },
   }));
 
-
   //--------------function to revertback employee to main database---------------------
-
-
   const handleRevertBackEmployee = async (itemId, name, dataToRevertBack) => {
     Swal.fire({
       title: `Are you sure you want to restore back ${name}?`,
@@ -188,21 +181,12 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
             dataToRevertBack
           });
 
-          Swal.fire(
-            'Reverted!',
-            `Employee ${name} has been reverted back.`,
-            'success'
-          );
+          Swal.fire('Reverted!',`Employee ${name} has been reverted back.`,'success');
           // fetchData();
           refetchActive();
           refetchDeleted();
         } catch (error) {
-          Swal.fire(
-            'Error!',
-            'There was an error reverting the employee back.',
-            'error'
-          );
-
+          Swal.fire('Error!','There was an error reverting the employee back.','error');
           console.error('Error reverting employee', error);
         }
       }
@@ -210,7 +194,6 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
   }
 
   //------------------function to delete employee -------------------------
-
   const handlePermanentDeleteEmployee = async (itemId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -224,10 +207,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
       if (result.isConfirmed) {
         try {
           const response = await axios.delete(`${secretKey}/employee/permanentDelete/${itemId}`);
-          Swal.fire(
-            'Deleted!',
-            'success'
-          );
+          Swal.fire('Deleted!','success');
           // fetchData();
           refetchActive();
           refetchDeleted();
@@ -242,9 +222,6 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
       }
     })
   };
-
-
-
 
 
 
