@@ -119,18 +119,18 @@ function RecruiterCallHistory({ empName, clientNumber }) {
 
     return (
         <div>
-            <div className={'d-flex align-items-center justify-content-between'}>
-                <button className='td_add_remarks_btn ml-1'
+            <div className={'d-flex align-items-center justify-content-center'}>
+                <a style={{textDecoration:"none"}}
                     data-bs-toggle="modal"
                     data-bs-target="#myModal"
                     onClick={handleOpenModal}
                 >
                     <LuHistory />
-                </button>
+                </a>
             </div>
             {/* ------------------------------------------------------call history dialog------------------------------------------------------- */}
             <div className="modal" id="myModal">
-                <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-dialog modal-xl modal-dialog-centered">
                     <div className="modal-content">
                         {/* Modal Header */}
                         <div className="modal-header">
@@ -140,45 +140,47 @@ function RecruiterCallHistory({ empName, clientNumber }) {
 
                         {/* Modal Body */}
                         <div className="modal-body">
-                            {callHistory && callHistory.length > 0 ? (
-                                <table className="table table-striped"
-                                // style={{
-                                //     width: "100%",
-                                //     tableLayout: "fixed"
-                                // }}
-                                >
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th className="th-sticky1">Employee Name</th>
-                                            <th>Employee Number (From)</th>
-                                            <th>To Number</th>
-                                            <th>Call Date</th>
-                                            <th>Call Time</th>
-                                            <th>Call Duration</th>
-                                            <th>Call Type</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {callHistory.map((item, index) => (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td className="td-sticky1">{item.emp_name}</td>
-                                                <td>{item.emp_number}</td>
-                                                <td>{item.client_name} ({item.client_number})</td>
-                                                <td>{formatDate(item.call_date)}</td>
-                                                <td>{formatTime(item.call_time)}</td>
-                                                <td>{formatDuration(item.duration)}</td>
-                                                <td>{item.call_type}</td>
+                            <div className='table table-responsive'>
+                                {callHistory && callHistory.length > 0 ? (
+                                    <table className="table"
+                                    // style={{
+                                    //     width: "100%",
+                                    //     tableLayout: "fixed"
+                                    // }}
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Employee Name</th>
+                                                <th>Employee Number (From)</th>
+                                                <th>To Number</th>
+                                                <th>Call Date</th>
+                                                <th>Call Time</th>
+                                                <th>Call Duration</th>
+                                                <th>Call Type</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            ) : (
-                                <div>
-                                    <Nodata />
-                                </div>
-                            )}
+                                        </thead>
+                                        <tbody>
+                                            {callHistory.map((item, index) => (
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{item.emp_name}</td>
+                                                    <td>{item.emp_number}</td>
+                                                    <td>{item.client_name} ({item.client_number})</td>
+                                                    <td>{formatDate(item.call_date)}</td>
+                                                    <td>{formatTime(item.call_time)}</td>
+                                                    <td>{formatDuration(item.duration)}</td>
+                                                    <td>{item.call_type}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <div>
+                                        <Nodata />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
