@@ -885,7 +885,7 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                 </div>
                                 <div className="row">
-                                  <div className="col-sm-4">
+                                  <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="email">Email Address<span style={{ color: "red" }}> * </span></label>
                                       <input
@@ -901,7 +901,31 @@ export default function HorizontalNonLinearStepper() {
                                       {errors.personalEmail && <p style={{ color: "red" }}>{errors.personalEmail}</p>}
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
+                                  <div className="col-sm-3">
+                                    <div className="form-group mt-2 mb-2">
+                                    <label for="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
+                                      <select
+                                        className="form-select mt-1"
+                                        name="bloodGroup"
+                                        id="bloodGroup"
+                                        value={personalInfo.bloodGroup}
+                                        onChange={handleInputChange}
+                                        disabled={!isPersonalInfoEditable}
+                                      >
+                                        <option value="Select Gender" selected> Select Blood Group</option>
+                                        <option value="A Positive (A+)">A Positive (A+)</option>
+                                        <option value="A Negative (A-)">A Negative (A-)</option>
+                                        <option value="B Positive (B+)">B Positive (B+)</option>
+                                        <option value="B Negative (B-)">B Negative (B-)</option>
+                                        <option value="AB Positive (AB+)">AB Positive (AB+)</option>
+                                        <option value="AB Negative (AB-)">AB Negative (AB-)</option>
+                                        <option value="O Positive (O+)">O Positive (O+)</option>
+                                        <option value="O Negative (O-)">O Negative (O-)</option>
+                                      </select>
+                                      {errors.bloodGroup && <p style={{ color: "red" }}>{errors.bloodGroup}</p>}
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
                                       <div>
@@ -919,23 +943,7 @@ export default function HorizontalNonLinearStepper() {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-sm-2">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label>Blood Group</label>
-                                      <input
-                                        type="text"
-                                        name="bloodGroup"
-                                        className="form-control mt-1"
-                                        //id="bloodgroup"
-                                        placeholder="Blood Group"
-                                        value={personalInfo.bloodGroup}
-                                        onChange={handleInputChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      />
-                                      {errors.bloodGroup && <p style={{ color: "red" }}>{errors.bloodGroup}</p>}
-                                    </div>
-                                  </div>
-                                  <div className="col-sm-2">
+                                  <div className="col-sm-3">
                                     <div className="form-group mt-1 mb-2">
                                       <div className="d-flex align-items-center justify-content-between">
                                         <label htmlFor="permanentAddress">
@@ -1627,6 +1635,18 @@ export default function HorizontalNonLinearStepper() {
                                   <div className="col-sm-9 p-0">
                                     <div className="form-label-data">
                                       {personalInfo.personalEmail || "-"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0">
+                                  <div className="col-sm-3 p-0">
+                                    <div className="form-label-name">
+                                      <b>Blood Group</b>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-9 p-0">
+                                    <div className="form-label-data">
+                                      {personalInfo.bloodGroup || "-"}
                                     </div>
                                   </div>
                                 </div>
