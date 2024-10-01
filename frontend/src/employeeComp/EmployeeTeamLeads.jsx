@@ -120,7 +120,8 @@ function EmployeeTeamLeads() {
     const [employeeName, setEmployeeName] = useState("");
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
-
+    const [addFormOpen, setAddFormOpen] = useState(false);
+    const [nowToFetch, setNowToFetch] = useState(false);
     const hanleCloseCallHistory = () => {
         setShowCallHistory(false);
     };
@@ -145,7 +146,7 @@ function EmployeeTeamLeads() {
     const [extraData, setExtraData] = useState([]);
     const [newFilteredData, setNewFilteredData] = useState([]);
     const [activeTab, setActiveTab] = useState('All');
-
+    const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
     // State for selecting status.
     const [selectedStatus, setSelectedStatus] = useState("");
 
@@ -560,14 +561,15 @@ function EmployeeTeamLeads() {
         cnum,
         bdeStatus,
         bdmOldStatus,
-        bdeName
+        bdeName,
+        isDeletedEmployeeCompany
     ) => {
         const title = `${data.ename} changed ${cname} status from ${bdmOldStatus} to ${bdmnewstatus}`;
         const DT = new Date();
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const bdmStatusChangeDate = new Date();
-
+        console.log("isDeletd", isDeletedEmployeeCompany)
         try {
 
             if (bdmnewstatus !== "Matured") {
@@ -600,7 +602,14 @@ function EmployeeTeamLeads() {
             } else {
                 const currentObject = teamData.find(obj => obj["Company Name"] === cname);
                 setMaturedBooking(currentObject);
-                setFormOpen(true)
+                setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+                if (!isDeletedEmployeeCompany) {
+                    console.log("formchal")
+                    setFormOpen(true);
+                } else {
+                    console.log("addleadfromchal")
+                    setAddFormOpen(true)
+                }
 
             }
 
@@ -881,7 +890,7 @@ function EmployeeTeamLeads() {
                     finalData
                 );
 
-                console.log(response.data)
+               
 
                 //console.log(response.data)
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
@@ -1026,103 +1035,11 @@ function EmployeeTeamLeads() {
         return `${year}-${month}-${day}`;
     }
 
-    //  ----------------------------------------  Filterization Process ---------------------------------------------
-    const handleFieldChange = (event) => {
-        if (
-            event.target.value === "Company Incorporation Date  " ||
-            event.target.value === "AssignDate"
-        ) {
-            setSelectedField(event.target.value);
-            setVisibility("block");
-            setVisibilityOther("none");
-            setSubFilterValue("");
-            setVisibilityOthernew("none");
-        } else if (event.target.value === "Status") {
-            setSelectedField(event.target.value);
-            setVisibility("none");
-            setVisibilityOther("none");
-            setSubFilterValue("");
-            setVisibilityOthernew("block");
-        } else {
-            setSelectedField(event.target.value);
-            setVisibility("none");
-            setVisibilityOther("block");
-            setSubFilterValue("");
-            setVisibilityOthernew("none");
-        }
-
-        //console.log(selectedField);
-    };
-
-    const handleDateChange = (e) => {
-        const dateValue = e.target.value;
-        setCurrentPage(0);
-
-        // Check if the dateValue is not an empty string
-        if (dateValue) {
-            const dateObj = new Date(dateValue);
-            const formattedDate = dateObj.toISOString().split("T")[0];
-            setSearchText(formattedDate);
-        } else {
-            // Handle the case when the date is cleared
-            setSearchText("");
-        }
-    };
-
-    // const filteredData = teamleadsData.filter((company) => {
-    //     const fieldValue = company[selectedField];
-
-    //     if (selectedField === "State" && citySearch) {
-    //         // Handle filtering by both State and City
-    //         const stateMatches = fieldValue
-    //             .toLowerCase()
-    //             .includes(searchText.toLowerCase());
-    //         const cityMatches = company.City.toLowerCase().includes(
-    //             citySearch.toLowerCase()
-    //         );
-    //         return stateMatches && cityMatches;
-    //     } else if (selectedField === "Company Incorporation Date  ") {
-    //         // Assuming you have the month value in a variable named `month`
-    //         if (month == 0) {
-    //             return fieldValue.includes(searchText);
-    //         } else if (year == 0) {
-    //             return fieldValue.includes(searchText);
-    //         }
-    //         const selectedDate = new Date(fieldValue);
-    //         const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-    //         const selectedYear = selectedDate.getFullYear();
-
-    //         // Use the provided month variable in the comparison
-    //         return (
-    //             selectedMonth.toString().includes(month) &&
-    //             selectedYear.toString().includes(year)
-    //         );
-    //     } else if (selectedField === "AssignDate") {
-    //         // Assuming you have the month value in a variable named `month`
-    //         return fieldValue.includes(searchText);
-    //     } else if (selectedField === "Status" && searchText === "All") {
-    //         // Display all data when Status is "All"
-    //         return true;
-    //     } else {
-    //         // Your existing filtering logic for other fields
-    //         if (typeof fieldValue === "string") {
-    //             return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-    //         } else if (typeof fieldValue === "number") {
-    //             return fieldValue.toString().includes(searchText);
-    //         } else if (fieldValue instanceof Date) {
-    //             // Handle date fields
-    //             return fieldValue.includes(searchText);
-    //         }
-
-    //         return false;
-    //     }
-    // });
-
 
 
     //---------------------------------- function to revert back company-------------------------------------
     const handleRevertBackCompany = async (companyId, companyName, bdmStatus) => {
-        console.log("yahan chala")
+    
         try {
             const reponse = await axios.post(`${secretKey}/bdm-data/deletebdm-updatebdedata`, null, {
                 params: {
@@ -1168,56 +1085,10 @@ function EmployeeTeamLeads() {
         setOpenFilterDrawer(false)
     };
 
-
-
-
-    // const handleSearch = (searchQuery) => {
-    //     console.log(searchQuery);
-
-    //     // setIsSearch(true);
-    //     const searchValue = searchQuery.toLowerCase();
-
-    //     if (!searchQuery || searchQuery.trim().length === 0) {
-    //         setIsSearch(false);
-    //         setFilteredData(extraData); // Assuming extraData is your full dataset
-    //         return;
-    //     }
-    //     setIsFilter(false);
-    //     setIsSearch(true);
-
-    //     const filteredItems = extraData.filter((company) => {
-    //         const companyName = company["Company Name"];
-    //         const companyNumber = company["Company Number"];
-    //         const companyEmail = company["Company Email"];
-    //         const companyState = company.State;
-    //         const companyCity = company.City;
-
-    //         if (companyName && companyName.toString().toLowerCase().includes(searchValue)) {
-    //             return true;
-    //         }
-    //         if (companyNumber && companyNumber.toString().includes(searchValue)) {
-    //             return true;
-    //         }
-    //         if (companyEmail && companyEmail.toString().toLowerCase().includes(searchValue)) {
-    //             return true;
-    //         }
-    //         if (companyState && companyState.toString().toLowerCase().includes(searchValue)) {
-    //             return true;
-    //         }
-    //         if (companyCity && companyCity.toString().toLowerCase().includes(searchValue)) {
-    //             return true;
-    //         }
-
-    //         return false;
-    //     });
-    //     setNewFilteredData(filteredItems);
-    //     setFilteredData(newFilteredData);
-    // };
-
-
     // Currently running for searching the data :
     const handleSearch = (searchQuery) => {
-        console.log(searchQuery);
+       
+        
 
         setIsFilter(false);
 
@@ -1253,7 +1124,8 @@ function EmployeeTeamLeads() {
     };
 
     const filterByTab = (data) => {
-        console.log("data is :", data);
+       
+        
         let filtered;
 
         switch (activeTab) {
@@ -1325,7 +1197,8 @@ function EmployeeTeamLeads() {
         }
     }, [filteredData, activeTab]);
 
-    console.log("Is Search :", isSearch);
+   
+    
 
     // To clear filter data :
     const handleClearFilter = () => {
@@ -1347,7 +1220,8 @@ function EmployeeTeamLeads() {
     // To apply filter :
     const handleFilterData = async (page = 1, limit = itemsPerPage) => {
         const bdmName = data.ename;
-        console.log("BDM Name is :", bdmName);
+      
+        
         try {
             setIsFilter(true);
             setOpenBacdrop(true);
@@ -1383,7 +1257,7 @@ function EmployeeTeamLeads() {
     };
 
     // console.log("Team data :", teamData);
-    console.log("Filtered data :", filteredData);
+ 
     // console.log("Team lead data :", teamleadsData);
     // console.log("Is Filter :", isFilter);
 
@@ -1481,10 +1355,7 @@ function EmployeeTeamLeads() {
 
     }, [filteredData, activeTab]);
 
-    console.log("activetab", activeTab);
-    console.log("selectedStatus", selectedStatus);
-    console.log("bdmNewStatus", bdmNewStatus);
-
+  
 
 
 
@@ -1494,7 +1365,7 @@ function EmployeeTeamLeads() {
         <div>
             {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
             <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
-            {!formOpen && (
+            {!formOpen && !addFormOpen && (
                 <>
                     {!showCallHistory ? <div className="page-wrapper">
                         {BDMrequests && (
@@ -2518,7 +2389,8 @@ function EmployeeTeamLeads() {
                                                                                             company["Company Number"],
                                                                                             company["Status"],
                                                                                             company.bdmStatus,
-                                                                                            company.ename
+                                                                                            company.ename,
+                                                                                            company.isDeletedEmployeeCompany,
                                                                                         )
                                                                                     }
                                                                                 >
@@ -2839,7 +2711,7 @@ function EmployeeTeamLeads() {
                 </>
             )}
 
-            {formOpen && maturedBooking && (
+            {formOpen && !addFormOpen && maturedBooking && (
                 <>
                     <RedesignedForm
                         // matured={true}
@@ -2854,6 +2726,21 @@ function EmployeeTeamLeads() {
                         companysInco={maturedBooking["Company Incorporation Date  "]}
                         employeeName={maturedBooking.ename}
                         bdmName={maturedBooking.bdmName}
+                    />
+                </>
+            )}
+            {addFormOpen && (
+                <>
+                    {" "}
+                    <AddLeadForm
+                        employeeEmail={maturedBooking.email}
+                        newBdeName={maturedBooking.ename}
+                        isDeletedEmployeeCompany={deletedEmployeeStatus}
+                        setFormOpen={setAddFormOpen}
+                        companysName={maturedBooking["Company Name"]}
+                        setNowToFetch={setNowToFetch}
+                        setDataStatus={setdataStatus}
+                        employeeName={maturedBooking.ename}
                     />
                 </>
             )}
@@ -2975,73 +2862,6 @@ function EmployeeTeamLeads() {
                     Submit
                 </button>
             </Dialog>
-            {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
-
-            {/* <Dialog
-                open={openFeedback}
-                onClose={handleCloseFeedback}
-                fullWidth
-                maxWidth="xs">
-                <DialogTitle>
-                    <span style={{ fontSize: "11px" }}>
-                        BDM Feedback for {feedbackCompanyName}
-                    </span>
-                    <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{ width: "16px", height: "16px" }}></CloseIcon>
-                    </IconButton>{" "}
-                    {(valueSlider && feedbackRemarks) ? (<IconButton
-                        onClick={() => {
-                            setIsEditFeedback(true);
-                        }}
-                        style={{ float: "right" }}>
-                        <EditIcon color="grey" style={{ width: "16px", height: "16px" }}></EditIcon>
-                    </IconButton>) : (null)}
-                </DialogTitle>
-                <DialogContent>
-
-                    <div className="card-body mt-5">
-                        <div className="feedback-slider">
-                            <Slider
-                                defaultValue={0}
-                                //getAriaValueText={valuetext} 
-                                value={valueSlider}
-                                onChange={(e) => { handleSliderChange(e.target.value) }}
-                                sx={{ zIndex: "99999999", color: "#ffb900" }}
-                                min={0}
-                                max={10}
-                                aria-label="Default"
-                                valueLabelDisplay="auto"
-                                disabled={!isEditFeedback} />
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer mt-4">
-                        <div class="mb-3 remarks-input">
-                            <textarea
-                                placeholder="Add Remarks Here...  "
-                                className="form-control"
-                                id="remarks-input"
-                                rows="3"
-                                value={feedbackRemarks}
-                                onChange={(e) => {
-                                    debouncedFeedbackRemarks(e.target.value);
-                                }}
-                                disabled={!isEditFeedback}
-                            ></textarea>
-                        </div>
-                        <button
-                            onClick={handleFeedbackSubmit}
-                            type="submit"
-                            className="btn btn-primary"
-                            style={{ width: "100%" }}
-                        >
-                            Submit
-                        </button>
-                    </div>
-
-                </DialogContent>
-            </Dialog> */}
 
             <Dialog className='My_Mat_Dialog'
                 open={openFeedback}

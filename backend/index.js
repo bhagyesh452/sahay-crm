@@ -253,29 +253,55 @@ app.post("/api/admin/login-admin", async (req, res) => {
   }
 });
 
+// app.post("/api/employeelogin", async (req, res) => {
+//   const { email, password } = req.body;
+//   //console.log(email , password)
+//   // Replace this with your actual Employee authentication logic
+//   const user = await adminModel.findOne({
+//     email: email,
+//     password: password,
+//     //designation: "Sales Executive",
+//   });
+
+//   if (!user) {
+//     // If user is not found
+//     return res.status(401).json({ message: "Invalid email or password" });
+//   } else if (user.designation !== "Sales Executive") {
+//     // If designation is incorrect
+//     return res.status(401).json({ message: "Designation is incorrect" });
+//   } else {
+//     // If credentials are correct
+//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+//       expiresIn: "3h",
+//     });
+//     res.json({ newtoken });
+//     socketIO.emit("Employee-login");
+//   }
+// });
+
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
-  //console.log(email , password)
-  // Replace this with your actual Employee authentication logic
-  const user = await adminModel.findOne({
-    email: email,
-    password: password,
-    //designation: "Sales Executive",
-  });
 
-  if (!user) {
-    // If user is not found
-    return res.status(401).json({ message: "Invalid email or password" });
-  } else if (user.designation !== "Sales Executive") {
-    // If designation is incorrect
-    return res.status(401).json({ message: "Designation is incorrect" });
-  } else {
-    // If credentials are correct
-    const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-      expiresIn: "3h",
-    });
-    res.json({ newtoken });
-    socketIO.emit("Employee-login");
+  try {
+    // Use .select() to limit fields retrieved from the database
+    const user = await adminModel.findOne({ email, password }).select('email password designation').lean();
+
+    if (!user) {
+      // If user is not found
+      return res.status(401).json({ message: "Invalid email or password" });
+    } else if (user.designation !== "Sales Executive") {
+      // If designation is incorrect
+      return res.status(401).json({ message: "Designation is incorrect" });
+    } else {
+      // If credentials are correct
+      const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+        expiresIn: "3h",
+      });
+      res.json({ newtoken });
+      socketIO.emit("Employee-login");
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
 

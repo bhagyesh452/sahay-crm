@@ -26,7 +26,7 @@ const RecruiterStatusDropdown = ({
         setStatus(newStatus);
         setStatusClass(statusClass);
         setNewSubStatus(newStatus);
-        console.log("newStatus", newStatus)
+        //console.log("newStatus", newStatus)
 
         try {
             let response;
@@ -35,7 +35,7 @@ const RecruiterStatusDropdown = ({
             if (mainStatus === "General") {
                 movedFromMainCategoryStatus = "General";
                 movedToMainCategoryStatus = "UnderReview";
-                if (newStatus === "Disqualified") {
+                if (newStatus === "Disqualified" || newStatus === "Not Looking For Job" || newStatus === "Junk") {
                     movedFromMainCategoryStatus = "General";
                     movedToMainCategoryStatus = "Disqualified";
                     response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
@@ -114,159 +114,6 @@ const RecruiterStatusDropdown = ({
                     });
                 }
             }
-            // else if (mainStatus === "Process") {
-            //     if (newStatus === "Submitted") {
-            //         if (empEmail === "Start-Up India Certificate" && !industry && !sector) {
-            //             Swal.fire({
-            //                 title: "Error",
-            //                 text: "Please select industry and sector first",
-            //                 icon: "warning",
-            //                 button: "OK",
-            //             });
-            //             setStatus("Process");
-            //             setStatusClass(statusClass);
-            //             setNewSubStatus("Process");
-            //             return;
-            //         } else if (writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved")) {
-            //             Swal.fire({
-            //                 title: "Error",
-            //                 text: "Content status must be Completed or Approved",
-            //                 icon: "warning",
-            //                 button: "OK",
-            //             });
-            //             setStatus("Process");
-            //             setStatusClass(statusClass);
-            //             setNewSubStatus("Process");
-            //             return;
-            //         } else if (designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved")) {
-            //             Swal.fire({
-            //                 title: "Error",
-            //                 text: "Brochure status must be Completed or Approved",
-            //                 icon: "warning",
-            //                 button: "OK",
-            //             });
-            //             setStatus("Process");
-            //             setStatusClass(statusClass);
-            //             setNewSubStatus("Process");
-            //             return;
-            //         } else {
-            //             movedFromMainCategoryStatus = "Process";
-            //             movedToMainCategoryStatus = "Submitted";
-            //             response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
-            //                 empName,
-            //                 empEmail,
-            //                 subCategoryStatus: newStatus,
-            //                 mainCategoryStatus: "Submitted",
-            //                 previousMainCategoryStatus: "Process",
-            //                 previousSubCategoryStatus: newStatus,
-            //                 movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-            //                 movedToMainCategoryStatus: movedToMainCategoryStatus,
-            //             });
-            //         }
-            //     } else if (newStatus === "Defaulter") {
-            //         movedFromMainCategoryStatus = "Process";
-            //         movedToMainCategoryStatus = "Defaulter";
-            //         response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
-            //             empName,
-            //             empEmail,
-            //             subCategoryStatus: newStatus,
-            //             mainCategoryStatus: "Defaulter",
-            //             previousMainCategoryStatus: "Process",
-            //             previousSubCategoryStatus: newStatus,
-            //             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-            //             movedToMainCategoryStatus: movedToMainCategoryStatus,
-            //         });
-
-            //     } else if (newStatus === "Hold") {
-            //         movedFromMainCategoryStatus = "Process";
-            //         movedToMainCategoryStatus = "Hold";
-            //         response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
-            //             empName,
-            //             empEmail,
-            //             subCategoryStatus: newStatus,
-            //             mainCategoryStatus: "Hold",
-            //             previousMainCategoryStatus: "Process",
-            //             previousSubCategoryStatus: newStatus,
-            //             movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-            //             movedToMainCategoryStatus: movedToMainCategoryStatus,
-            //         });
-            //     } else if (newStatus === "Undo") {
-            //         response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
-            //             empName,
-            //             empEmail,
-            //             subCategoryStatus: newStatus,
-
-            //             //mainCategoryStatus: "Defaulter",
-            //         });
-            //     } else if (newStatus === "Ready To Submit") {
-            //         const conditions = {
-            //             industryAndSector: empEmail === "Start-Up India Certificate" && !industry && !sector,
-            //             contentStatus: writername !== "Not Applicable" && (contentStatus !== "Completed" && contentStatus !== "Approved"),
-            //             brochureStatus: designername && designername !== "Not Applicable" && (brochureStatus !== "Completed" && brochureStatus !== "Approved"),
-            //             letterStatus: dscApplicable && letterStatus && (empEmail === "Start-Up India Certificate" || empEmail === "Organization DSC" || empEmail === "Director DSC") && letterStatus !== "Letter Received",
-            //             dscStatus: dscApplicable && dscStatus && (empEmail === "Start-Up India Certificate" || empEmail === "Organization DSC" || empEmail === "Director DSC") && dscStatus !== "Approved",
-            //             otpStatus: otpStatus !== "Both Done",
-            //         };
-            //         const messages = [];
-
-            //         // Check each condition and add appropriate messages
-            //         if (conditions.industryAndSector) {
-            //             messages.push("Please select industry and sector!");
-            //         }
-
-            //         if (conditions.contentStatus) {
-            //             messages.push("Content status must be Completed or Approved");
-            //         }
-
-            //         if (conditions.brochureStatus) {
-            //             messages.push("Brochure status must be Completed or Approved");
-            //         }
-            //         if (conditions.letterStatus) {
-            //             messages.push("DSC Letter Status must be received !")
-            //         }
-            //         if (conditions.dscStatus) {
-            //             messages.push("DSC Status must be approved!")
-            //         }
-            //         if (conditions.otpStatus) {
-            //             messages.push("Otp Status must be Both Done!")
-            //         }
-            //         if (messages.length > 0) {
-            //             const title = "Error";
-            //             const text = messages.join(" <br> ");
-            //             Swal.fire({
-            //                 title: title,
-            //                 html: text,
-            //                 icon: "warning",
-            //                 button: "OK",
-            //             }).then(() => {
-            //                 // Reset status and class only if conditions are met
-            //                 setStatus(subStatus);
-            //                 setStatusClass(getStatusClass(mainStatus, subStatus));
-            //                 setNewSubStatus(subStatus);
-            //             });
-            //         } else {
-            //             movedFromMainCategoryStatus = "Process";
-            //             movedToMainCategoryStatus = "Ready To Submit";
-            //             response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
-            //                 empName,
-            //                 empEmail,
-            //                 subCategoryStatus: newStatus,
-            //                 mainCategoryStatus: "Ready To Submit",
-            //                 previousMainCategoryStatus: "Process",
-            //                 previousSubCategoryStatus: newStatus,
-            //                 movedFromMainCategoryStatus: movedFromMainCategoryStatus,
-            //                 movedToMainCategoryStatus: movedToMainCategoryStatus,
-            //             });
-            //         }
-            //     } else {
-            //         response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
-            //             empName,
-            //             empEmail,
-            //             subCategoryStatus: newStatus,
-            //             mainCategoryStatus: "Process"
-            //         });
-            //     }
-            // }
             else if (mainStatus === "UnderReview") {
                 if (newStatus === "Disqualified") {
                     movedFromMainCategoryStatus = "UnderReview";
@@ -486,6 +333,12 @@ const RecruiterStatusDropdown = ({
                         return "untouched_status";
                     case "Interview Scheduled":
                         return "cdbp-status";
+                    case "Call Done":
+                        return "cdbp-status";
+                    case "UnderReview":
+                        return "cdbp-status";
+                    case "Not Looking For Job":
+                        return "cdbp-status";
                     case "Disqualified":
                         return "clnt_no_repond_status";
                     case "Rejected":
@@ -496,6 +349,9 @@ const RecruiterStatusDropdown = ({
                         return "clnt_no_repond_status";
                     case "Call Busy":
                         return "inprogress-status";
+                    case "Junk":
+                        return "need_to_call";
+
                     default:
                         return "";
                 }
@@ -511,14 +367,16 @@ const RecruiterStatusDropdown = ({
                         return "support-status";
                     case "Selected":
                         return "ready_to_submit";
-
                     case "Undo":
                         return "inprogress-status";
                     case "On Hold":
                         return "dfaulter-status";
-
                     case "Rejected":
                         return "need_to_call";
+                    case "Junk":
+                        return "need_to_call";
+                    case "Call Busy":
+                        return "inprogress-status";
                     default:
                         return "";
                 }
@@ -526,7 +384,7 @@ const RecruiterStatusDropdown = ({
                 switch (subStatus) {
                     case "On Hold":
                         return "ready_to_submit";
-                    case "Under Review":
+                    case "UnderReview":
                         return "submited-status";
                     case "Selected":
                         return "dfaulter-status";
@@ -541,6 +399,10 @@ const RecruiterStatusDropdown = ({
                 switch (subStatus) {
                     case "Disqualified":
                         return "clnt_no_repond_status";
+                    case "Junk":
+                        return "need_to_call";
+                    case "Not Looking For Job":
+                        return "cdbp-status";
                     default:
                         return "";
                 }
@@ -612,6 +474,51 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
+                                onClick={() => handleStatusChange("Call Not Received", "need_to_call")}
+                                href="#"
+                            >
+                                Call Not Received
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
+                                onClick={() => handleStatusChange("Call Busy", "need_to_call")}
+                                href="#"
+                            >
+                                Call Busy
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
+                                onClick={() => handleStatusChange("Call Done", "cdbp-status")}
+                                href="#"
+                            >
+                                Call Done
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
+                                onClick={() => handleStatusChange("UnderReview", "cdbp-status")}
+                                href="#"
+                            >
+                                Under Review
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
+                                onClick={() => handleStatusChange("Not Looking For Job", "cdbp-status")}
+                                href="#"
+                            >
+                                Not Looking For Job
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
                                 onClick={() => handleStatusChange("Disqualified", "clnt_no_repond_status")}
                                 href="#"
                             >
@@ -639,19 +546,10 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Not Received", "need_to_call")}
+                                onClick={() => handleStatusChange("Junk", "need_to_call")}
                                 href="#"
                             >
-                                Call Not Received
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Busy", "need_to_call")}
-                                href="#"
-                            >
-                                Call Busy
+                                Junk
                             </a>
                         </li>
                     </ul>

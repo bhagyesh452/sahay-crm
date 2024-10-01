@@ -34,7 +34,7 @@ const RecruitmentSchema = new mongoose.Schema({
     },
     personal_number: {
         type: String,
-        // unique: true
+        unique: true
     },
     number: {
         type: String,

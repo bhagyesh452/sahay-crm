@@ -64,21 +64,21 @@ router.post("/forwardtobdmdata", async (req, res) => {
   }
 });
 
-router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
-  const bdmName = req.params.bdmName;
+// router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
+//   const bdmName = req.params.bdmName;
 
-  try {
-    // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await TeamLeadsModel.find({
-      bdmName: bdmName,
-    }).lean();
+//   try {
+//     // Fetch data using lean queries to retrieve plain JavaScript objects
+//     const data = await TeamLeadsModel.find({
+//       bdmName: bdmName,
+//     }).lean();
 
-    res.send(data);
-  } catch (error) {
-    console.error("Error fetching data:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     res.send(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 // router.get('/filter-employee-team-leads/:bdmName', async (req, res) => {
 //   const bdmName = req.params.bdmName;
@@ -234,6 +234,42 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // });
+
+router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
+  const bdmName = req.params.bdmName;
+
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const teamLeadsData = await TeamLeadsModel.find({
+      bdmName: bdmName,
+    }).lean();
+
+    // Fetch the related company data from newcdatas collection
+    const companyNames = teamLeadsData.map((lead) => lead["Company Name"]);
+
+    const newcdatasData = await CompanyModel.find({
+      "Company Name": { $in: companyNames },
+    }).select("Company Name isDeletedEmployeeCompany");
+
+    // Create a lookup object for companyName to isDeletedEmployeeCompany mapping
+    const companyLookup = {};
+    newcdatasData.forEach((company) => {
+      companyLookup[company["Company Name"]] = company.isDeletedEmployeeCompany;
+    });
+
+    // Update team leads data based on lookup
+    teamLeadsData.forEach((lead) => {
+      if (companyLookup[lead["Company Name"]] !== undefined) {
+        lead.isDeletedEmployeeCompany = companyLookup[lead["Company Name"]];
+      }
+    });
+
+    res.status(200).send(teamLeadsData);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 
