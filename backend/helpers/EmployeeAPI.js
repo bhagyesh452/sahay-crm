@@ -13,6 +13,7 @@ const json2csv = require("json2csv").parse;
 const deletedEmployeeModel = require("../models/DeletedEmployee.js");
 const RedesignedLeadformModel = require("../models/RedesignedLeadform");
 const CallingModel = require("../models/EmployeeCallingData.js");
+const lastEmployeeIdsModel = require("../models/LastEmployeeId.js");
 const cron = require('node-cron');
 const axios = require('axios');
 const fetch = require('node-fetch');
@@ -152,8 +153,39 @@ router.post("/einfo", upload.fields([
   { name: "profilePhoto", maxCount: 1 },
 ]), async (req, res) => {
   try {
+    // Step 1: Get the lastEmployeeId from lastEmployeeIdsModel
+    let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne();
+    // console.log("lastEmployeeIdRecord :", lastEmployeeIdRecord);
+
+    // Step 2: Get the total count of employees
+    const totalEmployees = await adminModel.countDocuments({});
+    // console.log("totalEmployees :", totalEmployees);
+
+    let newEmployeeID;
+
+    // Step 3: If no record exists, generate employee ID from scratch, else increment the last one
+    if (lastEmployeeIdRecord.lastEmployeeId === "SSPL0000") {
+      // No last employee ID found, start with SSPL0001 + total count
+      newEmployeeID = `SSPL${(totalEmployees + 1).toString().padStart(4, '0')}`;
+
+      // Update lastEmployeeId in the collection with the new ID
+      await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+    } else {
+      // Last employee ID found, increment by 1
+      let lastEmployeeID = lastEmployeeIdRecord.lastEmployeeId;
+
+      // Extract the number part and increment
+      let employeeNumber = parseInt(lastEmployeeID.replace("SSPL", ""), 10) + 1;
+
+      // Generate new employee ID
+      newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
+
+      // Update lastEmployeeId in the collection with the new ID
+      await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+    }
+
     const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo, empId, employeeID, oldDesignation } = req.body;
-    console.log("Personal Info is :", personalInfo);
+    // console.log("Personal Info is :", personalInfo);
     // console.log("Employeement Info is :", employeementInfo);
     // console.log("Payroll info is :", payrollInfo);
     // console.log("Emergency info is :", emergencyInfo);
@@ -215,7 +247,7 @@ router.post("/einfo", upload.fields([
       ...req.body,
       AddedOn: new Date(),
       _id: empId,
-      employeeID: employeeID,
+      employeeID: employeeID || newEmployeeID,
 
       ...(personalInfo?.firstName || personalInfo?.middleName || personalInfo?.lastName) && {
         ename: `${personalInfo?.firstName || ""} ${personalInfo?.lastName || ""}`,
@@ -823,7 +855,7 @@ router.put("/revertbackdeletedemployeeintomaindatabase", upload.fields([
     }
 
     // console.log("Deleted data is :", dataToDelete);
-    console.log("Reverted employee is :", dataToRevertBack);
+    // console.log("Reverted employee is :", dataToRevertBack);
 
     const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
       fieldname: file.fieldname,
@@ -2228,7 +2260,7 @@ router.delete("/permanentDelete/:id", async (req, res) => {
 
 router.get("/einfo/:email/:password", async (req, res) => {
   const { email, password } = req.params;
-  console.log(email , password)
+  console.log(email, password)
   try {
     const data = await adminModel.findOne({ email: email, password: password });
 
