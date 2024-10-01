@@ -88,14 +88,14 @@ function EmployeeMaturedBookings() {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
-  
+
       const cleanString = (str) => (str ? str.replace(/\s+/g, '').toLowerCase() : '');
-  
+
       const redesignedData = response.data.filter((obj) => {
         const cleanedBdeName = cleanString(obj.bdeName);
         const cleanedBdmName = cleanString(obj.bdmName);
         const cleanedEname = cleanString(data.ename);
-  
+
         if (
           cleanedBdeName === cleanedEname ||
           cleanedBdmName === cleanedEname ||
@@ -107,25 +107,25 @@ function EmployeeMaturedBookings() {
             }))
         ) {
           // Log only when the condition matches
-          
+
           return true;
         }
         return false;
       });
-  
+
       const sortedData = redesignedData.sort((a, b) => {
         const dateA = new Date(a.lastActionDate);
         const dateB = new Date(b.lastActionDate);
         return dateB - dateA; // Sort in descending order
       });
-  
+
       setFormData(sortedData);
       setInfiniteBooking(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-  
+
 
   useEffect(() => {
 
@@ -582,8 +582,8 @@ function EmployeeMaturedBookings() {
   return (
     <div>
       {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
-      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
-      <EmpNav userId={userId} bdmWork={data.bdmWork} />
+      {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
@@ -1806,43 +1806,43 @@ function EmployeeMaturedBookings() {
                                                 alt="Default Image"
                                               />
                                             ))} */}
-                                            {currentLeadform &&
-                                          currentLeadform.paymentReceipt &&
-                                          currentLeadform.paymentReceipt[0] &&
-                                          currentLeadform.paymentReceipt[0]
-                                            .filename && // Ensure filename exists
-                                          (currentLeadform.paymentReceipt[0].filename
-                                            .toLowerCase()
-                                            .endsWith(".pdf") ? (
-                                            <PdfImageViewerAdmin
-                                              type="paymentrecieptpdf"
-                                              path={
-                                                currentLeadform
-                                                  .paymentReceipt[0].filename
-                                              }
-                                              companyName={
-                                                currentLeadform["Company Name"]
-                                              }
-                                            />
-                                          ) : currentLeadform.paymentReceipt[0].filename
+                                          {currentLeadform &&
+                                            currentLeadform.paymentReceipt &&
+                                            currentLeadform.paymentReceipt[0] &&
+                                            currentLeadform.paymentReceipt[0]
+                                              .filename && // Ensure filename exists
+                                            (currentLeadform.paymentReceipt[0].filename
+                                              .toLowerCase()
+                                              .endsWith(".pdf") ? (
+                                              <PdfImageViewerAdmin
+                                                type="paymentrecieptpdf"
+                                                path={
+                                                  currentLeadform
+                                                    .paymentReceipt[0].filename
+                                                }
+                                                companyName={
+                                                  currentLeadform["Company Name"]
+                                                }
+                                              />
+                                            ) : currentLeadform.paymentReceipt[0].filename
                                               .toLowerCase()
                                               .endsWith(".png") ||
-                                            currentLeadform.paymentReceipt[0].filename
-                                              .toLowerCase()
-                                              .endsWith(".jpg") ||
-                                            currentLeadform.paymentReceipt[0].filename
-                                              .toLowerCase()
-                                              .endsWith(".jpeg") ? (
-                                            <img
-                                              src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
-                                              alt="Receipt Image"
-                                            />
-                                          ) : (
-                                            <img
-                                              src={wordimg}
-                                              alt="Default Image"
-                                            />
-                                          ))}
+                                              currentLeadform.paymentReceipt[0].filename
+                                                .toLowerCase()
+                                                .endsWith(".jpg") ||
+                                              currentLeadform.paymentReceipt[0].filename
+                                                .toLowerCase()
+                                                .endsWith(".jpeg") ? (
+                                              <img
+                                                src={`${secretKey}/bookings/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                alt="Receipt Image"
+                                              />
+                                            ) : (
+                                              <img
+                                                src={wordimg}
+                                                alt="Default Image"
+                                              />
+                                            ))}
                                         </div>
                                         <div className="booking-docs-preview-text">
                                           <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
@@ -1886,7 +1886,7 @@ function EmployeeMaturedBookings() {
                                       </div>
                                     </div>
                                   ))} */}
-                                  {currentLeadform &&
+                                {currentLeadform &&
                                   currentLeadform.otherDocs &&
                                   currentLeadform.otherDocs.map((obj) => (
                                     <div
@@ -1904,9 +1904,9 @@ function EmployeeMaturedBookings() {
                                           }
                                         >
                                           {obj.filename && // Ensure filename exists
-                                          obj.filename
-                                            .toLowerCase()
-                                            .endsWith(".pdf") ? (
+                                            obj.filename
+                                              .toLowerCase()
+                                              .endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
@@ -1932,7 +1932,7 @@ function EmployeeMaturedBookings() {
                                           </p>
                                         </div>
                                       </div>
-                                        
+
                                     </div>
                                   ))}
                                 {/* ---------- Upload Documents From Preview -----------*/}

@@ -2128,6 +2128,7 @@ function BdmTeamLeads() {
                             <th className="th-sticky1">Company Name</th>
                             <th>BDE Name</th>
                             {bdmNewStatus !== "Untouched" && (<th>Company Number</th>)}
+                            <th>Call History</th>
                             <th>BDE Status</th>
                             <th>BDE Remarks</th>
                             {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
@@ -2162,7 +2163,6 @@ function BdmTeamLeads() {
                                 </>))}
                             </>)
                             }
-                            <th>Call History</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -2194,6 +2194,20 @@ function BdmTeamLeads() {
                                     </a>
                                   </div>
                                 </td>)}
+
+                                <td>
+                                  <LuHistory onClick={() => {
+                                    setShowCallHistory(true);
+                                    setClientNumber(company["Company Number"])
+                                  }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "15px",
+                                      height: "15px",
+                                    }}
+                                    color="grey"
+                                  />
+                                </td>
                                 <td>{company.Status}</td>
 
                                 <td>
@@ -2508,20 +2522,6 @@ function BdmTeamLeads() {
                                     </>
                                   )}
                                 </>)}
-
-                                <td>
-                                  <LuHistory onClick={() => {
-                                    setShowCallHistory(true);
-                                    setClientNumber(company["Company Number"])
-                                  }}
-                                    style={{
-                                      cursor: "pointer",
-                                      width: "17px",
-                                      height: "17px",
-                                    }}
-                                    color="grey"
-                                  />
-                                </td>
                               </tr>
                             )
                           })}

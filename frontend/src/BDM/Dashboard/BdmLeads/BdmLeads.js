@@ -3320,6 +3320,7 @@ function BdmLeads() {
                               <th className="th-sticky">Sr.No</th>
                               <th className="th-sticky1">Company Name</th>
                               <th>Company Number</th>
+                              <th>Call History</th>
                               <th>Status</th>
                               <th>Remarks</th>
 
@@ -3523,7 +3524,6 @@ function BdmLeads() {
                                 (dataStatus === "Interested" && (
                                   <th>Add Projection</th>
                                 ))}
-                              <th>Call History</th>
                             </tr>
                           </thead>
                           {loading ? (
@@ -3550,13 +3550,8 @@ function BdmLeads() {
                                   style={{ border: "1px solid #ddd" }}
                                 >
 
-                                  <td className="td-sticky">
-                                    {startIndex + index + 1}
-                                  </td>
-
-                                  <td className="td-sticky1">
-                                    {company["Company Name"]}
-                                  </td>
+                                  <td className="td-sticky">{startIndex + index + 1}</td>
+                                  <td className="td-sticky1">{company["Company Name"]}</td>
 
                                   <td>
                                     <div className="d-flex align-items-center justify-content-between wApp">
@@ -3565,6 +3560,20 @@ function BdmLeads() {
                                         <FaWhatsapp />
                                       </a>
                                     </div>
+                                  </td>
+
+                                  <td>
+                                    <LuHistory onClick={() => {
+                                      setShowCallHistory(true);
+                                      setClientNumber(company["Company Number"])
+                                    }}
+                                      style={{
+                                        cursor: "pointer",
+                                        width: "15px",
+                                        height: "15px",
+                                      }}
+                                      color="grey"
+                                    />
                                   </td>
 
                                   <td>
@@ -3890,20 +3899,6 @@ function BdmLeads() {
                                     </>
                                   )} */}
                                   {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
-
-                                  <td>
-                                    <LuHistory onClick={() => {
-                                      setShowCallHistory(true);
-                                      setClientNumber(company["Company Number"])
-                                    }}
-                                      style={{
-                                        cursor: "pointer",
-                                        width: "17px",
-                                        height: "17px",
-                                      }}
-                                      color="grey"
-                                    />
-                                  </td>
                                 </tr>
                               ))}
                             </tbody>

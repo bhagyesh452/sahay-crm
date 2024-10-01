@@ -3071,15 +3071,8 @@ function EmployeePanel() {
   return (
     <div>
       {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
-      <Header
-        id={data._id}
-        name={data.ename}
-        empProfile={data.profilePhoto &&
-          data.profilePhoto.length !== 0 &&
-          data.profilePhoto[0].filename}
-        gender={data.gender}
-        designation={data.newDesignation} />
-      <EmpNav userId={userId} bdmWork={data.bdmWork} />
+      {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
       {/* Dialog box for Request Data */}
 
       {!formOpen && !editFormOpen && !addFormOpen && !editMoreOpen && (
@@ -3771,8 +3764,8 @@ function EmployeePanel() {
                                   }}
                                     style={{
                                       cursor: "pointer",
-                                      width: "17px",
-                                      height: "17px",
+                                      width: "15px",
+                                      height: "15px",
                                     }}
                                     color="grey"
                                   />
