@@ -1,78 +1,104 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { IoIosPerson } from "react-icons/io";
 import { IoCall } from "react-icons/io5";
 import { IoIosMail } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6";
 import logo from "../../../static/mainLogo.png";
 import { FaEarthAmericas } from "react-icons/fa6";
+import html2canvas from 'html2canvas';
 
+function BusinessCardView({ employeeInformation }) {
+    const cardRef = useRef(null);
 
+    const handleDownloadJPG = () => {
+        if (cardRef.current === null) {
+            return;
+        }
 
+        html2canvas(cardRef.current, { useCORS: true })
+            .then((canvas) => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/jpeg', 1.0);
+                link.download = `${employeeInformation.empFullName}-business-card.jpg`;
+                link.click();
+            })
+            .catch((err) => {
+                console.error('Oops, something went wrong!', err);
+            });
+    };
 
-function BusinessCardView() {
-  return (
-    <div className="BusinessCardView">
-        <div className='d-flex align-items-center justify-content-center'>
-            <div className="BusinessCardBody mt-3">
-                <div className='BusinessCardheader'>
-                    <div className='d-flex align-items-start'>
-                        <div className='BusinessCardheaderIcon'>
-                            <IoIosPerson />
-                        </div>
-                        <div className='BusinessCardheaderName'>
-                            <h3 className='m-0'>NimeshKumar Parekh</h3>
-                            <p className='m-0'>CTO</p>
+    return (
+        <div className="BusinessCardView" onClick={handleDownloadJPG}>
+            <div className='d-flex align-items-center justify-content-center mt-3'>
+                <div className="BusinessCardBody" ref={cardRef}>
+                    <div className='BusinessCardheader'>
+                        <div className='d-flex align-items-start'>
+                            <div className='BusinessCardheaderIcon'>
+                                <IoIosPerson />
+                            </div>
+                            <div className='BusinessCardheaderName'>
+                                <h3 className='m-0'>{employeeInformation ? employeeInformation.empFullName : ""}</h3>
+                                <p className='m-0'>{employeeInformation ? employeeInformation.newDesignation : ""}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className='BusinessCardData'>
-                    <div className='d-flex align-items-start'>
-                        <div className="BusinessCardDetails">
-                            <div className='d-flex align-items-center mt-1 mb-2'>
-                                <div className='BusinessCardDetailsIcon'>
-                                    <IoCall />
+                    <div className='BusinessCardData'>
+                        <div className='d-flex align-items-start'>
+                            <div className="BusinessCardDetails">
+                                <div className='d-flex align-items-center mt-1 mb-2'>
+                                    <div className='BusinessCardDetailsIcon'>
+                                        <IoCall />
+                                    </div>
+                                    <div className='BusinessCardDetailsText'>
+                                        +91 {employeeInformation ? employeeInformation.number : ""}
+                                    </div>
                                 </div>
-                                <div className='BusinessCardDetailsText'>
-                                    +91 96647 05783
+                                <div className='d-flex align-items-center mt-3 mb-3'>
+                                    <div className='BusinessCardDetailsIcon'>
+                                        <IoIosMail />
+                                    </div>
+                                    <div className='BusinessCardDetailsText'>
+                                        {employeeInformation ? employeeInformation.email : ""}
+                                    </div>
+                                </div>
+                                <div className='d-flex align-items-center mt-2 mb-2'>
+                                    <div className='BusinessCardDetailsIcon'>
+                                        <FaLocationDot />
+                                    </div>
+                                    <div className='BusinessCardDetailsText'>
+                                        {employeeInformation && employeeInformation.branchOffice === "Gota" ?
+                                            (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
+                                                Road, Gota, Ahmedabad - 382470</p>) :
+                                            (<p className='m-0'>1307/08, Zion Z1, Beside Avalon Hotel,<br />
+                                                Sindhubhav Road, Ahmedabad - 380054 </p>)}
+                                    </div>
                                 </div>
                             </div>
-                            <div className='d-flex align-items-center mt-3 mb-3'>
-                                <div className='BusinessCardDetailsIcon'>
-                                    <IoIosMail />
-                                </div>
-                                <div className='BusinessCardDetailsText'>
-                                    nimesh@incscale.in
-                                </div>
+                            <div className="BusinessCardLogo">
+                                <img src={logo} alt="Logo" />
                             </div>
-                            <div className='d-flex align-items-center mt-2 mb-2'>
-                                <div className='BusinessCardDetailsIcon'>
-                                    <FaLocationDot  />
-                                </div>
-                                <div className='BusinessCardDetailsText'>
-                                   <p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br/>
-                                    Road, Gota, Ahmedabad - 382470</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="BusinessCardLogo">
-                            <img src={logo}></img>
                         </div>
                     </div>
-                </div>
-                <div className='BusinessCardFooter'>
-                    <div className='d-flex align-items-center mt-1 mb-2'>
-                        <div className='BusinessCardFooterIcon'>
-                            <FaEarthAmericas />
-                        </div>
-                        <div className='BusinessCardFooterText'>
-                            www.startupsahay.com
+                    <div className='BusinessCardFooter'>
+                        <div className='d-flex align-items-center mt-1 mb-2'>
+                            <div className='BusinessCardFooterIcon'>
+                                <FaEarthAmericas />
+                            </div>
+                            <div className='BusinessCardFooterText'>
+                                www.startupsahay.com
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            {/* Add a button to download the card as JPG */}
+            <div className='d-flex justify-content-center mt-4'>
+                <button className="btn btn-primary" >
+                    Download as JPG
+                </button>
+            </div>
         </div>
-    </div>
-  );
+    );
 }
 
 export default BusinessCardView;

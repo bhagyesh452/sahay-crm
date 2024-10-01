@@ -694,51 +694,66 @@ function CallingReportView({ employeeInformation }) {
                         ) : callingData && callingData.length !== 0 ?
                             (
                                 <tbody>
-                                    {callingData.map((item, index) => {
-                                        const targetTime = getTargetTime(employeeInformation.jdate);
-                                        const status = getTargetStatus(convertSecondsToHMS(item.total_duration), targetTime);
-                                        const badgeClass = status === "Achieved" ? 'badge-completed' : 'badge-leave';
-                                        const dateObject = new Date(item.date);
-                                        const isSunday = dateObject.getDay() === 0;
-                                        // Format the item date to DD-MM-YYYY for comparison with officialHolidays
-                                        const formattedDate = formatDateToDDMMYYYYNew(dateObject);
-
-                                        // Check if the formatted date is in the officialHolidays array
-                                        const isOfficialHoliday = officialHolidays.includes(formattedDate);
-                                        const attendance = attendanceData.find((obj) => {
-                                            // Construct the attendanceDate in "YYYY-MM-DD" format
-                                            const attendanceDate = `${obj.year}-${monthNamesToNumbers[(obj.month)]}-${String(obj.date).padStart(2, '0')}`;
-                                            const itemDate = new Date(item.date).toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
-                                            // console.log(itemDate, attendanceDate)
-                                            return attendanceDate === itemDate; // Return the result of the comparison
-                                        });
-                                        // console.log("atte", attendance)
-                                        return (
-                                            <tr>
-                                                <td>{index + 1}</td>
-                                                <td>{formatDateToDDMMYYYY(item.date)}</td>
-                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : item.total_unique_clients}</td>
-                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : item.total_calls}</td>
-                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : convertSecondsToHMSNew(item.total_duration)}</td>
-                                                <td>{(isSunday) || isOfficialHoliday || (attendance && attendance.status === "Leave") ? "-" : getTargetTimeNew(employeeInformation.jdate)}</td>
-                                                <td>
-                                                    <span className={attendance && attendance.status === "Leave" ? "badge badge-under-probation" :
-                                                        attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" || attendance.status === "Sunday Leave") ? "badge badge-sunday" :
-                                                            attendance && attendance.status === "Official Holiday" ? "badge badge-sunday" :
-                                                                `badge ${badgeClass}`}
-                                                    >
-                                                        {attendance && (attendance.status === "Sunday" || attendance.status === "Sunday Half Day" || attendance.status === "Sunday Leave") ? "Sunday" :
-                                                            attendance && (attendance.status === "Official Holiday" || attendance.status === "Official Holiday Half Day" || attendance.status === "Official Holiday Leave") ? "Official Holiday" :
-                                                                (attendance && attendance.status === "Leave") ? "Leave" :
-                                                                    getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                    }
-
-                                </tbody>
+                                {callingData.map((item, index) => {
+                                    const targetTime = getTargetTime(employeeInformation.jdate);
+                                    const status = getTargetStatus(convertSecondsToHMS(item.total_duration), targetTime);
+                                    const badgeClass = status === "Achieved" ? 'badge-completed' : 'badge-leave';
+                                    const dateObject = new Date(item.date);
+                            
+                                    // Determine if it's Sunday
+                                    const isSunday = dateObject.getDay() === 0;
+                                    console.log("Checking if the date is Sunday:", dateObject, "isSunday:", isSunday, "Day:", dateObject.getDay());
+                            
+                                    // Format the item date to DD-MM-YYYY for comparison with officialHolidays
+                                    const formattedDate = formatDateToDDMMYYYYNew(dateObject);
+                            
+                                    // Check if the formatted date is in the officialHolidays array
+                                    const isOfficialHoliday = officialHolidays.includes(formattedDate);
+                                    console.log("Checking if the date is an official holiday:", formattedDate, "isOfficialHoliday:", isOfficialHoliday);
+                            
+                                    // Find the matching attendance entry based on year, month, and day
+                                    const attendance = attendanceData.find((obj) => {
+                                        // Construct the attendanceDate in "YYYY-MM-DD" format
+                                        const attendanceDate = `${obj.year}-${monthNamesToNumbers[(obj.month)]}-${String(obj.date).padStart(2, '0')}`;
+                                        const itemDate = new Date(item.date).toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
+                            
+                                        console.log("Comparing attendance date:", itemDate, attendanceDate);
+                                        return attendanceDate === itemDate; // Return the result of the comparison
+                                    });
+                            
+                                    console.log("Attendance found:", attendance);
+                            
+                                    // Define whether the entry is a leave or holiday
+                                    const isLeave = attendance && attendance.status === "Leave";
+                                    const showSunday = isSunday || (attendance && attendance.status.includes("Sunday"));
+                                    const showHoliday = isOfficialHoliday || (attendance && attendance.status.includes("Official Holiday"));
+                            
+                                    return (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{formatDateToDDMMYYYY(item.date)}</td>
+                                            <td>{showSunday || showHoliday || isLeave ? "-" : item.total_unique_clients}</td>
+                                            <td>{showSunday || showHoliday || isLeave ? "-" : item.total_calls}</td>
+                                            <td>{showSunday || showHoliday || isLeave ? "-" : convertSecondsToHMSNew(item.total_duration)}</td>
+                                            <td>{showSunday || showHoliday || isLeave ? "-" : getTargetTimeNew(employeeInformation.jdate)}</td>
+                                            <td>
+                                                <span className={
+                                                    isLeave ? "badge badge-under-probation" :
+                                                    showSunday ? "badge badge-sunday" :
+                                                    showHoliday ? "badge badge-sunday" :
+                                                    `badge ${badgeClass}`
+                                                }>
+                                                    {showSunday ? "Sunday" :
+                                                    showHoliday ? "Official Holiday" :
+                                                    isLeave ? "Leave" :
+                                                    getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                            
                             ) : (callingData.length === 0 && !loading && (
                                 <tbody>
                                     <tr>

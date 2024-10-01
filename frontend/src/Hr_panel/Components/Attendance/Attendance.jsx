@@ -64,20 +64,31 @@ function Attendance() {
         setSelectedYear(Number(e.target.value));
         monthArray(Number(e.target.value));
     };
-    const monthArray =(year)=>{
-        const months = []
+    const monthArray = (selectedYear) => {
+        const months = [];
         let date;
-        if(year === currentYear){
-            date = new Date();
-        }else{
-            date = new Date(year, 0);
+    
+        // Check if the selected year is the current year
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth(); // Get the current month (0-based)
+    
+        if (selectedYear === currentYear) {
+            // Start from the previous month (or current month if it's January)
+            const startMonth = currentMonth > 0 ? currentMonth - 1 : 0;
+    
+            for (let month = startMonth; month <= 11; month++) {
+                months.push(format(new Date(selectedYear, month), 'MMMM'));
+            }
+        } else {
+            // For other years, include all months
+            for (let month = 0; month <= 11; month++) {
+                months.push(format(new Date(selectedYear, month), 'MMMM'));
+            }
         }
-        for (let month = date.getMonth(); month <= 11; month++) {
-            months.push(format(new Date(selectedYear, month), 'MMMM'));
-        }
+    
         setMonths(months);
         return months;
-    }
+    };
 
     const handleMonthChange = (e) => {
         setSelectedMonth(e.target.value);

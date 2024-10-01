@@ -62,22 +62,25 @@ function EmployeeViewAttendance({ data }) {
     const monthArray = (selectedYear) => {
         const months = [];
         let date;
-
+    
         // Check if the selected year is the current year
         const currentYear = new Date().getFullYear();
         const currentMonth = new Date().getMonth(); // Get the current month (0-based)
-
-        if (selectedYear == currentYear) {
-            date = new Date(); // Start from the current date
+    
+        if (selectedYear === currentYear) {
+            // Start from the previous month (or current month if it's January)
+            const startMonth = currentMonth > 0 ? currentMonth - 1 : 0;
+    
+            for (let month = startMonth; month <= 11; month++) {
+                months.push(format(new Date(selectedYear, month), 'MMMM'));
+            }
         } else {
-            // If it's a future year, start from January
-            date = new Date(selectedYear, 0); // 0 means January
+            // For other years, include all months
+            for (let month = 0; month <= 11; month++) {
+                months.push(format(new Date(selectedYear, month), 'MMMM'));
+            }
         }
-
-        // Loop through the months, starting from the calculated month
-        for (let month = date.getMonth(); month <= 11; month++) {
-            months.push(format(new Date(selectedYear, month), 'MMMM'));
-        }
+    
         setMonths(months);
         return months;
     };

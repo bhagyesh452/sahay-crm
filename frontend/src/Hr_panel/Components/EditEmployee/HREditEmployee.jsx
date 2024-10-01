@@ -112,11 +112,23 @@ export default function HREditEmployee() {
     personalPhoneNo: "",
     personalEmail: "",
     currentAddress: "",
-    permanentAddress: ""
+    permanentAddress: "",
+    bloodGroup:"",
+
   });
   const validatePersonalInfo = () => {
     const newErrors = {};
-    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, currentAddress, permanentAddress } = personalInfo;
+    const { 
+      firstName, 
+      middleName, 
+      lastName, 
+      dob, 
+      gender, 
+      personalPhoneNo, 
+      personalEmail, 
+      currentAddress, 
+      permanentAddress,
+      bloodGroup } = personalInfo;
 
     if (!firstName) newErrors.firstName = "First name is required";
     if (!middleName) newErrors.middleName = "Middle name is required";
@@ -129,6 +141,8 @@ export default function HREditEmployee() {
     else if (!isValidEmail(personalEmail)) newErrors.personalEmail = "Invalid email address";
     if (!currentAddress) newErrors.currentAddress = "Current Address is required";
     if (!permanentAddress) newErrors.permanentAddress = "Permanent Address is required";
+    if (!bloodGroup) newErrors.bloodGroup = "Blood Group is Required!";
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -359,7 +373,9 @@ export default function HREditEmployee() {
         personalPhoneNo: data.personal_number || "",
         personalEmail: data.personal_email || "",
         currentAddress: data.currentAddress || "",
-        permanentAddress: data.permanentAddress || ""
+        permanentAddress: data.permanentAddress || "",
+        bloodGroup:data.bloodGroup || ""
+
       });
 
       setEmployeementInfo({
@@ -901,6 +917,22 @@ export default function HREditEmployee() {
                                       </div>
                                     </div>
                                   </div>
+                                  <div className="col-sm-2">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label>Blood Group</label>
+                                      <input
+                                        type="text"
+                                        name="bloodGroup"
+                                        className="form-control mt-1"
+                                        //id="bloodgroup"
+                                        placeholder="Blood Group"
+                                        value={personalInfo.bloodGroup}
+                                        onChange={handleInputChange}
+                                        disabled={!isPersonalInfoEditable}
+                                      />
+                                      {errors.bloodGroup && <p style={{ color: "red" }}>{errors.bloodGroup}</p>}
+                                    </div>
+                                  </div>
                                   {/* <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label>Is permanent address same as current?</label>
@@ -919,7 +951,7 @@ export default function HREditEmployee() {
                                       {errors.isAddressSame && <p style={{ color: "red" }}>{errors.isAddressSame}</p>}
                                     </div>
                                   </div> */}
-                                  <div className="col-sm-4">
+                                  <div className="col-sm-2">
                                     <div className="form-group mt-1 mb-2">
                                       <div className="d-flex align-items-center justify-content-between">
                                         <label htmlFor="permanentAddress">

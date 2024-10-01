@@ -137,11 +137,22 @@ export default function HorizontalNonLinearStepper() {
     personalPhoneNo: "",
     personalEmail: "",
     currentAddress: "",
-    permanentAddress: ""
+    permanentAddress: "",
+    bloodGroup:"",
   });
   const validatePersonalInfo = () => {
     const newErrors = {};
-    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, currentAddress, permanentAddress } = personalInfo;
+    const { 
+      firstName,
+       middleName, 
+       lastName, 
+       dob, 
+       gender, 
+       personalPhoneNo, 
+       personalEmail, 
+       currentAddress, 
+       permanentAddress,
+      bloodGroup } = personalInfo;
 
     if (!firstName) newErrors.firstName = "First name is required";
     if (!middleName) newErrors.middleName = "Middle name is required";
@@ -152,6 +163,7 @@ export default function HorizontalNonLinearStepper() {
     else if (!isValidMobileNumber(personalPhoneNo)) newErrors.personalPhoneNo = "Invalid mobile number";
     if (!personalEmail) newErrors.personalEmail = "Email address is required";
     else if (!isValidEmail(personalEmail)) newErrors.personalEmail = "Invalid email address";
+    if (!bloodGroup) newErrors.bloodGroup = "Blood Group is Required!";
     if (!currentAddress) newErrors.currentAddress = "Current Address is required";
     if (!permanentAddress) newErrors.permanentAddress = "Permanent Address is required";
 
@@ -544,7 +556,7 @@ export default function HorizontalNonLinearStepper() {
     let res;
 
     if ((personalInfo.firstName && personalInfo.middleName && personalInfo.lastName && personalInfo.dob && personalInfo.gender && personalInfo.personalPhoneNo
-      && personalInfo.personalEmail && personalInfo.currentAddress && personalInfo.permanentAddress) === "") {
+      && personalInfo.personalEmail && personalInfo.currentAddress && personalInfo.permanentAddress && personalInfo.bloodGroup) === "") {
       Swal.fire("error", "Please Fill Personal Information before Saving", "error");
     } else {
       const requestBody = {
@@ -602,7 +614,7 @@ export default function HorizontalNonLinearStepper() {
   };
 
   const handleComplete = async () => {
-    // console.log("personalInfo before sending :", personalInfo);
+    console.log("personalInfo before sending :", personalInfo);
     // console.log("employeementInfo before sending :", employeementInfo);
     // console.log("payrollInfo before sending :", payrollInfo);
     // console.log("emergencyInfo before sending :", emergencyInfo);
@@ -650,7 +662,8 @@ export default function HorizontalNonLinearStepper() {
       personalPhoneNo: "",
       personalEmail: "",
       currentAddress: "",
-      permanentAddress: ""
+      permanentAddress: "",
+      bloodGroup: ""
     });
 
     setEmployeementInfo({
@@ -714,9 +727,9 @@ export default function HorizontalNonLinearStepper() {
         personalPhoneNo: data.personal_number || "",
         personalEmail: data.personal_email || "",
         currentAddress: data.currentAddress || "",
-        permanentAddress: data.permanentAddress || ""
+        permanentAddress: data.permanentAddress || "",
+        bloodGroup:data.bloodGroup || ""
       });
-
       setEmployeementInfo({
         employeeID: data.employeeID || "",
         department: data.department || "",
@@ -977,25 +990,23 @@ export default function HorizontalNonLinearStepper() {
                                       </div>
                                     </div>
                                   </div>
-                                  {/* <div className="col-sm-3">
+                                  <div className="col-sm-2">
                                     <div className="form-group mt-2 mb-2">
-                                      <label>Is permanent address same as current?</label>
-                                      <select
-                                        className="form-select mt-1"
-                                        name="isAddressSame"
-                                        id="isAddressSame"
-                                        value={personalInfo.isAddressSame}
-                                        onChange={handleAddressChange}
+                                      <label>Blood Group</label>
+                                      <input
+                                        type="text"
+                                        name="bloodGroup"
+                                        className="form-control mt-1"
+                                        //id="bloodgroup"
+                                        placeholder="Blood Group"
+                                        value={personalInfo.bloodGroup}
+                                        onChange={handleInputChange}
                                         disabled={!isPersonalInfoEditable}
-                                      >
-                                        <option value="Select Option" selected>Select Option</option>
-                                        <option value="yes">Yes</option>
-                                        <option value="no">No</option>
-                                      </select>
-                                      {errors.isAddressSame && <p style={{ color: "red" }}>{errors.isAddressSame}</p>}
+                                      />
+                                      {errors.bloodGroup && <p style={{ color: "red" }}>{errors.bloodGroup}</p>}
                                     </div>
-                                  </div> */}
-                                  <div className="col-sm-4">
+                                  </div>
+                                  <div className="col-sm-2">
                                     <div className="form-group mt-1 mb-2">
                                       <div className="d-flex align-items-center justify-content-between">
                                         <label htmlFor="permanentAddress">
