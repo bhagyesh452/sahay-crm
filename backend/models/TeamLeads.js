@@ -108,7 +108,11 @@ const CompanySchema = new mongoose.Schema({
   },
   RevertBackAcceptedCompanyRequest:{
     type:String,
-  }
+  },
+  isDeletedEmployeeCompany:{
+    type:Boolean,
+    default : false
+  },
 });
 
 const TeamLeadsModel = mongoose.model('teamleadsmodel', CompanySchema);
