@@ -257,7 +257,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       companyLookup[company["Company Name"]] = company.isDeletedEmployeeCompany;
     });
 
-    // Update team leads data based on lookup
+    // Update team leads data based on lookup, add isDeletedEmployeeCompany field if it doesn't exist
     teamLeadsData.forEach((lead) => {
       if (companyLookup[lead["Company Name"]] !== undefined) {
         lead.isDeletedEmployeeCompany = companyLookup[lead["Company Name"]];
@@ -270,6 +270,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 

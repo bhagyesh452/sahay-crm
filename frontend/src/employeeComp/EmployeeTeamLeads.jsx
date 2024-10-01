@@ -602,6 +602,7 @@ function EmployeeTeamLeads() {
             } else {
                 const currentObject = teamData.find(obj => obj["Company Name"] === cname);
                 setMaturedBooking(currentObject);
+                console.log("currentObject" , currentObject)
                 setDeletedEmployeeStatus(isDeletedEmployeeCompany)
                 if (!isDeletedEmployeeCompany) {
                     console.log("formchal")
