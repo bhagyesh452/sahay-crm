@@ -307,244 +307,170 @@ function CallingReportView({ employeeInformation }) {
         "December": "12"
     };
     const fetchAttendance = async () => {
+        const isCurrentMonth = selectedMonth === currentMonth;
+
         try {
             const res = await axios.get(`${secretKey}/attendance/viewAllAttendance`);
             const allAttendanceData = res.data.data;
 
-            const totalDays = new Date(selectedYear, new Date(Date.parse(`${selectedMonth} 1, ${selectedYear}`)).getMonth() + 1, 0).getDate();
-            const today = new Date().getDate(); // Current date of the month
-            const currentMonth = getCurrentMonthName();
-            const isCurrentMonth = selectedMonth === currentMonth;
-            let name = "";
-            let designation = "";
+            // Get the current year and month
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth(); // 0-indexed, i.e., 0 for January
+            const currentDay = new Date().getDate();
+
+            const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1; // Previous month, accounting for January (rolls to December)
+            const previousMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+            // Total days in the previous month
+            const totalDaysPreviousMonth = new Date(previousMonthYear, previousMonth + 1, 0).getDate();
 
             const filteredData = [];
             const filledDates = new Set(); // To track dates with existing data
+            let name = "";
+            let designation = "";
+
+            // Helper function to get month names
+            const getMonthName = (monthNumber) => {
+                const monthNames = [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+                return monthNames[monthNumber];
+            };
 
             // Collect all filled dates
             allAttendanceData.forEach(employee => {
                 if (employee._id === employeeInformation._id) {  // Check for the specific employee ID
                     employee.years.forEach(yearData => {
-                        if (yearData.year === selectedYear) {  // Check for the specific year
-                            yearData.months.forEach(monthData => {
-                                if (monthData.month === selectedMonth) {  // Check for the specific month
-                                    monthData.days.forEach(dayData => {
-                                        const { date: dayDate, inTime, outTime, workingHours, status, reasonValue, isAddedManually } = dayData;
+                        yearData.months.forEach(monthData => {
+                            // Filter for last month's data up until the 1st of the current month
+                            if (yearData.year === previousMonthYear && monthData.month === getMonthName(previousMonth)) {
+                                monthData.days.forEach(dayData => {
+                                    if (dayData.date <= totalDaysPreviousMonth) {
+                                        filledDates.add(dayData.date);
+                                        name = employee.employeeName;
+                                        designation = employee.designation;
 
-                                        filledDates.add(dayDate); // Add filled date to the set
+                                        filteredData.push({
+                                            _id: employee._id,
+                                            employeeId: employee.employeeId,
+                                            employeeName: employee.employeeName,
+                                            designation: employee.designation,
+                                            department: employee.department,
+                                            branchOffice: employee.branchOffice,
+                                            date: dayData.date,
+                                            month: getMonthName(previousMonth),
+                                            year: previousMonthYear,
+                                            inTime: dayData.inTime,
+                                            outTime: dayData.outTime,
+                                            workingHours: dayData.workingHours,
+                                            status: dayData.status,
+                                            reasonValue: dayData.reasonValue,
+                                            isAddedManually: dayData.isAddedManually
+                                        });
+                                    }
+                                });
+                            }
 
-                                        // Add data for the current month up to today or all data for past months
-                                        if (isCurrentMonth && dayDate <= today || !isCurrentMonth) {
+                            // Filter for current month's data from the 2nd of the current month
+                            if (yearData.year === currentYear && monthData.month === getMonthName(currentMonth)) {
+                                monthData.days.forEach(dayData => {
+                                    if (dayData.date >= 2) {
+                                        filledDates.add(dayData.date);
+                                        name = employee.employeeName;
+                                        designation = employee.designation;
 
-                                            name = employee.employeeName;
-                                            designation = employee.designation;
-
-                                            filteredData.push({
-                                                _id: employee._id,
-                                                employeeId: employee.employeeId,
-                                                employeeName: employee.employeeName,
-                                                designation: employee.designation,
-                                                department: employee.department,
-                                                branchOffice: employee.branchOffice,
-                                                date: dayDate,
-                                                month: selectedMonth,
-                                                year: selectedYear,
-                                                inTime,
-                                                outTime,
-                                                workingHours,
-                                                status,
-                                                reasonValue,
-                                                isAddedManually
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                                        filteredData.push({
+                                            _id: employee._id,
+                                            employeeId: employee.employeeId,
+                                            employeeName: employee.employeeName,
+                                            designation: employee.designation,
+                                            department: employee.department,
+                                            branchOffice: employee.branchOffice,
+                                            date: dayData.date,
+                                            month: getMonthName(currentMonth),
+                                            year: currentYear,
+                                            inTime: dayData.inTime,
+                                            outTime: dayData.outTime,
+                                            workingHours: dayData.workingHours,
+                                            status: dayData.status,
+                                            reasonValue: dayData.reasonValue,
+                                            isAddedManually: dayData.isAddedManually
+                                        });
+                                    }
+                                });
+                            }
+                        });
                     });
                 }
             });
 
-            // Function to find the previous working day
-            const findPrevWorkingDay = (year, month, startDay) => {
-                let currentDay = startDay;
-                let currentMonth = month;
-                let currentYear = year;
-
-                while (true) {
-                    if (currentDay < 1) {
-                        currentMonth--;
-                        if (currentMonth < 1) {
-                            currentMonth = 12;
-                            currentYear--;
-                        }
-                        const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
-                        currentDay = daysInPrevMonth;
-                    }
-
-                    const formattedDate = formatDateForHolidayCheck(currentYear, currentMonth, currentDay);
-                    const dateToCheck = new Date(currentYear, currentMonth - 1, currentDay);
-                    const isSunday = dateToCheck.getDay() === 0;
-                    const isHoliday = officialHolidays.includes(formattedDate);
-                    if (!isSunday && !isHoliday) {
-                        break;
-                    }
-                    currentDay--;
-                }
-                return { day: currentDay, month: currentMonth, year: currentYear };
-            };
-            // Function to find the next working day
-            const findNextWorkingDay = (year, month, startDay) => {
-                let currentDay = startDay;
-                let currentMonth = month;
-                let currentYear = year;
-
-                while (true) {
-                    const daysInCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
-                    if (currentDay > daysInCurrentMonth) {
-                        currentMonth++;
-                        if (currentMonth > 12) {
-                            currentMonth = 1;
-                            currentYear++;
-                        }
-                        currentDay = 1; // Reset to the first day of the next month
-                    }
-
-                    const formattedDate = formatDateForHolidayCheck(currentYear, currentMonth, currentDay);
-                    const dateToCheck = new Date(currentYear, currentMonth - 1, currentDay);
-                    const isSunday = dateToCheck.getDay() === 0;
+            // Logic to handle empty days for the previous month and current month
+            for (let date = 1; date <= totalDaysPreviousMonth; date++) {
+                if (!filledDates.has(date) && date <= 1) {
+                    const formattedDate = `${previousMonthYear}-${previousMonth + 1}-${date < 10 ? '0' + date : date}`;
+                    const isSunday = new Date(formattedDate).getDay() === 0;
                     const isHoliday = officialHolidays.includes(formattedDate);
 
-                    if (!isSunday && !isHoliday) {
-                        break;
-                    }
-
-                    currentDay++;
-                }
-
-                return { day: currentDay, month: currentMonth, year: currentYear };
-            };
-
-            // Logic to handle empty days for the current month
-            for (let date = 1; date <= (isCurrentMonth ? today : totalDays); date++) {
-                if (!filledDates.has(date)) {
-                    function getMonthName(monthNumber) {
-                        const monthNames = [
-                            "January", "February", "March", "April", "May", "June",
-                            "July", "August", "September", "October", "November", "December"
-                        ];
-
-                        return monthNames[monthNumber - 1]; // Subtract 1 since array indices start from 0
-                    }
-                    const monthNumber = monthNamesToNumbers[selectedMonth];
-                    const formattedDate = `${selectedYear}-${monthNumber}-${date < 10 ? '0' + date : date}`;
-                    const isSunday = new Date(`${selectedYear}-${selectedMonth}-${date}`).getDay() === 0;
-                    const isHoliday = officialHolidays.includes(formattedDate);
-                    // console.log("formatteddate" , formattedDate)
-
-                    let status = ''; // Default status for empty days
+                    let status = '';
 
                     if (isSunday) {
-                        const prevWorkingDate = findPrevWorkingDay(selectedYear, monthNumber, date - 1);
-                        const nextWorkingDate = findNextWorkingDay(selectedYear, monthNumber, date + 1);
-
-                        // Fetch attendance status for the previous and next working day
-                        const prevDayStatus = allAttendanceData.find(emp => emp._id === employeeInformation._id)?.years
-                            ?.find(yr => yr.year === prevWorkingDate.year)?.months
-                            ?.find(mn => mn.month === getMonthName(prevWorkingDate.month))?.days
-                            ?.find(d => d.date === prevWorkingDate.day)?.status;
-
-                        const nextDayStatus = allAttendanceData.find(emp => emp._id === employeeInformation._id)?.years
-                            ?.find(yr => yr.year === nextWorkingDate.year)?.months
-                            ?.find(mn => mn.month === getMonthName(nextWorkingDate.month))?.days
-                            ?.find(d => d.date === nextWorkingDate.day)?.status;
-
-                        // Determine Sunday status
-                        if (
-                            (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
-                            (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
-                            (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
-                        ) {
-                            status = "Sunday Leave"; // Sunday Leave
-
-                        } else if (
-                            (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
-                            (prevDayStatus === "LCH" && nextDayStatus === "LCH") ||
-                            (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
-                            (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
-                        ) {
-                            status = "Sunday Half Day"; // Sunday Half Day
-
-                        } else if (
-                            prevDayStatus === "Present" || nextDayStatus === "Present"
-                        ) {
-                            status = "Sunday"; // Sunday Present
-
-                        } else {
-                            status = "Sunday"; // Regular Sunday
-
-                        }
+                        status = "Sunday";
                     } else if (isHoliday) {
-                        const prevWorkingDate = findPrevWorkingDay(selectedYear, monthNumber, date - 1);
-                        const nextWorkingDate = findNextWorkingDay(selectedYear, monthNumber, date + 1);
-
-                        // Fetch attendance status for the previous and next working day
-                        const prevDayStatus = allAttendanceData.find(emp => emp._id === employeeInformation._id)?.years
-                            ?.find(yr => yr.year === prevWorkingDate.year)?.months
-                            ?.find(mn => mn.month === getMonthName(prevWorkingDate.month))?.days
-                            ?.find(d => d.date === prevWorkingDate.day)?.status;
-
-                        const nextDayStatus = allAttendanceData.find(emp => emp._id === employeeInformation._id)?.years
-                            ?.find(yr => yr.year === nextWorkingDate.year)?.months
-                            ?.find(mn => mn.month === getMonthName(nextWorkingDate.month))?.days
-                            ?.find(d => d.date === nextWorkingDate.day)?.status;
-
-                        // Determine Sunday status
-                        if (
-                            (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
-                            (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
-                            (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
-                        ) {
-                            status = "Official Holiday Leave"; // Sunday Leave
-
-                        } else if (
-                            (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
-                            (prevDayStatus === "LCH" && nextDayStatus === "LCH") ||
-                            (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
-                            (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
-                        ) {
-                            status = "Official Holiday Half Day"; // Sunday Half Day
-                        } else {
-                            status = "Official Holiday"; // Regular Sunday
-                        }
+                        status = "Official Holiday";
                     }
 
-                    if (status) {
-                        filteredData.push({
-                            employeeName: name,
-                            designation: designation,
-                            date: date,
-                            month: selectedMonth,
-                            year: selectedYear,
-                            inTime: '',
-                            outTime: '',
-                            workingHours: '',
-                            status: status ? status : "No Data",
-                        });
-                    }
-
+                    filteredData.push({
+                        employeeName: name,
+                        designation: designation,
+                        date: date,
+                        month: getMonthName(previousMonth),
+                        year: previousMonthYear,
+                        inTime: '',
+                        outTime: '',
+                        workingHours: '',
+                        status: status || "No Data"
+                    });
                 }
             }
 
-            filteredData.sort((a, b) => new Date(`${selectedYear}-${selectedMonth}-${a.date}`) - new Date(`${selectedYear}-${selectedMonth}-${b.date}`));
+            for (let date = 2; date <= (isCurrentMonth ? currentDay : totalDaysPreviousMonth); date++) {
+                if (!filledDates.has(date)) {
+                    const formattedDate = `${currentYear}-${currentMonth + 1}-${date < 10 ? '0' + date : date}`;
+                    const isSunday = new Date(formattedDate).getDay() === 0;
+                    const isHoliday = officialHolidays.includes(formattedDate);
+
+                    let status = '';
+
+                    if (isSunday) {
+                        status = "Sunday";
+                    } else if (isHoliday) {
+                        status = "Official Holiday";
+                    }
+
+                    filteredData.push({
+                        employeeName: name,
+                        designation: designation,
+                        date: date,
+                        month: getMonthName(currentMonth),
+                        year: currentYear,
+                        inTime: '',
+                        outTime: '',
+                        workingHours: '',
+                        status: status || "No Data"
+                    });
+                }
+            }
+
+            filteredData.sort((a, b) => new Date(`${a.year}-${a.month}-${a.date}`) - new Date(`${b.year}-${b.month}-${b.date}`));
             setAttendanceData(filteredData);
-            const presentDates = new Set(); // Use a Set to store unique dates
-            let hasLCH = false;
-            //console.log("filteredData :", filteredData);
+
             let presentCount = 0;
             let lcCount = 0;
             let leaveCount = 0;
             let halfDayCount = 0;
+            const presentDates = new Set();
+            let hasLCH = false;
 
             filteredData.forEach(data => {
                 if (data.status === "LCH") {
@@ -583,11 +509,11 @@ function CallingReportView({ employeeInformation }) {
             setLcCount(lcCount);
             setLeaveCount(leaveCount);
             setHalfDayCount(halfDayCount);
-            //console.log("Present counted for these dates:", presentDates);
         } catch (error) {
             console.log("Error fetching attendance record", error);
         }
     };
+
 
     useEffect(() => {
         fetchAttendance();
@@ -694,66 +620,66 @@ function CallingReportView({ employeeInformation }) {
                         ) : callingData && callingData.length !== 0 ?
                             (
                                 <tbody>
-                                {callingData.map((item, index) => {
-                                    const targetTime = getTargetTime(employeeInformation.jdate);
-                                    const status = getTargetStatus(convertSecondsToHMS(item.total_duration), targetTime);
-                                    const badgeClass = status === "Achieved" ? 'badge-completed' : 'badge-leave';
-                                    const dateObject = new Date(item.date);
-                            
-                                    // Determine if it's Sunday
-                                    const isSunday = dateObject.getDay() === 0;
-                                    console.log("Checking if the date is Sunday:", dateObject, "isSunday:", isSunday, "Day:", dateObject.getDay());
-                            
-                                    // Format the item date to DD-MM-YYYY for comparison with officialHolidays
-                                    const formattedDate = formatDateToDDMMYYYYNew(dateObject);
-                            
-                                    // Check if the formatted date is in the officialHolidays array
-                                    const isOfficialHoliday = officialHolidays.includes(formattedDate);
-                                    console.log("Checking if the date is an official holiday:", formattedDate, "isOfficialHoliday:", isOfficialHoliday);
-                            
-                                    // Find the matching attendance entry based on year, month, and day
-                                    const attendance = attendanceData.find((obj) => {
-                                        // Construct the attendanceDate in "YYYY-MM-DD" format
-                                        const attendanceDate = `${obj.year}-${monthNamesToNumbers[(obj.month)]}-${String(obj.date).padStart(2, '0')}`;
-                                        const itemDate = new Date(item.date).toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
-                            
-                                        console.log("Comparing attendance date:", itemDate, attendanceDate);
-                                        return attendanceDate === itemDate; // Return the result of the comparison
-                                    });
-                            
-                                    console.log("Attendance found:", attendance);
-                            
-                                    // Define whether the entry is a leave or holiday
-                                    const isLeave = attendance && attendance.status === "Leave";
-                                    const showSunday = isSunday || (attendance && attendance.status.includes("Sunday"));
-                                    const showHoliday = isOfficialHoliday || (attendance && attendance.status.includes("Official Holiday"));
-                            
-                                    return (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{formatDateToDDMMYYYY(item.date)}</td>
-                                            <td>{showSunday || showHoliday || isLeave ? "-" : item.total_unique_clients}</td>
-                                            <td>{showSunday || showHoliday || isLeave ? "-" : item.total_calls}</td>
-                                            <td>{showSunday || showHoliday || isLeave ? "-" : convertSecondsToHMSNew(item.total_duration)}</td>
-                                            <td>{showSunday || showHoliday || isLeave ? "-" : getTargetTimeNew(employeeInformation.jdate)}</td>
-                                            <td>
-                                                <span className={
-                                                    isLeave ? "badge badge-under-probation" :
-                                                    showSunday ? "badge badge-sunday" :
-                                                    showHoliday ? "badge badge-sunday" :
-                                                    `badge ${badgeClass}`
-                                                }>
-                                                    {showSunday ? "Sunday" :
-                                                    showHoliday ? "Official Holiday" :
-                                                    isLeave ? "Leave" :
-                                                    getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                            
+                                    {callingData.map((item, index) => {
+                                        const targetTime = getTargetTime(employeeInformation.jdate);
+                                        const status = getTargetStatus(convertSecondsToHMS(item.total_duration), targetTime);
+                                        const badgeClass = status === "Achieved" ? 'badge-completed' : 'badge-leave';
+                                        const dateObject = new Date(item.date);
+
+                                        // Determine if it's Sunday
+                                        const isSunday = dateObject.getDay() === 0;
+                                        console.log("Checking if the date is Sunday:", dateObject, "isSunday:", isSunday, "Day:", dateObject.getDay());
+
+                                        // Format the item date to DD-MM-YYYY for comparison with officialHolidays
+                                        const formattedDate = formatDateToDDMMYYYYNew(dateObject);
+
+                                        // Check if the formatted date is in the officialHolidays array
+                                        const isOfficialHoliday = officialHolidays.includes(formattedDate);
+                                        console.log("Checking if the date is an official holiday:", formattedDate, "isOfficialHoliday:", isOfficialHoliday);
+
+                                        // Find the matching attendance entry based on year, month, and day
+                                        const attendance = attendanceData.find((obj) => {
+                                            // Construct the attendanceDate in "YYYY-MM-DD" format
+                                            const attendanceDate = `${obj.year}-${monthNamesToNumbers[(obj.month)]}-${String(obj.date).padStart(2, '0')}`;
+                                            const itemDate = new Date(item.date).toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
+
+                                            console.log("Comparing attendance date:", itemDate, attendanceDate);
+                                            return attendanceDate === itemDate; // Return the result of the comparison
+                                        });
+
+                                        console.log("Attendance found:", attendance);
+
+                                        // Define whether the entry is a leave or holiday
+                                        const isLeave = attendance && attendance.status === "Leave";
+                                        const showSunday = isSunday || (attendance && attendance.status.includes("Sunday"));
+                                        const showHoliday = isOfficialHoliday || (attendance && attendance.status.includes("Official Holiday"));
+
+                                        return (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{formatDateToDDMMYYYY(item.date)}</td>
+                                                <td>{showSunday || showHoliday || isLeave ? "-" : item.total_unique_clients}</td>
+                                                <td>{showSunday || showHoliday || isLeave ? "-" : item.total_calls}</td>
+                                                <td>{showSunday || showHoliday || isLeave ? "-" : convertSecondsToHMSNew(item.total_duration)}</td>
+                                                <td>{showSunday || showHoliday || isLeave ? "-" : getTargetTimeNew(employeeInformation.jdate)}</td>
+                                                <td>
+                                                    <span className={
+                                                        isLeave ? "badge badge-under-probation" :
+                                                            showSunday ? "badge badge-sunday" :
+                                                                showHoliday ? "badge badge-sunday" :
+                                                                    `badge ${badgeClass}`
+                                                    }>
+                                                        {showSunday ? "Sunday" :
+                                                            showHoliday ? "Official Holiday" :
+                                                                isLeave ? "Leave" :
+                                                                    getTargetStatus(convertSecondsToHMS(item.total_duration), getTargetTime(employeeInformation.jdate))}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+
                             ) : (callingData.length === 0 && !loading && (
                                 <tbody>
                                     <tr>
