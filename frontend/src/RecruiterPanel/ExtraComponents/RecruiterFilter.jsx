@@ -4,7 +4,7 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
 
-const FilterableTableAdminExecutive = ({ 
+const RecruiterFilter = ({ 
     activeTab, 
     filteredData, 
     data, 
@@ -387,7 +387,7 @@ const FilterableTableAdminExecutive = ({
         
         try {
             // Fetch the complete dataset from the API
-            const response = await axios.get(`${secretKey}/rm-services/adminexecutive-complete`, {
+            const response = await axios.get(`${secretKey}/recruiter/recruiter-complete`, {
                 params: {
                     search: "",           // Clear search query
                     page: 1,              // Reset to first page
@@ -397,6 +397,7 @@ const FilterableTableAdminExecutive = ({
             });
     
             const { data, totalPages } = response.data;
+            // console.log("response" , response.data)
             onFilter(data);
             allFilterFields([])
             showingMenu(false)
@@ -499,5 +500,5 @@ const FilterableTableAdminExecutive = ({
     );
 };
 
-export default FilterableTableAdminExecutive;
+export default RecruiterFilter;
 

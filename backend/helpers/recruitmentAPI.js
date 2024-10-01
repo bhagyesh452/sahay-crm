@@ -156,7 +156,7 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
                       </p>                
           <p>Thank you once again for considering Start-Up Sahay Private Limited as your potential employer. We look forward to the possibility of working together and wish you the best of luck in your job search.</p>
           `;
-        
+
         const subject2 = `${empFullName} | Job Application Form | ${sendingDate}`;
         const html2 = `
         <h1>Applicant Data</h1>
@@ -208,10 +208,10 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
             subject,
             "",
             html,
-            
+
           );
           const emailInfo2 = await sendMailResponseRecruiter(
-            ["hr@startupsahay.com", "recruiter@startupsahay.com","shivangi@startupsahay.com"],
+            ["hr@startupsahay.com", "recruiter@startupsahay.com", "shivangi@startupsahay.com"],
             subject2,
             "",
             html2,
@@ -236,7 +236,78 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
   }
 });
 
+router.get('/recruiter-complete', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 500, activeTab } = req.query; // Extract search, page, and limit from request
+    //console.log("search", search)
+    // Build query object
+    let query = {};
+    if (search) {
+      const regex = new RegExp(search, 'i'); // Case-insensitive search
+      const numberSearch = parseFloat(search); // Attempt to parse the search term as a number
 
+      query = {
+        $or: [
+          { "Company Name": regex }, // Match companyName field
+          { serviceName: regex },
+          { "Company Email": regex },
+          { bdeName: regex },
+          { bdmName: regex },
+          // Only include the number fields if numberSearch is a valid number
+          ...(isNaN(numberSearch) ? [] : [
+            { "Company Number": numberSearch }, // Match companyNumber field
+            { caNumber: numberSearch } // Match caNumber field
+          ])
+        ]
+      };
+    }
+    //console.log("query", query)
+    const skip = (page - 1) * limit; // Calculate how many documents to skip
+
+    // Fetch data with pagination
+    let response;
+    if (activeTab === "General") {
+      response = await RecruitmentModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ fillingDate: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    } else {
+      response = await RecruitmentModel.find({ ...query, mainCategoryStatus: activeTab })
+        .sort({ dateOfChangingMainStatus: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
+
+    //console.log("response" , response)
+
+    const totalDocuments = await RecruitmentModel.countDocuments(query);
+
+    const totalDocumentsGeneral = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsUnderReview = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "UnderReview" });
+    const totalDocumentsOnHold = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "On Hold" });
+    const totalDocumentsDisqualified = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Disqualified" });
+    const totalDocumentsRejected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Rejected" });
+    const totalDocumentsSelected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Selected" });
+    //const totalDocuments = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+  
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsUnderReview,
+      totalDocumentsOnHold,
+      totalDocumentsDisqualified,
+      totalDocumentsRejected,
+      totalDocumentsSelected,
+      //totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
 router.get('/recruiter-data', async (req, res) => {
   try {
     const { search, page = 1, limit = 5000, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames

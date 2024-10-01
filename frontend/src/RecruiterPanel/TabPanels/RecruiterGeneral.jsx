@@ -20,6 +20,7 @@ import { FaFilter } from "react-icons/fa";
 import { AiFillFilePdf } from "react-icons/ai"; // Importing a PDF icon from react-icons
 import RecruiterStatusDropdown from '../ExtraComponents/RecruiterStatusDropdown.jsx';
 import RecruiterCallHistory from '../ExtraComponents/RecruiterCallHistory.jsx';
+import RecruiterFilter from '../ExtraComponents/RecruiterFilter.jsx';
 //import FilterableTable from '../Extra-Components/FilterableTable';
 
 function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon, completeEmployeeInfo }) {
@@ -125,7 +126,7 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
     useEffect(() => {
         document.title = `Recruiter-Sahay-CRM`;
     }, []);
-    
+
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
             secure: true, // Use HTTPS
@@ -178,92 +179,7 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
         return `${day} ${month}, ${year}`;
     };
 
-    const formatDate = (dateString) => {
-        const [year, month, date] = dateString.split('-');
-        return `${date}/${month}/${year}`;
-    };
 
-    // Remarks Popup Section
-    const handleOpenRemarksPopup = async (companyName, serviceName) => {
-        setCurrentCompanyName(companyName);
-        setCurrentServiceName(serviceName);
-        setOpenRemarksPopUp(true);
-
-        try {
-            const response = await axios.get(`${secretKey}/rm-services/get-remarks`, {
-                params: { companyName, serviceName }
-            });
-            setRemarksHistory(response.data);
-        } catch (error) {
-            console.error("Error fetching remarks", error.message);
-        }
-    };
-
-    const functionCloseRemarksPopup = () => {
-        setOpenRemarksPopUp(false);
-    };
-
-    const debouncedSetChangeRemarks = useCallback(
-        debounce((value) => {
-            setChangeRemarks(value);
-        }, 300),
-        []
-    );
-
-    const handleSubmitRemarks = async () => {
-        //console.log("changeremarks", changeRemarks)
-        try {
-            if (changeRemarks) {
-                const response = await axios.post(`${secretKey}/rm-services/post-remarks-for-rmofcertification`, {
-                    currentCompanyName,
-                    currentServiceName,
-                    changeRemarks,
-                    updatedOn: new Date()
-                });
-
-                //console.log("response", response.data);
-
-                if (response.status === 200) {
-                    if (filteredData && filteredData.length > 0) {
-                        fetchData(searchText, page, true);
-                    } else {
-                        fetchData(searchText, page, false);
-                    }
-                    functionCloseRemarksPopup();
-                    // Swal.fire(
-                    //     'Remarks Added!',
-                    //     'The remarks have been successfully added.',
-                    //     'success'
-                    // );
-                }
-            } else {
-                setError('Remarks Cannot Be Empty!')
-            }
-
-        } catch (error) {
-            console.log("Error Submitting Remarks", error.message);
-        }
-    };
-
-    const handleDeleteRemarks = async (remarks_id) => {
-        try {
-            const response = await axios.delete(`${secretKey}/rm-services/delete-remark-rmcert`, {
-                data: { remarks_id, companyName: currentCompanyName, serviceName: currentServiceName }
-            });
-            if (response.status === 200) {
-                if (filteredData && filteredData.length > 0) {
-                    fetchData(searchText, page, true);
-                } else {
-                    fetchData(searchText, page, false);
-                }
-
-                functionCloseRemarksPopup();
-            }
-            // Refresh the list
-        } catch (error) {
-            console.error("Error deleting remark:", error);
-        }
-    };
 
     // ------------------------------------------------function to send service back to recieved box --------------------------------
 
@@ -360,22 +276,22 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                 Applicant Name
                                             </div>
 
-                                            {/* <div className='RM_filter_icon'>
-                                                {isActiveField('bookingDate') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("bookingDate")} />
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('empFullName') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("empFullName")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("bookingDate")} />
+                                                    <BsFilter onClick={() => handleFilterClick("empFullName")} />
                                                 )}
-                                            </div> */}
+                                            </div>
 
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'bookingDate' && (
+                                            {showFilterMenu && activeFilterField === 'empFullName' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <RecruiterFilter
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
@@ -388,7 +304,7 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -397,22 +313,22 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                 Contact Number
                                             </div>
 
-                                            {/* <div className='RM_filter_icon'>
-                                                {isActiveField('Company Name') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("Company Name")} />
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('personal_number') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("personal_number")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("Company Name")} />
+                                                    <BsFilter onClick={() => handleFilterClick("personal_number")} />
                                                 )}
-                                            </div> */}
+                                            </div>
 
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'Company Name' && (
+                                            {showFilterMenu && activeFilterField === 'personal_number' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <RecruiterFilter
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
@@ -425,7 +341,7 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -434,21 +350,21 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                 Email ID
                                             </div>
 
-                                            {/* <div className='RM_filter_icon'>
-                                                {isActiveField('Company Number') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("Company Number")} />
+                                            <div className='RM_filter_icon'>
+                                                {isActiveField('personal_email') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("personal_email")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("Company Number")} />
+                                                    <BsFilter onClick={() => handleFilterClick("personal_email")} />
                                                 )}
-                                            </div> */}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === "Company Number" && (
+                                            {showFilterMenu && activeFilterField === "personal_email" && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <RecruiterFilter
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
@@ -461,7 +377,7 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
@@ -470,21 +386,21 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                 Status
                                             </div>
 
-                                            {/* <div className='RM_filter_icon'>
+                                            <div className='RM_filter_icon'>
                                                 {isActiveField('Company Email') ? (
                                                     <FaFilter onClick={() => handleFilterClick("Company Email")} />
                                                 ) : (
                                                     <BsFilter onClick={() => handleFilterClick("Company Email")} />
                                                 )}
-                                            </div> */}
+                                            </div>
                                             {/* ---------------------filter component--------------------------- */}
-                                            {/* {showFilterMenu && activeFilterField === 'Company Email' && (
+                                            {showFilterMenu && activeFilterField === 'Company Email' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"
                                                     style={{ top: `${filterPosition.top}px`, left: `${filterPosition.left}px` }}
                                                 >
-                                                    <FilterableTable
+                                                    <RecruiterFilter
                                                         noofItems={setnoOfAvailableData}
                                                         allFilterFields={setActiveFilterFields}
                                                         filteredData={filteredData}
@@ -497,7 +413,7 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                         dataForFilter={dataToFilter}
                                                     />
                                                 </div>
-                                            )} */}
+                                            )}
                                         </div>
                                     </th>
                                     <th>
