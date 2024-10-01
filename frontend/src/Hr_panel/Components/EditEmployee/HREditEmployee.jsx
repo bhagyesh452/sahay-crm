@@ -883,7 +883,7 @@ export default function HREditEmployee() {
                                   </div>
                                 </div>
                                 <div className="row">
-                                  <div className="col-sm-4">
+                                  <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="email">Email Address<span style={{ color: "red" }}> * </span></label>
                                       <input
@@ -899,25 +899,7 @@ export default function HREditEmployee() {
                                       {errors.personalEmail && <p style={{ color: "red" }}>{errors.personalEmail}</p>}
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
-                                      <div>
-                                        <textarea
-                                          rows={1}
-                                          name="currentAddress"
-                                          className="form-control mt-1"
-                                          id="currentAddress"
-                                          placeholder="Current address"
-                                          value={personalInfo.currentAddress}
-                                          onChange={handleInputChange}
-                                          disabled={!isPersonalInfoEditable}
-                                        ></textarea>
-                                        {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="col-sm-2">
+                                  <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                     <label for="bloodGroup">Blood Group<span style={{ color: "red" }}> * </span></label>
                                       <select
@@ -941,25 +923,27 @@ export default function HREditEmployee() {
                                       {errors.bloodGroup && <p style={{ color: "red" }}>{errors.bloodGroup}</p>}
                                     </div>
                                   </div>
-                                  {/* <div className="col-sm-3">
+                                  <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label>Is permanent address same as current?</label>
-                                      <select
-                                        className="form-select mt-1"
-                                        name="isAddressSame"
-                                        id="isAddressSame"
-                                        value={personalInfo.isAddressSame}
-                                        onChange={handleAddressChange}
-                                        disabled={!isPersonalInfoEditable}
-                                      >
-                                        <option value="Select Option" selected>Select Option</option>
-                                        <option value="yes">Yes</option>
-                                        <option value="no">No</option>
-                                      </select>
-                                      {errors.isAddressSame && <p style={{ color: "red" }}>{errors.isAddressSame}</p>}
+                                      <label for="currentAddress">Current Address<span style={{ color: "red" }}> * </span></label>
+                                      <div>
+                                        <textarea
+                                          rows={1}
+                                          name="currentAddress"
+                                          className="form-control mt-1"
+                                          id="currentAddress"
+                                          placeholder="Current address"
+                                          value={personalInfo.currentAddress}
+                                          onChange={handleInputChange}
+                                          disabled={!isPersonalInfoEditable}
+                                        ></textarea>
+                                        {errors.currentAddress && <p style={{ color: "red" }}>{errors.currentAddress}</p>}
+                                      </div>
                                     </div>
-                                  </div> */}
-                                  <div className="col-sm-2">
+                                  </div>
+
+
+                                  <div className="col-sm-3">
                                     <div className="form-group mt-1 mb-2">
                                       <div className="d-flex align-items-center justify-content-between">
                                         <label htmlFor="permanentAddress">
