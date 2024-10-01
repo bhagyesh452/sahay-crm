@@ -321,12 +321,12 @@ function EmployeeProfile() {
     }
   };
 
-  
+
 
   return (
     <div>
-      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
-      <EmpNav userId={data._id} bdmWork={data.bdmWork} />
+      {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <EmpNav userId={data._id} bdmWork={data.bdmWork} /> */}
       <div className="page-wrapper">
         <div className="page-header m-0">
           <div className="container-xl">
@@ -1258,7 +1258,7 @@ function EmployeeProfile() {
                       <LeaveReportView />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="CallingReport">
-                      <CallingReportView employeeInformation={data}/>
+                      <CallingReportView employeeInformation={data} />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>

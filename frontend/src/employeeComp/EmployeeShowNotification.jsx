@@ -22,7 +22,7 @@ function EmployeeShowNotification() {
     const [data, setData] = useState([]);
     const [employeeName, setEmployeeName] = useState("");
     const [dataType, setDataType] = useState(employeeDataStatus || "General");
-   
+
 
 
 
@@ -53,10 +53,10 @@ function EmployeeShowNotification() {
 
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
-      }, [data.ename]);
+    }, [data.ename]);
 
 
-// console.log("boom" , employeeName)  
+    // console.log("boom" , employeeName)  
 
 
 
@@ -65,8 +65,8 @@ function EmployeeShowNotification() {
 
     return (
         <div>
-            <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
-            <EmpNav userId={userId} bdmWork={data.bdmWork} />
+            {/* <Header name={data.ename} empProfile={data.employee_profile && data.employee_profile.length !== 0 && data.employee_profile[0].filename} designation={data.designation} />
+            <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
             <div className="page-wrapper">
                 <div className="page-header">
                     <div className="container-xl">
@@ -181,7 +181,7 @@ function EmployeeShowNotification() {
                             editData.length !== 0 && currentBooking && compareBooking &&
                             <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex !== 0 ? compareBooking.moreBookings[(currentBooking.bookingIndex - 1)] : compareBooking} setCurrentBooking={setCurrentBooking} setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany} />
                         } */}
-                        {dataType === "paymentApprovalRequests" && <EmployeePaymentApprovalComponent ename={employeeName}/>}
+                        {dataType === "paymentApprovalRequests" && <EmployeePaymentApprovalComponent ename={employeeName} />}
 
                     </div>
                 </div>

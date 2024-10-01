@@ -336,8 +336,8 @@ function EmployeeAssets() {
     return (
         <div>
             {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
-            <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
-            <EmpNav userId={userId} bdmWork={data.bdmWork} />
+            {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+            <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
             {!openDetailsPage && (<div className="page-wrapper">
                 <div className="page-header rm_Filter m-0">
                     <div className="container-xl">

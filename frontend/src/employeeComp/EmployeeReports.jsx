@@ -2658,8 +2658,8 @@ function EmployeeReports() {
   return (
     <div className="admin-dashboard">
       {shouldShowCollection && <TodaysCollection empId={userId} secretKey={secretKey} />}
-      <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
-      <EmpNav userId={userId} bdmWork={data.bdmWork} />
+      {/* <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
+      <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
       <div className="page-wrapper">
 
         {/* Lead Report Dashboard Numbers */}

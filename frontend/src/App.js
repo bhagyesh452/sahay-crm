@@ -3,7 +3,19 @@ import { BrowserRouter, Routes, Navigate, Route } from "react-router-dom";
 import { useState } from "react";
 import EmployeeLogin from "./components/EmployeeLogin";
 import ConveertedLeads from "./components/ConveertedLeads";
+
+// Employee Panel Imports 
+import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import EmployeePanel from "./employeeComp/EmployeePanel";
+import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
+import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
+import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
+import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
+import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
+import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
+import EmployeeLayout from "./employeeComp/EmployeeLayout.jsx";
+
+
 import Dashboard from "./admin/DashboardReportComponents/Dashboard.js";
 //import Dashboard from "./admin/Dashboard";
 import LoginAdmin from "./admin/LoginAdmin";
@@ -21,7 +33,6 @@ import Form from "./Processing/Form.jsx";
 import Nodata from "./Processing/Nodata.jsx";
 import CompanyParticular from "./admin/CompanyParticular.jsx";
 import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
-import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import Bellicon_processing from "./Processing/style_processing/Bellicon_processing.js";
 //import NewLeads from "./admin/NewLeads.jsx";
 import RedesignedForm from "./admin/RedesignedForm.jsx";
@@ -47,21 +58,17 @@ import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
 import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
 import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings.jsx";
 
-import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
 import AdminEmployeeLeads from "./admin/AdminEmployeeLeads.jsx";
 import AdminEmployeeTeamLeads from "./admin/AdminEmployeeTeamLeads.jsx";
 import NotificationDM from "./DataManager/Dashboard/ManageLeads/NotificationDM.jsx";
-import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
 import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
 import EmployeeStatusInfo from "./DataManager/Components/EmployeeStatusInfo/EmployeeStatusInfo.jsx";
 import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerDashboard.jsx";
 import TestLeads from "./admin/TestLeads.jsx";
 import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
-import EmployeeReports from "./employeeComp/EmployeeReports.jsx";
 import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
-import EmployeeProfile from "./employeeComp/EmployeeProfile.jsx";
 import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
 import ExpenseReport from "./DataManager/Dashboard/Expense/ExpenseReport.jsx";
 import RMofCertification from "./RM-CERTIFICATION/RM-CERT-LOGIN/RMofCertification.jsx";
@@ -79,7 +86,6 @@ import HREditEmployee from "./Hr_panel/Components/EditEmployee/HREditEmployee.js
 import Attendance from "./Hr_panel/Components/Attendance/Attendance.jsx";
 //import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
-import EmployeeShowNotification from "./employeeComp/EmployeeShowNotification.jsx";
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
 import CustomerDashboard from "./Customer-Panel/CustomerDashboard.jsx";
 import EmployeeView from "./Hr_panel/Components/EmployeeView.jsx";
@@ -87,7 +93,6 @@ import AdminExecutiveLogin from "./AdminExecutive/Login/AdminExecutiveLogin.jsx"
 import AdminExecutiveDashboard from "./AdminExecutive/Dashboard/AdminExecutiveDashboard.jsx";
 import AdminExecutiveRecievedBox from "./AdminExecutive/RecievedBookingBox/AdminExecutiveRecievedBox.jsx";
 import AdminExecutiveMyBookings from "./AdminExecutive/AdminExecutiveBookings/AdminExecutiveMyBookings.jsx";
-import EmployeeAssets from "./employeeComp/EmployeeAssets.jsx";
 import EmployeeInterestedCompanies from "./admin/EmployeeInterestestedCompanies.jsx";
 import EmployeeFolowUpCompanies from "./admin/EmployeeFolowUpCompanies.jsx";
 import EmployeeSalaryView from "./Hr_panel/Components/Attendance/EmployeeSalaryView.jsx";
@@ -118,11 +123,7 @@ function App() {
             path="/"
             element={<EmployeeLogin setnewToken={setnewToken} />}
           />
-
-
-
-
-          <Route
+          {/* <Route
             path="/employee-data/:userId/"
             element={newtoken ? <EmployeePanel /> : <Navigate to="/" />}
           ></Route>
@@ -139,7 +140,19 @@ function App() {
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
           <Route path='/employee-profile-details/:userId' element={newtoken ? <EmployeeProfile /> : <Navigate to='/' />}></Route>
           <Route path='/employee/show-notification/:userId' element={newtoken ? <EmployeeShowNotification /> : <Navigate to='/' />}></Route>
-          <Route path='/employee-assets/:userId' element={newtoken ? <EmployeeAssets /> : <Navigate to='/' />}></Route>
+          <Route path='/employee-assets/:userId' element={newtoken ? <EmployeeAssets /> : <Navigate to='/' />}></Route> */}
+
+          {/* Wrap all employee-related routes with EmployeeLayout */}
+          <Route element={newtoken ? <EmployeeLayout /> : <Navigate to="/" />}>
+            <Route path="/employee-dashboard/:userId/" element={<EmployeeDashboard />} />
+            <Route path="/employee-data/:userId/" element={<EmployeePanel />} />
+            <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
+            <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
+            <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
+            <Route path="/employee-assets/:userId" element={<EmployeeAssets />} />
+            <Route path="/employee-profile-details/:userId" element={<EmployeeProfile />} />
+            <Route path="/employee/show-notification/:userId" element={<EmployeeShowNotification />} />
+          </Route>
 
           {/* --------------------------------------------------Path for Customer-Panel---------------------------------------------------------- */}
           <Route path='/customer/login' element={<CustomerLogin />}></Route>
@@ -282,8 +295,8 @@ function App() {
           <Route path="/recruiter/appynowform" element={<ApplicationForm />} />
           <Route path="/recruiter/dashboard/:userId" element={<RecruiterDashboard />} />
           <Route path="/recruiter/employeesbox/:userId" element={<RecruiterBox />} />
-          <Route path="/recruiter/login" element={<RecruiterLogin setRecruiterToken={setRecruiterToken} />}  />
-          
+          <Route path="/recruiter/login" element={<RecruiterLogin setRecruiterToken={setRecruiterToken} />} />
+
         </Routes>
 
       </BrowserRouter>

@@ -2967,8 +2967,8 @@ function EmployeeParticular() {
                                         }}
                                           style={{
                                             cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
+                                            width: "15px",
+                                            height: "15px",
                                           }}
                                           color="grey"
                                         />
