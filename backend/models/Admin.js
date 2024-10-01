@@ -26,6 +26,10 @@ const yourSchema = new mongoose.Schema({
   dob: {
     type: Date
   },
+  bloodGroup: {
+    type: String,
+    default:""
+  },
   gender: {
     type: String
   },
@@ -49,7 +53,7 @@ const yourSchema = new mongoose.Schema({
   designation: {
     type: String
   },
-  newDesignation : {
+  newDesignation: {
     type: String
   },
   jdate: {

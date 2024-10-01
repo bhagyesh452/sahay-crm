@@ -1224,7 +1224,7 @@ function EmployeeView() {
                     </div>
                     
                     <div class="tab-pane heiitc_inner fade" id="BusinessCard">
-                      <BusinessCardView></BusinessCardView>
+                      <BusinessCardView employeeInformation={data} />
                     </div>
 
                   </div>

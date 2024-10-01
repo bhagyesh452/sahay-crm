@@ -286,14 +286,14 @@ function RecruiterUnderReview({
                         <table className="table table-vcenter table-nowrap rm_table">
                             <thead>
                                 <tr className="tr-sticky">
-                                    <th className="G_rm-sticky-left-1">
+                                    <th className="rm-sticky-left-1">
                                         <div className='d-flex align-items-center justify-content-center'>
                                             <div>
                                                 Sr.No
                                             </div>
                                         </div>
                                     </th>
-                                    <th className="G_rm-sticky-left-2">
+                                    <th className="rm-sticky-left-2">
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
                                             <div ref={el => fieldRefs.current['empFullName'] = el}>
                                                 Applicant Name
@@ -330,7 +330,7 @@ function RecruiterUnderReview({
                                             )} */}
                                         </div>
                                     </th>
-                                    <th className="G_rm-sticky-left-3">
+                                    <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative '>
                                             <div ref={el => fieldRefs.current['personal_number'] = el}>
                                                 Contact Number
@@ -780,9 +780,9 @@ function RecruiterUnderReview({
                             <tbody>
                                 {recruiterData && recruiterData.length !== 0 && recruiterData.map((obj, index) => (
                                     <tr key={index}>
-                                        <td className="G_rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
-                                        <td className='G_rm-sticky-left-2'>{obj.empFullName}</td>
-                                        <td className="G_rm-sticky-left-3">
+                                        <td className="rm-sticky-left-1"><div className="rm_sr_no">{index + 1}</div></td>
+                                        <td className='rm-sticky-left-2'>{obj.empFullName}</td>
+                                        <td>
                                             <div className="d-flex align-items-center justify-content-center wApp">
                                                 <div>{obj.personal_number}</div>
                                                 <a

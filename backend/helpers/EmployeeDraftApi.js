@@ -85,7 +85,29 @@ router.put("/updateEmployeeDraft/:empId", upload.fields([
 ]), async (req, res) => {
 
     const { empId } = req.params;
-    const { firstName, middleName, lastName, dob, gender, personalPhoneNo, personalEmail, employeeID, designation, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo, activeStep } = req.body;
+    const { 
+        firstName, 
+        middleName, 
+        lastName, 
+        dob, 
+        gender, 
+        personalPhoneNo, 
+        personalEmail, 
+        employeeID, 
+        designation, 
+        officialNo, 
+        officialEmail, 
+        joiningDate, 
+        branch, 
+        manager, 
+        nameAsPerBankRecord, 
+        firstMonthSalaryCondition, 
+        firstMonthSalary, 
+        personName, 
+        relationship, 
+        personPhoneNo, 
+        activeStep 
+    } = req.body;
     // console.log("Reqest file is :", req.files);
     // console.log("Emp id is :", employeeID);
     // console.log("Active step :", activeStep);

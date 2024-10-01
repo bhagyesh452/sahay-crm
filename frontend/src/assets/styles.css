@@ -12,7 +12,10 @@ body {
   overflow-y: auto !important;
   position: relative;
 } 
-
+.modal-backdrop
+{
+  --tblr-backdrop-opacity: 0.50 !important;
+}
 .pl-1 {
   padding-left: 10px;
 }

@@ -153,7 +153,7 @@ router.post("/einfo", upload.fields([
 ]), async (req, res) => {
   try {
     const { personalInfo, employeementInfo, payrollInfo, emergencyInfo, empDocumentInfo, empId, employeeID, oldDesignation } = req.body;
-    // console.log("Personal Info is :", personalInfo);
+    console.log("Personal Info is :", personalInfo);
     // console.log("Employeement Info is :", employeementInfo);
     // console.log("Payroll info is :", payrollInfo);
     // console.log("Emergency info is :", emergencyInfo);
@@ -227,6 +227,7 @@ router.post("/einfo", upload.fields([
       ...(personalInfo?.personalEmail && { personal_email: personalInfo.personalEmail }),
       ...(personalInfo?.currentAddress && { currentAddress: personalInfo.currentAddress }),
       ...(personalInfo?.permanentAddress && { permanentAddress: personalInfo.permanentAddress }),
+      ...(personalInfo?.bloodGroup && { bloodGroup: personalInfo.bloodGroup }),
 
       ...(employeementInfo?.empId && { empID: employeementInfo.empId }),
       ...(employeementInfo?.department && { department: employeementInfo.department }),
