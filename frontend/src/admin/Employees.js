@@ -45,11 +45,14 @@ import { FaRegEye } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
 import AddEmployeeDialog from "./ExtraComponent/AddEmployeeDialog";
+import { useQuery } from "@tanstack/react-query";
 
 function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePopup, searchValue, employeeData, isLoading, refetchActive, refetchDeleted }) {
 
   // console.log("Search value from employee list is :", searchValue);
   // console.log("Employee data is :", employeeData);
+
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -338,8 +341,36 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   //   }
   // });
 
-  const [dataToDelete, setDataToDelete] = useState([])
+  const [dataToDelete, setDataToDelete] = useState([]);
 
+  const handledeletefromcompany = async (filteredCompanyData) => {
+    if (filteredCompanyData && filteredCompanyData.length !== 0) {
+      // console.log("Filtered company data is :", filteredCompanyData);
+      try {
+        // Update companyData in the second database
+        await Promise.all(
+          filteredCompanyData.map(async (item) => {
+            // if (item.Status === 'Matured') {
+            if (item.Status) {
+              await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
+            } else {
+              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
+            }
+          })
+        );
+        Swal.fire({
+          title: "Data Deleted!",
+          text: "You have successfully Deleted the data!",
+          icon: "success",
+        });
+        //console.log("All ename updates completed successfully");
+      } catch (error) {
+        console.error("Error updating enames:", error.message);
+        Swal.fire("Error deleting the employee");
+        // Handle the error as needed
+      }
+    }
+  };
 
   const handleDeleteClick = async (itemId, nametochange, dataToDelete, filteredCompanyData) => {
     // Open the confirm delete modal
@@ -348,7 +379,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     setCompanyDdata(filteredCompanyData);
     setItemIdToDelete(itemId);
 
-    console.log("object")
+    // console.log("object");
     Swal.fire({
       title: 'Are you sure?',
       text: `Do you really want to remove ${nametochange}?`,
@@ -397,39 +428,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         });
       }
     });
-  };
-
-
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-
-  const handledeletefromcompany = async (filteredCompanyData) => {
-    if (filteredCompanyData && filteredCompanyData.length !== 0) {
-      console.log("Filtered company data is :", filteredCompanyData);
-      try {
-        // Update companyData in the second database
-        await Promise.all(
-          filteredCompanyData.map(async (item) => {
-            // if (item.Status === 'Matured') {
-            if (item.Status) {
-              await axios.put(`${secretKey}/company-data/updateCompanyForDeletedEmployeeWithMaturedStatus/${item._id}`)
-            } else {
-              await axios.delete(`${secretKey}/company-data/newcompanynamedelete/${item._id}`);
-            }
-          })
-        );
-        Swal.fire({
-          title: "Data Deleted!",
-          text: "You have successfully Deleted the data!",
-          icon: "success",
-        });
-
-        //console.log("All ename updates completed successfully");
-      } catch (error) {
-        console.error("Error updating enames:", error.message);
-        Swal.fire("Error deleting the employee");
-        // Handle the error as needed
-      }
-    }
   };
 
   // const handleCancelDelete = () => {
@@ -524,15 +522,12 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   };
 
   const handleUpdateClick = (id, echangename) => {
-
     // Set the selected data ID and set update mode to true
     setSelectedDataId(id);
     setIsUpdateMode(true);
     setCompanyData(cdata.filter((item) => item.ename === echangename));
     // Find the selected data object
     const selectedData = employeeData.find((item) => item._id === id);
-
-
     setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
     setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
     setTargetObjects(
@@ -595,17 +590,17 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
   };
 
 
-  useEffect(() => {
-    // Fetch data from the Node.js server
-    if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-      setFilteredData(data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-    } else {
-      setFilteredData(data);
-    }
-    // Call the fetchData function
-    // fetchData();
-    fetchCData();
-  }, [searchValue]);
+  // useEffect(() => {
+  //   // Fetch data from the Node.js server
+  //   if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
+  //     setFilteredData(data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
+  //   } else {
+  //     setFilteredData(data);
+  //   }
+  //   // Call the fetchData function
+  //   // fetchData();
+  //   // fetchCData();
+  // }, [searchValue]);
 
   function formatDateWP(dateString) {
     const date = new Date(dateString);
@@ -648,14 +643,29 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
     return `${day}/${month}/${year}`;
   }
 
-  const fetchCData = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/company-data/leads`);
-      setCData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
+  // const fetchCData = async () => {
+  //   try {
+  //     const response = await axios.get(`${secretKey}/company-data/leads`);
+  //     setCData(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error.message);
+  //   }
+  // };
+
+  const { data: leadData } = useQuery({
+    queryKey: ["companyData"],
+    queryFn: () => axios.get(`${secretKey}/company-data/leads`),
+    staleTime: 5 * 60 * 1000, // Optional: Cache data for 5 minutes to avoid unnecessary requests
+    refetchInterval: 5 * 60 * 1000,  // Refetch every 5 minutes (300,000 milliseconds)
+  });
+
+  useEffect(() => {
+    if (leadData?.data) {
+      setCData(leadData.data);
     }
-  };
+  }, [leadData?.data]);
+
+  // console.log("Company data is :", cdata);
 
   const handleInputChange = (field, value) => {
     switch (field) {
@@ -1112,7 +1122,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
         //console.log(response.data)
         setTimeout(() => {
           Swal.fire('BDM Work Assigned!', '', 'success');
-
         }, 500);
 
       } catch (error) {
