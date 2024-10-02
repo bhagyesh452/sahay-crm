@@ -2734,7 +2734,7 @@ function EmployeeTeamLeads() {
                 <>
                     {" "}
                     <AddLeadForm
-                        employeeEmail={maturedBooking.email}
+                        employeeEmail={maturedBooking.bdeEmail}
                         newBdeName={maturedBooking.ename}
                         isDeletedEmployeeCompany={deletedEmployeeStatus}
                         setFormOpen={setAddFormOpen}
