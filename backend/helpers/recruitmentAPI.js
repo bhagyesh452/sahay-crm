@@ -289,7 +289,7 @@ router.get('/recruiter-complete', async (req, res) => {
     const totalDocumentsRejected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Rejected" });
     const totalDocumentsSelected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Selected" });
     //const totalDocuments = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
-  
+
     res.status(200).json({
       data: response,
       totalDocuments,
@@ -1206,5 +1206,21 @@ router.post(`/post-save-exitDate-recruiter/`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.delete("/delete-applicant-recruiter", async (req, res) => {
+  const { id } = req.query; // Use req.query to access query parameters
+
+  try {
+    const applicant = await RecruitmentModel.findByIdAndDelete(id);
+    if (!applicant) {
+      return res.status(404).json({ message: "Applicant not found" });
+    }
+    res.status(200).json({ message: "Applicant deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    console.log("Error Deleting Employee", error.message);
+  }
+});
+
 
 module.exports = router;
