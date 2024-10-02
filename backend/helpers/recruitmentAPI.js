@@ -321,15 +321,16 @@ router.get('/recruiter-data', async (req, res) => {
 
       query = {
         $or: [
-          { "Company Name": regex }, // Match companyName field
-          { serviceName: regex },
-          { "Company Email": regex },
-          { bdeName: regex },
+          { empFullName: regex }, // Match companyName field
+          { personal_email: regex },
+          { appliedFor: regex },
+          { applicationSource: regex },
           { bdmName: regex },
           // Only include the number fields if numberSearch is a valid number
           ...(isNaN(numberSearch) ? [] : [
-            { "Company Number": numberSearch }, // Match companyNumber field
-            { caNumber: numberSearch } // Match caNumber field
+            { personal_number: numberSearch }, // Match companyNumber field
+            { currentCTC: numberSearch }, // Match caNumber field
+            { expectedCTC: numberSearch }, // Match caNumber field
           ])
         ]
       };

@@ -924,20 +924,20 @@ function RecruiterSelected({
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['firstSalaryCondition'] = el}>
+                                            <div ref={el => fieldRefs.current['firstMonthSalaryCondition'] = el}>
                                                 1st Salary Condition
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                {isActiveField('firstSalaryCondition') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("firstSalaryCondition")} />
+                                                {isActiveField('firstMonthSalaryCondition') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("firstMonthSalaryCondition")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("firstSalaryCondition")} />
+                                                    <BsFilter onClick={() => handleFilterClick("firstMonthSalaryCondition")} />
                                                 )}
                                             </div>
 
                                             {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'firstSalaryCondition' && (
+                                            {showFilterMenu && activeFilterField === 'firstMonthSalaryCondition' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"

@@ -148,9 +148,9 @@ function RecruiterBox() {
         fetchRMServicesData("", page); // Fetch data initially
     }, [employeeData]);
 
-    // useEffect(() => {
-    //     fetchRMServicesData(search, page); // Fetch data when search query changes
-    // }, [search]);
+    useEffect(() => {
+        fetchRMServicesData(search, page); // Fetch data when search query changes
+    }, [search]);
 
     const handleSearchChange = (event) => {
         setSearch(event.target.value); // Update search query state
