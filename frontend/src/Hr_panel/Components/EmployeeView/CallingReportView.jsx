@@ -55,26 +55,49 @@ function CallingReportView({ employeeInformation }) {
 
     const [callingData, setCallingData] = useState([])
     const [loading, setLoading] = useState(false)
-    const fetchCallingDate = async () => {
+    const fetchCallingData = async () => {
+        const emp_number = employeeInformation.number;
+        const month = selectedMonth;
+        const monthNamesToNumbers = {
+            "January": "01",
+            "February": "02",
+            "March": "03",
+            "April": "04",
+            "May": "05",
+            "June": "06",
+            "July": "07",
+            "August": "08",
+            "September": "09",
+            "October": "10",
+            "November": "11",
+            "December": "12"
+        };
+        const monthNumber = monthNamesToNumbers[month];
         try {
-            const response = await axios.get(`${secretKey}/employee/employee-calling-fetch/${employeeInformation.number}`);
-            const data = response.data.data;
+            setLoading(true);
+            const response = await axios.get(`${secretKey}/employee/employee-calling/filter`, {
+                params: {
+                    emp_number: emp_number,
+                    year: String(selectedYear),
+                    month: monthNumber,
+                },
+            });
+            // console.log("response", response.data.data)
+            if (response.status === 200) {
 
-            if (Array.isArray(data) && data.length > 0) {
-                // Safely access nested properties using optional chaining
-                const dailyData = data[0]?.year?.[0]?.monthly_data?.[0]?.daily_data;
+                const dailyData = response.data.data?.daily_data;
 
                 if (dailyData) {
-                    setCallingData(dailyData.sort((a, b) => new Date(a.date) - new Date(b.date))); // Set the data only if it exists
-                    console.log("dailyData", dailyData);
+                    setCallingData(dailyData.sort((a, b) => new Date(a.date) - new Date(b.date))); // Sort by date
+                    console.log("Filtered dailyData", dailyData);
                 } else {
                     console.error("Daily data is missing or not in the expected structure");
                 }
-            } else {
-                console.error("No data found for the employee");
             }
-        } catch (err) {
-            console.log("Error fetching calling data:", err);
+        } catch (error) {
+            console.error('Error fetching employee data:', error);
+        }finally{
+            setLoading(false);
         }
     };
 
@@ -127,7 +150,7 @@ function CallingReportView({ employeeInformation }) {
     };
 
     useEffect(() => {
-        fetchCallingDate();
+        fetchCallingData();
     }, [employeeInformation])
 
     // ------------------------filter functions------------------------------
@@ -201,9 +224,9 @@ function CallingReportView({ employeeInformation }) {
         };
         const monthNumber = monthNamesToNumbers[month];
 
-        console.log("emp_number:", emp_number);
-        console.log("year:", selectedYear);
-        console.log("monthNumber:", monthNumber);
+        // console.log("emp_number:", emp_number);
+        // console.log("year:", selectedYear);
+        // console.log("monthNumber:", monthNumber);
 
         setSelectedMonth(month);
 
@@ -215,7 +238,7 @@ function CallingReportView({ employeeInformation }) {
                     month: monthNumber,
                 },
             });
-            console.log("response", response.data.data)
+            // console.log("response", response.data.data)
             if (response.status === 200) {
 
                 const dailyData = response.data.data?.daily_data;

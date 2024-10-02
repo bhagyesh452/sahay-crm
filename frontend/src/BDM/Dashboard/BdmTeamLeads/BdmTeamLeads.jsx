@@ -34,6 +34,7 @@ import { IoIosClose } from "react-icons/io";
 import { Country, State, City } from 'country-state-city';
 import { LuHistory } from "react-icons/lu";
 import CallHistory from "../../../employeeComp/CallHistory.jsx";
+import AddLeadForm from "../../../admin/AddLeadForm.jsx";
 
 
 
@@ -584,8 +585,9 @@ function BdmTeamLeads() {
   //   console.log("error reversing bdm forwarded data", error.message);
   //   Swal.fire("Error rekecting data")
   // }
-
-
+  const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
+  const [addFormOpen, setAddFormOpen] = useState(false);
+  const [nowToFetch, setNowToFetch] = useState(false);
   const handlebdmStatusChange = async (
     companyId,
     bdmnewstatus,
@@ -595,7 +597,8 @@ function BdmTeamLeads() {
     cnum,
     bdeStatus,
     bdmOldStatus,
-    bdeName
+    bdeName,
+    isDeletedEmployeeCompany
   ) => {
     const title = `${data.ename} changed ${cname} status from ${bdmOldStatus} to ${bdmnewstatus}`;
     const DT = new Date();
@@ -635,7 +638,15 @@ function BdmTeamLeads() {
       } else {
         const currentObject = teamData.find(obj => obj["Company Name"] === cname);
         setMaturedBooking(currentObject);
-        setFormOpen(true)
+        console.log("currentObject", currentObject)
+        setDeletedEmployeeStatus(isDeletedEmployeeCompany)
+        if (!isDeletedEmployeeCompany) {
+          console.log("formchal")
+          setFormOpen(true);
+        } else {
+          console.log("addleadfromchal")
+          setAddFormOpen(true)
+        }
 
       }
       // Make API call to send the reques
@@ -1411,7 +1422,7 @@ function BdmTeamLeads() {
 
       <Header id={data._id} name={data.ename} empProfile={data.profilePhoto && data.profilePhoto.length !== 0 && data.profilePhoto[0].filename} gender={data.gender} designation={data.newDesignation} />
       <Navbar userId={userId} />
-      {!formOpen && (
+      {!formOpen && !addFormOpen && (
         <>
           {!showCallHistory ? <div className="page-wrapper">
             {BDMrequests && (
@@ -2283,7 +2294,8 @@ function BdmTeamLeads() {
                                                 company["Company Number"],
                                                 company["Status"],
                                                 company.bdmStatus,
-                                                company.ename
+                                                company.ename,
+                                                company.isDeletedEmployeeCompany
                                               )
                                             }
                                           >
@@ -2603,6 +2615,22 @@ function BdmTeamLeads() {
             employeeName={maturedBooking.ename}
 
             bdmName={maturedBooking.bdmName}
+          />
+        </>
+      )}
+
+      {addFormOpen && (
+        <>
+          {" "}
+          <AddLeadForm
+            employeeEmail={maturedBooking.bdeEmail}
+            newBdeName={maturedBooking.ename}
+            isDeletedEmployeeCompany={deletedEmployeeStatus}
+            setFormOpen={setAddFormOpen}
+            companysName={maturedBooking["Company Name"]}
+            setNowToFetch={setNowToFetch}
+            setDataStatus={setdataStatus}
+            employeeName={maturedBooking.ename}
           />
         </>
       )}

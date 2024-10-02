@@ -3332,6 +3332,18 @@ td input {
   font-size: 10px;
   color: #838383;
 }
+.td_delete_applicant_btn
+{
+  border: none;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  line-height: 19px;
+  border-radius: 100px;
+  background: #f1ecec;
+  font-size: 13px;
+  color: #838383;
+}
 .td_of_weblink
 {
   width: 180px;

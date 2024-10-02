@@ -10,6 +10,8 @@ const RequestMaturedModel = require("../models/RequestMatured.js");
 const InformBDEModel = require("../models/InformBDE.js");
 const FollowUpModel = require('../models/FollowUp.js');
 const LeadHistoryForInterestedandFollowModel = require('../models/LeadHistoryForInterestedandFollow.js');
+const adminModel = require("../models/Admin.js");
+
 
 router.get("/teamleadsdata", async (req, res) => {
   try {
@@ -245,24 +247,60 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
     }).lean();
 
     // Fetch the related company data from newcdatas collection
-    const companyNames = teamLeadsData.map((lead) => lead["Company Name"]);
+    const companyNames = teamLeadsData.map((lead) => lead["Company Name"]).filter(Boolean); // Remove any undefined or null values
+    const enames = teamLeadsData.map((lead) => lead.ename);
 
+    // Ensure that "Company Name" is being selected properly
     const newcdatasData = await CompanyModel.find({
       "Company Name": { $in: companyNames },
-    }).select("Company Name isDeletedEmployeeCompany");
+    }).select({ "Company Name": 1, isDeletedEmployeeCompany: 1 });
 
-    // Create a lookup object for companyName to isDeletedEmployeeCompany mapping
+    const employee = await adminModel.find({
+      ename: { $in: enames },
+    }).select({ email: 1, ename: 1 });
+
+    console.log("ename", employee);
+
+    // Create a lookup object for "Company Name" to isDeletedEmployeeCompany mapping
     const companyLookup = {};
     newcdatasData.forEach((company) => {
-      companyLookup[company["Company Name"]] = company.isDeletedEmployeeCompany;
-    });
-
-    // Update team leads data based on lookup
-    teamLeadsData.forEach((lead) => {
-      if (companyLookup[lead["Company Name"]] !== undefined) {
-        lead.isDeletedEmployeeCompany = companyLookup[lead["Company Name"]];
+      if (company["Company Name"]) {
+        companyLookup[company["Company Name"]] = company.isDeletedEmployeeCompany;
       }
     });
+
+    const emailLookup = {};
+    employee.forEach((emp) => {
+      if (emp.ename) {
+        emailLookup[emp.ename] = emp.email;
+      }
+    });
+
+    console.log("companylookup", companyLookup);
+
+    // Update team leads data based on lookup, add isDeletedEmployeeCompany field if it doesn't exist
+    for (const lead of teamLeadsData) {
+      if (companyLookup.hasOwnProperty(lead["Company Name"])) {
+        lead.isDeletedEmployeeCompany = companyLookup[lead["Company Name"]];
+        lead.bdeEmail = emailLookup[lead.ename] || "";
+      } else {
+        lead.isDeletedEmployeeCompany = false; // Set default value if no matching company is found
+        lead.bdeEmail = ""; // Set default value if no matching company is found
+      }
+
+      // Update the document in the TeamLeadsModel
+      await TeamLeadsModel.updateOne(
+        { _id: lead._id },
+        {
+          $set: {
+            isDeletedEmployeeCompany: lead.isDeletedEmployeeCompany,
+            bdeEmail: lead.bdeEmail,
+          },
+        }
+      );
+    }
+
+    console.log("teamleads", teamLeadsData);
 
     res.status(200).send(teamLeadsData);
   } catch (error) {
@@ -270,6 +308,9 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
 
 
 

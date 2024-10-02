@@ -602,6 +602,7 @@ function EmployeeTeamLeads() {
             } else {
                 const currentObject = teamData.find(obj => obj["Company Name"] === cname);
                 setMaturedBooking(currentObject);
+                console.log("currentObject" , currentObject)
                 setDeletedEmployeeStatus(isDeletedEmployeeCompany)
                 if (!isDeletedEmployeeCompany) {
                     console.log("formchal")
@@ -2714,11 +2715,8 @@ function EmployeeTeamLeads() {
             {formOpen && !addFormOpen && maturedBooking && (
                 <>
                     <RedesignedForm
-                        // matured={true}
-                        // companysId={companyId}
-                        // setDataStatus={setdataStatus}
-
-                        setFormOpen={setFormOpen}
+                      
+                      setFormOpen={setFormOpen}
                         companysName={maturedBooking["Company Name"]}
                         companysEmail={maturedBooking["Company Email"]}
                         companyNumber={maturedBooking["Company Number"]}
@@ -2733,7 +2731,7 @@ function EmployeeTeamLeads() {
                 <>
                     {" "}
                     <AddLeadForm
-                        employeeEmail={maturedBooking.email}
+                        employeeEmail={maturedBooking.bdeEmail}
                         newBdeName={maturedBooking.ename}
                         isDeletedEmployeeCompany={deletedEmployeeStatus}
                         setFormOpen={setAddFormOpen}

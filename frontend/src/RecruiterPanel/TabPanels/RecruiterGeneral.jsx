@@ -22,6 +22,11 @@ import RecruiterStatusDropdown from '../ExtraComponents/RecruiterStatusDropdown.
 import RecruiterCallHistory from '../ExtraComponents/RecruiterCallHistory.jsx';
 import RecruiterFilter from '../ExtraComponents/RecruiterFilter.jsx';
 //import FilterableTable from '../Extra-Components/FilterableTable';
+import { MdDelete } from "react-icons/md";
+
+
+
+
 
 function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData, showingFilterIcon, completeEmployeeInfo }) {
     const recruiterUserId = localStorage.getItem("recruiterUserId")
@@ -243,6 +248,22 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
         const sanitizedEmpName = empFullName.replace(/\s+/g, '');
         // Construct the URL and open the file in a new tab
         window.open(`${secretKey}/recruiter/uploads/${empFullName}/${filename}`, "_blank");
+    }
+
+    // --------------------------deleting applicant---------------------
+    const handleDeleteApplicant =async(id)=>{
+        try{
+            setOpenBacdrop(true)
+            const response = await axios.delete(`${secretKey}/recruiter/delete-applicant-recruiter`,{
+                params:{
+                    id:id
+                }
+            })
+        }catch(error){
+            console.log("Error Deleting Employee" ,error.message )
+        }finally{
+            setOpenBacdrop(false)
+        }
     }
     //console.log("noofavaibaledatageneral" , noOfAvailableData)
     //console.log("recruiterDatageneral" , recruiterData)
@@ -678,6 +699,13 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                             </div>
                                         </div>
                                     </th>
+                                    <th>
+                                        <div className='d-flex align-items-center justify-content-center position-relative'>
+                                            <div ref={el => fieldRefs.current['uploadedCv'] = el}>
+                                                Delete Applicant
+                                            </div>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -749,6 +777,16 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                             ) : (
                                                 "No Resume"
                                             )}
+                                        </td>
+                                        <td>
+                                            <button className='td_delete_applicant_btn ml-1'
+                                                onClick={() => {
+
+                                                    handleDeleteApplicant(obj._id)
+                                                }}
+                                            >
+                                                <MdDelete />
+                                            </button>
                                         </td>
 
 

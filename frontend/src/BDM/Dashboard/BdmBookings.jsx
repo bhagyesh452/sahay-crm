@@ -2780,7 +2780,7 @@ function BdmBookings() {
         <>
           {" "}
           <AddLeadForm
-            employeeEmail={currentLeadform.bdeEmail}
+            employeeEmail={currentLeadform.email}
             employeeName={currentLeadform.bdeName}
             setFormOpen={setAddFormOpen}
             companysName={currentLeadform["Company Name"]}

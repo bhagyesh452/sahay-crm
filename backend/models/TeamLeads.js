@@ -25,6 +25,10 @@ const CompanySchema = new mongoose.Schema({
     type:String,
     default:"Not Alloted"
   },
+  bdeEmail:{
+    type:String,
+    default:""
+  },
   AssignDate: {
     type: Date
   }, 
