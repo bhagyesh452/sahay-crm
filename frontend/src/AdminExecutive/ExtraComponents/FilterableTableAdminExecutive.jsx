@@ -37,7 +37,7 @@ const FilterableTableAdminExecutive = ({
 
     useEffect(() => {
         if (filteredData && filteredData.length !== 0) {
-            const values = filteredData.map(item => {
+            const values = dataForFilter.map(item => {
                 // Handle dynamic calculation for 'received Payment'
                 if (filterField === 'receivedPayment') {
                     const payment = (
