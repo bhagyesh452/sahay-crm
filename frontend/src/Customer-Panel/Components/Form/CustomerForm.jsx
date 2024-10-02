@@ -11,35 +11,35 @@ function CustomerForm() {
     const companyName = localStorage.getItem("companyName");
     // console.log("Company name is :", companyName);
 
-    const localStorageKeys = [
-        "companyToken",
-        "companyName",
-        "companyEmail",
-        "companyPhoneNo",
-        "companyPanNo",
-        "companyServices",
-        "lastVisitTimestamp"
-    ];
+    // const localStorageKeys = [
+    //     "companyToken",
+    //     "companyName",
+    //     "companyEmail",
+    //     "companyPhoneNo",
+    //     "companyPanNo",
+    //     "companyServices",
+    //     "lastVisitTimestamp"
+    // ];
 
-    const timestampKey = "lastVisitTimestamp";
-    // const oneHourInMilliseconds = 60000; // Miliseconds for 1 minute.
-    const oneHourInMilliseconds = 3600000;  // Miliseconds for 1 hour. 
+    // const timestampKey = "lastVisitTimestamp";
+    // // const oneHourInMilliseconds = 60000; // Miliseconds for 1 minute.
+    // const oneHourInMilliseconds = 3600000;  // Miliseconds for 1 hour. 
 
-    useEffect(() => {
-        const currentTimestamp = Date.now();
-        const lastVisitTimestamp = localStorage.getItem(timestampKey);
+    // useEffect(() => {
+    //     const currentTimestamp = Date.now();
+    //     const lastVisitTimestamp = localStorage.getItem(timestampKey);
 
-        if (lastVisitTimestamp) {
-            const timeDifference = currentTimestamp - parseInt(lastVisitTimestamp, 10);
-            if (timeDifference > oneHourInMilliseconds) {
-                // More than one hour has passed, remove items from localStorage
-                localStorageKeys.forEach(key => localStorage.removeItem(key));
-            }
-        }
+    //     if (lastVisitTimestamp) {
+    //         const timeDifference = currentTimestamp - parseInt(lastVisitTimestamp, 10);
+    //         if (timeDifference > oneHourInMilliseconds) {
+    //             // More than one hour has passed, remove items from localStorage
+    //             localStorageKeys.forEach(key => localStorage.removeItem(key));
+    //         }
+    //     }
 
-        // Update the timestamp in localStorage
-        localStorage.setItem(timestampKey, currentTimestamp.toString());
-    }, []);
+    //     // Update the timestamp in localStorage
+    //     localStorage.setItem(timestampKey, currentTimestamp.toString());
+    // }, []);
 
     const [companyData, setCompanyData] = useState({});
     const [formSubmitted, setFormSubmitted] = useState(false);

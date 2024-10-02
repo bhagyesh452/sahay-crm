@@ -12,10 +12,8 @@ function EmployeeLayout() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-            const tempData = response.data;
-            const userData = tempData.find((item) => item._id === userId);
-            setData(userData);
+            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            setData(response.data.data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
