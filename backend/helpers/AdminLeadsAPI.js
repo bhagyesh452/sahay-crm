@@ -249,7 +249,7 @@ router.post('/update-ename', async (req, res) => {
         : new Date(); // Default to current date if not provided
 
       // Logging the incoming item for debugging
-      console.log(`Updating company: ${companyName} with data:`, item);
+     
 
       // Update or insert the company
       const updateResult = await CompanyModel.findOneAndUpdate(
@@ -274,7 +274,7 @@ router.post('/update-ename', async (req, res) => {
       );
 
       // After updating/creating the company, log it
-      console.log('Company updated or created:', updateResult);
+      
 
       // Create a new entry in RemarksHistory for this company
       const newRemark = new RemarksHistory({
@@ -290,7 +290,7 @@ router.post('/update-ename', async (req, res) => {
 
       // Save the remarks history entry
       await newRemark.save();
-      console.log(`Remarks history added for company: ${companyName}`);
+     
     });
 
     // Wait for all updates and remarks to complete
@@ -375,7 +375,7 @@ router.post('/exportEmployeeTeamLeads', async (req, res) => {
 
     // Convert leads to CSV and send as response
     const csv = convertToCSVNew(cleanedLeads);
-    console.log('csv', csv);
+
 
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="AssginedTeamLeads_Employee.csv"`);
@@ -455,12 +455,12 @@ router.post('/exportLeads', async (req, res) => {
       }
 
       if (selectedCompanyIncoDate) {
-        console.log(selectedCompanyIncoDate, "yahan chala")
+       
         const selectedDate = new Date(selectedCompanyIncoDate);
         const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
 
         if (isEpochDate) {
-          console.log("good")
+      
           // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
           query["Company Incorporation Date  "] = null;
         } else {
@@ -552,9 +552,7 @@ router.post('/exportLeads', async (req, res) => {
 
 router.post("/manual", async (req, res) => {
   const receivedData = req.body;
-  //console.log("receiveddata" , receivedData)
-
-  // console.log(receivedData);
+ 
 
   try {
     const employee = new CompanyModel(receivedData);
@@ -734,7 +732,7 @@ router.get('/getIds', async (req, res) => {
       const isEpochDate = selectedDate.getTime() === new Date('1970-01-01T00:00:00Z').getTime();
 
       if (isEpochDate) {
-        console.log("good")
+     
         // If the selected date is 01/01/1970, find documents with null "Company Incorporation Date"
         query["Company Incorporation Date  "] = null;
       } else {
@@ -1041,36 +1039,47 @@ router.post("/postAssignData", async (req, res) => {
       await model.bulkWrite(batch);
     }
   };
-  console.log("selectedobjects", selectedObjects)
+
 
   // Bulk operations for CompanyModel
-  const bulkOperationsCompany = selectedObjects.map((obj) => ({
-    updateOne: {
-      filter: { _id: obj._id },
-      update: {
-        $set: {
-          ename: employeeSelection,
-          AssignDate: new Date(),
-          bdmAcceptStatus: "NotForwarded",
-          feedbackPoints: [],
-          multiBdmName: [],
-          Status: "Untouched",
-          isDeletedEmployeeCompany: obj.Status === "Matured",
-          extractedMultipleBde: obj.extractedMultipleBde || []
+  const bulkOperationsCompany = selectedObjects.map((obj) => {
+    const updateOperation = {
+      updateOne: {
+        filter: { _id: obj._id },
+        update: {
+          $set: {
+            ename: employeeSelection,
+            AssignDate: new Date(),
+            bdmAcceptStatus: "NotForwarded",
+            feedbackPoints: [],
+            multiBdmName: [],
+            Status: "Untouched",
+            extractedMultipleBde: obj.extractedMultipleBde || [],
+          },
+          $unset: {
+            bdmName: "",
+            bdeOldStatus: "",
+            bdeForwardDate: "",
+            bdmStatusChangeDate: "",
+            bdmStatusChangeTime: "",
+            bdmRemarks: "",
+            RevertBackAcceptedCompanyRequest: "",
+            Remarks: "",
+          },
         },
-        $unset: {
-          bdmName: "",
-          bdeOldStatus: "",
-          bdeForwardDate: "",
-          bdmStatusChangeDate: "",
-          bdmStatusChangeTime: "",
-          bdmRemarks: "",
-          RevertBackAcceptedCompanyRequest: "",
-          Remarks: ""
-        }
-      }
+      },
+    };
+  
+    // Conditionally set `isDeletedEmployeeCompany` only if `obj.Status` is "Matured"
+    if (obj.Status === "Matured") {
+      updateOperation.updateOne.update.$set.isDeletedEmployeeCompany = true;
     }
-  }));
+  
+    return updateOperation;
+  });
+  
+
+
 
   // Bulk operations for TeamLeadsModel
   const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
@@ -1143,7 +1152,7 @@ router.post("/postAssignData", async (req, res) => {
     });
 
     await Promise.all(updatePromises);
-    console.log("Assigned data is :", updatePromises);
+  
     res.json({ message: "Data posted successfully" });
   } catch (error) {
     console.error("Error posting assign data:", error);
@@ -1195,6 +1204,7 @@ router.post("/postExtractedData", async (req, res) => {
       }
     }
   }));
+  console.log("bulkOperationsCompany", bulkOperationsCompany);
   const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
     deleteOne: {
       filter: { _id: obj._id }
@@ -1318,7 +1328,7 @@ router.post("/postExtractedData", async (req, res) => {
 // });
 router.delete("/deleteAdminSelectedLeads", async (req, res) => {
   const { selectedRows } = req.body;
-  console.log("selectedrows", selectedRows);
+ 
 
   try {
     // Step 1: Find the documents to be deleted

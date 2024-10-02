@@ -1382,7 +1382,7 @@ router.post(
             multiBdmName.push(newData.bdmName);
             await CompanyModel.findByIdAndUpdate(companyData._id, {
               multiBdmName: multiBdmName,
-              Status: "Matured"
+              Status: "Matured",
             });
           }
         }

@@ -2715,11 +2715,8 @@ function EmployeeTeamLeads() {
             {formOpen && !addFormOpen && maturedBooking && (
                 <>
                     <RedesignedForm
-                        // matured={true}
-                        // companysId={companyId}
-                        // setDataStatus={setdataStatus}
-
-                        setFormOpen={setFormOpen}
+                      
+                      setFormOpen={setFormOpen}
                         companysName={maturedBooking["Company Name"]}
                         companysEmail={maturedBooking["Company Email"]}
                         companyNumber={maturedBooking["Company Number"]}
