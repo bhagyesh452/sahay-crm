@@ -291,7 +291,7 @@ router.post('/addAttendance', async (req, res) => {
         isAddedManually
     } = req.body;
     const reason = reasonValue ? reasonValue : "";
-    console.log("req.body", req.body)
+    //console.log("req.body", req.body)
     try {
         const selectedDate = new Date(attendanceDate);
         const year = selectedDate.getFullYear();
@@ -453,7 +453,7 @@ router.post('/addAttendance', async (req, res) => {
 
         // Save the updated attendance record
         const savedAttendance = await attendance.save();
-        console.log("savedAttendance",savedAttendance)
+        //console.log("savedAttendance",savedAttendance)
         res.status(200).json({ message: 'Attendance added/updated successfully', data: savedAttendance });
     } catch (error) {
         console.error('Error adding/updating attendance:', error);

@@ -259,7 +259,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       ename: { $in: enames },
     }).select({ email: 1, ename: 1 });
 
-    console.log("ename", employee);
+    //console.log("ename", employee);
 
     // Create a lookup object for "Company Name" to isDeletedEmployeeCompany mapping
     const companyLookup = {};
@@ -276,7 +276,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       }
     });
 
-    console.log("companylookup", companyLookup);
+    //console.log("companylookup", companyLookup);
 
     // Update team leads data based on lookup, add isDeletedEmployeeCompany field if it doesn't exist
     for (const lead of teamLeadsData) {
@@ -300,7 +300,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       );
     }
 
-    console.log("teamleads", teamLeadsData);
+    //console.log("teamleads", teamLeadsData);
 
     res.status(200).send(teamLeadsData);
   } catch (error) {
