@@ -39,7 +39,7 @@ function BusinessCardView({ employeeInformation }) {
                                 <IoIosPerson />
                             </div>
                             <div className='BusinessCardheaderName'>
-                                <h3 className='m-0'>{employeeInformation ? employeeInformation.empFullName : ""}</h3>
+                                <h3 className='m-0'>{employeeInformation ? employeeInformation.ename : ""}</h3>
                                 <p className='m-0'>{employeeInformation ? employeeInformation.newDesignation : ""}</p>
                             </div>
                         </div>
