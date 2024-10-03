@@ -375,6 +375,8 @@ const RecruiterStatusDropdown = ({
                         return "need_to_call";
                     case "Junk":
                         return "need_to_call";
+                    case "Call Done":
+                        return "cdbp-status";
                     case "Call Busy":
                         return "inprogress-status";
                     default:
@@ -403,6 +405,10 @@ const RecruiterStatusDropdown = ({
                         return "need_to_call";
                     case "Not Looking For Job":
                         return "cdbp-status";
+                    case "Not Looking For Job":
+                        return "cdbp-status";
+                    case "Junk":
+                        return "need_to_call";
                     default:
                         return "";
                 }
@@ -576,6 +582,24 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
+                                onClick={() => handleStatusChange("Call Busy", "need_to_call")}
+                                href="#"
+                            >
+                                Call Busy
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
+                                onClick={() => handleStatusChange("Call Done", "cdbp-status")}
+                                href="#"
+                            >
+                                Call Done
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
                                 onClick={() => handleStatusChange("Disqualified", "clnt_no_repond_status")}
                                 href="#"
                             >
@@ -673,6 +697,24 @@ const RecruiterStatusDropdown = ({
                                 href="#"
                             >
                                 Disqualified
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
+                                onClick={() => handleStatusChange("Not Looking For Job", "cdbp-status")}
+                                href="#"
+                            >
+                                Not Looking For Job
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                className="dropdown-item"
+                                onClick={() => handleStatusChange("Junk", "need_to_call")}
+                                href="#"
+                            >
+                                Junk
                             </a>
                         </li>
                         <li>

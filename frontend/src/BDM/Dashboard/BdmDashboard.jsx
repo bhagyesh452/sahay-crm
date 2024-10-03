@@ -67,14 +67,24 @@ function BdmDashboard() {
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
       setData(userData);
-      setForwardEmployeeData(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === userData.branchOffice))
-      setForwardEmployeeDataFilter(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === userData.branchOffice))
-      setForwardEmployeeDataNew(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === userData.branchOffice))
+      setForwardEmployeeData(tempData.filter((employee) => (employee.designation === "Sales Executive" || 
+        employee.designation === "Sales Manager") && 
+        employee.branchOffice === userData.branchOffice && 
+        !excludedBDENames.includes(employee.ename)))
+      setForwardEmployeeDataFilter(tempData.filter((employee) => (employee.designation === "Sales Executive" || 
+        employee.designation === "Sales Manager") && 
+        employee.branchOffice === userData.branchOffice &&
+        !excludedBDENames.includes(employee.ename)))
+      setForwardEmployeeDataNew(tempData.filter((employee) => (employee.designation === "Sales Executive" || 
+        employee.designation === "Sales Manager") && 
+        employee.branchOffice === userData.branchOffice &&
+        !excludedBDENames.includes(employee.ename)))
       //setmoreFilteredData(userData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
+  console.log("forwarde" , forwardEmployeeData)
 
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
@@ -88,17 +98,18 @@ function BdmDashboard() {
       }
       const data = await response.json();
       const userData = data.find((item) => item._id === userId);
-  
+
       if (!userData) {
         throw new Error('User data not found');
       }
-  
+
       const filteredData = data.filter(
         (employee) =>
           (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") &&
-          employee.branchOffice === userData.branchOffice
+          employee.branchOffice === userData.branchOffice &&
+         !excludedBDENames.includes(employee.ename)
       );
-  
+
       setEmployeeData(filteredData);
       setEmployeeDataFilter(filteredData);
       setEmployeeDataNew(filteredData);
@@ -106,7 +117,7 @@ function BdmDashboard() {
       console.error('Error Fetching Employee Data:', error);
     }
   };
-  
+
 
   useEffect(() => {
     fetchData()
@@ -172,9 +183,9 @@ function BdmDashboard() {
     fetch(`${secretKey}/company-data/leads`)
       .then((response) => response.json())
       .then((data) => {
-        setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
-        setCompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
-        setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
+        setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted" && obj.ename !== "Vishnu Suthar"));
+        setCompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted" && obj.ename !== "Vishnu Suthar"));
+        setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted" && obj.ename !== "Vishnu Suthar"));
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -291,22 +302,29 @@ function BdmDashboard() {
 
   const [redesignedData, setRedesignedData] = useState([]);
   const [permanentFormData, setPermanentFormData] = useState([]);
-
+  const excludedBDENames = [
+    "Vishnu Suthar",
+    "Vandit Shah",
+    "Khushi Gandhi",
+    "Yashesh Gajjar",
+    "Ravi Prajapati"
+  ];
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
         `${secretKey}/bookings/redesigned-final-leadData`
       );
       const bookingsData = response.data;
-      const getBDEnames = new Set();
-      bookingsData.forEach((obj) => {
-        // Check if the bdeName is already in the Set
 
-        if (!getBDEnames.has(obj.bdeName)) {
-          // If not, add it to the Set and push the object to the final array
+      const getBDEnames = new Set();
+
+      bookingsData.forEach((obj) => {
+        // If the bdeName is not in the excluded list, add it to the Set
+        if (!excludedBDENames.includes(obj.bdeName)) {
           getBDEnames.add(obj.bdeName);
         }
       });
+
       setUniqueBDE(getBDEnames);
       setRedesignedData(bookingsData);
       setPermanentFormData(bookingsData);
@@ -314,6 +332,7 @@ function BdmDashboard() {
       console.log("Error Fetching Bookings Data", error);
     }
   };
+  //console.log("unique", uniqueBDE)
 
   const [selectedMonthOption, setSelectedMonthOption] = useState("")
   const [selectedMonthOptionForBdm, setSelectedMonthOptionForBdm] = useState("")
@@ -1367,6 +1386,8 @@ function BdmDashboard() {
     uniqueBDE.size !== 0 &&
     employeeData.filter((obj) => Array.from(uniqueBDE).includes(obj.ename));
 
+  //console.log("uns", uniqueBDEobjects)
+
   const functionGetAmount = (object) => {
     if (object.targetDetails.length !== 0) {
       const foundObject = object.targetDetails.find(
@@ -1817,7 +1838,7 @@ function BdmDashboard() {
     return lastBookingDate ? formatDateFinal(lastBookingDate) : "No Bookings";
   }
 
-  
+
 
   const handleFilterFollowDataTodayRecievedCase = () => {
 
@@ -2182,202 +2203,202 @@ function BdmDashboard() {
     }
 
   };
- // ----------------------------sorting functions---------------------------------
- const [finalThisMonthBookingData, setFinalThisMonthBookingData] = useState([])
+  // ----------------------------sorting functions---------------------------------
+  const [finalThisMonthBookingData, setFinalThisMonthBookingData] = useState([])
 
- const handleSortMaturedCasesThisMonthBooking = (sortByForwarded) => {
-  console.log(sortByForwarded, "case");
-  setNewSortType((prevData) => ({
+  const handleSortMaturedCasesThisMonthBooking = (sortByForwarded) => {
+    //console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
       ...prevData,
       recievedcase:
-          prevData.maturedcase === 'ascending'
-              ? 'descending'
-              : prevData.maturedcase === 'descending'
-                  ? 'none'
-                  : 'ascending',
-  }));
+        prevData.maturedcase === 'ascending'
+          ? 'descending'
+          : prevData.maturedcase === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
 
-  switch (sortByForwarded) {
+    switch (sortByForwarded) {
       case 'ascending':
-          //console.log("yahan chala ascending");
-          const companyDataAscending = {};
-          employeeData.sort((a, b) => {
-              const countA = parseInt(functionOnlyCalculateMatured(a.ename)) || 0;
-              const countB = parseInt(functionOnlyCalculateMatured(b.ename)) || 0;
-              return countA - countB;
-          });
-          break; // Add break statement here
+        //console.log("yahan chala ascending");
+        const companyDataAscending = {};
+        employeeData.sort((a, b) => {
+          const countA = parseInt(functionOnlyCalculateMatured(a.ename)) || 0;
+          const countB = parseInt(functionOnlyCalculateMatured(b.ename)) || 0;
+          return countA - countB;
+        });
+        break; // Add break statement here
 
       case 'descending':
-          //console.log("yahan chala descending");
-          const companyDataDescending = {};
-         
-          employeeData.sort((a, b) => {
-              const countA = functionOnlyCalculateMatured(a.ename) || 0;
-              const countB = functionOnlyCalculateMatured(b.ename) || 0;
-              return countB - countA;
-          });
-          break; // Add break statement here
+        //console.log("yahan chala descending");
+        const companyDataDescending = {};
+
+        employeeData.sort((a, b) => {
+          const countA = functionOnlyCalculateMatured(a.ename) || 0;
+          const countB = functionOnlyCalculateMatured(b.ename) || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
 
       case "none":
-          console.log("yahan chala none");
-          if (finalThisMonthBookingData.length > 0) {
-              // Restore to previous state
-              setEmployeeData(finalThisMonthBookingData);
-          }
-          //fetchEmployeeInfo()
-          break; // Add break statement here
+        //console.log("yahan chala none");
+        if (finalThisMonthBookingData.length > 0) {
+          // Restore to previous state
+          setEmployeeData(finalThisMonthBookingData);
+        }
+        //fetchEmployeeInfo()
+        break; // Add break statement here
       default:
-          break;
-  }
-};
-const handleSortAchievedAmount = (sortByForwarded) => {
-  console.log(sortByForwarded, "case");
-  setNewSortType((prevData) => ({
+        break;
+    }
+  };
+  const handleSortAchievedAmount = (sortByForwarded) => {
+    //(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
       ...prevData,
       achievedamount:
-          prevData.achievedamount === 'ascending'
-              ? 'descending'
-              : prevData.achievedamount === 'descending'
-                  ? 'none'
-                  : 'ascending',
-  }));
+        prevData.achievedamount === 'ascending'
+          ? 'descending'
+          : prevData.achievedamount === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
 
-  switch (sortByForwarded) {
+    switch (sortByForwarded) {
       case 'ascending':
-          //console.log("yahan chala ascending");
-          const companyDataAscending = {};
-          employeeData.sort((a, b) => {
-              const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
-              console.log(countA, "a")
-              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
-              console.log(countB, "b")
-              return countA - countB;
-          });
-          break; // Add break statement here
+        //console.log("yahan chala ascending");
+        const companyDataAscending = {};
+        employeeData.sort((a, b) => {
+          const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
+          //console.log(countA, "a")
+          const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+          //console.log(countB, "b")
+          return countA - countB;
+        });
+        break; // Add break statement here
 
       case 'descending':
-          //console.log("yahan chala descending");
-          const companyDataDescending = {};
-          employeeData.sort((a, b) => {
-              const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
-              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
-              return countB - countA;
-          });
-          break; // Add break statement here
+        //console.log("yahan chala descending");
+        const companyDataDescending = {};
+        employeeData.sort((a, b) => {
+          const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) || 0;
+          const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
 
       case "none":
-          //console.log("yahan chala none");
-          if (finalThisMonthBookingData.length > 0) {
-              // Restore to previous state
-              setEmployeeData(finalThisMonthBookingData);
-          }
-          break; // Add break statement here
+        //console.log("yahan chala none");
+        if (finalThisMonthBookingData.length > 0) {
+          // Restore to previous state
+          setEmployeeData(finalThisMonthBookingData);
+        }
+        break; // Add break statement here
       default:
-          break;
-  }
-};
-const handleSortTargetAmount = (sortByForwarded) => {
-  console.log(sortByForwarded, "case");
-  setNewSortType((prevData) => ({
+        break;
+    }
+  };
+  const handleSortTargetAmount = (sortByForwarded) => {
+    //console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
       ...prevData,
       targetamount:
-          prevData.targetamount === 'ascending'
-              ? 'descending'
-              : prevData.targetamount === 'descending'
-                  ? 'none'
-                  : 'ascending',
-  }));
+        prevData.targetamount === 'ascending'
+          ? 'descending'
+          : prevData.targetamount === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
 
-  switch (sortByForwarded) {
+    switch (sortByForwarded) {
       case 'ascending':
-          //console.log("yahan chala ascending");
-          const companyDataAscending = {};
-          employeeData.sort((a, b) => {
-              const countA = parseInt(functionGetOnlyAmount(a)) || 0;
-              console.log(countA, "a")
-              const countB = parseInt(functionGetOnlyAmount(b)) || 0;
-              console.log(countB, "b")
-              return countA - countB;
-          });
-          break; // Add break statement here
+        //console.log("yahan chala ascending");
+        const companyDataAscending = {};
+        employeeData.sort((a, b) => {
+          const countA = parseInt(functionGetOnlyAmount(a)) || 0;
+          //console.log(countA, "a")
+          const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+          //console.log(countB, "b")
+          return countA - countB;
+        });
+        break; // Add break statement here
 
       case 'descending':
-          //console.log("yahan chala descending");
-          const companyDataDescending = {};
-          
-          employeeData.sort((a, b) => {
-              const countA = parseInt(functionGetOnlyAmount(a)) || 0;
-              const countB = parseInt(functionGetOnlyAmount(b)) || 0;
-              return countB - countA;
-          });
-          break; // Add break statement here
+        //console.log("yahan chala descending");
+        const companyDataDescending = {};
+
+        employeeData.sort((a, b) => {
+          const countA = parseInt(functionGetOnlyAmount(a)) || 0;
+          const countB = parseInt(functionGetOnlyAmount(b)) || 0;
+          return countB - countA;
+        });
+        break; // Add break statement here
 
       case "none":
-          //console.log("yahan chala none");
-          if (finalThisMonthBookingData.length > 0) {
-              // Restore to previous state
-              setEmployeeData(finalThisMonthBookingData);
-          }
-          break; // Add break statement here
+        //console.log("yahan chala none");
+        if (finalThisMonthBookingData.length > 0) {
+          // Restore to previous state
+          setEmployeeData(finalThisMonthBookingData);
+        }
+        break; // Add break statement here
       default:
-          break;
-  }
-};
-const handleSortRatio = (sortByForwarded) => {
-  console.log(sortByForwarded, "case");
-  setNewSortType((prevData) => ({
+        break;
+    }
+  };
+  const handleSortRatio = (sortByForwarded) => {
+    //console.log(sortByForwarded, "case");
+    setNewSortType((prevData) => ({
       ...prevData,
       targetratio:
-          prevData.targetratio === 'ascending'
-              ? 'descending'
-              : prevData.targetratio === 'descending'
-                  ? 'none'
-                  : 'ascending',
-  }));
+        prevData.targetratio === 'ascending'
+          ? 'descending'
+          : prevData.targetratio === 'descending'
+            ? 'none'
+            : 'ascending',
+    }));
 
-  switch (sortByForwarded) {
+    switch (sortByForwarded) {
       case 'ascending':
-          //console.log("yahan chala ascending");
-          const companyDataAscending = {};
-          
-          employeeData.sort((a, b) => {
-              const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
+        //console.log("yahan chala ascending");
+        const companyDataAscending = {};
 
-              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
+        employeeData.sort((a, b) => {
+          const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
 
-              return countA - countB;
-          });
-          break; // Add break statement here
+          const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
+
+          return countA - countB;
+        });
+        break; // Add break statement here
 
       case 'descending':
-          //console.log("yahan chala descending");
-          const companyDataDescending = {};
-         
+        //console.log("yahan chala descending");
+        const companyDataDescending = {};
 
-          employeeData.sort((a, b) => {
-              const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
 
-              const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
+        employeeData.sort((a, b) => {
+          const countA = parseInt(functionCalculateOnlyAchieved(a.ename)) / parseInt(functionGetOnlyAmount(a)) || 0;
 
-              return countB - countA;
-          });
-          break; // Add break statement here
+          const countB = parseInt(functionCalculateOnlyAchieved(b.ename)) / parseInt(functionGetOnlyAmount(b)) || 0;
+
+          return countB - countA;
+        });
+        break; // Add break statement here
 
       case "none":
-          //console.log("yahan chala none");
-          if (finalThisMonthBookingData.length > 0) {
-              // Restore to previous state
-              setEmployeeData(finalThisMonthBookingData);
-          }
-          break; // Add break statement here
+        //console.log("yahan chala none");
+        if (finalThisMonthBookingData.length > 0) {
+          // Restore to previous state
+          setEmployeeData(finalThisMonthBookingData);
+        }
+        break; // Add break statement here
       default:
-          break;
-  }
-};
-useEffect(() => {
-  setFinalThisMonthBookingData([...employeeData]); // Store original state of employeeData
-}, [employeeData]);
+        break;
+    }
+  };
+  useEffect(() => {
+    setFinalThisMonthBookingData([...employeeData]); // Store original state of employeeData
+  }, [employeeData]);
 
   return (
     <div>
@@ -2943,7 +2964,8 @@ useEffect(() => {
                             .filter(
                               (item) =>
                                 (item.designation ===
-                                  "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === data.branchOffice &&
+                                  "Sales Executive" || item.designation === "Sales Manager") &&
+                                !excludedBDENames.includes(item.ename) && // Exclude specific names item.branchOffice === data.branchOffice &&
                                 item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
                             )
                             .map((obj, index) => (
@@ -3055,7 +3077,7 @@ useEffect(() => {
                   className="dashboard-title"
                 >
                   <h2 style={{ marginBottom: "5px" }}>
-                    Employees Forwaded Data Report
+                    Employees Forwarded Data Report
                   </h2>
                 </div>
               </div>
@@ -3830,7 +3852,7 @@ useEffect(() => {
       </div>
 
       {/* -----------------employess interested leads---------------------- */}
-      <BDMInterestedLeadsReport/>
+      <BDMInterestedLeadsReport />
     </div>
   )
 }

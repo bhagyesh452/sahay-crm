@@ -311,22 +311,22 @@ router.get('/recruiter-complete', async (req, res) => {
 
 router.get('/recruiter-data-dashboard', async (req, res) => {
   try {
-    const { search, page = 1, limit = 500, activeTab } = req.query; // Extract search, page, and limit from request
+
     let response;
-    
-      response = await RecruitmentModel.find().lean()
-        
+
+    response = await RecruitmentModel.find().lean()
+
 
     //console.log("response" , response)
 
-    const totalDocuments = await RecruitmentModel.countDocuments(query);
+    const totalDocuments = await RecruitmentModel.countDocuments();
 
-    const totalDocumentsGeneral = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "General" });
-    const totalDocumentsUnderReview = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "UnderReview" });
-    const totalDocumentsOnHold = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "On Hold" });
-    const totalDocumentsDisqualified = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Disqualified" });
-    const totalDocumentsRejected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Rejected" });
-    const totalDocumentsSelected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Selected" });
+    const totalDocumentsGeneral = await RecruitmentModel.countDocuments({ mainCategoryStatus: "General" });
+    const totalDocumentsUnderReview = await RecruitmentModel.countDocuments({ mainCategoryStatus: "UnderReview" });
+    const totalDocumentsOnHold = await RecruitmentModel.countDocuments({ mainCategoryStatus: "On Hold" });
+    const totalDocumentsDisqualified = await RecruitmentModel.countDocuments({ mainCategoryStatus: "Disqualified" });
+    const totalDocumentsRejected = await RecruitmentModel.countDocuments({ mainCategoryStatus: "Rejected" });
+    const totalDocumentsSelected = await RecruitmentModel.countDocuments({ mainCategoryStatus: "Selected" });
     //const totalDocuments = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
 
     res.status(200).json({
@@ -338,9 +338,7 @@ router.get('/recruiter-data-dashboard', async (req, res) => {
       totalDocumentsDisqualified,
       totalDocumentsRejected,
       totalDocumentsSelected,
-      //totalDocumentsApproved,
-      currentPage: parseInt(page),
-      totalPages: Math.ceil(totalDocuments / limit)
+      totalPages: Math.ceil(totalDocuments / 500)
     });
   } catch (error) {
     console.log("Error fetching data", error);
@@ -712,20 +710,33 @@ router.post(`/update-disqualified-recuitment/`, async (req, res) => {
 
 router.post(`/post-save-interviewdate-recruiter/`, async (req, res) => {
   const { empName, empEmail, value } = req.body;
-  //console.log("date", value);
-  //console.log("dscStatus" ,email ,  currentCompanyName , currentServiceName)
   const socketIO = req.io;
+
+  // New interview object to push
+  const newInterview = {
+    interViewDate: new Date(value),
+    updatedOn: new Date()
+  };
+
   try {
+    // Find and update the recruitment document
     const company = await RecruitmentModel.findOneAndUpdate(
       {
         empFullName: empName,
         personal_email: empEmail
       },
       {
-        interViewDate: new Date(value),
+        // Set new interview date and push to the interview array
+        $set: {
+          interViewDate: new Date(value)
+        },
+        $push: {
+          interViewDateArray: newInterview
+        }
       },
-      { new: true }
+      { new: true } // Return the updated document
     );
+
     if (!company) {
       console.error("Failed to save the updated document");
       return res
@@ -741,6 +752,7 @@ router.post(`/post-save-interviewdate-recruiter/`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 router.post("/post-remarks-for-recruiter", async (req, res) => {
   const { empName, empEmail, changeRemarks, updatedOn } = req.body;

@@ -3,7 +3,7 @@ import { LuHistory } from "react-icons/lu";
 import ClipLoader from "react-spinners/ClipLoader";
 import Nodata from '../../DataManager/Components/Nodata/Nodata';
 
-function RecruiterApplicantReport({ empName, recruiterData }) {
+function RecruiterInterviewReport({ empName, recruiterData }) {
     const [isLoading, setisLoading] = useState(false);
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -16,43 +16,20 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
     const [groupedData, setGroupedData] = useState([]);
 
     useEffect(() => {
-        // Group data by `fillingDate` and count statuses
-        const groupedByDate = recruiterData.reduce((acc, applicant) => {
-            const date = new Date(applicant.fillingDate).toLocaleDateString(); // Format date
-            if (!acc[date]) {
-                acc[date] = {
-                    General: 0,
-                    UnderReview: 0,
-                   "On Hold": 0,
-                    Disqualified: 0,
-                    Rejected: 0,
-                    Selected: 0,
-                };
+        // Filter applicants whose status is "Selected" and joining date is in the future
+        const upcomingJoinees = recruiterData.filter(applicant => {
+            if (
+                applicant.subCategoryStatus === "Interview Scheduled" &&
+                new Date(applicant.interViewDate) > new Date()
+            ) {
+                return true;
             }
+            return false;
+        });
 
-            // Increase the count for the corresponding status
-            if (acc[date][applicant.mainCategoryStatus] !== undefined) {
-                acc[date][applicant.mainCategoryStatus] += 1;
-            }
-
-            return acc;
-        }, {});
-
-        // Convert the object to an array to make it easier for mapping
-        const dataAsArray = Object.keys(groupedByDate).map((date, index) => ({
-            date,
-            ...groupedByDate[date],
-            total:
-                groupedByDate[date].General +
-                groupedByDate[date].UnderReview +
-                groupedByDate[date]["On Hold"] +
-                groupedByDate[date].Disqualified +
-                groupedByDate[date].Rejected +
-                groupedByDate[date].Selected,
-        }));
-
-        setGroupedData(dataAsArray);
+        setGroupedData(upcomingJoinees);
     }, [recruiterData]);
+
 
     console.log("recruiterData" , recruiterData)
     console.log("groupedData" , groupedData)
@@ -66,7 +43,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
 
                         <div className="dashboard-title">
                             <h2 className="m-0 pl-1">
-                                Applicants Report
+                                Interview Schedule Report
                             </h2>
                         </div>
                     </div>
@@ -76,14 +53,13 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                 <thead className="recruiter-dash-tbl-thead">
                                     <tr  >
                                         <th>SR.NO</th>
+                                        <th>Application Name</th>
+                                        <th>Number</th>
+                                        <th>Email Id</th>
+                                        <th>Applied For</th>
+                                        <th>Interview On</th>
+                                        <th>Interview Status</th>
                                         <th>Application Date</th>
-                                        <th>General</th>
-                                        <th>Under Review</th>
-                                        <th>On Hold</th>
-                                        <th>Disqualified</th>
-                                        <th>Rejected</th>
-                                        <th>Selected</th>
-                                        <th>Total</th>
                                     </tr>
                                 </thead>
                                 {isLoading ? (
@@ -110,14 +86,13 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     <>
                                                         <tr  >
                                                             <th>{index + 1}</th>
-                                                            <th>{formatDatePro(obj.date)}</th>
-                                                            <th>{obj.General}</th>
-                                                            <th>{obj.UnderReview}</th>
-                                                            <th>{obj["On Hold"]}</th>
-                                                            <th>{obj.Disqualified}</th>
-                                                            <th>{obj.Selected}</th>
-                                                            <th>{obj.Rejected}</th>
-                                                            <th>{obj.total}</th>
+                                                            <th>{obj.empFullName}</th>
+                                                            <th>{obj.personal_number}</th>
+                                                            <th>{obj.personal_email}</th>
+                                                            <th>{obj.appliedFor ? obj.appliedFor : "-"}</th>
+                                                            <th>{obj.interViewDate ? formatDatePro(obj.interViewDate) : "-"}</th>
+                                                            <th>{obj.interViewStatus ? obj.interViewStatus : "-"}</th>
+                                                            <th>{formatDatePro(obj.fillingDate)}</th>
                                                             
                                                         </tr>
                                                     </>
@@ -144,4 +119,4 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
     );
 }
 
-export default RecruiterApplicantReport;
+export default RecruiterInterviewReport;

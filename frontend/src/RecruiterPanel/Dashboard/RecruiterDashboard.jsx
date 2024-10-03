@@ -4,6 +4,9 @@ import RecruiterHeader from "../Components/RecuiterHeader";
 import RecuiterNavbar from "../Components/RecuiterNavbar";
 import io from 'socket.io-client';
 import RecruiterApplicantReport from "./RecruiterApplicantReport";
+import RecruiterSelectdReport from "./RecruiterSelectedReport";
+import RecruiterInterviewDate from "../ExtraComponents/RecruiterInterviewDate";
+import RecruiterInterviewReport from "./RecruiterInterviewReport";
 
 
 function RecruiterDashboard() {
@@ -77,8 +80,14 @@ function RecruiterDashboard() {
       console.error("Error fetching data:", error.message);
     }
   };
+  function formatDatePro(inputDate) {
+    const date = new Date(inputDate);
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+  }
 
-  
 
   const fetchRMServicesData = async (searchQuery = "", page = 1) => {
     try {
@@ -96,7 +105,7 @@ function RecruiterDashboard() {
 
 
       } = response.data;
-      // console.log("response", response.data)
+      console.log("response", response.data)
 
       // If it's a search query, replace the data; otherwise, append for pagination
       if (page === 1) {
@@ -150,11 +159,13 @@ function RecruiterDashboard() {
         gender={employeeData.gender}
         designation={employeeData.newDesignation} />
       <RecuiterNavbar recruiterUserId={recruiterUserId} />
-      {/* --------------------------------------APPLICANT REPORT TABLE-------------------------------------- */}
+      {/* --------------------------------------TABLE-------------------------------------- */}
       <RecruiterApplicantReport
         recruiterData={rmServicesData} />
-
-
+      <RecruiterSelectdReport
+        recruiterData={rmServicesData} />
+      <RecruiterInterviewReport
+        recruiterData={rmServicesData} />
 
 
     </div>

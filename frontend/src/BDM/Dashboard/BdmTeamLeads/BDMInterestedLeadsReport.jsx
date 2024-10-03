@@ -62,7 +62,7 @@ function BDMInterestedLeadsReport() {
             const userData = tempData.find((item) => item._id === userId);
             // const newdata = response.data
             const deletedData = response3.data;
-            console.log("userData", userData)
+            //console.log("userData", userData)
             // Filter by designations
             const filteredData = tempData.filter(employee =>
                 employee.designation === ("Sales Executive" || employee.designation === "Sales Manager") &&
@@ -353,8 +353,8 @@ function BDMInterestedLeadsReport() {
     };
 
 
-    console.log("forwardedEmp", forwardEmployeeData)
-    console.log("totalfiletred", totalFilteredCompanies)
+    //console.log("forwardedEmp", forwardEmployeeData)
+    //console.log("totalfiletred", totalFilteredCompanies)
 
     return (
         <div>
