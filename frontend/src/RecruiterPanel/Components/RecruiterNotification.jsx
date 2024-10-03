@@ -41,7 +41,6 @@ const fetchEmployeeData =async()=>{
   
   try{
     const response = await axios.get(`${secretKey}/employee/einfo`)
-    console.log(response.data)
     const data = response.data.filter(item=>item.ename === name)
     setEmployeeData(data)
 

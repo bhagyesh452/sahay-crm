@@ -78,16 +78,12 @@ function RecruiterDashboard() {
     }
   };
 
+  
+
   const fetchRMServicesData = async (searchQuery = "", page = 1) => {
     try {
       setCurrentDataLoading(true);
-      const response = await axios.get(`${secretKey}/recruiter/recruiter-data`, {
-        params: {
-          search: searchQuery,
-          page,
-          activeTab: activeTab
-        }
-      });
+      const response = await axios.get(`${secretKey}/recruiter/recruiter-data-dashboard`);
       const {
         data,
         totalPages,

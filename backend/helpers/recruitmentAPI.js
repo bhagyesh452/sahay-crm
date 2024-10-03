@@ -308,6 +308,45 @@ router.get('/recruiter-complete', async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
+
+router.get('/recruiter-data-dashboard', async (req, res) => {
+  try {
+    const { search, page = 1, limit = 500, activeTab } = req.query; // Extract search, page, and limit from request
+    let response;
+    
+      response = await RecruitmentModel.find().lean()
+        
+
+    //console.log("response" , response)
+
+    const totalDocuments = await RecruitmentModel.countDocuments(query);
+
+    const totalDocumentsGeneral = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "General" });
+    const totalDocumentsUnderReview = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "UnderReview" });
+    const totalDocumentsOnHold = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "On Hold" });
+    const totalDocumentsDisqualified = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Disqualified" });
+    const totalDocumentsRejected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Rejected" });
+    const totalDocumentsSelected = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Selected" });
+    //const totalDocuments = await RecruitmentModel.countDocuments({ ...query, mainCategoryStatus: "Approved" });
+
+    res.status(200).json({
+      data: response,
+      totalDocuments,
+      totalDocumentsGeneral,
+      totalDocumentsUnderReview,
+      totalDocumentsOnHold,
+      totalDocumentsDisqualified,
+      totalDocumentsRejected,
+      totalDocumentsSelected,
+      //totalDocumentsApproved,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalDocuments / limit)
+    });
+  } catch (error) {
+    console.log("Error fetching data", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
 router.get('/recruiter-data', async (req, res) => {
   try {
     const { search, page = 1, limit = 5000, activeTab, companyNames, serviceNames } = req.query; // Extract companyNames and serviceNames
