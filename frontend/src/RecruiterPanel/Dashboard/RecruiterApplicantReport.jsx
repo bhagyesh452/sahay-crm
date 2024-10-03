@@ -76,7 +76,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                 <thead className="recruiter-dash-tbl-thead">
                                     <tr  >
                                         <th>SR.NO</th>
-                                        <th>Application Date</th>
+                                        <th>Applicant Date</th>
                                         <th>General</th>
                                         <th>Under Review</th>
                                         <th>On Hold</th>
