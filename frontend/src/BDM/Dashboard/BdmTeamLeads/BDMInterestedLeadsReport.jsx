@@ -51,7 +51,8 @@ function BDMInterestedLeadsReport() {
         "Vandit Shah",
         "Khushi Gandhi",
         "Yashesh Gajjar",
-        "Ravi Prajapati"
+        "Ravi Prajapati",
+        "Yash Goswami"
       ];
     useEffect(() => {
         document.title = `Floor-Manager-Sahay-CRM`;

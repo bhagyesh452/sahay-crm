@@ -19,7 +19,7 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
         // Filter applicants whose status is "Selected" and joining date is in the future
         const upcomingJoinees = recruiterData.filter(applicant => {
             if (
-                applicant.subCategoryStatus === "Interview Scheduled" &&
+                applicant.subCategoryStatus === "InterView Scheduled" &&
                 new Date(applicant.interViewDate) > new Date()
             ) {
                 return true;

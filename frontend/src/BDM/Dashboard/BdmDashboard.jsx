@@ -307,7 +307,8 @@ function BdmDashboard() {
     "Vandit Shah",
     "Khushi Gandhi",
     "Yashesh Gajjar",
-    "Ravi Prajapati"
+    "Ravi Prajapati",
+    "Yash Goswami"
   ];
   const fetchRedesignedBookings = async () => {
     try {

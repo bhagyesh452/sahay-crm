@@ -105,7 +105,7 @@ function RecruiterDashboard() {
 
 
       } = response.data;
-      console.log("response", response.data)
+     
 
       // If it's a search query, replace the data; otherwise, append for pagination
       if (page === 1) {
@@ -146,11 +146,6 @@ function RecruiterDashboard() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const setNoOfData = (number) => {
-    //console.log("number", number)
-    setnoOfFilteredData(number)
-  }
   return (
     <div className="admin-dashboard">
       <RecruiterHeader id={employeeData._id}

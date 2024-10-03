@@ -59,6 +59,7 @@ function RecruiterSelectdReport({ empName, recruiterData }) {
                                         <th>Designation</th>
                                         <th>Offered Salary</th>
                                         <th>First Salary Condition</th>
+                                        <th>Date Of Joining</th>
                                         <th>Branch Preference</th>
                                         <th>Source</th>
                                         <th>Application Date</th>
@@ -93,7 +94,8 @@ function RecruiterSelectdReport({ empName, recruiterData }) {
                                                             <th>{obj.personal_email}</th>
                                                             <th>{obj.appliedFor ? obj.appliedFor : "-"}</th>
                                                             <th>{obj.offeredSalary ? (obj.offeredSalary).toLocaleString("en-us") : "-"}</th>
-                                                            <th>{obj.firstMonthSalaryCondition ? `${obj.firstMonthSalaryCondition}%` : "-"}</th>
+                                                            <th>{obj.firstMonthSalaryCondition ? `${obj.firstMonthSalaryCondition}` : "-"}</th>
+                                                            <th>{obj.jdate ? formatDatePro(obj.jdate) : "-"}</th>
                                                             <th>{obj.branchOffice ? obj.branchOffice : "-"}</th>
                                                             <th>{obj.applicationSource}</th>
                                                             <th>{formatDatePro(obj.fillingDate)}</th>
