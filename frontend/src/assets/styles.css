@@ -2354,16 +2354,17 @@ td input {
   border-bottom: 1px solid #eee;
 }
 .profile-pic-upload {
-  width: 30px;
+  width: 35px;
   text-align: center;
-  height: 30px;
-  line-height: 26px;
+  height: 35px;
+  line-height: 14px;
   border-radius: 100px;
-  background: #201f1c;
+  background: #FF9800;
   position: absolute;
+  border: none;
   color: #fff;
-  right: 12px;
-  bottom: 4px;
+  right: 15px;
+  bottom: 12px;
   cursor: pointer;
   transition: transform .2s;
   box-shadow: 3px 4px 12px -3px #686868;

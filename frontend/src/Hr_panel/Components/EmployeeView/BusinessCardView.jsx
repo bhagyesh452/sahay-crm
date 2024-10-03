@@ -6,6 +6,8 @@ import { FaLocationDot } from "react-icons/fa6";
 import logo from "../../../static/mainLogo.png";
 import { FaEarthAmericas } from "react-icons/fa6";
 import html2canvas from 'html2canvas';
+import { MdFileDownload } from "react-icons/md";
+
 
 function BusinessCardView({ employeeInformation }) {
     const cardRef = useRef(null);
@@ -28,16 +30,16 @@ function BusinessCardView({ employeeInformation }) {
     };
 
     return (
-        <div className="BusinessCardView" onClick={handleDownloadJPG}>
-            <div className='d-flex align-items-center justify-content-center mt-3'>
-                <div className="BusinessCardBody" ref={cardRef}>
+        <div className="BusinessCardView flip-card">
+            <div className='d-flex align-items-center justify-content-center flip-card-inner mt-3'>
+                <div className="BusinessCardBody flip-card-front" ref={cardRef}>
                     <div className='BusinessCardheader'>
                         <div className='d-flex align-items-start'>
                             <div className='BusinessCardheaderIcon'>
                                 <IoIosPerson />
                             </div>
                             <div className='BusinessCardheaderName'>
-                                <h3 className='m-0'>{employeeInformation ? employeeInformation.empFullName : ""}</h3>
+                                <h3 className='m-0'>{employeeInformation ? employeeInformation.ename : ""}</h3>
                                 <p className='m-0'>{employeeInformation ? employeeInformation.newDesignation : ""}</p>
                             </div>
                         </div>
@@ -89,13 +91,33 @@ function BusinessCardView({ employeeInformation }) {
                             </div>
                         </div>
                     </div>
+                    {/* Add a button to download the card as JPG */}
+                    <button className="profile-pic-upload" onClick={handleDownloadJPG}>
+                        <MdFileDownload />
+                    </button>
                 </div>
-            </div>
-            {/* Add a button to download the card as JPG */}
-            <div className='d-flex justify-content-center mt-4'>
-                <button className="btn btn-primary" >
-                    Download as JPG
-                </button>
+                <div className='BusinessCardBody1 flip-card-back' ref={cardRef}>
+                    <div className='businessCardBacklogo'>
+                        <img src={logo} alt="Logo" />
+                    </div>
+                    <div className='businessCardBackfooter'>
+                        <div className='d-flex'>
+                            <div className='businessCardBackfootericon'>
+                                <FaLocationDot />
+                            </div>
+                            <div className='businessCardBackfootertext'>
+                                {employeeInformation && employeeInformation.branchOffice === "Gota" ?
+                                (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
+                                    Road, Gota, Ahmedabad - 382470</p>) :
+                                (<p className='m-0'>1307/08, Zion Z1, Beside Avalon Hotel,<br />
+                                    Sindhubhav Road, Ahmedabad - 380054 </p>)}
+                            </div>
+                        </div>
+                    </div>
+                    <button className="profile-pic-upload" onClick={handleDownloadJPG}>
+                        <MdFileDownload />
+                    </button>
+                </div>
             </div>
         </div>
     );
