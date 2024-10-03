@@ -69,6 +69,7 @@ function EmployeeCompleteCallingReport() {
     const [activeFilterFields, setActiveFilterFields] = useState([]); // New state for active filter fields
     const [loading, setLoading] = useState(false)
     const [deletedEmployeeData, setDeletedEmployeeData] = useState([])
+    const [cleared, setCleared] = useState(false);
     // --------------------------date formats--------------------------------------------
     // function formatDateFinal(timestamp) {
     //     const date = new Date(timestamp);
@@ -88,7 +89,16 @@ function EmployeeCompleteCallingReport() {
 
 
     //----------------------fetching employees info--------------------------------------
-   
+    useEffect(() => {
+        if (cleared) {
+          const timeout = setTimeout(() => {
+            setCleared(false);
+          }, 1500);
+    
+          return () => clearTimeout(timeout);
+        }
+        return () => {};
+      }, [cleared]);
 
 
     const fetchEmployeeInfo = async () => {
@@ -210,7 +220,7 @@ function EmployeeCompleteCallingReport() {
                 } catch (error) {
                     console.error('Error:', error);  // Catch any errors
                 }
-                console.log("New Data:", newData);
+                //console.log("New Data:", newData);
                 // Assuming data.result from first response and newData from second have `emp_number` as common
                 const mergedData = data.result.map(emp => {
                     const matchingEmp = newData.find(item => item.emp_number === emp.emp_number);
@@ -227,7 +237,7 @@ function EmployeeCompleteCallingReport() {
                     const errorData = await response2.json();
                     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
                 }
-                console.log("Merged Data:", mergedData);
+                //console.log("Merged Data:", mergedData);
                 setTotalCalls(mergedData);
                 setFilteredTotalCalls(mergedData);
                 setCompleteTotalCalls(mergedData);
@@ -324,7 +334,7 @@ function EmployeeCompleteCallingReport() {
                 } catch (error) {
                     console.error('Error:', error);  // Catch any errors
                 }
-                console.log("New Data:", newData);
+                //console.log("New Data:", newData);
                 // Assuming data.result from first response and newData from second have `emp_number` as common
                 const mergedData = data.result.map(emp => {
                     const matchingEmp = newData.find(item => item.emp_number === emp.emp_number);
@@ -341,7 +351,7 @@ function EmployeeCompleteCallingReport() {
                     const errorData = await response2.json();
                     throw new Error(`Error: ${response2.status} - ${errorData.message || response2.statusText}`);
                 }
-                console.log("Merged Data:", mergedData);
+                //console.log("Merged Data:", mergedData);
                 setTotalCalls(mergedData);
                 setFilteredTotalCalls(mergedData);
                 setCompleteTotalCalls(mergedData);
@@ -360,53 +370,6 @@ function EmployeeCompleteCallingReport() {
         // Call the fetch function
         fetchEmployeeData();
     };
-
-    const formatDate = (dateString) => {
-        // Parse the date string as IST
-        const date = moment(dateString, "YYYY-MM-DD HH:mm:ss").utcOffset('+05:30');
-
-        // Format the date
-        return date.format('DD MMM YYYY, h:mm:ss A');
-    };
-    // const formatDate = (dateString) => {
-    //     const date = new Date(dateString);
-    //     const options = { 
-    //         year: 'numeric', 
-    //         month: 'long', 
-    //         day: 'numeric', 
-    //         hour: '2-digit', 
-    //         minute: '2-digit', 
-    //         second: '2-digit', 
-    //         timeZoneName: 'short'
-    //     };
-    //     return date.toLocaleDateString('en-IN', options);
-    // };
-
-    const formatToIST = (dateString) => {
-        // Remove the "IST" part and replace the space between date and time with "T"
-        const cleanedDateString = dateString.replace(' IST', '').replace(' ', 'T');
-
-        const utcDate = new Date(cleanedDateString);  // Parse the cleaned UTC date
-        if (isNaN(utcDate)) {
-            return 'Invalid Date'; // Handle invalid date
-        }
-
-        // Create a new Date object with the IST offset of +5:30 hours
-        const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
-
-        // Format the IST date
-        const options = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZoneName: 'short'
-        };
-        return istDate.toLocaleString('en-IN', options);
-    };
-
 
     // ------------------------------------filter functions-------------------------
     const handleFilter = (newData) => {
@@ -443,7 +406,7 @@ function EmployeeCompleteCallingReport() {
             };
         }
     }, []);
-    console.log("totalcalls", totalcalls)
+    //console.log("totalcalls", totalcalls)
 
     // --------------------function to download pdf report----------------
     const handleDownloadPDF = () => {
@@ -582,12 +545,18 @@ function EmployeeCompleteCallingReport() {
 
                                                     // Format as required
                                                     const formattedDate = selectedDate.format("DD/MM/YYYY");
-                                                    console.log("Formatted Date:", formattedDate); // Debugging
+                                                    //console.log("Formatted Date:", formattedDate); // Debugging
 
                                                     // Call the function to handle the selected date and fetch data
                                                     handleSingleDateSelection(formattedDate);
                                                 }
                                             }}
+                                            slotProps={{
+                                                field: { clearable: true, onClear: () => {
+                                                    setCleared(true)
+                                                    fetchEmployeeInfo();
+                                                } },
+                                              }}
                                         // label="Basic date picker"
                                         />
                                     </DemoContainer>

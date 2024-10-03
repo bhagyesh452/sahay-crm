@@ -2109,6 +2109,13 @@ th.th-sticky1::after {
   font-weight: 700;
 }
 
+.recruiter-dash-tbl-thead  {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+
 .recruiter-dash-tbl-thead th {
   background: #43474c !important;
   color: #e4e4e4;
