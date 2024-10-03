@@ -8,10 +8,21 @@ import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDa
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment from "moment";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 function RecruiterApplicantReport({ empName, recruiterData }) {
     const [isLoading, setisLoading] = useState(false);
     const [cleared, setCleared] = useState(false);
+    const [newSortType, setNewSortType] = useState({
+        general: "none",
+        onHold: "none",
+        disqualified: "none",
+        selected: "none",
+        rejected: "none",
+        underReview: "none",
+        total:"none",
+    });
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
         const day = date.getDate();
@@ -97,8 +108,42 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
         );
         setFilteredData(filtered);
     };
+
+    const handleSort = (field, sortType) => {
+        let sortedData = [...filteredData];
     
+        if (sortType === "ascending") {
+            sortedData = sortedData.sort((a, b) => {
+                if (a[field] < b[field]) return -1;
+                if (a[field] > b[field]) return 1;
+                return 0;
+            });
+            console.log("ascedning" , sortedData)
+        } else if (sortType === "descending") {
+            sortedData = sortedData.sort((a, b) => {
+                if (a[field] < b[field]) return 1;
+                if (a[field] > b[field]) return -1;
+                return 0;
+            });
+            console.log("descending" , sortedData)
+
+        } else if(sortType === "none") {
+            sortedData = [...groupedData];
+            console.log("none" , sortedData)
+        }
+       
+
     
+        setFilteredData(sortedData);
+    };
+    
+    const handleSortGeneral = (sortType) => handleSort('General', sortType);
+    const handleSortUnderReview = (sortType) => handleSort('UnderReview', sortType);
+    const handleSortOnHold = (sortType) => handleSort('On Hold', sortType);
+    const handleSortDisqualified = (sortType) => handleSort('Disqualified', sortType);
+    const handleSortRejected = (sortType) => handleSort('Rejected', sortType);
+    const handleSortSelected = (sortType) => handleSort('Selected', sortType);
+    const handleSortTotal = (sortType) => handleSort('total', sortType);
 
 
     return (
@@ -112,7 +157,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                             </h2>
                         </div>
                         <div className='d-flex align-items-center'>
-                           
+
                             <div className="data-filter">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={['DatePicker']}
@@ -155,13 +200,280 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                     <tr  >
                                         <th>SR.NO</th>
                                         <th>Application Date</th>
-                                        <th>General</th>
-                                        <th>Under Review</th>
-                                        <th>On Hold</th>
-                                        <th>Disqualified</th>
-                                        <th>Rejected</th>
-                                        <th>Selected</th>
-                                        <th>Total</th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.general === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.general === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    general: updatedSortType,
+                                                }));
+                                                handleSortGeneral(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>General</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.general === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.general === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.underReview === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.underReview === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    underReview: updatedSortType,
+                                                }));
+                                                handleSortUnderReview(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>Under Review</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.underReview === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.underReview === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.onHold === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.onHold === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    onHold: updatedSortType,
+                                                }));
+                                                handleSortOnHold(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>On Hold</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.onHold === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.onHold === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.disqualified === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.disqualified === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    disqualified: updatedSortType,
+                                                }));
+                                                handleSortDisqualified(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>Disqualified</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.disqualified === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.disqualified === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.selected === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.selected === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    selected: updatedSortType,
+                                                }));
+                                                handleSortSelected(updatedSortType);
+                                            }}>
+                                                <div className="d-flex align-items-center">
+                                                <div className='mr-2'>Selected</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.selected === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.selected === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.rejected === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.rejected === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    rejected: updatedSortType,
+                                                }));
+                                                handleSortRejected(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>Rejected</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.rejected === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.rejected === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                                let updatedSortType;
+                                                if (newSortType.total === "ascending") {
+                                                    updatedSortType = "descending";
+                                                } else if (newSortType.total === "descending") {
+                                                    updatedSortType
+                                                        = "none";
+                                                } else {
+                                                    updatedSortType = "ascending";
+                                                }
+                                                setNewSortType((prevData) => ({
+                                                    ...prevData,
+                                                    total: updatedSortType,
+                                                }));
+                                                handleSortTotal(updatedSortType);
+                                            }}><div className="d-flex align-items-center justify-content-between">
+                                                <div>Total</div>
+                                                <div className="short-arrow-div">
+                                                    <ArrowDropUpIcon className="up-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.total === "descending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                    <ArrowDropDownIcon className="down-short-arrow"
+                                                        style={{
+                                                            color:
+                                                                newSortType.total === "ascending"
+                                                                    ? "black"
+                                                                    : "#9d8f8f",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 {isLoading ? (

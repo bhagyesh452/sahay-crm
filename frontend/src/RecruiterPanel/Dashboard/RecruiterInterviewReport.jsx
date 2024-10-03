@@ -142,7 +142,7 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
                                 <thead className="recruiter-dash-tbl-thead">
                                     <tr  >
                                         <th>SR.NO</th>
-                                        <th>Application Name</th>
+                                        <th>Applicant Name</th>
                                         <th>Number</th>
                                         <th>Email Id</th>
                                         <th>Applied For</th>

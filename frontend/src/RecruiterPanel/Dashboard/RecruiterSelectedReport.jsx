@@ -34,9 +34,6 @@ function RecruiterSelectdReport({ empName, recruiterData }) {
             setFilteredData(groupedData);
             return;
         }
-
-        
-    
         const filtered = groupedData.filter((applicant) => {
             const formattedApplicantDate = formatDateToDDMMYYYY(applicant.jdate);
             
