@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { IoIosPerson } from "react-icons/io";
 import { IoCall } from "react-icons/io5";
 import { IoIosMail } from "react-icons/io";
@@ -7,6 +7,7 @@ import logo from "../../../static/mainLogo.png";
 import { FaEarthAmericas } from "react-icons/fa6";
 import html2canvas from 'html2canvas';
 import { MdFileDownload } from "react-icons/md";
+import { MdFlipCameraAndroid } from "react-icons/md";
 
 
 function BusinessCardView({ employeeInformation }) {
@@ -29,10 +30,20 @@ function BusinessCardView({ employeeInformation }) {
             });
     };
 
+    const [flipped, setFlipped] = useState(false);
+
+    const handleFlip = () => {
+        setFlipped(true);
+    };
+
+    const handleFlipBack = () => {
+        setFlipped(false);
+    };
+
     return (
         <div className="BusinessCardView flip-card">
-            <div className='d-flex align-items-center justify-content-center flip-card-inner mt-3'>
-                <div className="BusinessCardBody flip-card-front" ref={cardRef}>
+            <div className={`d-flex align-items-center justify-content-center mt-3 flip-card-inner ${flipped ? 'flipped' : ''}`}>
+                <div className="BusinessCardBody front" ref={cardRef}>
                     <div className='BusinessCardheader'>
                         <div className='d-flex align-items-start'>
                             <div className='BusinessCardheaderIcon'>
@@ -95,8 +106,9 @@ function BusinessCardView({ employeeInformation }) {
                     <button className="profile-pic-upload" onClick={handleDownloadJPG}>
                         <MdFileDownload />
                     </button>
+                    <button id="flipButton" className='profile-pic-flip' onClick={handleFlip}><MdFlipCameraAndroid /></button>
                 </div>
-                <div className='BusinessCardBody1 flip-card-back' ref={cardRef}>
+                <div className='BusinessCardBody1 back' ref={cardRef}>
                     <div className='businessCardBacklogo'>
                         <img src={logo} alt="Logo" />
                     </div>
@@ -117,8 +129,11 @@ function BusinessCardView({ employeeInformation }) {
                     <button className="profile-pic-upload" onClick={handleDownloadJPG}>
                         <MdFileDownload />
                     </button>
+                    <button id="flipButtonBack" className='profile-pic-flip' onClick={handleFlipBack}><MdFlipCameraAndroid /></button>
                 </div>
             </div>
+          
+            
         </div>
     );
 }
