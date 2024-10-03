@@ -217,7 +217,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     general: updatedSortType,
                                                 }));
                                                 handleSortGeneral(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}><div className="d-flex align-items-center justify-content-center">
                                                 <div>General</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
@@ -256,7 +256,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     underReview: updatedSortType,
                                                 }));
                                                 handleSortUnderReview(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}><div className="d-flex align-items-center justify-content-center">
                                                 <div>Under Review</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
@@ -295,7 +295,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     onHold: updatedSortType,
                                                 }));
                                                 handleSortOnHold(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}><div className="d-flex align-items-center justify-content-center">
                                                 <div>On Hold</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
@@ -334,7 +334,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     disqualified: updatedSortType,
                                                 }));
                                                 handleSortDisqualified(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}><div className="d-flex align-items-center justify-content-center">
                                                 <div>Disqualified</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
@@ -373,9 +373,8 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     selected: updatedSortType,
                                                 }));
                                                 handleSortSelected(updatedSortType);
-                                            }}>
-                                                <div className="d-flex align-items-center">
-                                                <div className='mr-2'>Selected</div>
+                                            }}><div className="d-flex align-items-center justify-content-center">
+                                                <div>Selected</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
                                                         style={{
@@ -413,7 +412,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     rejected: updatedSortType,
                                                 }));
                                                 handleSortRejected(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}><div className="d-flex align-items-center justify-content-center">
                                                 <div>Rejected</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
@@ -452,7 +451,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
                                                     total: updatedSortType,
                                                 }));
                                                 handleSortTotal(updatedSortType);
-                                            }}><div className="d-flex align-items-center justify-content-between">
+                                            }}><div className="d-flex align-items-center justify-content-center">
                                                 <div>Total</div>
                                                 <div className="short-arrow-div">
                                                     <ArrowDropUpIcon className="up-short-arrow"
