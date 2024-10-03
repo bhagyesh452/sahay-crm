@@ -131,7 +131,7 @@ function RecruiterCallHistory({ empName, clientNumber }) {
                                         </thead>
                                         <tbody>
                                             {callHistory.map((item, index) => {
-                                                console.log("Call history item:", item, item.client_number); // Debug console log
+                                                //console.log("Call history item:", item, item.client_number); // Debug console log
                                                 return (
                                                     <tr key={item.id}>
                                                         <td>{index + 1}</td>

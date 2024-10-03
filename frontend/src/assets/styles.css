@@ -2109,6 +2109,13 @@ th.th-sticky1::after {
   font-weight: 700;
 }
 
+.recruiter-dash-tbl-thead th {
+  background: #43474c !important;
+  color: #e4e4e4;
+  border: none !important;
+  padding: 6px 8px 6px 8px !important;
+}
+
 .admin-dash-tbl-thead th:first-child {
   border-radius: 10px 0 0 0;
 }

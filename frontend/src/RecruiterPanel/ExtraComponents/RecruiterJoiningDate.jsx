@@ -24,7 +24,7 @@ const RecruiterJoiningDate = ({
         selectedDate.setMilliseconds(currentTime.getMilliseconds());
 
         const fullDateTime = selectedDate.toISOString();
-        console.log("joiningDate", fullDateTime);
+        //console.log("joiningDate", fullDateTime);
 
         try {
             const response = await axios.post(`${secretKey}/recruiter/post-save-joiningDate-recruiter`, {

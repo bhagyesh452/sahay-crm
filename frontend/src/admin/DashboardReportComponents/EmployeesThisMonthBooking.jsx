@@ -3019,7 +3019,8 @@ function EmployeesThisMonthBooking() {
 
 
     return (
-        <div>{/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+        <div>
+            {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
 
             <div className="employee-dashboard mt-2">
                 <div className="card mb-2">

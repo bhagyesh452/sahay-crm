@@ -30,7 +30,7 @@ const RecruiterInterviewDate = ({
         selectedDate.setMilliseconds(currentTime.getMilliseconds());
 
         const fullDateTime = selectedDate.toISOString(); // Full date-time string
-        console.log("expensedate", fullDateTime);
+        //console.log("expensedate", fullDateTime);
 
         try {
             const response = await axios.post(`${secretKey}/recruiter/post-save-interviewdate-recruiter`, {
