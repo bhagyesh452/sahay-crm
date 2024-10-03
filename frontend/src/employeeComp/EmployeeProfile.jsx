@@ -228,14 +228,6 @@ function EmployeeProfile() {
     }
   }
 
-  // const handleCameraClick = () => {
-  //   setOpen(true);
-  // };
-
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
-
   //-----------------fetching employee details----------------------------------
   const fetchEmployeeData = async () => {
     try {

@@ -2,6 +2,12 @@ import React, { useState,useEffect } from 'react';
 import { LuHistory } from "react-icons/lu";
 import ClipLoader from "react-spinners/ClipLoader";
 import Nodata from '../../DataManager/Components/Nodata/Nodata';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import moment from "moment";
+import dayjs from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 
 function RecruiterInterviewReport({ empName, recruiterData }) {
     const [isLoading, setisLoading] = useState(false);
@@ -13,8 +19,13 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
         return `${day} ${month}, ${year}`;
     }
 
+    const [cleared, setCleared] = useState(false);
     const [groupedData, setGroupedData] = useState([]);
-
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchText, setSearchText] = useState([])
+    const formatDateToDDMMYYYY = (dateString) => {
+        return dayjs(dateString).format('DD/MM/YYYY');
+    };
     useEffect(() => {
         // Filter applicants whose status is "Selected" and joining date is in the future
         const upcomingJoinees = recruiterData.filter(applicant => {
@@ -28,11 +39,35 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
         });
 
         setGroupedData(upcomingJoinees);
+        setFilteredData(upcomingJoinees);
     }, [recruiterData]);
 
+    const handleSingleDateSelection = (formattedDate) => {
+        if (!formattedDate) {
+            setFilteredData(groupedData);
+            return;
+        }
+        const filtered = groupedData.filter((applicant)=>{
+          const formattedInterViewDate = formatDateToDDMMYYYY(applicant.interViewDate);
+          return formattedInterViewDate === formattedDate;
+        })
+        setFilteredData(filtered);
+    }
 
-    console.log("recruiterData" , recruiterData)
-    console.log("groupedData" , groupedData)
+    const handleSearchChange = (searchValue) => {
+        if (!searchValue) {
+            setFilteredData(groupedData);
+            return;
+        }
+        const filtered = groupedData.filter((data) => {
+            return (
+                data.empFullName?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                data.personal_number?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                data.personal_email?.toLowerCase().includes(searchValue.toLowerCase())
+            );
+        });
+        setFilteredData(filtered);
+    }
 
     return (
         <div className='container-xl'>
@@ -46,6 +81,60 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
                                 Interview Schedule Report
                             </h2>
                         </div>
+                        <div className='d-flex align-items-center'>
+                            <div class="input-icon mr-1">
+                                <span class="input-icon-addon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                        <path d="M21 21l-6 -6"></path>
+                                    </svg>
+                                </span>
+                                <input
+                                    className="form-control search-cantrol mybtn"
+                                    placeholder="Search…"
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search"
+                                    value={searchText}
+                                    onChange={(e)=>{
+                                        setSearchText(e.target.value)
+                                        handleSearchChange(e.target.value)}}
+                                />
+                            </div>
+                            <div className="data-filter">
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DemoContainer components={['DatePicker']}
+                                        sx={{ padding: '0px', width: '220px' }}>
+                                        <DatePicker
+                                            className="form-control my-date-picker form-control-sm p-0"
+                                            onChange={(value) => {
+                                                if (value) {
+                                                    // Convert the selected date to Moment object
+                                                    const selectedDate = moment(value.$d);
+
+                                                    // Format as required
+                                                    const formattedDate = selectedDate.format("DD/MM/YYYY");
+                                                    // console.log("Formatted Date:", formattedDate); // Debugging
+
+                                                    // Call the function to handle the selected date and fetch data
+                                                    handleSingleDateSelection(formattedDate);
+                                                }
+                                            }}
+                                            slotProps={{
+                                                field: {
+                                                    clearable: true, onClear: () => {
+                                                        setCleared(true)
+                                                        setFilteredData(groupedData)
+                                                    }
+                                                },
+                                            }}
+                                        // label="Basic date picker"
+                                        />
+                                    </DemoContainer>
+                                </LocalizationProvider>
+                            </div>
+                        </div>
                     </div>
                     <div className="card-body">
                         <div className="row tbl-scroll">
@@ -53,7 +142,7 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
                                 <thead className="recruiter-dash-tbl-thead">
                                     <tr  >
                                         <th>SR.NO</th>
-                                        <th>Application Name</th>
+                                        <th>Applicant Name</th>
                                         <th>Number</th>
                                         <th>Email Id</th>
                                         <th>Applied For</th>
@@ -79,10 +168,10 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
                                         </tr>
                                     </tbody>
                                 ) : (
-                                    groupedData.length !== 0 ? (
+                                    filteredData.length !== 0 ? (
                                         <>
                                             <tbody>
-                                                {groupedData.map((obj, index) => (
+                                                {filteredData.map((obj, index) => (
                                                     <>
                                                         <tr  >
                                                             <th>{index + 1}</th>

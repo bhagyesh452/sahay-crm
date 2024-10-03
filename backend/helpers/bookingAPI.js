@@ -1671,11 +1671,11 @@ router.post(
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
           const recipients = isAdmin ?
-            ["nimesh@incscale.in"] :
+            ["nimesh@incscale.in", "bookings@startupsahay.com"] :
             [
               newData.bdeEmail,
               newData.bdmEmail,
-              
+              "bookings@startupsahay.com",
               "documents@startupsahay.com",
               // "admin@startupsahay.com"
             ];
@@ -3444,7 +3444,7 @@ router.post(
             newData.caEmail :
             newData["Company Email"]
           const mainClientMail = isAdmin ?
-            ["nimesh@incscale.in"] :
+            ["nimesh@incscale.in", "bookings@startupsahay.com"] :
             [clientMail, "admin@startupsahay.com"]
           console.log("mainClientMail", mainClientMail)
           const draftHtml = draftCondition ? `<p >To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.in/customer/login" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
@@ -4070,7 +4070,7 @@ router.post("/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
       // "admin@startupsahay.com"
-    ] : ["nimesh@incscale.in"];
+    ] : ["nimesh@incscale.in", "bookings@startupsahay.com"];
 
     console.log("recipients", recipients)
 
@@ -5857,7 +5857,7 @@ I declare that all required documents for the MSME IDEA HACKATHON 4.0 applicatio
 
     const clientMail = newData.caCase == "Yes" ? newData.caEmail : newData["Company Email"]
     //console.log(clientMail)
-    const mainClientMail = isAdmin ? ["nimesh@incscale.in"] :
+    const mainClientMail = isAdmin ? ["nimesh@incscale.in", "bookings@startupsahay.com"] :
       [clientMail, "admin@startupsahay.com"]
     console.log("mainClientMail", mainClientMail)
     pdf
