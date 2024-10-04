@@ -135,7 +135,7 @@ function HrEmployees() {
 
 
   useEffect(() => {
-    fetchRecruiterData("", page = 1); // Fetch data initially
+    fetchRecruiterData("", page); // Fetch data initially
   }, []);
 
   // Fetch active employees
@@ -484,7 +484,9 @@ function HrEmployees() {
                         Upcomming Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        {upcomingEmployees.length > 0}
+                        {recruiterData.filter((applicant) => {
+                          return applicant.mainCategoryStatus === "Selected" && new Date(applicant.jdate) > new Date();
+                        }).length}
                       </div>
                     </div>
                   </a>
@@ -797,7 +799,7 @@ function HrEmployees() {
               </div>
 
               <div class="tab-pane" id="UpcommingEmployees">
-                 <UpcomingEmployees upcomingEmployees={recruiterData} dataLoading={currentDataLoading}/>
+                <UpcomingEmployees upcomingEmployees={recruiterData} dataLoading={currentDataLoading} />
               </div>
             </div>
           </div>

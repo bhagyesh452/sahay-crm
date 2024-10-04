@@ -40,10 +40,10 @@ function UpcomingEmployees({ upcomingEmployees, dataLoading }) {
     }
 
     return (
-        <div class="tab-pane" id="DeletedEmployees">
+      
             <div className="table table-responsive table-style-3 m-0">
-                <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
-                    <thead className="recruiter-dash-tbl-thead">
+                <table className="table table-vcenter table-nowrap">
+                    <thead>
                         <tr className="tr-sticky">
                             <th>SR.NO</th>
                             <th>Applicant Name</th>
@@ -111,7 +111,7 @@ function UpcomingEmployees({ upcomingEmployees, dataLoading }) {
                         )
                     )}
                 </table>
-            </div>
+         
         </div>
     )
 }
