@@ -9,12 +9,13 @@ import { GoCreditCard } from "react-icons/go";
 import { BsCardHeading } from "react-icons/bs";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaRegSave } from "react-icons/fa";
+import { h } from "@fullcalendar/core/preact.js";
 
 
 
 
 
-function EmployeeViewPayrollView({ editField, setEditField }) {
+function EmployeeViewPayrollView({ editField, setEditField, hrUserId }) {
 
     const { userId } = useParams();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -33,28 +34,33 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
 
     const fetchEmployeeData = async () => {
         try {
-          const response = await axios.get(`${secretKey}/employee/einfo`);
-          console.log(response.data, userId);
-          const tempData = response.data;
-          const data = tempData.find((item) => item._id === userId);
-          console.log("Payroll Info is :", data);
-    
-          setData(data);
-          setAccountNo(data.accountNo);
-          setNameAsPerBankRecord(data.nameAsPerBankRecord);
-          setIfscCode(data.ifscCode);
-          setSalary(data.salary);
-          setFirstMonthSalaryCondition(data.firstMonthSalaryCondition);
-          setFirstMonthSalary(data.firstMonthSalary);
-          setPanNumber(data.panNumber);
-          setAadharNumber(data.aadharNumber);
-          setUanNumber(data.uanNumber);
-          setPfNumber(data.pfNumber);
-    
+            const response = await axios.get(`${secretKey}/employee/einfo`);
+            // console.log(response.data, userId);
+            const tempData = response.data;
+            let data;
+            if(hrUserId) {
+                data = tempData.find((item) => item._id === hrUserId);
+            } else {
+                data = tempData.find((item) => item._id === userId);
+            }
+            // console.log("Payroll Info is :", data);
+
+            setData(data);
+            setAccountNo(data.accountNo);
+            setNameAsPerBankRecord(data.nameAsPerBankRecord);
+            setIfscCode(data.ifscCode);
+            setSalary(data.salary);
+            setFirstMonthSalaryCondition(data.firstMonthSalaryCondition);
+            setFirstMonthSalary(data.firstMonthSalary);
+            setPanNumber(data.panNumber);
+            setAadharNumber(data.aadharNumber);
+            setUanNumber(data.uanNumber);
+            setPfNumber(data.pfNumber);
+
         } catch (error) {
-          console.error("Error fetching employee data", error);
+            console.error("Error fetching employee data", error);
         }
-      };
+    };
 
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount);
@@ -105,7 +111,7 @@ function EmployeeViewPayrollView({ editField, setEditField }) {
     useEffect(() => {
         fetchEmployeeData();
     }, []);
-    
+
     return (
         <div className="payrollViewMain mt-2">
             <div className="my-card mt-2" >

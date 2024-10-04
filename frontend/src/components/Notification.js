@@ -78,6 +78,7 @@ export default function Notification({ name, designation }) {
           </IconButton>
         </Tooltip>
       </Box>
+
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -119,28 +120,34 @@ export default function Notification({ name, designation }) {
         }}>
           <Avatar /> Profile
         </MenuItem>
+
         {/* <MenuItem onClick={handleClose}>
           <Avatar /> My account
         </MenuItem> */}
+
         <Divider />
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <PersonAdd fontSize="small" />
           </ListItemIcon>
           Add another account
         </MenuItem>
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings
         </MenuItem>
+        
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>
+
       </Menu>
     </React.Fragment>
   );

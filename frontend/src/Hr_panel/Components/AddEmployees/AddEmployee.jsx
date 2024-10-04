@@ -732,8 +732,8 @@ export default function HorizontalNonLinearStepper() {
 
   return (
     <div>
-      <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
-      <Navbar />
+      {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
+      <Navbar /> */}
       <div className="container mt-2">
         <div className="card">
           <div className="card-body p-3">

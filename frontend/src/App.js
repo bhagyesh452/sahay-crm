@@ -74,6 +74,8 @@ import Attendance from "./Hr_panel/Components/Attendance/Attendance.jsx";
 //import Employee from "./Hr_panel/Components/EmployeeView.jsx";
 import EmployeeView from "./Hr_panel/Components/EmployeeView.jsx";
 import EmployeeSalaryView from "./Hr_panel/Components/Attendance/EmployeeSalaryView.jsx";
+import HrLayout from "./Hr_panel/Components/HrLayout.jsx";
+import HrManagerProfile from "./Hr_panel/Components/HrManagerProfile.jsx";
 
 // Recruiter Panel Imports
 import ApplicationForm from "./RecruiterPanel/ApplicationForm/ApplicationForm.jsx";
@@ -251,15 +253,26 @@ function App() {
 
           {/**********************************************  HR-Panel-Portal   *******************************************************/}
           <Route path="/hr/login" element={<HrLogin setHrToken={setHrToken} />} />
-          <Route path="/hr/dashboard" element={<HrDashboard />}></Route>
-          {/* <Route path="/hr/employees/" element={<NewEmployees />} /> */}
+          {/* <Route path="/hr/dashboard" element={<HrDashboard />}></Route>
+          <Route path="/hr/employees/" element={<NewEmployees />} />
           <Route path="/hr/employees" element={<HrEmployees />} />
           <Route path="/hr/add/employee" element={<HorizontalNonLinearStepper />} />
           <Route path="/hr/edit/employee/:empId" element={<HREditEmployee />} />
           <Route path="/hr/employees/attendance" element={<Attendance />} />
           <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
           <Route path='/hr/employees/salarypage' element={<EmployeeSalaryView />}></Route>
-          <Route path="/hr-profile-details/:userId" element={<EmployeeProfile />} />
+          <Route path="/hr-profile-details/:userId" element={<HrManagerProfile />} /> */}
+          <Route element={newtoken ? <HrLayout /> : <Navigate to="/" />}>
+            <Route path="/hr/dashboard" element={<HrDashboard />} />
+            {/* <Route path="/hr/employees/" element={<NewEmployees />} /> */}
+            <Route path="/hr/employees" element={<HrEmployees />} />
+            <Route path="/hr/add/employee" element={<HorizontalNonLinearStepper />} />
+            <Route path="/hr/edit/employee/:empId" element={<HREditEmployee />} />
+            <Route path="/hr/employees/attendance" element={<Attendance />} />
+            <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />} />
+            <Route path='/hr/employees/salarypage' element={<EmployeeSalaryView />} />
+            <Route path="/hr-profile-details" element={<HrManagerProfile />} />
+          </Route>
 
           {/**********************************************  RecruiterPanel  *******************************************************/}
           <Route path="/recruiter/appynowform" element={<ApplicationForm />} />

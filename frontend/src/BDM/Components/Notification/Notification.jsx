@@ -126,5 +126,5 @@ export default function Notification() {
             </Menu>
         </React.Fragment>
 
-    )
+    );
 }
