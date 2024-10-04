@@ -112,8 +112,8 @@ function Dashboard() {
 
     return (
         <div>
-            <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
-            <Navbar />
+            {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
+            <Navbar /> */}
             <div className="page-wrapper">
                 <div className="container-xl mt-3">
                     <div className="card todays-booking totalbooking" id="totalbooking"   >

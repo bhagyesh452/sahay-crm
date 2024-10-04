@@ -16,21 +16,16 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
 
-
-
-
-
-
 export default function HrNotification() {
+
     const [anchorEl, setAnchorEl] = React.useState(null);
-
-
     const navigate = useNavigate();
-
     const open = Boolean(anchorEl);
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -40,14 +35,9 @@ export default function HrNotification() {
         localStorage.removeItem("hrName");
         localStorage.removeItem("hrUserId");
         navigate("/hr/login");
-    }
-
-
-
-
+    };
 
     return (
-
         <React.Fragment>
             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
 
@@ -64,6 +54,7 @@ export default function HrNotification() {
                     </IconButton>
                 </Tooltip>
             </Box>
+
             <Menu
                 anchorEl={anchorEl}
                 id="account-menu"
@@ -99,30 +90,37 @@ export default function HrNotification() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={() => {
+                    navigate(`/hr-profile-details`);
+                    handleClose();
+                }}>
                     <Avatar /> Profile
                 </MenuItem>
+               
                 <Divider />
+
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <PersonAdd fontSize="small" />
                     </ListItemIcon>
                     Add another account
                 </MenuItem>
+                
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <Settings fontSize="small" />
                     </ListItemIcon>
                     Settings
                 </MenuItem>
+                
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <Logout fontSize="small" />
                     </ListItemIcon>
                     Logout
                 </MenuItem>
+
             </Menu>
         </React.Fragment>
-
-    )
+    );
 }

@@ -1,19 +1,9 @@
-import React, { useEffect, useState, CSSProperties, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
-import Header from "./Header/Header.jsx";
 import axios from "axios";
-import "react-date-range/dist/styles.css"; // main style file
-import "react-date-range/dist/theme/default.css"; // theme css file
-//import { DateRangePicker } from "react-date-range";
-import EmpImg1 from "../../static/EmployeeImg/Emp1.jpeg"
-import EmpImg2 from "../../static/EmployeeImg/Emp2.jpeg"
-import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 import MaleEmployee from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import { MdOutlineCameraAlt } from "react-icons/md";
-import logo from "../../static/mainLogo.png"
-import { FaCamera } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { TbPhoneCall } from "react-icons/tb";
@@ -22,44 +12,26 @@ import { HiOutlineBuildingLibrary } from "react-icons/hi2";
 import { MdOutlinePersonPin } from "react-icons/md";
 import { GoPerson } from "react-icons/go";
 import { GrLocation } from "react-icons/gr";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import { Calendar } from "@fullcalendar/core";
-import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
-import listPlugin from '@fullcalendar/list';
-import timeGridPlugin from '@fullcalendar/timegrid'
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
-  Button,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, IconButton, Button} from "@mui/material";
 import Swal from 'sweetalert2';
 import { GiRelationshipBounds } from "react-icons/gi";
 import CloseIcon from "@mui/icons-material/Close";
-import Navbar from "./Navbar/Navbar.jsx";
-import { HiPencil } from "react-icons/hi";
 import { BsGenderTrans } from "react-icons/bs";
 import { FaRegUser } from "react-icons/fa";
 import { IoCalendarClearOutline } from "react-icons/io5";
-import { FcBusinesswoman } from "react-icons/fc";
 import { PiPhoneCall } from "react-icons/pi";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaRegSave } from "react-icons/fa";
-import { color } from "@mui/system";
-import { FcBriefcase } from "react-icons/fc";
-import { IoCall } from "react-icons/io5";
-import EmployeeViewAttendance from "./EmployeeView/EmloyeeViewAttendance.jsx";
-import EmployeeViewPayrollView from "./EmployeeView/EmployeePayrollView.jsx";
-import SalaryCalculationView from "./EmployeeView/SalaryCalculationView.jsx";
-import LeaveReportView from "./EmployeeView/LeaveReportView.jsx";
-import CallingReportView from "./EmployeeView/CallingReportView.jsx";
-import BusinessCardView from "./EmployeeView/BusinessCardView.jsx";
+import EmployeeViewAttendance from "../../Hr_panel/Components/EmployeeView/EmloyeeViewAttendance.jsx";
+import EmployeeViewPayrollView from "../../Hr_panel/Components/EmployeeView/EmployeePayrollView.jsx";
+import SalaryCalculationView from "../../Hr_panel/Components/EmployeeView/SalaryCalculationView.jsx";
+import LeaveReportView from "../../Hr_panel/Components/EmployeeView/LeaveReportView.jsx";
+import CallingReportView from "../../Hr_panel/Components/EmployeeView/CallingReportView.jsx"
+import BusinessCardView from "../../Hr_panel/Components/EmployeeView/BusinessCardView.jsx";
 import { MdOutlineBloodtype } from "react-icons/md";
 
-function EmployeeView() {
+function FloorManagerProfile() {
 
   const { userId } = useParams();
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -96,7 +68,7 @@ function EmployeeView() {
   );
 
   useEffect(() => {
-    document.title = `HR-Sahay-CRM`;
+    document.title = `Floor-Manager-Sahay-CRM`;
   }, []);
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -229,14 +201,6 @@ function EmployeeView() {
     }
   }
 
-  // const handleCameraClick = () => {
-  //   setOpen(true);
-  // };
-
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
-
   //-----------------fetching employee details----------------------------------
   const fetchEmployeeData = async () => {
     try {
@@ -257,7 +221,7 @@ function EmployeeView() {
       setDepartment(data.department);
       setEmploymentType(data.employeementType);
       setDob(data.dob);
-      setBloodGroup(data.bloodGroup)
+      setBloodGroup(data.bloodGroup);
       setGender(data.gender);
       setRelationship(data.relationship);
       setCurrentAddress(data.currentAddress);
@@ -328,14 +292,12 @@ function EmployeeView() {
 
   return (
     <div>
-      {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
-      <Navbar /> */}
       <div className="page-wrapper">
         <div className="page-header m-0">
           <div className="container-xl">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><Link to="/hr/employees">Employee</Link></li>
+                {/* <li class="breadcrumb-item"><Link to={`/employee-dashboard/${userId}`}>Employee</Link></li> */}
                 <li class="breadcrumb-item active" aria-current="page">Employee Profile</li>
               </ol>
             </nav>
@@ -409,16 +371,6 @@ function EmployeeView() {
                                       <div className="ep_info_t">
                                         {data.email || "-"}
                                       </div>
-                                      <div className="ep_info_icon">
-                                        <MdOutlineEdit onClick={() => {
-                                          if (editField !== "") {
-                                            Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                            return;
-                                          }
-                                          setOfficialEmail(data.email);
-                                          setEditField("officialEmail");
-                                        }} />
-                                      </div>
                                     </div>
                                   ) : (
                                     <div className="d-flex align-items-center justify-content-between">
@@ -451,16 +403,6 @@ function EmployeeView() {
                                     <div className="d-flex align-items-center justify-content-between ep_info">
                                       <div className="ep_info_t">
                                         {data.number || "-"}
-                                      </div>
-                                      <div className="ep_info_icon">
-                                        <MdOutlineEdit onClick={() => {
-                                          if (editField !== "") {
-                                            Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                            return;
-                                          }
-                                          setOfficialNumber(data.number);
-                                          setEditField("officialNumber");
-                                        }} />
                                       </div>
                                     </div>
                                   ) : (
@@ -497,16 +439,6 @@ function EmployeeView() {
                                       <div className="ep_info_t">
                                         {data.jdate ? formatDateNew(data.jdate) : "-"}
                                       </div>
-                                      <div className="ep_info_icon">
-                                        <MdOutlineEdit onClick={() => {
-                                          if (editField !== "") {
-                                            Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                            return;
-                                          }
-                                          setJoiningDate(formatDateForInput(data.jdate));
-                                          setEditField("joiningDate");
-                                        }} />
-                                      </div>
                                     </div>
                                   ) : (
                                     <div className="d-flex align-items-center justify-content-between">
@@ -534,7 +466,7 @@ function EmployeeView() {
                 </div>
 
                 <div className="mt-3">
-                  <ul class="nav nav-tabs employee_e_info_tab" style={{ fontSize: '12px' }}>
+                  <ul class="nav nav-tabs employee_e_info_tab" style={{fontSize: "12px"}}>
                     <li class="nav-item">
                       <a class="nav-link active" data-bs-toggle="tab" href="#eI">Your Info</a>
                     </li>
@@ -572,16 +504,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.department || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setDepartment(data.department);
-                                      setEditField("department");
-                                    }} />
-                                  </div>
+                                 
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -597,12 +520,7 @@ function EmployeeView() {
                                       <option value="Others">Others</option>
                                     </select>
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <FaRegSave onClick={() => {
-                                      setEditField("");
-                                      handleSave();
-                                    }} />
-                                  </div>
+                                  
                                 </div>
                               )}
                             </div>
@@ -623,16 +541,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.branchOffice || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setBranchOffice(data.branchOffice);
-                                      setEditField("branchOffice");
-                                    }} />
-                                  </div>
+                                  
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -670,16 +579,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.employeementType || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setEmploymentType(data.employeementType);
-                                      setEditField("employmentType");
-                                    }} />
-                                  </div>
+                                 
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -720,16 +620,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.reportingManager || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setReportingManager(data.reportingManager);
-                                      setEditField("reportingManager");
-                                    }} />
-                                  </div>
+                                  
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -758,9 +649,7 @@ function EmployeeView() {
                       </div>
 
                       <div className="my-card mt-2" >
-                        {/* <div className="my-card-head">
-                          Personal Information
-                        </div> */}
+                        
                         <div className="my-card-body">
 
                           <div className="row m-0 bdr-btm-eee">
@@ -778,16 +667,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.empFullName || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setFullName(data.empFullName);
-                                      setEditField("empFullName");
-                                    }} />
-                                  </div>
+                                 
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -819,18 +699,7 @@ function EmployeeView() {
                               {editField !== "dob" ? (
                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
-                                    {data.dob ? formatDateNew(data.dob) : "-"}
-                                    {/* 2<sup>nd</sup> Dec 2024 */}
-                                  </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setDob(formatDateForInput(data.dob));
-                                      setEditField("dob");
-                                    }} />
+                                    {data.dob ? formatDateNew(data.dob) : "-"}                                  
                                   </div>
                                 </div>
                               ) : (
@@ -892,17 +761,11 @@ function EmployeeView() {
                                       <option value="O Negative (O-)">O Negative (O-)</option>
                                     </select>
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <FaRegSave onClick={() => {
-                                      setEditField("");
-                                      handleSave();
-                                    }} />
-                                  </div>
+                                  
                                 </div>
                               )}
                             </div>
                           </div>
-
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-4 pt-1 pb-1 ">
                               <div className="d-flex align-items-center">
@@ -918,16 +781,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.gender || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setGender(data.gender);
-                                      setEditField("gender");
-                                    }} />
-                                  </div>
+                                 
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -965,16 +819,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.personal_number || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setPersonalNumber(data.personal_number);
-                                      setEditField("personalNumber");
-                                    }} />
-                                  </div>
+                                  
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1008,16 +853,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.personal_email || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
-                                    <MdOutlineEdit onClick={() => {
-                                      if (editField !== "") {
-                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
-                                        return;
-                                      }
-                                      setPersonalEmail(data.personal_email);
-                                      setEditField("personalEmail");
-                                    }} />
-                                  </div>
+                                 
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1064,7 +900,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.personal_contact_person || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1073,7 +909,7 @@ function EmployeeView() {
                                       setEmergencyContactName(data.personal_contact_person);
                                       setEditField("emergencyContact");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1107,7 +943,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_relationship || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1116,7 +952,7 @@ function EmployeeView() {
                                       setRelationship(data.personal_contact_person_relationship);
                                       setEditField("relationship");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1155,7 +991,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.personal_contact_person_number || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1164,7 +1000,7 @@ function EmployeeView() {
                                       setEmergencyContactNumber(data.personal_contact_person_number);
                                       setEditField("emergencyContactNo");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1204,7 +1040,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.currentAddress || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1213,7 +1049,7 @@ function EmployeeView() {
                                       setCurrentAddress(data.currentAddress);
                                       setEditField("currentAddress");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1247,7 +1083,7 @@ function EmployeeView() {
                                   <div className="ep_info_t">
                                     {data.permanentAddress || "-"}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -1256,7 +1092,7 @@ function EmployeeView() {
                                       setPermanentAddress(data.permanentAddress);
                                       setEditField("permanentAddress");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1278,11 +1114,9 @@ function EmployeeView() {
                         </div>
                       </div>
                     </div>
-
                     <div class="tab-pane heiitc_inner fade" id="BusinessCard">
                       <BusinessCardView employeeInformation={data} />
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -1295,19 +1129,19 @@ function EmployeeView() {
                     <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link active" data-bs-toggle="tab" href="#Attendance">Attendance</a>
                     </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
+                    <li class="nav-item hr_emply_info_inner_tab_item d-none">
                       <a class="nav-link" data-bs-toggle="tab" href="#SalaryCalculation">Salary Calculation</a>
                     </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
+                    <li class="nav-item hr_emply_info_inner_tab_item d-none">
                       <a class="nav-link" data-bs-toggle="tab" href="#LeaveReport">Leave Report</a>
                     </li>
                     <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link" data-bs-toggle="tab" href="#CallingReport">Calling Report</a>
                     </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
+                    <li class="nav-item hr_emply_info_inner_tab_item d-none">
                       <a class="nav-link" data-bs-toggle="tab" href="#EmployeeDocuments">Employee Documents</a>
                     </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
+                    <li class="nav-item hr_emply_info_inner_tab_item d-none">
                       <a class="nav-link" data-bs-toggle="tab" href="#Settings">Settings</a>
                     </li>
                   </ul>
@@ -1324,6 +1158,7 @@ function EmployeeView() {
                     <div class="tab-pane heiitc_inner fade" id="CallingReport">
                       <CallingReportView employeeInformation={data} />
                     </div>
+                   
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
@@ -1388,4 +1223,4 @@ function EmployeeView() {
   );
 }
 
-export default EmployeeView;
+export default FloorManagerProfile;

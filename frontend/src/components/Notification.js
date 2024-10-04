@@ -15,57 +15,52 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import Bell from './Bell';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+
 
 export default function Notification({ name, designation }) {
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { userId } = useParams();
+  const navigate = useNavigate();
+
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [data, setdata] = useState([]);
+  const [employeeData, setEmployeeData] = useState([]);
+  const { newtoken } = useParams();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const navigate = useNavigate();
-  const [data, setdata] = useState([])
-  const [employeeData, setEmployeeData] = useState([])
-  const { newtoken } = useParams();
-  const { userId } = useParams();
-
   const fetchEmployeeData = async () => {
-
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`)
-      console.log(response.data)
-      const data = response.data.filter(item => item.ename === name)
-
-      console.log(data)
-      setEmployeeData(data)
-
-
+      console.log(response.data);
+      const data = response.data.filter(item => item.ename === name);
+      console.log(data);
+      setEmployeeData(data);
     } catch (error) {
-      console.error("Error fetching employee data", error)
-
+      console.error("Error fetching employee data", error);
     }
-  }
-  React.useEffect(() => {
-    fetchEmployeeData()
-  }, [userId])
+  };
 
-
+  useEffect(() => {
+    fetchEmployeeData();
+  }, [userId]);
 
   const handleLogout = () => {
     const currentPage = window.location.pathname;
-
     // Clear the token from local storage based on the current page
-
     localStorage.removeItem("newtoken");
-
     navigate("/");
-
   };
+
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -83,6 +78,7 @@ export default function Notification({ name, designation }) {
           </IconButton>
         </Tooltip>
       </Box>
+
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -124,28 +120,34 @@ export default function Notification({ name, designation }) {
         }}>
           <Avatar /> Profile
         </MenuItem>
+
         {/* <MenuItem onClick={handleClose}>
           <Avatar /> My account
         </MenuItem> */}
+
         <Divider />
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <PersonAdd fontSize="small" />
           </ListItemIcon>
           Add another account
         </MenuItem>
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings
         </MenuItem>
+        
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>
+
       </Menu>
     </React.Fragment>
   );

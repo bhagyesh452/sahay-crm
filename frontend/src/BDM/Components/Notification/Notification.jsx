@@ -13,19 +13,20 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 //import Bell from './Bell';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-
-
-
-
-
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 export default function Notification() {
+
+    const { userId } = useParams();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+    const navigate = useNavigate();
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -34,14 +35,9 @@ export default function Notification() {
         const currentPage = window.location.pathname;
         localStorage.removeItem("bdmToken");
         window.location.href = '/floormanager/login';
-    }
-
-
-
-
+    };
 
     return (
-
         <React.Fragment>
             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
 
@@ -58,6 +54,7 @@ export default function Notification() {
                     </IconButton>
                 </Tooltip>
             </Box>
+
             <Menu
                 anchorEl={anchorEl}
                 id="account-menu"
@@ -93,33 +90,41 @@ export default function Notification() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={() => {
+                    navigate(`/floormanager-profile-details/${userId}`);
+                    handleClose();
+                }}>
                     <Avatar /> Profile
                 </MenuItem>
+
                 <MenuItem onClick={handleClose}>
                     <Avatar /> My account
                 </MenuItem>
+
                 <Divider />
+
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <PersonAdd fontSize="small" />
                     </ListItemIcon>
                     Add another account
                 </MenuItem>
+
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <Settings fontSize="small" />
                     </ListItemIcon>
                     Settings
                 </MenuItem>
+
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <Logout fontSize="small" />
                     </ListItemIcon>
                     Logout
                 </MenuItem>
+
             </Menu>
         </React.Fragment>
-
-    )
+    );
 }
