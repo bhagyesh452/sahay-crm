@@ -978,7 +978,7 @@ function ViewAttendance({ year, month, date }) {
                                                                             ${status === "Present" && newmanuallyAdded === true ? newReason : ""}                                                                                                      
                                                                                ${status === "Half Day" && newmanuallyAdded === true ? newReason : ""}
                                                                                     ${status === "Leave" && newmanuallyAdded === true ? newReason : ""}
-                                                                                    ${status === "S" && newmanuallyAdded === true ? newReason : ""}
+                                                                                    ${(status === "S" || status === "OH") && newmanuallyAdded === true ? newReason : ""}
                                                                                     ${status.startsWith("LC") && newmanuallyAdded === true ? newReason : ""}
                                                                                 `.trim()}
                                                                         className=
@@ -986,7 +986,7 @@ function ViewAttendance({ year, month, date }) {
                                                                     ${status === "Present" && newmanuallyAdded === true ? "p-present OverP" : status === "Present" ? "p-present" : ""}
                                                                        ${status === "Half Day" && newmanuallyAdded === true ? "H-Halfday OverP" : status === "Half Day" ? "H-Halfday" : ""}
                                                                             ${status === "Leave" && newmanuallyAdded === true ? "l-leave OverP" : status === "Leave" ? "l-leave" : ""}
-                                                                            ${status === "S" && newmanuallyAdded === true ? "s-sunday OverP" : status === "s-sunday" ? "s-sunday" : ""}
+                                                                            ${(status === "S" || status === "OH") && newmanuallyAdded === true ? "s-sunday OverP" : (status === "S" || status === "OH") ? "s-sunday" : ""}
                                                                             ${status.startsWith("LC") && newmanuallyAdded === true ? "l-lc OverP" : status.startsWith("LC") ? "l-lc" : ""}
                                                                         `.trim()}
                                                                     >
@@ -994,6 +994,7 @@ function ViewAttendance({ year, month, date }) {
                                                                             status === "Half Day" ? "H" :
                                                                                 status === "Leave" ? "L" :
                                                                                     status === "S" ? "S" :
+                                                                                    status === "OH" ? "OH" :
                                                                                         status.startsWith("LC") ? status : ""
                                                                         }
                                                                     </div>

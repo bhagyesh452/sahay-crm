@@ -16,6 +16,7 @@ import { TbRestore } from "react-icons/tb";
 import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import { useQuery } from "@tanstack/react-query";
+import UpcomingEmployees from "./UpcomingEmployees";
 
 function HrEmployees() {
 
@@ -26,7 +27,7 @@ function HrEmployees() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const userId = localStorage.getItem("hrUserId");
   const [myInfo, setMyInfo] = useState([]);
-
+  const [upcomingEmployees, setUpcomingEmployees] = useState([])
   const navigate = useNavigate();
 
   // const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +36,10 @@ function HrEmployees() {
   const [deletedData, setDeletedData] = useState([]);
   const [companyData, setCompanyData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [recruiterData, setRecruiterData] = useState([])
+  const [page, setPage] = useState(1);
+  const [currentDataLoading, setCurrentDataLoading] = useState(false);
+  const [openRecruiterWindow, setOpenRecruiterWindow] = useState(false)
 
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
@@ -103,6 +108,35 @@ function HrEmployees() {
     //     setIsLoading(false);
     //   }
   };
+
+  const fetchRecruiterData = async (searchQuery = "", page = 1) => {
+    try {
+      setCurrentDataLoading(true);
+      const response = await axios.get(`${secretKey}/recruiter/recruiter-data-dashboard`);
+      const {
+        data,
+      } = response.data;
+
+
+      // If it's a search query, replace the data; otherwise, append for pagination
+      if (page === 1) {
+        // This is either the first page load or a search operation
+        setRecruiterData(data);
+      } else {
+        // This is a pagination request
+        setRecruiterData(prevData => [...prevData, ...data]);
+      }
+    } catch (error) {
+      console.error("Error fetching data", error.message);
+    } finally {
+      setCurrentDataLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchRecruiterData("", page = 1); // Fetch data initially
+  }, []);
 
   // Fetch active employees
   const { data: activeData, isLoading: isLoadingActive, isError: isErrorActive, refetch: refetchActive } = useQuery({
@@ -450,7 +484,7 @@ function HrEmployees() {
                         Upcomming Employees
                       </div>
                       <div className="rm_tsn_bdge">
-                        10
+                        {upcomingEmployees.length > 0}
                       </div>
                     </div>
                   </a>
@@ -763,7 +797,7 @@ function HrEmployees() {
               </div>
 
               <div class="tab-pane" id="UpcommingEmployees">
-                <h1>Upcoming Employees</h1>
+                 <UpcomingEmployees upcomingEmployees={recruiterData} dataLoading={currentDataLoading}/>
               </div>
             </div>
           </div>

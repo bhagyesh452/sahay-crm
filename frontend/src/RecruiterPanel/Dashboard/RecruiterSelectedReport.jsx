@@ -153,7 +153,7 @@ function RecruiterSelectdReport({ empName, recruiterData }) {
                         <div className="row tbl-scroll">
                             <table className="table-vcenter table-nowrap admin-dash-tbl" style={{ maxHeight: "400px" }}>
                                 <thead className="recruiter-dash-tbl-thead">
-                                    <tr>
+                                    <tr className="tr-sticky">
                                         <th>SR.NO</th>
                                         <th>Applicant Name</th>
                                         <th>Number</th>

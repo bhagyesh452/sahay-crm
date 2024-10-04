@@ -17,17 +17,7 @@ function RecruiterDashboard() {
   const [currentDataLoading, setCurrentDataLoading] = useState(false)
   const [rmServicesData, setRmServicesData] = useState([]);
   const [search, setSearch] = useState("");
-  //const [showFilterIcon, setShowFilterIcon] = useState(false)
-  const [activeTab, setActiveTab] = useState("General");
-  const [showFilterIcon, setShowFilterIcon] = useState({
-    General: false,
-    InProcess: false,
-    ReadyToSubmit: false,
-    Submited: false,
-    Approved: false,
-    Hold: false,
-    Defaulter: false
-  });
+
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
