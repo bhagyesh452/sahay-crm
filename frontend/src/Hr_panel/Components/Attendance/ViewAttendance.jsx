@@ -217,10 +217,10 @@ function ViewAttendance({ year, month, date }) {
         const reason = attendanceDetails.reasonValue || "";
         //console.log("reason", attendanceDetails)
         const manualStatus = attendanceDetails.isAddedManually;
-        console.log("manualStatus", manualStatus)
-        console.log("sirfstatus", status)
+      
+      
         // Log the status before setting it to statusValue
-        console.log("Setting statusValue to:", manualStatus ? status : "");
+       
         setNewStatus(status)
         setReasonValue(manualStatus ? reason : "");
         setStatusValue(manualStatus ? status : "");
@@ -249,7 +249,7 @@ function ViewAttendance({ year, month, date }) {
         // console.log("Attendance date is :", formattedDate);
         // console.log("Day name is :", dayName);
     };
-    console.log("statusvaluesbahar", statusValue)
+   
     const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
         let workingHours, status, reasonToSend, isAddedManually;
         const convertToMinutes = (timeString) => {
@@ -368,13 +368,13 @@ function ViewAttendance({ year, month, date }) {
             if (hasError) {
                 return;
             }
-            inTime = inTime ? inTime : "00:00";
-            outTime = outTime ? outTime : "00:00";
-            workingHours = workingHours ? workingHours : "00:00";
+            inTime = inTime ? inTime : "";
+            outTime = outTime ? outTime : "";
+            workingHours = workingHours ? workingHours : "";
             status = statusValue;
             reasonToSend = reasonValue;
             isAddedManually = true;
-            console.log("statusvalue", statusValue)
+           
         } else {
             // Validate In Time
             if (!inTime) {
@@ -432,8 +432,7 @@ function ViewAttendance({ year, month, date }) {
             reasonValue: reasonToSend ? reasonToSend : null,
             isAddedManually: isAddedManually,
         };
-        console.log("payload", payload)
-
+       
         setShowPopup(false);
         setInTime("");
         setOutTime("");
@@ -2170,9 +2169,9 @@ function ViewAttendance({ year, month, date }) {
                                                         className="form-select"
                                                         value={["LC1", "LC2", "LC3", "LCH"].includes(statusValue) ? "LC" : statusValue} // Map LC1, LC2, LC3, LCH to LC
                                                         onChange={(e) => {
-                                                            console.log("statusvalueidhr", statusValue)
+                                                         
                                                             setStatusValue(e.target.value);
-                                                            console.log("Status Value Changed to:", e.target.value); // Debugging
+                                                        
                                                             if (e.target.value) setStatusValueError(""); // Clear error when valid
                                                         }}
                                                     >

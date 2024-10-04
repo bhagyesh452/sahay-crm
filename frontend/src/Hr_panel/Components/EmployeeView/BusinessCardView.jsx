@@ -14,6 +14,61 @@ function BusinessCardView({ employeeInformation }) {
     const backCardRef = useRef(null);
     const [flipped, setFlipped] = useState(false);
 
+    // const handleDownloadJPG = async () => {
+    //     if (!frontCardRef.current || !backCardRef.current) {
+    //         return;
+    //     }
+    
+    //     try {
+    //         // Hide buttons before capturing
+    //         document.querySelectorAll(".profile-pic-upload, .profile-pic-flip").forEach((button) => {
+    //             button.style.visibility = 'hidden';
+    //         });
+    
+    //         // Capture front side
+    //         const frontCanvas = await html2canvas(frontCardRef.current, { useCORS: true });
+    
+    //         // Temporarily unflip back side to capture it correctly
+    //         setFlipped(true);
+    //         await new Promise(resolve => setTimeout(resolve, 300)); // Wait for animation to complete
+    
+    //         // Capture back side
+    //         const backCanvas = await html2canvas(backCardRef.current, { useCORS: true });
+    
+    //         // Define the margin between front and back images
+    //         const margin = 20; // You can adjust this value as needed
+    
+    //         // Create a new canvas to combine both sides
+    //         const combinedCanvas = document.createElement('canvas');
+    //         combinedCanvas.width = Math.max(frontCanvas.width, backCanvas.width);
+    //         combinedCanvas.height = frontCanvas.height + backCanvas.height + margin;
+    
+    //         const ctx = combinedCanvas.getContext('2d');
+            
+    //         // Draw front image
+    //         ctx.drawImage(frontCanvas, 0, 0);
+            
+    //         // Draw back image with margin space
+    //         ctx.drawImage(backCanvas, 0, frontCanvas.height + margin);
+    
+    //         // Convert combined canvas to image and download
+    //         const combinedImage = combinedCanvas.toDataURL('image/jpeg', 1.0);
+    //         const link = document.createElement('a');
+    //         link.href = combinedImage;
+    //         link.download = `${employeeInformation.empFullName}-business-card-combined.jpg`;
+    //         link.click();
+    
+    //     } catch (err) {
+    //         console.error('Oops, something went wrong!', err);
+    //     } finally {
+    //         // Show buttons after capturing
+    //         document.querySelectorAll(".profile-pic-upload, .profile-pic-flip").forEach((button) => {
+    //             button.style.visibility = 'visible';
+    //         });
+    //     }
+    // };
+    
+
     const handleDownloadJPG = async () => {
         if (!frontCardRef.current || !backCardRef.current) {
             return;
@@ -25,31 +80,45 @@ function BusinessCardView({ employeeInformation }) {
                 button.style.visibility = 'hidden';
             });
     
-            // Capture front side
-            const frontCanvas = await html2canvas(frontCardRef.current, { useCORS: true });
+            // Set fixed width and height for capturing business card
+            const CARD_WIDTH = 475;  // Fixed width in pixels
+            const CARD_HEIGHT = 260;  // Fixed height in pixels
+    
+            // Capture front side with fixed size
+            const frontCanvas = await html2canvas(frontCardRef.current, {
+                useCORS: true,
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                scale: 2,  // Higher value for better quality
+            });
     
             // Temporarily unflip back side to capture it correctly
             setFlipped(true);
-            await new Promise(resolve => setTimeout(resolve, 300)); // Wait for animation to complete
+            await new Promise(resolve => setTimeout(resolve, 300)); // Wait for the flip animation to complete
     
-            // Capture back side
-            const backCanvas = await html2canvas(backCardRef.current, { useCORS: true });
+            // Capture back side with fixed size
+            const backCanvas = await html2canvas(backCardRef.current, {
+                useCORS: true,
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                scale: 2,  // Higher value for better quality
+            });
     
             // Define the margin between front and back images
-            const margin = 20; // You can adjust this value as needed
+            const margin = 40;  // Adjust this value for better spacing
     
             // Create a new canvas to combine both sides
             const combinedCanvas = document.createElement('canvas');
-            combinedCanvas.width = Math.max(frontCanvas.width, backCanvas.width);
-            combinedCanvas.height = frontCanvas.height + backCanvas.height + margin;
+            combinedCanvas.width = CARD_WIDTH;
+            combinedCanvas.height = CARD_HEIGHT * 2 + margin;
     
             const ctx = combinedCanvas.getContext('2d');
-            
+    
             // Draw front image
-            ctx.drawImage(frontCanvas, 0, 0);
-            
+            ctx.drawImage(frontCanvas, 0, 0, CARD_WIDTH, CARD_HEIGHT);
+    
             // Draw back image with margin space
-            ctx.drawImage(backCanvas, 0, frontCanvas.height + margin);
+            ctx.drawImage(backCanvas, 0, CARD_HEIGHT + margin, CARD_WIDTH, CARD_HEIGHT);
     
             // Convert combined canvas to image and download
             const combinedImage = combinedCanvas.toDataURL('image/jpeg', 1.0);
@@ -67,7 +136,6 @@ function BusinessCardView({ employeeInformation }) {
             });
         }
     };
-    
 
     const handleFlip = () => {
         setFlipped(true);
