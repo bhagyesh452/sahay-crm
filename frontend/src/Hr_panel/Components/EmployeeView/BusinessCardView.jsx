@@ -80,28 +80,31 @@ function BusinessCardView({ employeeInformation }) {
                 button.style.visibility = 'hidden';
             });
     
+            // Get the pixel ratio to adjust the scale accordingly
+            const pixelRatio = window.devicePixelRatio || 1;
+            
             // Set fixed width and height for capturing business card
             const CARD_WIDTH = 475;  // Fixed width in pixels
             const CARD_HEIGHT = 260;  // Fixed height in pixels
     
-            // Capture front side with fixed size
+            // Capture front side with scale adjusted to devicePixelRatio
             const frontCanvas = await html2canvas(frontCardRef.current, {
                 useCORS: true,
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
-                scale: 2,  // Higher value for better quality
+                scale: pixelRatio,  // Adjust the scale to the device's pixel ratio
             });
     
             // Temporarily unflip back side to capture it correctly
             setFlipped(true);
             await new Promise(resolve => setTimeout(resolve, 300)); // Wait for the flip animation to complete
     
-            // Capture back side with fixed size
+            // Capture back side with scale adjusted to devicePixelRatio
             const backCanvas = await html2canvas(backCardRef.current, {
                 useCORS: true,
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
-                scale: 2,  // Higher value for better quality
+                scale: pixelRatio,  // Adjust the scale to the device's pixel ratio
             });
     
             // Define the margin between front and back images
@@ -109,16 +112,16 @@ function BusinessCardView({ employeeInformation }) {
     
             // Create a new canvas to combine both sides
             const combinedCanvas = document.createElement('canvas');
-            combinedCanvas.width = CARD_WIDTH;
-            combinedCanvas.height = CARD_HEIGHT * 2 + margin;
+            combinedCanvas.width = Math.max(frontCanvas.width, backCanvas.width);
+            combinedCanvas.height = frontCanvas.height + backCanvas.height + margin;
     
             const ctx = combinedCanvas.getContext('2d');
     
             // Draw front image
-            ctx.drawImage(frontCanvas, 0, 0, CARD_WIDTH, CARD_HEIGHT);
+            ctx.drawImage(frontCanvas, 0, 0);
     
             // Draw back image with margin space
-            ctx.drawImage(backCanvas, 0, CARD_HEIGHT + margin, CARD_WIDTH, CARD_HEIGHT);
+            ctx.drawImage(backCanvas, 0, frontCanvas.height + margin);
     
             // Convert combined canvas to image and download
             const combinedImage = combinedCanvas.toDataURL('image/jpeg', 1.0);
@@ -227,8 +230,8 @@ function BusinessCardView({ employeeInformation }) {
                                 {employeeInformation && employeeInformation.branchOffice === "Gota" ?
                                 (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
                                     Road, Gota, Ahmedabad - 382470</p>) :
-                                (<p className='m-0'>1307/08, Zion Z1, Shindhubhavan Road,<br />
-                                    Ahmedabad - 380054 </p>)}
+                                (<p className='m-0'>1307/08, Zion Z1, Shindhubhavan<br />
+                                    Road, Ahmedabad - 380054 </p>)}
                             </div>
                         </div>
                     </div>
