@@ -162,7 +162,6 @@ function TestLeads() {
     }, [dataStatus, isSearching, sortPattern, isFilter])
 
     //--------------------function to change pages ------------------------------
-
     // const handleNextPage = () => {
     //     setCurrentPage(currentPage + 1);
     //     fetchData(currentPage + 1, latestSortCount);
@@ -230,20 +229,19 @@ function TestLeads() {
                             limit,
                         }
                     });
-                }
 
-                if (response) {
-                    setTotalExtractedCount(response.data.extractedDataCount)
-                    setTotalCompaniesUnaasigned(response.data.totalUnassigned)
-                    setTotalCompaniesAssigned(response.data.totalAssigned)
-                    if (dataStatus === "Unassigned") {
-                        setunAssignedData(response.data.unassigned);
+                    if (response) {
+                        setTotalExtractedCount(response.data.extractedDataCount);
+                        setTotalCompaniesUnaasigned(response.data.totalUnassigned);
+                        setTotalCompaniesAssigned(response.data.totalAssigned);
 
-                    } else if (dataStatus === "Extracted") {
-                        setExtractedData(response.data.extracted);
-
-                    } else {
-                        setAssignedData(response.data.assigned)
+                        if (dataStatus === "Unassigned") {
+                            setunAssignedData(response.data.unassigned);
+                        } else if (dataStatus === "Extracted") {
+                            setExtractedData(response.data.extracted);
+                        } else {
+                            setAssignedData(response.data.assigned);
+                        }
                     }
                 }
             } catch (error) {
@@ -256,7 +254,6 @@ function TestLeads() {
         }
     }, [dataStatus]);
 
-
     //const currentData = mainData.slice(startIndex, endIndex);
 
     function formatDateFinal(timestamp) {
@@ -266,8 +263,8 @@ function TestLeads() {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
-    //--------------------function to filter company name ------------------------------
 
+    //--------------------function to filter company name ------------------------------
     // const handleFilterSearch = async (searchQuery) => {
     //     try {
     //         setCurrentDataLoading(true);
@@ -1233,7 +1230,6 @@ function TestLeads() {
         const response = await axios.post(`${secretKey}/admin-leads/fetch-by-ids`, { ids: selectedRows });
         const dataToSend = response.data;
         // console.log("Data to send is :", dataToSend);
-        
         try {
             setOpenBacdrop(true);
             setOpenAssignLeadsDialog(false);
@@ -1783,7 +1779,7 @@ function TestLeads() {
     }
 
 
-// -----------------update-leads-button-function-for emergency-use-only------------
+    // -----------------update-leads-button-function-for emergency-use-only------------
     const handleFileUploadForChange = async (e) => {
         const file = e.target.files[0];
 
@@ -1952,7 +1948,7 @@ function TestLeads() {
                                                 setDataStatus("Assigned")
                                                 setCurrentPage(1)
                                             }}
-                                            >
+                                        >
                                             Assigned
                                             <span className="no_badge">
                                                 {totalCompaniesAssigned}
