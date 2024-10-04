@@ -19,9 +19,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 export default function Notification() {
 
     const { userId } = useParams();
+    const navigate = useNavigate();
+    
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
-    const navigate = useNavigate();
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);

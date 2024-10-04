@@ -924,8 +924,8 @@ function RmofCertificationBookings() {
 
   return (
     <div>
-      <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
-      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
+      {/* <RmofCertificationHeader name={employeeData.ename} designation={employeeData.designation} />
+      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} /> */}
 
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">

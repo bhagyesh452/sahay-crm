@@ -1119,18 +1119,9 @@ function Received_booking_box() {
 
   return (
     <div>
-      <RmofCertificationHeader
-        id={employeeData._id}
-        name={employeeData.ename}
-        empProfile={
-          employeeData.profilePhoto &&
-          employeeData.profilePhoto.length !== 0 &&
-          employeeData.profilePhoto[0].filename
-        }
-        gender={employeeData.gender}
-        designation={employeeData.newDesignation}
-      />
-      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
+      {/* <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename } gender={employeeData.gender} designation={employeeData.newDesignation} />
+      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} /> */}
+      
       {!openAllBooking && !openTrashBoxPanel && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">

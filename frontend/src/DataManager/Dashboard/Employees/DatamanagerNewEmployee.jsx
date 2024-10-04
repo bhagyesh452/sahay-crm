@@ -155,8 +155,8 @@ function DatamanagerNewEmployee() {
 
     return (
         <div>
-            <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
-            <Navbar number={1} />
+            {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
+            <Navbar number={1} /> */}
 
             {/* New Code Of Employee */}
             <div className="page-wrapper">

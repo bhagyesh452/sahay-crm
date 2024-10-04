@@ -224,8 +224,9 @@ function RmCertificationDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
-      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} />
+      {/* <RmofCertificationHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
+      <RmCertificationNavbar rmCertificationUserId={rmCertificationUserId} /> */}
+      
       <div className="page-wrapper employess-new-dashboard">
         <div className="Dash-Main mt-3">
           <div className="container-xl">
