@@ -911,7 +911,7 @@ function RecruiterUnderReview({
                                         <td>{formatDatePro(obj.fillingDate)}</td>
                                         <td>
                                             <RecruiterCallHistory
-                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
+                                            key={`${obj.empFullName}-${obj.personal_email}-${obj.personal_number}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
                                             mainStatus={obj.mainCategoryStatus}
                                             subStatus={obj.subCategoryStatus}
                                             setNewSubStatus={setNewStatusProcess}

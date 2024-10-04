@@ -1850,6 +1850,7 @@ th.th-day {
     border-radius: 6px;
     box-shadow: 2px 2px 10px -2px #b4b4b4;
     overflow: hidden;
+    position: relative;
 }
 .BusinessCardheader
 {
@@ -1960,4 +1961,106 @@ th.th-day {
 .call-history td
 {
     padding: 6px 7px !important;
+}
+
+
+
+.flip-card {
+    background-color: transparent;
+    /* perspective: 1000px; */
+}
+  
+.flip-card-inner {
+    perspective: 1000px;
+    position: relative;
+}
+  
+  
+.flip-card-inner .front, .flip-card-inner .back  {
+    position: absolute;
+    backface-visibility: hidden;
+    transition: transform 0.6s;
+    top: 0;
+}
+
+.flip-card-inner .front {
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+.flip-card-inner .back {
+    transform: rotateY(180deg);
+}
+
+.flip-card-inner.flipped .front {
+    transform: rotateY(-180deg);
+}
+  
+.flip-card-inner.flipped .back {
+    transform: rotateY(0deg);
+}
+  
+.BusinessCardBody1
+{
+    width: 475px;
+    height: 260px;
+    background: #fff;
+    background-image: url(../static/bg-flip.png);
+    background-position: center 10px;
+    background-size: 100% 93%;
+    background-repeat: no-repeat;
+    border-radius: 6px;
+    box-shadow: 2px 2px 10px -2px #b4b4b4;
+    overflow: hidden;
+    position: relative;
+
+}
+.businessCardBacklogo
+{
+    width: 185px;
+    text-align: center;
+    margin: 62px auto;
+}
+.businessCardBacklogo img 
+{
+    width: 100%;
+}
+.businessCardBackfootertext
+{
+    font-size: 10px;
+    color: #fff;
+    margin-left: 8px;
+    line-height: 15px;
+    letter-spacing: 1px;
+    font-weight: 100;
+    padding-top: 12px;
+}
+.businessCardBackfootericon
+{
+    width: 18px;
+    height: 46px;
+    background: #ffbb00;
+    margin: 0 0 0 12px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+    padding-top: 11px;
+    color: #ffff;
+    font-size: 11px;
+}
+
+.profile-pic-flip
+{
+    width: 35px;
+    text-align: center;
+    height: 35px;
+    line-height: 11px;
+    border-radius: 100px;
+    background: #FF9800;
+    position: absolute;
+    border: none;
+    color: #fff;
+    right: 58px;
+    bottom: 12px;
+    cursor: pointer;
+    transition: transform .2s;
+    box-shadow: 3px 4px 12px -3px #686868;
 }

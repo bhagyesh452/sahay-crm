@@ -46,7 +46,14 @@ function BDMInterestedLeadsReport() {
 
     });
     const [finalEmployeeData, setFinalEmployeeData] = useState([])
-
+    const excludedBDENames = [
+        "Vishnu Suthar",
+        "Vandit Shah",
+        "Khushi Gandhi",
+        "Yashesh Gajjar",
+        "Ravi Prajapati",
+        "Yash Goswami"
+      ];
     useEffect(() => {
         document.title = `Floor-Manager-Sahay-CRM`;
     }, []);
@@ -62,15 +69,17 @@ function BDMInterestedLeadsReport() {
             const userData = tempData.find((item) => item._id === userId);
             // const newdata = response.data
             const deletedData = response3.data;
-            console.log("userData", userData)
+            //console.log("userData", userData)
             // Filter by designations
             const filteredData = tempData.filter(employee =>
                 employee.designation === ("Sales Executive" || employee.designation === "Sales Manager") &&
-                employee.branchOffice === userData.branchOffice
+                employee.branchOffice === userData.branchOffice &&
+                !excludedBDENames.includes(employee.ename)
             );
             const filteredDeletedData = deletedData.filter(employee =>
                 employee.designation === ("Sales Executive" || employee.designation === "Sales Manager") &&
-                employee.branchOffice === userData.branchOffice
+                employee.branchOffice === userData.branchOffice &&
+                !excludedBDENames.includes(employee.ename)
             );
             // Combine data from both responses
             const combinedForwardEmployeeData = [...filteredData, ...filteredDeletedData];
@@ -93,35 +102,6 @@ function BDMInterestedLeadsReport() {
     const [companyDataFilter, setCompanyDataFilter] = useState([]);
     const [companyDataTotal, setCompanyDataTotal] = useState([]);
 
-
-    // const fetchEmployeeInfo = async () => {
-    //     try {
-    //         const response = await fetch(`${secretKey}/employee/einfo`);
-    //         if (!response.ok) {
-    //             throw new Error('Network response was not ok');
-    //         }
-    //         const data = await response.json();
-    //         const userData = data.find((item) => item._id === userId);
-
-    //         if (!userData) {
-    //             throw new Error('User data not found');
-    //         }
-
-    //         const filteredData = data.filter(
-    //             (employee) =>
-    //                 (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") &&
-    //                 employee.branchOffice === userData.branchOffice
-    //         );
-
-    //         setEmployeeData(filteredData);
-    //         setEmployeeDataFilter(filteredData);
-    //         setEmployeeDataNew(filteredData);
-    //     } catch (error) {
-    //         console.error('Error Fetching Employee Data:', error);
-    //     }
-    // };
-
-
     useEffect(() => {
         fetchData()
         //fetchEmployeeInfo()
@@ -141,9 +121,9 @@ function BDMInterestedLeadsReport() {
         fetch(`${secretKey}/company-data/leads/interestedleads`)
             .then((response) => response.json())
             .then((data) => {
-                setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
-                setCompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
-                setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
+                setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted" && !excludedBDENames.includes(obj.ename)));
+                setCompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted" && !excludedBDENames.includes(obj.ename)));
+                setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted" && !excludedBDENames.includes(obj.ename)));
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);
@@ -353,8 +333,8 @@ function BDMInterestedLeadsReport() {
     };
 
 
-    console.log("forwardedEmp", forwardEmployeeData)
-    console.log("totalfiletred", totalFilteredCompanies)
+    //console.log("forwardedEmp", forwardEmployeeData)
+    //console.log("totalfiletred", totalFilteredCompanies)
 
     return (
         <div>
@@ -370,26 +350,6 @@ function BDMInterestedLeadsReport() {
                                 </h2>
                             </div>
                             <div className="d-flex align-items-center pr-1">
-                                {/* <div class="input-icon mr-1">
-                                    <span class="input-icon-addon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                                            <path d="M21 21l-6 -6"></path>
-                                        </svg>
-                                    </span>
-                                    <input
-                                        value={searchTermProjection}
-                                        onChange={(e) =>
-                                            debouncedFilterSearchProjection(e.target.value)
-                                        }
-                                        className="form-control"
-                                        placeholder="Enter BDE Name..."
-                                        type="text"
-                                        name="bdeName-search"
-                                        id="bdeName-search" />
-                                </div> */}
-
                                 <div className="date-filter">
                                 <LocalizationProvider
                                     dateAdapter={AdapterDayjs} >

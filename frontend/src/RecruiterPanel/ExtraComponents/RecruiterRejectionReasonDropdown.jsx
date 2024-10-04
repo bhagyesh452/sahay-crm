@@ -31,7 +31,7 @@ const RecruiterRejectionReasonDropdown = ({ empName, empEmail, mainStatus, rejec
       console.error("Error updating status:", error.message);
     }
   };
-  console.log("rejectionreason" , rejectionReason)
+  //console.log("rejectionreason" , rejectionReason)
 
 
 

@@ -35,7 +35,7 @@ router.post("/forwardtobdmdata", async (req, res) => {
     companyName,
   } = req.body;
   //console.log("selectedData", selectedData);
-  console.log(companyName)
+  //console.log(companyName)
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
     const newLeads = await Promise.all(
@@ -259,7 +259,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       ename: { $in: enames },
     }).select({ email: 1, ename: 1 });
 
-    console.log("ename", employee);
+    //console.log("ename", employee);
 
     // Create a lookup object for "Company Name" to isDeletedEmployeeCompany mapping
     const companyLookup = {};
@@ -276,7 +276,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       }
     });
 
-    console.log("companylookup", companyLookup);
+    //console.log("companylookup", companyLookup);
 
     // Update team leads data based on lookup, add isDeletedEmployeeCompany field if it doesn't exist
     for (const lead of teamLeadsData) {
@@ -300,7 +300,7 @@ router.get("/forwardedbybdedata/:bdmName", async (req, res) => {
       );
     }
 
-    console.log("teamleads", teamLeadsData);
+    //console.log("teamleads", teamLeadsData);
 
     res.status(200).send(teamLeadsData);
   } catch (error) {
@@ -326,7 +326,7 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
     monthIndex,
   } = req.query;
 
-  console.log(selectedBdeForwardDate);
+  //console.log(selectedBdeForwardDate);
 
   try {
     // Start with the required bdmName filter
@@ -377,11 +377,11 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
       };
     }
 
-    console.log("Base Query:", JSON.stringify(baseQuery, null, 2));
+    //console.log("Base Query:", JSON.stringify(baseQuery, null, 2));
 
     const data = await TeamLeadsModel.find(baseQuery).lean();
 
-    console.log("Data Retrieved:", data);
+    //console.log("Data Retrieved:", data);
 
     res.send(data);
   } catch (error) {
@@ -396,7 +396,7 @@ router.post("/update-bdm-status/:id", async (req, res) => {
   const socketIO = req.io;
   
  
-  console.log(id)
+  //console.log(id)
   const {
     newBdmStatus,
     companyId,
@@ -406,7 +406,7 @@ router.post("/update-bdm-status/:id", async (req, res) => {
     bdmStatusChangeTime,
   } = req.body; // Destructure the required properties from req.body
 
-  console.log(req.body)
+  //console.log(req.body)
   try {
     // Update the status field in the database based on the employee id
     await TeamLeadsModel.findByIdAndUpdate(id, {
@@ -426,7 +426,7 @@ router.post("/update-bdm-status/:id", async (req, res) => {
       companyName : company["Company Name"]
     })
 
-    console.log(company.ename)
+    //console.log(company.ename)
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -512,7 +512,7 @@ router.post(`/teamleads-reversedata/:id`, async (req, res) => {
 router.post(`/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
   const { bdmAcceptStatus, bdmName, remarks } = req.body;
-  console.log(bdmName , remarks)
+  //g(bdmName , remarks)
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
@@ -813,7 +813,7 @@ router.post(`/rejectedrequestdonebybdm`, async (req, res) => {
 
 router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
   const { data, name } = req.body;
-  console.log(data)
+  //console.log(data)
   try {
     const updatePromises = data.map(async (company) => {
       const uploadDate = company.UploadDate === '$AssignDate' ? new Date() : company.UploadDate;
@@ -835,7 +835,7 @@ router.post("/leadsforwardedbyadmintobdm", async (req, res) => {
     });
 
     await Promise.all(updatePromises);
-    console.log("Updated Data is :", updatePromises);
+    //console.log("Updated Data is :", updatePromises);
     res.status(200).json({ message: "Data created and updated successfully" });
   } catch (error) {
     console.log(error);

@@ -1186,7 +1186,8 @@ function EmployeesForwardedDataReport() {
                                                 </div>
                                             </div>
                                         </th>
-                                        <th style={{ cursor: "pointer" }}
+                                        <th 
+                                        style={{ cursor: "pointer" }}
                                             onClick={(e) => {
                                                 let updatedSortType;
                                                 if (newSortType.recievedcase === "ascending") {

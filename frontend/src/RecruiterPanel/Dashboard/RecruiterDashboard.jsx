@@ -2,231 +2,170 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import RecruiterHeader from "../Components/RecuiterHeader";
 import RecuiterNavbar from "../Components/RecuiterNavbar";
+import io from 'socket.io-client';
+import RecruiterApplicantReport from "./RecruiterApplicantReport";
+import RecruiterSelectdReport from "./RecruiterSelectedReport";
+import RecruiterInterviewDate from "../ExtraComponents/RecruiterInterviewDate";
+import RecruiterInterviewReport from "./RecruiterInterviewReport";
 
 
 function RecruiterDashboard() {
 
-  //const { rmCertificationUserId } = useParams();
-
+  const recruiterUserId = localStorage.getItem("recruiterUserId")
+  const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [employeeData, setEmployeeData] = useState([]);
-
-  // Main Category Statuses for Admin-Head
-  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [currentDataLoading, setCurrentDataLoading] = useState(false)
+  const [rmServicesData, setRmServicesData] = useState([]);
+  const [search, setSearch] = useState("");
+  //const [showFilterIcon, setShowFilterIcon] = useState(false)
+  const [activeTab, setActiveTab] = useState("General");
+  const [showFilterIcon, setShowFilterIcon] = useState({
+    General: false,
+    InProcess: false,
+    ReadyToSubmit: false,
+    Submited: false,
+    Approved: false,
+    Hold: false,
+    Defaulter: false
+  });
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [totalDocumentsGeneral, setTotalDocumentsGeneral] = useState(0);
-  const [totalDocumentsProcess, setTotalDocumentsProcess] = useState(0);
-  const [totalDocumentsReadyToSubmit, setTotalDocumentsReadyToSubmit] = useState(0);
-  const [totalDocumentsSubmitted, setTotalDocumentsSubmitted] = useState(0);
-  const [totalDocumentsApproved, setTotalDocumentsApproved] = useState(0);
-  const [totalDocumentsHold, setTotalDocumentsHold] = useState(0);
-  const [totalDocumentsDefaulter, setTotalDocumentsDefaulter] = useState(0);
-
-  // Inporcess Sub Category Statuses for Admin-Head
-  const [callBriefPending, setCallBriefPending] = useState(0);
-  const [dscPending, setDscPending] = useState(0);
-  const [clientNotResponding, setClientNotResponding] = useState(0);
-  const [documentsPending, setDocumentsPending] = useState(0);
-  const [working, setWorking] = useState(0);
-  const [needToCall, setNeedToCall] = useState(0);
-
-  // Main Category Statuses for Admin-Executive
-  const [isAdminExecutive, setIsAdminExecutive] = useState(false);
-  const [totalDocumentsForAdminExecutive, setTotalDocumentsForAdminExecutive] = useState(0);
-  const [totalDocumentsGeneralForAdminExecutive, setTotalDocumentsGeneralForAdminExecutive] = useState(0);
-  const [totalDocumentsProcessForAdminExecutive, setTotalDocumentsProcessForAdminExecutive] = useState(0);
-  const [totalDocumentsApplicationSubmitted, setTotalDocumentsApplicationSubmitted] = useState(0);
-  const [totalDocumentsApprovedForAdminExecutive, setTotalDocumentsApprovedForAdminExecutive] = useState(0);
-  const [totalDocumentsHoldForAdminExecutive, setTotalDocumentsHoldForAdminExecutive] = useState(0);
-  const [totalDocumentsDefaulterForAdminExecutive, setTotalDocumentsDefaulterForAdminExecutive] = useState(0);
-
-  // Inporcess Sub Category Statuses for Admin-Executive
-  const [clientNotRespondingForAdminExecutive, setClientNotRespondingForAdminExecutive] = useState(0);
-  const [needToCallForAdminExecutive, setNeedToCallForAdminExecutive] = useState(0);
-  const [documentsPendingForAdminExecutive, setDocumentsPendingForAdminExecutive] = useState(0);
-  const [workingForAdminExecutive, setWorkingForAdminExecutive] = useState(0);
-  const [applicationPendingForAdminExecutive, setApplicationPendingForAdminExecutive] = useState(0);
-
-  // Application Submitted Sub Category Statuses for Admin-Executive
-  const [kycPendingForAdminExecutive, setKycPendingForAdminExecutive] = useState(0);
-  const [kycRejectedForAdminExecutive, setKycRejectedForAdminExecutive] = useState(0);
-  const [kycIncompleteForAdminExecutive, setKycIncompleteForAdminExecutive] = useState(0);
+  const [totalDocumentsUnderReview, setTotalDocumentsUnderReview] = useState(0);
+  const [totalDocumentsOnHold, setTotalDocumentsOnHold] = useState(0);
+  const [totalDocumentsDisqualified, setTotalDocumentsDisqualified] = useState(0);
+  const [totalDocumentsRejected, settotalDocumentsRejected] = useState(0);
+  const [totalDocumentsSelected, settotalDocumentsSelected] = useState(0);
+  const [noOfFilteredData, setnoOfFilteredData] = useState(0);
+  const [showNoOfFilteredData, setShowNoOfFilteredData] = useState(true);
+  const [openCompanyTaskComponent, setOpenCompanyTaskComponent] = useState(false)
+  const [completeEmployeeInfo, setcompleteEmployeeInfo] = useState([])
 
   useEffect(() => {
     document.title = `Recruiter-Sahay-CRM`;
   }, []);
 
-  const recruiterUserId = localStorage.getItem("recruiterUserId");
-  // console.log(rmCertificationUserId);
+  useEffect(() => {
+    const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
+      secure: true, // Use HTTPS
+      path: '/socket.io',
+      reconnection: true,
+      transports: ['websocket'],
+    });
+
+    socket.on("recruiter-general-status-updated", (res) => {
+      fetchRMServicesData(search)
+    });
+    socket.on("recruiter-application-submitted", (res) => {
+      fetchRMServicesData(search)
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
 
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
       // Set the retrieved data in the state
       const tempData = response.data;
-      // console.log(tempData);
+      //console.log(tempData)
       const userData = tempData.find((item) => item._id === recruiterUserId);
-      // console.log(userData);
+      //console.log(userData)
       setEmployeeData(userData);
-      fetchRMServicesData();
-      fetchInProcessData();
-      fetchAdminExecutiveData();
-      fetchAdminExecutiveInProcessData();
-      fetchAdminExecutiveApplicationSubmittedData();
+      setcompleteEmployeeInfo(tempData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
+  };
+  function formatDatePro(inputDate) {
+    const date = new Date(inputDate);
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+  }
+
+
+  const fetchRMServicesData = async (searchQuery = "", page = 1) => {
+    try {
+      setCurrentDataLoading(true);
+      const response = await axios.get(`${secretKey}/recruiter/recruiter-data-dashboard`);
+      const {
+        data,
+        totalPages,
+        totalDocumentsGeneral,
+        totalDocumentsUnderReview,
+        totalDocumentsOnHold,
+        totalDocumentsDisqualified,
+        totalDocumentsRejected,
+        totalDocumentsSelected,
+
+
+      } = response.data;
+     
+
+      // If it's a search query, replace the data; otherwise, append for pagination
+      if (page === 1) {
+        // This is either the first page load or a search operation
+        setRmServicesData(data);
+      } else {
+        // This is a pagination request
+        setRmServicesData(prevData => [...prevData, ...data]);
+      }
+      setTotalDocumentsUnderReview(totalDocumentsUnderReview)
+      setTotalDocumentsGeneral(totalDocumentsGeneral)
+      setTotalDocumentsOnHold(totalDocumentsOnHold)
+      setTotalDocumentsDisqualified(totalDocumentsDisqualified)
+      settotalDocumentsRejected(totalDocumentsRejected)
+      settotalDocumentsSelected(totalDocumentsSelected)
+
+      setTotalPages(totalPages); // Update total pages
+    } catch (error) {
+      console.error("Error fetching data", error.message);
+    } finally {
+      setCurrentDataLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchRMServicesData("", page); // Fetch data initially
+  }, [employeeData]);
+
+  useEffect(() => {
+    fetchRMServicesData(search, page); // Fetch data when search query changes
+  }, [search]);
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value); // Update search query state
   };
 
   useEffect(() => {
     fetchData();
   }, []);
-
-  const fetchRMServicesData = async (searchQuery = "", page = 1) => {
-    try {
-      const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`);
-
-      const {
-        totalDocuments,
-        totalDocumentsGeneral,
-        totalDocumentsProcess,
-        totalDocumentsReadyToSubmit,
-        totalDocumentsSubmitted,
-        totalDocumentsApproved,
-        totalDocumentsHold,
-        totalDocumentsDefaulter,
-
-      } = response.data;
-      // console.log("Admin head booking data is :", response.data);
-
-      setTotalDocuments(totalDocuments);
-      setTotalDocumentsGeneral(totalDocumentsGeneral);
-      setTotalDocumentsProcess(totalDocumentsProcess);
-      setTotalDocumentsReadyToSubmit(totalDocumentsReadyToSubmit);
-      setTotalDocumentsSubmitted(totalDocumentsSubmitted);
-      setTotalDocumentsApproved(totalDocumentsApproved);
-      setTotalDocumentsHold(totalDocumentsHold);
-      setTotalDocumentsDefaulter(totalDocumentsDefaulter);
-    } catch (error) {
-      console.error("Error fetching booking data", error);
-    }
-  };
-
-  const fetchInProcessData = async (searchQuery = "", page = 1) => {
-    let params = { search: searchQuery, page, activeTab: "Process" };
-
-    try {
-      const servicesResponse = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest`, {
-        params: params
-      });
-
-      const { data, totalPages } = servicesResponse.data;
-      // console.log("Admin head inprocess data is :", data);
-
-      setCallBriefPending(data.filter((item) => item.subCategoryStatus === "Call Done Brief Pending").length);
-      setDscPending(data.filter((item) => item.subCategoryStatus === "All Done DSC Pending").length);
-      setClientNotResponding(data.filter((item) => item.subCategoryStatus === "Client Not Responding").length);
-      setDocumentsPending(data.filter((item) => item.subCategoryStatus === "Documents Pending").length);
-      setWorking(data.filter((item) => item.subCategoryStatus === "Working").length);
-      setNeedToCall(data.filter((item) => item.subCategoryStatus === "Need To Call").length);
-
-    } catch (error) {
-      console.error("Error fetching in process data :", error);
-    }
-  };
-
-  const fetchAdminExecutiveData = async () => {
-    try {
-      const response = await axios.get(`${secretKey}/rm-services/adminexecutivedata`);
-
-      const {
-        data,
-        totalPages,
-        totalDocuments,
-        totalDocumentsGeneral,
-        totalDocumentsApplicationSubmitted,
-        totalDocumentsApproved,
-        totalDocumentsHold,
-        totalDocumentsDefaulter,
-        totalDocumentsProcess,
-
-      } = response.data;
-      // console.log("Admin executive booking data is :", response.data);
-
-      setIsAdminExecutive(true);
-      setTotalDocumentsForAdminExecutive(totalDocuments);
-      setTotalDocumentsGeneralForAdminExecutive(totalDocumentsGeneral);
-      setTotalDocumentsApplicationSubmitted(totalDocumentsApplicationSubmitted);
-      setTotalDocumentsApprovedForAdminExecutive(totalDocumentsApproved);
-      setTotalDocumentsHoldForAdminExecutive(totalDocumentsHold);
-      setTotalDocumentsDefaulterForAdminExecutive(totalDocumentsDefaulter);
-      setTotalDocumentsProcessForAdminExecutive(totalDocumentsProcess);
-    } catch (error) {
-      console.error("Error fetching booking data", error.message);
-    }
-  };
-
-  const fetchAdminExecutiveInProcessData = async (searchQuery = "", page = 1) => {
-    let params = { search: searchQuery, page, activeTab: "Process" };
-
-    try {
-      const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
-        params: params
-      });
-
-      const { data, totalPages } = servicesResponse.data;
-      // console.log("Admin executive inprocess data is :", data);
-
-      setIsAdminExecutive(true);
-      setClientNotRespondingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Client Not Responding").length);
-      setNeedToCallForAdminExecutive(data.filter((item) => item.subCategoryStatus === " Need To Call").length);
-      setDocumentsPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Call Done Docs Pending").length);
-      setWorkingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Working").length);
-      setApplicationPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "Application Pending").length);
-
-    } catch (error) {
-      console.error("Error fetching in process data :", error);
-    }
-  };
-
-  const fetchAdminExecutiveApplicationSubmittedData = async (searchQuery = "", page = 1) => {
-    let params = { search: searchQuery, page, activeTab: "Application Submitted" };
-
-    try {
-      const servicesResponse = await axios.get(`${secretKey}/rm-services/adminexecutivedata`, {
-        params: params
-      });
-
-      const { data, totalPages } = servicesResponse.data;
-      // console.log("Admin executive inprocess data is :", data);
-
-      setKycPendingForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Pending").length);
-      setKycRejectedForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Rejected").length);
-      setKycIncompleteForAdminExecutive(data.filter((item) => item.subCategoryStatus === "KYC Incomplete").length);
-
-    } catch (error) {
-      console.error("Error fetching in process data :", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchRMServicesData();
-    fetchInProcessData();
-    fetchAdminExecutiveData();
-    fetchAdminExecutiveInProcessData();
-    fetchAdminExecutiveApplicationSubmittedData();
-  }, [employeeData]);
-
-  // console.log('employeeData', employeeData);
-
   return (
     <div className="admin-dashboard">
-      <RecruiterHeader id={employeeData._id} 
-      name={employeeData.ename} 
-      empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} 
-      gender={employeeData.gender} 
-      designation={employeeData.newDesignation}/>
-     <RecuiterNavbar recruiterUserId={recruiterUserId}/>
+      <RecruiterHeader id={employeeData._id}
+        name={employeeData.ename}
+        empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename}
+        gender={employeeData.gender}
+        designation={employeeData.newDesignation} />
+      <RecuiterNavbar recruiterUserId={recruiterUserId} />
+      {/* --------------------------------------TABLE-------------------------------------- */}
+      <RecruiterApplicantReport
+        recruiterData={rmServicesData} />
+      <RecruiterSelectdReport
+        recruiterData={rmServicesData} />
+      <RecruiterInterviewReport
+        recruiterData={rmServicesData} />
+
+
     </div>
+
+
   )
 }
 

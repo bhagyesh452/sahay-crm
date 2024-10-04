@@ -11,6 +11,16 @@ const RemarksSchema = new mongoose.Schema({
         default: new Date()
     },
 })
+const InterviewSchema = new mongoose.Schema({
+    interViewDate: {
+        type: Date,
+        default: new Date()
+    },
+    updatedOn: {
+        type: Date,
+        default: new Date()
+    },
+})
 const RecruitmentSchema = new mongoose.Schema({
     ename: {
         type: String,
@@ -108,6 +118,7 @@ const RecruitmentSchema = new mongoose.Schema({
         type: Date,
         //default:new Date()
     },
+    interViewDateArray:[InterviewSchema],
     Remarks: [RemarksSchema],
     disqualificationReason: {
         type: String,

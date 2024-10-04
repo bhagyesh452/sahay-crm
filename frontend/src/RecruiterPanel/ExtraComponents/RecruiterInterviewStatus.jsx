@@ -75,7 +75,7 @@ const RecruiterInterviewStatus = ({
     setStatusClass(getStatusClass(interViewStatus));
   }, [interViewStatus]);
 
- console.log("interViewStatus", interViewStatus)
+ //console.log("interViewStatus", interViewStatus)
 
 
   return (

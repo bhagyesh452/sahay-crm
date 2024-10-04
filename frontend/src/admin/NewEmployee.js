@@ -43,41 +43,7 @@ function NewEmployee() {
         document.title = `Admin-Sahay-CRM`;
     }, []);
 
-    // const fetchEmployee = async () => {
-    //     try {
-    //         let res;
-    //         if (!searchValue) {
-    //             res = await axios.get(`${secretKey}/employee/einfo`);
-    //         } else {
-    //             res = await axios.get(`${secretKey}/employee/searchEmployee`, {
-    //                 params: { search: searchValue }, // send searchValue as query param
-    //             });
-    //         }
-    //         if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-    //             setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-    //         } else {
-    //             setEmployee(res.data);
-    //         }
-    //         // const result = res.data.filter((emp) => {
-    //         //     return (
-    //         //         emp.ename?.toLowerCase().includes(searchValue) ||
-    //         //         emp.number?.toString().includes(searchValue) ||
-    //         //         emp.email?.toLowerCase().includes(searchValue) ||
-    //         //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
-    //         //         emp.branchOffice?.toLowerCase().includes(searchValue)
-    //         //     );
-    //         // });
-    //         // console.log("Search result from employee list is :", result);
-    //         // if (adminName === "Saurav" || adminName === "Krunal Pithadia") {
-    //         //     setEmployee(res.data.filter(obj => obj.designation === "Sales Executive" || obj.designation === "Sales Manager"));
-    //         // } else {
-    //         //     setEmployee(res.data);
-    //         // }
-    //     } catch (error) {
-    //         console.log("Error fetching employees data:", error);
-    //     }
-    // };
-    // console.log("Employee data in new employee is :", employee);
+    
 
     // Fetch active employees
     const { data: activeData, isLoading: isLoadingActive, isError: isErrorActive, refetch: refetchActive } = useQuery({

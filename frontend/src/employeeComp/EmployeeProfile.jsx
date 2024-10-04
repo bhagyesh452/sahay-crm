@@ -56,6 +56,7 @@ import EmployeeViewPayrollView from "../Hr_panel/Components/EmployeeView/Employe
 import SalaryCalculationView from "../Hr_panel/Components/EmployeeView/SalaryCalculationView.jsx";
 import LeaveReportView from "../Hr_panel/Components/EmployeeView/LeaveReportView.jsx";
 import CallingReportView from "../Hr_panel/Components/EmployeeView/CallingReportView.jsx"
+import BusinessCardView from "../Hr_panel/Components/EmployeeView/BusinessCardView.jsx";
 
 
 
@@ -227,14 +228,6 @@ function EmployeeProfile() {
       default: return "th";
     }
   }
-
-  // const handleCameraClick = () => {
-  //   setOpen(true);
-  // };
-
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
 
   //-----------------fetching employee details----------------------------------
   const fetchEmployeeData = async () => {
@@ -531,15 +524,18 @@ function EmployeeProfile() {
                 </div>
 
                 <div className="mt-3">
-                  <ul class="nav nav-tabs employee_e_info_tab">
+                  <ul class="nav nav-tabs employee_e_info_tab" style={{fontSize: "12px"}}>
                     <li class="nav-item">
-                      <a class="nav-link active" data-bs-toggle="tab" href="#eI">Employee Info</a>
+                      <a class="nav-link active" data-bs-toggle="tab" href="#eI">Your Info</a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" data-bs-toggle="tab" href="#Emergency_Contact">Emergency Contact</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Information</a>
+                      <a class="nav-link" data-bs-toggle="tab" href="#PayrollInformation">Payroll Details</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#BusinessCard">Business Card</a>
                     </li>
                   </ul>
 
@@ -1219,6 +1215,9 @@ function EmployeeProfile() {
                         </div>
                       </div>
                     </div>
+                    <div class="tab-pane heiitc_inner fade" id="BusinessCard">
+                      <BusinessCardView employeeInformation={data} />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1260,6 +1259,7 @@ function EmployeeProfile() {
                     <div class="tab-pane heiitc_inner fade" id="CallingReport">
                       <CallingReportView employeeInformation={data} />
                     </div>
+                   
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
