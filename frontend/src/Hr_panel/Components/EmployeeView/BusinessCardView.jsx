@@ -121,7 +121,7 @@ function BusinessCardView({ employeeInformation }) {
                                             (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
                                                 Road, Gota, Ahmedabad - 382470</p>) :
                                             (<p className='m-0'>1307/08, Zion Z1, Beside Avalon Hotel,<br />
-                                                Sindhubhav Road, Ahmedabad - 380054 </p>)}
+                                                Sindhubhavn Road, Ahmedabad - 380054 </p>)}
                                     </div>
                                 </div>
                             </div>
@@ -157,10 +157,10 @@ function BusinessCardView({ employeeInformation }) {
                             </div>
                             <div className='businessCardBackfootertext'>
                                 {employeeInformation && employeeInformation.branchOffice === "Gota" ?
-                                    (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
-                                        Road, Gota, Ahmedabad - 382470</p>) :
-                                    (<p className='m-0'>1307/08, Zion Z1, Beside Avalon Hotel,<br />
-                                        Sindhubhav Road, Ahmedabad - 380054 </p>)}
+                                (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
+                                    Road, Gota, Ahmedabad - 382470</p>) :
+                                (<p className='m-0'>1307/08, Zion Z1, Shindhubhavan Road,<br />
+                                    Ahmedabad - 380054 </p>)}
                             </div>
                         </div>
                     </div>

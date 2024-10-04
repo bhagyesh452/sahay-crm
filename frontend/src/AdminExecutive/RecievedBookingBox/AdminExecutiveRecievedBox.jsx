@@ -1795,7 +1795,7 @@ function AdminExecutiveRecievedBox() {
                                                                                         <div class="row m-0">
                                                                                             <div class="col-sm-4 align-self-stretch p-0">
                                                                                                 <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                    Expanses Date
+                                                                                                    expense Date
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="col-sm-8 align-self-stretch p-0">
@@ -2841,7 +2841,7 @@ function AdminExecutiveRecievedBox() {
                                                                                             <div class="row m-0">
                                                                                                 <div class="col-sm-4 align-self-stretch p-0">
                                                                                                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                                                                                        Expanses Date
+                                                                                                        expense Date
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div class="col-sm-8 align-self-stretch p-0">

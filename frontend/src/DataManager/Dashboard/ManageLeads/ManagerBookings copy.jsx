@@ -1523,7 +1523,7 @@ function ManagerBookings() {
                                               {")"}
                                             </div>
 
-                                            {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
+                                            {/* --------------------------------------------------------------   ADD expense Section  --------------------------------------------------- */}
                                             <div className="d-flex">
                                               <button onClick={() => functionOpenAddExpanse(0, obj.serviceName, obj._id)} className="btn btn-link btn-small">
                                                 + Expanse
@@ -1649,7 +1649,7 @@ function ManagerBookings() {
                                     <div class="row m-0">
                                       <div class="col-sm-6 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                          Expanses Date
+                                          expense Date
                                         </div>
                                       </div>
                                       <div class="col-sm-6 align-self-stretch p-0">
@@ -2939,7 +2939,7 @@ function ManagerBookings() {
                                                     : "Without GST"}
                                                   {")"}
                                                 </div>
-                                                {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
+                                                {/* --------------------------------------------------------------   ADD expense Section  --------------------------------------------------- */}
                                                 <div>
                                                   <button onClick={() => functionOpenAddExpanse(BookingIndex + 1, obj.serviceName, obj._id)} className="btn btn-link btn-small">
                                                     + Expanse
@@ -2993,7 +2993,7 @@ function ManagerBookings() {
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expanses
+                                              expense
                                             </div>
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
@@ -3007,7 +3007,7 @@ function ManagerBookings() {
                                         <div class="row m-0">
                                           <div class="col-sm-6 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expanses Date
+                                              expense Date
                                             </div>
                                           </div>
                                           <div class="col-sm-6 align-self-stretch p-0">

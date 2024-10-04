@@ -1140,7 +1140,7 @@ function RmofCertificationAllBookings({ setOpenAllBookingPanel, completeData }) 
                                                                                                     <div class="col-lg-4 col-sm-12 p-0">
                                                                                                         <div class="row m-0">
                                                                                                             <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">Expanses Date</div>
+                                                                                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">expense Date</div>
                                                                                                             </div>
                                                                                                             <div class="col-lg-6 align-self-stretch p-0">
                                                                                                                 <div class="booking_inner_dtl_b bdr-left-eee h-100">
@@ -1905,7 +1905,7 @@ function RmofCertificationAllBookings({ setOpenAllBookingPanel, completeData }) 
                                                                                                         <div class="col-lg-4 col-sm-12 p-0">
                                                                                                             <div class="row m-0">
                                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
-                                                                                                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Expanses Date</div>
+                                                                                                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">expense Date</div>
                                                                                                                 </div>
                                                                                                                 <div class="col-lg-6 align-self-stretch p-0">
                                                                                                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
