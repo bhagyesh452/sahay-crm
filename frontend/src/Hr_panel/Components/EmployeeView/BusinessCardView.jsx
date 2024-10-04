@@ -92,7 +92,7 @@ function BusinessCardView({ employeeInformation }) {
                 useCORS: true,
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
-                scale: pixelRatio,  // Adjust the scale to the device's pixel ratio
+                scale: 2,  // Adjust the scale to the device's pixel ratio
             });
     
             // Temporarily unflip back side to capture it correctly

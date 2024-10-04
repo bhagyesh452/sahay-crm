@@ -1,7 +1,11 @@
 const attendanceModel = require("../models/AttendanceModel");
 const express = require("express");
 const router = express.Router();
-
+const officialHolidays = [
+    '14-01-2024', '15-01-2024', '24-03-2024', '25-03-2024',
+    '07-07-2024', '19-08-2024', '12-10-2024', '31-10-2024',
+    '01-11-2024', '02-11-2024', '03-11-2024', '04-11-2024', '05-11-2024'
+];
 
 router.post('/addAttendance', async (req, res) => {
     const {
@@ -95,7 +99,7 @@ router.post('/addAttendance', async (req, res) => {
                             status: status === "LC" ? "LC1" : status, // Initialize with LC1 if status is LC
                             reasonValue: reason,
                             isAddedManually:isAddedManually
-                        
+
                         }]
                     });
                 } else {
@@ -211,61 +215,65 @@ router.post('/addAttendance', async (req, res) => {
 //         inTime,
 //         outTime,
 //         workingHours,
-//         status: originalStatus,
+//         status: originalStatus, // Rename the incoming status to avoid conflict
 //         reasonValue,
 //         isAddedManually
 //     } = req.body;
 
 //     const reason = reasonValue ? reasonValue : "";
-//     const selectedDate = new Date(attendanceDate);
-//     const year = selectedDate.getFullYear();
-//     const month = selectedDate.toLocaleString('default', { month: 'long' });
-//     const day = selectedDate.getDate();
 
 //     try {
+//         const selectedDate = new Date(attendanceDate);
+//         const year = selectedDate.getFullYear();
+//         const month = selectedDate.toLocaleString('default', { month: 'long' });
+//         const day = selectedDate.getDate();
+
+//         // Find the existing attendance record
 //         let attendance = await attendanceModel.findById(id);
-//         let status = originalStatus;
+
+//         let status = originalStatus; // Use a let variable for status to allow reassignment
 
 //         if (!attendance) {
 //             // Create a new attendance record if none exists
 //             attendance = new attendanceModel({
 //                 _id: id,
-//                 employeeId,
+//                 employeeId: employeeId,
 //                 employeeName: ename,
-//                 designation,
-//                 department,
-//                 branchOffice,
+//                 designation: designation,
+//                 department: department,
+//                 branchOffice: branchOffice,
 //                 years: [{
-//                     year,
+//                     year: year,
 //                     months: [{
-//                         month,
+//                         month: month,
 //                         days: [{
 //                             date: day,
-//                             dayName,
-//                             inTime,
-//                             outTime,
-//                             workingHours,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
 //                             status: status === "LC" ? "LC1" : status,
-//                             reasonValue: reason,
+//                             reasonValue: reason, // Initialize with LC1 if status is LC
 //                             isAddedManually: isAddedManually
 //                         }]
 //                     }]
 //                 }]
 //             });
 //         } else {
-//             // Existing attendance, add/update accordingly
+//             // Find the year in the existing attendance record
 //             let yearArray = attendance.years.find(y => y.year === year);
+
 //             if (!yearArray) {
 //                 attendance.years.push({
-//                     year,
+//                     year: year,
 //                     months: [{
-//                         month,
+//                         month: month,
 //                         days: [{
 //                             date: day,
-//                             dayName,
-//                             inTime,
-//                             outTime,
-//                             workingHours,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
 //                             status: status === "LC" ? "LC1" : status,
 //                             reasonValue: reason,
 //                             isAddedManually: isAddedManually
@@ -274,144 +282,203 @@ router.post('/addAttendance', async (req, res) => {
 //                 });
 //             } else {
 //                 let monthArray = yearArray.months.find(m => m.month === month);
+
 //                 if (!monthArray) {
 //                     yearArray.months.push({
-//                         month,
+//                         month: month,
 //                         days: [{
 //                             date: day,
-//                             dayName,
-//                             inTime,
-//                             outTime,
-//                             workingHours,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
 //                             status: status === "LC" ? "LC1" : status,
 //                             reasonValue: reason,
 //                             isAddedManually: isAddedManually
 //                         }]
 //                     });
 //                 } else {
+//                     //If status is LC, check how many LC entries already exist for the month
+//                     if (status === "LC") {
+//                         let dayArray = monthArray.days.find(d => d.date === day);
+
+//                         if (dayArray && dayArray.status.startsWith("LC")) {
+//                             // If the day already has an LC status, do not increment the count
+//                             status = dayArray.status;
+//                         } else {
+//                             const lcCount = monthArray.days.filter(d => d.status.startsWith("LC")).length;
+//                             if (lcCount < 3) {
+//                                 status = `LC${lcCount + 1}`; // Increment the LC count up to LC3
+//                             } else {
+//                                 // If the LC count exceeds 3, set status to LCH
+//                                 status = 'LCH';
+
+//                                 // Convert all previous LC1, LC2, LC3 in the same month to LCH
+//                                 monthArray.days.forEach(d => {
+//                                     if (d.status.startsWith("LC")) {
+//                                         d.status = 'LCH'; // Convert all LC statuses to LCH
+//                                     }
+//                                 });
+//                             }
+//                         }
+//                     }
 //                     let dayArray = monthArray.days.find(d => d.date === day);
+
 //                     if (!dayArray) {
 //                         monthArray.days.push({
 //                             date: day,
-//                             dayName,
-//                             inTime,
-//                             outTime,
-//                             workingHours,
+//                             dayName: dayName,
+//                             inTime: inTime,
+//                             outTime: outTime,
+//                             workingHours: workingHours,
 //                             status: status,
 //                             reasonValue: reason,
 //                             isAddedManually: isAddedManually
 //                         });
 //                     } else {
-//                         dayArray.inTime = inTime;
-//                         dayArray.outTime = outTime;
-//                         dayArray.workingHours = workingHours;
-//                         dayArray.status = status;
-//                         dayArray.reasonValue = reason;
-//                         dayArray.isAddedManually = isAddedManually !== undefined ? isAddedManually : dayArray.isAddedManually;
+//                         if (!inTime && !outTime && !workingHours && !status) {
+//                             // If inTime, outTime, workingHours, and status are empty, remove the day
+//                             monthArray.days = monthArray.days.filter(d => d.date !== day);
+//                         } else {
+//                             // Update existing day
+//                             dayArray.inTime = inTime;
+//                             dayArray.outTime = outTime;
+//                             dayArray.workingHours = workingHours;
+//                             dayArray.status = status;
+//                             dayArray.reasonValue = reason;
+//                             dayArray.isAddedManually = isAddedManually !== undefined ? isAddedManually : dayArray.isAddedManually;
+//                         }
+//                     }
+//                     // After clearing, re-check the number of LC statuses for the month
+//                     let lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
+//                     // If status is LC, re-assign LC numbers (LC1, LC2, LC3)
+//                     if (status === "LC") {
+//                         const lcCount = lcEntries.length;
+//                         if (lcCount < 3) {
+//                             status = `LC${lcCount + 1}`;
+//                         } else {
+//                             status = 'LCH'; // If LC count exceeds 3, set to LCH
+//                             lcEntries.forEach(d => {
+//                                 d.status = 'LCH'; // Update all previous LC entries to LCH
+//                             });
+//                         }
+//                     }
+//                     // Recalculate the LC statuses if an LC was cleared or updated
+//                     lcEntries = monthArray.days.filter(d => d.status.startsWith('LC'));
+//                     lcEntries.forEach((entry, index) => {
+//                         entry.status = `LC${index + 1}`; // Reassign LC statuses in sequence
+//                     });
+
+//                     // If LC entries exceed 3, set them all to LCH
+//                     if (lcEntries.length > 3) {
+//                         lcEntries.forEach(entry => {
+//                             entry.status = 'LCH';
+//                         });
 //                     }
 //                 }
 //             }
 //         }
 
-//         // Official Holidays Array
-//         const officialHolidays = [
-//             '14-01-2024', '15-01-2024', '24-03-2024', '25-03-2024',
-//             '07-07-2024', '19-08-2024', '12-10-2024', '31-10-2024',
-//             '01-11-2024', '02-11-2024', '03-11-2024', '04-11-2024', '05-11-2024'
-//         ];
 
-//         // Function to find the previous working day
-//         const findPrevWorkingDay = (currentYear, currentMonth, currentDay) => {
-//             let day = currentDay - 1;
-//             let month = currentMonth;
-//             let year = currentYear;
+//         // Add logic to handle Sundays and official holidays
+//         const previousDay = new Date(selectedDate);
+//         previousDay.setDate(previousDay.getDate() - 1);
 
-//             while (day < 1) {
-//                 month--;
-//                 if (month < 0) {
-//                     month = 11;
-//                     year--;
+//         const prevYear = previousDay.getFullYear();
+//         const prevMonth = previousDay.toLocaleString('default', { month: 'long' });
+//         const prevDate = previousDay.getDate();
+//         const prevDayName = previousDay.toLocaleString('default', { weekday: 'long' });
+
+//         const isSunday = previousDay.getDay() === 0;
+//         const formattedPrevDate = `${prevDate < 10 ? '0' + prevDate : prevDate}-${previousDay.getMonth() + 1}-${prevYear}`;
+//         const isHoliday = officialHolidays.includes(formattedPrevDate);
+
+//         if (isSunday || isHoliday) {
+//             let prevYearArray = attendance.years.find(y => y.year === prevYear);
+//             if (!prevYearArray) {
+//                 attendance.years.push({
+//                     year: prevYear,
+//                     months: [{
+//                         month: prevMonth,
+//                         days: [{
+//                             date: prevDate,
+//                             dayName: prevDayName,
+//                             status: determineSundayOrHolidayStatus(attendance, year, month, day),
+//                             inTime: "",
+//                             outTime: "",
+//                             workingHours: "",
+//                             reasonValue: "Auto-filled based on surrounding days",
+//                             isAddedManually: false
+//                         }]
+//                     }]
+//                 });
+//             } else {
+//                 let prevMonthArray = prevYearArray.months.find(m => m.month === prevMonth);
+//                 if (!prevMonthArray) {
+//                     prevYearArray.months.push({
+//                         month: prevMonth,
+//                         days: [{
+//                             date: prevDate,
+//                             dayName: prevDayName,
+//                             status: determineSundayOrHolidayStatus(attendance, year, month, day),
+//                             inTime: "",
+//                             outTime: "",
+//                             workingHours: "",
+//                             reasonValue: "",
+//                             isAddedManually: false
+//                         }]
+//                     });
+//                 } else {
+//                     let prevDayArray = prevMonthArray.days.find(d => d.date === prevDate);
+//                     if (!prevDayArray) {
+//                         prevMonthArray.days.push({
+//                             date: prevDate,
+//                             dayName: prevDayName,
+//                             status: determineSundayOrHolidayStatus(attendance, year, month, day),
+//                             inTime: "",
+//                             outTime: "",
+//                             workingHours: "",
+//                             reasonValue: "Auto-filled based on surrounding days",
+//                             isAddedManually: false
+//                         });
+//                     }
 //                 }
-//                 day = new Date(year, month + 1, 0).getDate();
 //             }
-
-//             return new Date(year, month, day);
-//         };
-
-//         // Helper function to format a date as DD-MM-YYYY
-//         const formatDate = (date) => {
-//             const day = String(date.getDate()).padStart(2, '0');
-//             const month = String(date.getMonth() + 1).padStart(2, '0');
-//             const year = date.getFullYear();
-//             return `${day}-${month}-${year}`;
-//         };
-
-//         // Check if the previous day is Sunday or an official holiday
-//         const prevDay = findPrevWorkingDay(year, selectedDate.getMonth(), day);
-//         const prevDayName = prevDay.toLocaleString('en-US', { weekday: 'long' });
-//         const prevDayFormatted = formatDate(prevDay);
-
-//         let prevDayStatus = null;
-//         if (attendance) {
-//             let prevYear = attendance.years.find(y => y.year === prevDay.getFullYear());
-//             let prevMonth = prevYear?.months.find(m => m.month === prevDay.toLocaleString('default', { month: 'long' }));
-//             let prevDayArray = prevMonth?.days.find(d => d.date === prevDay.getDate());
-//             prevDayStatus = prevDayArray ? prevDayArray.status : null;
 //         }
 
-//         if (prevDayName === 'Sunday' || officialHolidays.includes(prevDayFormatted)) {
-//             // Determine the new status for the previous day
-//             let newPrevDayStatus = null;
+//         // Function to determine Sunday or Holiday status based on surrounding days
+//         function determineSundayOrHolidayStatus(attendance, year, month, day) {
+//             const prevDayStatus = attendance.years.find(y => y.year === year)?.months.find(m => m.month === month)?.days.find(d => d.date === day - 1)?.status;
+//             const nextDayStatus = attendance.years.find(y => y.year === year)?.months.find(m => m.month === month)?.days.find(d => d.date === day + 1)?.status;
 
-//             if (prevDayStatus) {
-//                 // Check the status of the current day
-//                 if (
-//                     (prevDayStatus === "Leave" && status === "Leave") ||
-//                     (prevDayStatus === "Leave" && status === "Half Day") ||
-//                     (prevDayStatus === "Half Day" && status === "Leave")
-//                 ) {
-//                     newPrevDayStatus = prevDayName === 'Sunday' ? "SL" : "OHL";
-//                 } else if (
-//                     (prevDayStatus === "Half Day" && status === "Half Day") ||
-//                     (prevDayStatus === "LCH" && status === "LCH") ||
-//                     (prevDayStatus === "LCH" && status === "Half Day") ||
-//                     (prevDayStatus === "Half Day" && status === "LCH")
-//                 ) {
-//                     newPrevDayStatus = prevDayName === 'Sunday' ? "SH" : "OHH";
-//                 } else {
-//                     newPrevDayStatus = prevDayName === 'Sunday' ? "S" : "OH";
-//                 }
-
-//                 // Update the previous day's status in the attendance record
-//                 let yearArray = attendance.years.find(y => y.year === prevDay.getFullYear());
-//                 let monthArray = yearArray?.months.find(m => m.month === prevDay.toLocaleString('default', { month: 'long' }));
-//                 let prevDayArray = monthArray?.days.find(d => d.date === prevDay.getDate());
-//                 if (prevDayArray) {
-//                     prevDayArray.status = newPrevDayStatus;
-//                 } else {
-//                     // Add previous day if not already present
-//                     monthArray.days.push({
-//                         date: prevDay.getDate(),
-//                         dayName: prevDayName,
-//                         inTime: "",
-//                         outTime: "",
-//                         workingHours: "",
-//                         status: newPrevDayStatus,
-//                         reasonValue: "",
-//                         isAddedManually: false
-//                     });
-//                 }
+//             if (
+//                 (prevDayStatus === "Leave" && nextDayStatus === "Leave") ||
+//                 (prevDayStatus === "Leave" && nextDayStatus === "Half Day") ||
+//                 (prevDayStatus === "Half Day" && nextDayStatus === "Leave")
+//             ) {
+//                 return "SL";
+//             } else if (
+//                 (prevDayStatus === "Half Day" && nextDayStatus === "Half Day") ||
+//                 (prevDayStatus === "LCH" && nextDayStatus === "LCH") ||
+//                 (prevDayStatus === "LCH" && nextDayStatus === "Half Day") ||
+//                 (prevDayStatus === "Half Day" && nextDayStatus === "LCH")
+//             ) {
+//                 return "SH";
+//             } else {
+//                 return "S";
 //             }
 //         }
 
 //         // Save the updated attendance record
 //         const savedAttendance = await attendance.save();
 //         res.status(200).json({ message: 'Attendance added/updated successfully', data: savedAttendance });
+
 //     } catch (error) {
 //         console.error('Error adding/updating attendance:', error);
 //         res.status(500).json({ message: 'Server error' });
 //     }
 // });
+
 
 
 

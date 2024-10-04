@@ -217,10 +217,10 @@ function ViewAttendance({ year, month, date }) {
         const reason = attendanceDetails.reasonValue || "";
         //console.log("reason", attendanceDetails)
         const manualStatus = attendanceDetails.isAddedManually;
-      
-      
+
+
         // Log the status before setting it to statusValue
-       
+
         setNewStatus(status)
         setReasonValue(manualStatus ? reason : "");
         setStatusValue(manualStatus ? status : "");
@@ -249,7 +249,7 @@ function ViewAttendance({ year, month, date }) {
         // console.log("Attendance date is :", formattedDate);
         // console.log("Day name is :", dayName);
     };
-   
+
     const handleSubmit = async (id, empId, name, designation, department, branch, date, day, inTime, outTime) => {
         let workingHours, status, reasonToSend, isAddedManually;
         const convertToMinutes = (timeString) => {
@@ -374,7 +374,7 @@ function ViewAttendance({ year, month, date }) {
             status = statusValue;
             reasonToSend = reasonValue;
             isAddedManually = true;
-           
+
         } else {
             // Validate In Time
             if (!inTime) {
@@ -432,7 +432,7 @@ function ViewAttendance({ year, month, date }) {
             reasonValue: reasonToSend ? reasonToSend : null,
             isAddedManually: isAddedManually,
         };
-       
+
         setShowPopup(false);
         setInTime("");
         setOutTime("");
@@ -975,29 +975,26 @@ function ViewAttendance({ year, month, date }) {
                                                                     <div
                                                                         onClick={() => handleDayClick(day, emp._id, emp.empFullName, emp.employeeId, emp.newDesignation, emp.department, emp.branchOffice, intime, outtime, emp.ename, emp.status)}
                                                                         title={`
-                                                                            ${status === "Present" && newmanuallyAdded === true
-                                                                                ? newReason // Add OverP class if isAddedManually is true
-                                                                                : ""}
+                                                                            ${status === "Present" && newmanuallyAdded === true ? newReason : ""}                                                                                                      
                                                                                ${status === "Half Day" && newmanuallyAdded === true ? newReason : ""}
                                                                                     ${status === "Leave" && newmanuallyAdded === true ? newReason : ""}
+                                                                                    ${status === "S" && newmanuallyAdded === true ? newReason : ""}
                                                                                     ${status.startsWith("LC") && newmanuallyAdded === true ? newReason : ""}
                                                                                 `.trim()}
                                                                         className=
                                                                         {`
-                                                                    ${status === "Present" && newmanuallyAdded === true
-                                                                                ? "p-present OverP" // Add OverP class if isAddedManually is true
-                                                                                : status === "Present"
-                                                                                    ? "p-present"
-                                                                                    : ""}
+                                                                    ${status === "Present" && newmanuallyAdded === true ? "p-present OverP" : status === "Present" ? "p-present" : ""}
                                                                        ${status === "Half Day" && newmanuallyAdded === true ? "H-Halfday OverP" : status === "Half Day" ? "H-Halfday" : ""}
                                                                             ${status === "Leave" && newmanuallyAdded === true ? "l-leave OverP" : status === "Leave" ? "l-leave" : ""}
+                                                                            ${status === "S" && newmanuallyAdded === true ? "s-sunday OverP" : status === "s-sunday" ? "s-sunday" : ""}
                                                                             ${status.startsWith("LC") && newmanuallyAdded === true ? "l-lc OverP" : status.startsWith("LC") ? "l-lc" : ""}
                                                                         `.trim()}
                                                                     >
                                                                         {status === "Present" ? "P" :
                                                                             status === "Half Day" ? "H" :
                                                                                 status === "Leave" ? "L" :
-                                                                                    status.startsWith("LC") ? status : ""
+                                                                                    status === "S" ? "S" :
+                                                                                        status.startsWith("LC") ? status : ""
                                                                         }
                                                                     </div>
                                                                     {!status && (
@@ -2169,9 +2166,9 @@ function ViewAttendance({ year, month, date }) {
                                                         className="form-select"
                                                         value={["LC1", "LC2", "LC3", "LCH"].includes(statusValue) ? "LC" : statusValue} // Map LC1, LC2, LC3, LCH to LC
                                                         onChange={(e) => {
-                                                         
+
                                                             setStatusValue(e.target.value);
-                                                        
+
                                                             if (e.target.value) setStatusValueError(""); // Clear error when valid
                                                         }}
                                                     >
