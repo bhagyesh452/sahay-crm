@@ -7,12 +7,12 @@ import Navbar from "../Components/Navbar/Navbar";
 function HrLayout() {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const userId = localStorage.getItem("hrUserId");
+    const hrUserId = localStorage.getItem("hrUserId");
     const [data, setData] = useState([]);
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
+            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${hrUserId}`);
             setData(response.data.data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -22,7 +22,7 @@ function HrLayout() {
     // Fetch data once and pass it to Header and EmpNav
     useEffect(() => {
         fetchData();
-    }, [userId]);
+    }, [hrUserId]);
 
     return (
         <>
@@ -34,7 +34,7 @@ function HrLayout() {
                 designation={data.newDesignation}
                 data={data}
             />
-            <Navbar />
+            <Navbar userId={data._id} />
             {/* This will render the specific page content */}
             <Outlet />
         </>
