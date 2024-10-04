@@ -405,7 +405,31 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
-  const { firstName, middleName, lastName, dob, personalPhoneNo, personalEmail, department, designation, oldDesignation, employeementType, officialNo, officialEmail, joiningDate, branch, manager, nameAsPerBankRecord, salary, firstMonthSalaryCondition, firstMonthSalary, personName, relationship, personPhoneNo } = req.body;
+  const { 
+    firstName, 
+    middleName, 
+    lastName, 
+    dob,
+    bloodGroup,
+    personalPhoneNo, 
+    personalEmail, 
+    department, 
+    designation, 
+    oldDesignation, 
+    employeementType, 
+    officialNo, 
+    officialEmail, 
+    joiningDate, 
+    branch, 
+    manager, 
+    nameAsPerBankRecord, 
+    salary, 
+    firstMonthSalaryCondition, 
+    firstMonthSalary, 
+    personName, 
+    relationship, 
+    personPhoneNo 
+  } = req.body;
   // console.log("Reqest file is :", req.files);
 
   const getFileDetails = (fileArray) => fileArray ? fileArray.map(file => ({
@@ -456,6 +480,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
         empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
       ...(dob && { dob }),
+      ...(bloodGroup && { bloodGroup :bloodGroup }),
       ...(personalPhoneNo && { personal_number: personalPhoneNo }),
       ...(personalEmail && { personal_email: personalEmail }),
 
@@ -501,11 +526,13 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
     );
 
     if (!emp) {
+      console.log("Employee not found");
       return res.status(404).json({ result: false, message: "Employee not found" });
     }
 
     res.status(200).json({ result: true, message: "Data successfully updated", data: emp });
   } catch (error) {
+    console.log("Error updating employee:", error);
     res.status(500).json({ result: false, message: "Error updating employee", error: error.message });
   }
 });
