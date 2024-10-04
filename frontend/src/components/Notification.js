@@ -17,11 +17,18 @@ import Bell from './Bell';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate, useParams } from 'react-router-dom';
 
+
 export default function Notification({ name, designation }) {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { userId } = useParams();
+  const navigate = useNavigate();
+
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [data, setdata] = useState([]);
+  const [employeeData, setEmployeeData] = useState([]);
+  const { newtoken } = useParams();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -30,13 +37,6 @@ export default function Notification({ name, designation }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const navigate = useNavigate();
-
-  const [data, setdata] = useState([]);
-  const [employeeData, setEmployeeData] = useState([]);
-  const { newtoken } = useParams();
-  const { userId } = useParams();
 
   const fetchEmployeeData = async () => {
     try {
@@ -50,7 +50,7 @@ export default function Notification({ name, designation }) {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchEmployeeData();
   }, [userId]);
 
