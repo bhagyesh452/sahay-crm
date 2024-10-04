@@ -401,7 +401,7 @@ function CallingReportView({ employeeInformation }) {
                             // Filter for current month's data from the 2nd of the current month
                             if (yearData.year === currentYear && monthData.month === getMonthName(currentMonth)) {
                                 monthData.days.forEach(dayData => {
-                                    if (dayData.date >= 2) {
+                                    if (dayData.date >= 1) {
                                         filledDates.add(dayData.date);
                                         name = employee.employeeName;
                                         designation = employee.designation;

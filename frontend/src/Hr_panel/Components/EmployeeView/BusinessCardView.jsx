@@ -9,28 +9,65 @@ import html2canvas from 'html2canvas';
 import { MdFileDownload } from "react-icons/md";
 import { MdFlipCameraAndroid } from "react-icons/md";
 
-
 function BusinessCardView({ employeeInformation }) {
-    const cardRef = useRef(null);
+    const frontCardRef = useRef(null);
+    const backCardRef = useRef(null);
+    const [flipped, setFlipped] = useState(false);
 
-    const handleDownloadJPG = () => {
-        if (cardRef.current === null) {
+    const handleDownloadJPG = async () => {
+        if (!frontCardRef.current || !backCardRef.current) {
             return;
         }
-
-        html2canvas(cardRef.current, { useCORS: true })
-            .then((canvas) => {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/jpeg', 1.0);
-                link.download = `${employeeInformation.empFullName}-business-card.jpg`;
-                link.click();
-            })
-            .catch((err) => {
-                console.error('Oops, something went wrong!', err);
+    
+        try {
+            // Hide buttons before capturing
+            document.querySelectorAll(".profile-pic-upload, .profile-pic-flip").forEach((button) => {
+                button.style.visibility = 'hidden';
             });
+    
+            // Capture front side
+            const frontCanvas = await html2canvas(frontCardRef.current, { useCORS: true });
+    
+            // Temporarily unflip back side to capture it correctly
+            setFlipped(true);
+            await new Promise(resolve => setTimeout(resolve, 300)); // Wait for animation to complete
+    
+            // Capture back side
+            const backCanvas = await html2canvas(backCardRef.current, { useCORS: true });
+    
+            // Define the margin between front and back images
+            const margin = 20; // You can adjust this value as needed
+    
+            // Create a new canvas to combine both sides
+            const combinedCanvas = document.createElement('canvas');
+            combinedCanvas.width = Math.max(frontCanvas.width, backCanvas.width);
+            combinedCanvas.height = frontCanvas.height + backCanvas.height + margin;
+    
+            const ctx = combinedCanvas.getContext('2d');
+            
+            // Draw front image
+            ctx.drawImage(frontCanvas, 0, 0);
+            
+            // Draw back image with margin space
+            ctx.drawImage(backCanvas, 0, frontCanvas.height + margin);
+    
+            // Convert combined canvas to image and download
+            const combinedImage = combinedCanvas.toDataURL('image/jpeg', 1.0);
+            const link = document.createElement('a');
+            link.href = combinedImage;
+            link.download = `${employeeInformation.empFullName}-business-card-combined.jpg`;
+            link.click();
+    
+        } catch (err) {
+            console.error('Oops, something went wrong!', err);
+        } finally {
+            // Show buttons after capturing
+            document.querySelectorAll(".profile-pic-upload, .profile-pic-flip").forEach((button) => {
+                button.style.visibility = 'visible';
+            });
+        }
     };
-
-    const [flipped, setFlipped] = useState(false);
+    
 
     const handleFlip = () => {
         setFlipped(true);
@@ -43,7 +80,8 @@ function BusinessCardView({ employeeInformation }) {
     return (
         <div className="BusinessCardView flip-card">
             <div className={`d-flex align-items-center justify-content-center mt-3 flip-card-inner ${flipped ? 'flipped' : ''}`}>
-                <div className="BusinessCardBody front" ref={cardRef}>
+                {/* Front Side */}
+                <div className="BusinessCardBody front" ref={frontCardRef}>
                     <div className='BusinessCardheader'>
                         <div className='d-flex align-items-start'>
                             <div className='BusinessCardheaderIcon'>
@@ -102,13 +140,13 @@ function BusinessCardView({ employeeInformation }) {
                             </div>
                         </div>
                     </div>
-                    {/* Add a button to download the card as JPG */}
                     <button className="profile-pic-upload" onClick={handleDownloadJPG}>
                         <MdFileDownload />
                     </button>
                     <button id="flipButton" className='profile-pic-flip' onClick={handleFlip}><MdFlipCameraAndroid /></button>
                 </div>
-                <div className='BusinessCardBody1 back' ref={cardRef}>
+                {/* Back Side */}
+                <div className='BusinessCardBody1 back' ref={backCardRef}>
                     <div className='businessCardBacklogo'>
                         <img src={logo} alt="Logo" />
                     </div>
@@ -119,21 +157,26 @@ function BusinessCardView({ employeeInformation }) {
                             </div>
                             <div className='businessCardBackfootertext'>
                                 {employeeInformation && employeeInformation.branchOffice === "Gota" ?
+<<<<<<< HEAD
                                 (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
                                     Road, Gota, Ahmedabad - 382470</p>) :
                                 (<p className='m-0'>1307/08, Zion Z1, Sindhubhav Road,<br />
                                     Ahmedabad - 380054 </p>)}
+=======
+                                    (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
+                                        Road, Gota, Ahmedabad - 382470</p>) :
+                                    (<p className='m-0'>1307/08, Zion Z1, Beside Avalon Hotel,<br />
+                                        Sindhubhav Road, Ahmedabad - 380054 </p>)}
+>>>>>>> a9d0ff430b70666bc5e2fc2dc58d00275f5a83c7
                             </div>
                         </div>
                     </div>
-                    <button className="profile-pic-upload" onClick={handleDownloadJPG}>
+                    {/* <button className="profile-pic-upload" onClick={handleDownloadJPG}>
                         <MdFileDownload />
-                    </button>
-                    <button id="flipButtonBack" className='profile-pic-flip' onClick={handleFlipBack}><MdFlipCameraAndroid /></button>
+                    </button> */}
+                    <button id="flipButtonBack" className='profile-pic-upload' onClick={handleFlipBack}><MdFlipCameraAndroid /></button>
                 </div>
             </div>
-          
-            
         </div>
     );
 }

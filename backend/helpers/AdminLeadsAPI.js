@@ -296,7 +296,7 @@ router.post('/update-ename', async (req, res) => {
     // Wait for all updates and remarks to complete
     await Promise.all(updates);
 
-    console.log('All companies and remarks updated/inserted successfully.');
+    //console.log('All companies and remarks updated/inserted successfully.');
     res.status(200).json({ message: 'Ename and remarks updated or inserted successfully' });
   } catch (error) {
     console.error('Error updating or inserting ename/remarks:', error);
@@ -1204,7 +1204,7 @@ router.post("/postExtractedData", async (req, res) => {
       }
     }
   }));
-  console.log("bulkOperationsCompany", bulkOperationsCompany);
+  //console.log("bulkOperationsCompany", bulkOperationsCompany);
   const bulkOperationsTeamLeads = selectedObjects.map((obj) => ({
     deleteOne: {
       filter: { _id: obj._id }
