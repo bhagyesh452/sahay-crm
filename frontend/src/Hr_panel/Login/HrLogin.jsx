@@ -20,49 +20,34 @@ function HrLogin({ setHrToken }){
     const [userId , setUserId] = useState(null)
     const[errorMessage , setErrorMessage] = useState("")
     const [ename , setEname] = useState("")
-
+    const [recruiterUserId, setRecruiterUserId] = useState(null)
+   
     useEffect(() => {
         document.title = `HR-Sahay-CRM`;
       }, []);
 
-    const fetchData = async () => {
+      const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/hrlogin`);
-            setData(response.data);
-            console.log(response.data);
+          const response = await axios.get(`${secretKey}/employee/einfo/${email}/${password}`);
+          console.log(response.data)
+          console.log(email , password)
+          setData(response.data);
+          setRecruiterUserId(response.data._id)
+          setDesignation(response.data.designation)
         } catch (error) {
-            console.log(error);
+          console.log("Error finding employee", error);
         }
-    }
+      };
 
 
-    useEffect(() => {
-        fetchData()
-        console.log("data",data);
-    }, [])
-
-
-    const findUserId = () => {
-        const user = data.find(
-            (user) => user.email === email && user.password === password
-        );
-        console.log(user);
-        if(user){
-            setDesignation(user.designation)
-            setEname(user.ename)
-            setUserId(user._id);
-        } else {
-            setUserId(null);
+      useEffect(() => {
+        if (email && password) {
+          fetchData();
         }
-    };
-
-    useEffect(() => {
-        findUserId();
-    }, [email , password , data])
+      }, [email, password]);
 
 
-    console.log(email , password , designation);
-
+    
 
     const handleSubmit = async(e) => {
         e.preventDefault()
@@ -73,12 +58,12 @@ function HrLogin({ setHrToken }){
                 designation
             });
             console.log(response.data);
-            const { hrToken , userId , ename } = response.data
+            const { hrToken } = response.data
             setHrToken(hrToken);
             localStorage.setItem("hrName", ename)
             localStorage.setItem("hrToken", hrToken)
-            localStorage.setItem("hrUserId", userId)
-            console.log("userId" , userId);
+            localStorage.setItem("hrUserId", recruiterUserId)
+            console.log("userId" , recruiterUserId);
             window.location.replace(`/hr/dashboard`);
         } catch (error) {
             console.error("Login Failed", error);
