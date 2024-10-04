@@ -13,6 +13,7 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 //import Bell from './Bell';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 
@@ -21,11 +22,16 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 
 export default function Notification() {
+    
+    const { userId } = useParams();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+    const navigate = useNavigate();
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -35,10 +41,6 @@ export default function Notification() {
         localStorage.removeItem("bdmToken");
         window.location.href = '/floormanager/login';
     }
-
-
-
-
 
     return (
 
@@ -93,7 +95,10 @@ export default function Notification() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={() => {
+                    navigate(`/floormanager-profile-details/${userId}`);
+                    handleClose();
+                }}>
                     <Avatar /> Profile
                 </MenuItem>
                 <MenuItem onClick={handleClose}>
