@@ -145,7 +145,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
     const handleSortSelected = (sortType) => handleSort('Selected', sortType);
     const handleSortTotal = (sortType) => handleSort('total', sortType);
 
-
+console.log("groupedData" , groupedData)
     return (
         <div className='container-xl'>
             <div className="employee-dashboard mt-2">
