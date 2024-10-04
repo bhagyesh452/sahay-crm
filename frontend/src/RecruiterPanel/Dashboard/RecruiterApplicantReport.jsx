@@ -21,7 +21,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
         selected: "none",
         rejected: "none",
         underReview: "none",
-        total:"none",
+        total: "none",
     });
     function formatDatePro(inputDate) {
         const date = new Date(inputDate);
@@ -111,32 +111,32 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
 
     const handleSort = (field, sortType) => {
         let sortedData = [...filteredData];
-    
+
         if (sortType === "ascending") {
             sortedData = sortedData.sort((a, b) => {
                 if (a[field] < b[field]) return -1;
                 if (a[field] > b[field]) return 1;
                 return 0;
             });
-            console.log("ascedning" , sortedData)
+            console.log("ascedning", sortedData)
         } else if (sortType === "descending") {
             sortedData = sortedData.sort((a, b) => {
                 if (a[field] < b[field]) return 1;
                 if (a[field] > b[field]) return -1;
                 return 0;
             });
-            console.log("descending" , sortedData)
+            console.log("descending", sortedData)
 
-        } else if(sortType === "none") {
+        } else if (sortType === "none") {
             sortedData = [...groupedData];
-            console.log("none" , sortedData)
+            console.log("none", sortedData)
         }
-       
 
-    
+
+
         setFilteredData(sortedData);
     };
-    
+
     const handleSortGeneral = (sortType) => handleSort('General', sortType);
     const handleSortUnderReview = (sortType) => handleSort('UnderReview', sortType);
     const handleSortOnHold = (sortType) => handleSort('On Hold', sortType);
@@ -145,7 +145,7 @@ function RecruiterApplicantReport({ empName, recruiterData }) {
     const handleSortSelected = (sortType) => handleSort('Selected', sortType);
     const handleSortTotal = (sortType) => handleSort('total', sortType);
 
-console.log("groupedData" , groupedData)
+    console.log("groupedData", groupedData)
     return (
         <div className='container-xl'>
             <div className="employee-dashboard mt-2">
