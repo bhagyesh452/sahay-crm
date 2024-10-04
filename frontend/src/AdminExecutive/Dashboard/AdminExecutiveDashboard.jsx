@@ -146,15 +146,9 @@ function AdminExecutiveDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <AdminExecutiveHeader id={employeeData._id}
-        name={employeeData.ename}
-        empProfile={employeeData.profilePhoto &&
-          employeeData.profilePhoto.length !== 0 &&
-          employeeData.profilePhoto[0].filename}
-        gender={employeeData.gender}
-        designation={employeeData.newDesignation}
-      />
-      <AdminExecutiveNavbar adminExecutiveUserId={adminExecutiveUserId} />
+      {/* <AdminExecutiveHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
+      <AdminExecutiveNavbar adminExecutiveUserId={adminExecutiveUserId} /> */}
+
       <div className="page-wrapper employess-new-dashboard">
         <div className="Dash-Main mt-3">
           <div className="container-xl">

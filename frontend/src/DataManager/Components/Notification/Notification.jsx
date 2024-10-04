@@ -16,29 +16,26 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
 export default function Notification() {
+
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-const navigate = useNavigate();
-
-
-
   const handleLogout = () => {
     const currentPage = window.location.pathname;
-
     // Clear the token from local storage based on the current page
-    
       localStorage.removeItem("managerToken");
-      
       window.location.href = '/dataanalyst/login';
-    
   };
+
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -56,6 +53,7 @@ const navigate = useNavigate();
           </IconButton>
         </Tooltip>
       </Box>
+      
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -91,31 +89,40 @@ const navigate = useNavigate();
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => {
+                    navigate(`/dataanalyst-profile-details`);
+                    handleClose();
+                }}>
           <Avatar /> Profile
         </MenuItem>
+
         <MenuItem onClick={handleClose}>
           <Avatar /> My account
         </MenuItem>
+
         <Divider />
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <PersonAdd fontSize="small" />
           </ListItemIcon>
           Add another account
         </MenuItem>
+
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings
         </MenuItem>
+
         <MenuItem  onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>
+
       </Menu>
     </React.Fragment>
   );

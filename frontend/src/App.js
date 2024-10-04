@@ -56,12 +56,16 @@ import RMofFundingDashboard from "./RM-FUNDING/RM-FUNDING-DASHBOARD/RMofFundingD
 import RmofCertificationBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationBookings.jsx";
 import RmofCertificationMyBookings from "./RM-CERTIFICATION/RM-CERT-BOOKINGS/RmofCertificationMyBookings.jsx";
 import Received_booking_box from "./RM-CERTIFICATION/RM-CERT-Process/Received_booking_box.jsx";
+import AdminHeadLayout from "./RM-CERTIFICATION/RM-CERT-COMPONENTS/AdminHeadLayout.jsx";
+import AdminHeadProfile from "./RM-CERTIFICATION/RM-CERT-COMPONENTS/AdminHeadProfile.jsx";
 
 // Admin Executive Imports
 import AdminExecutiveLogin from "./AdminExecutive/Login/AdminExecutiveLogin.jsx";
 import AdminExecutiveDashboard from "./AdminExecutive/Dashboard/AdminExecutiveDashboard.jsx";
 import AdminExecutiveRecievedBox from "./AdminExecutive/RecievedBookingBox/AdminExecutiveRecievedBox.jsx";
 import AdminExecutiveMyBookings from "./AdminExecutive/AdminExecutiveBookings/AdminExecutiveMyBookings.jsx";
+import AdminExecutiveLayout from "./AdminExecutive/Components/AdminExecutiveLayout.jsx";
+import AdminExecutiveProfile from "./AdminExecutive/Components/AdminExecutiveProfile.jsx";
 
 // Hr Panel Imports
 import HrLogin from "./Hr_panel/Login/HrLogin.jsx";
@@ -97,11 +101,13 @@ import DatamanagerDashboard from "./DataManager/Dashboard/Dashboard/DatamanagerD
 import DatamanagerEmployeeTeamLeads from "./DataManager/Dashboard/DatamanagerEmployeeTeamLeads/DatamanagerEmployeeTeamLeads.jsx";
 import DatamanagerNewEmployee from "./DataManager/Dashboard/Employees/DatamanagerNewEmployee.jsx";
 import ExpenseReport from "./DataManager/Dashboard/Expense/ExpenseReport.jsx";
+import DataAnalystLayout from "./DataManager/Components/ExtraComponents/DataAnalystLayout.jsx";
+import DataAnalystProfile from "./DataManager/Components/ExtraComponents/DataAnalystProfile.jsx";
 
 // Customer Panel Imports
-import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 import CustomerLogin from "./Customer-Panel/CustomerLogin.jsx";
 import CustomerDashboard from "./Customer-Panel/CustomerDashboard.jsx";
+// import BasicForm from "./Client-Basic-Info/BasicForm.jsx";
 
 // Extra Imports
 import Dashboard_processing from "./Processing/Dashboard_processing";
@@ -138,9 +144,10 @@ function App() {
       <BrowserRouter>
         <Routes>
 
+          {/* --------------------------------------------------Path for BDE/BDM---------------------------------------------------------- */}
           <Route path="/" element={<EmployeeLogin setnewToken={setnewToken} />} />
-          {/* <Route path="/employee-data/:userId/" element={newtoken ? <EmployeePanel /> : <Navigate to="/" />} ></Route>
-          <Route path="/employee-dashboard/:userId/" element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}></Route>
+          {/* <Route path="/employee-data/:userId" element={newtoken ? <EmployeePanel /> : <Navigate to="/" />} ></Route>
+          <Route path="/employee-dashboard/:userId" element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}></Route>
           <Route path="/employee-team-leads/:userId" element={newtoken ? <EmployeeTeamLeads /> : <Navigate to="/" />}></Route>
           <Route path="/employee-bookings/:userId" element={newtoken ? <EmployeeMaturedBookings /> : <Navigate to="/" />}></Route>
           <Route path='/employee-reports/:userId' element={newtoken ? <EmployeeReports /> : <Navigate to='/' />}></Route>
@@ -162,17 +169,17 @@ function App() {
 
           {/* --------------------------------------------------Path for Customer-Panel---------------------------------------------------------- */}
           {/* <Route path="/client/basic-form" element={<BasicForm />} /> */}
-          <Route path='/customer/login' element={<CustomerLogin />}></Route>
-          <Route path='/customer/dashboard/:email' element={<CustomerDashboard />}></Route>
+          <Route path='/customer/login' element={<CustomerLogin />} />
+          <Route path='/customer/dashboard/:email' element={<CustomerDashboard />} />
 
           {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
           <Route path="/floormanager/login" element={<BDMLogin setBdmToken={setBdmToken} />} />
-          {/* <Route path="/floormanager/dashboard/:userId/" element={<BdmDashboard />}></Route>
-          <Route path="/floormanager/leads/:userId/" element={<BdmLeads />}></Route>
-          <Route path="/floormanager/teamleads/:userId/" element={<BdmTeamLeads />}></Route>
-          <Route path="/floormanager/bookings/:userId/" element={<BdmBookings />}></Route>
+          {/* <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />}></Route>
+          <Route path="/floormanager/leads/:userId" element={<BdmLeads />}></Route>
+          <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />}></Route>
+          <Route path="/floormanager/bookings/:userId" element={<BdmBookings />}></Route>
           <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} /> */}
-          <Route element={newtoken ? <FloorManagerLayout /> : <Navigate to="/" />}>
+          <Route element={<FloorManagerLayout />}>
             <Route path="/floormanager/dashboard/:userId" element={<BdmDashboard />} />
             <Route path="/floormanager/leads/:userId" element={<BdmLeads />} />
             <Route path="/floormanager/teamleads/:userId" element={<BdmTeamLeads />} />
@@ -180,26 +187,42 @@ function App() {
             <Route path="/floormanager-profile-details/:userId" element={<FloorManagerProfile />} />
           </Route>
 
-          {/* --------------------------------------------------rm-certification components---------------------------------------------------------- */}
+          {/* --------------------------------------------------Admin Head/rm-certification components---------------------------------------------------------- */}
           <Route path='/adminhead/login' element={<RMofCertification setrmofcertificationToken={setrmofcertificationToken} />} />
-          <Route path='/adminhead/dashboard/:userId/' element={<RmCertificationDashboard />} />
-          <Route path='/adminhead/bookings/:userId/' element={<RmofCertificationBookings />} />
+          {/* <Route path='/adminhead/dashboard/:userId' element={<RmCertificationDashboard />} />
+          <Route path='/adminhead/bookings/:userId' element={<RmofCertificationBookings />} />
           <Route path='/adminhead/mybookings/:userId' element={<RmofCertificationMyBookings />} />
           <Route path='/adminhead/received-booking-box/:userId' element={<Received_booking_box />} />
-          <Route path="/adminhead-profile-details/:userId" element={<EmployeeProfile />} />
+          <Route path="/adminhead-profile-details/:userId" element={<AdminHeadProfile />} />
           <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken} />} />
-          <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} />
+          <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} /> */}
+          <Route element={<AdminHeadLayout />}>
+            <Route path='/adminhead/dashboard/:userId' element={<RmCertificationDashboard />} />
+            <Route path='/adminhead/bookings/:userId' element={<RmofCertificationBookings />} />
+            <Route path='/adminhead/mybookings/:userId' element={<RmofCertificationMyBookings />} />
+            <Route path='/adminhead/received-booking-box/:userId' element={<Received_booking_box />} />
+            <Route path="/adminhead-profile-details/:userId" element={<AdminHeadProfile />} />
+            <Route path='/rmoffunding/login-rmoffunding' element={<RMofFundingLogin setrmoffundingToken={setrmoffundingToken} />} />
+            <Route path='/rmoffunding/dashboard-rmoffunding/:userId' element={<RMofFundingDashboard />} />
+          </Route>
+
 
           {/* --------------------------------------------------admin executive components---------------------------------------------------------- */}
           <Route path='/adminexecutive/login' element={<AdminExecutiveLogin setAdminExecutiveToken={setAdminExecutiveToken} />} />
-          <Route path='/adminexecutive/dashboard/:userId/' element={<AdminExecutiveDashboard />} />
+          {/* <Route path='/adminexecutive/dashboard/:userId' element={<AdminExecutiveDashboard />} />
           <Route path='/adminexecutive/received-booking-box/:userId' element={<AdminExecutiveRecievedBox />} />
           <Route path='/adminexecutive/mybookings/:userId' element={<AdminExecutiveMyBookings />} />
-          <Route path="/adminexecutive-profile-details/:userId" element={<EmployeeProfile />} />
+          <Route path="/adminexecutive-profile-details/:userId" element={<AdminExecutiveProfile />} /> */}
+          <Route element={<AdminExecutiveLayout />}>
+            <Route path='/adminexecutive/dashboard/:userId' element={<AdminExecutiveDashboard />} />
+            <Route path='/adminexecutive/received-booking-box/:userId' element={<AdminExecutiveRecievedBox />} />
+            <Route path='/adminexecutive/mybookings/:userId' element={<AdminExecutiveMyBookings />} />
+            <Route path="/adminexecutive-profile-details/:userId" element={<AdminExecutiveProfile />} />
+          </Route>
 
           {/* -----------------------------------------datamanager components--------------------------------------- */}
           <Route path="/dataanalyst/login" element={<DataManagerLogin setManagerToken={setManagerToken} />} />
-          <Route path='/dataanalyst/dashboard/:userId/' element={<DatamanagerDashboard />} />
+          {/* <Route path='/dataanalyst/dashboard/:userId/' element={<DatamanagerDashboard />} />
           <Route path="/dataanalyst/manageleads" element={<ManageLeads />} ></Route>
           <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager />} />
           <Route path="/dataanalyst/employees" element={<DataManager_Employees />}></Route>
@@ -207,10 +230,24 @@ function App() {
           <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />}></Route>
           <Route path="/dataanalyst/bookings" element={<ManagerBookings />}></Route>
           <Route path="/dataanalyst/expensereport" element={<ExpenseReport />}></Route>
-          <Route path="/dataanalyst-profile-details/:userId" element={<EmployeeProfile />} />
-          <Route path="/datamanager/notification" element={<NotificationDM />}></Route>
+          <Route path="/dataanalyst-profile-details/:userId" element={<DataAnalystProfile />} />
+          <Route path="/dataanalyst/notification" element={<NotificationDM />}></Route>
           <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
-          <Route path="/datamanager/datamanagerside-employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} />
+          <Route path="/datamanager/datamanagerside-employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} /> */}
+          <Route element={<DataAnalystLayout />}>
+            <Route path='/dataanalyst/dashboard/:userId/' element={<DatamanagerDashboard />} />
+            <Route path="/dataanalyst/manageleads" element={<ManageLeads />} />
+            <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager />} />
+            <Route path="/dataanalyst/employees" element={<DataManager_Employees />} />
+            <Route path="/dataanalyst/newEmployees" element={<DatamanagerNewEmployee />} />
+            <Route path="/dataanalyst/employeeLeads/:id" element={<EmployeeLeads />} />
+            <Route path="/dataanalyst/bookings" element={<ManagerBookings />} />
+            <Route path="/dataanalyst/expensereport" element={<ExpenseReport />} />
+            <Route path="/dataanalyst-profile-details" element={<DataAnalystProfile />} />
+            <Route path="/dataanalyst/notification" element={<NotificationDM />} />
+            <Route path="/employeereportdatamanager/:ename/:status" element={<EmployeeStatusInfo />} />
+            <Route path="/datamanager/datamanagerside-employeeteamleads/:id" element={<DatamanagerEmployeeTeamLeads />} />
+          </Route>
 
           {/* ---------------------------------------admin  components--------------------------------------- */}
           <Route path="/converted-leads/:userId/" element={newtoken ? <ConveertedLeads /> : <Navigate to="/employeelogin" />}></Route>
@@ -262,7 +299,7 @@ function App() {
           <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
           <Route path='/hr/employees/salarypage' element={<EmployeeSalaryView />}></Route>
           <Route path="/hr-profile-details/:userId" element={<HrManagerProfile />} /> */}
-          <Route element={newtoken ? <HrLayout /> : <Navigate to="/" />}>
+          <Route element={<HrLayout />}>
             <Route path="/hr/dashboard" element={<HrDashboard />} />
             {/* <Route path="/hr/employees/" element={<NewEmployees />} /> */}
             <Route path="/hr/employees" element={<HrEmployees />} />

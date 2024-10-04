@@ -15,7 +15,7 @@ import { h } from "@fullcalendar/core/preact.js";
 
 
 
-function EmployeeViewPayrollView({ editField, setEditField, hrUserId }) {
+function EmployeeViewPayrollView({ editField, setEditField, hrUserId, dataManagerUserId }) {
 
     const { userId } = useParams();
     const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -38,8 +38,10 @@ function EmployeeViewPayrollView({ editField, setEditField, hrUserId }) {
             // console.log(response.data, userId);
             const tempData = response.data;
             let data;
-            if(hrUserId) {
+            if (hrUserId) {
                 data = tempData.find((item) => item._id === hrUserId);
+            } else if (dataManagerUserId) {
+                data = tempData.find((item) => item._id === dataManagerUserId);
             } else {
                 data = tempData.find((item) => item._id === userId);
             }

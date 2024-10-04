@@ -44,7 +44,7 @@ export default function Bellicon({data , gdata,adata }) {
       //   await axios.put(`http://localhost:3001/api/requestData/${id}`, {
       //     read: true,
       //   });
-        window.location.replace("/datamanager/notification");
+        window.location.replace("/dataanalyst/notification");
         // Assuming that you have a 'read' property in your MongoDB model
         // Adjust the URL and data structure based on your actual backend implementation
       // }
@@ -61,7 +61,7 @@ export default function Bellicon({data , gdata,adata }) {
       //   await axios.put(`http://localhost:3001/api/requestgData/${id}`, {
       //     read: true,
       //   });
-        window.location.replace("/datamanager/notification");
+        window.location.replace("/dataanalyst/notification");
         // Assuming that you have a 'read' property in your MongoDB model
         // Adjust the URL and data structure based on your actual backend implementation
       
@@ -265,7 +265,7 @@ export default function Bellicon({data , gdata,adata }) {
               ))}
               </Stack>
               <div style={{ margin: "3px 0px" }} className="foot">
-          <Link to={"/dataManager/notification"}>
+          <Link to={"/datamanager/notification"}>
             <div style={{ minWidth: "20vw", textAlign: "center" }}>See All</div>
           </Link>
         </div>

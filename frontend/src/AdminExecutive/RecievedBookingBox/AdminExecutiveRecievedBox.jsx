@@ -1015,8 +1015,9 @@ function AdminExecutiveRecievedBox() {
 
     return (
         <div>
-            <AdminExecutiveHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
-            <AdminExecutiveNavbar adminExecutiveUserId={adminExecutiveUserId} />
+            {/* <AdminExecutiveHeader id={employeeData._id} name={employeeData.ename} empProfile={employeeData.profilePhoto && employeeData.profilePhoto.length !== 0 && employeeData.profilePhoto[0].filename} gender={employeeData.gender} designation={employeeData.newDesignation} />
+            <AdminExecutiveNavbar adminExecutiveUserId={adminExecutiveUserId} /> */}
+
             {(!openAllBooking && !openTrashBoxPanel) && (
                 <div className="booking-list-main admin-executive">
                     <div className="booking_list_Filter">

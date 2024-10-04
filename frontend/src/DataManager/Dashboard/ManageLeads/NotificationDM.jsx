@@ -160,10 +160,10 @@ function NotificationDM() {
   const dataManagerName = localStorage.getItem("dataManagerName")
   return (
     <div>
-      
       {" "}
-      <Header name={dataManagerName} />
-      <Navbar />
+      {/* <Header name={dataManagerName} />
+      <Navbar /> */}
+      
       <div className="page-wrapper">
         <div className="page-header">
           <div className="container-xl">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Header from "../../Components/Header/Header.jsx";
 import { useParams } from "react-router-dom";
+import Header from "../../Components/Header/Header.jsx";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
 import axios from "axios";
 import Nodata from "../../Components/Nodata/Nodata.jsx";
@@ -104,8 +104,9 @@ function DatamanagerDashboard() {
 
     return (
         <div>
-            <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
-            <Navbar name={dataManagerName} />
+            {/* <Header id={myInfo._id} name={myInfo.ename} empProfile={myInfo.profilePhoto && myInfo.profilePhoto.length !== 0 && myInfo.profilePhoto[0].filename} gender={myInfo.gender} designation={myInfo.newDesignation} />
+            <Navbar name={dataManagerName} /> */}
+
             <div className="page-wrapper">
                 <div className="container-xl">
                     <div className="card mt-3">
