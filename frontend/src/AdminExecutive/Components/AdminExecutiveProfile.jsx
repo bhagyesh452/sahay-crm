@@ -1135,9 +1135,9 @@ function AdminExecutiveProfile() {
                     <li class="nav-item hr_emply_info_inner_tab_item d-none">
                       <a class="nav-link" data-bs-toggle="tab" href="#LeaveReport">Leave Report</a>
                     </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item">
+                    {/* <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link" data-bs-toggle="tab" href="#CallingReport">Calling Report</a>
-                    </li>
+                    </li> */}
                     <li class="nav-item hr_emply_info_inner_tab_item d-none">
                       <a class="nav-link" data-bs-toggle="tab" href="#EmployeeDocuments">Employee Documents</a>
                     </li>
@@ -1155,9 +1155,9 @@ function AdminExecutiveProfile() {
                     <div class="tab-pane heiitc_inner fade" id="LeaveReport">
                       <LeaveReportView />
                     </div>
-                    <div class="tab-pane heiitc_inner fade" id="CallingReport">
+                    {/* <div class="tab-pane heiitc_inner fade" id="CallingReport">
                       <CallingReportView employeeInformation={data} />
-                    </div>
+                    </div> */}
                    
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
