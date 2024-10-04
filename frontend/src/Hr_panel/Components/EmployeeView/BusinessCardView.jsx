@@ -82,6 +82,7 @@ function BusinessCardView({ employeeInformation }) {
     
             // Get the pixel ratio to adjust the scale accordingly
             const pixelRatio = window.devicePixelRatio || 1;
+            console.log("pixelratio" , pixelRatio)
             
             // Set fixed width and height for capturing business card
             const CARD_WIDTH = 475;  // Fixed width in pixels
@@ -104,7 +105,7 @@ function BusinessCardView({ employeeInformation }) {
                 useCORS: true,
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
-                scale: pixelRatio,  // Adjust the scale to the device's pixel ratio
+                scale: 2,  // Adjust the scale to the device's pixel ratio
             });
     
             // Define the margin between front and back images
