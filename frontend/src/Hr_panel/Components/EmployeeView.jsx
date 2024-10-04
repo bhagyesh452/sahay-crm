@@ -57,7 +57,7 @@ import SalaryCalculationView from "./EmployeeView/SalaryCalculationView.jsx";
 import LeaveReportView from "./EmployeeView/LeaveReportView.jsx";
 import CallingReportView from "./EmployeeView/CallingReportView.jsx";
 import BusinessCardView from "./EmployeeView/BusinessCardView.jsx";
-
+import { MdOutlineBloodtype } from "react-icons/md";
 
 function EmployeeView() {
 
@@ -81,6 +81,7 @@ function EmployeeView() {
   const [reportingManager, setReportingManager] = useState("");
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
+  const [bloodGroup, setBloodGroup] = useState("")
   const [gender, setGender] = useState("");
   const [personalNumber, setPersonalNumber] = useState("");
   const [personalEmail, setPersonalEmail] = useState("");
@@ -256,6 +257,7 @@ function EmployeeView() {
       setDepartment(data.department);
       setEmploymentType(data.employeementType);
       setDob(data.dob);
+      setBloodGroup(data.bloodGroup)
       setGender(data.gender);
       setRelationship(data.relationship);
       setCurrentAddress(data.currentAddress);
@@ -301,6 +303,7 @@ function EmployeeView() {
       middleName: middleName,
       lastName: lastName,
       dob: dob,
+      bloodGroup: bloodGroup,
       gender: gender,
       personalPhoneNo: personalNumber,
       personalEmail: personalEmail,
@@ -321,7 +324,7 @@ function EmployeeView() {
     }
   };
 
-  
+
 
   return (
     <div>
@@ -531,7 +534,7 @@ function EmployeeView() {
                 </div>
 
                 <div className="mt-3">
-                  <ul class="nav nav-tabs employee_e_info_tab" style={{fontSize:'12px'}}>
+                  <ul class="nav nav-tabs employee_e_info_tab" style={{ fontSize: '12px' }}>
                     <li class="nav-item">
                       <a class="nav-link active" data-bs-toggle="tab" href="#eI">Your Info</a>
                     </li>
@@ -835,6 +838,59 @@ function EmployeeView() {
                                   <div className="ep_info_form">
                                     <input type="date" className="ep_info_input form-control"
                                       value={dob} onChange={(e) => setDob(e.target.value)} />
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <FaRegSave onClick={() => {
+                                      setEditField("");
+                                      handleSave();
+                                    }} />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-4 pt-1 pb-1">
+                              <div className="d-flex align-items-center">
+                                <div className="ep_info_icon clr-ffb900">
+                                  <MdOutlineBloodtype />
+                                </div>
+                                <div className="ep_info_h">Blood Group :</div>
+                              </div>
+                            </div>
+                            <div className="col-8 pt-1 pb-1 bdr-left-eee">
+                              {editField !== "bloodGroup" ? (
+                                <div className="d-flex align-items-center justify-content-between ep_info">
+                                  <div className="ep_info_t">
+                                    {data.bloodGroup ? data.bloodGroup : "-"}
+                                    {/* 2<sup>nd</sup> Dec 2024 */}
+                                  </div>
+                                  <div className="ep_info_icon">
+                                    <MdOutlineEdit onClick={() => {
+                                      if (editField !== "") {
+                                        Swal.fire("Error", "Please save your changes before editing this field", "error");
+                                        return;
+                                      }
+                                      setBloodGroup(data.bloodGroup);
+                                      setEditField("bloodGroup");
+                                    }} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="ep_info_form">
+                                    <select className="ep_info_select form-control"
+                                      value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)}>
+                                      <option value="" selected>--Select Blood Group--</option>
+                                      <option value="A Positive (A+)">A Positive (A+)</option>
+                                      <option value="A Negative (A-)">A Negative (A-)</option>
+                                      <option value="B Positive (B+)">B Positive (B+)</option>
+                                      <option value="B Negative (B-)">B Negative (B-)</option>
+                                      <option value="AB Positive (AB+)">AB Positive (AB+)</option>
+                                      <option value="AB Negative (AB-)">AB Negative (AB-)</option>
+                                      <option value="O Positive (O+)">O Positive (O+)</option>
+                                      <option value="O Negative (O-)">O Negative (O-)</option>
+                                    </select>
                                   </div>
                                   <div className="ep_info_icon">
                                     <FaRegSave onClick={() => {
@@ -1222,7 +1278,7 @@ function EmployeeView() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div class="tab-pane heiitc_inner fade" id="BusinessCard">
                       <BusinessCardView employeeInformation={data} />
                     </div>
@@ -1266,7 +1322,7 @@ function EmployeeView() {
                       <LeaveReportView />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="CallingReport">
-                      <CallingReportView employeeInformation={data}/>
+                      <CallingReportView employeeInformation={data} />
                     </div>
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, CSSProperties, useRef } from "react";
 import { format } from 'date-fns';
 import axios from "axios";
+import Nodata from "../../../components/Nodata";
 
 function EmployeeViewAttendance({ data }) {
 
@@ -456,6 +457,7 @@ function EmployeeViewAttendance({ data }) {
                             <th>Status</th>
                         </tr>
                     </thead>
+                   { attendanceData && attendanceData.length > 0 ? (
                     <tbody>
                         {attendanceData.map((emp, index) => {
                              const attendanceDate = `${selectedYear}-${monthNamesToNumbers[selectedMonth]}-${String(emp.date).padStart(2, '0')}`;
@@ -551,6 +553,17 @@ function EmployeeViewAttendance({ data }) {
                             )
                         })}
                     </tbody>
+                    ) : (
+                        <tbody>
+                            <tr>
+                                <td colSpan="6">
+                                    <Nodata/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    )
+                    }
+                    
                 </table>
             </div>
         </div>
