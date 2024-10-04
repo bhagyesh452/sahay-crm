@@ -6,7 +6,7 @@ import Navbar from "../Navbar/Navbar";
 
 function DataAnalystLayout() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const { userId } = useParams();
+  const userId = localStorage.getItem("dataManagerUserId");
   const [data, setData] = useState([]);
 
   const fetchData = async () => {
