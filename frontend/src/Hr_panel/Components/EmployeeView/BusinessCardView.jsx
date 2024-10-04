@@ -157,17 +157,10 @@ function BusinessCardView({ employeeInformation }) {
                             </div>
                             <div className='businessCardBackfootertext'>
                                 {employeeInformation && employeeInformation.branchOffice === "Gota" ?
-<<<<<<< HEAD
                                 (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
                                     Road, Gota, Ahmedabad - 382470</p>) :
                                 (<p className='m-0'>1307/08, Zion Z1, Sindhubhav Road,<br />
                                     Ahmedabad - 380054 </p>)}
-=======
-                                    (<p className='m-0'>B-304, Ganesh Glory 11, Jagatpur<br />
-                                        Road, Gota, Ahmedabad - 382470</p>) :
-                                    (<p className='m-0'>1307/08, Zion Z1, Beside Avalon Hotel,<br />
-                                        Sindhubhav Road, Ahmedabad - 380054 </p>)}
->>>>>>> a9d0ff430b70666bc5e2fc2dc58d00275f5a83c7
                             </div>
                         </div>
                     </div>
