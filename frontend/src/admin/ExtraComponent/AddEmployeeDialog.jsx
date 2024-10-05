@@ -514,7 +514,8 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                     </IconButton>{" "}
                 </DialogTitle>
                 <DialogContent>
-                    {isLoading ? <div>
+                    {isLoading ? 
+                    <div>
                         <div className="LoaderTDSatyle w-100">
                             <ClipLoader
                                 color="lightgrey"
@@ -524,7 +525,8 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                                 data-testid="loader"
                             />
                         </div>
-                    </div> : <div className="modal-dialog modal-lg" role="document">
+                    </div> : 
+                    <div className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
                             <div className="modal-body">
                                 <div className="mb-3">
@@ -851,11 +853,12 @@ function AddEmployeeDialog({ empId, openForAdd, closeForAdd, openForEdit, closeF
                                 </div>
                             ))}
                         </div>
-                    </div>}
+                    </div>
+                    }
                 </DialogContent>
-                <Button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
+                <button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
                     Submit
-                </Button>
+                </button>
             </Dialog>
         </div>
     )

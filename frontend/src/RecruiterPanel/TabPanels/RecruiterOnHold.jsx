@@ -876,6 +876,8 @@ function RecruiterOnHold({
                                                         empName={obj.empFullName}
                                                         empEmail={obj.personal_email}
                                                         refreshData={refreshData}
+                                                        interViewStatus={obj.interViewStatus}
+                                                        interViewDate={obj.interViewDate}
                                                     />
                                                 )}
                                             </div>
@@ -921,7 +923,8 @@ function RecruiterOnHold({
                                         </td>
                                         <td>{obj.applicationSource}</td>
                                         <td>{formatDatePro(obj.fillingDate)}</td>
-                                        <td><RecruiterCallHistory
+                                        <td>
+                                            <RecruiterCallHistory
                                             key={`${obj.empFullName}-${obj.personal_email}-${obj.mainCategoryStatus}-${obj.subCategoryStatus}`} // Unique key
                                             mainStatus={obj.mainCategoryStatus}
                                             subStatus={obj.subCategoryStatus}

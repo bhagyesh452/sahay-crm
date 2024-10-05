@@ -17,6 +17,7 @@ import EmpDfaullt from "../../static/EmployeeImg/office-man.png";
 import FemaleEmployee from "../../static/EmployeeImg/woman.png";
 import { useQuery } from "@tanstack/react-query";
 import UpcomingEmployees from "./UpcomingEmployees";
+import DialogAddRecentEmployee from "./Extra Components/DialogAddRecentEmployee";
 
 function HrEmployees() {
 
@@ -40,10 +41,15 @@ function HrEmployees() {
   const [page, setPage] = useState(1);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
   const [openRecruiterWindow, setOpenRecruiterWindow] = useState(false)
+  const [openRecentEmployee, setOpenRecentEmployee] = useState(false)
 
   const handleAddEmployee = () => {
     navigate("/hr/add/employee");
   };
+
+  const handleAddRecentEmployee=()=>{
+    setOpenRecentEmployee(true)
+  }
 
   const formatSalary = (amount) => {
     return new Intl.NumberFormat('en-IN').format(amount);
@@ -441,6 +447,9 @@ function HrEmployees() {
                     <IoFilterOutline className='mr-1' /> Filter
                   </button>
                 </div>
+              </div>
+              <div>
+                <DialogAddRecentEmployee/>
               </div>
               <div>
                 <button onClick={handleAddEmployee} className="btn btn-primary">+ Add Employee</button>

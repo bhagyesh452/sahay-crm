@@ -999,6 +999,8 @@ function RecruiterRejected({
                                                         empName={obj.empFullName}
                                                         empEmail={obj.personal_email}
                                                         refreshData={refreshData}
+                                                        interViewStatus={obj.interViewStatus}
+                                                        interViewDate={obj.interViewDate}
                                                     />
                                                 )}
                                             </div>

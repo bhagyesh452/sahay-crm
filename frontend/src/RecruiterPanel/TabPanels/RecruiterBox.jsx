@@ -486,6 +486,10 @@ function RecruiterBox() {
             fetchRMServicesData(search)
         });
 
+        socket.on("recruiter-applicant-deleted", (res) => {
+            fetchRMServicesData(search)
+        });
+
         return () => {
             socket.disconnect();
         };
