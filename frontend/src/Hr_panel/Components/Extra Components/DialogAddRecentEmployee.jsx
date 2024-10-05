@@ -464,8 +464,7 @@ function DialogAddRecentEmployee({ refetch }) {
                     style={{ textDecoration: "none" }}
                     data-bs-toggle="modal"
                     data-bs-target="#myModal" // Use dynamic modal ID
-
-                >
+                    >
                     <button className="btn btn-primary mr-1">+ Add Recent Employee</button>
                 </a>
             </div>
@@ -821,11 +820,11 @@ function DialogAddRecentEmployee({ refetch }) {
                         </div>
                         <div className="modal-footer">
                             {isAddSingleEmployee ? (
-                                <button className="btn btn-primary" onClick={handleSubmit}>
+                                <button className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit}>
                                     Submit
                                 </button>
                             ) : (
-                                <button className="btn btn-primary" onClick={handleBulkUploadSubmit}>
+                                <button className="btn btn-primary" data-bs-dismiss="modal" onClick={handleBulkUploadSubmit}>
                                     Bulk Upload
                                 </button>
                             )}
@@ -835,7 +834,7 @@ function DialogAddRecentEmployee({ refetch }) {
                 </div>
 
             </div>
-        </div >
+        </div>
     )
 }
 
