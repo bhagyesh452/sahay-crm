@@ -193,12 +193,21 @@ function ApplicationForm() {
                 window.location.href = "https://calendly.com/requirement-startupsahay/15min";
             }
         } catch (error) {
-            // Handle submission error
-            Swal.fire({
-                icon: 'error',
-                title: 'Submission Failed',
-                text: `There was an issue submitting the form. Error: ${error.message}`,
-            });
+            if (error.response && error.response.status === 400) {
+                // Display the specific error message for duplicate entry
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed',
+                    text: error.response.data.message,
+                });
+            } else {
+                // General error handling
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed',
+                    text: 'There was an issue submitting the form. Please try again later.',
+                });
+            }
         } finally {
             setOpenBacdrop(false);
         }

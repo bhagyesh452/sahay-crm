@@ -19,6 +19,7 @@ const axios = require('axios');
 const fetch = require('node-fetch');
 const { previousDay } = require("date-fns");
 require('dotenv').config();
+const { sendMailEmployees } = require("./sendMailEmployees");
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -320,6 +321,7 @@ router.post('/addemployee/hrside', async (req, res) => {
       ename,
       empFullName,
       department,
+      oldDesignation,
       newDesignation,
       branchOffice,
       reportingManager,
@@ -370,6 +372,7 @@ router.post('/addemployee/hrside', async (req, res) => {
       ename,
       empFullName,
       department,
+      designation: oldDesignation,
       newDesignation,
       branchOffice,
       reportingManager,
@@ -382,9 +385,44 @@ router.post('/addemployee/hrside', async (req, res) => {
 
     // Step 5: Save the new employee to the database
     const result = await newEmployee.save();
-    console.log("result" , newEmployee);
+    // Step 6: Send welcome email to the new employee
+    const subject = `Welcome to Startup Sahay! Your CRM Login Details`;
+    const html = `
+        <p>Dear ${ename},</p>
+        <p>Welcome to the team at Startup Sahay Private Limited! We’re excited to have you onboard.</p>
+        <p>As part of your onboarding process, we’ve created your account in our CRM system to help you manage and track your tasks efficiently. Below are your login details:</p>
+        <ul>
+            <li>CRM URL: startupsahay.in</li>
+            <li><b>Username:</b> ${email}</li>
+            <li><b>Password:</b> ${password}</li>
+        </ul>
+         <p>How to Access the CRM:</p>
+         <p> - Go to startupsahay.in.</p>
+         <p> - Enter your business email ID as your username.</p>
+         <p> - Use password mentioned above to log in</p>
 
-    // Step 6: Send response
+         <p>If you encounter any issues while logging in or have any questions, feel free to reach out to the HR team or your team head.</p>
+         <p>We’re here to help ensure you have a smooth start. Welcome again to Startup Sahay, and we look forward to working with you!</p>
+           
+        <p>Best regards,<br>HR Team</br><br>Start-Up Sahay Private Limited</p>
+    `;
+
+    // Send email using the sendMailEmployees function
+    try {
+      const emailInfo = await sendMailEmployees(
+        [email],
+        subject,
+        "", // Empty text (use HTML version instead)
+        html
+      );
+
+      console.log(`Email sent: ${emailInfo.messageId}`);
+    } catch (emailError) {
+      console.error('Error sending email:', emailError);
+      return res.status(500).json({ message: 'Employee added but email sending failed.' });
+    }
+
+    // Step 7: Send response
     res.status(200).json({
       message: "Employee created successfully",
       data: newEmployee
@@ -398,6 +436,104 @@ router.post('/addemployee/hrside', async (req, res) => {
     });
   }
 });
+
+router.post('/hr-bulk-add-employees', async (req, res) => {
+  try {
+    const { employeesData } = req.body;
+    console.log("employeesData", employeesData);
+
+    if (!employeesData || !Array.isArray(employeesData)) {
+      return res.status(400).json({ message: 'Invalid data format' });
+    }
+
+    // Array to hold the promises for inserting each employee
+    const employeeInsertPromises = employeesData.map(async (employee) => {
+      try {
+        // Generate new employee ID using the existing logic
+        let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
+        let totalEmployees = await adminModel.countDocuments();
+        let newEmployeeID;
+
+        if (!lastEmployeeIdRecord || lastEmployeeIdRecord.lastEmployeeId === "SSPL0000") {
+          newEmployeeID = `SSPL${(totalEmployees + 1).toString().padStart(4, '0')}`;
+          if (lastEmployeeIdRecord) {
+            await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+          } else {
+            await lastEmployeeIdsModel.create({ lastEmployeeId: newEmployeeID });
+          }
+        } else {
+          let lastEmployeeID = lastEmployeeIdRecord.lastEmployeeId;
+          let employeeNumber = parseInt(lastEmployeeID.replace("SSPL", ""), 10) + 1;
+          newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
+          await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+        }
+
+        // Generate a random password for the employee
+        const generateRandomPassword = (firstName) => {
+          const randomNumber = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit random number
+          return `${firstName}@Sahay#${randomNumber}`;
+        };
+        const generatedPassword = generateRandomPassword(employee.firstName);
+
+        // Add the new employee ID and password to the employee object
+        employee.employeeID = newEmployeeID;
+        employee.password = generatedPassword;
+
+        // Create a new employee document and save it to the database
+        const newEmployee = new adminModel(employee);
+        console.log("newEmployee", newEmployee);
+        await newEmployee.save();
+
+        // Step 6: Send welcome email to the new employee
+        const subject = `Welcome to Startup Sahay! Your CRM Login Details`;
+        const html = `
+          <p>Dear ${employee.firstName},</p>
+          <p>Welcome to the team at Startup Sahay Private Limited! We’re excited to have you onboard.</p>
+          <p>As part of your onboarding process, we’ve created your account in our CRM system to help you manage and track your tasks efficiently. Below are your login details:</p>
+          <ul>
+              <li><b>CRM URL:</b> <a href="https://startupsahay.in" target="_blank">https://startupsahay.in</a></li>
+              <li><b>Username:</b> ${employee.email}</li>
+              <li><b>Password:</b> ${generatedPassword}</li>
+          </ul>
+          <p>How to Access the CRM:</p>
+          <p>- Go to startupsahay.in.</p>
+          <p>- Enter your business email ID as your username.</p>
+          <p>- Use the password mentioned above to log in.</p>
+          <p>If you encounter any issues while logging in or have any questions, feel free to reach out to the HR team or your team head.</p>
+          <p>We’re here to help ensure you have a smooth start. Welcome again to Startup Sahay, and we look forward to working with you!</p>
+          <p>Best regards,<br>HR Team<br>Start-Up Sahay Private Limited</p>
+        `;
+
+        // Send email using the sendMailEmployees function
+        try {
+          const emailInfo = await sendMailEmployees(
+            [employee.email],
+            subject,
+            "", // Empty text (use HTML version instead)
+            html
+          );
+          console.log(`Email sent: ${emailInfo.messageId}`);
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+          // Log error, but do not stop the loop for other employees
+        }
+
+      } catch (error) {
+        console.error('Error adding employee:', employee.email, error.message);
+        // Log error, but do not stop the loop for other employees
+      }
+    });
+
+    // Wait for all employees to be added
+    await Promise.all(employeeInsertPromises);
+
+    res.status(200).json({ message: 'Employees added successfully' });
+  } catch (error) {
+    console.error('Error adding employees:', error.message);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
 
 // router.post("/einfo", async (req, res) => {
 //   try {
@@ -489,30 +625,30 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
 ]), async (req, res) => {
 
   const { empId } = req.params;
-  const { 
-    firstName, 
-    middleName, 
-    lastName, 
+  const {
+    firstName,
+    middleName,
+    lastName,
     dob,
     bloodGroup,
-    personalPhoneNo, 
-    personalEmail, 
-    department, 
-    designation, 
-    oldDesignation, 
-    employeementType, 
-    officialNo, 
-    officialEmail, 
-    joiningDate, 
-    branch, 
-    manager, 
-    nameAsPerBankRecord, 
-    salary, 
-    firstMonthSalaryCondition, 
-    firstMonthSalary, 
-    personName, 
-    relationship, 
-    personPhoneNo 
+    personalPhoneNo,
+    personalEmail,
+    department,
+    designation,
+    oldDesignation,
+    employeementType,
+    officialNo,
+    officialEmail,
+    joiningDate,
+    branch,
+    manager,
+    nameAsPerBankRecord,
+    salary,
+    firstMonthSalaryCondition,
+    firstMonthSalary,
+    personName,
+    relationship,
+    personPhoneNo
   } = req.body;
   // console.log("Reqest file is :", req.files);
 
@@ -564,7 +700,7 @@ router.put("/updateEmployeeFromId/:empId", upload.fields([
         empFullName: `${firstName || ""} ${middleName || ""} ${lastName || ""}`
       },
       ...(dob && { dob }),
-      ...(bloodGroup && { bloodGroup :bloodGroup }),
+      ...(bloodGroup && { bloodGroup: bloodGroup }),
       ...(personalPhoneNo && { personal_number: personalPhoneNo }),
       ...(personalEmail && { personal_email: personalEmail }),
 
@@ -2137,9 +2273,9 @@ router.get('/achieved-details/:ename', async (req, res) => {
 // 2. Read the Employee
 router.get("/einfo", async (req, res) => {
   try {
-   
+
     const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
-   
+
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
