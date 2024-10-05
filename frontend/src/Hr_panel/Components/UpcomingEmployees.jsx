@@ -79,24 +79,24 @@ function UpcomingEmployees({ upcomingEmployees, dataLoading }) {
                             <tbody>
                                 {filteredData.map((obj, index) => (
                                     <tr key={index}>
-                                        <th>{index + 1}</th>
-                                        <th>{obj.empFullName}</th>
-                                        <th>{obj.personal_number}</th>
-                                        <th>{obj.personal_email}</th>
-                                        <th>{obj.appliedFor ? obj.appliedFor : "-"}</th>
-                                        <th>
+                                        <td>{index + 1}</td>
+                                        <td>{obj.empFullName}</td>
+                                        <td>{obj.personal_number}</td>
+                                        <td>{obj.personal_email}</td>
+                                        <td>{obj.appliedFor ? obj.appliedFor : "-"}</td>
+                                        <td>
                                             {obj.offeredSalary
                                                 ? `${parseInt(obj.offeredSalary).toLocaleString("en-US", {
                                                     style: "currency",
                                                     currency: "INR", // Change this to your desired currency code
                                                 })}`
                                                 : "-"}
-                                        </th>
-                                        <th>{obj.firstMonthSalaryCondition ? `${obj.firstMonthSalaryCondition}` : "-"}</th>
-                                        <th>{obj.jdate ? formatDatePro(obj.jdate) : "-"}</th>
-                                        <th>{obj.branchOffice ? obj.branchOffice : "-"}</th>
-                                        <th>{obj.applicationSource}</th>
-                                        <th>{formatDatePro(obj.fillingDate)}</th>
+                                        </td>
+                                        <td>{obj.firstMonthSalaryCondition ? `${obj.firstMonthSalaryCondition}` : "-"}</td>
+                                        <td>{obj.jdate ? formatDatePro(obj.jdate) : "-"}</td>
+                                        <td>{obj.branchOffice ? obj.branchOffice : "-"}</td>
+                                        <td>{obj.applicationSource}</td>
+                                        <td>{formatDatePro(obj.fillingDate)}</td>
                                     </tr>
                                 ))}
                             </tbody>

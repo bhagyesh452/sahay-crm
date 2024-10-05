@@ -311,9 +311,93 @@ router.post("/einfo", upload.fields([
   }
 });
 
+router.post('/addemployee/hrside', async (req, res) => {
+  try {
+    // Extract employee details from request body
+    const {
+      email,
+      number,
+      ename,
+      empFullName,
+      department,
+      newDesignation,
+      branchOffice,
+      reportingManager,
+      password,
+      jdate,
+      AddedOn,
+      targetDetails,
+      bdmWork
+    } = req.body;
+    console.log("Received request for adding employee:", req.body);
+    // Step 1: Find the record of the last generated employee ID
+    let lastEmployeeIdRecord = await lastEmployeeIdsModel.findOne({});
 
+    // Step 2: Get the total number of employees
+    let totalEmployees = await adminModel.countDocuments();
 
+    // Step 3: If no record exists, generate employee ID from scratch, else increment the last one
+    let newEmployeeID;
+    if (!lastEmployeeIdRecord || lastEmployeeIdRecord.lastEmployeeId === "SSPL0000") {
+      // No last employee ID found, start with SSPL0001 + total count
+      newEmployeeID = `SSPL${(totalEmployees + 1).toString().padStart(4, '0')}`;
 
+      // Update or insert the lastEmployeeId in the collection with the new ID
+      if (lastEmployeeIdRecord) {
+        await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+      } else {
+        await lastEmployeeIdsModel.create({ lastEmployeeId: newEmployeeID });
+      }
+    } else {
+      // Last employee ID found, increment by 1
+      let lastEmployeeID = lastEmployeeIdRecord.lastEmployeeId;
+
+      // Extract the number part and increment
+      let employeeNumber = parseInt(lastEmployeeID.replace("SSPL", ""), 10) + 1;
+
+      // Generate new employee ID
+      newEmployeeID = `SSPL${employeeNumber.toString().padStart(4, '0')}`;
+
+      // Update lastEmployeeId in the collection with the new ID
+      await lastEmployeeIdsModel.updateOne({}, { $set: { lastEmployeeId: newEmployeeID } });
+    }
+
+    // Step 4: Create a new employee document
+    const newEmployee = new adminModel({
+      email,
+      number,
+      employeeID: newEmployeeID,
+      ename,
+      empFullName,
+      department,
+      newDesignation,
+      branchOffice,
+      reportingManager,
+      password,
+      jdate,
+      AddedOn,
+      targetDetails,
+      bdmWork
+    });
+
+    // Step 5: Save the new employee to the database
+    const result = await newEmployee.save();
+    console.log("result" , newEmployee);
+
+    // Step 6: Send response
+    res.status(200).json({
+      message: "Employee created successfully",
+      data: newEmployee
+    });
+
+  } catch (error) {
+    console.log("Error creating employee:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+});
 
 // router.post("/einfo", async (req, res) => {
 //   try {
@@ -2053,57 +2137,9 @@ router.get('/achieved-details/:ename', async (req, res) => {
 // 2. Read the Employee
 router.get("/einfo", async (req, res) => {
   try {
-    // Destructure query parameters
-    // const { search } = req.query;
-    // console.log("Search query :", search);
-
-    // Create the filter object
-    // const filter = {};
-
-    // if (search) {
-    //   // Define search conditions
-    //   const searchRegex = new RegExp(search, "i"); // case-insensitive search
-
-    //   // Map search terms for designation
-    //   let designationConditions = [];
-    //   if (search.toLowerCase() === "bd") {
-    //     // For BDE, match both Business Development Executive and Business Development Manager
-    //     designationConditions = [
-    //       { newDesignation: /Business Development Executive/i },
-    //       { newDesignation: /Business Development Manager/i }
-    //     ];
-    //   } else if (search.toLowerCase() === "bde") {
-    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
-    //   } else if (search.toLowerCase() === "bdm") {
-    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
-    //   } else if (search.toLowerCase() === "business development executive") {
-    //     designationConditions = [{ newDesignation: /Business Development Executive/i }];
-    //   } else if (search.toLowerCase() === "business development manager") {
-    //     designationConditions = [{ newDesignation: /Business Development Manager/i }];
-    //   } else {
-    //     designationConditions = [{ newDesignation: searchRegex }];
-    //   }
-
-    //   // Build the search query using $or
-    //   filter.$or = [
-    //     { ename: searchRegex },
-    //     { number: searchRegex },
-    //     { email: searchRegex },
-    //     { branchOffice: searchRegex },
-    //     { department: searchRegex },
-    //     ...designationConditions
-    //   ];
-    // }
-
-    // Perform the search query :
-    // let data;
-    // if(!search){
-    // Fetch all data when there's no search.
+   
     const data = await adminModel.find().lean();  // The .lean() method converts the results to plain JavaScript objects instead of Mongoose documents.
-    // } else {
-    //   // Search using filter.
-    //   data = await adminModel.find(filter).lean();
-    // }
+   
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);

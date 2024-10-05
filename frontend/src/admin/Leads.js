@@ -3763,7 +3763,7 @@ function Leads() {
                                   />
 
                                 </IconButton> </>}
-                              <Link to={`/admin/leads/${company._id}`}>
+                              <Link to={`/managing-director/leads/${company._id}`}>
                                 <IconButton>
                                   <IconEye
                                     style={{

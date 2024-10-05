@@ -345,7 +345,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
                               <button className="action-btn action-btn-primary">
                                 <Link
                                   style={{ textDecoration: "none", color: 'inherit' }}
-                                  to={`/admin/employees/${item._id}`}
+                                  to={`/managing-director/employees/${item._id}`}
                                 >
                                   <FaRegEye />
                                 </Link>
@@ -573,7 +573,7 @@ function DeletedEmployeePanel({ searchValue, deletedEmployee, isLoading, refetch
                                   <div className="icons-btn">
                                     <Link
                                       style={{ color: "black" }}
-                                      to={`/admin/employees/${item._id}`}
+                                      to={`/managing-director/employees/${item._id}`}
                                     >
                                       <IconButton>
                                         {" "}

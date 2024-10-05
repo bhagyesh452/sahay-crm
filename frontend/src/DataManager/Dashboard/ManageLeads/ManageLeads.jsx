@@ -1827,7 +1827,7 @@ function ManageLeads() {
                                                                 />
                                                             </button>
 
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                            <button className='tbl-action-btn' to={`/managing-director/leads/${company._id}`} >
                                                                 <IconEye
                                                                     style={{
                                                                         width: "14px",
@@ -1923,7 +1923,7 @@ function ManageLeads() {
                                                                 />
                                                             </button>
 
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                            <button className='tbl-action-btn' to={`/managing-director/leads/${company._id}`} >
                                                                 <IconEye
                                                                     style={{
                                                                         width: "14px",
@@ -2019,7 +2019,7 @@ function ManageLeads() {
                                                                 />
                                                             </button>
 
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                            <button className='tbl-action-btn' to={`/managing-director/leads/${company._id}`} >
                                                                 <IconEye
                                                                     style={{
                                                                         width: "14px",
@@ -2115,7 +2115,7 @@ function ManageLeads() {
 
                                                             </button>
 
-                                                            <button className='tbl-action-btn' to={`/admin/leads/${company._id}`} >
+                                                            <button className='tbl-action-btn' to={`/managing-director/leads/${company._id}`} >
                                                                 <IconEye
                                                                     style={{
                                                                         width: "14px",

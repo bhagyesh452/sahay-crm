@@ -1154,7 +1154,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                           <button className="action-btn action-btn-primary">
                             <Link
                               style={{ textDecoration: "none", color: 'inherit' }}
-                              to={`/admin/employees/${item._id}`}
+                              to={`/managing-director/employees/${item._id}`}
                             >
                               <FaRegEye />
                             </Link>
@@ -1517,7 +1517,7 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                                 <div className="icons-btn">
                                   <Link
                                     style={{ color: "black" }}
-                                    to={`/admin/employees/${item._id}`}
+                                    to={`/managing-director/employees/${item._id}`}
                                   >
                                     <IconButton>
                                       {" "}

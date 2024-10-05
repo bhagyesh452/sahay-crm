@@ -904,24 +904,32 @@ const FilterTableThisMonthBooking = ({
     // }, [filterField, filteredData, dataForFilter, employeeData]);
 
     const getValues = (dataSource) => {
-        return dataSource.map(item => {
-            if (filterField === 'maturedcases') {
-                return functionCalculateMatured(item.ename);
-            }
-            if (filterField === 'target') {
-                return functionGetAmount(item);
-            }
-            if (filterField === 'achieved') {
-                return functionCalculateAchievedAmount(item.ename); // Return raw value here
-            }
-            if (filterField === 'achievedratio') {
-                return calculateAchievedRatio(item.ename, item);
-            }
-            if (filterField === 'lastbookingdate') {
-                return functionGetLastBookingDate(item.ename);
-            }
-            return item[filterField];
-        }).filter(Boolean);
+        return dataSource
+            .map(item => {
+                let value;
+                if (filterField === 'maturedcases') {
+                    value = functionCalculateMatured(item.ename);
+                    return value;  // Only include non-zero values
+                }
+                if (filterField === 'target') {
+                    value = functionGetAmount(item);
+                    return value !== 0 ? value : null;  // Only include non-zero values
+                }
+                if (filterField === 'achieved') {
+                    value = functionCalculateAchievedAmount(item.ename);
+                    return value;  // Only include non-zero values
+                }
+                if (filterField === 'achievedratio') {
+                    value = calculateAchievedRatio(item.ename, item);
+                    return value !== 0 ? value : null;  // Only include non-zero values
+                }
+                if (filterField === 'lastbookingdate') {
+                    value = functionGetLastBookingDate(item.ename);
+                    return value;  // Include all dates, as zero is not relevant here
+                }
+                return item[filterField];
+            })
+            .filter(value => value !== null && value !== undefined);  // Keep values, excluding null and undefined
     };
 
     useEffect(() => {
@@ -1257,7 +1265,7 @@ const FilterTableThisMonthBooking = ({
                                 />
                             </div>
                             <label className="filter-val p-2" for={value}>
-                                {filterField === 'achieved' ? formatCurrency(value) : value}
+                                {filterField === 'achieved' ? formatCurrency(value) : filterField === 'target' ? formatCurrency(value) : value}
                             </label>
                         </div>
                     ))}

@@ -16,17 +16,31 @@ const RecruiterStatusDropdown = ({
     empName,
     empEmail,
     refreshData,
+    interViewStatus,
+    interViewDate
 }) => {
     const [status, setStatus] = useState(subStatus);
     const [statusClass, setStatusClass] = useState("");
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+    console.log("interview status", interViewStatus, interViewDate, empName, subStatus)
 
     const handleStatusChange = async (newStatus, statusClass) => {
         setStatus(newStatus);
         setStatusClass(statusClass);
         setNewSubStatus(newStatus);
-        //console.log("newStatus", newStatus)
+        // Validation for interview status before moving to Selected or Rejected status
+        if (mainStatus === "UnderReview" && subStatus === "InterView Scheduled" && (newStatus === "Selected" || newStatus === "Rejected") && interViewDate && !interViewStatus) {
+            Swal.fire({
+                title: "Validation Error",
+                text: "Please select interview status before changing the status to Selected or Rejected.",
+                icon: "warning",
+                button: "OK",
+            });
+            setStatus(subStatus);
+            setStatusClass(getStatusClass(mainStatus, subStatus));
+            setNewSubStatus(subStatus);
+            return; // Exit the function if validation fails
+        }
 
         try {
             let response;
@@ -129,6 +143,7 @@ const RecruiterStatusDropdown = ({
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
                 } else if (newStatus === "Selected") {
+
                     movedFromMainCategoryStatus = "UnderReview";
                     movedToMainCategoryStatus = "Selected";
                     response = await axios.post(`${secretKey}/recruiter/update-substatus-recruiter`, {
@@ -141,6 +156,8 @@ const RecruiterStatusDropdown = ({
                         movedFromMainCategoryStatus: movedFromMainCategoryStatus,
                         movedToMainCategoryStatus: movedToMainCategoryStatus,
                     });
+
+
                 } else if (newStatus === "On Hold") {
                     movedFromMainCategoryStatus = "UnderReview";
                     movedToMainCategoryStatus = "On Hold";

@@ -852,6 +852,8 @@ function RecruiterUnderReview({
                                                         setNewSubStatus={setNewStatusProcess}
                                                         empName={obj.empFullName}
                                                         empEmail={obj.personal_email}
+                                                        interViewStatus={obj.interViewStatus}
+                                                        interViewDate={obj.interViewDate}
                                                         refreshData={refreshData}
                                                     />
                                                 )}

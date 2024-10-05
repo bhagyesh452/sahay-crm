@@ -259,6 +259,10 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                     id:id
                 }
             })
+            if(response.status === 200){
+                Swal.fire("Deleted Successfully")
+                fetchData(searchText,page)
+            }
         }catch(error){
             console.log("Error Deleting Employee" ,error.message )
         }finally{
@@ -738,6 +742,8 @@ function RecruiterGeneral({ searchText, showFilter, activeTab, totalFilteredData
                                                         empName={obj.empFullName}
                                                         empEmail={obj.personal_email}
                                                         refreshData={refreshData}
+                                                        interViewStatus={obj.interViewStatus}
+                                                        interViewDate={obj.interViewDate}
                                                     />
                                                 )}
                                             </div>

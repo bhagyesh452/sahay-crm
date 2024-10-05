@@ -251,54 +251,30 @@ function App() {
 
           {/* ---------------------------------------admin  components--------------------------------------- */}
           <Route path="/converted-leads/:userId/" element={newtoken ? <ConveertedLeads /> : <Navigate to="/employeelogin" />}></Route>
-          <Route path="/admin/login-admin" element={<LoginAdmin setToken={setToken} />} />
+          <Route path="/managing-director/login" element={<LoginAdmin setToken={setToken} />} />
           {token ? (
             <>
-              <Route path="/admin/dashboard" element={<Dashboard />} />
-              <Route path="/admin/employees" element={<Employees />} />
-              <Route path="/admin/admin-user" element={<NewEmployee />} />
+              <Route path="/managing-director/dashboard" element={<Dashboard />} />
+              <Route path="/managing-director/employees" element={<Employees />} />
+              <Route path="/managing-director/user" element={<NewEmployee />} />
               {/* <Route path="/admin/new-leads" element={<NewLeads />} /> */}
-              <Route path="/admin/employees/:id" element={<EmployeeParticular />} />
-              <Route path="/admin/employeeleads/:id" element={<AdminEmployeeTeamLeads />} />
-              <Route path="/admin/employees/:id/login-details" element={<LoginDetails />} />
-              {/* <Route path="/admin/leads" element={<Leads />} /> */}
-              <Route path="/admin/leads" element={<TestLeads />} />
-              <Route path="/admin/team" element={<Team />} />
-              <Route path="/admin/leads/:companyId" element={<CompanyParticular />} />
-              <Route path="/admin/bookings" element={<BookingList />} />
-              <Route path="/admin/notification" element={<ShowNotification />} />
-              <Route path="/admin/bookings/Addbookings" element={<RedesignedForm />} />
-              <Route path="/admin/servicesandschemes" element={<Services />} />\
+              <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} />
+              <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} />
+              <Route path="/managing-director/employees/:id/login-details" element={<LoginDetails />} />
+              <Route path="/managing-director/leads" element={<TestLeads />} />
+              <Route path="/managing-director/leads/:companyId" element={<CompanyParticular />} />
+              <Route path="/managing-director/bookings" element={<BookingList />} />
+              <Route path="/managing-director/notification" element={<ShowNotification />} />
+              <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
+              <Route path="/managing-director/servicesandschemes" element={<Services />} />
             </>
           ) : (
-            <Route path="/admin" element={<Navigate to="/admin/login-admin" />} />
+            <Route path="/managing-director" element={<Navigate to="/managing-director/login" />} />
           )}
-
-          {/* <Route path="/*" element={<Navigate to="/employeelogin" />} /> */}
-          {/* <Route path="/processing/processing-login" element={<ProcessingLogin setProcessingToken={setProcessingToken} />} />
-          <Route path="/Processing/Dashboard_processing" element={processingTokenn ? <Dashboard_processing /> : <Navigate to="/processing/processing-login" />} />
-          <Route path="/Processing/Dashboard_processing/addbookings" element={<Form />} />
-          <Route path="/Processing/Dashboard_processing/nodata" element={<Nodata />} />
-          <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard />} />
-          <Route path="/Processing/bellicon" element={<Bellicon_processing />} />
-          <Route path="/Components/Drawer" element={<DrawerComponent />} />
-          <Route path="/employeereport/:ename/:status" element={<StausInfo />} />
-          <Route path="/interestedleadreport/:ename" element={<EmployeeInterestedCompanies />} />
-          <Route path="/followupleadreport/:ename" element={<EmployeeFolowUpCompanies />} />
-          <Route path='/daterange' element={<MaterialUIPickers />} /> */}
           <Route path="*" element={<NotFound />} />
 
           {/**********************************************  HR-Panel-Portal   *******************************************************/}
           <Route path="/hr/login" element={<HrLogin setHrToken={setHrToken} />} />
-          {/* <Route path="/hr/dashboard" element={<HrDashboard />}></Route>
-          <Route path="/hr/employees/" element={<NewEmployees />} />
-          <Route path="/hr/employees" element={<HrEmployees />} />
-          <Route path="/hr/add/employee" element={<HorizontalNonLinearStepper />} />
-          <Route path="/hr/edit/employee/:empId" element={<HREditEmployee />} />
-          <Route path="/hr/employees/attendance" element={<Attendance />} />
-          <Route path='hr-employee-profile-details/:userId' element={<EmployeeView />}></Route>
-          <Route path='/hr/employees/salarypage' element={<EmployeeSalaryView />}></Route>
-          <Route path="/hr-profile-details/:userId" element={<HrManagerProfile />} /> */}
           <Route element={<HrLayout />}>
             <Route path="/hr/dashboard" element={<HrDashboard />} />
             {/* <Route path="/hr/employees/" element={<NewEmployees />} /> */}

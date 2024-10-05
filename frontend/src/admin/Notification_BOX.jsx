@@ -12,7 +12,7 @@ function Notification_BOX({ isDM }) {
   const [total_notifications, setTotal_notifications] = useState([])
   const [total_notiCount, setTotal_notiCount] = useState(0);
   const navigate = useNavigate();
-  const link = isDM ? "/dataanalyst/notification" : "/admin/notification"
+  const link = isDM ? "/dataanalyst/notification" : "/managing-director/notification"
   const notificationRef = useRef(null);
 
 

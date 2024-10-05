@@ -8,7 +8,6 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import myImage from "../static/logo.jpg";
 import { useNavigate } from "react-router-dom";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-// import Notification from "../admin/Notification.js";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
 import Bellicon from "../admin/Bellicon.js";
