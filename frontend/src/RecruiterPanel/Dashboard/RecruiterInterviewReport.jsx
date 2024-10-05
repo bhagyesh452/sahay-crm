@@ -31,7 +31,7 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
         const upcomingJoinees = recruiterData.filter(applicant => {
             if (
                 applicant.subCategoryStatus === "InterView Scheduled" &&
-                new Date(applicant.interViewDate) > new Date()
+                new Date(applicant.interViewDate) >= new Date()
             ) {
                 return true;
             }

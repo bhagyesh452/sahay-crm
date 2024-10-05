@@ -1260,12 +1260,13 @@ router.post(`/post-save-exitDate-recruiter/`, async (req, res) => {
 
 router.delete("/delete-applicant-recruiter", async (req, res) => {
   const { id } = req.query; // Use req.query to access query parameters
-
+  const socketIO = req.io;
   try {
     const applicant = await RecruitmentModel.findByIdAndDelete(id);
     if (!applicant) {
       return res.status(404).json({ message: "Applicant not found" });
     }
+    socketIO.emit('recruiter-applicant-deleted');
     res.status(200).json({ message: "Applicant deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
