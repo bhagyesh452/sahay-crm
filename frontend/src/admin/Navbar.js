@@ -25,12 +25,12 @@ function Navbar() {
               <ul className="navbar-nav">
                 <li
                   className={
-                    location.pathname === "/admin/dashboard" ? "nav-item active" : "nav-item"
+                    location.pathname === "/managing-director/dashboard" ? "nav-item active" : "nav-item"
                   }
                 >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/dashboard"
+                    to="/managing-director/dashboard"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -59,13 +59,13 @@ function Navbar() {
                 </li>
                 <li
                   className={
-                    location.pathname.startsWith("/admin/admin-user")
+                    location.pathname.startsWith("/managing-director/user")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/admin-user"
+                    to="/managing-director/user"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -76,35 +76,16 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                {/* <li
-                  className={
-                    location.pathname.startsWith("/admin/employees")
-                      ? "nav-item active"
-                      : "nav-item"
-                  }>
-                  <Link
-                    style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/employees"
-                  >
-                    <a className="nav-link" href="./">
-                      <span className="nav-link-icon d-md-none d-lg-inline-block">
-                        <BsFillPersonVcardFill style={{ width: "19px", height: "23px" }} />
-                      </span>
-
-                      <span className="nav-link-title active"> Employees </span>
-                    </a>
-                  </Link>
-                </li> */}
                 {(adminName === "Nimesh" || adminName === "Ronak Kumar" || adminName === "Aakash" || adminName === "shivangi" || adminName === "Karan") && <li
                   className={
-                    location.pathname === "/admin/leads"
+                    location.pathname === "/managing-director/leads"
                       ? "nav-item active"
                       : "nav-item"
                   }
                 >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/leads"
+                    to="/managing-director/leads"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -116,14 +97,14 @@ function Navbar() {
                 </li>}
                 <li
                   className={
-                    location.pathname === "/admin/bookings"
+                    location.pathname === "/managing-director/bookings"
                       ? "nav-item active"
                       : "nav-item"
                   }
                 >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/bookings"
+                    to="/managing-director/bookings"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -133,36 +114,16 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                {/* <li
-                  className={
-                    location.pathname === "/admin/team"
-                      ? "nav-item active"
-                      : "nav-item"
-                  }
-                 >
-                  <Link
-                    style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/team"
-                  >
-                    <a className="nav-link" href="./">
-                      <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      <AiOutlineTeam style={{ height: "24px", width: "19px" }} />
-                      </span>
-                      <span className="nav-link-title">Team</span>
-                    </a>
-                  </Link>
-                </li> */}
-
                 <li
                   className={
-                    location.pathname === "/admin/servicesandschemes"
+                    location.pathname === "/managing-director/servicesandschemes"
                       ? "nav-item active"
                       : "nav-item"
                   }
                 >
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/servicesandschemes"
+                    to="/managing-director/servicesandschemes"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">

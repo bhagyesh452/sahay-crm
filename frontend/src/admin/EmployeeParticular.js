@@ -1328,7 +1328,7 @@ function EmployeeParticular() {
 
       // Get the nextId from the eData array
       const nextId = eData[nextIndex];
-      window.location.replace(`/admin/employees/${nextId}`);
+      window.location.replace(`/managing-director/employees/${nextId}`);
       //setBackButton(nextId !== 0);
     } else {
       console.log("Current ID not found in eData array.");
@@ -1393,12 +1393,12 @@ function EmployeeParticular() {
 
       if (currentIndex === 0) {
         // If it's the first page, navigate to the employees page
-        window.location.replace(`/admin/admin-user`);
+        window.location.replace(`/managing-director/user`);
         //setBackButton(false)
       } else {
         // Get the previousId from the eData array
         const prevId = eData[prevIndex];
-        window.location.replace(`/admin/employees/${prevId}`);
+        window.location.replace(`/managing-director/employees/${prevId}`);
       }
       //setBackButton(prevIndex !== 0);
     } else {
@@ -1606,7 +1606,7 @@ function EmployeeParticular() {
     };
   }
   const location = useLocation();
-  const [value, setValue] = React.useState(location.pathname === `/admin/employees/${id}` ? 0 : 1);
+  const [value, setValue] = React.useState(location.pathname === `/managing-director/employees/${id}` ? 0 : 1);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -2035,7 +2035,7 @@ function EmployeeParticular() {
                       </button>
                     )} */}
                     {!selectedEmployee2 && (<Link
-                      to={`/admin/employees/${id}/login-details`}
+                      to={`/managing-director/employees/${id}/login-details`}
                       style={{ marginLeft: "10px" }}>
                       <button className="btn btn-primary d-none d-sm-inline-block">
                         Login Details
@@ -2047,7 +2047,7 @@ function EmployeeParticular() {
                       {!AddForm ?
                         <Link
 
-                          to={`/admin/admin-user`}
+                          to={`/managing-director/user`}
                           style={{ marginLeft: "10px" }}
                         >
                           <button className="btn btn-primary d-none d-sm-inline-block">
@@ -2088,7 +2088,7 @@ function EmployeeParticular() {
                 href="#tabs-home-5"
                 onClick={() => {
                   setCurrentTab("Leads")
-                  window.location.pathname = `/admin/employees/${id}`
+                  window.location.pathname = `/managing-director/employees/${id}`
                 }}
                 className={
                   currentTab === "Leads"
@@ -2111,7 +2111,7 @@ function EmployeeParticular() {
                   href="#tabs-activity-5"
                   onClick={() => {
                     setCurrentTab("TeamLeads")
-                    window.location.pathname = `/admin/employeeleads/${id}`
+                    window.location.pathname = `/managing-director/employeeleads/${id}`
                   }}
                   className={
                     currentTab === "TeamLeads"
@@ -2200,302 +2200,6 @@ function EmployeeParticular() {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="row g-2 align-items-center">
-                <div className="col-2">
-                  <div
-                    className="form-control"
-                    style={{ height: "fit-content", width: "auto" }}>
-                    <select
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        width: "fit-content",
-                      }}
-                      value={selectedField}
-                      onChange={handleFieldChange}
-                    >
-                      <option value="Company Name">Company Name</option>
-                      <option value="Company Number">Company Number</option>
-                      <option value="Company Email">Company Email</option>
-                      <option value="Company Incorporation Date  ">
-                        Company Incorporation Date
-                      </option>
-                      <option value="City">City</option>
-                      <option value="State">State</option>
-                      <option value="Status">Status</option>
-                    </select>
-                  </div>
-                </div>
-
-                {visibility === "block" && (
-                  <div className="col-2">
-                    <input
-                      onChange={handleDateChange}
-                      style={{ display: visibility }}
-                      type="date"
-                      className="form-control"
-                    />
-                  </div>
-                )}
-                <div className="col-2">
-                  {visibilityOther === "block" && (
-                    <div
-                      style={{
-                        //width: "20vw",
-                        //margin: "0px 8px",
-                        display: visibilityOther,
-                      }}
-                      className="input-icon"
-                    >
-                      <span className="input-icon-addon">
-                        
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="20"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                          <path d="M21 21l-6 -6" />
-                        </svg>
-                      </span>
-                      <input
-                        type="text"
-                        value={searchText}
-                        onChange={(e) => {
-                          setSearchText(e.target.value);
-                          setCurrentPage(0);
-                        }}
-                        className="form-control"
-                        placeholder="Search…"
-                        aria-label="Search in website"
-                      />
-                    </div>
-                  )}
-                  {visibilityOthernew === "block" && (
-                    <div
-                      style={{
-                        //width: "20vw",
-                        width: "120px",
-                        // margin: "0px 8px",
-                        display: visibilityOthernew,
-                      }}
-                      className="input-icon"
-                    >
-                      <select
-                        value={searchText}
-                        onChange={(e) => {
-                          setSearchText(e.target.value);
-                          // Set dataStatus based on selected option
-                          if (
-                            e.target.value === "All" ||
-                            e.target.value === "Busy" ||
-                            e.target.value === "Not Picked Up"
-                          ) {
-                            setdataStatus("All");
-                          } else if (
-                            e.target.value === "Junk" ||
-                            e.target.value === "Not Interested"
-                          ) {
-                            setdataStatus("NotInterested");
-                          } else if (e.target.value === "Interested") {
-                            setdataStatus("Interested");
-                          } else if (e.target.value === "Untouched") {
-                            setEmployeeData(
-                              moreEmpData.filter(
-                                (obj) => obj.Status === "Untouched"
-                              )
-                            );
-                          }
-                        }}
-                        className="form-select"
-                      >
-                        <option value="All">All</option>
-                        <option value="Busy">Busy</option>
-                        <option value="Not Picked Up">Not Picked Up</option>
-                        <option value="Junk">Junk</option>
-                        <option value="Interested">Interested</option>
-                        <option value="Not Interested">Not Interested</option>
-                        <option value="Untouched">Untouched</option>
-                      </select>
-                    </div>
-                  )}
-                </div>
-                <div
-                  className="col-2"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "7px",
-                  }}
-                >
-                  {selectedField === "State" && (
-                    <div style={{ marginLeft: "-16px" }} className="input-icon">
-                      <span className="input-icon-addon">
-                       
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="20"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                          <path d="M21 21l-6 -6" />
-                        </svg>
-                      </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={citySearch}
-                        onChange={(e) => {
-                          setcitySearch(e.target.value);
-                          setCurrentPage(0);
-                        }}
-                        placeholder="Search City"
-                        aria-label="Search in website"
-                      />
-                    </div>
-                  )}
-                  {selectedField === "Company Incorporation Date  " && (
-                    <>
-                      <div
-                        style={{ width: "fit-content" }}
-                        className="form-control"
-                      >
-                        <select
-                          style={{ border: "none", outline: "none" }}
-                          onChange={(e) => {
-                            setMonth(e.target.value);
-                            setCurrentPage(0);
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Month
-                          </option>
-                          <option value="12">December</option>
-                          <option value="11">November</option>
-                          <option value="10">October</option>
-                          <option value="9">September</option>
-                          <option value="8">August</option>
-                          <option value="7">July</option>
-                          <option value="6">June</option>
-                          <option value="5">May</option>
-                          <option value="4">April</option>
-                          <option value="3">March</option>
-                          <option value="2">February</option>
-                          <option value="1">January</option>
-                        </select>
-                      </div>
-                      <div className="input-icon form-control">
-                        <select
-                          select
-                          style={{ border: "none", outline: "none" }}
-                          value={year}
-                          onChange={(e) => {
-                            setYear(e.target.value);
-                            setCurrentPage(0); // Reset page when year changes
-                          }}
-                        >
-                          <option value="">Select Year</option>
-                          {[...Array(15)].map((_, index) => {
-                            const yearValue = 2024 - index;
-                            return (
-                              <option key={yearValue} value={yearValue}>
-                                {yearValue}
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                  className="features"
-                >
-                  <div style={{ display: "flex" }} className="feature1 mb-2">
-                    {selectedRows.length !== 0 && (
-                      <div className="form-control">
-                        {selectedRows.length} Data Selected
-                      </div>
-                    )}
-                    {searchText !== "" && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          fontSize: "16px",
-                          fontFamily: "sans-serif",
-                        }}
-                        className="results"
-                      >
-                        {filteredData.length} results found
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-               
-              </div> */}
-                {/* <div class="card-header my-tab">
-                <ul
-                  class="nav nav-tabs card-header-tabs nav-fill p-0"
-                  data-bs-toggle="tabs"
-                >
-                  <li class="nav-item data-heading">
-                    <a
-                      href="#tabs-home-5"
-                      onClick={() => {
-                        setCurrentTab("Leads")
-                        window.location.pathname = `/admin/employees/${id}`
-                      }}
-                      className={
-                        currentTab === "Leads"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      Leads{" "}
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a
-                      href="#tabs-activity-5"
-                      onClick={() => {
-                        setCurrentTab("TeamLeads")
-                        window.location.pathname = `/admin/employeeleads/${id}`
-                      }}
-                      className={
-                        currentTab === "TeamLeads"
-                          ? "nav-link active item-act"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    >
-                      <span>Team Leads</span>
-                    </a>
-                  </li>
-                </ul>
-              </div> */}
                 <div class="card-header my-tab">
                   <ul
                     class="nav nav-tabs card-header-tabs nav-fill p-0"

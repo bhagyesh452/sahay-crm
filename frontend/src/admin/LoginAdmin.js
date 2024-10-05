@@ -51,7 +51,7 @@ function LoginAdmin({ setToken }) {
       setToken(token);
       localStorage.setItem("token", token);
       localStorage.setItem("adminName" , adminName)
-      window.location.replace("/admin/dashboard");
+      window.location.replace("/managing-director/dashboard");
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("Incorrect Credentials!");

@@ -24,7 +24,8 @@ useEffect(() => {
 
 const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/employee/einfo/${email}/${password}`);
+        const encodedPassword = encodeURIComponent(password);
+      const response = await axios.get(`${secretKey}/employee/einfo/${email}/${encodedPassword}`);
       console.log(response.data)
       console.log(email , password)
       setData(response.data);

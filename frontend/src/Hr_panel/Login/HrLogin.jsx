@@ -28,7 +28,7 @@ function HrLogin({ setHrToken }){
 
       const fetchData = async () => {
         try {
-            const encodedPassword = encodeURIComponent(password);
+        const encodedPassword = encodeURIComponent(password);
           const response = await axios.get(`${secretKey}/employee/einfo/${email}/${encodedPassword}`);
           console.log(response.data)
           console.log(email , password)
