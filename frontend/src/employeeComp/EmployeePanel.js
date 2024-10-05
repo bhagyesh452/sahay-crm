@@ -77,6 +77,8 @@ import { MdPayment } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
 import CallHistory from "./CallHistory.jsx";
 import { LuHistory } from "react-icons/lu";
+import BdmMaturedCases from "./BdmMaturedCases.jsx";
+import { IoMdClose } from "react-icons/io";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -2356,6 +2358,8 @@ function EmployeePanel() {
 
   const [confirmationPending, setConfirmationPending] = useState(false);
   const [bdeOldStatus, setBdeOldStatus] = useState("");
+  const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false);
+  const [selectedBDM, setSelectedBDM] = useState("");
 
   const handleConfirmAssign = (
     companyId,
@@ -2371,7 +2375,7 @@ function EmployeePanel() {
       (companyStatus === "FollowUp")
     ) {
       // Assuming `bdmName` is defined somewhere
-      setOpenBdmNamePopoup(true)
+      setOpenBdmNamePopoup(true);
       setBdeOldStatus(companyStatus);
       setForrwardEname(ename);
       setForrwardStatus(companyStatus);
@@ -2383,7 +2387,6 @@ function EmployeePanel() {
       Swal.fire("Your are not assigned to any bdm!");
     }
   };
-
 
   const handleForwardBdm = async () => {
     // Check if selectedBDM is not empty
@@ -2424,22 +2427,18 @@ function EmployeePanel() {
   };
 
 
-  const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false)
-  const [selectedBDM, setSelectedBDM] = useState("")
+
 
   //.log("selectedbdm", selectedBDM)
 
-
   // const handleConfirmAssign = ()=>{
-  //   setOpenBdmNamePopoup(true)
+  //   setOpenBdmNamePopoup(true);
   // }
 
   const closeBdmNamePopup = () => {
-    setOpenBdmNamePopoup(false)
-    setSelectedBDM("")
-  }
-
-
+    setOpenBdmNamePopoup(false);
+    setSelectedBDM("");
+  };
 
   const handleReverseAssign = async (
     companyId,
@@ -5345,8 +5344,7 @@ function EmployeePanel() {
       </Dialog>
 
       {/* -------------------------------------------------------- DIALOG FOR BDM NAMES--------------------------------------------------- */}
-
-      <Dialog className='My_Mat_Dialog' open={openBdmNamePopup} onClose={closeBdmNamePopup} fullWidth maxWidth="sm">
+      {/* <Dialog className='My_Mat_Dialog' open={openBdmNamePopup} onClose={closeBdmNamePopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Choose BDM To Forward Data
           <IconButton onClick={closeBdmNamePopup} style={{ float: "right" }}>
@@ -5387,7 +5385,42 @@ function EmployeePanel() {
             Submit
           </button>
         </div>
-      </Dialog>
+      </Dialog> */}
+      {openBdmNamePopup && (
+        <>
+          <div
+            className="popup-overlay d-flex justify-content-center align-items-center"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black backdrop
+              zIndex: 1000, // Ensure it is on top of other content
+            }}
+          >
+            <div
+              className="popup-content"
+              style={{
+                backgroundColor: "#fff",
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                overflowY: "auto", // Add scrolling for larger content
+              }}
+            >
+              <div className="d-flex justify-content-between">
+                <h3>BDM Matured Cases</h3>
+                <div>
+                  <button className="cursor-pointer" onClick={() => setOpenBdmNamePopoup(false)}><IoMdClose /></button>
+                </div>
+              </div>
+              <BdmMaturedCases />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Side Drawer for Edit Booking Requests */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>

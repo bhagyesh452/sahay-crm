@@ -2294,11 +2294,11 @@ router.get("/fetchMaturedCases", async (req, res) => {
                 maturedCase: {
                   $cond: [
                     { $eq: ["$$this.bdmName", "$ename"] },
-                    { $add: ["$$value.count", 1] }, 
+                    { $add: ["$$value.count", 1] },
                     {
                       $cond: [
                         { $eq: ["$$this.bdmType", "Close-by"] },
-                        { $add: ["$$value.count", 0.5] }, 
+                        { $add: ["$$value.count", 0.5] },
                         { $add: ["$$value.count", 1] }
                       ]
                     }
@@ -2339,11 +2339,11 @@ router.get("/fetchMaturedCases", async (req, res) => {
                           generatedReceivedAmount: {
                             $cond: [
                               { $eq: ["$$booking.bdmName", "$ename"] },
-                              "$$booking.generatedReceivedAmount", 
+                              "$$booking.generatedReceivedAmount",
                               {
                                 $cond: [
                                   { $eq: ["$$booking.bdmType", "Close-by"] },
-                                  { $divide: ["$$booking.generatedReceivedAmount", 2] }, 
+                                  { $divide: ["$$booking.generatedReceivedAmount", 2] },
                                   "$$booking.generatedReceivedAmount"
                                 ]
                               }
@@ -2378,5 +2378,104 @@ router.get("/fetchMaturedCases", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Fetching bdm matured cases data :
+router.get("/bdmMaturedCases", async (req, res) => {
+  try {
+    // First, look up employees who are BDM or Floor Managers and select both ename and bdmNumber
+    const employees = await adminModel.find({
+      newDesignation: { $in: ["Business Development Manager", "Floor Manager"] }
+    }).select("ename number"); // Select both ename and number fields
+
+    const employeeData = employees.map(emp => ({
+      name: emp.ename,
+      bdmNumber: emp.number
+    }));
+
+    const employeeNames = employeeData.map(emp => emp.name); // Extract only the names for filtering
+
+    // Aggregation pipeline to calculate received and matured cases for each BDM
+    const bdmStats = await CompanyModel.aggregate([
+      {
+        // Step 1: Filter companies where bdmAcceptStatus is "Pending" or "Accept" (received cases)
+        $match: {
+          bdmAcceptStatus: { $in: ["Pending", "Accept"] },
+        }
+      },
+      {
+        // Step 2: Group by bdmName to calculate receivedCases and maturedCases
+        $group: {
+          _id: "$bdmName", // Group by bdmName
+          receivedCases: { $sum: 1 }, // Total number of received cases
+          maturedCases: {
+            $sum: {
+              // Only count as maturedCases if bdmAcceptStatus is "Accept" and Status is "Matured"
+              $cond: [
+                { $and: [{ $eq: ["$bdmAcceptStatus", "Accept"] }, { $eq: ["$Status", "Matured"] }] },
+                1,
+                0
+              ]
+            }
+          }
+        }
+      },
+      {
+        // Step 3: Calculate the ratio of maturedCases to receivedCases
+        $addFields: {
+          ratio: {
+            $cond: [
+              { $eq: ["$receivedCases", 0] }, // Avoid division by zero
+              0,
+              {
+                $multiply: [{ $divide: ["$maturedCases", "$receivedCases"] }, 100]
+              }
+            ]
+          }
+        }
+      },
+      {
+        // Step 4: Filter results to only include those bdmNames present in the employee collection
+        $match: {
+          _id: { $in: employeeNames }
+        }
+      },
+      {
+        // Step 5: Format the response
+        $project: {
+          bdmName: "$_id",
+          receivedCases: 1,
+          maturedCases: 1,
+          ratio: "$ratio" // Keep ratio as it is for now
+        }
+      },
+      {
+        // Step 6: Sort data by bdmName in ascending order
+        $sort: {
+          bdmName: 1 // 1 for ascending, -1 for descending
+        }
+      }
+    ]);
+
+    // Step 7: Prepare final response to include Floor Managers and BDMs with zero cases and bdmNumber
+    const finalStats = employeeData.map(({ name, bdmNumber }) => {
+      // Find corresponding bdmStats or return default values
+      const stat = bdmStats.find(stat => stat.bdmName === name);
+      return {
+        bdmName: name,
+        bdmNumber: bdmNumber || "N/A", // Include bdmNumber from employee collection or 'N/A'
+        receivedCases: stat ? stat.receivedCases : 0, // Use actual count or 0
+        maturedCases: stat ? stat.maturedCases : 0, // Use actual count or 0
+        ratio: stat ? stat.ratio.toFixed(2) : (0).toFixed(2) // Use actual ratio or 0 formatted
+      };
+    });
+
+    // Return the final result
+    res.status(200).json({ result: true, message: "Data fetched successfully", data: finalStats });
+  } catch (error) {
+    res.status(500).json({ result: false, message: "Error fetching data", error: error });
+  }
+});
+
+
 
 module.exports = router;
