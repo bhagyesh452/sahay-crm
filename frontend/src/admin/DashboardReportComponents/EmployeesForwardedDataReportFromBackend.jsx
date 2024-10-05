@@ -34,7 +34,7 @@ function EmployeesForwardedDataReportFromBackend() {
         maturedcase: "none",
         generatedrevenue: "none",
     });
-    
+
     const [isLoading, setIsLoading] = useState(true);
     const [backendData, setBackendData] = useState([]);
     const [employeeStats, setEmployeeStats] = useState({});
@@ -59,7 +59,7 @@ function EmployeesForwardedDataReportFromBackend() {
             const exportData = filteredEmployeeStats.map(([name, stats], index) => {
                 const projectionData = employeeTotalAmount[name] || { forwardedProjection: 0, receivedProjection: 0 };
                 const maturedData = maturedTotals[name] || { maturedCases: 0, generatedRevenue: 0 };
-    
+
                 return {
                     SrNo: index + 1,
                     employeeName: name,
@@ -72,7 +72,7 @@ function EmployeesForwardedDataReportFromBackend() {
                     GeneratedRevenue: maturedData.generatedRevenue,
                 };
             });
-    
+
             // Convert to CSV format
             const csvContent = [
                 ["SrNo", "Employee Name", "Branch Office", "Forwarded Cases", "Received Cases", "Forwarded Case Projection", "Received Case Projection", "Matured Cases", "Generated Revenue"],
@@ -88,7 +88,7 @@ function EmployeesForwardedDataReportFromBackend() {
                     item.GeneratedRevenue,
                 ]),
             ].map(e => e.join(",")).join("\n");
-    
+
             // Create a Blob from the CSV content
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
@@ -241,18 +241,27 @@ function EmployeesForwardedDataReportFromBackend() {
                 }
 
                 // Add matured case counts
-                totals[ename].maturedCases += maturedCase;
+                // totals[ename].maturedCases += maturedCase;
+
+                // Ensure maturedCase is a number, default to 0 if it's NaN
+                const maturedCaseCount = isNaN(maturedCase) ? 0 : maturedCase;
+                totals[ename].maturedCases += maturedCaseCount;
 
                 services.forEach(service => {
-                    const { generatedReceivedAmount } = service;
+                    // const { generatedReceivedAmount } = service;
+                    // Ensure generatedReceivedAmount is a number, default to 0 if it's NaN
+                    const generatedAmount = isNaN(service.generatedReceivedAmount) ? 0 : service.generatedReceivedAmount;
 
                     // If maturedCase is 0.5, split the revenue between ename and bdmName
                     if (maturedCase === 0.5 && bdmName) {
-                        totals[ename].generatedRevenue += generatedReceivedAmount;
-                        totals[bdmName].generatedRevenue += generatedReceivedAmount;
+                        // totals[ename].generatedRevenue += generatedReceivedAmount;
+                        // totals[bdmName].generatedRevenue += generatedReceivedAmount;
+                        totals[ename].generatedRevenue += generatedAmount;
+                        totals[bdmName].generatedRevenue += generatedAmount;
                     } else {
                         // If maturedCase is 1, add full revenue to ename
-                        totals[ename].generatedRevenue += generatedReceivedAmount;
+                        // totals[ename].generatedRevenue += generatedReceivedAmount;
+                        totals[ename].generatedRevenue += generatedAmount;
                     }
                 });
             });
@@ -443,7 +452,7 @@ function EmployeesForwardedDataReportFromBackend() {
         filterEmployeeStats();
     }, [employeeStats, selectedBranch, searchFromName, employeeName]);
 
-    console.log("Data is :",filteredEmployeeStats)
+    console.log("Data is :", filteredEmployeeStats)
 
 
     // --------------------------date formats--------------------------------------------

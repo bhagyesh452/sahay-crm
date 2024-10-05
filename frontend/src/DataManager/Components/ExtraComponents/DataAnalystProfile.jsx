@@ -12,7 +12,7 @@ import { HiOutlineBuildingLibrary } from "react-icons/hi2";
 import { MdOutlinePersonPin } from "react-icons/md";
 import { GoPerson } from "react-icons/go";
 import { GrLocation } from "react-icons/gr";
-import { Dialog, DialogTitle, DialogContent, IconButton, Button} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, IconButton, Button } from "@mui/material";
 import Swal from 'sweetalert2';
 import { GiRelationshipBounds } from "react-icons/gi";
 import CloseIcon from "@mui/icons-material/Close";
@@ -30,9 +30,11 @@ import LeaveReportView from "../../../Hr_panel/Components/EmployeeView/LeaveRepo
 import CallingReportView from "../../../Hr_panel/Components/EmployeeView/CallingReportView.jsx"
 import BusinessCardView from "../../../Hr_panel/Components/EmployeeView/BusinessCardView.jsx";
 import { MdOutlineBloodtype } from "react-icons/md";
+import ClipLoader from "react-spinners/ClipLoader.js";
+
 
 function DataAnalystProfile() {
-  
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const userId = localStorage.getItem("dataManagerUserId");
 
@@ -42,6 +44,7 @@ function DataAnalystProfile() {
   const [employeeData, setEmployeeData] = useState([]);
   const [showProfileUploadWindow, setShowProfileUploadWindow] = useState(false);
   const [editField, setEditField] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [officialEmail, setOfficialEmail] = useState("");
   const [officialNumber, setOfficialNumber] = useState("");
@@ -203,6 +206,7 @@ function DataAnalystProfile() {
   //-----------------fetching employee details----------------------------------
   const fetchEmployeeData = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.get(`${secretKey}/employee/einfo`);
       // console.log(response.data, userId);
       const tempData = response.data;
@@ -228,6 +232,9 @@ function DataAnalystProfile() {
 
     } catch (error) {
       console.error("Error fetching employee data", error);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -287,11 +294,17 @@ function DataAnalystProfile() {
     }
   };
 
-
-
   return (
     <div>
-      <div className="page-wrapper">
+      {isLoading ? <div className="d-flex align-items-center justify-content-center"
+        style={{ height: '80vh', width: '100vw' }}>
+        <ClipLoader
+          color="lightgrey"
+          size={30}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div> : <div className="page-wrapper">
         <div className="page-header m-0">
           <div className="container-xl">
             <nav aria-label="breadcrumb">
@@ -465,7 +478,7 @@ function DataAnalystProfile() {
                 </div>
 
                 <div className="mt-3">
-                  <ul class="nav nav-tabs employee_e_info_tab" style={{fontSize: "12px"}}>
+                  <ul class="nav nav-tabs employee_e_info_tab" style={{ fontSize: "12px" }}>
                     <li class="nav-item">
                       <a class="nav-link active" data-bs-toggle="tab" href="#eI">Your Info</a>
                     </li>
@@ -503,7 +516,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.department || "-"}
                                   </div>
-                                 
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -519,7 +532,7 @@ function DataAnalystProfile() {
                                       <option value="Others">Others</option>
                                     </select>
                                   </div>
-                                  
+
                                 </div>
                               )}
                             </div>
@@ -540,7 +553,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.branchOffice || "-"}
                                   </div>
-                                  
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -578,7 +591,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.employeementType || "-"}
                                   </div>
-                                 
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -619,7 +632,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.reportingManager || "-"}
                                   </div>
-                                  
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -648,7 +661,7 @@ function DataAnalystProfile() {
                       </div>
 
                       <div className="my-card mt-2" >
-                        
+
                         <div className="my-card-body">
 
                           <div className="row m-0 bdr-btm-eee">
@@ -666,7 +679,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.empFullName || "-"}
                                   </div>
-                                 
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -698,7 +711,7 @@ function DataAnalystProfile() {
                               {editField !== "dob" ? (
                                 <div className="d-flex align-items-center justify-content-between ep_info">
                                   <div className="ep_info_t">
-                                    {data.dob ? formatDateNew(data.dob) : "-"}                                  
+                                    {data.dob ? formatDateNew(data.dob) : "-"}
                                   </div>
                                 </div>
                               ) : (
@@ -760,7 +773,7 @@ function DataAnalystProfile() {
                                       <option value="O Negative (O-)">O Negative (O-)</option>
                                     </select>
                                   </div>
-                                  
+
                                 </div>
                               )}
                             </div>
@@ -780,7 +793,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.gender || "-"}
                                   </div>
-                                 
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -818,7 +831,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.personal_number || "-"}
                                   </div>
-                                  
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -852,7 +865,7 @@ function DataAnalystProfile() {
                                   <div className="ep_info_t">
                                     {data.personal_email || "-"}
                                   </div>
-                                 
+
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
@@ -1157,7 +1170,7 @@ function DataAnalystProfile() {
                     {/* <div class="tab-pane heiitc_inner fade" id="CallingReport">
                       <CallingReportView employeeInformation={data} />
                     </div> */}
-                   
+
                     <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
@@ -1166,7 +1179,8 @@ function DataAnalystProfile() {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
+
       {/* Profile upload dialog box */}
       <Dialog
         open={showProfileUploadWindow}

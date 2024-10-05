@@ -23,13 +23,16 @@ function ExpenseReport() {
     const userId = localStorage.getItem("dataManagerUserId");
     const dataManagerName = localStorage.getItem("dataManagerName");
 
-
     const [myInfo, setMyInfo] = useState([]);
     const [expenseReport, setExpenseReport] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [serviceName, setServiceName] = useState("");
     const [companyName, setCompanyName] = useState("");
     const [dateRange, setDateRange] = useState([null, null]);
+
+    useEffect(() => {
+        document.title = `Dataanalyst-Sahay-CRM`;
+    }, []);
 
     const formatSalary = (amount) => {
         return new Intl.NumberFormat('en-IN').format(amount);

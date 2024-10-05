@@ -30,6 +30,8 @@ import LeaveReportView from "../Components/EmployeeView/LeaveReportView.jsx";
 import CallingReportView from "../Components/EmployeeView/CallingReportView.jsx"
 import BusinessCardView from "../Components/EmployeeView/BusinessCardView.jsx";
 import { MdOutlineBloodtype } from "react-icons/md";
+import ClipLoader from "react-spinners/ClipLoader.js";
+
 
 function HrManagerProfile() {
 
@@ -43,6 +45,7 @@ function HrManagerProfile() {
     const [employeeData, setEmployeeData] = useState([]);
     const [showProfileUploadWindow, setShowProfileUploadWindow] = useState(false);
     const [editField, setEditField] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const [officialEmail, setOfficialEmail] = useState("");
     const [officialNumber, setOfficialNumber] = useState("");
@@ -204,6 +207,7 @@ function HrManagerProfile() {
     //-----------------fetching employee details----------------------------------
     const fetchEmployeeData = async () => {
         try {
+            setIsLoading(true);
             const response = await axios.get(`${secretKey}/employee/einfo`);
             // console.log(response.data, userId);
             const tempData = response.data;
@@ -229,6 +233,9 @@ function HrManagerProfile() {
 
         } catch (error) {
             console.error("Error fetching employee data", error);
+            setIsLoading(false);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -288,11 +295,17 @@ function HrManagerProfile() {
         }
     };
 
-
-
     return (
         <div>
-            <div className="page-wrapper">
+            {isLoading ? <div className="d-flex align-items-center justify-content-center"
+                style={{ height: '80vh', width: '100vw' }}>
+                <ClipLoader
+                    color="lightgrey"
+                    size={30}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                />
+            </div> : <div className="page-wrapper">
                 <div className="page-header m-0">
                     <div className="container-xl">
                         <nav aria-label="breadcrumb">
@@ -544,8 +557,8 @@ function HrManagerProfile() {
 
                                                                 </div>
                                                             ) : (
-                                                               
-                                                               <div className="d-flex align-items-center justify-content-between">
+
+                                                                <div className="d-flex align-items-center justify-content-between">
                                                                     <div className="ep_info_form">
                                                                         <select className="ep_info_select form-control"
                                                                             value={branchOffice} onChange={(e) => setBranchOffice(e.target.value)}>
@@ -880,7 +893,7 @@ function HrManagerProfile() {
 
                                         {/* Payroll Information Component */}
                                         <div class="tab-pane fade" id="PayrollInformation">
-                                            <EmployeeViewPayrollView editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} hrUserId={userId}/>
+                                            <EmployeeViewPayrollView editField={editField} setEditField={setEditField} fetchEmployeeData={fetchEmployeeData} hrUserId={userId} />
                                         </div>
 
                                         <div class="tab-pane fade" id="Emergency_Contact">
@@ -1169,7 +1182,8 @@ function HrManagerProfile() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>}
+
             {/* Profile upload dialog box */}
             <Dialog
                 open={showProfileUploadWindow}
