@@ -5406,6 +5406,7 @@ function EmployeePanel() {
                 backgroundColor: "#fff",
                 padding: "20px",
                 borderRadius: "10px",
+                width: "700px",
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
                 overflowY: "auto", // Add scrolling for larger content
               }}
@@ -5413,10 +5414,21 @@ function EmployeePanel() {
               <div className="d-flex justify-content-between">
                 <h3>BDM Matured Cases</h3>
                 <div>
-                  <button className="cursor-pointer" onClick={() => setOpenBdmNamePopoup(false)}><IoMdClose /></button>
+                  {/* <button className="cursor-pointer d-flex align-items-center" onClick={() => setOpenBdmNamePopoup(false)}> */}
+                  <IoMdClose className="cursor-pointer" onClick={() => setOpenBdmNamePopoup(false)} />
+                  {/* </button> */}
                 </div>
               </div>
-              <BdmMaturedCases />
+              <BdmMaturedCases
+                currentData={currentData}
+                bdmData={bdmNames}
+                forwardedCompany={forwardedCompany}
+                forwardCompanyId={forwardCompanyId}
+                bdeOldStatus={bdeOldStatus}
+                bdmNewAcceptStatus={bdmNewAcceptStatus}
+                closeBdmNamePopup={closeBdmNamePopup}
+                fetchNewData={fetchNewData}
+              />
             </div>
           </div>
         </>
