@@ -5406,7 +5406,8 @@ function EmployeePanel() {
                 backgroundColor: "#fff",
                 padding: "20px",
                 borderRadius: "10px",
-                width: "700px",
+                width: "800px",
+                height: "500px",
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
                 overflowY: "auto", // Add scrolling for larger content
               }}
