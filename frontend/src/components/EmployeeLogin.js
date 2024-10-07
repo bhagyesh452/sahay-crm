@@ -51,59 +51,59 @@ function EmployeeLogin({ setnewToken }) {
   useEffect(() => {
     fetchData();
   }, []);
+  
+  // async function getLocationInfo(latitude, longitude) {
+  //   try {
+  //     const response = await fetch(
+  //       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+  //     );
 
-  async function getLocationInfo(latitude, longitude) {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-      );
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+  //     const data = await response.json();
 
-      const data = await response.json();
+  //     if (data.error) {
+  //       throw new Error(`Nominatim API error: ${data.error}`);
+  //     }
 
-      if (data.error) {
-        throw new Error(`Nominatim API error: ${data.error}`);
-      }
+  //     const { address } = data;
+  //     setAddress(`${address.suburb} ,${address.state_district}`);
 
-      const { address } = data;
-      setAddress(`${address.suburb} ,${address.state_district}`);
+  //     // Log the location information
+  //   } catch (error) {
+  //     console.error("Error fetching location:", error.message);
+  //   }
+  // }
 
-      // Log the location information
-    } catch (error) {
-      console.error("Error fetching location:", error.message);
-    }
-  }
+  // const [locationAccess, setLocationAccess] = useState(false);
+  // useEffect(() => {
+  //   let watchId;
+  //   const successCallback = (position) => {
+  //     const userLatitude = position.coords.latitude;
+  //     const userLongitude = position.coords.longitude;
+  //     setLocationAccess(true);
+  //     getLocationInfo(userLatitude, userLongitude);
+  //   };
 
-  const [locationAccess, setLocationAccess] = useState(false);
-  useEffect(() => {
-    let watchId;
-    const successCallback = (position) => {
-      const userLatitude = position.coords.latitude;
-      const userLongitude = position.coords.longitude;
-      setLocationAccess(true);
-      getLocationInfo(userLatitude, userLongitude);
-    };
+  //   const errorCallback = (error) => {
+  //     console.error("Geolocation error:", error.message);
+  //     if (error.code === error.PERMISSION_DENIED) {
+  //       setLocationAccess(false);
+  //     }
+  //     // Handle other error cases if needed
+  //   };
 
-    const errorCallback = (error) => {
-      console.error("Geolocation error:", error.message);
-      if (error.code === error.PERMISSION_DENIED) {
-        setLocationAccess(false);
-      }
-      // Handle other error cases if needed
-    };
+  //   navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
 
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+  //   // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
 
-    // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
-
-    // Cleanup function to clear the watch if the component unmounts
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, []);
+  //   // Cleanup function to clear the watch if the component unmounts
+  //   return () => {
+  //     navigator.geolocation.clearWatch(watchId);
+  //   };
+  // }, []);
 
   useEffect(() => {
     document.title = `Employee-Sahay-CRM`;
@@ -139,7 +139,7 @@ function EmployeeLogin({ setnewToken }) {
     const time = getCurrentTime();
     const address = address1 !== "" ? address1 : "No Location Found";
     const ename = email;
-
+  
     try {
       const response = await axios.post(`${secretKey}/employeelogin`, {
         email,
@@ -147,24 +147,24 @@ function EmployeeLogin({ setnewToken }) {
         designation,
       });
       const response2 = await axios.post(`${secretKey}/loginDetails`, {
-        ename,
-        date,
-        time,
-        address,
-      });
-
+              ename,
+               date,
+               time,
+              address,
+             });
+  
       const { newtoken } = response.data;
-
+      
       setnewToken(newtoken);
       localStorage.setItem("newtoken", newtoken);
       localStorage.setItem("userId", userId);
-
+      
       // Store designation, login time, and date in localStorage
       localStorage.setItem("designation", designation);
       localStorage.setItem("loginTime", new Date().toISOString());
       localStorage.setItem("loginDate", new Date().toISOString().substr(0, 10)); // Store YYYY-MM-DD format
 
-      window.location.replace(`/employee-dashboard/${userId}`);
+      window.location.replace(`/employee-dashboard/${userId}`);     
     } catch (error) {
       console.error("Login failed:", error.response.data.message);
       if (error.response.status === 401) {
@@ -198,8 +198,8 @@ function EmployeeLogin({ setnewToken }) {
   }, []); // Empty dependency array ensures this runs once when the component mounts
 
 
-
-
+  
+  
   //console.log(email)
   //console.log(password)
 
@@ -214,7 +214,7 @@ function EmployeeLogin({ setnewToken }) {
                 <div className="card card-md h-100">
                   <div className="card-body d-flex align-items-center justify-content-center">
                     <div className="logo">
-                      <img src={logo}></img>
+                        <img src={logo}></img>
                     </div>
                   </div>
                 </div>
