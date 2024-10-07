@@ -27,6 +27,7 @@ import { AiOutlineUserDelete } from "react-icons/ai";
 import Employees from "./Employees.js";
 import { useQuery } from "@tanstack/react-query";
 import AddBulkTargetDialog from "./AddBulkTagretDialog.jsx";
+import UpcomingEmployees from "../Hr_panel/Components/UpcomingEmployees.jsx";
 
 
 
@@ -37,6 +38,9 @@ function NewEmployee() {
     const [addEmployeePopup, setAddEmployeePopup] = useState(false);
     const [addBulkTarget, setAddBulkTarget] = useState(false);
     const [searchValue, setSearchValue] = useState("");
+    const [recruiterData, setRecruiterData] = useState([])
+    const [page, setPage] = useState(1);
+    const [currentDataLoading, setCurrentDataLoading] = useState(false);
     // const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
     // const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
     const adminName = localStorage.getItem("adminName")
@@ -169,6 +173,35 @@ function NewEmployee() {
 
     const closeAddEmployeePopup = () => setAddEmployeePopup(false);
 
+    const fetchRecruiterData = async (searchQuery = "", page = 1) => {
+        try {
+          setCurrentDataLoading(true);
+          const response = await axios.get(`${secretKey}/recruiter/recruiter-data-dashboard`);
+          const {
+            data,
+          } = response.data;
+    
+    
+          // If it's a search query, replace the data; otherwise, append for pagination
+          if (page === 1) {
+            // This is either the first page load or a search operation
+            setRecruiterData(data);
+          } else {
+            // This is a pagination request
+            setRecruiterData(prevData => [...prevData, ...data]);
+          }
+        } catch (error) {
+          console.error("Error fetching data", error.message);
+        } finally {
+          setCurrentDataLoading(false);
+        }
+      };
+    
+    
+      useEffect(() => {
+        fetchRecruiterData("", page); // Fetch data initially
+      }, []);
+
     return (
         <div>
             {/* New Code Of Employee */}
@@ -205,8 +238,8 @@ function NewEmployee() {
                                     <button className="btn btn-primary" onClick={() => setAddEmployeePopup(true)}>+ Add Employee</button>
                                 </div>
                                 <div>
-                                    <AddBulkTargetDialog 
-                                    refetchActive={refetchActive} />
+                                    <AddBulkTargetDialog
+                                        refetchActive={refetchActive} />
                                 </div>
                             </div>
 
@@ -252,7 +285,9 @@ function NewEmployee() {
                                                 Upcomming Employees
                                             </div>
                                             <div className="rm_tsn_bdge">
-                                                0
+                                                {recruiterData.filter((applicant) => {
+                                                    return applicant.mainCategoryStatus === "Selected" && new Date(applicant.jdate) > new Date();
+                                                }).length}
                                             </div>
                                         </div>
                                     </a>
@@ -284,7 +319,7 @@ function NewEmployee() {
                                 />
                             </div>
                             <div class="tab-pane" id="UpcommingEmployees">
-                                <h1>Upcoming Employees</h1>
+                                <UpcomingEmployees upcomingEmployees={recruiterData} dataLoading={currentDataLoading} />
                             </div>
                         </div>
                     </div>
