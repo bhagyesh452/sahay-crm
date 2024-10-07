@@ -679,7 +679,6 @@ function BookingList() {
 
   return (
     <div>
-    
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
@@ -832,6 +831,9 @@ function BookingList() {
                                     data["Company Name"] === obj["Company Name"]
                                 )
                               );
+                              setActiveIndexBooking(1);
+                              setActiveIndex(0);
+                              setActiveIndexMoreBookingServices(0);
                             }}
                           >
                             <div className="d-flex justify-content-between align-items-center">
@@ -1058,7 +1060,17 @@ function BookingList() {
                             <div>
                               Total Services:{" "}
                               {currentLeadform &&
-                                currentLeadform.services.length}
+                                  (currentLeadform.services.length !== 0 ||
+                                    currentLeadform.moreBookings.length !== 0)
+                                    ? [
+                                        ...currentLeadform.services,
+                                        ...(
+                                          currentLeadform.moreBookings || []
+                                        ).flatMap(
+                                          (booking) => booking.services
+                                        ),
+                                      ].length
+                                    : null}
                             </div>
                           </div>
                         </div>
@@ -1250,6 +1262,7 @@ function BookingList() {
                                   onClick={() => {
                                     setActiveIndex(0);
                                     setActiveIndexBooking(1);
+                                    
                                   }}
                                 >
                                   Booking 1

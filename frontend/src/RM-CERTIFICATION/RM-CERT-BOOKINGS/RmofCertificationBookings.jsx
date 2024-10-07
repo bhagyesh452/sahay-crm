@@ -218,37 +218,7 @@ function RmofCertificationBookings() {
     setCurrentPage(value);
   };
 
-  // useEffect(() => {
-  //   // setLeadFormData(
-  //   //   infiniteBooking.filter((obj) =>
-  //   //     obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
-  //   //   )
-  //   // );
-  //   setCurrentDataLoading(true)
-  //   setIsSearching(true)
-  //   try{
-  //     const response = axios.get(`${secretKey}/rm-services/search-booking-data` , {
-  //       params:{
-  //         searchText,
-  //         currentPage,
-  //         itemsPerPage
-  //       }
-  //     });
-  //     if(!searchText.trim()){
-  //       setIsSearching(false);
-  //       fetchRedesignedFormData(currentPage);
-  //     }else{
-  //       console.log(response.data)
-  //       setLeadFormData(response.data)
-  //       setCurrentPage(1)
-  //     }
-  //   }catch(error){
-  //     console.log("Error fetching data" , error)
-  //   }finally{
-  //     setCurrentDataLoading(false)
-  //     setIsSearching(false)
-  //   }
-  // }, [searchText]);
+ 
 
   const handleFilterSearch = async (searchText) => {
     setCurrentDataLoading(true);
@@ -1020,7 +990,6 @@ function RmofCertificationBookings() {
                                 : "bookings_Company_Name"
                             }
                             onClick={() =>
-
                               setCurrentLeadform(
                                 leadFormData.find(
                                   (data) =>

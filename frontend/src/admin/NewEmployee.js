@@ -175,32 +175,32 @@ function NewEmployee() {
 
     const fetchRecruiterData = async (searchQuery = "", page = 1) => {
         try {
-          setCurrentDataLoading(true);
-          const response = await axios.get(`${secretKey}/recruiter/recruiter-data-dashboard`);
-          const {
-            data,
-          } = response.data;
-    
-    
-          // If it's a search query, replace the data; otherwise, append for pagination
-          if (page === 1) {
-            // This is either the first page load or a search operation
-            setRecruiterData(data);
-          } else {
-            // This is a pagination request
-            setRecruiterData(prevData => [...prevData, ...data]);
-          }
+            setCurrentDataLoading(true);
+            const response = await axios.get(`${secretKey}/recruiter/recruiter-data-dashboard`);
+            const {
+                data,
+            } = response.data;
+
+
+            // If it's a search query, replace the data; otherwise, append for pagination
+            if (page === 1) {
+                // This is either the first page load or a search operation
+                setRecruiterData(data);
+            } else {
+                // This is a pagination request
+                setRecruiterData(prevData => [...prevData, ...data]);
+            }
         } catch (error) {
-          console.error("Error fetching data", error.message);
+            console.error("Error fetching data", error.message);
         } finally {
-          setCurrentDataLoading(false);
+            setCurrentDataLoading(false);
         }
-      };
-    
-    
-      useEffect(() => {
+    };
+
+
+    useEffect(() => {
         fetchRecruiterData("", page); // Fetch data initially
-      }, []);
+    }, []);
 
     return (
         <div>
