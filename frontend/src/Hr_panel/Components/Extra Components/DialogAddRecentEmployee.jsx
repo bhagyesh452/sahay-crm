@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import { AiOutlineDownload } from "react-icons/ai";
 
 
 function DialogAddRecentEmployee({ refetch }) {
@@ -408,7 +409,7 @@ function DialogAddRecentEmployee({ refetch }) {
                 } else {
                     designation = row["Designation"];
                 }
-                console.log("row" , row["Joining Date"])
+                console.log("row", row["Joining Date"])
                 return {
                     firstName: row["First Name"],
                     middleName: row["Middle Name"],
@@ -464,7 +465,7 @@ function DialogAddRecentEmployee({ refetch }) {
                     style={{ textDecoration: "none" }}
                     data-bs-toggle="modal"
                     data-bs-target="#myModal" // Use dynamic modal ID
-                    >
+                >
                     <button className="btn btn-primary mr-1">+ Add Recent Employee</button>
                 </a>
             </div>
@@ -812,6 +813,20 @@ function DialogAddRecentEmployee({ refetch }) {
                                         <div className="col-lg-12">
                                             <input type="file" className="form-control" onChange={handleFileChange} />
                                         </div>
+                                        <a
+                                            href={`${process.env.PUBLIC_URL}/AddNewEmployeeFormat.xlsx`}
+                                            download={"AddNewEmployeeFormat.xlsx"}
+                                        >
+                                            <div className='d-flex align-items-center justify-content-end' style={{ marginTop: "10px", textDecoration: "none"}}>
+                                                <div style={{ marginRight: "5px" }}>
+                                                    <AiOutlineDownload />
+                                                </div>
+                                                <div>
+                                                    Download Sample
+                                                </div>
+
+                                            </div>
+                                        </a>
                                     </div>
                                 </>
                             )
