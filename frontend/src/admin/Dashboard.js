@@ -3446,19 +3446,9 @@ function Dashboard() {
 
   return (
     <div className="admin-dashboard">
-      <Header />
-      <Navbar />
       <div className="page-wrapper">
         <div className="mb-3">
           <div className="">
-            {/* <div className="recent-updates-icon">
-              <IconButton
-                style={{ backgroundColor: "#ffb900", color: "white" }}
-                onClick={changeUpdate}
-              >
-                <AnnouncementIcon />
-              </IconButton>
-            </div> */}
             <div className="page-header d-print-none" >
               <div className="container-xl">
                 <div className="row">

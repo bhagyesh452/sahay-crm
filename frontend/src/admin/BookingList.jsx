@@ -679,8 +679,7 @@ function BookingList() {
 
   return (
     <div>
-      <Header />
-      <Navbar />
+    
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">

@@ -124,6 +124,8 @@ import MaterialUIPickers from "./components/MaterialUIPickers.js";
 //import CompanyDetails from "./Processing/CompanyDetails.jsx";
 import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
+import AdminLayout from "./admin/AdminLayout.jsx";
+import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
 
 
 function App() {
@@ -254,10 +256,10 @@ function App() {
           <Route path="/managing-director/login" element={<LoginAdmin setToken={setToken} />} />
           {token ? (
             <>
+            <Route element={<AdminLayout />} >
               <Route path="/managing-director/dashboard" element={<Dashboard />} />
               <Route path="/managing-director/employees" element={<Employees />} />
               <Route path="/managing-director/user" element={<NewEmployee />} />
-              {/* <Route path="/admin/new-leads" element={<NewLeads />} /> */}
               <Route path="/managing-director/employees/:id" element={<EmployeeParticular />} />
               <Route path="/managing-director/employeeleads/:id" element={<AdminEmployeeTeamLeads />} />
               <Route path="/managing-director/employees/:id/login-details" element={<LoginDetails />} />
@@ -267,6 +269,8 @@ function App() {
               <Route path="/managing-director/notification" element={<ShowNotification />} />
               <Route path="/managing-director/bookings/Addbookings" element={<RedesignedForm />} />
               <Route path="/managing-director/servicesandschemes" element={<Services />} />
+              <Route path="/managing-director/employeeProfileView/:userId" element={<AdminEmployeeProfile/>}/>
+              </Route>
             </>
           ) : (
             <Route path="/managing-director" element={<Navigate to="/managing-director/login" />} />

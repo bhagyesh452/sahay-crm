@@ -96,8 +96,7 @@ function Dashboard() {
 
     return (
         <div>
-            <Header />
-            <Navbar number={1} />
+            
             <div className="page-wrapper">
                 <div className="container-xl">
                     <div className="card mt-3">

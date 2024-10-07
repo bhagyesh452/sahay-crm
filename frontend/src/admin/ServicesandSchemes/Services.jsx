@@ -407,8 +407,7 @@ function Services() {
 
     return (
         <div>
-            <Header />
-            <Navbar />
+           
 
             {!showAddServiceDetails && !showEditServiceDetails && !showServiceDetails &&
                 <div className="page-wrapper">

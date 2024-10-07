@@ -19,21 +19,6 @@ function LoginAdmin({ setToken }) {
     document.title = `Admin-Sahay-CRM`;
   }, []);
 
-  // e.preventDefault();
-  // const response = await fetch('http://62.72.56.202:3001/login');
-  // const userData = await response.json();
-  // console.log(username);
-  // const matchedUser = userData.find(user => user.email === username && user.password === password);
-  // console.log(matchedUser);
-  // if(matchedUser){
-  //   // localStorage.setItem('isLoggedIn', 'true');
-  //   sessionStorage.setItem('isLoggedIn', 'true');
-  //   onLogin();
-  // }
-  // else{
-  //   window.alert("Incorrect email or password")
-  // }
-  // console.log("button clicked")
   
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   

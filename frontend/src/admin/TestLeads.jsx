@@ -1813,8 +1813,6 @@ function TestLeads() {
 
     return (
         <div>
-            <Header />
-            <Navbar />
             {!openInterestFollowPage && (
                 <div className="page-wrapper">
                     <div className="page-header d-print-none">
