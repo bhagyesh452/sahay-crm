@@ -39,8 +39,7 @@ const EmployeeInterestestedCompanies = () => {
 
   return (
     <div>
-            <Header />
-            <Navbar />
+            
             <div className='container-xl mt-2'>
                 <div className='card'>
                     <div className='card-header employeedashboard'>

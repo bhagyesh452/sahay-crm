@@ -5,12 +5,14 @@ import Swal from 'sweetalert2';
 import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-
+import { AiOutlineDownload } from "react-icons/ai";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function DialogAddRecentEmployee({ refetch }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+    const [openBacdrop, setOpenBacdrop] = useState(false)
     const [bdmWork, setBdmWork] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [isUpdateMode, setIsUpdateMode] = useState(false);
@@ -38,7 +40,9 @@ function DialogAddRecentEmployee({ refetch }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isAddSingleEmployee, setIsAddSingleEmployee] = useState(true); // By default, "Add Single Employee" is checked
     const [uploadedFile, setUploadedFile] = useState(null);
-
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
     const defaultObject = {
         year: "",
         month: "",
@@ -408,7 +412,7 @@ function DialogAddRecentEmployee({ refetch }) {
                 } else {
                     designation = row["Designation"];
                 }
-                console.log("row" , row["Joining Date"])
+                console.log("row", row["Joining Date"])
                 return {
                     firstName: row["First Name"],
                     middleName: row["Middle Name"],
@@ -431,13 +435,14 @@ function DialogAddRecentEmployee({ refetch }) {
             });
             console.log("employeesDATA", employeesData)
             try {
+                setOpenBacdrop(true)
                 // Send the data to the backend
                 const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData });
                 console.log("response.data", response.data)
                 if (response.status === 200) {
                     Swal.fire({
                         title: 'Employees Added!',
-                        text: 'The employees have been successfully added.',
+                        html: `The employees have been successfully added.<br>Added Employees:${response.data.successCount} Duplicate Data:${response.data.failureCount}</br>`,
                         icon: 'success',
                     });
                     handleCloseDialog(); // Close the modal
@@ -450,7 +455,10 @@ function DialogAddRecentEmployee({ refetch }) {
                     text: `Error occurred during bulk upload: ${error.message}`,
                 });
             }
-        };
+            finally {
+                setOpenBacdrop(false)
+            }
+        }
 
         reader.readAsArrayBuffer(uploadedFile);
     };
@@ -464,7 +472,7 @@ function DialogAddRecentEmployee({ refetch }) {
                     style={{ textDecoration: "none" }}
                     data-bs-toggle="modal"
                     data-bs-target="#myModal" // Use dynamic modal ID
-                    >
+                >
                     <button className="btn btn-primary mr-1">+ Add Recent Employee</button>
                 </a>
             </div>
@@ -812,6 +820,20 @@ function DialogAddRecentEmployee({ refetch }) {
                                         <div className="col-lg-12">
                                             <input type="file" className="form-control" onChange={handleFileChange} />
                                         </div>
+                                        <a
+                                            href={`${process.env.PUBLIC_URL}/AddNewEmployeeFormat.xlsx`}
+                                            download={"AddNewEmployeeFormat.xlsx"}
+                                        >
+                                            <div className='d-flex align-items-center justify-content-end' style={{ marginTop: "10px", textDecoration: "none"}}>
+                                                <div style={{ marginRight: "5px" }}>
+                                                    <AiOutlineDownload />
+                                                </div>
+                                                <div>
+                                                    Download Sample
+                                                </div>
+
+                                            </div>
+                                        </a>
                                     </div>
                                 </>
                             )
@@ -830,11 +852,17 @@ function DialogAddRecentEmployee({ refetch }) {
                             )}
                         </div>
                     </div>
-
                 </div>
-
             </div>
+            {/* --------------------------------backedrop------------------------- */}
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
         </div>
+        
     )
 }
 

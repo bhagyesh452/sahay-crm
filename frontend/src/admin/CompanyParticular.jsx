@@ -95,8 +95,7 @@ function CompanyParticular({}) {
   }
   return (
     <div>
-      <Header />
-      <Navbar />
+      
       {companyObject !== null && (
         <div className="container-xl mt-2">
           <div className="company-introduction-card card">

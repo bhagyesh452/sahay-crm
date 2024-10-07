@@ -26,6 +26,8 @@ import DeletedEmployeePanel from "./DeletedEmployeePanel.jsx";
 import { AiOutlineUserDelete } from "react-icons/ai";
 import Employees from "./Employees.js";
 import { useQuery } from "@tanstack/react-query";
+import AddBulkTargetDialog from "./AddBulkTagretDialog.jsx";
+import UpcomingEmployees from "../Hr_panel/Components/UpcomingEmployees.jsx";
 
 
 
@@ -34,7 +36,11 @@ function NewEmployee() {
     const [employee, setEmployee] = useState([]);
     const [deletedEmployee, setDeletedEmployee] = useState([]);
     const [addEmployeePopup, setAddEmployeePopup] = useState(false);
+    const [addBulkTarget, setAddBulkTarget] = useState(false);
     const [searchValue, setSearchValue] = useState("");
+    const [recruiterData, setRecruiterData] = useState([])
+    const [page, setPage] = useState(1);
+    const [currentDataLoading, setCurrentDataLoading] = useState(false);
     // const [employeeSearchResult, setEmployeeSearchResult] = useState([]);
     // const [deletedEmployeeSearchResult, setDeletedEmployeeSearchResult] = useState([]);
     const adminName = localStorage.getItem("adminName")
@@ -43,7 +49,7 @@ function NewEmployee() {
         document.title = `Admin-Sahay-CRM`;
     }, []);
 
-    
+
 
     // Fetch active employees
     const { data: activeData, isLoading: isLoadingActive, isError: isErrorActive, refetch: refetchActive } = useQuery({
@@ -127,42 +133,6 @@ function NewEmployee() {
         }
     }, [deletedData?.data, searchValue]);
 
-    // const fetchDeletedEmployee = async () => {
-    //     try {
-    //         let res;
-    //         if (!searchValue) {
-    //             res = await axios.get(`${secretKey}/employee/deletedemployeeinfo`);
-    //         } else {
-    //             res = await axios.get(`${secretKey}/employee/searchDeletedEmployeeInfo`, {
-    //                 params: { search: searchValue } // send searchValue as query param
-    //             });
-    //         }
-    //         setDeletedEmployee(res.data);
-
-    //         // console.log("Fetched Deleted Employees are:", deletedEmployeeData);
-    //         // const result = res.data.filter((emp) => {
-    //         //     return (
-    //         //         emp.ename?.toLowerCase().includes(searchValue) ||
-    //         //         emp.number?.toString().includes(searchValue) ||
-    //         //         emp.email?.toLowerCase().includes(searchValue) ||
-    //         //         emp.newDesignation?.toLowerCase().includes(searchValue) ||
-    //         //         emp.branchOffice?.toLowerCase().includes(searchValue)
-    //         //     );
-    //         // });
-    //         // // console.log("Search result from deleted employee list is :", result);
-    //         // setDeletedEmployeeSearchResult(result);
-    //     } catch (error) {
-    //         console.log("Error fetching employees data:", error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    // fetchEmployee();
-    // fetchDeletedEmployee();
-    // }, [searchValue]);
-
-
-
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props;
 
@@ -203,11 +173,37 @@ function NewEmployee() {
 
     const closeAddEmployeePopup = () => setAddEmployeePopup(false);
 
+    const fetchRecruiterData = async (searchQuery = "", page = 1) => {
+        try {
+          setCurrentDataLoading(true);
+          const response = await axios.get(`${secretKey}/recruiter/recruiter-data-dashboard`);
+          const {
+            data,
+          } = response.data;
+    
+    
+          // If it's a search query, replace the data; otherwise, append for pagination
+          if (page === 1) {
+            // This is either the first page load or a search operation
+            setRecruiterData(data);
+          } else {
+            // This is a pagination request
+            setRecruiterData(prevData => [...prevData, ...data]);
+          }
+        } catch (error) {
+          console.error("Error fetching data", error.message);
+        } finally {
+          setCurrentDataLoading(false);
+        }
+      };
+    
+    
+      useEffect(() => {
+        fetchRecruiterData("", page); // Fetch data initially
+      }, []);
+
     return (
         <div>
-            <Header />
-            <Navbar number={1} />
-
             {/* New Code Of Employee */}
             <div className="page-wrapper">
                 <div className="page-header rm_Filter m-0">
@@ -237,9 +233,16 @@ function NewEmployee() {
                                     </button>
                                 </div>
                             </div>
-                            <div>
-                                <button className="btn btn-primary" onClick={() => setAddEmployeePopup(true)}>+ Add Employee</button>
+                            <div className="d-flex align-items-center">
+                                <div className="mr-1">
+                                    <button className="btn btn-primary" onClick={() => setAddEmployeePopup(true)}>+ Add Employee</button>
+                                </div>
+                                <div>
+                                    <AddBulkTargetDialog
+                                        refetchActive={refetchActive} />
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -282,7 +285,9 @@ function NewEmployee() {
                                                 Upcomming Employees
                                             </div>
                                             <div className="rm_tsn_bdge">
-                                                0
+                                                {recruiterData.filter((applicant) => {
+                                                    return applicant.mainCategoryStatus === "Selected" && new Date(applicant.jdate) > new Date();
+                                                }).length}
                                             </div>
                                         </div>
                                     </a>
@@ -314,56 +319,9 @@ function NewEmployee() {
                                 />
                             </div>
                             <div class="tab-pane" id="UpcommingEmployees">
-                                <h1>Upcoming Employees</h1>
+                                <UpcomingEmployees upcomingEmployees={recruiterData} dataLoading={currentDataLoading} />
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-            {/* old code of employee */}
-            <div className="page-wrapper d-none">
-                <div className="container-xl">
-                    <div className="card mt-3">
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                                <Tab label={
-                                    <div style={{ display: "flex", alignItems: "center" }}>
-                                        <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                        <span style={{ fontSize: "12px" }}>Employee List</span>
-                                    </div>
-                                } {...a11yProps(0)} />
-                                <Tab
-                                    label={
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                            <AiOutlineUserDelete style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{ fontSize: "12px" }}>Deleted Employees List</span>
-                                        </div>
-                                    }
-                                    {...a11yProps(1)}
-                                />
-                                {/* <Tab
-                                    label={
-                                        <div style={{ display: "flex", alignItems: "center" }}>
-                                            <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                            <span style={{fontSize:"12px"}}>Teams</span>
-                                        </div>
-                                    }
-                                    {...a11yProps(1)}
-                                /> */}
-                            </Tabs>
-                        </Box>
-                        <CustomTabPanel value={value} index={0}>
-                            <Employee />
-                        </CustomTabPanel>
-                        <CustomTabPanel value={value} index={1}>
-                            <DeletedEmployeePanel />
-                        </CustomTabPanel>
-                        {/* <CustomTabPanel value={value} index={1}>
-                            <Team/>
-                        </CustomTabPanel> */}
                     </div>
                 </div>
             </div>

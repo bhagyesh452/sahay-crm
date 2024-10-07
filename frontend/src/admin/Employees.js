@@ -1152,9 +1152,15 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
                         </td>
                         <td>
                           <button className="action-btn action-btn-primary">
-                            <Link
+                            {/* <Link
                               style={{ textDecoration: "none", color: 'inherit' }}
                               to={`/managing-director/employees/${item._id}`}
+                            >
+                              <FaRegEye />
+                            </Link> */}
+                            <Link
+                              style={{ textDecoration: "none", color: 'inherit' }}
+                              to={`/managing-director/employeeProfileView/${item._id}`}
                             >
                               <FaRegEye />
                             </Link>
@@ -1199,92 +1205,6 @@ function Employees({ onEyeButtonClick, openAddEmployeePopup, closeAddEmployeePop
 
         </table>
       </div>
-
-
-      {/* old code */}
-      <div className="d-none">
-        <div className="page-header d-print-none m-0">
-          <div className="row g-2 align-items-center">
-            <div className="col m-0">
-              {/* <!-- Page pre-title --> */}
-              <h2 className="page-title">Employees</h2>
-            </div>
-            <div style={{ width: "20vw" }} className="input-icon">
-              <span className="input-icon-addon">
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon"
-                  width="20"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                  <path d="M21 21l-6 -6" />
-                </svg>
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                className="form-control"
-                placeholder="Search…"
-                aria-label="Search in website"
-                onChange={handleSearch}
-              />
-            </div>
-
-            {/* <!-- Page title actions --> */}
-            <div className="col-auto ms-auto d-print-none">
-              <div className="btn-list">
-                <button
-                  className="btn btn-primary d-none d-sm-inline-block"
-                  onClick={() => {
-                    functionopenpopup();
-                    // resetForm(); 
-                    setIsUpdateMode(false);
-                    setErrors("");
-                  }}
-                >
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 5l0 14" />
-                    <path d="M5 12l14 0" />
-                  </svg>
-                  Add Employees
-                </button>
-                <a
-                  href="#"
-                  className="btn btn-primary d-sm-none btn-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-report"
-                  aria-label="Create new report"
-                >
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Employee table */}
       <div
         onCopy={(e) => {

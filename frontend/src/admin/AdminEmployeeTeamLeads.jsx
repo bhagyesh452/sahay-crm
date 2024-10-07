@@ -1832,8 +1832,6 @@ function AdminEmployeeTeamLeads() {
 
     return (
         <div>
-            <Header />
-            <Navbar />
             {!formOpen && <div className="page-wrapper">
                 <div style={{
                     margin: "3px 0px 1px 0px",

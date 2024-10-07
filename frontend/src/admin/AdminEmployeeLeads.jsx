@@ -81,9 +81,6 @@ function AdminEmployeeLeads() {
 
     return (
         <div>
-            <Header />
-            <Navbar number={1} />
-
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label={

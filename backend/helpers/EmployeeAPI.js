@@ -446,6 +446,10 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
       return res.status(400).json({ message: 'Invalid data format' });
     }
 
+    let successCount = 0;
+    let failureCount = 0;
+    let failureDetails = [];
+
     // Array to hold the promises for inserting each employee
     const employeeInsertPromises = employeesData.map(async (employee) => {
       try {
@@ -518,21 +522,33 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
           // Log error, but do not stop the loop for other employees
         }
 
+        successCount++; // Increment success count if save was successful
+
       } catch (error) {
         console.error('Error adding employee:', employee.email, error.message);
-        // Log error, but do not stop the loop for other employees
+        failureCount++; // Increment failure count if an error occurred
+        failureDetails.push({
+          email: employee.email,
+          error: error.message
+        });
       }
     });
 
     // Wait for all employees to be added
     await Promise.all(employeeInsertPromises);
 
-    res.status(200).json({ message: 'Employees added successfully' });
+    res.status(200).json({ 
+      message: 'Employees processed successfully',
+      successCount,
+      failureCount,
+      failureDetails
+    });
   } catch (error) {
     console.error('Error adding employees:', error.message);
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
+
 
 
 // router.post("/einfo", async (req, res) => {
@@ -2422,6 +2438,68 @@ router.put("/einfo/:id", async (req, res) => {
   }
 });
 
+router.post('/addbulktargetemployees', async (req, res) => {
+  try {
+      const { employeeData } = req.body;
+
+      if (!employeeData || !Array.isArray(employeeData)) {
+          return res.status(400).json({ message: 'Invalid data format' });
+      }
+
+      // Iterate over each employee data from the request
+      for (const employee of employeeData) {
+          const { email, year, month, amount, achievedAmount } = employee;
+
+          // Find the employee by email
+          let existingEmployee = await adminModel.findOne({ email });
+
+          if (!existingEmployee) {
+              console.error(`Employee not found: ${email}`);
+              continue; // Skip to the next iteration if the employee is not found
+          }
+
+          // Find if target for the given year and month already exists
+          let targetDetails = existingEmployee.targetDetails || [];
+          let existingTargetIndex = targetDetails.findIndex(
+              (target) => target.year === year && target.month === month
+          );
+
+          // If target for given year and month already exists, update it; otherwise, add a new entry
+          if (existingTargetIndex !== -1) {
+              targetDetails[existingTargetIndex] = {
+                  year,
+                  month,
+                  amount,
+                  achievedAmount: achievedAmount || 0,
+                  ratio: 0,
+                  result: "Poor" // You can calculate or update this based on some logic
+              };
+          } else {
+              targetDetails.push({
+                  year,
+                  month,
+                  amount,
+                  achievedAmount: achievedAmount || 0,
+                  ratio: 0,
+                  result: "Poor"
+              });
+          }
+
+          // Update employee record with modified targetDetails
+          existingEmployee.targetDetails = targetDetails;
+
+          // Save the updated employee record
+          await existingEmployee.save();
+      }
+
+      res.status(200).json({ message: 'Employees target details updated successfully' });
+
+  } catch (error) {
+      console.error('Error updating employee targets:', error.message);
+      res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+})
+
 
 // 4. Delete an Employee
 router.delete("/einfo/:id", async (req, res) => {
@@ -2976,9 +3054,6 @@ router.post('/employee-calling/save', async (req, res) => {
     res.status(500).json({ message: 'Error saving employee data', error: error.message });
   }
 });
-
-
-
 
 router.get(`/employee-calling-fetch/:number`, async (req, res) => {
   const { number } = req.params; // Accessing the number directly from req.paramscd backen

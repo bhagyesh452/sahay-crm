@@ -1868,8 +1868,7 @@ function EmployeeParticular() {
 
   return (
     <div>
-      <Header />
-      <Navbar />
+      
       <div className="page-wrapper">
         <div style={{ margin: "3px 0px 1px 0px", }}
           className="page-header d-print-none">

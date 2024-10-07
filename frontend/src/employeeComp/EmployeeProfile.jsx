@@ -773,7 +773,7 @@ function EmployeeProfile() {
                                     {data.bloodGroup ? data.bloodGroup : "-"}
                                     {/* 2<sup>nd</sup> Dec 2024 */}
                                   </div>
-                                  <div className="ep_info_icon">
+                                  {/* <div className="ep_info_icon">
                                     <MdOutlineEdit onClick={() => {
                                       if (editField !== "") {
                                         Swal.fire("Error", "Please save your changes before editing this field", "error");
@@ -782,7 +782,7 @@ function EmployeeProfile() {
                                       setBloodGroup(data.bloodGroup);
                                       setEditField("bloodGroup");
                                     }} />
-                                  </div>
+                                  </div> */}
                                 </div>
                               ) : (
                                 <div className="d-flex align-items-center justify-content-between">
