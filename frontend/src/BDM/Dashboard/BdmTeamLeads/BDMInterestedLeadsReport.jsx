@@ -53,7 +53,8 @@ function BDMInterestedLeadsReport() {
         "Yashesh Gajjar",
         "Ravi Prajapati",
         "Yash Goswami"
-      ];
+    ];
+
     useEffect(() => {
         document.title = `Floor-Manager-Sahay-CRM`;
     }, []);
@@ -248,8 +249,8 @@ function BDMInterestedLeadsReport() {
         return total + filteredCompanies.length;
     }, 0);
 
-     // ----------------daterangefilterfunction---------------------
-      //-----------------------------date range filter function---------------------------------
+    // ----------------daterangefilterfunction---------------------
+    //-----------------------------date range filter function---------------------------------
     const numberFormatOptions = {
         style: "currency",
         currency: "INR", // Use the currency code for Indian Rupee (INR)
@@ -340,52 +341,53 @@ function BDMInterestedLeadsReport() {
         <div>
             {/* -------------------------------------------------Interested Leads Report------------------------------------------------------------ */}
             <div className='container-xl mt-3'>
-                <div className="employee-dashboard "
-                    id="projectionsummaryadmin"   >
+                <div className="employee-dashboard" id="projectionsummaryadmin">
                     <div className="card">
                         <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+
                             <div className="dashboard-title pl-1"  >
                                 <h2 className="m-0">
                                     Employees Interested & FollowUp Leads Report
                                 </h2>
                             </div>
+
                             <div className="d-flex align-items-center pr-1">
                                 <div className="date-filter">
-                                <LocalizationProvider
-                                    dateAdapter={AdapterDayjs} >
-                                    <DemoContainer
-                                        components={["SingleInputDateRangeField"]} sx={{
-                                            padding: '0px',
-                                            with: '220px'
-                                        }}  >
-                                        <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
-                                            onChange={(values) => {
-                                                const startDateEmp = moment(values[0]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                const endDateEmp = moment(values[1]).format(
-                                                    "DD/MM/YYYY"
-                                                );
-                                                setSelectedDateRangeForwardedEmployee([
-                                                    startDateEmp,
-                                                    endDateEmp,
-                                                ]);
-                                                handleForwardedEmployeeDateRange(values); // Call handleSelect with the selected values
-                                            }}
-                                            slots={{ field: SingleInputDateRangeField }}
-                                            slotProps={{
-                                                shortcuts: {
-                                                    items: shortcutsItems,
-                                                },
-                                                actionBar: { actions: [] },
-                                                textField: {
-                                                    InputProps: { endAdornment: <Calendar /> },
-                                                },
-                                            }}
-                                        //calendars={1}
-                                        />
-                                    </DemoContainer>
-                                </LocalizationProvider>
+                                    <LocalizationProvider
+                                        dateAdapter={AdapterDayjs} >
+                                        <DemoContainer
+                                            components={["SingleInputDateRangeField"]} sx={{
+                                                padding: '0px',
+                                                with: '220px'
+                                            }}  >
+                                            <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                                                onChange={(values) => {
+                                                    const startDateEmp = moment(values[0]).format(
+                                                        "DD/MM/YYYY"
+                                                    );
+                                                    const endDateEmp = moment(values[1]).format(
+                                                        "DD/MM/YYYY"
+                                                    );
+                                                    setSelectedDateRangeForwardedEmployee([
+                                                        startDateEmp,
+                                                        endDateEmp,
+                                                    ]);
+                                                    handleForwardedEmployeeDateRange(values); // Call handleSelect with the selected values
+                                                }}
+                                                slots={{ field: SingleInputDateRangeField }}
+                                                slotProps={{
+                                                    shortcuts: {
+                                                        items: shortcutsItems,
+                                                    },
+                                                    actionBar: { actions: [] },
+                                                    textField: {
+                                                        InputProps: { endAdornment: <Calendar /> },
+                                                    },
+                                                }}
+                                            //calendars={1}
+                                            />
+                                        </DemoContainer>
+                                    </LocalizationProvider>
                                 </div>
                                 {/* <div className='services'>
                                     <FormControl sx={{ m: 1, width: 200 }}>
@@ -469,62 +471,62 @@ function BDMInterestedLeadsReport() {
                                                 </div>
                                             </th>
                                             <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                              let updatedSortType;
-                                              if (newSortType.followupcase === "ascending") {
-                                                updatedSortType = "descending";
-                                              } else if (newSortType.followupcase === "descending") {
-                                                updatedSortType
-                                                  = "none";
-                                              } else {
-                                                updatedSortType = "ascending";
-                                              }
-                                              setNewSortType((prevData) => ({
-                                                ...prevData,
-                                                followupcase: updatedSortType,
-                                              }));
-                                              handleSortFollowUpCase(updatedSortType);
-                                            }}
+                                                onClick={(e) => {
+                                                    let updatedSortType;
+                                                    if (newSortType.followupcase === "ascending") {
+                                                        updatedSortType = "descending";
+                                                    } else if (newSortType.followupcase === "descending") {
+                                                        updatedSortType
+                                                            = "none";
+                                                    } else {
+                                                        updatedSortType = "ascending";
+                                                    }
+                                                    setNewSortType((prevData) => ({
+                                                        ...prevData,
+                                                        followupcase: updatedSortType,
+                                                    }));
+                                                    handleSortFollowUpCase(updatedSortType);
+                                                }}
                                             >
                                                 <div className="d-flex align-items-center justify-content-center">
                                                     <div className='mr-1'>FolLowUp Leads</div>
                                                     <div className="short-arrow-div">
-                            <ArrowDropUpIcon className="up-short-arrow"
-                              style={{
-                                color:
-                                  newSortType.followupcase === "descending"
-                                    ? "black"
-                                    : "#9d8f8f",
-                              }}
-                            />
-                            <ArrowDropDownIcon className="down-short-arrow"
-                              style={{
-                                color:
-                                  newSortType.followupcase === "ascending"
-                                    ? "black"
-                                    : "#9d8f8f",
-                              }}
-                            />
-                          </div>
+                                                        <ArrowDropUpIcon className="up-short-arrow"
+                                                            style={{
+                                                                color:
+                                                                    newSortType.followupcase === "descending"
+                                                                        ? "black"
+                                                                        : "#9d8f8f",
+                                                            }}
+                                                        />
+                                                        <ArrowDropDownIcon className="down-short-arrow"
+                                                            style={{
+                                                                color:
+                                                                    newSortType.followupcase === "ascending"
+                                                                        ? "black"
+                                                                        : "#9d8f8f",
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </th>
                                             <th style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                              let updatedSortType;
-                                              if (newSortType.forwardedcase === "ascending") {
-                                                updatedSortType = "descending";
-                                              } else if (newSortType.forwardedcase === "descending") {
-                                                updatedSortType
-                                                  = "none";
-                                              } else {
-                                                updatedSortType = "ascending";
-                                              }
-                                              setNewSortType((prevData) => ({
-                                                ...prevData,
-                                                forwardedcase: updatedSortType,
-                                              }));
-                                              handleSortForwardeCases(updatedSortType);
-                                            }}
+                                                onClick={(e) => {
+                                                    let updatedSortType;
+                                                    if (newSortType.forwardedcase === "ascending") {
+                                                        updatedSortType = "descending";
+                                                    } else if (newSortType.forwardedcase === "descending") {
+                                                        updatedSortType
+                                                            = "none";
+                                                    } else {
+                                                        updatedSortType = "ascending";
+                                                    }
+                                                    setNewSortType((prevData) => ({
+                                                        ...prevData,
+                                                        forwardedcase: updatedSortType,
+                                                    }));
+                                                    handleSortForwardeCases(updatedSortType);
+                                                }}
                                             >
                                                 <div className="d-flex align-items-center justify-content-center">
                                                     <div className='mr-1'>Forwarded Cases</div>
@@ -563,8 +565,8 @@ function BDMInterestedLeadsReport() {
                                                         mainObj["Company Name"] === company["Company Name"]
                                                     )
                                                 );
-                                                 // Step 1: Calculate total interested companies for the employee
-                                                 const totalInterestedCompanies = leadHistoryData.filter(
+                                                // Step 1: Calculate total interested companies for the employee
+                                                const totalInterestedCompanies = leadHistoryData.filter(
                                                     (company) => company.ename === obj.ename && company.newStatus === "Interested"
                                                 ).map(company => company["Company Name"]);
 
@@ -643,7 +645,7 @@ function BDMInterestedLeadsReport() {
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                             > */}
-                                                                {/* {
+                                                            {/* {
                                                                     leadHistoryData.filter(
                                                                         (company) => company.ename === obj.ename && company.newStatus === "Interested"
                                                                     ).length
@@ -669,7 +671,7 @@ function BDMInterestedLeadsReport() {
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                             > */}
-                                                                {/* {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length} */}
+                                                            {/* {leadHistoryData.filter((company) => company.ename === obj.ename && company.newStatus === "FollowUp").length} */}
                                                             {/* </Link> */}
                                                             {remainingFollowCompanies.length}
                                                         </td>
@@ -689,56 +691,56 @@ function BDMInterestedLeadsReport() {
                                                 Total
                                             </td>
                                             <td>
-                                            {forwardEmployeeData.reduce((total, obj) => {
-                                                const totalInterestedCompanies = leadHistoryData
-                                                    .filter(company => company.ename === obj.ename && company.newStatus === "Interested")
-                                                    .map(company => company["Company Name"]);
+                                                {forwardEmployeeData.reduce((total, obj) => {
+                                                    const totalInterestedCompanies = leadHistoryData
+                                                        .filter(company => company.ename === obj.ename && company.newStatus === "Interested")
+                                                        .map(company => company["Company Name"]);
 
-                                                const forwardedCompanies = companyDataTotal
-                                                    .filter(mainObj =>
-                                                        leadHistoryData.some(company =>
-                                                            company.ename === obj.ename &&
-                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                                mainObj.bdmAcceptStatus === "Pending" ||
-                                                                mainObj.bdmAcceptStatus === "Accept") &&
-                                                            mainObj["Company Name"] === company["Company Name"] &&
-                                                            mainObj.Status === "Interested"
+                                                    const forwardedCompanies = companyDataTotal
+                                                        .filter(mainObj =>
+                                                            leadHistoryData.some(company =>
+                                                                company.ename === obj.ename &&
+                                                                (mainObj.bdmAcceptStatus === "Forwarded" ||
+                                                                    mainObj.bdmAcceptStatus === "Pending" ||
+                                                                    mainObj.bdmAcceptStatus === "Accept") &&
+                                                                mainObj["Company Name"] === company["Company Name"] &&
+                                                                mainObj.Status === "Interested"
+                                                            )
                                                         )
-                                                    )
-                                                    .map(company => company["Company Name"]);
+                                                        .map(company => company["Company Name"]);
 
-                                                // Add the remaining interested companies to the total
-                                                return total + totalInterestedCompanies.filter(
-                                                    companyName => !forwardedCompanies.includes(companyName)
-                                                ).length;
-                                            }, 0)}
-                                        </td>
-                                        {/* Total remaining follow-up companies across all employees */}
-                                        <td>
-                                            {forwardEmployeeData.reduce((total, obj) => {
-                                                const totalFollowCompanies = leadHistoryData
-                                                    .filter(company => company.ename === obj.ename && company.newStatus === "FollowUp")
-                                                    .map(company => company["Company Name"]);
+                                                    // Add the remaining interested companies to the total
+                                                    return total + totalInterestedCompanies.filter(
+                                                        companyName => !forwardedCompanies.includes(companyName)
+                                                    ).length;
+                                                }, 0)}
+                                            </td>
+                                            {/* Total remaining follow-up companies across all employees */}
+                                            <td>
+                                                {forwardEmployeeData.reduce((total, obj) => {
+                                                    const totalFollowCompanies = leadHistoryData
+                                                        .filter(company => company.ename === obj.ename && company.newStatus === "FollowUp")
+                                                        .map(company => company["Company Name"]);
 
-                                                const forwardedCompaniesFollow = companyDataTotal
-                                                    .filter(mainObj =>
-                                                        leadHistoryData.some(company =>
-                                                            company.ename === obj.ename &&
-                                                            (mainObj.bdmAcceptStatus === "Forwarded" ||
-                                                                mainObj.bdmAcceptStatus === "Pending" ||
-                                                                mainObj.bdmAcceptStatus === "Accept") &&
-                                                            mainObj["Company Name"] === company["Company Name"] &&
-                                                            mainObj.Status === "FollowUp"
+                                                    const forwardedCompaniesFollow = companyDataTotal
+                                                        .filter(mainObj =>
+                                                            leadHistoryData.some(company =>
+                                                                company.ename === obj.ename &&
+                                                                (mainObj.bdmAcceptStatus === "Forwarded" ||
+                                                                    mainObj.bdmAcceptStatus === "Pending" ||
+                                                                    mainObj.bdmAcceptStatus === "Accept") &&
+                                                                mainObj["Company Name"] === company["Company Name"] &&
+                                                                mainObj.Status === "FollowUp"
+                                                            )
                                                         )
-                                                    )
-                                                    .map(company => company["Company Name"]);
+                                                        .map(company => company["Company Name"]);
 
-                                                // Add the remaining follow-up companies to the total
-                                                return total + totalFollowCompanies.filter(
-                                                    companyName => !forwardedCompaniesFollow.includes(companyName)
-                                                ).length;
-                                            }, 0)}
-                                        </td>
+                                                    // Add the remaining follow-up companies to the total
+                                                    return total + totalFollowCompanies.filter(
+                                                        companyName => !forwardedCompaniesFollow.includes(companyName)
+                                                    ).length;
+                                                }, 0)}
+                                            </td>
                                             <td>
                                                 {totalFilteredCompanies}
                                             </td>
@@ -760,7 +762,7 @@ function BDMInterestedLeadsReport() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default BDMInterestedLeadsReport
+export default BDMInterestedLeadsReport;

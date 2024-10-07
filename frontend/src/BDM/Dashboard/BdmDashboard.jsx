@@ -45,7 +45,6 @@ function BdmDashboard() {
     forwardedprojectioncase: "none",
     generatedrevenue: "none",
     recievedprojectioncase: "none",
-
   })
   const [newSortType1, setNewSortType1] = useState({
     maturedcase: "none",
@@ -2408,7 +2407,6 @@ function BdmDashboard() {
 
 
       {/* ----------------------------------------------bdm recieved cases report-------------------------------------------------------------- */}
-
       <div className="as-bde-bdm-daSH mt-4 mb-2">
         <div className="container-xl">
           <div className="as-bde-bdm-daSH-inner">
@@ -2669,8 +2667,8 @@ function BdmDashboard() {
         </div>
       </div>
 
-      {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
 
+      {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
       <div className='container-xl mt-3'>
         <div className="employee-dashboard ">
           <div className="card todays-booking totalbooking" id="totalbooking"   >
@@ -3067,7 +3065,6 @@ function BdmDashboard() {
 
 
       {/* ------------------------------------------------employess forwarded data report------------------------------------------------ */}
-
       <div className='container-xl mt-3'>
         <div className="employee-dashboard">
           <div className="card">
@@ -3483,6 +3480,8 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+
+
       {/* -------------------------------------------------projection summary------------------------------------------------------------ */}
       <div className='container-xl mt-3'>
         <div className="employee-dashboard "
@@ -3852,10 +3851,11 @@ function BdmDashboard() {
         </div>
       </div>
 
+
       {/* -----------------employess interested leads---------------------- */}
       <BDMInterestedLeadsReport />
     </div>
-  )
+  );
 }
 
-export default BdmDashboard
+export default BdmDashboard;

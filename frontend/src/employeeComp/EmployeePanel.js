@@ -77,7 +77,7 @@ import { MdPayment } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
 import CallHistory from "./CallHistory.jsx";
 import { LuHistory } from "react-icons/lu";
-import BdmMaturedCases from "./BdmMaturedCases.jsx";
+import BdmMaturedCasesDialogBox from "./BdmMaturedCasesDialogBox.jsx";
 import { IoMdClose } from "react-icons/io";
 
 function EmployeePanel() {
@@ -5386,6 +5386,7 @@ function EmployeePanel() {
           </button>
         </div>
       </Dialog> */}
+
       {openBdmNamePopup && (
         <>
           <div
@@ -5404,10 +5405,11 @@ function EmployeePanel() {
               className="popup-content"
               style={{
                 backgroundColor: "#fff",
-                padding: "20px",
+                paddingTop: "20px",
+                paddingLeft: "20px",
+                paddingRight: "20px",
                 borderRadius: "10px",
                 width: "800px",
-                height: "500px",
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
                 overflowY: "auto", // Add scrolling for larger content
               }}
@@ -5420,7 +5422,7 @@ function EmployeePanel() {
                   {/* </button> */}
                 </div>
               </div>
-              <BdmMaturedCases
+              <BdmMaturedCasesDialogBox
                 currentData={currentData}
                 bdmData={bdmNames}
                 forwardedCompany={forwardedCompany}

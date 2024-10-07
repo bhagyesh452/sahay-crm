@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { useParams } from 'react-router-dom';
 import { FaWhatsapp } from "react-icons/fa";
 
-function BdmMaturedCases({ currentData, forwardedCompany, forwardCompanyId, bdeOldStatus, bdmNewAcceptStatus, closeBdmNamePopup, fetchNewData }) {
+function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompanyId, bdeOldStatus, bdmNewAcceptStatus, closeBdmNamePopup, fetchNewData }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
@@ -94,7 +94,8 @@ function BdmMaturedCases({ currentData, forwardedCompany, forwardCompanyId, bdeO
 
     return (
         <div className="modal-body">
-            <div className='table table-responsive'>
+            <div className='table table-responsive'
+                style={{ height: "50vh", overflow: "auto" }}>
                 {isLoading ? (
                     <div className='d-flex justify-content-center align-items-center'>
                         <ClipLoader />
@@ -102,7 +103,7 @@ function BdmMaturedCases({ currentData, forwardedCompany, forwardCompanyId, bdeO
                 ) : maturedCases && maturedCases.length > 0 ? (
                     <table className="table">
                         <thead>
-                            <tr>
+                            <tr className='tr-sticky'>
                                 <th>#</th>
                                 <th>Sr. No</th>
                                 <th>BDM Name</th>
@@ -150,7 +151,7 @@ function BdmMaturedCases({ currentData, forwardedCompany, forwardCompanyId, bdeO
                 )}
             </div>
             <div className='d-flex align-items-center justify-content-center mt-4'>
-                <button className='btn btn-primary' onClick={handleForwardBdm} disabled={!selectedBdm}>
+                <button className='btn btn-primary w-100' onClick={handleForwardBdm} disabled={!selectedBdm}>
                     Forward
                 </button>
             </div>
@@ -158,4 +159,4 @@ function BdmMaturedCases({ currentData, forwardedCompany, forwardCompanyId, bdeO
     );
 }
 
-export default BdmMaturedCases;
+export default BdmMaturedCasesDialogBox;
