@@ -231,6 +231,14 @@ router.post('/application-form/save', upload.single('uploadedCV'), async (req, r
     socketIO.emit('recruiter-application-submitted', { data: savedApplicationData });
     return res.status(200).json({ message: 'Application submitted successfully and email sent.' });
   } catch (error) {
+    if (error.code === 11000) {
+      // Handle duplicate key error for email or personal number
+      if (error.keyValue.personal_email) {
+        return res.status(400).json({ message: 'Applicant already exists.' });
+      } else if (error.keyValue.personal_number) {
+        return res.status(400).json({ message: 'Applicant already exists.' });
+      }
+    }
     console.error('Error submitting application:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }

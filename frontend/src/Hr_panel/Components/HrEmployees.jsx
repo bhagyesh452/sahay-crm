@@ -449,7 +449,8 @@ function HrEmployees() {
                 </div>
               </div>
               <div>
-                <DialogAddRecentEmployee/>
+                <DialogAddRecentEmployee 
+                refetch={refetchActive}/>
               </div>
               <div>
                 <button onClick={handleAddEmployee} className="btn btn-primary">+ Add Employee</button>

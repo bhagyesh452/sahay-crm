@@ -4,10 +4,10 @@ import { MdOutlineAddCircle } from "react-icons/md";
 import Swal from 'sweetalert2';
 import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 
-
-function DialogAddRecentEmployee({}) {
+function DialogAddRecentEmployee({ refetch }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -37,6 +37,7 @@ function DialogAddRecentEmployee({}) {
     const [isDepartmentSelected, setIsDepartmentSelected] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isAddSingleEmployee, setIsAddSingleEmployee] = useState(true); // By default, "Add Single Employee" is checked
+    const [uploadedFile, setUploadedFile] = useState(null);
 
     const defaultObject = {
         year: "",
@@ -51,7 +52,13 @@ function DialogAddRecentEmployee({}) {
 
     const handleClosePopup = () => {
         setOpenPopup(false);
+
     }
+    // Function to generate a random password in the pattern: firstName@Sahay#XXXX
+    const generateRandomPassword = (firstName) => {
+        const randomNumber = Math.floor(1000 + Math.random() * 9000);
+        return `${firstName}@Sahay#${randomNumber}`;
+    };
 
     const convertToDateInputFormat = (dateStr) => {
         if (!dateStr) return '';
@@ -248,13 +255,6 @@ function DialogAddRecentEmployee({}) {
             } else {
                 designation = newDesignation;
             }
-
-            // Function to generate random password with the pattern: firstName@Sahay#XXXX (4-digit number)
-            const generateRandomPassword = (firstName) => {
-                const randomNumber = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit random number
-                return `${firstName}@Sahay#${randomNumber}`;
-            };
-
             // Generate password if creating a new employee
             let generatedPassword = "";
             if (!isUpdateMode) {
@@ -293,14 +293,15 @@ function DialogAddRecentEmployee({}) {
                 // Adds data in performance report:
                 console.log("response", response)
                 handleCloseDialog();
+                refetch();
                 //console.log("Data sent successfully");
                 Swal.fire({
                     title: "Data Added!",
                     text: "You have successfully added the data!",
                     icon: "success",
                 });
-               
-              
+
+
 
             } catch {
                 Swal.fire({
@@ -313,7 +314,7 @@ function DialogAddRecentEmployee({}) {
         }
     };
 
-   
+
     const handleAddTarget = () => {
         const totalTargets = targetObjects;
         totalTargets.push(defaultObject);
@@ -326,10 +327,6 @@ function DialogAddRecentEmployee({}) {
         totalTargets.pop();
         setTargetCount(targetCount - 1);
         setTargetObjects(totalTargets);
-    };
-
-    const handleCheckboxChange = (isSingleEmployee) => {
-        setIsAddSingleEmployee(isSingleEmployee);
     };
 
     const handleCloseDialog = () => {
@@ -354,7 +351,110 @@ function DialogAddRecentEmployee({}) {
         setTargetObjects([defaultObject]);
     }
 
-    //console.log("ename" , ename)
+    // Handle radio button change
+    const handleCheckboxChange = (isSingleEmployee) => {
+        setIsAddSingleEmployee(isSingleEmployee);
+        setUploadedFile(null); // Clear uploaded file if switching modes
+    };
+
+    // Handle file selection for bulk upload
+    const handleFileChange = (e) => {
+        setUploadedFile(e.target.files[0]);
+    };
+    // Handle form submission for bulk upload
+    const handleBulkUploadSubmit = async () => {
+        if (!uploadedFile) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Missing File',
+                text: 'Please upload an Excel file.',
+            });
+            return;
+        }
+        const parseExcelDate = (serial) => {
+            const excelEpoch = new Date(Date.UTC(1900, 0, 1)); // Excel's epoch starts at January 1, 1900
+            const utcDays = serial - 2; // Excel counts incorrectly starting from 1900 (1900 is considered a leap year by Excel)
+            const dateInMilliseconds = utcDays * 24 * 60 * 60 * 1000;
+            return new Date(excelEpoch.getTime() + dateInMilliseconds);
+        };
+
+        // Generate password if creating a new employee
+        let generatedPassword = "";
+        if (!isUpdateMode) {
+            generatedPassword = generateRandomPassword(firstName);
+        }
+        // Read and parse the Excel file using XLSX
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+            // Prepare employee data for each row
+            const employeesData = sheetData.map((row) => {
+                const generatedPassword = generateRandomPassword(row["First Name"]);
+                let designation;
+                if (row["Designation"] === "Business Development Executive" || row["Designation"] === "Business Development Manager") {
+                    designation = "Sales Executive";
+                } else if (row["Designation"] === "Floor Manager") {
+                    designation = "Sales Manager";
+                } else if (row["Designation"] === "Data Analyst") {
+                    designation = "Data Manager";
+                } else if (row["Designation"] === "Admin Head") {
+                    designation = "RM-Certification";
+                } else if (row["Designation"] === "HR Manager") {
+                    designation = "HR";
+                } else {
+                    designation = row["Designation"];
+                }
+                console.log("row" , row["Joining Date"])
+                return {
+                    firstName: row["First Name"],
+                    middleName: row["Middle Name"],
+                    lastName: row["Last Name"],
+                    email: row["Email  Address"],
+                    number: row["Number"],
+                    ename: `${row["First Name"]} ${row["Last Name"]}`,
+                    empFullName: `${row["First Name"]} ${row["Middle Name"]} ${row["Last Name"]}`,
+                    department: row["Department"],
+                    designation: designation, // Adjust this mapping as needed
+                    newDesignation: row["Designation"],
+                    branchOffice: row["Branch Office"],
+                    reportingManager: row["Manager"],
+                    password: generatedPassword,
+                    jdate: parseExcelDate(row["Joining Date"]), // Convert to Date object
+                    AddedOn: new Date().toLocaleDateString(),
+                    targetDetails: [], // You can add default target details here if needed
+                    bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager",
+                };
+            });
+            console.log("employeesDATA", employeesData)
+            try {
+                // Send the data to the backend
+                const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData });
+                console.log("response.data", response.data)
+                if (response.status === 200) {
+                    Swal.fire({
+                        title: 'Employees Added!',
+                        text: 'The employees have been successfully added.',
+                        icon: 'success',
+                    });
+                    handleCloseDialog(); // Close the modal
+                    refetch()
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Bulk Upload Failed',
+                    text: `Error occurred during bulk upload: ${error.message}`,
+                });
+            }
+        };
+
+        reader.readAsArrayBuffer(uploadedFile);
+    };
+
 
 
     return (
@@ -364,8 +464,7 @@ function DialogAddRecentEmployee({}) {
                     style={{ textDecoration: "none" }}
                     data-bs-toggle="modal"
                     data-bs-target="#myModal" // Use dynamic modal ID
-
-                >
+                    >
                     <button className="btn btn-primary mr-1">+ Add Recent Employee</button>
                 </a>
             </div>
@@ -711,11 +810,7 @@ function DialogAddRecentEmployee({}) {
                                     <div className="row mb-3">
                                         <label className="form-label">Upload Employee Data</label>
                                         <div className="col-lg-12">
-                                            <input
-                                                type="file"
-                                                className="form-control"
-                                                onChange={(e) => handleInputChange("bulkFile", e.target.files[0])}
-                                            />
+                                            <input type="file" className="form-control" onChange={handleFileChange} />
                                         </div>
                                     </div>
                                 </>
@@ -723,18 +818,23 @@ function DialogAddRecentEmployee({}) {
                             }
 
                         </div>
-
-
-
-                        <button className="btn btn-primary bdr-radius-none" onClick={handleSubmit} variant="contained">
-                            Submit
-                        </button>
+                        <div className="modal-footer">
+                            {isAddSingleEmployee ? (
+                                <button className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit}>
+                                    Submit
+                                </button>
+                            ) : (
+                                <button className="btn btn-primary" data-bs-dismiss="modal" onClick={handleBulkUploadSubmit}>
+                                    Bulk Upload
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                 </div>
 
             </div>
-        </div >
+        </div>
     )
 }
 
