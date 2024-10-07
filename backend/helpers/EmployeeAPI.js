@@ -446,6 +446,10 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
       return res.status(400).json({ message: 'Invalid data format' });
     }
 
+    let successCount = 0;
+    let failureCount = 0;
+    let failureDetails = [];
+
     // Array to hold the promises for inserting each employee
     const employeeInsertPromises = employeesData.map(async (employee) => {
       try {
@@ -518,21 +522,33 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
           // Log error, but do not stop the loop for other employees
         }
 
+        successCount++; // Increment success count if save was successful
+
       } catch (error) {
         console.error('Error adding employee:', employee.email, error.message);
-        // Log error, but do not stop the loop for other employees
+        failureCount++; // Increment failure count if an error occurred
+        failureDetails.push({
+          email: employee.email,
+          error: error.message
+        });
       }
     });
 
     // Wait for all employees to be added
     await Promise.all(employeeInsertPromises);
 
-    res.status(200).json({ message: 'Employees added successfully' });
+    res.status(200).json({ 
+      message: 'Employees processed successfully',
+      successCount,
+      failureCount,
+      failureDetails
+    });
   } catch (error) {
     console.error('Error adding employees:', error.message);
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
+
 
 
 // router.post("/einfo", async (req, res) => {

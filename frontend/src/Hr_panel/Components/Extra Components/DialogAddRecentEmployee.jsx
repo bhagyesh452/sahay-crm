@@ -6,12 +6,13 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { AiOutlineDownload } from "react-icons/ai";
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function DialogAddRecentEmployee({ refetch }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+    const [openBacdrop, setOpenBacdrop] = useState(false)
     const [bdmWork, setBdmWork] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [isUpdateMode, setIsUpdateMode] = useState(false);
@@ -39,7 +40,9 @@ function DialogAddRecentEmployee({ refetch }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isAddSingleEmployee, setIsAddSingleEmployee] = useState(true); // By default, "Add Single Employee" is checked
     const [uploadedFile, setUploadedFile] = useState(null);
-
+    const handleCloseBackdrop = () => {
+        setOpenBacdrop(false)
+    }
     const defaultObject = {
         year: "",
         month: "",
@@ -432,13 +435,14 @@ function DialogAddRecentEmployee({ refetch }) {
             });
             console.log("employeesDATA", employeesData)
             try {
+                setOpenBacdrop(true)
                 // Send the data to the backend
                 const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData });
                 console.log("response.data", response.data)
                 if (response.status === 200) {
                     Swal.fire({
                         title: 'Employees Added!',
-                        text: 'The employees have been successfully added.',
+                        html: `The employees have been successfully added.<br>Added Employees:${response.data.successCount} Duplicate Data:${response.data.failureCount}</br>`,
                         icon: 'success',
                     });
                     handleCloseDialog(); // Close the modal
@@ -451,7 +455,10 @@ function DialogAddRecentEmployee({ refetch }) {
                     text: `Error occurred during bulk upload: ${error.message}`,
                 });
             }
-        };
+            finally {
+                setOpenBacdrop(false)
+            }
+        }
 
         reader.readAsArrayBuffer(uploadedFile);
     };
@@ -845,11 +852,17 @@ function DialogAddRecentEmployee({ refetch }) {
                             )}
                         </div>
                     </div>
-
                 </div>
-
             </div>
+            {/* --------------------------------backedrop------------------------- */}
+            {openBacdrop && (<Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBacdrop}
+                onClick={handleCloseBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>)}
         </div>
+        
     )
 }
 
