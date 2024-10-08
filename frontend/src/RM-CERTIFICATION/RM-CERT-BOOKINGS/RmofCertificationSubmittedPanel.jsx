@@ -42,7 +42,7 @@ import DscLetterStatusAdHead from "../Extra-Components/DscLetterStatusAdHead";
 
 
 
-function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab,completeEmployeeInfo }) {
+function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFilteredData, showingFilterIcon, activeTab, completeEmployeeInfo }) {
   const rmCertificationUserId = localStorage.getItem("rmCertificationUserId")
   const [employeeData, setEmployeeData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -78,7 +78,27 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   const fieldRefs = useRef({});
   const [noOfAvailableData, setnoOfAvailableData] = useState(0)
 
+  function convertToIST(utcDateString) {
+    // Create a new Date object from the UTC string
+    const date = new Date(utcDateString);
 
+    // Convert the UTC date to IST (UTC +5:30)
+    const istDate = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+
+    // Format the IST date to a readable format (day/month/year hour:minute:second)
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      // hour: '2-digit',
+      // minute: '2-digit',
+      // second: '2-digit',
+      // hour12: true,
+      // timeZoneName: 'short'
+    };
+
+    return istDate.toLocaleString('en-IN', options);
+  }
 
   function formatDateNew(inputDate) {
     const date = new Date(inputDate);
@@ -180,11 +200,11 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
       }
     });
     socket.on("lead-updated-by-admin", (res) => {
-  
+
       if (res.updatedDocument) {
-          updateDocumentInState(res.updatedDocument);
+        updateDocumentInState(res.updatedDocument);
       }
-  });
+    });
     return () => {
       socket.disconnect();
     };
@@ -462,7 +482,7 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
   // }, [showFilter]);
 
   const handleFilter = (newData) => {
-    
+
     setFilteredData(newData)
     setRmServicesData(newData.filter(obj => obj.mainCategoryStatus === "Submitted"));
   };
@@ -506,20 +526,20 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
-        const handleClickOutside = (event) => {
-            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-                setShowFilterMenu(false);
-                setIsScrollLocked(false);
-            }
-        };
+      const handleClickOutside = (event) => {
+        if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+          setShowFilterMenu(false);
+          setIsScrollLocked(false);
+        }
+      };
 
-        document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
     }
-}, []);
+  }, []);
 
   return (
     <div>
@@ -1893,26 +1913,25 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                       <td>
                         {obj.subCategoryStatus === "Submitted"
                           ? obj.submittedOn
-                            ? `${formatDateNew(obj.submittedOn)} | ${formatTime(
+                            ? `${convertToIST(obj.submittedOn)} | ${formatTime(
                               obj.submittedOn
                             )}`
-                            : `${formatDateNew(new Date())} | ${formatTime(
+                            : `${convertToIST(new Date())} | ${formatTime(
                               new Date()
                             )}`
                           : obj.subCategoryStatus === "2nd Time Submitted"
                             ? obj.SecondTimeSubmitDate
-                              ? `${formatDateNew(
-                                obj.SecondTimeSubmitDate
+                              ? `${convertToIST(obj.SecondTimeSubmitDate
                               )} | ${formatTime(obj.SecondTimeSubmitDate)}`
-                              : `${formatDateNew(new Date())} | ${formatTime(
+                              : `${convertToIST(new Date())} | ${formatTime(
                                 new Date()
                               )}`
                             : obj.subCategoryStatus === "3rd Time Submitted"
                               ? obj.ThirdTimeSubmitDate
-                                ? `${formatDateNew(
+                                ? `${convertToIST(
                                   obj.ThirdTimeSubmitDate
                                 )} | ${formatTime(obj.ThirdTimeSubmitDate)}`
-                                : `${formatDateNew(new Date())} | ${formatTime(
+                                : `${convertToIST(new Date())} | ${formatTime(
                                   new Date()
                                 )}`
                               : // Find the latest date among the three
@@ -1935,59 +1954,58 @@ function RmofCertificationSubmittedPanel({ searchText, showFilter, totalFiltered
                                   )
                                 );
 
-                                return `${formatDateNew(
+                                return `${convertToIST(
                                   latestDate
                                 )} | ${formatTime(latestDate)}`;
                               })()}
                       </td>
-
                       <td>{obj.submittedBy ? obj.submittedBy : employeeData.ename}</td>
                       <td>{formatDatePro(obj.bookingDate)}</td>
                       <td>
-                                            <div className="d-flex align-items-center justify-content-center">
-                                                <div>
-                                                    {obj.bdeName}
-                                                    {
-                                                        completeEmployeeInfo
-                                                            .filter((employee) => employee.ename === obj.bdeName)
-                                                            .map((employee) => (
-                                                                <a
-                                                                    key={employee.number} // Add a unique key for rendering a list
-                                                                    href={`https://wa.me/${employee.number}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
-                                                                >
-                                                                    <FaWhatsapp />
-                                                                </a>
-                                                            ))
-                                                    }
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="d-flex align-items-center justify-content-center">
+                        <div className="d-flex align-items-center justify-content-center">
+                          <div>
+                            {obj.bdeName}
+                            {
+                              completeEmployeeInfo
+                                .filter((employee) => employee.ename === obj.bdeName)
+                                .map((employee) => (
+                                  <a
+                                    key={employee.number} // Add a unique key for rendering a list
+                                    href={`https://wa.me/${employee.number}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                  >
+                                    <FaWhatsapp />
+                                  </a>
+                                ))
+                            }
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-center">
 
-                                                <div>
-                                                    {obj.bdmName}
-                                                {
-                                                        completeEmployeeInfo
-                                                            .filter((employee) => employee.ename === obj.bdmName)
-                                                            .map((employee) => (
-                                                                <a
-                                                                    key={employee.number} // Add a unique key for rendering a list
-                                                                    href={`https://wa.me/${employee.number}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
-                                                                >
-                                                                    <FaWhatsapp />
-                                                                </a>
-                                                            ))
-                                                    }
-                                                </div>
-                                            </div>
-                                        </td>
+                          <div>
+                            {obj.bdmName}
+                            {
+                              completeEmployeeInfo
+                                .filter((employee) => employee.ename === obj.bdmName)
+                                .map((employee) => (
+                                  <a
+                                    key={employee.number} // Add a unique key for rendering a list
+                                    href={`https://wa.me/${employee.number}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ marginLeft: '10px', lineHeight: '14px', fontSize: '14px' }}
+                                  >
+                                    <FaWhatsapp />
+                                  </a>
+                                ))
+                            }
+                          </div>
+                        </div>
+                      </td>
                       <td>
                         ₹{" "}
                         {parseInt(obj.totalPaymentWGST || 0, 10).toLocaleString(

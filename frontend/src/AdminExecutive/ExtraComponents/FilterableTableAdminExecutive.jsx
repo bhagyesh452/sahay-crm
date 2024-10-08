@@ -21,6 +21,14 @@ const FilterableTableAdminExecutive = ({
     const [sortOrder, setSortOrder] = useState(null);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
+
     const handleSort = (order) => {
         if (order === "none") {
             setSortOrder(null); // Clear the sort order
@@ -468,7 +476,7 @@ const FilterableTableAdminExecutive = ({
                                 />
                             </div>
                             <label className="filter-val p-2" for={value}>
-                                {value}
+                                {filterField === "bookingDate" ? formatDatePro(value) : value}
                             </label>
                         </div>
                     ))}

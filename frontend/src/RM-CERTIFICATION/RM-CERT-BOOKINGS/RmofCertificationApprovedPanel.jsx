@@ -81,6 +81,23 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
     return `${day} ${month}, ${year}`;
   }
 
+  function convertToIST(utcDateString) {
+    // Create a new Date object from the UTC string
+    const date = new Date(utcDateString);
+
+    // Convert the UTC date to IST (UTC +5:30)
+    const istDate = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+
+    // Format the IST date to a readable format (day/month/year hour:minute:second)
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    };
+
+    return istDate.toLocaleString('en-IN', options);
+  }
+
   const formatTimeNew = (timeString) => {
     // If the input is a time string in HH:MM:SS format
     if (timeString && typeof timeString === 'string') {
@@ -1908,12 +1925,12 @@ function RmofCertificationApprovedPanel({ searchText, showFilter, totalFilteredD
                       <td>
                         {obj.submittedOn ? (
                           <>
-                            {formatDateNew(obj.submittedOn)} |{" "}
+                            {convertToIST(obj.submittedOn)} |{" "}
                             {obj.isUploadedDirect ? formatTimeNew(obj.submittedTime) : formatTime(obj.submittedOn)}
                           </>
                         ) : (
                           <>
-                            {formatDateNew(new Date())} | {formatTime(new Date())}
+                            {convertToIST(new Date())} | {formatTime(new Date())}
                           </>
                         )}
                       </td>

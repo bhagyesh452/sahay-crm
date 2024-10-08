@@ -4,18 +4,18 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
 
-const FilterableTable = ({ 
-    activeTab, 
-    filteredData, 
-    data, 
-    filterField, 
-    onFilter, 
-    completeData, 
-    dataForFilter, 
-    activeFilters ,
+const FilterableTable = ({
+    activeTab,
+    filteredData,
+    data,
+    filterField,
+    onFilter,
+    completeData,
+    dataForFilter,
+    activeFilters,
     allFilterFields,
     noofItems,
-    showingMenu}) => {
+    showingMenu }) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -31,13 +31,18 @@ const FilterableTable = ({
     };
 
     useEffect(() => {
-        applyFilters(selectedFilters , filterField);
+        applyFilters(selectedFilters, filterField);
     }, [sortOrder]);
 
 
     useEffect(() => {
         if (filteredData && filteredData.length !== 0) {
             const values = filteredData.map(item => {
+                // Handle 'submittedOn' field by removing time part and just considering the date
+                if (filterField === 'submittedOn') {
+                    const submittedDate = new Date(item[filterField]).toLocaleDateString('en-IN'); // Convert date to string (ignoring time)
+                    return submittedDate;
+                }
                 // Handle dynamic calculation for 'received Payment'
                 if (filterField === 'receivedPayment') {
                     const payment = (
@@ -68,6 +73,11 @@ const FilterableTable = ({
             setColumnValues([...new Set(values)]); // Ensure unique values
         } else {
             const values = dataForFilter.map(item => {
+                // Handle 'submittedOn' field by removing time part and just considering the date
+                if (filterField === 'submittedOn') {
+                    const submittedDate = new Date(item[filterField]).toLocaleDateString('en-IN'); // Convert date to string (ignoring time)
+                    return submittedDate;
+                }
                 // Handle dynamic calculation for 'received Payment'
                 if (filterField === 'receivedPayment') {
                     const payment = (
@@ -129,7 +139,7 @@ const FilterableTable = ({
         const allSelectedFilters = Object.values(safeFilters).flat();
 
         // Start with the data to be filtered
-        if (filteredData && filteredData.length !== 0 ) {
+        if (filteredData && filteredData.length !== 0) {
             dataToSort = filteredData.map(item => {
                 // Add numeric fields for sorting
                 const receivedPayment = (
@@ -150,19 +160,22 @@ const FilterableTable = ({
                 return {
                     ...item,
                     receivedPayment,
-                    pendingPayment
+                    pendingPayment,
+                    // Add submittedOn without time for comparison
+                    submittedDate: new Date(item.submittedOn).toLocaleDateString('en-IN')
+
                 };
             });
 
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
                 // Update the active filter fields array
-        allFilterFields(prevFields => {
+                allFilterFields(prevFields => {
 
-            // Add the field if it's not active
-            return [...prevFields, column];
+                    // Add the field if it's not active
+                    return [...prevFields, column];
 
-        });
+                });
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
@@ -177,9 +190,14 @@ const FilterableTable = ({
                         if (column === 'withDSC') {
                             return columnFilters.includes(item.withDSC ? 'Yes' : 'No');
                         }
+                        // For 'submittedOn', only compare date without time
+                    if (column === 'submittedOn') {
+                        const submittedDate = new Date(item.submittedOn).toLocaleDateString('en-IN');
+                        return columnFilters.includes(submittedDate);
+                    }
                         return columnFilters.includes(String(item[column]));
                     });
-                    
+
                     return match;
                 });
                 numberOfFilteredItems = dataToSort ? dataToSort.length : 0;
@@ -247,7 +265,9 @@ const FilterableTable = ({
                 return {
                     ...item,
                     receivedPayment,
-                    pendingPayment
+                    pendingPayment,
+                    // Add submittedOn without time for comparison
+                    submittedDate: new Date(item.submittedOn).toLocaleDateString('en-IN')
                 };
             });
 
@@ -257,7 +277,7 @@ const FilterableTable = ({
 
                     // Add the field if it's not active
                     return [...prevFields, column];
-        
+
                 });
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
@@ -269,6 +289,11 @@ const FilterableTable = ({
                         if (column === 'pendingPayment') {
                             const pendingPayment = item.pendingPayment.toLocaleString('en-IN');
                             return columnFilters.includes(pendingPayment);
+                        }
+                        // For 'submittedOn', only compare date without time
+                        if (column === 'submittedOn') {
+                            const submittedDate = new Date(item.submittedOn).toLocaleDateString('en-IN');
+                            return columnFilters.includes(submittedDate);
                         }
                         return columnFilters.includes(String(item[column]));
                     });
@@ -319,20 +344,20 @@ const FilterableTable = ({
             }
         }
 
-        onFilter(dataToSort); 
+        onFilter(dataToSort);
     };
 
     const handleSelectAll = () => {
         setSelectedFilters(prevFilters => {
             const isAllSelected = prevFilters[filterField]?.length === columnValues.length;
-    
+
             return {
                 ...prevFilters,
                 [filterField]: isAllSelected ? [] : [...columnValues]  // Deselect all if already selected, otherwise select all
             };
         });
     };
-    
+
     // Example of logging the length of the selected filters for a specific field
     console.log(selectedFilters[filterField]?.length, columnValues.length);
 
@@ -350,7 +375,7 @@ const FilterableTable = ({
             ...prevFilters,
             [filterField]: []
         }));
-        
+
         try {
             // Fetch the complete dataset from the API
             const response = await axios.get(`${secretKey}/rm-services/rm-sevicesgetrequest-complete`, {
@@ -361,7 +386,7 @@ const FilterableTable = ({
                     activeTab: activeTab  // Adjust as needed
                 }
             });
-    
+
             const { data, totalPages } = response.data;
             onFilter(data);
             allFilterFields([])
@@ -371,9 +396,30 @@ const FilterableTable = ({
             console.error("Error fetching complete data", error.message);
         }
     };
-    
 
-       return (
+    function formatDatePro(inputDate) {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    }
+
+    function formatDate(dateString) {
+        // Split the date string based on '/' (assuming input is '20/7/2024')
+        const [day, month, year] = dateString.split('/');
+    
+        // Array of month names to convert the numerical month to name
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    
+        // Parse the month from the array (subtract 1 because month is zero-indexed in arrays)
+        const monthName = monthNames[parseInt(month) - 1];
+    
+        // Return the formatted date as '20July,2024'
+        return `${day}${monthName},${year}`;
+    }
+
+    return (
         <div>
             <div className="inco-filter">
                 <div
@@ -401,7 +447,7 @@ const FilterableTable = ({
                         filterField === "receivedPayment" ||
                         filterField === "pendingPayment" ? "Descending" : "Sort Z TO A"}
                 </div>
-                    {/* <div className="inco-subFilter p-2"
+                {/* <div className="inco-subFilter p-2"
                         onClick={(e) => handleSort("none")}>
                         <SwapVertIcon style={{ height: "16px" }} />
                         None
@@ -434,32 +480,33 @@ const FilterableTable = ({
                                 />
                             </div>
                             <label className="filter-val p-2" for={value}>
-                                {value}
+                                {filterField === "bookingDate"  ? formatDatePro(value) 
+                                :filterField === "submittedOn" ? formatDate(value) : value}
                             </label>
                         </div>
                     ))}
                 </div>
                 <div className='d-flex align-items-center justify-content-between'>
                     <div className='w-50'>
-                    <button className='filter-footer-btn btn-yellow'
-                    style={{backgroundColor:"#e7e5e0"}}
-                    onClick={()=>{
-                    applyFilters(selectedFilters ,filterField )
-                    showingMenu(false)
-                }}>
-                    Apply Filters
-                    </button>
-                        </div>
-                   <div className='w-50'>
-                   <button className='filter-footer-btn btn-yellow'
-                    style={{backgroundColor:"#e7e5e0"}}
-                    onClick={()=>{
-                    handleClearAll()
-                }}>
-                    Clear Filters
-                    </button>
-                   </div>
+                        <button className='filter-footer-btn btn-yellow'
+                            style={{ backgroundColor: "#e7e5e0" }}
+                            onClick={() => {
+                                applyFilters(selectedFilters, filterField)
+                                showingMenu(false)
+                            }}>
+                            Apply Filters
+                        </button>
                     </div>
+                    <div className='w-50'>
+                        <button className='filter-footer-btn btn-yellow'
+                            style={{ backgroundColor: "#e7e5e0" }}
+                            onClick={() => {
+                                handleClearAll()
+                            }}>
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
             </div>
         </div >
     );
