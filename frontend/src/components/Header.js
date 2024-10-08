@@ -290,7 +290,7 @@ function Header({ name, id, designation, empProfile, gender }) {
     const url = 'https://api1.callyzer.co/v2/call-log/employee-summary';
 
     const startTimestamp = Math.floor(new Date(date).setUTCHours(4, 0, 0, 0) / 1000);
-    const endTimestamp = Math.floor(new Date(date).setUTCHours(13, 0, 0, 0) / 1000);
+    const endTimestamp = Math.floor(new Date(date).setUTCHours(14, 0, 0, 0) / 1000);
     const body = {
       "call_from": startTimestamp,
       "call_to": endTimestamp,

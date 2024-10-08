@@ -155,7 +155,7 @@ function EmployeeCompleteCallingReport() {
     todayStartDate.setUTCHours(4, 0, 0, 0);
 
     //Set todayEndDate to the end of the day in UTC
-    todayEndDate.setUTCHours(13, 0, 0, 0);
+    todayEndDate.setUTCHours(14, 0, 0, 0);
 
     // Convert to Unix timestamps (seconds since epoch)
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
@@ -175,6 +175,8 @@ function EmployeeCompleteCallingReport() {
                 "call_types": ["Missed", "Rejected", "Incoming", "Outgoing"],
                 "emp_numbers": employeeArray
             };
+            console.log("start", startTimestamp)
+            console.log("end", endTimestamp)
             try {
                 setLoading(true);
 
@@ -271,16 +273,12 @@ function EmployeeCompleteCallingReport() {
 
         // Set specific times for start and end of the day in IST
         const startOfDay = date.set({ hour: 9, minute: 30, second: 0, millisecond: 0 }).unix(); // 9:30 AM IST
-        const endOfDay = date.set({ hour: 18, minute: 30, second: 0, millisecond: 0 }).unix(); // 6:30 PM IST
+        const endOfDay = date.set({ hour: 19, minute: 30, second: 0, millisecond: 0 }).unix(); // 6:30 PM IST
 
         // Set the timestamps
         const startTimestamp = startOfDay;
         const endTimestamp = endOfDay;
 
-        // console.log("Start of Day (UTC):", moment.unix(startOfDay).utc().format());
-        // console.log("End of Day (UTC):", moment.unix(endOfDay).utc().format());
-        // console.log("Start of Day (IST):", moment.unix(startOfDay).format());
-        // console.log("End of Day (IST):", moment.unix(endOfDay).format());
         console.log(startTimestamp, endTimestamp)
         // Fetch data based on the selected date
         const fetchEmployeeData = async () => {
