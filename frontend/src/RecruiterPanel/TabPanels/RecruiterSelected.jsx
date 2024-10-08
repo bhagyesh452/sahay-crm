@@ -961,20 +961,20 @@ function RecruiterSelected({
                                     </th>
                                     <th>
                                         <div className='d-flex align-items-center justify-content-center position-relative'>
-                                            <div ref={el => fieldRefs.current['jDate'] = el}>
+                                            <div ref={el => fieldRefs.current['jdate'] = el}>
                                                 Joining Date
                                             </div>
 
                                             <div className='RM_filter_icon'>
-                                                {isActiveField('jDate') ? (
-                                                    <FaFilter onClick={() => handleFilterClick("jDate")} />
+                                                {isActiveField('jdate') ? (
+                                                    <FaFilter onClick={() => handleFilterClick("jdate")} />
                                                 ) : (
-                                                    <BsFilter onClick={() => handleFilterClick("jDate")} />
+                                                    <BsFilter onClick={() => handleFilterClick("jdate")} />
                                                 )}
                                             </div>
 
                                             {/* ---------------------filter component--------------------------- */}
-                                            {showFilterMenu && activeFilterField === 'jDate' && (
+                                            {showFilterMenu && activeFilterField === 'jdate' && (
                                                 <div
                                                     ref={filterMenuRef}
                                                     className="filter-menu"

@@ -73,6 +73,13 @@ function DialogAddRecentEmployee({ refetch }) {
         return `${year}-${month}-${day}`;
     };
 
+    const parseExcelDate = (serial) => {
+        const excelEpoch = new Date(Date.UTC(1900, 0, 1)); // Excel's epoch starts at January 1, 1900
+        const utcDays = serial - 2; // Excel counts incorrectly starting from 1900 (1900 is considered a leap year by Excel)
+        const dateInMilliseconds = utcDays * 24 * 60 * 60 * 1000;
+        return new Date(excelEpoch.getTime() + dateInMilliseconds);
+    };
+
     const validate = () => {
         const newErrors = {};
         if (!firstName) newErrors.firstName = "First name is required";
@@ -168,6 +175,42 @@ function DialogAddRecentEmployee({ refetch }) {
         ],
         Others: ["Miss. Hiral Panchal"],
     }
+    const departmentValidation = {
+        "Start-Up": {
+            designations: ["Admin Head", "Accountant", "Data Analyst", "Content Writer", "Graphic Designer", "Company Secretary", "Admin Executive"],
+            managers: ["Mr. Ronak Kumar", "Mr. Krunal Pithadia", "Miss. Dhruvi Gohel"]
+        },
+        "HR": {
+            designations: ["HR Manager", "HR Recruiter"],
+            managers: ["Mr. Ronak Kumar", "Miss. Hiral Panchal"]
+        },
+        "Sales": {
+            designations: ["Business Development Executive", "Business Development Manager", "Floor Manager", "Sales Manager"],
+            managers: ["Mr. Vishal Gohel", "Mr. Vaibhav Acharya"]
+        },
+        "IT": {
+            designations: ["Web Developer", "Software Developer", "SEO Executive", "Graphic Designer", "App Developer", "Digital Marketing Executive"],
+            managers: ["Mr. Nimesh Parekh"]
+        },
+        Sales: {
+            designations: [
+                "Business Development Executive",
+                "Business Development Manager",
+                // "Sales Manager",
+                "Team Leader",
+                "Floor Manager",
+            ],
+            managers: [
+                "Mr. Vaibhav Acharya",
+                "Mr. Vishal Gohel"
+            ],
+        },
+        Others: {
+            designations: ["Receptionist"],
+            managers: ["Miss. Hiral Panchal"],
+        }
+    };
+
 
     const renderDesignationOptions = () => {
         const designations = departmentDesignations[department] || [];
@@ -232,7 +275,7 @@ function DialogAddRecentEmployee({ refetch }) {
         });
     };
 
-    console.log("emial is :", email);
+
 
     const handleSubmit = async (e) => {
 
@@ -366,6 +409,103 @@ function DialogAddRecentEmployee({ refetch }) {
         setUploadedFile(e.target.files[0]);
     };
     // Handle form submission for bulk upload
+    // const handleBulkUploadSubmit = async () => {
+    //     if (!uploadedFile) {
+    //         Swal.fire({
+    //             icon: 'error',
+    //             title: 'Missing File',
+    //             text: 'Please upload an Excel file.',
+    //         });
+    //         return;
+    //     }
+    //     const parseExcelDate = (serial) => {
+    //         const excelEpoch = new Date(Date.UTC(1900, 0, 1)); // Excel's epoch starts at January 1, 1900
+    //         const utcDays = serial - 2; // Excel counts incorrectly starting from 1900 (1900 is considered a leap year by Excel)
+    //         const dateInMilliseconds = utcDays * 24 * 60 * 60 * 1000;
+    //         return new Date(excelEpoch.getTime() + dateInMilliseconds);
+    //     };
+
+    //     // Generate password if creating a new employee
+    //     let generatedPassword = "";
+    //     if (!isUpdateMode) {
+    //         generatedPassword = generateRandomPassword(firstName);
+    //     }
+    //     // Read and parse the Excel file using XLSX
+    //     const reader = new FileReader();
+    //     reader.onload = async (e) => {
+    //         const data = new Uint8Array(e.target.result);
+    //         const workbook = XLSX.read(data, { type: 'array' });
+    //         const sheetName = workbook.SheetNames[0];
+    //         const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    //         // Prepare employee data for each row
+    //         const employeesData = sheetData.map((row) => {
+    //             const generatedPassword = generateRandomPassword(row["First Name"]);
+    //             let designation;
+    //             if (row["Designation"] === "Business Development Executive" || row["Designation"] === "Business Development Manager") {
+    //                 designation = "Sales Executive";
+    //             } else if (row["Designation"] === "Floor Manager") {
+    //                 designation = "Sales Manager";
+    //             } else if (row["Designation"] === "Data Analyst") {
+    //                 designation = "Data Manager";
+    //             } else if (row["Designation"] === "Admin Head") {
+    //                 designation = "RM-Certification";
+    //             } else if (row["Designation"] === "HR Manager") {
+    //                 designation = "HR";
+    //             } else {
+    //                 designation = row["Designation"];
+    //             }
+    //             console.log("row", row["Joining Date"])
+    //             return {
+    //                 firstName: row["First Name"],
+    //                 middleName: row["Middle Name"],
+    //                 lastName: row["Last Name"],
+    //                 email: row["Email  Address"],
+    //                 number: row["Number"],
+    //                 ename: `${row["First Name"]} ${row["Last Name"]}`,
+    //                 empFullName: `${row["First Name"]} ${row["Middle Name"]} ${row["Last Name"]}`,
+    //                 department: row["Department"],
+    //                 designation: designation, // Adjust this mapping as needed
+    //                 newDesignation: row["Designation"],
+    //                 branchOffice: row["Branch Office"],
+    //                 reportingManager: row["Manager"],
+    //                 password: generatedPassword,
+    //                 jdate: parseExcelDate(row["Joining Date"]), // Convert to Date object
+    //                 AddedOn: new Date().toLocaleDateString(),
+    //                 targetDetails: [], // You can add default target details here if needed
+    //                 bdmWork: row["Designation"] === "Floor Manager" || row["Designation"] === "Business Development Manager",
+    //             };
+    //         });
+    //         console.log("employeesDATA", employeesData)
+    //         try {
+    //             setOpenBacdrop(true)
+    //             // Send the data to the backend
+    //             const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData });
+    //             console.log("response.data", response.data)
+    //             if (response.status === 200) {
+    //                 Swal.fire({
+    //                     title: 'Employees Added!',
+    //                     html: `The employees have been successfully added.<br>Added Employees:${response.data.successCount} Duplicate Data:${response.data.failureCount}</br>`,
+    //                     icon: 'success',
+    //                 });
+    //                 handleCloseDialog(); // Close the modal
+    //                 refetch()
+    //             }
+    //         } catch (error) {
+    //             Swal.fire({
+    //                 icon: 'error',
+    //                 title: 'Bulk Upload Failed',
+    //                 text: `Error occurred during bulk upload: ${error.message}`,
+    //             });
+    //         }
+    //         finally {
+    //             setOpenBacdrop(false)
+    //         }
+    //     }
+
+    //     reader.readAsArrayBuffer(uploadedFile);
+    // };
+
     const handleBulkUploadSubmit = async () => {
         if (!uploadedFile) {
             Swal.fire({
@@ -375,19 +515,7 @@ function DialogAddRecentEmployee({ refetch }) {
             });
             return;
         }
-        const parseExcelDate = (serial) => {
-            const excelEpoch = new Date(Date.UTC(1900, 0, 1)); // Excel's epoch starts at January 1, 1900
-            const utcDays = serial - 2; // Excel counts incorrectly starting from 1900 (1900 is considered a leap year by Excel)
-            const dateInMilliseconds = utcDays * 24 * 60 * 60 * 1000;
-            return new Date(excelEpoch.getTime() + dateInMilliseconds);
-        };
 
-        // Generate password if creating a new employee
-        let generatedPassword = "";
-        if (!isUpdateMode) {
-            generatedPassword = generateRandomPassword(firstName);
-        }
-        // Read and parse the Excel file using XLSX
         const reader = new FileReader();
         reader.onload = async (e) => {
             const data = new Uint8Array(e.target.result);
@@ -395,7 +523,6 @@ function DialogAddRecentEmployee({ refetch }) {
             const sheetName = workbook.SheetNames[0];
             const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-            // Prepare employee data for each row
             const employeesData = sheetData.map((row) => {
                 const generatedPassword = generateRandomPassword(row["First Name"]);
                 let designation;
@@ -425,7 +552,7 @@ function DialogAddRecentEmployee({ refetch }) {
                     designation: designation, // Adjust this mapping as needed
                     newDesignation: row["Designation"],
                     branchOffice: row["Branch Office"],
-                    reportingManager: row["Manager"],
+                    manager: row["Manager"],
                     password: generatedPassword,
                     jdate: parseExcelDate(row["Joining Date"]), // Convert to Date object
                     AddedOn: new Date().toLocaleDateString(),
@@ -434,19 +561,62 @@ function DialogAddRecentEmployee({ refetch }) {
                 };
             });
             console.log("employeesDATA", employeesData)
+
+            // Validation logic
+            let hasError = false;
+            let errorMessages = "";
+
+            employeesData.forEach((employee, index) => {
+                const department = employee.department;
+                const newDesignation = employee.newDesignation;
+                const firstName = employee.firstName;
+                const lastName = employee.lastName;
+                const manager = employee.manager;
+
+                if (departmentValidation[department]) {
+                    const validDesignations = departmentValidation[department].designations;
+                    const validManagers = departmentValidation[department].managers;
+
+                    // Validate Designation
+                    if (!validDesignations.includes(newDesignation)) {
+                        hasError = true;
+                        errorMessages += `Row ${index + 2} ${firstName} ${lastName}: Invalid Designation "${newDesignation}" for Department "${department}".<br>`;
+                    }
+
+                    // Validate Manager
+                    if (!validManagers.includes(manager)) {
+                        hasError = true;
+                        errorMessages += `Row ${index + 2} ${firstName}  ${lastName}: Invalid Manager "${manager}" for Department "${department}".<br>`;
+                    }
+                } else {
+                    hasError = true;
+                    errorMessages += `Row ${index + 2} ${firstName}  ${lastName}: Unknown Department "${department}".<br>`;
+                }
+            });
+
+            if (hasError) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    html: errorMessages,
+                });
+                return;
+            }
+
+            // Proceed with sending the data to the backend if validation passes
+            console.log("employeesDATA", employeesData)
             try {
-                setOpenBacdrop(true)
-                // Send the data to the backend
+                setOpenBacdrop(true);
                 const response = await axios.post(`${secretKey}/employee/hr-bulk-add-employees`, { employeesData });
-                console.log("response.data", response.data)
+
                 if (response.status === 200) {
                     Swal.fire({
                         title: 'Employees Added!',
                         html: `The employees have been successfully added.<br>Added Employees:${response.data.successCount} Duplicate Data:${response.data.failureCount}</br>`,
                         icon: 'success',
                     });
-                    handleCloseDialog(); // Close the modal
-                    refetch()
+                    handleCloseDialog();
+                    refetch();
                 }
             } catch (error) {
                 Swal.fire({
@@ -454,14 +624,14 @@ function DialogAddRecentEmployee({ refetch }) {
                     title: 'Bulk Upload Failed',
                     text: `Error occurred during bulk upload: ${error.message}`,
                 });
+            } finally {
+                setOpenBacdrop(false);
             }
-            finally {
-                setOpenBacdrop(false)
-            }
-        }
+        };
 
         reader.readAsArrayBuffer(uploadedFile);
     };
+
 
 
 
@@ -824,7 +994,7 @@ function DialogAddRecentEmployee({ refetch }) {
                                             href={`${process.env.PUBLIC_URL}/AddNewEmployeeFormat.xlsx`}
                                             download={"AddNewEmployeeFormat.xlsx"}
                                         >
-                                            <div className='d-flex align-items-center justify-content-end' style={{ marginTop: "10px", textDecoration: "none"}}>
+                                            <div className='d-flex align-items-center justify-content-end' style={{ marginTop: "10px", textDecoration: "none" }}>
                                                 <div style={{ marginRight: "5px" }}>
                                                     <AiOutlineDownload />
                                                 </div>
@@ -862,7 +1032,7 @@ function DialogAddRecentEmployee({ refetch }) {
                 <CircularProgress color="inherit" />
             </Backdrop>)}
         </div>
-        
+
     )
 }
 

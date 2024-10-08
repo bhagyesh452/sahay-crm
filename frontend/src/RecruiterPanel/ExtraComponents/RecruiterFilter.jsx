@@ -4,18 +4,18 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axios from "axios";
 
-const RecruiterFilter = ({ 
-    activeTab, 
-    filteredData, 
-    data, 
-    filterField, 
-    onFilter, 
-    completeData, 
-    dataForFilter, 
-    activeFilters ,
+const RecruiterFilter = ({
+    activeTab,
+    filteredData,
+    data,
+    filterField,
+    onFilter,
+    completeData,
+    dataForFilter,
+    activeFilters,
     allFilterFields,
     noofItems,
-    showingMenu}) => {
+    showingMenu }) => {
     const [columnValues, setColumnValues] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState(null);
@@ -31,7 +31,7 @@ const RecruiterFilter = ({
     };
 
     useEffect(() => {
-        applyFilters(selectedFilters , filterField);
+        applyFilters(selectedFilters, filterField);
     }, [sortOrder]);
 
 
@@ -129,7 +129,7 @@ const RecruiterFilter = ({
         const allSelectedFilters = Object.values(safeFilters).flat();
 
         // Start with the data to be filtered
-        if (filteredData && filteredData.length !== 0 ) {
+        if (filteredData && filteredData.length !== 0) {
             dataToSort = filteredData.map(item => {
                 // Add numeric fields for sorting
                 const receivedPayment = (
@@ -157,12 +157,12 @@ const RecruiterFilter = ({
             // Apply filters if there are selected filters
             if (allSelectedFilters.length > 0) {
                 // Update the active filter fields array
-        allFilterFields(prevFields => {
+                allFilterFields(prevFields => {
 
-            // Add the field if it's not active
-            return [...prevFields, column];
+                    // Add the field if it's not active
+                    return [...prevFields, column];
 
-        });
+                });
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
                         const columnFilters = safeFilters[column];
@@ -179,7 +179,7 @@ const RecruiterFilter = ({
                         }
                         return columnFilters.includes(String(item[column]));
                     });
-                    
+
                     return match;
                 });
                 numberOfFilteredItems = dataToSort ? dataToSort.length : 0;
@@ -204,22 +204,22 @@ const RecruiterFilter = ({
                     }
 
                     // Sorting for expenseReimbursementStatus based on both status and date
-                if (column === 'expenseReimbursementStatus') {
-                    // Sort by status first
-                    const statusCompare = valueA.localeCompare(valueB);
-                    if (statusCompare !== 0) {
-                        return sortOrder === 'oldest' ? statusCompare : -statusCompare;
-                    }
+                    if (column === 'expenseReimbursementStatus') {
+                        // Sort by status first
+                        const statusCompare = valueA.localeCompare(valueB);
+                        if (statusCompare !== 0) {
+                            return sortOrder === 'oldest' ? statusCompare : -statusCompare;
+                        }
 
-                    // If statuses are the same, sort by expenseReimbursementDate
-                    const dateA = new Date(a.expenseReimbursementDate);
-                    const dateB = new Date(b.expenseReimbursementDate);
-                    if (sortOrder === 'oldest') {
-                        return dateA - dateB; // Sort from oldest to newest
-                    } else if (sortOrder === 'newest') {
-                        return dateB - dateA; // Sort from newest to oldest
+                        // If statuses are the same, sort by expenseReimbursementDate
+                        const dateA = new Date(a.expenseReimbursementDate);
+                        const dateB = new Date(b.expenseReimbursementDate);
+                        if (sortOrder === 'oldest') {
+                            return dateA - dateB; // Sort from oldest to newest
+                        } else if (sortOrder === 'newest') {
+                            return dateB - dateA; // Sort from newest to oldest
+                        }
                     }
-                }
 
                     // Handle numeric fields
                     if (column === 'receivedPayment' || column === 'pendingPayment') {
@@ -275,7 +275,7 @@ const RecruiterFilter = ({
 
                     // Add the field if it's not active
                     return [...prevFields, column];
-        
+
                 });
                 dataToSort = dataToSort.filter(item => {
                     const match = Object.keys(safeFilters).every(column => {
@@ -313,22 +313,22 @@ const RecruiterFilter = ({
                         }
                     }
                     // Sorting for expenseReimbursementStatus based on both status and date
-                if (column === 'expenseReimbursementStatus') {
-                    // Sort by status first
-                    const statusCompare = valueA.localeCompare(valueB);
-                    if (statusCompare !== 0) {
-                        return sortOrder === 'oldest' ? statusCompare : -statusCompare;
-                    }
+                    if (column === 'expenseReimbursementStatus') {
+                        // Sort by status first
+                        const statusCompare = valueA.localeCompare(valueB);
+                        if (statusCompare !== 0) {
+                            return sortOrder === 'oldest' ? statusCompare : -statusCompare;
+                        }
 
-                    // If statuses are the same, sort by expenseReimbursementDate
-                    const dateA = new Date(a.expenseReimbursementDate);
-                    const dateB = new Date(b.expenseReimbursementDate);
-                    if (sortOrder === 'oldest') {
-                        return dateA - dateB; // Sort from oldest to newest
-                    } else if (sortOrder === 'newest') {
-                        return dateB - dateA; // Sort from newest to oldest
+                        // If statuses are the same, sort by expenseReimbursementDate
+                        const dateA = new Date(a.expenseReimbursementDate);
+                        const dateB = new Date(b.expenseReimbursementDate);
+                        if (sortOrder === 'oldest') {
+                            return dateA - dateB; // Sort from oldest to newest
+                        } else if (sortOrder === 'newest') {
+                            return dateB - dateA; // Sort from newest to oldest
+                        }
                     }
-                }
                     // Handle numeric fields
                     if (column === 'receivedPayment' || column === 'pendingPayment') {
                         valueA = valueA !== undefined ? valueA : 0;
@@ -353,20 +353,20 @@ const RecruiterFilter = ({
             }
         }
 
-        onFilter(dataToSort); 
+        onFilter(dataToSort);
     };
 
     const handleSelectAll = () => {
         setSelectedFilters(prevFilters => {
             const isAllSelected = prevFilters[filterField]?.length === columnValues.length;
-    
+
             return {
                 ...prevFilters,
                 [filterField]: isAllSelected ? [] : [...columnValues]  // Deselect all if already selected, otherwise select all
             };
         });
     };
-    
+
     // Example of logging the length of the selected filters for a specific field
     //console.log(selectedFilters[filterField]?.length, columnValues.length);
 
@@ -384,7 +384,7 @@ const RecruiterFilter = ({
             ...prevFilters,
             [filterField]: []
         }));
-        
+
         try {
             // Fetch the complete dataset from the API
             const response = await axios.get(`${secretKey}/recruiter/recruiter-complete`, {
@@ -395,7 +395,7 @@ const RecruiterFilter = ({
                     activeTab: activeTab  // Adjust as needed
                 }
             });
-    
+
             const { data, totalPages } = response.data;
             // console.log("response" , response.data)
             onFilter(data);
@@ -406,9 +406,15 @@ const RecruiterFilter = ({
             console.error("Error fetching complete data", error.message);
         }
     };
-    
+    const formatDatePro = (inputDate) => {
+        const date = new Date(inputDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    };
 
-       return (
+    return (
         <div>
             <div className="inco-filter">
                 <div
@@ -416,12 +422,14 @@ const RecruiterFilter = ({
                     onClick={(e) => handleSort("oldest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
-                        filterField === "Company Number" ||
-                        filterField === "caNumber" ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
-                        filterField === "pendingPayment" ? "Ascending" : "Sort A TO Z"}
+                    {
+                        filterField === "currentCTC" ||
+                            filterField === "personal_number" ||
+                            filterField === "expectedCTC" ||
+                            filterField === "fillingDate" ||
+                            filterField === "interViewDate" ||
+                            filterField === "jdate" ||
+                            filterField === "exitDate" ? "Ascending" : "Sort A TO Z"}
                 </div>
 
                 <div
@@ -429,18 +437,15 @@ const RecruiterFilter = ({
                     onClick={(e) => handleSort("newest")}
                 >
                     <SwapVertIcon style={{ height: "16px" }} />
-                    {filterField === "bookingDate" ||
-                        filterField === "Company Number" ||
-                        filterField === "caNumber" ||
-                        filterField === "totalPaymentWGST" ||
-                        filterField === "receivedPayment" ||
-                        filterField === "pendingPayment" ? "Descending" : "Sort Z TO A"}
+                    {
+                        filterField === "currentCTC" ||
+                            filterField === "personal_number" ||
+                            filterField === "expectedCTC" ||
+                            filterField === "fillingDate" ||
+                            filterField === "interViewDate" ||
+                            filterField === "jdate" ||
+                            filterField === "exitDate" ? "Descending" : "Sort Z TO A"}
                 </div>
-                    {/* <div className="inco-subFilter p-2"
-                        onClick={(e) => handleSort("none")}>
-                        <SwapVertIcon style={{ height: "16px" }} />
-                        None
-                    </div> */}
                 <div className='w-100'>
                     <div className="inco-subFilter d-flex align-items-center">
                         <div className='filter-check' onClick={handleSelectAll}>
@@ -468,33 +473,40 @@ const RecruiterFilter = ({
                                     id={value}
                                 />
                             </div>
-                            <label className="filter-val p-2" for={value}>
-                                {value}
+                            <label className="filter-val p-2" htmlFor={value}>
+                                {
+                                    filterField === "jdate" ||
+                                        filterField === "exitDate" ||
+                                        filterField === "fillingDate" ||
+                                        filterField === "interViewDate" ?
+                                        `${formatDatePro(value)}` : value
+                                }
                             </label>
+
                         </div>
                     ))}
                 </div>
                 <div className='d-flex align-items-center justify-content-between'>
                     <div className='w-50'>
-                    <button className='filter-footer-btn btn-yellow'
-                    style={{backgroundColor:"#e7e5e0"}}
-                    onClick={()=>{
-                    applyFilters(selectedFilters ,filterField )
-                    showingMenu(false)
-                }}>
-                    Apply Filters
-                    </button>
-                        </div>
-                   <div className='w-50'>
-                   <button className='filter-footer-btn btn-yellow'
-                    style={{backgroundColor:"#e7e5e0"}}
-                    onClick={()=>{
-                    handleClearAll()
-                }}>
-                    Clear Filters
-                    </button>
-                   </div>
+                        <button className='filter-footer-btn btn-yellow'
+                            style={{ backgroundColor: "#e7e5e0" }}
+                            onClick={() => {
+                                applyFilters(selectedFilters, filterField)
+                                showingMenu(false)
+                            }}>
+                            Apply Filters
+                        </button>
                     </div>
+                    <div className='w-50'>
+                        <button className='filter-footer-btn btn-yellow'
+                            style={{ backgroundColor: "#e7e5e0" }}
+                            onClick={() => {
+                                handleClearAll()
+                            }}>
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
             </div>
         </div >
     );
