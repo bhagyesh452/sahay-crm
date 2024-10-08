@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LuHistory } from "react-icons/lu";
 import ClipLoader from "react-spinners/ClipLoader";
 import Nodata from '../../DataManager/Components/Nodata/Nodata';
@@ -27,29 +27,42 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
         return dayjs(dateString).format('DD/MM/YYYY');
     };
     useEffect(() => {
-        // Filter applicants whose status is "Selected" and joining date is in the future
         const upcomingJoinees = recruiterData.filter(applicant => {
-            if (
-                applicant.subCategoryStatus === "InterView Scheduled" &&
-                new Date(applicant.interViewDate) >= new Date()
-            ) {
-                return true;
+            if (!applicant.interViewDate) {
+                console.log("Interview Date Missing for:", applicant.empFullName);
+                return false;
             }
-            return false;
+    
+            // Parse interview date and current date
+            const interviewDate = new Date(applicant.interViewDate);
+            const currentDate = new Date();
+    
+            // Set both dates' time to midnight (00:00:00) for comparison
+            interviewDate.setHours(0, 0, 0, 0);
+            currentDate.setHours(0, 0, 0, 0);
+    
+            console.log("Interview Date:", interviewDate, "Current Date:", currentDate); // Debugging
+    
+            // Compare only the date part
+            return (
+                applicant.subCategoryStatus === "InterView Scheduled" &&
+                interviewDate >= currentDate
+            );
         });
-
+    
         setGroupedData(upcomingJoinees);
         setFilteredData(upcomingJoinees);
     }, [recruiterData]);
+    
 
     const handleSingleDateSelection = (formattedDate) => {
         if (!formattedDate) {
             setFilteredData(groupedData);
             return;
         }
-        const filtered = groupedData.filter((applicant)=>{
-          const formattedInterViewDate = formatDateToDDMMYYYY(applicant.interViewDate);
-          return formattedInterViewDate === formattedDate;
+        const filtered = groupedData.filter((applicant) => {
+            const formattedInterViewDate = formatDateToDDMMYYYY(applicant.interViewDate);
+            return formattedInterViewDate === formattedDate;
         })
         setFilteredData(filtered);
     }
@@ -97,9 +110,10 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
                                     name="bdeName-search"
                                     id="bdeName-search"
                                     value={searchText}
-                                    onChange={(e)=>{
+                                    onChange={(e) => {
                                         setSearchText(e.target.value)
-                                        handleSearchChange(e.target.value)}}
+                                        handleSearchChange(e.target.value)
+                                    }}
                                 />
                             </div>
                             <div className="data-filter">
@@ -182,7 +196,7 @@ function RecruiterInterviewReport({ empName, recruiterData }) {
                                                             <th>{obj.interViewDate ? formatDatePro(obj.interViewDate) : "-"}</th>
                                                             <th>{obj.interViewStatus ? obj.interViewStatus : "-"}</th>
                                                             <th>{formatDatePro(obj.fillingDate)}</th>
-                                                            
+
                                                         </tr>
                                                     </>
                                                 ))}

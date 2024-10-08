@@ -57,8 +57,15 @@ function RecruiterSelectdReport({ empName, recruiterData }) {
     // Initial grouping of applicants whose status is "Selected" and joining date is in the future
     useEffect(() => {
         const upcomingJoinees = recruiterData.filter(applicant => {
-            return applicant.mainCategoryStatus === "Selected" &&
-                new Date(applicant.jdate) > new Date();
+            const joiningDate = new Date(applicant.jdate);
+            const currentDate = new Date();
+            joiningDate.setHours(0, 0, 0, 0);
+            currentDate.setHours(0, 0, 0, 0);
+            
+            return (
+                applicant.mainCategoryStatus === "Selected" &&
+                joiningDate >= currentDate
+            )
         });
 
         setGroupedData(upcomingJoinees);

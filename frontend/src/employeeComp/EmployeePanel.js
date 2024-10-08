@@ -233,7 +233,10 @@ function EmployeePanel() {
   const [searchQuery, setSearchQuery] = useState("")
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
-
+  const [moreEmpData, setmoreEmpData] = useState([]);
+  const [tempData, setTempData] = useState([]);
+  const [revertedData, setRevertedData] = useState([]);
+  const [bdmNames, setBdmNames] = useState([])
   //console.log(userId);
 
   useEffect(() => {
@@ -497,7 +500,7 @@ function EmployeePanel() {
     setFilteredRemarks([]);
   };
 
-  const [bdmNames, setBdmNames] = useState([])
+ 
 
   //console.log(userId)
 
@@ -516,15 +519,15 @@ function EmployeePanel() {
 
       //console.log(userData.bdmName)
 
-      if (userData.bdmWork) {
-        const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork && !userData.ename.includes(employee.ename))
-        //console.log(bdmNames)
-        setBdmNames(bdmNames.map((obj) => obj.ename))
-      } else {
-        const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
-        setBdmNames(bdmNames.map((obj) => obj.ename))
-        //console.log(bdmNames)
-      }
+      // if (userData.bdmWork) {
+      //   const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork && !userData.ename.includes(employee.ename))
+      //   //console.log(bdmNames)
+      //   setBdmNames(bdmNames.map((obj) => obj.ename))
+      // } else {
+      //   const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
+      //   setBdmNames(bdmNames.map((obj) => obj.ename))
+      //   //console.log(bdmNames)
+      // }
 
       //console.log("data" , userData)
 
@@ -533,29 +536,29 @@ function EmployeePanel() {
     }
   };
 
-  //console.log("bdmNames", bdmNames)
 
 
-  const fecthTeamData = async () => {
-    const ename = data.ename;
-    //console.log("ename", ename)
-    try {
-      const response = await axios.get(`${secretKey}/teams/teaminfo/${ename}`);
 
-      //console.log("teamdata", response.data)
-      setTeamInfo(response.data);
-      setBdmName(response.data.bdmName);
-      //setTeamDataFilter(response.data)
-    } catch (error) {
-      console.log("error Fetching data", error.message);
-    }
-  };
+  // const fecthTeamData = async () => {
+  //   const ename = data.ename;
+  //   //console.log("ename", ename)
+  //   try {
+  //     const response = await axios.get(`${secretKey}/teams/teaminfo/${ename}`);
+
+  //     //console.log("teamdata", response.data)
+  //     setTeamInfo(response.data);
+  //     setBdmName(response.data.bdmName);
+  //     //setTeamDataFilter(response.data)
+  //   } catch (error) {
+  //     console.log("error Fetching data", error.message);
+  //   }
+  // };
 
   // console.log("teaminfo", teamInfo)
   //console.log("bdmName", bdmName)
 
   useEffect(() => {
-    fecthTeamData();
+    //fecthTeamData();
     fetchBDMbookingRequests();
     fetchRedesignedFormDataAll()
   }, [data.ename]);
@@ -589,9 +592,6 @@ function EmployeePanel() {
   };
 
   //console.log(projectionData)
-  const [moreEmpData, setmoreEmpData] = useState([]);
-  const [tempData, setTempData] = useState([]);
-  const [revertedData, setRevertedData] = useState([])
 
   const fetchNewData = async (status) => {
     const cleanString = (str) => {
@@ -840,93 +840,13 @@ function EmployeePanel() {
     fetchRequestDetails();
     fetchEditRequests();
 
-    // let watchId;
-    // const successCallback = (position) => {
-    //   const userLatitude = position.coords.latitude;
-    //   const userLongitude = position.coords.longitude;
-
-    //   // console.log("User Location:", userLatitude, userLongitude);
-    //   if (
-    //     Number(userLatitude.toFixed(3)) === 23.114 &&
-    //     Number(userLongitude.toFixed(3)) === 72.541
-    //   ) {
-    //     setLocationAccess(true);
-    //     // console.log("Location accessed")
-    //   }
-    //   // Now you can send these coordinates to your server for further processing
-    // };
-    // // console.log(localStorage.getItem("newtoken"), locationAccess);
     if (userId !== localStorage.getItem("userId")) {
       localStorage.removeItem("newtoken");
       window.location.replace("/");
     }
-    // const errorCallback = (error) => {
-    //   console.error("Geolocation error:", error.message);
-    //   setLocationAccess(false);
-    //   // Handle the error, e.g., show a message to the user
-    // };
-
-    // navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-
-    // // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
-
-    // // Cleanup function to clear the watch if the component unmounts
-    // return () => {
-    //   navigator.geolocation.clearWatch(watchId);
-    // };
+    
   }, []);
-  // console.log(locationAccess);
-
-  // console.log(employeeData);
-
-  // const filteredData = employeeData.filter((company) => {
-  //   const fieldValue = company[selectedField];
-
-  //   if (selectedField === "State" && citySearch) {
-  //     // Handle filtering by both State and City
-  //     const stateMatches = fieldValue
-  //       .toLowerCase()
-  //       .includes(searchText.toLowerCase());
-  //     const cityMatches = company.City.toLowerCase().includes(
-  //       citySearch.toLowerCase()
-  //     );
-  //     return stateMatches && cityMatches;
-  //   } else if (selectedField === "Company Incorporation Date  ") {
-  //     // Assuming you have the month value in a variable named `month`
-  //     if (month == 0) {
-  //       return fieldValue.includes(searchText);
-  //     } else if (year == 0) {
-  //       return fieldValue.includes(searchText);
-  //     }
-  //     const selectedDate = new Date(fieldValue);
-  //     const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-  //     const selectedYear = selectedDate.getFullYear();
-
-  //     // Use the provided month variable in the comparison
-  //     return (
-  //       selectedMonth.toString().includes(month) &&
-  //       selectedYear.toString().includes(year)
-  //     );
-  //   } else if (selectedField === "AssignDate") {
-  //     // Assuming you have the month value in a variable named `month`
-  //     return fieldValue.includes(searchText);
-  //   } else if (selectedField === "Status" && searchText === "All") {
-  //     // Display all data when Status is "All"
-  //     return true;
-  //   } else {
-  //     // Your existing filtering logic for other fields
-  //     if (typeof fieldValue === "string") {
-  //       return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-  //     } else if (typeof fieldValue === "number") {
-  //       return fieldValue.toString().includes(searchText);
-  //     } else if (fieldValue instanceof Date) {
-  //       // Handle date fields
-  //       return fieldValue.includes(searchText);
-  //     }
-
-  //     return false;
-  //   }
-  // });
+  
 
   const handleSearch = (searchQuery) => {
     const searchQueryLower = searchQuery.toLowerCase();
@@ -5424,7 +5344,7 @@ function EmployeePanel() {
               </div>
               <BdmMaturedCasesDialogBox
                 currentData={currentData}
-                bdmData={bdmNames}
+                //bdmData={bdmNames}
                 forwardedCompany={forwardedCompany}
                 forwardCompanyId={forwardCompanyId}
                 bdeOldStatus={bdeOldStatus}
