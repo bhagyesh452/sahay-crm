@@ -155,7 +155,7 @@ function EmployeeCompleteCallingReport() {
     todayStartDate.setUTCHours(4, 0, 0, 0);
 
     //Set todayEndDate to the end of the day in UTC
-    todayEndDate.setUTCHours(14, 0, 0, 0);
+    todayEndDate.setUTCHours(13, 0, 0, 0);
 
     // Convert to Unix timestamps (seconds since epoch)
     const startTimestamp = Math.floor(todayStartDate.getTime() / 1000);
@@ -273,7 +273,7 @@ function EmployeeCompleteCallingReport() {
 
         // Set specific times for start and end of the day in IST
         const startOfDay = date.set({ hour: 9, minute: 30, second: 0, millisecond: 0 }).unix(); // 9:30 AM IST
-        const endOfDay = date.set({ hour: 19, minute: 30, second: 0, millisecond: 0 }).unix(); // 6:30 PM IST
+        const endOfDay = date.set({ hour: 18, minute: 30, second: 0, millisecond: 0 }).unix(); // 6:30 PM IST
 
         // Set the timestamps
         const startTimestamp = startOfDay;
