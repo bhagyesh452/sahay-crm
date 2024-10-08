@@ -372,17 +372,16 @@ function AdminEmployeeProfile() {
                                                     <div className="EP_Designation">{data.newDesignation || "-"}</div>
                                                 </h3>
                                                 <div className="d-flex align-items-center">
-                                                    <div className="employee_panel mr-1">
+                                                    {(data.designation === "Sales Executive" || data.designation === "Sales Manager") && (<div className="employee_panel mr-1">
                                                         <Link
                                                             style={{ textDecoration: "none", color: 'inherit' }}
                                                             to={`/managing-director/employees/${data._id}`}
                                                         >
                                                             Panel
                                                         </Link>
-                                                    </div>
+                                                    </div>)}
                                                     <div className="employee_active">Active</div>
                                                 </div>
-
                                             </div>
                                             <div className="row m-0 aling-items-start">
                                                 <div className="col p-0">

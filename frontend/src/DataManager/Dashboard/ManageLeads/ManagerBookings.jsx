@@ -952,13 +952,16 @@ function ManagerBookings() {
                                 : "bookings_Company_Name"
                             }
                             onClick={() =>
-                              setCurrentLeadform(
+                              {setCurrentLeadform(
                                 leadFormData.find(
                                   (data) =>
                                     data["Company Name"] === obj["Company Name"]
                                 )
-                              )
-                            }
+                              );
+                              setActiveIndexBooking(1);
+                              setActiveIndex(0);
+                              setActiveIndexMoreBookingServices(0);
+                            }}
                           >
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="b_cmpny_name cName-text-wrap">
@@ -1184,7 +1187,17 @@ function ManagerBookings() {
                             <div>
                               Total Services:{" "}
                               {currentLeadform &&
-                                currentLeadform.services.length}
+                                  (currentLeadform.services.length !== 0 ||
+                                    currentLeadform.moreBookings.length !== 0)
+                                    ? [
+                                        ...currentLeadform.services,
+                                        ...(
+                                          currentLeadform.moreBookings || []
+                                        ).flatMap(
+                                          (booking) => booking.services
+                                        ),
+                                      ].length
+                                    : null}
                             </div>
                           </div>
                         </div>
