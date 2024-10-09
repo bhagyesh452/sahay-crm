@@ -2,7 +2,10 @@ body {
   margin: 0;
   overflow: overlay;
 }
-
+.modal-footer
+{
+  overflow: hidden;
+}
 .page-wrapper {
   display: flex;
   flex: 1 1;

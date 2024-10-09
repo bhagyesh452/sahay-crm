@@ -132,39 +132,46 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
             </div>
 
             <div className="modal" id={modalId}>
-                <div className="modal-dialog modal-xl modal-dialog-centered">
+                <div className="modal-dialog modal-lg modal-dialog-centered">
                     <div className="modal-content">
 
                         {/* Modal Header */}
                         <div className="modal-header">
-                            <h4 className="modal-title">
-                                BDM Matured Cases
-                            </h4>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                data-bs-dismiss="modal"
-                                onClick={() => setSelectedBdm(null)}
-                            ></button>
+                            <div className='d-flex align-items-center justify-content-between w-100' >
+                                <div className=''>
+                                    <h4 className="modal-title">
+                                        BDM Matured Cases
+                                    </h4>
+                                </div>
+                                <div className='d-flex align-items-center '>
+                                    <div class="input-icon MR-2" >
+                                        <input
+                                            value={searchQuery}
+                                            onChange={(e) => {
+                                                setSearchQuery(e.target.value);
+                                                handleSearch();
+                                            }}
+                                            className="form-control search-cantrol mybtn"
+                                            placeholder="Enter BDM Name"
+                                            type="text"
+                                            name="bdeName-search"
+                                            id="bdeName-search" />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn-close"
+                                        data-bs-dismiss="modal"
+                                        onClick={() => setSelectedBdm(null)}
+                                    ></button>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="modal-body">
 
-                            <div class="input-icon float-end mb-2 me-2" >
-                                <input
-                                    value={searchQuery}
-                                    onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                        handleSearch();
-                                    }}
-                                    className="form-control search-cantrol mybtn"
-                                    placeholder="Enter BDM Name"
-                                    type="text"
-                                    name="bdeName-search"
-                                    id="bdeName-search" />
-                            </div>
 
-                            <div className='table table-responsive' style={{ height: "50vh", overflow: "auto" }}>
+
+                            <div className='table table-responsive table-style-2 m-0'>
                                 <table className="table">
                                     {/* Render the table header regardless of loading or data state */}
                                     <thead>
@@ -183,7 +190,7 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                                     {isLoading ? (
                                         <tbody>
                                             <tr>
-                                                <td colSpan="7">
+                                                <td colSpan="7" style={{ height: "50vh", overflow: "auto" }}>
                                                     <div className='d-flex justify-content-center align-items-center'>
                                                         <ClipLoader />
                                                     </div>
@@ -234,14 +241,23 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                         </div>
 
                         <div className="modal-footer p-0 m-0">
-                            <button
-                                className='btn btn-primary w-100'
-                                onClick={handleForwardBdm}
-                                disabled={!selectedBdm}
-                                data-bs-dismiss="modal" // This will close the modal after clicking Forward
-                            >
-                                Forward
-                            </button>
+                            <div className='d-flex w-100 m-0'>
+                                <button style={{border:"none",borderRadius:"0px"}}
+                                    className='btn btn-danger w-50 m-0'
+                                    data-bs-dismiss="modal"
+                                onClick={() => setSelectedBdm(null)}// This will close the modal after clicking Forward
+                                >
+                                    Cancel
+                                </button>
+                                <button style={{border:"none",borderRadius:"0px"}}
+                                    className='btn btn-primary w-50 m-0'
+                                    onClick={handleForwardBdm}
+                                    disabled={!selectedBdm}
+                                    data-bs-dismiss="modal" // This will close the modal after clicking Forward
+                                >
+                                    Forward
+                                </button>
+                            </div>
                         </div>
 
                     </div>
