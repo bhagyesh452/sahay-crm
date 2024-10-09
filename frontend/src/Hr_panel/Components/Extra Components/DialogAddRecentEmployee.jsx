@@ -8,11 +8,14 @@ import * as XLSX from 'xlsx';
 import { AiOutlineDownload } from "react-icons/ai";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { MdOutlineFileUpload } from "react-icons/md";
+import { SiGoogledocs } from "react-icons/si";
+import { MdOutlineDelete } from "react-icons/md";
 
 function DialogAddRecentEmployee({ refetch }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [openBacdrop, setOpenBacdrop] = useState(false);
     const [bdmWork, setBdmWork] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [isUpdateMode, setIsUpdateMode] = useState(false);
@@ -40,6 +43,7 @@ function DialogAddRecentEmployee({ refetch }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isAddSingleEmployee, setIsAddSingleEmployee] = useState(true); // By default, "Add Single Employee" is checked
     const [uploadedFile, setUploadedFile] = useState(null);
+    const [isDragging, setIsDragging] = useState(false); // To highlight the area during drag
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
@@ -408,6 +412,38 @@ function DialogAddRecentEmployee({ refetch }) {
     const handleFileChange = (e) => {
         setUploadedFile(e.target.files[0]);
     };
+
+    const handleRemoveFile = () => {
+        setUploadedFile(null);
+    }
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true); // Show drag highlight
+    };
+
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true); // Show drag highlight
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false); // Remove drag highlight
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false); // Remove drag highlight
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            setUploadedFile(e.dataTransfer.files[0]);
+            e.dataTransfer.clearData(); // Clear data after drop
+        }
+    };
     // Handle form submission for bulk upload
     // const handleBulkUploadSubmit = async () => {
     //     if (!uploadedFile) {
@@ -750,29 +786,6 @@ function DialogAddRecentEmployee({ refetch }) {
                                             />
                                             {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
                                         </div>
-
-                                        {/* <div className="col-lg-6 mb-3">
-                                            <label className="form-label">Password</label>
-                                            <div className="input-group">
-                                                <input
-                                                    type={showPassword ? "text" : "password"}
-                                                    value={password}
-                                                    className="form-control"
-                                                    name="example-text-input"
-                                                    placeholder="Password"
-                                                    required
-                                                    onChange={(e) => handleInputChange("password", e.target.value)}
-                                                />
-                                                <button
-                                                    className="btn btn-outline-secondary"
-                                                    type="button"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                >
-                                                    {showPassword ? "Hide" : "Show"}
-                                                </button>
-                                            </div>
-                                            {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
-                                        </div> */}
                                     </div>
                                     <div className="row">
                                         <div className="col-lg-4 mb-3">
@@ -985,7 +998,7 @@ function DialogAddRecentEmployee({ refetch }) {
                             ) : (
                                 <>
                                     {/* Field for Bulk Upload */}
-                                    <div className="row mb-3">
+                                    {/* <div className="row mb-3">
                                         <label className="form-label">Upload Employee Data</label>
                                         <div className="col-lg-12">
                                             <input type="file" className="form-control" onChange={handleFileChange} />
@@ -995,6 +1008,45 @@ function DialogAddRecentEmployee({ refetch }) {
                                             download={"AddNewEmployeeFormat.xlsx"}
                                         >
                                             <div className='d-flex align-items-center justify-content-end' style={{ marginTop: "10px", textDecoration: "none" }}>
+                                                <div style={{ marginRight: "5px" }}>
+                                                    <AiOutlineDownload />
+                                                </div>
+                                                <div>
+                                                    Download Sample
+                                                </div>
+
+                                            </div>
+                                        </a>
+                                    </div> */}
+                                    <div>
+                                        <div className={`drag-file-area ${isDragging ? 'dragging' : ''}`} // Add 'dragging' class to change style during drag
+                                            onDragOver={handleDragOver}
+                                            onDragEnter={handleDragEnter}
+                                            onDragLeave={handleDragLeave}
+                                            onDrop={handleDrop}>
+                                            <div className='upload-icon'>
+                                                <MdOutlineFileUpload />
+                                            </div>
+                                            <h3 class="dynamic-message"> Drag & drop any file here </h3>
+                                            <label className='browse-files-text'> Browse Files Here
+                                                <input type="file" class="default-file-input" onChange={handleFileChange} />
+                                            </label>
+                                        </div>
+                                        {uploadedFile && (
+                                            <div className="file-block">
+                                                <div className="file-info">
+                                                    <span className="material-icons-outlined file-icon"><SiGoogledocs /></span>
+                                                    <span className="file-name">{uploadedFile.name}</span>
+                                                </div>
+                                                <span className="material-icons remove-file-icon" onClick={handleRemoveFile}><MdDelete /></span>
+                                                <div className="progress-bar"></div>
+                                            </div>
+                                        )}
+                                        <a className='hr_bulk_upload_a' 
+                                            href={`${process.env.PUBLIC_URL}/AddNewEmployeeFormat.xlsx`}
+                                            download={"AddNewEmployeeFormat.xlsx"}
+                                        >
+                                            <div className='hr_bulk_upload'>
                                                 <div style={{ marginRight: "5px" }}>
                                                     <AiOutlineDownload />
                                                 </div>
