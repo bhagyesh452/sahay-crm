@@ -57,6 +57,7 @@ import CallingReportView from "../Hr_panel/Components/EmployeeView/CallingReport
 import BusinessCardView from "../Hr_panel/Components/EmployeeView/BusinessCardView.jsx";
 import { MdOutlineBloodtype } from "react-icons/md";
 import ClipLoader from "react-spinners/ClipLoader.js";
+import EmployeeDocumentsView from "../Hr_panel/Components/EmployeeView/EmployeeDocumentsView.jsx";
 
 
 function EmployeeProfile() {
@@ -1177,7 +1178,7 @@ function EmployeeProfile() {
                     <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link" data-bs-toggle="tab" href="#CallingReport">Calling Report</a>
                     </li>
-                    <li class="nav-item hr_emply_info_inner_tab_item d-none">
+                    <li class="nav-item hr_emply_info_inner_tab_item">
                       <a class="nav-link" data-bs-toggle="tab" href="#EmployeeDocuments">Employee Documents</a>
                     </li>
                     <li class="nav-item hr_emply_info_inner_tab_item d-none">
@@ -1198,7 +1199,9 @@ function EmployeeProfile() {
                       <CallingReportView employeeInformation={data} />
                     </div>
 
-                    <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">
+                      <EmployeeDocumentsView employeeInformation={data} isEmployee={true}/>
+                    </div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
                 </div>

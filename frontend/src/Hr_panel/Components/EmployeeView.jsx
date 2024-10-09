@@ -58,6 +58,7 @@ import LeaveReportView from "./EmployeeView/LeaveReportView.jsx";
 import CallingReportView from "./EmployeeView/CallingReportView.jsx";
 import BusinessCardView from "./EmployeeView/BusinessCardView.jsx";
 import { MdOutlineBloodtype } from "react-icons/md";
+import EmployeeDocumentsView from "./EmployeeView/EmployeeDocumentsView.jsx";
 
 function EmployeeView() {
 
@@ -1324,7 +1325,9 @@ function EmployeeView() {
                     <div class="tab-pane heiitc_inner fade" id="CallingReport">
                       <CallingReportView employeeInformation={data} />
                     </div>
-                    <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">...</div>
+                    <div class="tab-pane heiitc_inner fade" id="EmployeeDocuments">
+                      <EmployeeDocumentsView employeeInformation={data} />
+                    </div>
                     <div class="tab-pane heiitc_inner fade" id="Settings">...</div>
                   </div>
                 </div>

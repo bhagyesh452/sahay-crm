@@ -70,7 +70,6 @@ import AdminExecutiveProfile from "./AdminExecutive/Components/AdminExecutivePro
 // Hr Panel Imports
 import HrLogin from "./Hr_panel/Login/HrLogin.jsx";
 import HrDashboard from "./Hr_panel/Dashboard/HrDashboard.jsx";
-import NewEmployees from "./Hr_panel/Components/NewEmployees.jsx";
 import HrEmployees from "./Hr_panel/Components/HrEmployees.jsx";
 import HorizontalNonLinearStepper from "./Hr_panel/Components/AddEmployees/AddEmployee.jsx";
 import HREditEmployee from "./Hr_panel/Components/EditEmployee/HREditEmployee.jsx";
