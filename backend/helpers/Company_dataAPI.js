@@ -2380,101 +2380,6 @@ router.get("/fetchMaturedCases", async (req, res) => {
 });
 
 // Fetching bdm matured cases data :
-// router.get("/bdmMaturedCases", async (req, res) => {
-//   try {
-//     // First, look up employees who are BDM or Floor Managers and select both ename and bdmNumber
-//     const employees = await adminModel.find({
-//       newDesignation: { $in: ["Business Development Manager", "Floor Manager"] }
-//     }).select("ename number"); // Select both ename and number fields
-
-//     const employeeData = employees.map(emp => ({
-//       name: emp.ename,
-//       bdmNumber: emp.number
-//     }));
-
-//     const employeeNames = employeeData.map(emp => emp.name); // Extract only the names for filtering
-
-//     // Aggregation pipeline to calculate received and matured cases for each BDM
-//     const bdmStats = await CompanyModel.aggregate([
-//       {
-//         // Step 1: Filter companies where bdmAcceptStatus is "Pending" or "Accept" (received cases)
-//         $match: {
-//           bdmAcceptStatus: { $in: ["Pending", "Accept"] },
-//         }
-//       },
-//       {
-//         // Step 2: Group by bdmName to calculate receivedCases and maturedCases
-//         $group: {
-//           _id: "$bdmName", // Group by bdmName
-//           receivedCases: { $sum: 1 }, // Total number of received cases
-//           maturedCases: {
-//             $sum: {
-//               // Only count as maturedCases if bdmAcceptStatus is "Accept" and Status is "Matured"
-//               $cond: [
-//                 { $and: [{ $eq: ["$bdmAcceptStatus", "Accept"] }, { $eq: ["$Status", "Matured"] }] },
-//                 1,
-//                 0
-//               ]
-//             }
-//           }
-//         }
-//       },
-//       {
-//         // Step 3: Calculate the ratio of maturedCases to receivedCases
-//         $addFields: {
-//           ratio: {
-//             $cond: [
-//               { $eq: ["$receivedCases", 0] }, // Avoid division by zero
-//               0,
-//               {
-//                 $multiply: [{ $divide: ["$maturedCases", "$receivedCases"] }, 100]
-//               }
-//             ]
-//           }
-//         }
-//       },
-//       {
-//         // Step 4: Filter results to only include those bdmNames present in the employee collection
-//         $match: {
-//           _id: { $in: employeeNames }
-//         }
-//       },
-//       {
-//         // Step 5: Format the response
-//         $project: {
-//           bdmName: "$_id",
-//           receivedCases: 1,
-//           maturedCases: 1,
-//           ratio: "$ratio" // Keep ratio as it is for now
-//         }
-//       },
-//       {
-//         // Step 6: Sort data by bdmName in ascending order
-//         $sort: {
-//           bdmName: 1 // 1 for ascending, -1 for descending
-//         }
-//       }
-//     ]);
-
-//     // Step 7: Prepare final response to include Floor Managers and BDMs with zero cases and bdmNumber
-//     const finalStats = employeeData.map(({ name, bdmNumber }) => {
-//       // Find corresponding bdmStats or return default values
-//       const stat = bdmStats.find(stat => stat.bdmName === name);
-//       return {
-//         bdmName: name,
-//         bdmNumber: bdmNumber || "N/A", // Include bdmNumber from employee collection or 'N/A'
-//         receivedCases: stat ? stat.receivedCases : 0, // Use actual count or 0
-//         maturedCases: stat ? stat.maturedCases : 0, // Use actual count or 0
-//         ratio: stat ? stat.ratio.toFixed(2) : (0).toFixed(2) // Use actual ratio or 0 formatted
-//       };
-//     });
-
-//     // Return the final result
-//     res.status(200).json({ result: true, message: "Data fetched successfully", data: finalStats });
-//   } catch (error) {
-//     res.status(500).json({ result: false, message: "Error fetching data", error: error });
-//   }
-// });
 router.get("/bdmMaturedCases", async (req, res) => {
   try {
     // Step 1: Fetch employees who are BDM or Floor Managers
@@ -2489,22 +2394,24 @@ router.get("/bdmMaturedCases", async (req, res) => {
 
     const employeeNames = employeeData.map(emp => emp.name); // Extract only the names for filtering
 
-    // Step 2: Aggregation pipeline to calculate received and matured cases with company names
+    // Step 2: Aggregation pipeline to calculate matured cases with company names
     const bdmStats = await CompanyModel.aggregate([
       {
+        // Match only cases where bdmAcceptStatus is "Accept"
         $match: {
-          bdmAcceptStatus: { $in: ["Pending", "Accept"] }, // Filter for received cases
+          bdmAcceptStatus: "Accept", // Only "Accept" cases
         }
       },
       {
+        // Group by BDM Name
         $group: {
-          _id: "$bdmName", // Group by BDM Name
+          _id: "$bdmName", // Group by bdmName
           receivedCases: { $sum: 1 }, // Total number of received cases
           receivedCompanies: { $push: "$Company Name" }, // Collect company names for received cases
           maturedCases: {
             $sum: {
               $cond: [
-                { $and: [{ $eq: ["$bdmAcceptStatus", "Accept"] }, { $eq: ["$Status", "Matured"] }] },
+                { $eq: ["$Status", "Matured"] }, // Only count cases where status is "Matured"
                 1,
                 0
               ]
@@ -2513,7 +2420,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
           maturedCompanies: {
             $push: {
               $cond: [
-                { $and: [{ $eq: ["$bdmAcceptStatus", "Accept"] }, { $eq: ["$Status", "Matured"] }] },
+                { $eq: ["$Status", "Matured"] }, // Only collect company names where status is "Matured"
                 "$Company Name",
                 null
               ]
@@ -2522,6 +2429,7 @@ router.get("/bdmMaturedCases", async (req, res) => {
         }
       },
       {
+        // Add fields to calculate the ratio of matured cases to received cases
         $addFields: {
           ratio: {
             $cond: [
@@ -2540,29 +2448,32 @@ router.get("/bdmMaturedCases", async (req, res) => {
         }
       },
       {
+        // Filter results to only include those bdmNames present in the employee collection
         $match: {
           _id: { $in: employeeNames }
         }
       },
       {
+        // Sort by matured cases in descending order
+        $sort: {
+          maturedCases: -1 // Sort by ratio in descending order
+        }
+      },
+      {
+        // Project the final fields
         $project: {
           bdmName: "$_id",
           receivedCases: 1,
           maturedCases: 1,
-          ratio: { $round: ["$ratio", 2] },
-          receivedCompanies: 1,
-          maturedCompanies: 1 // Return the array of matured company names
-        }
-      },
-      {
-        $sort: {
-          bdmName: 1
+          ratio: { $round: ["$ratio", 2] }, // Round ratio to 2 decimal places
+          // receivedCompanies: 1,
+          // maturedCompanies: 1 // Return the array of matured company names
         }
       }
     ]);
 
     // Step 3: Prepare the final response
-    const finalStats = employeeData.map(({ name, bdmNumber }) => {
+    let finalStats = employeeData.map(({ name, bdmNumber }) => {
       const stat = bdmStats.find(stat => stat.bdmName === name);
       return {
         bdmName: name,
@@ -2575,11 +2486,16 @@ router.get("/bdmMaturedCases", async (req, res) => {
       };
     });
 
+    // Sort the finalStats based on the ratio in descending order
+    finalStats = finalStats.sort((a, b) => parseFloat(b.maturedCases) - parseFloat(a.maturedCases));
+
     // Return the final result
     res.status(200).json({ result: true, message: "Data fetched successfully", data: finalStats });
   } catch (error) {
     res.status(500).json({ result: false, message: "Error fetching data", error: error });
   }
 });
+
+
 
 module.exports = router;

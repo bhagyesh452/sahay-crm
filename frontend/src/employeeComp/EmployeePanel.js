@@ -4123,8 +4123,8 @@ function EmployeePanel() {
                                           forwardCompanyId={company._id}
                                           forwardedStatus={company.Status}
                                           forwardedEName={company.ename}
-                                          bdeOldStatus={bdeOldStatus}
-                                          bdmNewAcceptStatus={bdmNewAcceptStatus}
+                                          bdeOldStatus={company.Status}
+                                          bdmNewAcceptStatus={"Pending"}
                                           fetchNewData={fetchNewData}
                                         />
                                       </td>
