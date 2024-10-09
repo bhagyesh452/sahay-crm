@@ -132,7 +132,7 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
             </div>
 
             <div className="modal" id={modalId}>
-                <div className="modal-dialog modal-xl modal-dialog-centered">
+                <div className="modal-dialog modal-lg modal-dialog-centered">
                     <div className="modal-content">
 
                         {/* Modal Header */}
@@ -235,7 +235,7 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
 
                         <div className="modal-footer p-0 m-0">
                             <button
-                                className='btn btn-primary w-100'
+                                className='btn btn-primary w-100 m-0'
                                 onClick={handleForwardBdm}
                                 disabled={!selectedBdm}
                                 data-bs-dismiss="modal" // This will close the modal after clicking Forward
