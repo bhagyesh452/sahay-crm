@@ -180,24 +180,24 @@ router.post("/forwardtobdmdata", async (req, res) => {
 
 //     // Add additional filters if they are present
 //     if (selectedStatus) baseQuery.bdmStatus = selectedStatus;
-    
+
 //     if (selectedState) baseQuery.State = selectedState;
-    
+
 //     if (selectedNewCity) baseQuery.City = selectedNewCity;
-    
+
 //     if (selectedBdeForwardDate) {
 //       const startOfDay = new Date(selectedBdeForwardDate);
 //       startOfDay.setHours(0, 0, 0, 0); // Set to midnight local time
-  
+
 //       const endOfDay = new Date(selectedBdeForwardDate);
 //       endOfDay.setHours(23, 59, 59, 999); // Set to the end of the day local time
-  
+
 //       baseQuery.bdeForwardDate = {
 //           $gte: startOfDay,
 //           $lt: endOfDay
 //       };
 //   }
-  
+
 //     if (selectedYear) {
 //       if (monthIndex !== '0') {
 //         const year = parseInt(selectedYear);
@@ -336,7 +336,7 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
     if (selectedStatus) baseQuery.bdmStatus = selectedStatus;
     if (selectedState) baseQuery.State = selectedState;
     if (selectedNewCity) baseQuery.City = selectedNewCity;
-    
+
     if (selectedBdeForwardDate) {
       const startOfDay = new Date(selectedBdeForwardDate);
       startOfDay.setHours(0, 0, 0, 0); // Set to midnight local time
@@ -394,8 +394,8 @@ router.get("/filter-employee-team-leads/:bdmName", async (req, res) => {
 router.post("/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
   const socketIO = req.io;
-  
- 
+
+
   //console.log(id)
   const {
     newBdmStatus,
@@ -421,12 +421,59 @@ router.post("/update-bdm-status/:id", async (req, res) => {
       bdmStatusChangeTime: bdmStatusChangeTime,
     });
 
-    socketIO.emit("bdmDataAcceptedRequest" , {
-      ename : company.ename,
-      companyName : company["Company Name"]
-    })
+    //   socketIO.emit("bdmDataAcceptedRequest" , {
+    //     ename : company.ename,
+    //     companyName : company["Company Name"]
+    //   })
 
-    //console.log(company.ename)
+    //   //console.log(company.ename)
+
+    //   res.status(200).json({ message: "Status updated successfully" });
+    // } catch (error) {
+    //   console.error("Error updating status:", error);
+    //   res.status(500).json({ error: "Internal Server Error" });
+    // }
+
+    // Fetch the BDM name and company name
+    const ename = company.ename;
+    const bdmName = company.bdmName;
+    const companyName = company["Company Name"];
+
+    // Fetch the ratio for the specific BDM from the `/bdmMaturedCases` aggregation
+    const bdmStats = await CompanyModel.aggregate([
+      { $match: { bdmAcceptStatus: "Accept", bdmName: bdmName } },
+      {
+        $group: {
+          _id: "$bdmName",
+          receivedCases: { $sum: 1 },
+          maturedCases: {
+            $sum: {
+              $cond: [{ $eq: ["$Status", "Matured"] }, 1, 0],
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          ratio: {
+            $cond: [
+              { $eq: ["$receivedCases", 0] },
+              0,
+              { $multiply: [{ $divide: ["$maturedCases", "$receivedCases"] }, 100] },
+            ],
+          },
+        },
+      },
+    ]);
+
+    const ratio = bdmStats[0]?.ratio || 0;
+
+    // Emit socket event with BDM name, company name, and ratio
+    socketIO.emit("bdmDataAcceptedRequest", {
+      ename: ename,
+      companyName: companyName,
+      ratio: ratio.toFixed(2), // Send the ratio as a formatted value
+    });
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -476,11 +523,11 @@ router.post("/bdm-status-change/:id", async (req, res) => {
         { new: true } // Option to return the updated document
       );
     }
-    
 
-    if(bdmnewstatus === "Not Interested" || bdmnewstatus === "Junk" || bdmnewstatus === "Busy"){
+
+    if (bdmnewstatus === "Not Interested" || bdmnewstatus === "Junk" || bdmnewstatus === "Busy") {
       await LeadHistoryForInterestedandFollowModel.findOneAndDelete({
-        _id : id
+        _id: id
       })
     }
 
@@ -520,7 +567,7 @@ router.post(`/teamleads-rejectdata/:id`, async (req, res) => {
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
       bdmName: bdmName,
-      Remarks : remarks
+      Remarks: remarks
     });
 
     await RemarksHistory.findByIdAndUpdate(id, {

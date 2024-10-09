@@ -62,7 +62,7 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
     useEffect(() => {
         handleSearch();
     }, [searchQuery]);
-    
+
     // Fetch current employee first, then fetch the matured cases
     useEffect(() => {
         fetchCurrentEmployee();
@@ -149,22 +149,22 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                         </div>
 
                         <div className="modal-body">
+
+                            <div class="input-icon float-end mb-2 me-2" >
+                                <input
+                                    value={searchQuery}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        handleSearch();
+                                    }}
+                                    className="form-control search-cantrol mybtn"
+                                    placeholder="Enter BDM Name"
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                            </div>
+
                             <div className='table table-responsive' style={{ height: "50vh", overflow: "auto" }}>
-
-                                <div class="input-icon float-end mb-3">
-                                    <input
-                                        value={searchQuery}
-                                        onChange={(e) => {
-                                            setSearchQuery(e.target.value);
-                                            handleSearch();
-                                        }}
-                                        className="form-control search-cantrol mybtn"
-                                        placeholder="Enter BDM Name"
-                                        type="text"
-                                        name="bdeName-search"
-                                        id="bdeName-search" />
-                                </div>
-
                                 <table className="table">
                                     {/* Render the table header regardless of loading or data state */}
                                     <thead>

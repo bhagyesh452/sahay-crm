@@ -2496,6 +2496,4 @@ router.get("/bdmMaturedCases", async (req, res) => {
   }
 });
 
-
-
 module.exports = router;

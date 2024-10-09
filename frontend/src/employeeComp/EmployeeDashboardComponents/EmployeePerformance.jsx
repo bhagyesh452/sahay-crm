@@ -1013,8 +1013,6 @@ function EmployeePerformance({ data }) {
                                 <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[2].ename) / functionGetOnlyAmount(sortedEmployeeData[2])) * 100).toFixed(2)} %</td>
                             </tr>
                             <tr className={sortedEmployeeData[3].ename === data.ename ? "clr-bg-light-e65b5b myself " : "clr-bg-light-e65b5b "}  >
-
-
                                 <td><div className="ranktd clr-bg-e65b5b clr-fff">4</div></td>
                                 <td>
                                     <div className='My_Text_Wrap'>
@@ -1025,8 +1023,6 @@ function EmployeePerformance({ data }) {
                                 <td>{((functionCalculateOnlyAchieved(sortedEmployeeData[3].ename) / functionGetOnlyAmount(sortedEmployeeData[3])) * 100).toFixed(2)} %</td>
                             </tr>
                             <tr className={sortedEmployeeData[4].ename === data.ename ? "clr-bg-light-4299e1 myself " : "clr-bg-light-4299e1 "}  >
-
-
                                 <td style={{ borderRadius: ' 0 0 0 8px ' }}><div className="ranktd clr-bg-4299e1 clr-fff">5</div></td>
                                 <td>
                                     <div className='My_Text_Wrap'>
