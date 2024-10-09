@@ -22,7 +22,6 @@ const RecruiterStatusDropdown = ({
     const [status, setStatus] = useState(subStatus);
     const [statusClass, setStatusClass] = useState("");
     const secretKey = process.env.REACT_APP_SECRET_KEY;
-    console.log("interview status", interViewStatus, interViewDate, empName, subStatus)
 
     const handleStatusChange = async (newStatus, statusClass) => {
         setStatus(newStatus);
@@ -348,10 +347,10 @@ const RecruiterStatusDropdown = ({
                 switch (subStatus) {
                     case "Untouched":
                         return "untouched_status";
-                    case "Interview Scheduled":
+                    case "InterView Scheduled":
                         return "cdbp-status";
                     case "Call Done":
-                        return "cdbp-status";
+                        return "need_to_call";
                     case "UnderReview":
                         return "cdbp-status";
                     case "Not Looking For Job":
@@ -359,16 +358,15 @@ const RecruiterStatusDropdown = ({
                     case "Disqualified":
                         return "clnt_no_repond_status";
                     case "Rejected":
-                        return "support-status";
-                    case "On Hold":
                         return "need_to_call";
+                    case "On Hold":
+                        return "dfaulter-status";
                     case "Call Not Received":
                         return "clnt_no_repond_status";
                     case "Call Busy":
                         return "inprogress-status";
                     case "Junk":
                         return "need_to_call";
-
                     default:
                         return "";
                 }
@@ -376,8 +374,8 @@ const RecruiterStatusDropdown = ({
                 switch (subStatus) {
                     case "InterView Scheduled":
                         return "cdbp-status";
-                    case "Call Not Recieved":
-                        return "cdbp-status";
+                    case "Call Not Received":
+                        return "clnt_no_repond_status";
                     case "Disqualified":
                         return "clnt_no_repond_status";
                     case "Switched Off":
@@ -393,7 +391,7 @@ const RecruiterStatusDropdown = ({
                     case "Junk":
                         return "need_to_call";
                     case "Call Done":
-                        return "cdbp-status";
+                        return "need_to_call";
                     case "Call Busy":
                         return "inprogress-status";
                     default:
@@ -402,11 +400,11 @@ const RecruiterStatusDropdown = ({
             case "On Hold":
                 switch (subStatus) {
                     case "On Hold":
-                        return "ready_to_submit";
+                        return "dfaulter-status";
                     case "UnderReview":
                         return "submited-status";
                     case "Selected":
-                        return "dfaulter-status";
+                        return "ready_to_submit";
                     case "Rejected":
                         return "need_to_call";
                     case "Disqualified":
@@ -452,7 +450,7 @@ const RecruiterStatusDropdown = ({
         setStatusClass(getStatusClass(mainStatus, subStatus));
     }, [mainStatus, subStatus]);
 
-
+console.log("statusclasss" , statusClass,empName,empEmail,subStatus,mainStatus)
 
 
 
@@ -488,16 +486,16 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Interview Scheduled", "cdbp-status")}
+                                onClick={() => handleStatusChange("InterView Scheduled", "cdbp-status")}
                                 href="#"
                             >
-                                Interview Scheduled
+                                InterView Scheduled
                             </a>
                         </li>
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Not Received", "need_to_call")}
+                                onClick={() => handleStatusChange("Call Not Received", "clnt_no_repond_status")}
                                 href="#"
                             >
                                 Call Not Received
@@ -506,7 +504,7 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Busy", "need_to_call")}
+                                onClick={() => handleStatusChange("Call Busy", "inprogress-status")}
                                 href="#"
                             >
                                 Call Busy
@@ -515,7 +513,7 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Done", "cdbp-status")}
+                                onClick={() => handleStatusChange("Call Done", "need_to_call")}
                                 href="#"
                             >
                                 Call Done
@@ -551,7 +549,7 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Rejected", "support-status")}
+                                onClick={() => handleStatusChange("Rejected", "need_to_call")}
                                 href="#"
                             >
                                 Rejected
@@ -560,7 +558,7 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("On Hold", "need_to_call")}
+                                onClick={() => handleStatusChange("On Hold", "dfaulter-status")}
                                 href="#"
                             >
                                 On Hold
@@ -590,16 +588,16 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Not Recieved", "cdbp-status")}
+                                onClick={() => handleStatusChange("Call Not Received", "clnt_no_repond_status")}
                                 href="#"
                             >
-                                Call Not Recieved
+                                Call Not Received
                             </a>
                         </li>
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Busy", "need_to_call")}
+                                onClick={() => handleStatusChange("Call Busy", "inprogress-status")}
                                 href="#"
                             >
                                 Call Busy
@@ -608,7 +606,7 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Call Done", "cdbp-status")}
+                                onClick={() => handleStatusChange("Call Done", "need_to_call")}
                                 href="#"
                             >
                                 Call Done
@@ -674,7 +672,7 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("On Hold", "ready_to_submit")}
+                                onClick={() => handleStatusChange("On Hold", "dfaulter-status")}
                                 href="#"
                             >
                                 On Hold
@@ -692,7 +690,7 @@ const RecruiterStatusDropdown = ({
                         <li>
                             <a
                                 className="dropdown-item"
-                                onClick={() => handleStatusChange("Selected", "dfaulter-status")}
+                                onClick={() => handleStatusChange("Selected", "ready_to_submit")}
                                 href="#"
                             >
                                 Selected
