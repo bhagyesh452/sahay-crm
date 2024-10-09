@@ -500,7 +500,7 @@ function EmployeePanel() {
     setFilteredRemarks([]);
   };
 
- 
+
 
   //console.log(userId)
 
@@ -844,9 +844,9 @@ function EmployeePanel() {
       localStorage.removeItem("newtoken");
       window.location.replace("/");
     }
-    
+
   }, []);
-  
+
 
   const handleSearch = (searchQuery) => {
     const searchQueryLower = searchQuery.toLowerCase();
@@ -2288,7 +2288,7 @@ function EmployeePanel() {
     ename,
     bdmAcceptStatus
   ) => {
-    //console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
+    // console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
 
     if (
       companyStatus === "Interested" ||
@@ -4097,7 +4097,7 @@ function EmployeePanel() {
                                           </IconButton>
                                         </td>
                                       )}
-                                      <td>
+                                      {/* <td>
                                         <TiArrowForward
                                           onClick={() => {
                                             handleConfirmAssign(
@@ -4114,6 +4114,18 @@ function EmployeePanel() {
                                             height: "17px",
                                           }}
                                           color="grey"
+                                        />
+                                      </td> */}
+                                      <td>
+                                        <BdmMaturedCasesDialogBox
+                                          currentData={currentData}
+                                          forwardedCompany={company["Company Name"]}
+                                          forwardCompanyId={company._id}
+                                          forwardedStatus={company.Status}
+                                          forwardedEName={company.ename}
+                                          bdeOldStatus={bdeOldStatus}
+                                          bdmNewAcceptStatus={bdmNewAcceptStatus}
+                                          fetchNewData={fetchNewData}
                                         />
                                       </td>
                                     </>
@@ -5307,7 +5319,7 @@ function EmployeePanel() {
         </div>
       </Dialog> */}
 
-      {openBdmNamePopup && (
+      {/* {openBdmNamePopup && (
         <>
           <div
             className="popup-overlay d-flex justify-content-center align-items-center"
@@ -5337,9 +5349,9 @@ function EmployeePanel() {
               <div className="d-flex justify-content-between">
                 <h3>BDM Matured Cases</h3>
                 <div>
-                  {/* <button className="cursor-pointer d-flex align-items-center" onClick={() => setOpenBdmNamePopoup(false)}> */}
+                  <button className="cursor-pointer d-flex align-items-center" onClick={() => setOpenBdmNamePopoup(false)}>
                   <IoMdClose className="cursor-pointer" onClick={() => setOpenBdmNamePopoup(false)} />
-                  {/* </button> */}
+                  </button>
                 </div>
               </div>
               <BdmMaturedCasesDialogBox
@@ -5355,7 +5367,7 @@ function EmployeePanel() {
             </div>
           </div>
         </>
-      )}
+      )} */}
 
       {/* Side Drawer for Edit Booking Requests */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>

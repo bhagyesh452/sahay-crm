@@ -107,7 +107,9 @@ function RecruiterCallHistory({ empName, clientNumber }) {
                                 className="btn-close"
                                 data-bs-dismiss="modal"
                                 onClick={() => setCallHistory([])}
-                            ></button>
+                            >
+                                
+                            </button>
                         </div>
 
                         {/* Modal Body */}

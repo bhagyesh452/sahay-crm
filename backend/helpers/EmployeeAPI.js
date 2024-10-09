@@ -537,7 +537,7 @@ router.post('/hr-bulk-add-employees', async (req, res) => {
     // Wait for all employees to be added
     await Promise.all(employeeInsertPromises);
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: 'Employees processed successfully',
       successCount,
       failureCount,
@@ -2440,63 +2440,63 @@ router.put("/einfo/:id", async (req, res) => {
 
 router.post('/addbulktargetemployees', async (req, res) => {
   try {
-      const { employeeData } = req.body;
+    const { employeeData } = req.body;
 
-      if (!employeeData || !Array.isArray(employeeData)) {
-          return res.status(400).json({ message: 'Invalid data format' });
+    if (!employeeData || !Array.isArray(employeeData)) {
+      return res.status(400).json({ message: 'Invalid data format' });
+    }
+
+    // Iterate over each employee data from the request
+    for (const employee of employeeData) {
+      const { email, year, month, amount, achievedAmount } = employee;
+
+      // Find the employee by email
+      let existingEmployee = await adminModel.findOne({ email });
+
+      if (!existingEmployee) {
+        console.error(`Employee not found: ${email}`);
+        continue; // Skip to the next iteration if the employee is not found
       }
 
-      // Iterate over each employee data from the request
-      for (const employee of employeeData) {
-          const { email, year, month, amount, achievedAmount } = employee;
+      // Find if target for the given year and month already exists
+      let targetDetails = existingEmployee.targetDetails || [];
+      let existingTargetIndex = targetDetails.findIndex(
+        (target) => target.year === year && target.month === month
+      );
 
-          // Find the employee by email
-          let existingEmployee = await adminModel.findOne({ email });
-
-          if (!existingEmployee) {
-              console.error(`Employee not found: ${email}`);
-              continue; // Skip to the next iteration if the employee is not found
-          }
-
-          // Find if target for the given year and month already exists
-          let targetDetails = existingEmployee.targetDetails || [];
-          let existingTargetIndex = targetDetails.findIndex(
-              (target) => target.year === year && target.month === month
-          );
-
-          // If target for given year and month already exists, update it; otherwise, add a new entry
-          if (existingTargetIndex !== -1) {
-              targetDetails[existingTargetIndex] = {
-                  year,
-                  month,
-                  amount,
-                  achievedAmount: achievedAmount || 0,
-                  ratio: 0,
-                  result: "Poor" // You can calculate or update this based on some logic
-              };
-          } else {
-              targetDetails.push({
-                  year,
-                  month,
-                  amount,
-                  achievedAmount: achievedAmount || 0,
-                  ratio: 0,
-                  result: "Poor"
-              });
-          }
-
-          // Update employee record with modified targetDetails
-          existingEmployee.targetDetails = targetDetails;
-
-          // Save the updated employee record
-          await existingEmployee.save();
+      // If target for given year and month already exists, update it; otherwise, add a new entry
+      if (existingTargetIndex !== -1) {
+        targetDetails[existingTargetIndex] = {
+          year,
+          month,
+          amount,
+          achievedAmount: achievedAmount || 0,
+          ratio: 0,
+          result: "Poor" // You can calculate or update this based on some logic
+        };
+      } else {
+        targetDetails.push({
+          year,
+          month,
+          amount,
+          achievedAmount: achievedAmount || 0,
+          ratio: 0,
+          result: "Poor"
+        });
       }
 
-      res.status(200).json({ message: 'Employees target details updated successfully' });
+      // Update employee record with modified targetDetails
+      existingEmployee.targetDetails = targetDetails;
+
+      // Save the updated employee record
+      await existingEmployee.save();
+    }
+
+    res.status(200).json({ message: 'Employees target details updated successfully' });
 
   } catch (error) {
-      console.error('Error updating employee targets:', error.message);
-      res.status(500).json({ message: 'Internal server error', error: error.message });
+    console.error('Error updating employee targets:', error.message);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 })
 
@@ -3207,44 +3207,31 @@ const saveDailyDataToDatabase = async (employeeNumber, dailyData) => {
     console.error(`Error saving data for employee ${employeeNumber}:`, err.message);
   }
 };
+// Route for serving employee documents
+router.get("/employeedocuments/:documenttype/:id/:filename", async (req, res) => {
+  const { documenttype, id, filename } = req.params; // Extract document type, employee id, and filename from the request params
+
+  // Construct the file path based on the document type, employee ID, and filename
+  const filePath = path.join(__dirname, `../EmployeeDocs/${id}/${filename}`);
 
 
-// Cron job to fetch and save data at 12 PM every day
-// cron.schedule('10-20 12 * * *', async () => {  // Runs every day at 12 PM
-//   console.log('Starting cron job to fetch and save previous day data for all employees');
+  // Check if the file exists
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(`File not found: ${filePath}`, err);
+      return res.status(404).json({ error: "File not found" });
+    }
 
-//   try {
-//     // Fetch all employees with a number field
-//     const employees = await adminModel.find({ number: { $exists: true, $ne: null } });
+    // If the file exists, send it as a response
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error(`Error sending file: ${filePath}`, err);
+        res.status(500).json({ error: "Error sending file" });
+      }
+    });
+  });
+});
 
-//     if (employees.length === 0) {
-//       console.log('No employees found with a number field');
-//       return;
-//     }
 
-//     // Calculate the previous day
-//     const previousDay = new Date();
-//     previousDay.setDate(previousDay.getDate() - 1);
-
-//     // Loop through each employee
-//     for (const employee of employees) {
-//       const employeeNumber = employee.number;
-//       console.log(`Fetching data for employee: ${employeeNumber}`);
-
-//       // Fetch data for the previous day
-//       const dailyData = await fetchDailyData(previousDay, employeeNumber);
-//       if (dailyData && dailyData.length > 0) {
-//         await saveDailyDataToDatabase(employeeNumber, dailyData);
-//       }
-
-//       console.log(`Finished processing for employee: ${employeeNumber}`);
-//       await delay(1000); // Optional delay between processing employees
-//     }
-
-//     console.log('Cron job finished');
-//   } catch (err) {
-//     console.error('Error fetching employee data:', err.message);
-//   }
-// });
 
 module.exports = router;

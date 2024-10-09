@@ -21,9 +21,17 @@ function PdfImageViewerAdmin(props) {
    const specificpath = props.type
    const companyName = props.companyName
     try {
-      const response = await axios.get(`${secretKey}/bookings/${specificpath}/${companyName}/${path}`, {
-        responseType: "blob"
-      });
+      let response;
+      if(props.isEmployee){
+        response = await axios.get(`${secretKey}/employee/employeedocuments/${props.type}/${props.id}/${props.path}`,{
+          responseType: "blob"
+        })
+      }else{
+        response = await axios.get(`${secretKey}/bookings/${specificpath}/${companyName}/${path}`, {
+          responseType: "blob"
+        });
+      }
+      
       const blob = response.data;
       const reader = new FileReader();
       reader.onload = function () {
