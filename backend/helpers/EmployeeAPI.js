@@ -408,19 +408,19 @@ router.post('/addemployee/hrside', async (req, res) => {
     `;
 
     // Send email using the sendMailEmployees function
-    // try {
-    //   const emailInfo = await sendMailEmployees(
-    //     [email],
-    //     subject,
-    //     "", // Empty text (use HTML version instead)
-    //     html
-    //   );
+    try {
+      const emailInfo = await sendMailEmployees(
+        [email],
+        subject,
+        "", // Empty text (use HTML version instead)
+        html
+      );
 
-    //   console.log(`Email sent: ${emailInfo.messageId}`);
-    // } catch (emailError) {
-    //   console.error('Error sending email:', emailError);
-    //   return res.status(500).json({ message: 'Employee added but email sending failed.' });
-    // }
+      console.log(`Email sent: ${emailInfo.messageId}`);
+    } catch (emailError) {
+      console.error('Error sending email:', emailError);
+      return res.status(500).json({ message: 'Employee added but email sending failed.' });
+    }
 
     // Step 7: Send response
     res.status(200).json({

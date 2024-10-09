@@ -345,6 +345,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         text: "You have successfully added the data!",
                         icon: "success",
                     });
+                    
                     handleCloseDialog()
                     refetch(); // To refresh data
                 }
@@ -1058,7 +1059,10 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         </div>
                         <div className="modal-footer">
                             {isAddSingleEmployee ? (
-                                <button className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit}>
+                                <button className="btn btn-primary" 
+                                data-bs-dismiss="modal" 
+                                onClick={handleSubmit}
+                                >
                                     Submit
                                 </button>
                             ) : (
