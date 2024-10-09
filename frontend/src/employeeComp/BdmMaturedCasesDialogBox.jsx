@@ -16,8 +16,9 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
     const [maturedCases, setMaturedCases] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedBdm, setSelectedBdm] = useState(null); // Track the selected BDM
+    const [searchQuery, setSearchQuery] = useState("");
     const [currentEmployeeName, setCurrentEmployeeName] = useState(null);
-
+    const [searchedData, setSearchedData] = useState([]); // New state for searched data
 
     // Fetch current employee based on userId
     const fetchCurrentEmployee = async () => {
@@ -50,6 +51,17 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
             setIsLoading(false);
         }
     };
+
+    const handleSearch = () => {
+        const searchedResult = maturedCases.filter((data) =>
+            data.bdmName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setSearchedData(searchedResult); // Set filtered data based on the search query
+    };
+
+    useEffect(() => {
+        handleSearch();
+    }, [searchQuery]);
 
     // Fetch current employee first, then fetch the matured cases
     useEffect(() => {
@@ -137,61 +149,87 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                         </div>
 
                         <div className="modal-body">
-                            <div className='table table-responsive' style={{height: "50vh", overflow: "auto"}}>
-                                {isLoading ? (
-                                    <div className='d-flex justify-content-center align-items-center'>
-                                        <ClipLoader />
-                                    </div>
-                                ) : maturedCases && maturedCases.length > 0 ? (
-                                    <table className="table">
-                                        <thead>
-                                            <tr className='tr-sticky'>
-                                                <th>#</th>
-                                                <th>Sr. No</th>
-                                                <th>BDM Name</th>
-                                                <th>Number</th>
-                                                <th>Received Cases</th>
-                                                <th>Matured Cases</th>
-                                                <th>Ratio</th>
-                                            </tr>
-                                        </thead>
 
+                            <div class="input-icon float-end mb-2 me-2" >
+                                <input
+                                    value={searchQuery}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        handleSearch();
+                                    }}
+                                    className="form-control search-cantrol mybtn"
+                                    placeholder="Enter BDM Name"
+                                    type="text"
+                                    name="bdeName-search"
+                                    id="bdeName-search" />
+                            </div>
+
+                            <div className='table table-responsive' style={{ height: "50vh", overflow: "auto" }}>
+                                <table className="table">
+                                    {/* Render the table header regardless of loading or data state */}
+                                    <thead>
+                                        <tr className='tr-sticky'>
+                                            <th>#</th>
+                                            <th>Sr. No</th>
+                                            <th>BDM Name</th>
+                                            <th>Number</th>
+                                            <th>Received Cases</th>
+                                            <th>Matured Cases</th>
+                                            <th>Ratio</th>
+                                        </tr>
+                                    </thead>
+
+                                    {/* Render table body or loader based on the state */}
+                                    {isLoading ? (
                                         <tbody>
-                                            {maturedCases.map((item, index) => {
-                                                return (
-                                                    <tr key={item.bdmName}>
-                                                        <td className='p-2'>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedBdm === item.bdmName} // Only this checkbox is selected
-                                                                onChange={() => handleCheckboxChange(item.bdmName)} // Avoid unchecking the same item
-                                                            />
-                                                        </td>
-                                                        <td className='p-2'>{index + 1}</td>
-                                                        <td className='p-2'>{item.bdmName}</td>
-                                                        <td className='p-2'>
-                                                            <a
-                                                                target="_blank"
-                                                                className="text-decoration-none text-dark"
-                                                                href={`https://wa.me/91${item.bdmNumber}`}
-                                                            >
-                                                                {item.bdmNumber}
-                                                                <FaWhatsapp className="text-success w-25 mb-1" />
-                                                            </a>
-                                                        </td>
-                                                        <td className='p-2'>{item.receivedCases}</td>
-                                                        <td className='p-2'>{item.maturedCases}</td>
-                                                        <td className='p-2'>{item.ratio} %</td>
-                                                    </tr>
-                                                );
-                                            })}
+                                            <tr>
+                                                <td colSpan="7">
+                                                    <div className='d-flex justify-content-center align-items-center'>
+                                                        <ClipLoader />
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         </tbody>
-                                    </table>
-                                ) : (
-                                    <div>
-                                        <Nodata />
-                                    </div>
-                                )}
+                                    ) : (searchQuery ? searchedData : maturedCases).length > 0 ? (
+                                        <tbody>
+                                            {(searchQuery ? searchedData : maturedCases).map((item, index) => (
+                                                <tr key={item.bdmName}>
+                                                    <td className='p-2'>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedBdm === item.bdmName} // Only this checkbox is selected
+                                                            onChange={() => handleCheckboxChange(item.bdmName)} // Avoid unchecking the same item
+                                                        />
+                                                    </td>
+                                                    <td className='p-2'>{index + 1}</td>
+                                                    <td className='p-2'>{item.bdmName}</td>
+                                                    <td className='p-2'>
+                                                        <a
+                                                            target="_blank"
+                                                            className="text-decoration-none text-dark"
+                                                            href={`https://wa.me/91${item.bdmNumber}`}
+                                                        >
+                                                            {item.bdmNumber}
+                                                            <FaWhatsapp className="text-success w-25 mb-1" />
+                                                        </a>
+                                                    </td>
+                                                    <td className='p-2'>{item.receivedCases}</td>
+                                                    <td className='p-2'>{item.maturedCases}</td>
+                                                    <td className='p-2'>{item.ratio} %</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    ) : (
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="7">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    )}
+                                </table>
+
                             </div>
                         </div>
 

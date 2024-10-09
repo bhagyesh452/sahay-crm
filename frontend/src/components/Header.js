@@ -41,7 +41,7 @@ function Header({ name, id, designation, empProfile, gender }) {
   };
 
   useEffect(() => {
-    fetchData()
+    fetchData();
     const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
       secure: true, // Use HTTPS
       path: '/socket.io',
@@ -62,6 +62,7 @@ function Header({ name, id, designation, empProfile, gender }) {
         audioplayer.play();
       }
     });
+
     socket.on("new-leads-assigned", (res) => {
       if (res.name === name) {
         enqueueSnackbar(`New Leads Assigned To You!PLEASE REFRESH 🔄`, { variant: "reportComplete", persist: true });
@@ -69,20 +70,21 @@ function Header({ name, id, designation, empProfile, gender }) {
         audioplayer.play();
       }
     });
+
     socket.on("delete-leads-request-bde", (res) => {
       if (res.name === name) {
         enqueueSnackbar(`Your Request of ${res.dAmount} Leads is Rejected!`, { variant: "reportComplete", persist: true });
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-    })
+    });
+
     // socket.on("data-assigned", (res) => {
     //   if (res === name) {
     //     enqueueSnackbar(`New Data Received!`, { variant: "reportComplete", persist: true });
     //     const audioplayer = new Audio(notification_audio);
     //     audioplayer.play();
     //   }
-
     // });
 
     socket.on("data-action-performed", (res) => {
@@ -91,7 +93,6 @@ function Header({ name, id, designation, empProfile, gender }) {
           variant: 'reportComplete',
           persist: true
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
@@ -103,18 +104,17 @@ function Header({ name, id, designation, empProfile, gender }) {
           variant: 'reportComplete',
           persist: true
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
     });
+
     socket.on("delete-request-done", (res) => {
       if (res.name === name) {
         enqueueSnackbar(`Booking Delete Request Accepted for ${res.companyName}!`, {
           variant: 'reportComplete',
           persist: true
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
@@ -126,26 +126,22 @@ function Header({ name, id, designation, empProfile, gender }) {
           variant: 'reportComplete',
           persist: true
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
     });
 
-
     socket.on("Remaining_Payment_Added", (res) => {
-
       if (name === res.name) {
         enqueueSnackbar(`Remaining Amount Received from ${res.companyName}`, {
           variant: 'warning',
           autoHideDuration: 5000
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
     });
+
     socket.on("expanse-added", (res) => {
       console.log("Expanse Added", "response :" + res.name, "Name" + name)
       if (name === res.name) {
@@ -156,8 +152,8 @@ function Header({ name, id, designation, empProfile, gender }) {
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
     });
+
     socket.on("booking-updated", (res) => {
       if (name === res.name) {
         enqueueSnackbar(`Booking Edit Request for ${res.companyName} has been Accepted!`, {
@@ -178,18 +174,17 @@ function Header({ name, id, designation, empProfile, gender }) {
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-    })
+    });
+
     socket.on("bdmDataAcceptedRequest", (res) => {
       if (name === res.ename) {
-        enqueueSnackbar(`BDM has accpeted ${res.companyName} 🔄`, {
+        enqueueSnackbar(`BDM has accepted ${res.companyName}. Your lead closing chance is increased by ${res.ratio}%. 🔄`, {
           variant: 'reportComplete',
-          persist: true
+          persist: true,
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
     });
 
     socket.on("payment-approval-requets-accept", (res) => {
@@ -198,11 +193,9 @@ function Header({ name, id, designation, empProfile, gender }) {
           variant: 'reportComplete',
           persist: true
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
     });
 
     socket.on("payment-approval-requets-reject", (res) => {
@@ -211,13 +204,10 @@ function Header({ name, id, designation, empProfile, gender }) {
           variant: 'reportComplete',
           persist: true
         });
-
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
       }
-
     });
-
 
     // Clean up the socket connection when the component unmounts
     return () => {
@@ -248,8 +238,6 @@ function Header({ name, id, designation, empProfile, gender }) {
       clearTimeout(timerId);
     };
   }, [socketID, userId]);
-
-
 
 
   // ----------------------------------   Functions  ----------------------------------------------
@@ -313,9 +301,9 @@ function Header({ name, id, designation, empProfile, gender }) {
         throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
       }
 
-    const data = await response.json();
-    const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
-      
+      const data = await response.json();
+      const dateString = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
       // Append the date field to each result
       return data.result.map((entry) => ({
         ...entry,
@@ -327,6 +315,7 @@ function Header({ name, id, designation, empProfile, gender }) {
       return null;
     }
   };
+
   const fetchMonthlyData = async (employeeNumber, startDate, endDate) => {
     let currentDate = new Date(startDate);
     const data = [];
@@ -402,11 +391,11 @@ function Header({ name, id, designation, empProfile, gender }) {
         emp_name: dailyData[0].emp_name,
         emp_tags: dailyData[0].emp_tags,
       });
-  
+
       if (response.status !== 200) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-  
+
       console.log('Previous day data saved successfully');
     } catch (err) {
       console.error('Error saving data:', err.message);
@@ -418,19 +407,19 @@ function Header({ name, id, designation, empProfile, gender }) {
       // Calculate the previous day
       const previousDay = new Date();
       previousDay.setDate(previousDay.getDate() - 1);
-  
+
       const fetchAndSaveData = async () => {
         const dailyData = await fetchDailyData(previousDay, data.number); // Fetch only for the previous day
         if (dailyData) {
           await saveMonthlyDataToDatabase(data.number, dailyData); // Save only the previous day's data
         }
       };
-  
+
       fetchAndSaveData();
     }
   }, [data]);
 
-  
+
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
