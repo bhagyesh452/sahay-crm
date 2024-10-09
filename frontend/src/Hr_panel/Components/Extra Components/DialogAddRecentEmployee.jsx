@@ -939,7 +939,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div className="col-lg-2">
+                                            <div className="col-lg-3">
                                                 <div>
                                                     <input
                                                         placeholder="ADD Target value"
