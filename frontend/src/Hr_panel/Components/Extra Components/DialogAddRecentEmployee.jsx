@@ -44,6 +44,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
     const [isAddSingleEmployee, setIsAddSingleEmployee] = useState(true); // By default, "Add Single Employee" is checked
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false); // To highlight the area during drag
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
@@ -345,6 +346,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         text: "You have successfully added the data!",
                         icon: "success",
                     });
+                    
                     handleCloseDialog()
                     refetch(); // To refresh data
                 }
@@ -1058,7 +1060,10 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         </div>
                         <div className="modal-footer">
                             {isAddSingleEmployee ? (
-                                <button className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit}>
+                                <button className="btn btn-primary" 
+                                {...(errors ? {} : { 'data-bs-dismiss': 'modal' })} 
+                                onClick={handleSubmit}
+                                >
                                     Submit
                                 </button>
                             ) : (
