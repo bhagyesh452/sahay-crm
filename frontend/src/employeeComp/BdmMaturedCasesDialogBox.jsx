@@ -5,15 +5,19 @@ import axios from 'axios';
 import Swal from "sweetalert2";
 import { useParams } from 'react-router-dom';
 import { FaWhatsapp } from "react-icons/fa";
+import { TiArrowForward } from "react-icons/ti";
 
-function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompanyId, bdeOldStatus, bdmNewAcceptStatus, closeBdmNamePopup, fetchNewData }) {
+function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompanyId, forwardedStatus, forwardedEName, bdeOldStatus, bdmNewAcceptStatus, fetchNewData }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const { userId } = useParams();
+    const modalId = `modal-${forwardedCompany.replace(/\s+/g, '')}-${forwardCompanyId}`; // Generate a unique modal ID
+
     const [maturedCases, setMaturedCases] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedBdm, setSelectedBdm] = useState(null); // Track the selected BDM
     const [currentEmployeeName, setCurrentEmployeeName] = useState(null);
+
 
     // Fetch current employee based on userId
     const fetchCurrentEmployee = async () => {
@@ -78,7 +82,6 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
             });
             Swal.fire("success", "Company Forwarded", "success");
             fetchNewData(bdeOldStatus);
-            closeBdmNamePopup();
         } catch (error) {
             console.log(error);
             Swal.fire("Error", "Error Assigning Data", "error");
@@ -92,68 +95,119 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
         }
     };
 
+    const handleOpenModal = () => {
+        fetchMaturedCases();
+    };
+
     return (
-        <div className="modal-body">
-            <div className='table table-responsive'
-                style={{ height: "50vh", overflow: "auto" }}>
-                {isLoading ? (
-                    <div className='d-flex justify-content-center align-items-center'>
-                        <ClipLoader />
-                    </div>
-                ) : maturedCases && maturedCases.length > 0 ? (
-                    <table className="table">
-                        <thead>
-                            <tr className='tr-sticky'>
-                                <th>#</th>
-                                <th>Sr. No</th>
-                                <th>BDM Name</th>
-                                <th>Number</th>
-                                <th>Received Cases</th>
-                                <th>Matured Cases</th>
-                                <th>Ratio</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {maturedCases.map((item, index) => {
-                                return (
-                                    <tr key={item.bdmName}>
-                                        <td className='p-2'>
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedBdm === item.bdmName} // Only this checkbox is selected
-                                                onChange={() => handleCheckboxChange(item.bdmName)} // Avoid unchecking the same item
-                                            />
-                                        </td>
-                                        <td className='p-2'>{index + 1}</td>
-                                        <td className='p-2'>{item.bdmName}</td>
-                                        <td className='p-2'>
-                                            <a
-                                                target="_blank"
-                                                className="text-decoration-none text-dark"
-                                                href={`https://wa.me/91${item.bdmNumber}`}
-                                            >
-                                                {item.bdmNumber}
-                                                <FaWhatsapp className="text-success w-25 mb-1" />
-                                            </a>
-                                        </td>
-                                        <td className='p-2'>{item.receivedCases}</td>
-                                        <td className='p-2'>{item.maturedCases}</td>
-                                        <td className='p-2'>{item.ratio} %</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                ) : (
-                    <div>
-                        <Nodata />
-                    </div>
-                )}
+        <div>
+            <div className={'d-flex align-items-center justify-content-center'}>
+                <a
+                    style={{ textDecoration: "none" }}
+                    data-bs-toggle="modal"
+                    data-bs-target={`#${modalId}`} // Use dynamic modal ID
+                    onClick={handleOpenModal}
+                >
+                    <TiArrowForward
+                        style={{
+                            cursor: "pointer",
+                            width: "17px",
+                            height: "17px",
+                        }}
+                        color="grey"
+                    />
+                </a>
             </div>
-            <div className='d-flex align-items-center justify-content-center mt-4'>
-                <button className='btn btn-primary w-100' onClick={handleForwardBdm} disabled={!selectedBdm}>
-                    Forward
-                </button>
+
+            <div className="modal" id={modalId}>
+                <div className="modal-dialog modal-xl modal-dialog-centered">
+                    <div className="modal-content">
+
+                        {/* Modal Header */}
+                        <div className="modal-header">
+                            <h4 className="modal-title">
+                                BDM Matured Cases
+                            </h4>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                                onClick={() => setSelectedBdm(null)}
+                            ></button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className='table table-responsive' style={{height: "50vh", overflow: "auto"}}>
+                                {isLoading ? (
+                                    <div className='d-flex justify-content-center align-items-center'>
+                                        <ClipLoader />
+                                    </div>
+                                ) : maturedCases && maturedCases.length > 0 ? (
+                                    <table className="table">
+                                        <thead>
+                                            <tr className='tr-sticky'>
+                                                <th>#</th>
+                                                <th>Sr. No</th>
+                                                <th>BDM Name</th>
+                                                <th>Number</th>
+                                                <th>Received Cases</th>
+                                                <th>Matured Cases</th>
+                                                <th>Ratio</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {maturedCases.map((item, index) => {
+                                                return (
+                                                    <tr key={item.bdmName}>
+                                                        <td className='p-2'>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedBdm === item.bdmName} // Only this checkbox is selected
+                                                                onChange={() => handleCheckboxChange(item.bdmName)} // Avoid unchecking the same item
+                                                            />
+                                                        </td>
+                                                        <td className='p-2'>{index + 1}</td>
+                                                        <td className='p-2'>{item.bdmName}</td>
+                                                        <td className='p-2'>
+                                                            <a
+                                                                target="_blank"
+                                                                className="text-decoration-none text-dark"
+                                                                href={`https://wa.me/91${item.bdmNumber}`}
+                                                            >
+                                                                {item.bdmNumber}
+                                                                <FaWhatsapp className="text-success w-25 mb-1" />
+                                                            </a>
+                                                        </td>
+                                                        <td className='p-2'>{item.receivedCases}</td>
+                                                        <td className='p-2'>{item.maturedCases}</td>
+                                                        <td className='p-2'>{item.ratio} %</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <div>
+                                        <Nodata />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="modal-footer p-0 m-0">
+                            <button
+                                className='btn btn-primary w-100'
+                                onClick={handleForwardBdm}
+                                disabled={!selectedBdm}
+                                data-bs-dismiss="modal" // This will close the modal after clicking Forward
+                            >
+                                Forward
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     );
