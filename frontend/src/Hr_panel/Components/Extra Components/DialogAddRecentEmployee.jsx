@@ -12,7 +12,7 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { SiGoogledocs } from "react-icons/si";
 import { MdOutlineDelete } from "react-icons/md";
 
-function DialogAddRecentEmployee({ refetch }) {
+function DialogAddRecentEmployee({ refetch, isAdmin }) {
 
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const [openBacdrop, setOpenBacdrop] = useState(false);
@@ -311,9 +311,6 @@ function DialogAddRecentEmployee({ refetch }) {
             if (!isUpdateMode) {
                 generatedPassword = generateRandomPassword(firstName);
             }
-
-
-
             try {
                 let dataToSend = {
                     email: email,
@@ -341,19 +338,16 @@ function DialogAddRecentEmployee({ refetch }) {
                 // console.log(isUpdateMode, "updateMode")
                 console.log("Before creating employee data is :", dataToSend);
                 const response = await axios.post(`${secretKey}/employee/addemployee/hrside`, dataToSend);
-                // Adds data in performance report:
-                console.log("response", response)
-                handleCloseDialog();
-                refetch();
-                //console.log("Data sent successfully");
-                Swal.fire({
-                    title: "Data Added!",
-                    text: "You have successfully added the data!",
-                    icon: "success",
-                });
-
-
-
+                // Only close the modal if the status is 200 (success)
+                if (response.status === 200) {
+                    Swal.fire({
+                        title: "Data Added!",
+                        text: "You have successfully added the data!",
+                        icon: "success",
+                    });
+                    handleCloseDialog()
+                    refetch(); // To refresh data
+                }
             } catch {
                 Swal.fire({
                     icon: "error",
@@ -679,7 +673,7 @@ function DialogAddRecentEmployee({ refetch }) {
                     data-bs-toggle="modal"
                     data-bs-target="#myModal" // Use dynamic modal ID
                 >
-                    <button className="btn btn-primary mr-1">+ Add Recent Employee</button>
+                    <button className="btn btn-primary mr-1">+ Add Employee</button>
                 </a>
             </div>
             {/* ------------------------------------------------------add employee dialog------------------------------------------------------- */}
@@ -889,7 +883,7 @@ function DialogAddRecentEmployee({ refetch }) {
                                             </div>
                                         </div>
                                     </div>
-                                    {targetObjects.map((obj, index) => (
+                                    {isAdmin && targetObjects.map((obj, index) => (
                                         <div className="row mb-3" key={index}>
                                             <label className="form-label">ADD Target</label>
                                             <div className="col-lg-3">
@@ -962,7 +956,7 @@ function DialogAddRecentEmployee({ refetch }) {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="col-lg-2">
+                                            {/* <div className="col-lg-2">
                                                 <div>
                                                     <input
                                                         placeholder="ADD achieved amount"
@@ -978,7 +972,7 @@ function DialogAddRecentEmployee({ refetch }) {
                                                         }}
                                                     />
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div className="col-lg-2 d-flex align-items-center justify-content-end">
                                                 <button className="btn" onClick={() => handleAddTarget(index)}>
                                                     <MdOutlineAddCircle
@@ -1042,7 +1036,7 @@ function DialogAddRecentEmployee({ refetch }) {
                                                 <div className="progress-bar"></div>
                                             </div>
                                         )}
-                                        <a className='hr_bulk_upload_a' 
+                                        <a className='hr_bulk_upload_a'
                                             href={`${process.env.PUBLIC_URL}/AddNewEmployeeFormat.xlsx`}
                                             download={"AddNewEmployeeFormat.xlsx"}
                                         >

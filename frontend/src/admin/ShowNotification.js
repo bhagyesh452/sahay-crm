@@ -147,9 +147,6 @@ function ShowNotification() {
 
   return (
     <div>
-      {" "}
-      <Header />
-      <Navbar />
       <div className="page-wrapper">
         <div className="page-header">
           <div className="container-xl">
