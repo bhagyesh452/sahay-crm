@@ -44,6 +44,8 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
     const [isAddSingleEmployee, setIsAddSingleEmployee] = useState(true); // By default, "Add Single Employee" is checked
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false); // To highlight the area during drag
+    const [isValidForm, setIsValidForm] = useState(false); // State to track form validity
+
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
     }
@@ -286,9 +288,11 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
+            setIsValidForm(false)
         } else {
             // Submit form data
             setErrors({});
+            setIsValidForm(true);
             // Add your form submission logic here
             // const referenceId = uuidv4();
             const AddedOn = new Date().toLocaleDateString();
@@ -345,7 +349,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         text: "You have successfully added the data!",
                         icon: "success",
                     });
-                    
+                    setIsValidForm(true)
                     handleCloseDialog()
                     refetch(); // To refresh data
                 }
@@ -395,6 +399,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
         setIsUpdateMode(false);
         setTargetCount(1);
         setTargetObjects([defaultObject]);
+        setErrors({});
     }
 
     // Handle radio button change
@@ -884,7 +889,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                                             </div>
                                         </div>
                                     </div>
-                                    {isAdmin && targetObjects.map((obj, index) => (
+                                    {targetObjects.map((obj, index) => (
                                         <div className="row mb-3" key={index}>
                                             <label className="form-label">ADD Target</label>
                                             <div className="col-lg-3">
@@ -1060,7 +1065,8 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         <div className="modal-footer">
                             {isAddSingleEmployee ? (
                                 <button className="btn btn-primary" 
-                                data-bs-dismiss="modal" 
+                                // {...(isValidForm ? { 'data-bs-dismiss': 'modal' } : {})} // Only close modal if form is valid
+                                data-bs-dismiss="modal"
                                 onClick={handleSubmit}
                                 >
                                     Submit
