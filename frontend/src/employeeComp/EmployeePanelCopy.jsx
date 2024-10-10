@@ -8,7 +8,7 @@ import * as XLSX from "xlsx";
 import axios from "axios";
 import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
-import { Drawer, Icon, IconButton } from "@mui/material";
+import { Drawer } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FontDownloadIcon from "@mui/icons-material/FontDownload";
 import AttachmentIcon from "@mui/icons-material/Attachment";
@@ -79,8 +79,9 @@ import CallHistory from "./CallHistory.jsx";
 import { LuHistory } from "react-icons/lu";
 import BdmMaturedCasesDialogBox from "./BdmMaturedCasesDialogBox.jsx";
 import { IoMdClose } from "react-icons/io";
+import ProjectionDialog from "./ExtraComponents/ProjectionDialog.jsx";
 
-function EmployeePanel() {
+function EmployeePanelCopy() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
@@ -135,52 +136,6 @@ function EmployeePanel() {
   const [employeeName, setEmployeeName] = useState("");
   const [showCallHistory, setShowCallHistory] = useState(false);
   const [clientNumber, setClientNumber] = useState("");
-
-  const hanleCloseCallHistory = () => {
-    setShowCallHistory(false);
-  };
-
-  const handleTogglePopup = () => {
-    setIsOpen(false);
-  };
-
-  const loginwithgoogle = () => {
-    window.open("http://localhost:6050/auth/google/callback");
-  };
-
-  function navigate(url) {
-    window.location.href = url;
-  }
-
-  async function handleGoogleLogin() {
-    const response = await fetch("http://localhost:6050/request", {
-      method: "post",
-    });
-
-    const data = await response.json();
-    //console.log(data);
-    navigate(data.url);
-  }
-  // const handleGoogleLogin = async () => {
-  //   try {
-  //     const { data } = await axios.get(`http://localhost:6050/request`);
-  //     console.log(data); // Handle the response as needed
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //   }
-  // };
-  const handleChangeMail = (e) => {
-    const { name, value } = e.target;
-    setEmailData({ ...emailData, [name]: value });
-  };
-
-  const handleSubmitMail = (e) => {
-    e.preventDefault();
-    // Perform email sending logic here (e.g., using an API or backend)
-    //console.log("Email Data:", emailData);
-    // Close the compose popup after sending
-    setIsOpen(false);
-  };
   const [employeeData, setEmployeeData] = useState([]);
   const [redesignedData, setRedesignedData] = useState([])
   const [searchText, setSearchText] = useState("");
@@ -236,7 +191,57 @@ function EmployeePanel() {
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([]);
   const [revertedData, setRevertedData] = useState([]);
-  const [bdmNames, setBdmNames] = useState([])
+  const [bdmNames, setBdmNames] = useState([]);
+  const [companyName, setCompanyName] = useState("");
+  const [maturedCompanyName, setMaturedCompanyName] = useState("");
+  const [companyEmail, setCompanyEmail] = useState("");
+  const [companyInco, setCompanyInco] = useState(null);
+  const [companyNumber, setCompanyNumber] = useState(0);
+  const [companyId, setCompanyId] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editFormOpen, setEditFormOpen] = useState(false);
+  const [addFormOpen, setAddFormOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [extraData, setExtraData] = useState([])
+
+  //console.log(companyName, companyInco);
+
+  const currentData = employeeData.slice(startIndex, endIndex);
+  const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
+  const [newBdeName, setNewBdeName] = useState("")
+
+
+  const hanleCloseCallHistory = () => {
+    setShowCallHistory(false);
+  };
+
+  const handleTogglePopup = () => {
+    setIsOpen(false);
+  };
+
+  function navigate(url) {
+    window.location.href = url;
+  }
+
+  async function handleGoogleLogin() {
+    const response = await fetch("http://localhost:6050/request", {
+      method: "post",
+    });
+
+    const data = await response.json();
+    //console.log(data);
+    navigate(data.url);
+  }
+
+  const handleChangeMail = (e) => {
+    const { name, value } = e.target;
+    setEmailData({ ...emailData, [name]: value });
+  };
+
+  const handleSubmitMail = (e) => {
+    e.preventDefault();
+    setIsOpen(false);
+  };
   //console.log(userId);
 
   useEffect(() => {
@@ -489,7 +494,6 @@ function EmployeePanel() {
     setSecondPlus(false);
     setOpenThirdMinus(false)
     fetchData();
-    setError('')
     setErrorDirectorNumberFirst("");
     setErrorDirectorNumberSecond("");
     setErrorDirectorNumberThird("");
@@ -537,7 +541,6 @@ function EmployeePanel() {
   };
 
   useEffect(() => {
-    //fecthTeamData();
     fetchBDMbookingRequests();
     fetchRedesignedFormDataAll()
   }, [data.ename]);
@@ -587,13 +590,10 @@ function EmployeePanel() {
       const tempData = response.data;
       const revertedData = response.data.filter((item) => item.RevertBackAcceptedCompanyRequest === 'Reject')
       setRevertedData(revertedData)
-
-
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
-
       setExtraData(sortedData)
       setmoreEmpData(sortedData);
       setTempData(tempData);
@@ -649,7 +649,7 @@ function EmployeePanel() {
         setdataStatus("FollowUp");
       }
       if (status === "Interested") {
-        setEmployeeData(tempData.filter((obj) => obj.Status === "Interested" && obj.bdmAcceptStatus === "NotForwarded"));
+        setEmployeeData(tempData.filter((obj) => (obj.Status === "Interested" || obj.Status === "FollowUp") && obj.bdmAcceptStatus === "NotForwarded"));
         setdataStatus("Interested");
       }
       if (status === "Forwarded") {
@@ -687,67 +687,6 @@ function EmployeePanel() {
 
   }, [nowToFetch]);
 
-  const handleFieldChange = (event) => {
-    if (
-      event.target.value === "Company Incorporation Date  " ||
-      event.target.value === "AssignDate"
-    ) {
-      setSelectedField(event.target.value);
-      setVisibility("block");
-      setVisibilityOther("none");
-      setSubFilterValue("");
-      setVisibilityOthernew("none");
-    } else if (event.target.value === "Status") {
-      setSelectedField(event.target.value);
-      setVisibility("none");
-      setVisibilityOther("none");
-      setSubFilterValue("");
-      setVisibilityOthernew("block");
-    } else {
-      setSelectedField(event.target.value);
-      setVisibility("none");
-      setVisibilityOther("block");
-      setSubFilterValue("");
-      setVisibilityOthernew("none");
-    }
-
-    //console.log(selectedField);
-  };
-
-  const handleDateChange = (e) => {
-    const dateValue = e.target.value;
-    setCurrentPage(0);
-
-    // Check if the dateValue is not an empty string
-    if (dateValue) {
-      const dateObj = new Date(dateValue);
-      const formattedDate = dateObj.toISOString().split("T")[0];
-      setSearchText(formattedDate);
-    } else {
-      // Handle the case when the date is cleared
-      setSearchText("");
-    }
-  };
-  const activeStatus = async () => {
-    if (data._id && socketID) {
-      try {
-        const id = data._id;
-        console.log("Request is sending for" + socketID + " " + data._id)
-        const response = await axios.put(
-          `${secretKey}/employee/online-status/${id}/${socketID}`
-        );
-        //console.log(response.data); // Log response for debugging
-        return response.data; // Return response data if needed
-      } catch (error) {
-        console.error("Error:", error);
-        throw error; // Throw error for handling in the caller function
-      }
-    } else {
-      console.log(data._id, socketID, "This is it")
-    }
-  };
-
-
 
   useEffect(() => {
 
@@ -758,31 +697,6 @@ function EmployeePanel() {
       fetchNewData()
     }
   }, [data.ename, revertedData.length]);
-
-
-  // useEffect(() => {
-  //   const checkAndRunActiveStatus = () => {
-  //     if (data._id) {
-  //       activeStatus();
-  //     } else {
-  //       const intervalId = setInterval(() => {
-  //         if (data._id) {
-  //           activeStatus();
-  //           clearInterval(intervalId);
-  //         }
-  //       }, 1000);
-  //       return () => clearInterval(intervalId); 
-  //     }
-  //   };
-
-  //   const timerId = setTimeout(() => {
-  //     checkAndRunActiveStatus();
-  //   }, 2000);
-
-  //   return () => {
-  //     clearTimeout(timerId);
-  //   };
-  // }, [socketID, data._id]);
 
   const fetchRequestDetails = async () => {
     try {
@@ -805,10 +719,6 @@ function EmployeePanel() {
     fetchData();
   }, [userId]);
 
-
-  //console.log(remarksHistory);
-
-  // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     fetchProjections();
   }, [data]);
@@ -884,22 +794,12 @@ function EmployeePanel() {
         setEmployeeData(
           filteredData.filter(
             (obj) =>
-              obj.Status === "Interested" &&
+              (obj.Status === "Interested" || obj.Status === "FollowUp") &&
               obj.bdmAcceptStatus === "NotForwarded" &&
               obj.bdmAcceptStatus !== "Pending" &&
               obj.bdmAcceptStatus !== "Accept"
           )
         );
-      } else if (dataStatus === 'FollowUp') {
-        setEmployeeData(
-          filteredData.filter(
-            (obj) =>
-              obj.Status === "FollowUp" &&
-              obj.bdmAcceptStatus === "NotForwarded" &&
-              obj.bdmAcceptStatus !== "Pending" &&
-              obj.bdmAcceptStatus !== "Accept"
-          )
-        )
       } else if (dataStatus === 'Matured') {
         setEmployeeData(
           filteredData
@@ -944,7 +844,7 @@ function EmployeePanel() {
           setdataStatus('Interested')
         } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') &&
           currentStatus === 'FollowUp') {
-          setdataStatus('FollowUp')
+          setdataStatus('Interested')
         } else if ((filteredData[0].bdmAcceptStatus !== "Pending" && filteredData[0].bdmAcceptStatus !== 'Accept') && currentStatus === 'Matured') {
           setdataStatus('Matured')
         } else if (filteredData[0].bdmAcceptStatus !== "NotForwarded" &&
@@ -963,25 +863,6 @@ function EmployeePanel() {
     }
 
   }, [filteredData])
-
-  const [companyName, setCompanyName] = useState("");
-  const [maturedCompanyName, setMaturedCompanyName] = useState("");
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [companyInco, setCompanyInco] = useState(null);
-  const [companyNumber, setCompanyNumber] = useState(0);
-  const [companyId, setCompanyId] = useState("");
-  const [formOpen, setFormOpen] = useState(false);
-  const [editFormOpen, setEditFormOpen] = useState(false);
-  const [addFormOpen, setAddFormOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [extraData, setExtraData] = useState([])
-
-  //console.log(companyName, companyInco);
-
-  const currentData = employeeData.slice(startIndex, endIndex);
-  const [deletedEmployeeStatus, setDeletedEmployeeStatus] = useState(false)
-  const [newBdeName, setNewBdeName] = useState("")
-
   const handleStatusChange = async (
     company,
     employeeId,
@@ -1026,11 +907,8 @@ function EmployeePanel() {
     //console.log(bdmAcceptStatus, "bdmAcceptStatus");
     try {
       let response;
-
       if (bdmAcceptStatus === "Accept") {
-
         if (newStatus === "Interested" || newStatus === "FollowUp") {
-
           response = await axios.delete(`${secretKey}/bdm-data/post-deletecompany-interested/${employeeId}`);
           const response2 = await axios.post(
             `${secretKey}/company-data/update-status/${employeeId}`,
@@ -1230,23 +1108,6 @@ function EmployeePanel() {
   };
 
   const [freezeIndex, setFreezeIndex] = useState(null);
-
-  const handleFreezeIndexChange = (e) => {
-    setFreezeIndex(Number(e.target.value));
-  };
-
-  const getCellStyle = (index) => {
-    if (index === freezeIndex) {
-      return {
-        position: "sticky",
-        left: 0,
-        zIndex: 1,
-        backgroundColor: "#f0f0f0",
-      };
-    }
-
-    return {};
-  };
 
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -2074,94 +1935,6 @@ function EmployeePanel() {
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
 
-  // ------------------------------------------------------payment-link-work-----------------------------------------
-
-  const [paymentLink, setPaymentLink] = useState("");
-  const [error, setError] = useState("");
-  const [orderId, setOrderId] = useState("");
-
-  // let cashfree;
-
-  // let insitialzeSDK = async function () {
-
-  //   cashfree = await load({
-  //     mode: "sandbox",
-  //   })
-  // }
-
-  // insitialzeSDK()
-
-  // //let version = cashfree.version();
-
-  // const getSessionId = async () => {
-  //   try {
-  //     let res = await axios.get(`${secretKey}/payment`)
-  //     console.log(res.data)
-  //     if (res.data && res.data.payment_session_id) {
-  //       console.log(res.data)
-  //       setOrderId(res.data.order_id)
-  //       return res.data.payment_session_id
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
-  // const verifyPayment = async () => {
-  //   try {
-
-  //     let res = await axios.post(`${secretKey}/verify`, {
-  //       orderId: orderId
-  //     })
-
-  //     if (res && res.data) {
-  //       alert("payment verified")
-  //     }
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-  // const handlePayment = async (e) => {
-  //   e.preventDefault()
-  //   try {
-
-  //     let sessionId = await getSessionId()
-  //     let checkoutOptions = {
-  //       paymentSessionId: sessionId,
-  //       redirectTarget: "_modal",
-  //     }
-
-  //     cashfree.checkout(checkoutOptions).then((res) => {
-  //       console.log("payment initialized")
-
-  //       verifyPayment(orderId)
-  //     })
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-
-  // }
-
-  // const generatePaymentLink = async () => {
-  //   try {
-  //     const response = await axios.post(`${secretKey}/generatePaymentLink`, {
-  //       orderId: '121',
-  //       amount: 100, // Amount in INR
-  //       customerName: 'John Doe',
-  //       customerEmail: 'john@example.com',
-  //       customerPhone: '9876543210',
-  //     });
-  //     console.log(response.data.paymentLink)
-  //     setPaymentLink(response.data.paymentLink);
-  //   } catch (error) {
-  //     setError('Could not generate payment link');
-  //   }
-  // };
-
-  // console.log(paymentLink)
-
   // ---------------------------------------------- For Editable Lead-form -----------------------------------------------------------
 
   const handleOpenEditForm = () => {
@@ -2267,7 +2040,7 @@ function EmployeePanel() {
     ename,
     bdmAcceptStatus
   ) => {
-    // console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
+    //console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
 
     if (
       companyStatus === "Interested" ||
@@ -2622,6 +2395,14 @@ function EmployeePanel() {
   const [openBacdrop, setOpenBacdrop] = useState(false)
   const [companyIncoDate, setCompanyIncoDate] = useState(null);
   const [monthIndex, setMonthIndex] = useState(0)
+
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Closes the filter drawer
+ * @function
+ * @returns {undefined}
+ */
+/******  f4793f48-67cd-4453-ae84-2b11f4d49cb5  *******/
 
   const functionCloseFilterDrawer = () => {
     setOpenFilterDrawer(false)
@@ -3075,12 +2856,12 @@ function EmployeePanel() {
                       >
                         <GoPlusCircle className='mr-1' /> Today's General Projection
                       </button> */}
-                      <button type="button" className="btn mybtn"
+                      {/* <button type="button" className="btn mybtn"
                         onClick={() => setOpenPaymentApproval(true)}
 
                       >
                         <MdPayment className='mr-1' /> Payment Approval
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                   <div className="d-flex align-items-center">
@@ -3183,7 +2964,7 @@ function EmployeePanel() {
                           setEmployeeData(
                             mappedData.filter(
                               (obj) =>
-                                obj.Status === "Interested" &&
+                                (obj.Status === "Interested" || obj.Status === "FollowUp") &&
                                 obj.bdmAcceptStatus === "NotForwarded"
                             )
                           );
@@ -3200,14 +2981,14 @@ function EmployeePanel() {
                           {
                             ((isSearch || isFilter) ? filteredData : moreEmpData).filter(
                               (obj) =>
-                                obj.Status === "Interested" &&
+                                (obj.Status === "Interested" || obj.Status === "FollowUp") &&
                                 obj.bdmAcceptStatus === "NotForwarded"
                             ).length
                           }
                         </span>
                       </a>
                     </li>
-                    <li class="nav-item">
+                    {/* <li class="nav-item">
                       <a
                         href="#tabs-activity-5"
                         onClick={() => {
@@ -3240,7 +3021,7 @@ function EmployeePanel() {
                           }
                         </span>
                       </a>
-                    </li>
+                    </li> */}
 
                     <li class="nav-item">
                       <a
@@ -3397,156 +3178,6 @@ function EmployeePanel() {
 
                             <th>
                               Incorporation Date
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                // onClick={() => {
-                                //   setEmployeeData(
-                                //     [...moreEmpData].sort((a, b) =>
-                                //       b[
-                                //         "Company Incorporation Date  "
-                                //       ].localeCompare(
-                                //         a["Company Incorporation Date  "]
-                                //       )
-                                //     )
-                                //   );
-                                // }}
-                                onClick={handleFilterIncoDate}
-                              />
-                              {openIncoDate && (
-                                <div className="inco-filter">
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("oldest")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Oldest
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("newest")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Newest
-                                  </div>
-
-                                  <div
-                                    style={{ marginLeft: "5px" }}
-                                    className="inco-subFilter d-flex"
-                                  >
-                                    <div style={{ marginRight: "5px" }}>
-                                      <input
-                                        type="checkbox"
-                                        name="year-filter"
-                                        id={`year-filter-all`}
-                                        checked={selectAllChecked}
-                                        onChange={(e) =>
-                                          handleSelectAllChange(e)
-                                        }
-                                      />
-                                    </div>
-                                    <div className="year-val">Select All</div>
-                                  </div>
-                                  {resultArray.length !== 0 &&
-                                    resultArray.map((obj) => (
-                                      <div key={obj.year}>
-                                        <div
-                                          style={{ marginLeft: "5px" }}
-                                          className="inco-subFilter d-flex"
-                                        >
-                                          <div style={{ marginRight: "5px" }}>
-                                            <input
-                                              type="checkbox"
-                                              name="year-filter"
-                                              id={`year-filter-${obj.year}`}
-                                              checked={selectedYears.includes(
-                                                obj.year
-                                              )}
-                                              onChange={(e) =>
-                                                handleYearFilterChange(
-                                                  e,
-                                                  obj.year
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                          <div className="year-val">
-                                            {obj.year}
-                                          </div>
-                                          {expandYear !== obj.year && (
-                                            <div
-                                              className="expand-year d-flex"
-                                              onClick={() => {
-                                                setExpandYear(obj.year);
-                                              }}
-                                            >
-                                              <AddCircle
-                                                style={{ height: "15px" }}
-                                              />
-                                            </div>
-                                          )}
-                                          {expandYear === obj.year && (
-                                            <div
-                                              className="expand-year d-flex"
-                                              onClick={() => {
-                                                setExpandYear(0);
-                                              }}
-                                            >
-                                              <RemoveCircleIcon
-                                                style={{ height: "15px" }}
-                                              />
-                                            </div>
-                                          )}
-                                        </div>
-                                        {obj.month.length !== 0 &&
-                                          expandYear === obj.year &&
-                                          obj.month.map((month) => (
-                                            <div
-                                              key={`${obj.year}-${month}`}
-                                              style={{ marginLeft: "25px" }}
-                                              className="inco-subFilter d-flex"
-                                            >
-                                              <div
-                                                style={{ marginRight: "5px" }}
-                                              >
-                                                <input
-                                                  type="checkbox"
-                                                  name="month-filter"
-                                                  id={`month-filter-${month}`}
-                                                  checked={selectedMonths.includes(
-                                                    month
-                                                  )}
-                                                  onChange={(e) =>
-                                                    handleMonthFilterChange(
-                                                      e,
-                                                      obj.year,
-                                                      month
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                              <div className="month-val">
-                                                {month}
-                                              </div>
-                                            </div>
-                                          ))}
-                                      </div>
-                                    ))}
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
                             </th>
 
                             <th>City</th>
@@ -3732,15 +3363,15 @@ function EmployeePanel() {
                                                 <option value="Interested">
                                                   Interested
                                                 </option>
-                                                <option value="FollowUp">
+                                                {/* <option value="FollowUp">
                                                   Follow Up
-                                                </option>
+                                                </option> */}
                                                 <option value="Matured">
                                                   Matured
                                                 </option>
                                               </>
                                             )}
-                                            {dataStatus === "FollowUp" && (
+                                            {/* {dataStatus === "FollowUp" && (
                                               <>
                                                 <option value="FollowUp">
                                                   Follow Up
@@ -3749,7 +3380,7 @@ function EmployeePanel() {
                                                   Matured
                                                 </option>
                                               </>
-                                            )}
+                                            )} */}
                                           </select>
                                         )}
                                       {(company.bdmAcceptStatus !==
@@ -3764,6 +3395,7 @@ function EmployeePanel() {
                                         (company.Status === "Not Interested" || company.Status === "Junk" || company.Status === "Not Picked Up" || company.Status === "Busy") && (
                                           <select
                                             style={{
+                                              color: "rgb(139, 139, 139)",
                                               background: "none",
                                               padding: ".4375rem .75rem",
                                               border:
@@ -3799,7 +3431,7 @@ function EmployeePanel() {
                                               Not Interested
                                             </option>
                                             <option value="Interested">Interested</option>
-                                            <option value="FollowUp">Follow Up</option>
+                                            {/* <option value="FollowUp">Follow Up</option> */}
                                           </select>
                                         )}
                                     </>
@@ -3828,10 +3460,11 @@ function EmployeePanel() {
                                       (company.Status === "Matured" ||
                                         company.Status === "Not Interested" ||
                                         company.Status === "Busy" ||
-                                        company.Status === "Busy" ||
+
                                         company.Status === "Not Picked Up" ||
                                         company.Status === "Junk")) && (
-                                        <IconButton
+                                        <button
+                                          style={{ border: "transparent", background: "none" }}
                                           onClick={() => {
                                             functionopenpopupremarks(
                                               company._id,
@@ -3858,12 +3491,15 @@ function EmployeePanel() {
                                             style={{
                                               width: "12px",
                                               height: "12px",
+                                              color: "rgb(139, 139, 139)"
                                             }}
+
                                           />
-                                        </IconButton>
+                                        </button>
                                       )}
                                     {company.bdmAcceptStatus === "Accept" && (company.Status !== "Matured" && company.Status !== "Not Interested" && company.Status !== "Busy" && company.Status !== "Busy" && company.Status !== "Not Picked Up" && company.Status !== "Junk") && (
-                                      <IconButton
+                                      <button
+                                        style={{ border: "transparent", background: "none" }}
                                         onClick={() => {
                                           functionopenpopupremarksEdit(
                                             company._id,
@@ -3884,7 +3520,7 @@ function EmployeePanel() {
                                             cursor: "pointer",
                                           }}
                                         />
-                                      </IconButton>
+                                      </button>
                                     )}
                                   </div>
                                 </td>
@@ -3935,7 +3571,8 @@ function EmployeePanel() {
                                         ? "No Remarks"
                                         : company.bdmRemarks}
                                     </p>
-                                    <IconButton
+                                    <button
+                                      style={{ border: "transparent", background: "none" }}
                                       onClick={() => {
                                         functionopenpopupremarksBdm(
                                           company._id,
@@ -3956,7 +3593,7 @@ function EmployeePanel() {
                                           cursor: "pointer",
                                         }}
                                       />
-                                    </IconButton>
+                                    </button>
                                   </div>
                                 </td>}
 
@@ -3972,7 +3609,7 @@ function EmployeePanel() {
                                 {dataStatus === "Matured" && <>
                                   <td>{functionCalculateBookingDate(company._id)}</td>
                                   <td>{functionCalculatePublishDate(company._id)}</td>
-                                  <td>
+                                  {/* <td>
                                     {company &&
                                       projectionData &&
                                       projectionData.some(
@@ -3980,7 +3617,9 @@ function EmployeePanel() {
                                           item.companyName ===
                                           company["Company Name"]
                                       ) ? (
-                                      <IconButton>
+                                      <button
+                                        style={{ border: "transparent", background: "none" }}
+                                      >
                                         <RiEditCircleFill
                                           onClick={() => {
                                             functionopenprojection(
@@ -3994,9 +3633,11 @@ function EmployeePanel() {
                                           }}
                                           color="#fbb900"
                                         />
-                                      </IconButton>
+                                      </button>
                                     ) : (
-                                      <IconButton>
+                                      <button
+                                        style={{ border: "transparent", background: "none" }}
+                                      >
                                         <RiEditCircleFill
                                           onClick={() => {
                                             functionopenprojection(
@@ -4010,10 +3651,12 @@ function EmployeePanel() {
                                             height: "17px",
                                           }}
                                         />
-                                      </IconButton>
+                                      </button>
                                     )}
+                                  </td> */}
+                                  <td>
+                                   <ProjectionDialog/>
                                   </td>
-
                                 </>}
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
@@ -4028,7 +3671,9 @@ function EmployeePanel() {
                                                 item.companyName ===
                                                 company["Company Name"]
                                             ) ? (
-                                            <IconButton>
+                                            <button
+                                              style={{ border: "transparent", background: "none" }}
+                                            >
                                               <RiEditCircleFill
                                                 onClick={() => {
                                                   functionopenprojection(
@@ -4042,9 +3687,11 @@ function EmployeePanel() {
                                                 }}
                                                 color="#fbb900"
                                               />
-                                            </IconButton>
+                                            </button>
                                           ) : (
-                                            <IconButton>
+                                            <button
+                                              style={{ border: "transparent", background: "none" }}
+                                            >
                                               <RiEditCircleFill
                                                 onClick={() => {
                                                   functionopenprojection(
@@ -4057,13 +3704,16 @@ function EmployeePanel() {
                                                   width: "17px",
                                                   height: "17px",
                                                 }}
+                                                color="#8b8b8b"
                                               />
-                                            </IconButton>
+                                            </button>
                                           )}
                                         </td>
                                       ) : (
                                         <td>
-                                          <IconButton>
+                                          <button
+                                            style={{ border: "transparent", background: "none" }}
+                                          >
                                             <RiEditCircleFill
                                               style={{
                                                 cursor: "pointer",
@@ -4073,10 +3723,10 @@ function EmployeePanel() {
                                                 color: "black",
                                               }}
                                             />
-                                          </IconButton>
+                                          </button>
                                         </td>
                                       )}
-                                      {/* <td>
+                                      <td>
                                         <TiArrowForward
                                           onClick={() => {
                                             handleConfirmAssign(
@@ -4093,18 +3743,6 @@ function EmployeePanel() {
                                             height: "17px",
                                           }}
                                           color="grey"
-                                        />
-                                      </td> */}
-                                      <td>
-                                        <BdmMaturedCasesDialogBox
-                                          currentData={currentData}
-                                          forwardedCompany={company["Company Name"]}
-                                          forwardCompanyId={company._id}
-                                          forwardedStatus={company.Status}
-                                          forwardedEName={company.ename}
-                                          bdeOldStatus={company.Status}
-                                          bdmNewAcceptStatus={"Pending"}
-                                          fetchNewData={fetchNewData}
                                         />
                                       </td>
                                     </>
@@ -4205,37 +3843,41 @@ function EmployeePanel() {
                                 {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
                                   (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
                                     <td>
-                                      <IconButton onClick={() => {
-                                        handleViewFeedback(
-                                          company._id,
-                                          company["Company Name"],
-                                          company.feedbackRemarks,
-                                          company.feedbackPoints
-                                        )
-                                      }}>
+                                      <button
+                                        style={{ border: "transparent", background: "none" }}
+                                        onClick={() => {
+                                          handleViewFeedback(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.feedbackRemarks,
+                                            company.feedbackPoints
+                                          )
+                                        }}>
                                         <RiInformationLine style={{
                                           cursor: "pointer",
                                           width: "17px",
                                           height: "17px",
                                         }} color="#fbb900" />
-                                      </IconButton>
+                                      </button>
                                     </td>
                                   ) : (
                                     <td>
-                                      <IconButton onClick={() => {
-                                        handleViewFeedback(
-                                          company._id,
-                                          company["Company Name"],
-                                          company.feedbackRemarks,
-                                          company.feedbackPoints
-                                        )
-                                      }}>
+                                      <button
+                                        style={{ border: "transparent", background: "none" }}
+                                        onClick={() => {
+                                          handleViewFeedback(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.feedbackRemarks,
+                                            company.feedbackPoints
+                                          )
+                                        }}>
                                         <RiInformationLine style={{
                                           cursor: "pointer",
                                           width: "17px",
                                           height: "17px",
                                         }} color="lightgrey" />
-                                      </IconButton>
+                                      </button>
                                     </td>
                                   )
                                 ) : null}
@@ -4263,7 +3905,7 @@ function EmployeePanel() {
                         }}
                         className="pagination"
                       >
-                        <IconButton
+                        <button
                           onClick={() =>
                             setCurrentPage((prevPage) =>
                               Math.max(prevPage - 1, 0)
@@ -4272,13 +3914,13 @@ function EmployeePanel() {
                           disabled={currentPage === 0}
                         >
                           <IconChevronLeft />
-                        </IconButton>
+                        </button>
                         <span>
                           Page {currentPage + 1} of{" "}
                           {Math.ceil(employeeData.length / itemsPerPage)}
                         </span>
 
-                        <IconButton
+                        <button
                           onClick={() =>
                             setCurrentPage((prevPage) =>
                               Math.min(
@@ -4294,7 +3936,7 @@ function EmployeePanel() {
                           }
                         >
                           <IconChevronRight />
-                        </IconButton>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -4383,7 +4025,7 @@ function EmployeePanel() {
         maxWidth="sm">
         <DialogTitle>
           Choose Booking{" "}
-          <IconButton
+          <button
             onClick={() => {
               setOpenBooking(false);
               setCurrentForm(null);
@@ -4391,7 +4033,7 @@ function EmployeePanel() {
             style={{ float: "right" }}
           >
             <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          </button>{" "}
         </DialogTitle>
 
         <DialogContent>
@@ -4440,9 +4082,9 @@ function EmployeePanel() {
       <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
           Request Data{" "}
-          <IconButton onClick={closepopup} style={{ float: "right" }}>
+          <button onClick={closepopup} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          </button>{" "}
         </DialogTitle>
         <DialogContent>
           <div className="container">
@@ -4571,9 +4213,9 @@ function EmployeePanel() {
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
           </span>
-          <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
+          <button onClick={closepopupRemarks} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          </button>{" "}
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
@@ -4656,12 +4298,12 @@ function EmployeePanel() {
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
           </span>
-          <IconButton
+          <button
             onClick={closePopUpRemarksEdit}
             style={{ float: "right" }}
           >
             <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          </button>{" "}
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
@@ -4705,12 +4347,12 @@ function EmployeePanel() {
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
           </span>
-          <IconButton
+          <button
             onClick={closePopUpRemarksBdm}
             style={{ float: "right" }}
           >
             <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          </button>{" "}
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
@@ -4749,9 +4391,9 @@ function EmployeePanel() {
       <Dialog className='My_Mat_Dialog' open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
         <DialogTitle>
           Company Info{" "}
-          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
+          <button onClick={closepopupNew} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          </button>{" "}
         </DialogTitle>
         <DialogContent>
           <div className="modal-dialog" role="document">
@@ -5125,9 +4767,9 @@ function EmployeePanel() {
       <Dialog className='My_Mat_Dialog' open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
         <DialogTitle>
           Import CSV DATA{" "}
-          <IconButton onClick={closepopupCSV} style={{ float: "right" }}>
+          <button onClick={closepopupCSV} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          </button>{" "}
         </DialogTitle>
         <DialogContent>
           <div className="maincon">
@@ -5152,13 +4794,6 @@ function EmployeePanel() {
               />
             </div>
           </div>
-          {/* <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-              />
-              <button onClick={handleButtonClick}>Choose File</button> */}
         </DialogContent>
         <button onClick={handleUploadData} className="btn btn-primary bdr-radius-none">
           Submit
@@ -5176,9 +4811,9 @@ function EmployeePanel() {
           <div className="d-flex align-items-center justify-content-between">
             <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" > {feedbackCompany}</span></div>
             <div>
-              <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+              <button onClick={closeFeedbackPopup} style={{ float: "right" }}>
                 <CloseIcon color="primary"></CloseIcon>
-              </IconButton>{" "}
+              </button>{" "}
             </div>
           </div>
         </DialogTitle>
@@ -5254,51 +4889,7 @@ function EmployeePanel() {
         </DialogContent>
       </Dialog>
 
-      {/* -------------------------------------------------------- DIALOG FOR BDM NAMES--------------------------------------------------- */}
-      {/* <Dialog className='My_Mat_Dialog' open={openBdmNamePopup} onClose={closeBdmNamePopup} fullWidth maxWidth="sm">
-        <DialogTitle>
-          Choose BDM To Forward Data
-          <IconButton onClick={closeBdmNamePopup} style={{ float: "right" }}>
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
-        </DialogTitle>
-        <DialogContent>
-          <div className="container">
-            <div className="mb-3">
-              <label className="form-label" htmlFor="selectYear">
-                Select BDM :
-              </label>
-              <select
-                id="selectYear"
-                name="selectYear"
-                value={selectedBDM}
-                onChange={(e) => {
-                  setSelectedBDM(e.target.value)
-                }}
-                className="form-select"
-              >
-                <option value="" disabled>Select BDM Name</option>
-                {bdmNames.map((name) => (
-                  <option value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </DialogContent>
-        <div class="card-footer">
-          <button
-            style={{ width: "100%" }}
-            onClick={handleForwardBdm}
-            className="btn btn-primary bdr-radius-none"
-          >
-            Submit
-          </button>
-        </div>
-      </Dialog> */}
-
-      {/* {openBdmNamePopup && (
+      {openBdmNamePopup && (
         <>
           <div
             className="popup-overlay d-flex justify-content-center align-items-center"
@@ -5328,9 +4919,9 @@ function EmployeePanel() {
               <div className="d-flex justify-content-between">
                 <h3>BDM Matured Cases</h3>
                 <div>
-                  <button className="cursor-pointer d-flex align-items-center" onClick={() => setOpenBdmNamePopoup(false)}>
+                  {/* <button className="cursor-pointer d-flex align-items-center" onClick={() => setOpenBdmNamePopoup(false)}> */}
                   <IoMdClose className="cursor-pointer" onClick={() => setOpenBdmNamePopoup(false)} />
-                  </button>
+                  {/* </button> */}
                 </div>
               </div>
               <BdmMaturedCasesDialogBox
@@ -5346,39 +4937,11 @@ function EmployeePanel() {
             </div>
           </div>
         </>
-      )} */}
-
-      {/* Side Drawer for Edit Booking Requests */}
-      <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
-        <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
-          <div className="LeadFormPreviewDrawar-header">
-            <div className="Container">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h2 className="title m-0 ml-1">
-                    {currentForm ? currentForm["Company Name"] : "Company Name"}
-                  </h2>
-                </div>
-                <div>
-                  <IconButton onClick={closeAnchor}>
-                    <CloseIcon />
-                  </IconButton>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <LeadFormPreview
-              setOpenAnchor={setOpenAnchor}
-              currentLeadForm={currentForm}
-            />
-          </div>
-        </div>
-      </Drawer>
+      )}
 
       {/* Drawer for Follow Up Projection  */}
       <div>
-        <Drawer
+        {/* <Drawer
           style={{ top: "50px" }}
           anchor="right"
           open={openProjection}
@@ -5402,35 +4965,19 @@ function EmployeePanel() {
                     (item) => item.companyName === projectingCompany
                   ) ? (
                   <>
-                    <IconButton
+                    <button
                       onClick={() => {
                         setIsEditProjection(true);
                       }}
                     >
                       <EditIcon color="grey"></EditIcon>
-                    </IconButton>
+                    </button>
                   </>
                 ) : null}
-                {/* <IconButton
-                  onClick={() => {
-                    setIsEditProjection(true);
-                  }}>
-                  <EditIcon color="grey"></EditIcon>
-                </IconButton> */}
-                {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
-                  <DeleteIcon
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      color: "#bf0b0b",
-                    }}
-                  >
-                    Delete
-                  </DeleteIcon>
-                </IconButton> */}
-                <IconButton>
+
+                <button>
                   <IoClose onClick={closeProjection} />
-                </IconButton>
+                </button>
               </div>
             </div>
             <hr style={{ margin: "0px" }} />
@@ -5642,14 +5189,27 @@ function EmployeePanel() {
                 </button>
               </div>
               <div>
-
-                {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
-                {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
-                {error && <p>{error}</p>} */}
               </div>
             </div>
           </div>
-        </Drawer>
+        </Drawer> */}
+        {
+          openProjection &&
+          <ProjectionDialog
+            openPorjection={openProjection}
+            closeProjection={closeProjection}
+            projectingCompany={projectingCompany}
+            projectionData={projectionData}
+            isEditProjection={isEditProjection}
+            setIsEditProjection={setIsEditProjection}
+            handleDelete={handleDelete}
+            currentProjection={currentProjection}
+            setCurrentProjection={setCurrentProjection}
+            handleProjectionSubmit={handleProjectionSubmit}
+            selectedValues={selectedValues}
+            setSelectedValues={setSelectedValues}
+          />
+        }
 
         {/* //----------------leads filter drawer------------------------------- */}
         <Drawer
@@ -5876,9 +5436,9 @@ function EmployeePanel() {
         >
           <DialogTitle>
             Today's Project Collection{" "}
-            <IconButton onClick={closePopup} style={{ float: "right" }}>
+            <button onClick={closePopup} style={{ float: "right" }}>
               <CloseIcon color="primary" />
-            </IconButton>
+            </button>
           </DialogTitle>
           <DialogContent>
             <div className="modal-dialog modal-lg" role="document">
@@ -6117,4 +5677,4 @@ function EmployeePanel() {
   );
 }
 
-export default EmployeePanel;
+export default EmployeePanelCopy;

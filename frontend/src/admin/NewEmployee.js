@@ -26,9 +26,9 @@ import DeletedEmployeePanel from "./DeletedEmployeePanel.jsx";
 import { AiOutlineUserDelete } from "react-icons/ai";
 import Employees from "./Employees.js";
 import { useQuery } from "@tanstack/react-query";
-import AddBulkTargetDialog from "./AddBulkTagretDialog.jsx";
 import UpcomingEmployees from "../Hr_panel/Components/UpcomingEmployees.jsx";
 import DialogAddRecentEmployee from "../Hr_panel/Components/Extra Components/DialogAddRecentEmployee.jsx";
+import AddBulkTagretDialog from "../admin/ExtraComponent/AddBulkTagretDialog.jsx";
 
 
 
@@ -236,11 +236,14 @@ function NewEmployee() {
                             </div>
                             <div className="d-flex align-items-center">
                                 <div className="mr-1">
-                                    <DialogAddRecentEmployee refetch={refetchActive} isAdmin={true}/>
+                                    <DialogAddRecentEmployee
+                                        refetch={refetchActive}
+                                        isAdmin={true}
+                                    />
                                     {/* <button className="btn btn-primary" onClick={() => setAddEmployeePopup(true)}>+ Add Employee</button> */}
                                 </div>
                                 <div>
-                                    <AddBulkTargetDialog
+                                    <AddBulkTagretDialog
                                         refetchActive={refetchActive} />
                                 </div>
                             </div>
