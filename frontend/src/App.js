@@ -125,6 +125,7 @@ import "../src/assets/v2_style.css"
 import "../src/assets/hover.css"
 import AdminLayout from "./admin/AdminLayout.jsx";
 import AdminEmployeeProfile from "./admin/AdminEmployeeProfile.jsx";
+import EmployeePanelCopy from "./employeeComp/EmployeePanelCopy.jsx";
 
 
 function App() {
@@ -160,6 +161,7 @@ function App() {
           <Route element={newtoken ? <EmployeeLayout /> : <Navigate to="/" />}>
             <Route path="/employee-dashboard/:userId" element={<EmployeeDashboard />} />
             <Route path="/employee-data/:userId" element={<EmployeePanel />} />
+            {/* <Route path="/employee-data/:userId" element={<EmployeePanelCopy />} /> */}
             <Route path="/employee-team-leads/:userId" element={<EmployeeTeamLeads />} />
             <Route path="/employee-bookings/:userId" element={<EmployeeMaturedBookings />} />
             <Route path="/employee-reports/:userId" element={<EmployeeReports />} />
