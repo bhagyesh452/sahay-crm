@@ -45,6 +45,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false); // To highlight the area during drag
     const [isValidForm, setIsValidForm] = useState(false); // State to track form validity
+    const modalRef = useRef(null); // Create a ref for the modal
 
     const handleCloseBackdrop = () => {
         setOpenBacdrop(false)
@@ -316,6 +317,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 generatedPassword = generateRandomPassword(firstName);
             }
             try {
+                setOpenBacdrop(true);
                 let dataToSend = {
                     email: email,
                     number: number,
@@ -349,7 +351,20 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         text: "You have successfully added the data!",
                         icon: "success",
                     });
-                    setIsValidForm(true)
+                    document.querySelector("#myModal").classList.remove("show");
+                    document.querySelector("#myModal").setAttribute("aria-hidden", "true");
+                    document.querySelector("#myModal").style.display = "none";
+
+                    // Remove the modal-backdrop (faded overlay) to avoid screen fade
+                    const modalBackdrop = document.querySelector('.modal-backdrop');
+                    if (modalBackdrop) {
+                        modalBackdrop.parentNode.removeChild(modalBackdrop);
+                    }
+
+                    // Ensure body does not have leftover modal-open class (which disables scrolling)
+                    document.body.classList.remove('modal-open');
+                    document.body.style.removeProperty('overflow');
+                    document.body.style.removeProperty('padding-right');
                     handleCloseDialog()
                     refetch(); // To refresh data
                 }
@@ -360,6 +375,8 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                     text: "Something went wrong!",
                 });
                 console.error("Internal server error");
+            }finally{
+                setOpenBacdrop(false);
             }
         }
     };
@@ -683,7 +700,7 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                 </a>
             </div>
             {/* ------------------------------------------------------add employee dialog------------------------------------------------------- */}
-            <div className="modal" id="myModal">
+            <div className="modal" id="myModal" ref={modalRef}>
                 <div className="modal-dialog modal-lg modal-dialog-centered">
                     <div className="modal-content">
                         {/* Modal Header */}
@@ -1064,10 +1081,10 @@ function DialogAddRecentEmployee({ refetch, isAdmin }) {
                         </div>
                         <div className="modal-footer">
                             {isAddSingleEmployee ? (
-                                <button className="btn btn-primary" 
-                                // {...(isValidForm ? { 'data-bs-dismiss': 'modal' } : {})} // Only close modal if form is valid
-                                data-bs-dismiss="modal"
-                                onClick={handleSubmit}
+                                <button className="btn btn-primary"
+                                    // {...(isValidForm ? { 'data-bs-dismiss': 'modal' } : {})} // Only close modal if form is valid
+                                    //data-bs-dismiss="modal"
+                                    onClick={handleSubmit}
                                 >
                                     Submit
                                 </button>

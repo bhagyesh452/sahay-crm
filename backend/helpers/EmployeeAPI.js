@@ -2441,6 +2441,7 @@ router.put("/einfo/:id", async (req, res) => {
 router.post('/addbulktargetemployees', async (req, res) => {
   try {
     const { employeeData } = req.body;
+    console.log("employeeData", employeeData)
 
     if (!employeeData || !Array.isArray(employeeData)) {
       return res.status(400).json({ message: 'Invalid data format' });

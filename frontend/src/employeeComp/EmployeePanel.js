@@ -536,27 +536,6 @@ function EmployeePanel() {
     }
   };
 
-
-
-
-  // const fecthTeamData = async () => {
-  //   const ename = data.ename;
-  //   //console.log("ename", ename)
-  //   try {
-  //     const response = await axios.get(`${secretKey}/teams/teaminfo/${ename}`);
-
-  //     //console.log("teamdata", response.data)
-  //     setTeamInfo(response.data);
-  //     setBdmName(response.data.bdmName);
-  //     //setTeamDataFilter(response.data)
-  //   } catch (error) {
-  //     console.log("error Fetching data", error.message);
-  //   }
-  // };
-
-  // console.log("teaminfo", teamInfo)
-  //console.log("bdmName", bdmName)
-
   useEffect(() => {
     //fecthTeamData();
     fetchBDMbookingRequests();
