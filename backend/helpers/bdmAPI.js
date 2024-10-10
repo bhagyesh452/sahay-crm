@@ -421,65 +421,65 @@ router.post("/update-bdm-status/:id", async (req, res) => {
       bdmStatusChangeTime: bdmStatusChangeTime,
     });
 
-    //   socketIO.emit("bdmDataAcceptedRequest" , {
-    //     ename : company.ename,
-    //     companyName : company["Company Name"]
-    //   })
-
-    //   //console.log(company.ename)
-
-    //   res.status(200).json({ message: "Status updated successfully" });
-    // } catch (error) {
-    //   console.error("Error updating status:", error);
-    //   res.status(500).json({ error: "Internal Server Error" });
-    // }
-
-    // Fetch the BDM name and company name
-    const ename = company.ename;
-    const bdmName = company.bdmName;
-    const companyName = company["Company Name"];
-
-    // Fetch the ratio for the specific BDM from the `/bdmMaturedCases` aggregation
-    const bdmStats = await CompanyModel.aggregate([
-      { $match: { bdmAcceptStatus: "Accept", bdmName: bdmName } },
-      {
-        $group: {
-          _id: "$bdmName",
-          receivedCases: { $sum: 1 },
-          maturedCases: {
-            $sum: {
-              $cond: [{ $eq: ["$Status", "Matured"] }, 1, 0],
-            },
-          },
-        },
-      },
-      {
-        $addFields: {
-          ratio: {
-            $cond: [
-              { $eq: ["$receivedCases", 0] },
-              0,
-              { $multiply: [{ $divide: ["$maturedCases", "$receivedCases"] }, 100] },
-            ],
-          },
-        },
-      },
-    ]);
-
-    const ratio = bdmStats[0]?.ratio || 0;
-
-    // Emit socket event with BDM name, company name, and ratio
     socketIO.emit("bdmDataAcceptedRequest", {
-      ename: ename,
-      companyName: companyName,
-      ratio: ratio.toFixed(2), // Send the ratio as a formatted value
+      ename: company.ename,
+      companyName: company["Company Name"]
     });
+
+    //console.log(company.ename);
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+
+  //   // Fetch the BDM name and company name
+  //   const ename = company.ename;
+  //   const bdmName = company.bdmName;
+  //   const companyName = company["Company Name"];
+
+  //   // Fetch the ratio for the specific BDM from the `/bdmMaturedCases` aggregation
+  //   const bdmStats = await CompanyModel.aggregate([
+  //     { $match: { bdmAcceptStatus: "Accept", bdmName: bdmName } },
+  //     {
+  //       $group: {
+  //         _id: "$bdmName",
+  //         receivedCases: { $sum: 1 },
+  //         maturedCases: {
+  //           $sum: {
+  //             $cond: [{ $eq: ["$Status", "Matured"] }, 1, 0],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       $addFields: {
+  //         ratio: {
+  //           $cond: [
+  //             { $eq: ["$receivedCases", 0] },
+  //             0,
+  //             { $multiply: [{ $divide: ["$maturedCases", "$receivedCases"] }, 100] },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //   ]);
+
+  //   const ratio = bdmStats[0]?.ratio || 0;
+
+  //   // Emit socket event with BDM name, company name, and ratio
+  //   socketIO.emit("bdmDataAcceptedRequest", {
+  //     ename: ename,
+  //     companyName: companyName,
+  //     ratio: ratio.toFixed(2), // Send the ratio as a formatted value
+  //   });
+
+  //   res.status(200).json({ message: "Status updated successfully" });
+  // } catch (error) {
+  //   console.error("Error updating status:", error);
+  //   res.status(500).json({ error: "Internal Server Error" });
+  // }
 });
 
 router.get(`/api/completeLeadsData`, async (req, res) => {

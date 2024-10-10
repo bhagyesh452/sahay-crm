@@ -178,9 +178,9 @@ function Header({ name, id, designation, empProfile, gender }) {
 
     socket.on("bdmDataAcceptedRequest", (res) => {
       if (name === res.ename) {
-        enqueueSnackbar(`BDM has accepted ${res.companyName}. Your lead closing chance is increased by ${res.ratio}%. 🔄`, {
+        enqueueSnackbar(`BDM has accpeted ${res.companyName} 🔄`, {
           variant: 'reportComplete',
-          persist: true,
+          persist: true
         });
         const audioplayer = new Audio(notification_audio);
         audioplayer.play();
