@@ -22,7 +22,6 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
     const [showSuccessModal, setShowSuccessModal] = useState(false); // To trigger success modal
     const [selectedBdmRatio, setSelectedBdmRatio] = useState(0); // Store the ratio of selected BDM
 
-    
     // Fetch current employee based on userId
     const fetchCurrentEmployee = async () => {
         try {
@@ -103,9 +102,11 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
             // Show success modal
             setShowSuccessModal(true);
             fetchNewData(bdeOldStatus);
+            setSelectedBdm(null);
+            Swal.fire("Lead Forwarded Successful!!",`By forwarding this lead to ${selectedBdm}, you raised the chances of closing it by ${ratio}%`, "success");
         } catch (error) {
             console.log(error);
-            Swal.fire("Error", "Error Assigning Data", "error");
+            Swal.fire("Error", "Error Forwarding Lead", "error");
         }
     };
 
@@ -271,7 +272,7 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                 </div>
             </div>
 
-            {showSuccessModal && (
+            {/* {showSuccessModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                     <div className="modal-dialog modal-lg modal-dialog-centered">
                         <div className="modal-content">
@@ -296,7 +297,7 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 }
