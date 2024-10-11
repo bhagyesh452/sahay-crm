@@ -115,9 +115,6 @@ const RemarksDialog = ({
 
 const handleDeleteRemarks = async (remarksId, remarksValue) => {
     const mainRemarks = remarksValue === changeRemarks;
-    console.log("mainRemarks" , mainRemarks)
-    console.log("changeRemarks" , changeRemarks)
-    console.log("remarksvalue" , remarksValue)
     try {
       await axios.delete(`${secretKey}/remarks/remarks-history/${remarksId}`);
       if (mainRemarks) {

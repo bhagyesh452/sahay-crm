@@ -7,8 +7,7 @@ import { MdOutlinePostAdd } from "react-icons/md";
 import debounce from "lodash/debounce";
 
 
-function EmployeeRequestDataDialog({secretKey , ename}) {
-    const [open, openchange] = useState(false);
+function EmployeeRequestDataDialog({secretKey , ename  , setOpenChange , open}) {
     const [selectedOption, setSelectedOption] = useState("general");
     const [selectedYear, setSelectedYear] = useState("")
     const [companyType, setCompanyType] = useState("");
@@ -21,11 +20,8 @@ function EmployeeRequestDataDialog({secretKey , ename}) {
         );
         return formattedDate;
     }
-    const functionopenpopup = () => {
-        openchange(true);
-    };
     const closepopup = () => {
-        openchange(false);
+        setOpenChange(false);
     };
 
     const handleOptionChange = (event) => {
@@ -93,11 +89,6 @@ function EmployeeRequestDataDialog({secretKey , ename}) {
     };
     return (
         <div>
-            <button type="button" className="btn mybtn"
-                onClick={functionopenpopup}
-            >
-                <MdOutlinePostAdd className='mr-1' /> Request Data
-            </button>
             {/* Request Data popup */}
             <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
                 <DialogTitle>

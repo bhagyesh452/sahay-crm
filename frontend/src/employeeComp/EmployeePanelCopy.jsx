@@ -9,16 +9,8 @@ import axios from "axios";
 import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { Drawer } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FontDownloadIcon from "@mui/icons-material/FontDownload";
-import AttachmentIcon from "@mui/icons-material/Attachment";
-import ImageIcon from "@mui/icons-material/Image";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IoIosClose } from "react-icons/io";
-import EditIcon from "@mui/icons-material/Edit";
-import { Link } from "react-router-dom";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
-import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
@@ -75,6 +67,7 @@ import CsvImportDialog from "./ExtraComponents/ImportCSVDialog.jsx";
 import EmployeeAddLeadDialog from "./ExtraComponents/EmployeeAddLeadDialog.jsx";
 import EmployeeRequestDataDialog from "./ExtraComponents/EmployeeRequestDataDialog.jsx";
 import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
+import { MdOutlinePostAdd } from "react-icons/md";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -117,16 +110,13 @@ function EmployeePanelCopy() {
     const [showCallHistory, setShowCallHistory] = useState(false);
     const [clientNumber, setClientNumber] = useState("");
     const [employeeData, setEmployeeData] = useState([]);
+    const [nowToFetch, setNowToFetch] = useState(false);
     const [redesignedData, setRedesignedData] = useState([])
     const [openbdmRequest, setOpenbdmRequest] = useState(false);
     const [selectAllChecked, setSelectAllChecked] = useState(true);
     const [selectedYears, setSelectedYears] = useState([]);
     const [selectedMonths, setSelectedMonths] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const [month, setMonth] = useState(0);
-    const [updateData, setUpdateData] = useState({});
-    const [nowToFetch, setNowToFetch] = useState(false);
-    const [RequestApprovals, setRequestApprovals] = useState([]);
     const [mapArray, setMapArray] = useState([]);
     const [totalBookings, setTotalBookings] = useState([]);
     const itemsPerPage = 500;
@@ -399,67 +389,6 @@ function EmployeePanelCopy() {
             // Set loading to false regardless of success or error
         }
     };
-
-    const [totalCounts, setTotalCounts] = useState({
-        notInterested: 0,
-        followUp: 0,
-        interested: 0,
-        forwarded: 0,
-        untouched: 0,
-        matured: 0,
-    });
-
-    // const fetchNewData = async (status, skip = 0, limit = 500) => {
-    //     const cleanString = (str) => str.replace(/\u00A0/g, ' ').trim();
-    //     const cleanedEname = cleanString(data.ename);
-
-    //     try {
-    //         if (!status) {
-    //             setLoading(true);
-    //         }
-
-    //         const response = await axios.get(`${secretKey}/company-data/employees/${cleanedEname}`, {
-    //             params: {
-    //                 limit,
-    //                 skip,
-    //                 dataStatus: status || dataStatus, // Pass dataStatus as a query parameter
-    //             }
-    //         });
-
-    //         const { data, totalCounts } = response.data;
-    //         const sortedData = data.sort((a, b) => new Date(b.AssignDate) - new Date(a.AssignDate));
-
-    //         setEmployeeData(sortedData);
-    //         setTotalCounts(totalCounts);
-
-    //         if (status === "Not Interested" || status === "Junk") {
-    //             setEmployeeData(data.filter(obj => obj.Status === "Not Interested" || obj.Status === "Junk"));
-    //             setdataStatus("NotInterested");
-    //         } else if (status === "FollowUp") {
-    //             setEmployeeData(data.filter(obj => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"));
-    //             setdataStatus("FollowUp");
-    //         } else if (status === "Interested") {
-    //             setEmployeeData(data.filter(obj => (obj.Status === "Interested" || obj.Status === "FollowUp") && obj.bdmAcceptStatus === "NotForwarded"));
-    //             setdataStatus("Interested");
-    //         } else if (status === "Forwarded") {
-    //             setEmployeeData(data.filter(obj => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp")));
-    //             setdataStatus("Forwarded");
-    //         } else {
-    //             setEmployeeData(data);
-    //             setdataStatus("All");
-    //         }
-
-    //         if (!status) {
-    //             setLoading(false);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error fetching data:", error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-
 
     useEffect(() => {
         if (data.ename) {
@@ -775,59 +704,6 @@ function EmployeePanelCopy() {
         }
     };
 
-    // const handleUpdate = async () => {
-    //     // Now you have the updated Status and Remarks, perform the update logic
-    //     //console.log(cid, cstat, changeRemarks);
-    //     const Remarks = changeRemarks;
-    //     if (Remarks === "") {
-    //         Swal.fire({ title: "Empty Remarks!", icon: "warning" });
-    //         return true;
-    //     }
-    //     try {
-    //         // Make an API call to update the employee status in the database
-    //         const response = await axios.post(`${secretKey}/remarks/update-remarks/${cid}`, {
-    //             Remarks,
-    //         });
-    //         const response2 = await axios.post(
-    //             `${secretKey}/remarks/remarks-history/${cid}`,
-    //             {
-    //                 Remarks,
-    //                 bdeName,
-    //                 currentCompanyName
-    //             }
-    //         );
-
-    //         // Check if the API call was successful
-    //         if (response.status === 200) {
-    //             Swal.fire("Remarks updated!");
-    //             setChangeRemarks("");
-    //             // If successful, update the employeeData state or fetch data again to reflect changes
-    //             fetchNewData(cstat);
-    //             fetchRemarksHistory();
-    //             // setCstat("");
-    //             closepopupRemarks(); // Assuming fetchData is a function to fetch updated employee data
-    //         } else {
-    //             // Handle the case where the API call was not successful
-    //             console.error("Failed to update status:", response.data.message);
-    //         }
-    //     } catch (error) {
-    //         // Handle any errors that occur during the API call
-    //         console.error("Error updating status:", error.message);
-    //     }
-
-    //     setUpdateData((prevData) => ({
-    //         ...prevData,
-    //         [companyId]: {
-    //             ...prevData[companyId],
-    //             isButtonEnabled: false,
-    //         },
-    //     }));
-
-    //     // After updating, you can disable the button
-    // };
-
-    const [freezeIndex, setFreezeIndex] = useState(null);
-
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -853,25 +729,6 @@ function EmployeePanelCopy() {
         return `${year}-${month}-${day}`;
     }
 
-    const fetchApproveRequests = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
-            setRequestApprovals(response.data);
-            const uniqueEnames = response.data.reduce((acc, curr) => {
-                if (!acc.some((item) => item.ename === data.ename)) {
-                    const [dateString, timeString] = formatDateAndTime(
-                        curr.AssignDate
-                    ).split(", ");
-                    acc.push({ ename: data.ename, date: dateString, time: timeString });
-                }
-                return acc;
-            }, []);
-            setMapArray(uniqueEnames);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
-
     const fetchRedesignedFormDataAll = async () => {
         try {
             //console.log(maturedID);
@@ -896,32 +753,7 @@ function EmployeePanelCopy() {
         const indianDate = date.toLocaleString("en-IN", options);
         return indianDate;
     };
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-    // console.log(currentProjection)
-
-    const [openIncoDate, setOpenIncoDate] = useState(false);
-
-    const handleFilterIncoDate = () => {
-        setOpenIncoDate(!openIncoDate);
-    };
-    const handleCloseIncoDate = () => {
-        setOpenIncoDate(false);
-    };
-    const handleMarktrue = async () => {
-        try {
-            // Assuming 'id' is the ID of the object you want to mark as read
-            const id = requestData._id;
-
-            // Send a POST request to set the AssignRead property to true for the object with the given ID
-            await axios.post(`${secretKey}/requests/setMarktrue/${id}`);
-
-            // Optionally, you can also update the state or perform any other actions after successfully marking the object as read
-        } catch (error) {
-            // Handle any errors that occur during the API request
-            console.error("Error marking object as read:", error);
-        }
-    };
+    
     const createNewArray = (data) => {
         let dataArray;
 
@@ -969,92 +801,6 @@ function EmployeePanelCopy() {
         });
 
         return newArray;
-    };
-
-    // Call the function to create the new array
-    const resultArray =
-        moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
-
-    // Handle "Select All" checkbox change
-    const handleSelectAllChange = (e) => {
-        const isChecked = e.target.checked;
-        setSelectAllChecked(isChecked);
-        if (isChecked) {
-            const newEmpData =
-                dataStatus === "All"
-                    ? moreEmpData.filter(
-                        (obj) =>
-                            obj.Status === "Untouched" ||
-                            obj.Status === "Busy" ||
-                            obj.Status === "Not Picked Up"
-                    )
-                    : dataStatus === "Interested"
-                        ? moreEmpData.filter((obj) => obj.Status === "Interested")
-                        : dataStatus === "Not Interested"
-                            ? moreEmpData.filter(
-                                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-                            )
-                            : dataStatus === "FollowUp"
-                                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                                : [];
-
-            setEmployeeData(newEmpData);
-            setSelectedYears([
-                ...new Set(
-                    newEmpData.map((data) =>
-                        new Date(data["Company Incorporation Date  "])
-                            .getFullYear()
-                            .toString()
-                    )
-                ),
-            ]);
-            setSelectedMonths([]);
-        } else {
-            setEmployeeData([]);
-            setSelectedYears([]);
-            setSelectedMonths([]);
-        }
-    };
-
-    // Handle year checkbox change
-    const handleYearFilterChange = (e, selectedYear) => {
-        const isChecked = e.target.checked;
-        setSelectAllChecked(false); // Uncheck "Select All" when a year checkbox is clicked
-        if (isChecked) {
-            const newEmpData =
-                dataStatus === "All"
-                    ? moreEmpData.filter(
-                        (obj) =>
-                            obj.Status === "Untouched" ||
-                            obj.Status === "Busy" ||
-                            obj.Status === "Not Picked Up"
-                    )
-                    : dataStatus === "Interested"
-                        ? moreEmpData.filter((obj) => obj.Status === "Interested")
-                        : dataStatus === "Not Interested"
-                            ? moreEmpData.filter(
-                                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-                            )
-                            : dataStatus === "FollowUp"
-                                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                                : [];
-            setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
-            const filteredData = newEmpData.filter(
-                (data) =>
-                    new Date(data["Company Incorporation Date  "]).getFullYear() ===
-                    selectedYear
-            );
-
-            setEmployeeData([...employeeData, ...filteredData]); // Add filtered data to the existing employeeData
-        } else {
-            setSelectedYears(selectedYears.filter((year) => year !== selectedYear)); // Remove selected year from the list
-            const filteredData = employeeData.filter(
-                (data) =>
-                    new Date(data["Company Incorporation Date  "]).getFullYear() !==
-                    selectedYear
-            );
-            setEmployeeData(filteredData); // Update employeeData with filtered data
-        }
     };
 
     // --------------------------------------forward to bdm function---------------------------------------------\
@@ -1453,6 +1199,12 @@ function EmployeePanelCopy() {
         }
     };
 
+    // -------------------request dialog functions-------------------
+    const [open, openchange] = useState(false);
+    const functionopenpopup = () => {
+        openchange(true);
+    };
+
     return (
         <div>
 
@@ -1547,15 +1299,18 @@ function EmployeePanelCopy() {
                                             >
                                                 <IoFilterOutline className='mr-1' /> Filter
                                             </button>
-                                            {/* <button type="button" className="btn mybtn"
+                                            <button type="button" className="btn mybtn"
                                                 onClick={functionopenpopup}
                                             >
                                                 <MdOutlinePostAdd className='mr-1' /> Request Data
-                                            </button> */}
+                                            </button>
+                                            {open &&
                                             <EmployeeRequestDataDialog
                                                 secretKey={secretKey}
                                                 ename={data.ename}
-                                            />
+                                                setOpenChange={openchange}
+                                                open={open}
+                                            /> }
 
                                         </div>
                                     </div>
