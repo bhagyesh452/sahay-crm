@@ -3668,7 +3668,6 @@ function EmployeePanel() {
                                     color="grey"
                                   />
                                 </td>
-
                                 <td>
                                   {company["Status"] === "Matured" ? (
                                     <span>{company["Status"]}</span>

@@ -152,13 +152,6 @@ useEffect(() => {
         password,
         designation,
       });
-      //console.log(response.data)
-    //   const response2 = await axios.post(`${secretKey}/loginDetails`, {
-    //           ename,
-    //            date,
-    //            time,
-    //           address,
-    //          });
   
       const { newtoken } = response.data;
       setManagerToken(newtoken);

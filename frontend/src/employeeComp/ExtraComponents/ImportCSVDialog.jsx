@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { IoClose } from "react-icons/io5";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { TbFileImport } from "react-icons/tb";
@@ -112,7 +112,7 @@ const CsvImportDialog = ({ secretKey, data }) => {
         <DialogTitle>
           Import CSV DATA
           <button onClick={closepopupCSV} style={{ float: "right" }}>
-            <CloseIcon color="primary" />
+            <IoClose color="primary" />
           </button>
         </DialogTitle>
         <DialogContent>
