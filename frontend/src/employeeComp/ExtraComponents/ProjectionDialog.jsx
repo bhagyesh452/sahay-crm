@@ -14,10 +14,11 @@ function ProjectionDialog({
     projectionCompanyName,
     projectionData, // Pass projectionData to check if a projection exists
     bdmAcceptStatus,
-    editingStateOfProjection,
     secretKey,
     fetchProjections,
-    ename
+    ename,
+    hasMaturedStatus,
+    hasExistingProjection
 }) {
     const [open, setOpen] = useState(false);
     const [currentProjection, setCurrentProjection] = useState({
@@ -32,131 +33,143 @@ function ProjectionDialog({
         time: "",
         editCount: -1,
         totalPaymentError: "",
-      });
-      const [selectedValues, setSelectedValues] = useState([]);
-      const [isEditProjection, setIsEditProjection] = useState(false);
-      const [projectingCompany, setProjectingCompany] = useState("");
-    
-      // Function to open projection dialog and set the current projection data
-      const functionopenprojection = (comName) => {
-        setProjectingCompany(comName);
-        setOpen(true);
-        const findOneprojection = projectionData.find(
-          (item) => item.companyName === comName
-        );
+    });
+    const [selectedValues, setSelectedValues] = useState([]);
+    const [isEditProjection, setIsEditProjection] = useState(false);
+    const [projectingCompany, setProjectingCompany] = useState("");
+    // Check if the company has an existing projection
+    const cleanedProjectionCompanyName = projectionCompanyName.toLowerCase().trim();
+    const findOneprojection = projectionData?.find(
+        (item) => item.companyName.toLowerCase().trim() === cleanedProjectionCompanyName
+    );
+
+    // console.log("hasExistingProjection:", hasExistingProjection);
+    const functionopenprojection = () => {
+        // setProjectingCompany(projectionCompanyName);
+        setOpen(true)
+
+        // console.log("projectionCompanyName:", projectionCompanyName);
+        // console.log("findOneprojection:", findOneprojection);
+
         if (findOneprojection) {
-          setCurrentProjection({
-            companyName: findOneprojection.companyName,
-            ename: findOneprojection.ename,
-            offeredPrize: findOneprojection.offeredPrize,
-            offeredServices: findOneprojection.offeredServices,
-            lastFollowUpdate: findOneprojection.lastFollowUpdate,
-            estPaymentDate: findOneprojection.estPaymentDate,
-            remarks: findOneprojection.remarks,
-            totalPayment: findOneprojection.totalPayment,
-            date: "",
-            time: "",
-            editCount: findOneprojection.editCount,
-          });
-          setSelectedValues(findOneprojection.offeredServices);
+            // Existing projection, set edit mode to true
+            setCurrentProjection({
+                companyName: findOneprojection.companyName,
+                ename: findOneprojection.ename,
+                offeredPrize: findOneprojection.offeredPrize,
+                offeredServices: findOneprojection.offeredServices,
+                lastFollowUpdate: findOneprojection.lastFollowUpdate,
+                estPaymentDate: findOneprojection.estPaymentDate,
+                remarks: findOneprojection.remarks,
+                totalPayment: findOneprojection.totalPayment,
+                date: "",
+                time: "",
+                editCount: findOneprojection.editCount,
+            });
+            setSelectedValues(findOneprojection.offeredServices);
+            setIsEditProjection(false);  // Set to true because it's an edit
+        } else {
+            // No existing projection, we are creating a new one
+            setCurrentProjection({
+                companyName: projectionCompanyName,
+                ename: "",
+                offeredPrize: "",
+                offeredServices: [],
+                totalPayment: 0,
+                lastFollowUpdate: "",
+                remarks: "",
+                date: "",
+                time: "",
+                editCount: -1,
+                totalPaymentError: "",
+            });
+            setSelectedValues([]);
+            setIsEditProjection(true);  // New projection, so not in edit mode
         }
-      };
-    
-      const closeProjection = () => {
+    };
+
+    const closeProjection = () => {
         setOpen(false);
         setCurrentProjection({
-          companyName: "",
-          ename: "",
-          offeredPrize: "",
-          offeredServices: "",
-          totalPayment: 0,
-          lastFollowUpdate: "",
-          remarks: "",
-          date: "",
-          time: "",
+            companyName: "",
+            ename: "",
+            offeredPrize: "",
+            offeredServices: "",
+            totalPayment: 0,
+            lastFollowUpdate: "",
+            remarks: "",
+            date: "",
+            time: "",
         });
         setIsEditProjection(false);
         setSelectedValues([]);
-      };
-    
-      // Handle form submission
-      const handleProjectionSubmit = async () => {
+    };
+    // console.log("currentProjection", currentProjection)
+    // Handle form submission
+    const handleProjectionSubmit = async () => {
         try {
-          const newEditCount =
-            currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
-    
-          const finalData = {
-            ...currentProjection,
-            companyName: projectingCompany,
-            ename: ename,
-            offeredServices: selectedValues,
-            editCount: currentProjection.editCount + 1, // Increment editCount
-          };
-    
-          // Validation logic
-          if (finalData.offeredServices.length === 0) {
-            Swal.fire({ title: "Services is required!", icon: "warning" });
-          } else if (finalData.remarks === "") {
-            Swal.fire({ title: "Remarks is required!", icon: "warning" });
-          } else if (Number(finalData.totalPayment) === 0) {
-            Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
-          } else if (Number(finalData.offeredPrize) === 0) {
-            Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
-          } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
-            Swal.fire({
-              title: "Total Payment cannot be greater than Offered Prize!",
-              icon: "warning",
-            });
-          } else if (!finalData.lastFollowUpdate) {
-            Swal.fire({
-              title: "Last FollowUp Date is required!",
-              icon: "warning",
-            });
-          } else if (!finalData.estPaymentDate) {
-            Swal.fire({
-              title: "Estimated Payment Date is required!",
-              icon: "warning",
-            });
-          } else {
-            // Send data to backend API
-            const response = await axios.post(
-              `${secretKey}/projection/update-followup`,
-              finalData
-            );
-            Swal.fire({ title: "Projection Submitted!", icon: "success" });
-            closeProjection(); // Close projection after submitting
-            fetchProjections(); // Refresh data
-          }
-        } catch (error) {
-          console.error("Error updating or adding data:", error.message);
-        }
-      };
-    // Check if the company has an existing projection
-    const hasExistingProjection = projectionData?.some(
-        (item) => item.companyName === projectionCompanyName
-    );
+            // Create a new object with only the relevant data fields
+            const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
+            // console.log("currentProjection", currentProjection)
+            // Manually create a clean object without including any potential non-serializable references
+            const finalData = {
+                companyName: currentProjection.companyName,
+                ename: ename,
+                offeredPrize: currentProjection.offeredPrize,
+                offeredServices: selectedValues,
+                totalPayment: currentProjection.totalPayment,
+                lastFollowUpdate: currentProjection.lastFollowUpdate,
+                estPaymentDate: currentProjection.estPaymentDate,
+                remarks: currentProjection.remarks,
+                editCount: newEditCount, // Increment editCount
+            };
 
-    // Handle drawer open/close state
-    const toggleDrawer = (newOpen) => () => {
-        setOpen(newOpen);
+            // Validation logic
+            if (finalData.offeredServices.length === 0) {
+                Swal.fire({ title: "Services is required!", icon: "warning" });
+            } else if (finalData.remarks === "") {
+                Swal.fire({ title: "Remarks is required!", icon: "warning" });
+            } else if (Number(finalData.totalPayment) === 0) {
+                Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
+            } else if (Number(finalData.offeredPrize) === 0) {
+                Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+            } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
+                Swal.fire({
+                    title: "Total Payment cannot be greater than Offered Prize!",
+                    icon: "warning",
+                });
+            } else if (!finalData.lastFollowUpdate) {
+                Swal.fire({
+                    title: "Last FollowUp Date is required!",
+                    icon: "warning",
+                });
+            } else if (!finalData.estPaymentDate) {
+                Swal.fire({
+                    title: "Estimated Payment Date is required!",
+                    icon: "warning",
+                });
+            } else {
+                // Send data to backend API
+                const response = await axios.post(
+                    `${secretKey}/projection/update-followup`,
+                    finalData
+                );
+                Swal.fire({ title: "Projection Submitted!", icon: "success" });
+                closeProjection(); // Close projection after submitting
+                fetchProjections(); // Refresh data
+            }
+        } catch (error) {
+            console.error("Error updating or adding data:", error.message);
+        }
     };
 
     // Determine the color and icon based on conditions
     const getIconColor = () => {
-        if (bdmAcceptStatus === "NotForwarded") {
+        // console.log("hasmaturedstatus" , hasMaturedStatus , projectionCompanyName)
+        if (bdmAcceptStatus === "NotForwarded" || hasMaturedStatus) {
             return hasExistingProjection ? "#fbb900" : "#8b8b8b";
         }
         return "black"; // Default color for other statuses
-    };
-
-    const handleIconClick = () => {
-        // Open the drawer or do other actions based on conditions
-        if (bdmAcceptStatus === "NotForwarded") {
-            if (hasExistingProjection) {
-                editingStateOfProjection && editingStateOfProjection(true); // Optionally handle editing state
-            }
-        }
-        setOpen(true); // Open the drawer
     };
 
     const handleDelete = async (company) => {
@@ -172,7 +185,7 @@ function ProjectionDialog({
             // Show a success message after successful deletion
 
             setCurrentProjection({
-                companyName: "",
+                companyName:projectionCompanyName,
                 ename: "",
                 offeredPrize: 0,
                 offeredServices: [],
@@ -196,7 +209,7 @@ function ProjectionDialog({
         <div>
             <button style={{ border: "transparent", background: "none" }}>
                 <RiEditCircleFill
-                    onClick={handleIconClick}
+                    onClick={functionopenprojection}
                     style={{
                         cursor: "pointer",
                         width: "17px",
@@ -205,36 +218,11 @@ function ProjectionDialog({
                     color={getIconColor()} // Set the color based on conditions
                 />
             </button>
-            {/* <Drawer
-                style={{ top: "50px" }}
-                anchor="right"
-                open={open}
-                onClose={toggleDrawer(false)}
-            >
-                <div style={{ width: "31em" }}>
-                    <h3>Project Details for {projectionCompanyName}</h3>
-                  
-                    {hasExistingProjection ? (
-                        <div>
-                            <p>Editing Existing Projection</p>
-                           
-                        </div>
-                    ) : (
-                        <div>
-                            <p>New Projection</p>
-                           
-                        </div>
-                    )}
-                    <button onClick={toggleDrawer(false)}>
-                        <IoClose size={24} /> Close
-                    </button>
-                </div>
-            </Drawer> */}
             <Drawer
                 style={{ top: "50px" }}
                 anchor="right"
                 open={open}
-                onClose={toggleDrawer(false)}
+                onClose={closeProjection}
             >
                 <div style={{ width: "31em" }} className="container-xl">
                     <div
@@ -255,17 +243,18 @@ function ProjectionDialog({
                                 ) ? (
                                 <>
                                     <button
+                                        style={{ border: "transparent", background: "none" }}
                                         onClick={() => {
-                                            editingStateOfProjection(true);
+                                            setIsEditProjection(true);
                                         }}
                                     >
-                                        <HiPencilSquare color="grey"/>
+                                        <HiPencilSquare color="grey" />
                                     </button>
                                 </>
                             ) : null}
 
-                            <button>
-                                <IoClose onClick={toggleDrawer(false)} />
+                            <button style={{ border: "transparent", background: "none" }}>
+                                <IoClose onClick={closeProjection} />
                             </button>
                         </div>
                     </div>
@@ -304,7 +293,7 @@ function ProjectionDialog({
                         <div className="label">
                             <strong>
                                 Offered Services{" "}
-                                {selectedValues.length === 0 && (
+                                {selectedValues && selectedValues.length === 0 && (
                                     <span style={{ color: "red" }}>*</span>
                                 )}{" "}
                                 :
@@ -318,7 +307,7 @@ function ProjectionDialog({
                                             selectedOptions.map((option) => option.value)
                                         );
                                     }}
-                                    value={selectedValues.map((value) => ({
+                                    value={selectedValues && selectedValues.map((value) => ({
                                         value,
                                         label: value,
                                     }))}

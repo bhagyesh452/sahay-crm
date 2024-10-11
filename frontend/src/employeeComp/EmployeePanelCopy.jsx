@@ -80,6 +80,8 @@ import { LuHistory } from "react-icons/lu";
 import BdmMaturedCasesDialogBox from "./BdmMaturedCasesDialogBox.jsx";
 import { IoMdClose } from "react-icons/io";
 import ProjectionDialog from "./ExtraComponents/ProjectionDialog.jsx";
+import FeedbackDialog from "./ExtraComponents/FeedbackDialog.jsx";
+import CsvImportDialog from "./ExtraComponents/ImportCSVDialog.jsx";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -88,27 +90,13 @@ function EmployeePanelCopy() {
     const [BDMrequests, setBDMrequests] = useState(null);
     const [openBooking, setOpenBooking] = useState(false);
     const [sortStatus, setSortStatus] = useState("");
-    const [maturedID, setMaturedID] = useState("");
+    //const [maturedID, setMaturedID] = useState("");
     const [currentForm, setCurrentForm] = useState(null);
     const [projectionData, setProjectionData] = useState([]);
     const [requestDeletes, setRequestDeletes] = useState([]);
     const [openLogin, setOpenLogin] = useState(false);
     const [requestData, setRequestData] = useState(null);
     const [sortOrder, setSortOrder] = useState("asc");
-    const [currentProjection, setCurrentProjection] = useState({
-        companyName: "",
-        ename: "",
-        offeredPrize: 0,
-        offeredServices: [],
-        lastFollowUpdate: "",
-        totalPayment: 0,
-        estPaymentDate: "",
-        remarks: "",
-        date: "",
-        time: "",
-        editCount: -1,
-        totalPaymentError: "",
-    });
     const [csvdata, setCsvData] = useState([]);
     const [dataStatus, setdataStatus] = useState("All");
     const [changeRemarks, setChangeRemarks] = useState("");
@@ -199,7 +187,7 @@ function EmployeePanelCopy() {
     const [companyNumber, setCompanyNumber] = useState(0);
     const [companyId, setCompanyId] = useState("");
     const [formOpen, setFormOpen] = useState(false);
-    const [editFormOpen, setEditFormOpen] = useState(false);
+    //const [editFormOpen, setEditFormOpen] = useState(false);
     const [addFormOpen, setAddFormOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [extraData, setExtraData] = useState([])
@@ -336,49 +324,11 @@ function EmployeePanelCopy() {
 
     //console.log(totalBookings, "This is elon musk");
 
-    const functionopenprojection = (comName) => {
-        setProjectingCompany(comName);
-        setOpenProjection(true);
-        const findOneprojection =
-            projectionData.length !== 0 &&
-            projectionData.find((item) => item.companyName === comName);
-        if (findOneprojection) {
-            setCurrentProjection({
-                companyName: findOneprojection.companyName,
-                ename: findOneprojection.ename,
-                offeredPrize: findOneprojection.offeredPrize,
-                offeredServices: findOneprojection.offeredServices,
-                lastFollowUpdate: findOneprojection.lastFollowUpdate,
-                estPaymentDate: findOneprojection.estPaymentDate,
-                remarks: findOneprojection.remarks,
-                totalPayment: findOneprojection.totalPayment,
-                date: "",
-                time: "",
-                editCount: findOneprojection.editCount,
-            });
-            setSelectedValues(findOneprojection.offeredServices);
-        }
-    };
 
 
 
-    const closeProjection = () => {
-        setOpenProjection(false);
-        setProjectingCompany("");
-        setCurrentProjection({
-            companyName: "",
-            ename: "",
-            offeredPrize: "",
-            offeredServices: "",
-            totalPayment: 0,
-            lastFollowUpdate: "",
-            remarks: "",
-            date: "",
-            time: "",
-        });
-        setIsEditProjection(false);
-        setSelectedValues([]);
-    };
+
+
     const functionopenAnchor = () => {
         setTimeout(() => {
             setOpenAnchor(true);
@@ -472,19 +422,11 @@ function EmployeePanelCopy() {
     const functionopenpopupNew = () => {
         openchangeNew(true);
     };
-    const closeAnchor = () => {
-        setOpenAnchor(false);
-    };
-    const functionopenpopupCSV = () => {
-        openchangeCSV(true);
-    };
-
+    
     const closepopup = () => {
         openchange(false);
     };
-    const closepopupCSV = () => {
-        openchangeCSV(false);
-    };
+    
     const closepopupNew = () => {
         openchangeNew(false);
         setOpenFirstDirector(true);
@@ -510,31 +452,13 @@ function EmployeePanelCopy() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${secretKey}/employee/einfo`);
-
-
+            const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
             // Set the retrieved data in the state
-            const tempData = response.data;
-            const userData = tempData.find((item) => item._id === userId);
+            const userData = response.data.data;
             setEmployeeName(userData.ename)
             //console.log(userData);
             setData(userData);
             setmoreFilteredData(userData);
-
-            //console.log(userData.bdmName)
-
-            // if (userData.bdmWork) {
-            //   const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork && !userData.ename.includes(employee.ename))
-            //   //console.log(bdmNames)
-            //   setBdmNames(bdmNames.map((obj) => obj.ename))
-            // } else {
-            //   const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
-            //   setBdmNames(bdmNames.map((obj) => obj.ename))
-            //   //console.log(bdmNames)
-            // }
-
-            //console.log("data" , userData)
-
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
@@ -574,6 +498,8 @@ function EmployeePanelCopy() {
     };
 
     //console.log(projectionData)
+
+    
 
     const fetchNewData = async (status) => {
         const cleanString = (str) => {
@@ -670,6 +596,65 @@ function EmployeePanelCopy() {
             // Set loading to false regardless of success or error
         }
     };
+
+    const [totalCounts, setTotalCounts] = useState({
+        notInterested: 0,
+        followUp: 0,
+        interested: 0,
+        forwarded: 0,
+        untouched: 0,
+        matured: 0,
+    });
+
+    // const fetchNewData = async (status, skip = 0, limit = 500) => {
+    //     const cleanString = (str) => str.replace(/\u00A0/g, ' ').trim();
+    //     const cleanedEname = cleanString(data.ename);
+
+    //     try {
+    //         if (!status) {
+    //             setLoading(true);
+    //         }
+
+    //         const response = await axios.get(`${secretKey}/company-data/employees/${cleanedEname}`, {
+    //             params: {
+    //                 limit,
+    //                 skip,
+    //                 dataStatus: status || dataStatus, // Pass dataStatus as a query parameter
+    //             }
+    //         });
+
+    //         const { data, totalCounts } = response.data;
+    //         const sortedData = data.sort((a, b) => new Date(b.AssignDate) - new Date(a.AssignDate));
+
+    //         setEmployeeData(sortedData);
+    //         setTotalCounts(totalCounts);
+
+    //         if (status === "Not Interested" || status === "Junk") {
+    //             setEmployeeData(data.filter(obj => obj.Status === "Not Interested" || obj.Status === "Junk"));
+    //             setdataStatus("NotInterested");
+    //         } else if (status === "FollowUp") {
+    //             setEmployeeData(data.filter(obj => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"));
+    //             setdataStatus("FollowUp");
+    //         } else if (status === "Interested") {
+    //             setEmployeeData(data.filter(obj => (obj.Status === "Interested" || obj.Status === "FollowUp") && obj.bdmAcceptStatus === "NotForwarded"));
+    //             setdataStatus("Interested");
+    //         } else if (status === "Forwarded") {
+    //             setEmployeeData(data.filter(obj => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp")));
+    //             setdataStatus("Forwarded");
+    //         } else {
+    //             setEmployeeData(data);
+    //             setdataStatus("All");
+    //         }
+
+    //         if (!status) {
+    //             setLoading(false);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error fetching data:", error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
 
 
@@ -1484,42 +1469,7 @@ function EmployeePanelCopy() {
     // })
 
 
-    const handleUploadData = async (e) => {
-        const name = data.ename;
-        const updatedCsvdata = csvdata.map((data) => ({
-            ...data,
-            ename: name,
-        }));
-
-        //console.log("updatedcsv", updatedCsvdata);
-
-        if (updatedCsvdata.length !== 0) {
-            // Move setLoading outside of the loop
-
-            try {
-                await axios.post(`${secretKey}/requests/requestCompanyData`, updatedCsvdata);
-
-                Swal.fire({
-                    title: "Request Sent!",
-                    text: "Your Request has been successfully sent to the Admin",
-                    icon: "success",
-                });
-            } catch (error) {
-                if (error.response.status !== 500) {
-                    Swal.fire("Some of the data are not unique");
-                } else {
-                    Swal.fire("Please upload unique data");
-                }
-                console.log("Error:", error);
-            }
-
-            // Move setLoading outside of the loop
-
-            setCsvData([]);
-        } else {
-            Swal.fire("Please upload data");
-        }
-    };
+    
     const fetchApproveRequests = async () => {
         try {
             const response = await axios.get(`${secretKey}/requests/requestCompanyData`);
@@ -1538,39 +1488,22 @@ function EmployeePanelCopy() {
             console.error("Error fetching data:", error.message);
         }
     };
-    const fetchRedesignedFormData = async () => {
-        try {
-            //console.log(maturedID);
-            const response = await axios.get(
-                `${secretKey}/bookings/redesigned-final-leadData`
-            );
-
-            const data = response.data.find((obj) => obj.company === maturedID);
-            //console.log(data);
-            setCurrentForm(data);
-        } catch (error) {
-            console.error("Error fetching data:", error.message);
-        }
-    };
+    
     const fetchRedesignedFormDataAll = async () => {
         try {
             //console.log(maturedID);
             const response = await axios.get(
                 `${secretKey}/bookings/redesigned-final-leadData`
             );
-
+            //const data = response.data.find((obj) => obj.company === maturedID);
+            //console.log(data);
+            setCurrentForm(data);
             setRedesignedData(response.data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
-    useEffect(() => {
-        //console.log("Matured ID Changed", maturedID);
-        if (maturedID) {
-            fetchRedesignedFormData();
-        }
-    }, [maturedID]);
-    //console.log("Current Form:", currentForm);
+   
     const formatDateAndTime = (AssignDate) => {
         // Convert AssignDate to a Date object
         const date = new Date(AssignDate);
@@ -1581,76 +1514,6 @@ function EmployeePanelCopy() {
         return indianDate;
     };
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-    const handleProjectionSubmit = async () => {
-        try {
-            const newEditCount =
-                currentProjection.editCount === -1
-                    ? 0
-                    : currentProjection.editCount + 1;
-
-            const finalData = {
-                ...currentProjection,
-                companyName: projectingCompany,
-                ename: data.ename,
-                offeredServices: selectedValues,
-                editCount: currentProjection.editCount + 1, // Increment editCount
-            };
-
-            if (finalData.offeredServices.length === 0) {
-                Swal.fire({ title: "Services is required!", icon: "warning" });
-            } else if (finalData.remarks === "") {
-                Swal.fire({ title: "Remarks is required!", icon: "warning" });
-            } else if (Number(finalData.totalPayment) === 0) {
-                Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
-            } else if (finalData.totalPayment === "") {
-                Swal.fire({ title: "Total Payment Can't be 0", icon: "warning" });
-            } else if (Number(finalData.offeredPrize) === 0) {
-                Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
-            } else if (
-                Number(finalData.totalPayment) > Number(finalData.offeredPrize)
-            ) {
-                Swal.fire({
-                    title: "Total Payment cannot be greater than Offered Prize!",
-                    icon: "warning",
-                });
-            } else if (finalData.lastFollowUpdate === null) {
-                Swal.fire({
-                    title: "Last FollowUp Date is required!",
-                    icon: "warning",
-                });
-            } else if (finalData.estPaymentDate === 0) {
-                Swal.fire({
-                    title: "Estimated Payment Date is required!",
-                    icon: "warning",
-                });
-            } else {
-                // Send data to backend API
-                const response = await axios.post(
-                    `${secretKey}/projection/update-followup`,
-                    finalData
-                );
-                Swal.fire({ title: "Projection Submitted!", icon: "success" });
-                setOpenProjection(false);
-                setCurrentProjection({
-                    companyName: "",
-                    ename: "",
-                    offeredPrize: 0,
-                    offeredServices: [],
-                    lastFollowUpdate: "",
-                    remarks: "",
-                    date: "",
-                    time: "",
-                    editCount: newEditCount,
-                    totalPaymentError: "", // Increment editCount
-                });
-                fetchProjections();
-                setSelectedValues([]);
-            }
-        } catch (error) {
-            console.error("Error updating or adding data:", error.message);
-        }
-    };
 
     // console.log(currentProjection)
 
@@ -1811,43 +1674,10 @@ function EmployeePanelCopy() {
         }
     };
 
-   
-   
 
-    // -----------------------------------------------------delete-projection-data-------------------------------
 
-    const handleDelete = async (company) => {
-        const companyName = company;
-        //console.log(companyName);
 
-        try {
-            // Send a DELETE request to the backend API endpoint
-            const response = await axios.delete(
-                `${secretKey}/projection/delete-followup/${companyName}`
-            );
-            //console.log(response.data.message); // Log the response message
-            // Show a success message after successful deletion
-
-            setCurrentProjection({
-                companyName: "",
-                ename: "",
-                offeredPrize: 0,
-                offeredServices: [],
-                lastFollowUpdate: "",
-                totalPayment: 0,
-                estPaymentDate: "",
-                remarks: "",
-                date: "",
-                time: "",
-            });
-            setSelectedValues([]);
-            fetchProjections();
-        } catch (error) {
-            console.error("Error deleting data:", error);
-            // Show an error message if deletion fails
-            console.log("Error!", "Follow Up Not Found.", "error");
-        }
-    };
+    // -----------------------------------------------------delete-projection-data------------------------------
 
 
     const formatDatePro = (dateString) => {
@@ -1857,33 +1687,18 @@ function EmployeePanelCopy() {
 
     // ---------------------------------------------- For Editable Lead-form -----------------------------------------------------------
 
-    const handleOpenEditForm = () => {
-        setOpenBooking(false);
-        setEditMoreOpen(true);
-    };
+    // const handleOpenEditForm = () => {
+    //     setOpenBooking(false);
+    //     setEditMoreOpen(true);
+    // };
 
     // --------------------------------------forward to bdm function---------------------------------------------\
 
     const [forwardedCompany, setForwardedCompany] = useState("");
     const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("");
     const [forwardCompanyId, setforwardCompanyId] = useState("");
-    const [feedbakPoints, setFeedbackPoints] = useState("")
-    const [feedbackRemarks, setFeedbackRemarks] = useState("")
-    const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false)
-    const [feedbackCompany, setFeedbackCompany] = useState("")
 
-    const handleViewFeedback = (companyId, companyName, companyFeedbackRemarks, companyFeedbackPoints) => {
-        setFeedbackPopupOpen(true)
-        setFeedbackPoints(companyFeedbackPoints)
-        setFeedbackRemarks(companyFeedbackRemarks)
-        setFeedbackCompany(companyName)
-    }
 
-    //console.log(feedbakPoints)
-
-    const closeFeedbackPopup = () => {
-        setFeedbackPopupOpen(false)
-    }
     function ValueLabelComponent(props) {
         const { children, value } = props;
 
@@ -1902,53 +1717,7 @@ function EmployeePanelCopy() {
     const iOSBoxShadow =
         '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
 
-    const IOSSlider = styled(Slider)(({ theme }) => ({
-        color: theme.palette.mode === 'dark' ? '#0a84ff' : '#007bff',
-        height: 5,
-        padding: '15px 0',
-        '& .MuiSlider-thumb': {
-            height: 20,
-            width: 20,
-            backgroundColor: '#fff',
-            boxShadow: '0 0 2px 0px rgba(0, 0, 0, 0.1)',
-            '&:focus, &:hover, &.Mui-active': {
-                boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)',
-                // Reset on touch devices, it doesn't add specificity
-                '@media (hover: none)': {
-                    boxShadow: iOSBoxShadow,
-                },
-            },
-            '&:before': {
-                boxShadow:
-                    '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
-            },
-        },
-        '& .MuiSlider-valueLabel': {
-            fontSize: 12,
-            fontWeight: 'normal',
-            top: -6,
-            backgroundColor: 'unset',
-            color: theme.palette.text.primary,
-            '&::before': {
-                display: 'none',
-            },
-            '& *': {
-                background: 'transparent',
-                color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-            },
-        },
-        '& .MuiSlider-track': {
-            border: 'none',
-            height: 5,
-        },
-        '& .MuiSlider-rail': {
-            opacity: 0.5,
-            boxShadow: 'inset 0px 0px 4px -2px #000',
-            backgroundColor: '#d0d0d0',
-        },
-    }));
 
-    const [confirmationPending, setConfirmationPending] = useState(false);
     const [bdeOldStatus, setBdeOldStatus] = useState("");
     const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false);
     const [selectedBDM, setSelectedBDM] = useState("");
@@ -2421,7 +2190,7 @@ function EmployeePanelCopy() {
     // Shows today's projection pop-up :
     const [shouldShowCollection, setShouldShowCollection] = useState(false);
     const [currentDate, setCurrentDate] = useState(getCurrentDate());
-   
+
 
     // Function to get current date in YYYY-MM-DD format
     function getCurrentDate() {
@@ -2621,7 +2390,7 @@ function EmployeePanelCopy() {
       <EmpNav userId={userId} bdmWork={data.bdmWork} /> */}
             {/* Dialog box for Request Data */}
 
-            {!formOpen && !editFormOpen && !addFormOpen && !editMoreOpen && (
+            {!formOpen && !addFormOpen && (
                 <>
                     {!showCallHistory ? <div className="page-wrapper">
                         {BDMrequests && (
@@ -2706,37 +2475,21 @@ function EmployeePanelCopy() {
                                             >
                                                 <IoFilterOutline className='mr-1' /> Filter
                                             </button>
-                                            <button type="button" className="btn mybtn"
+                                            {/* <CsvImportDialog secretKey={secretKey} data={data} /> */}
+                                            {/* <button type="button" className="btn mybtn"
                                                 onClick={functionopenpopupCSV}
 
                                             >
                                                 <TbFileImport className='mr-1' /> Import Leads
-                                            </button>
+                                            </button> */}
                                             <button type="button" className="btn mybtn"
                                                 onClick={functionopenpopup}
                                             >
                                                 <MdOutlinePostAdd className='mr-1' /> Request Data
                                             </button>
-                                            {/* <button type="button" className="btn mybtn"
-                        onClick={() => setOpenTodaysCollection(true)}
-
-                      >
-                        <GoPlusCircle className='mr-1' /> Today's General Projection
-                      </button> */}
-                                            {/* <button type="button" className="btn mybtn"
-                        onClick={() => setOpenPaymentApproval(true)}
-
-                      >
-                        <MdPayment className='mr-1' /> Payment Approval
-                      </button> */}
                                         </div>
                                     </div>
                                     <div className="d-flex align-items-center">
-                                        {/* {selectedRows.length !== 0 && (
-                                    <div className="selection-data" >
-                                        Total Data Selected : <b>{selectedRows.length}</b>
-                                    </div>
-                                )} */}
                                         <div class="input-icon ml-1">
                                             <span class="input-icon-addon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon mybtn" width="18" height="18" viewBox="0 0 22 22" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -2819,6 +2572,9 @@ function EmployeePanelCopy() {
                                                         ).length
                                                     }
                                                 </span>
+                                                {/* <span className="no_badge">
+                                                  {totalCounts.untouched}
+                                                </span> */}
                                             </a>
                                         </li>
                                         <li class="nav-item">
@@ -2853,6 +2609,9 @@ function EmployeePanelCopy() {
                                                         ).length
                                                     }
                                                 </span>
+                                                {/* <span className="no_badge">
+                                                  {totalCounts.interested}
+                                                </span> */}
                                             </a>
                                         </li>
                                         {/* <li class="nav-item">
@@ -2931,6 +2690,9 @@ function EmployeePanelCopy() {
                                                         ).length
                                                     }
                                                 </span>
+                                                {/* <span className="no_badge">
+                                                  {totalCounts.matured}
+                                                </span> */}
                                             </a>
                                         </li>
                                         <li class="nav-item">
@@ -2974,6 +2736,9 @@ function EmployeePanelCopy() {
                                                         ).length
                                                     }
                                                 </span>
+                                                {/* <span className="no_badge">
+                                                  {totalCounts.forwarded}
+                                                </span> */}
                                             </a>
                                         </li>
                                         <li class="nav-item">
@@ -3010,6 +2775,9 @@ function EmployeePanelCopy() {
                                                         ).length
                                                     }
                                                 </span>
+                                                {/* <span className="no_badge">
+                                                  {totalCounts.notInterested}
+                                                </span> */}
                                             </a>
                                         </li>
                                     </ul>
@@ -3477,49 +3245,20 @@ function EmployeePanelCopy() {
                                                                     <td>{functionCalculateBookingDate(company._id)}</td>
                                                                     <td>{functionCalculatePublishDate(company._id)}</td>
                                                                     <td>
-                                                                        {company &&
-                                                                            projectionData &&
-                                                                            projectionData.some(
-                                                                                (item) =>
-                                                                                    item.companyName ===
-                                                                                    company["Company Name"]
-                                                                            ) ? (
-                                                                            <button
-                                                                                style={{ border: "transparent", background: "none" }}
-                                                                            >
-                                                                                <RiEditCircleFill
-                                                                                    onClick={() => {
-                                                                                        functionopenprojection(
-                                                                                            company["Company Name"]
-                                                                                        );
-                                                                                    }}
-                                                                                    style={{
-                                                                                        cursor: "pointer",
-                                                                                        width: "17px",
-                                                                                        height: "17px",
-                                                                                    }}
-                                                                                    color="#fbb900"
-                                                                                />
-                                                                            </button>
-                                                                        ) : (
-                                                                            <button
-                                                                                style={{ border: "transparent", background: "none" }}
-                                                                            >
-                                                                                <RiEditCircleFill
-                                                                                    onClick={() => {
-                                                                                        functionopenprojection(
-                                                                                            company["Company Name"]
-                                                                                        );
-                                                                                        setIsEditProjection(true);
-                                                                                    }}
-                                                                                    style={{
-                                                                                        cursor: "pointer",
-                                                                                        width: "17px",
-                                                                                        height: "17px",
-                                                                                    }}
-                                                                                />
-                                                                            </button>
-                                                                        )}
+                                                                        <ProjectionDialog
+                                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                                            projectionCompanyName={company["Company Name"]}
+                                                                            projectionData={projectionData}
+                                                                            secretKey={secretKey}
+                                                                            fetchProjections={fetchProjections}
+                                                                            ename={data.ename}
+                                                                            bdmAcceptStatus={company.bdmAcceptStatus}
+                                                                            hasMaturedStatus={true}
+                                                                            hasExistingProjection={projectionData?.some(
+                                                                                (item) => item.companyName === company["Company Name"]
+                                                                            )}
+
+                                                                        />
                                                                     </td>
 
                                                                 </>}
@@ -3528,33 +3267,29 @@ function EmployeePanelCopy() {
                                                                         <>
                                                                             <td>
                                                                                 <ProjectionDialog
+                                                                                    key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
                                                                                     projectionCompanyName={company["Company Name"]}
                                                                                     projectionData={projectionData}
                                                                                     secretKey={secretKey}
-                                                                                    data={data}
-                                                                                    setIsEditProjection={setIsEditProjection}
                                                                                     fetchProjections={fetchProjections}
                                                                                     ename={data.ename}
-                                                                                  
+                                                                                    bdmAcceptStatus={company.bdmAcceptStatus}
+                                                                                    hasMaturedStatus={false}
+                                                                                    hasExistingProjection={projectionData?.some(
+                                                                                        (item) => item.companyName === company["Company Name"]
+                                                                                    )}
                                                                                 />
                                                                             </td>
                                                                             <td>
-                                                                                <TiArrowForward
-                                                                                    onClick={() => {
-                                                                                        handleConfirmAssign(
-                                                                                            company._id,
-                                                                                            company["Company Name"],
-                                                                                            company.Status, // Corrected parameter name
-                                                                                            company.ename,
-                                                                                            company.bdmAcceptStatus
-                                                                                        );
-                                                                                    }}
-                                                                                    style={{
-                                                                                        cursor: "pointer",
-                                                                                        width: "17px",
-                                                                                        height: "17px",
-                                                                                    }}
-                                                                                    color="grey"
+                                                                                <BdmMaturedCasesDialogBox
+                                                                                    currentData={currentData}
+                                                                                    forwardedCompany={company["Company Name"]}
+                                                                                    forwardCompanyId={company._id}
+                                                                                    forwardedStatus={company.Status}
+                                                                                    forwardedEName={company.ename}
+                                                                                    bdeOldStatus={company.Status}
+                                                                                    bdmNewAcceptStatus={"Pending"}
+                                                                                    fetchNewData={fetchNewData}
                                                                                 />
                                                                             </td>
                                                                         </>
@@ -3653,45 +3388,15 @@ function EmployeePanelCopy() {
                                                                 )}
 
                                                                 {(dataStatus === "Forwarded" && company.bdmAcceptStatus !== "NotForwarded") ? (
-                                                                    (company.feedbackPoints.length !== 0 || company.feedbackRemarks) ? (
-                                                                        <td>
-                                                                            <button
-                                                                                style={{ border: "transparent", background: "none" }}
-                                                                                onClick={() => {
-                                                                                    handleViewFeedback(
-                                                                                        company._id,
-                                                                                        company["Company Name"],
-                                                                                        company.feedbackRemarks,
-                                                                                        company.feedbackPoints
-                                                                                    )
-                                                                                }}>
-                                                                                <RiInformationLine style={{
-                                                                                    cursor: "pointer",
-                                                                                    width: "17px",
-                                                                                    height: "17px",
-                                                                                }} color="#fbb900" />
-                                                                            </button>
-                                                                        </td>
-                                                                    ) : (
-                                                                        <td>
-                                                                            <button
-                                                                                style={{ border: "transparent", background: "none" }}
-                                                                                onClick={() => {
-                                                                                    handleViewFeedback(
-                                                                                        company._id,
-                                                                                        company["Company Name"],
-                                                                                        company.feedbackRemarks,
-                                                                                        company.feedbackPoints
-                                                                                    )
-                                                                                }}>
-                                                                                <RiInformationLine style={{
-                                                                                    cursor: "pointer",
-                                                                                    width: "17px",
-                                                                                    height: "17px",
-                                                                                }} color="lightgrey" />
-                                                                            </button>
-                                                                        </td>
-                                                                    )
+                                                                    <td>
+                                                                        <FeedbackDialog
+                                                                            key={`${company["Company Name"]}-${index}`} // Using index or another field to create a unique key
+                                                                            companyId={company._id}
+                                                                            companyName={company["Company Name"]}
+                                                                            feedbackRemarks={company.feedbackRemarks}
+                                                                            feedbackPoints={company.feedbackPoints}
+                                                                        />
+                                                                    </td>
                                                                 ) : null}
                                                             </tr>
                                                         ))}
@@ -3776,40 +3481,7 @@ function EmployeePanelCopy() {
                     />
                 </>
             )}
-
-            {editFormOpen && (
-                <>
-                    <EditableLeadform
-                        setFormOpen={setEditFormOpen}
-                        companysName={currentForm["Company Name"]}
-                        companysEmail={currentForm["Company Email"]}
-                        companyNumber={currentForm["Company Number"]}
-                        setNowToFetch={setNowToFetch}
-                        companysInco={currentForm.incoDate}
-                        employeeName={data.ename}
-                        employeeEmail={data.email}
-                        setDataStatus={setdataStatus}
-                    />
-                </>
-            )}
-
-            {editMoreOpen && (
-                <>
-                    <EditableMoreBooking
-                        setFormOpen={setEditMoreOpen}
-                        bookingIndex={bookingIndex}
-                        companysName={currentForm["Company Name"]}
-                        companysEmail={currentForm["Company Email"]}
-                        companyNumber={currentForm["Company Number"]}
-                        setNowToFetch={setNowToFetch}
-                        companysInco={currentForm.incoDate}
-                        employeeName={data.ename}
-                        employeeEmail={data.email}
-                        setDataStatus={setdataStatus}
-                    />
-                </>
-            )}
-
+           
             {addFormOpen && (
                 <>
                     {" "}
@@ -3826,69 +3498,7 @@ function EmployeePanelCopy() {
                 </>
             )}
 
-            {/* Pop up for confirming bookings  */}
-            <Dialog className='My_Mat_Dialog'
-                open={openBooking}
-                onClose={() => {
-                    setOpenBooking(false);
-                    setCurrentForm(null);
-                }}
-                fullWidth
-                maxWidth="sm">
-                <DialogTitle>
-                    Choose Booking{" "}
-                    <button
-                        onClick={() => {
-                            setOpenBooking(false);
-                            setCurrentForm(null);
-                        }}
-                        style={{ float: "right" }}
-                    >
-                        <CloseIcon color="primary"></CloseIcon>
-                    </button>{" "}
-                </DialogTitle>
-
-                <DialogContent>
-                    <div className="bookings-content">
-                        <div className="open-bookings d-flex align-items-center justify-content-around">
-                            <div className="booking-1">
-                                <label for="open-bookings "> Booking 1 </label>
-                                <input
-                                    onChange={() => setBookingIndex(0)}
-                                    className="form-check-input ml-1"
-                                    type="radio"
-                                    name="open-bookings"
-                                    id="open-bookings-1"
-                                />
-                            </div>
-                            {currentForm &&
-                                currentForm.moreBookings.map((obj, index) => (
-                                    <div className="booking-2">
-                                        <label for="open-bookings"> Booking {index + 2} </label>
-                                        <input
-                                            onChange={() => setBookingIndex(index + 1)}
-                                            className="form-check-input ml-1"
-                                            type="radio"
-                                            name="open-bookings"
-                                            id={`open-booking-${index + 2}`}
-                                        />
-                                    </div>
-                                ))}
-                        </div>
-
-                        <div className="open-bookings-footer mt-2 d-flex justify-content-center">
-                            <button
-                                onClick={handleOpenEditForm}
-                                style={{ textAlign: "center" }}
-                                className="btn btn-primary"
-                            >
-                                Confirm Booking
-                            </button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
+            
 
             {/* Request Data popup */}
             <Dialog className='My_Mat_Dialog' open={open} onClose={closepopup} fullWidth maxWidth="sm">
@@ -4199,7 +3809,7 @@ function EmployeePanelCopy() {
                 </DialogContent>
             </Dialog>
 
-
+            {/* --------------------------dialog to import leads-------------------------------------------- */}
             <Dialog className='My_Mat_Dialog' open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
                 <DialogTitle>
                     Company Info{" "}
@@ -4575,437 +4185,10 @@ function EmployeePanelCopy() {
                 </button>
             </Dialog>
 
-            {/* -------------------------- Import CSV File ---------------------------- */}
-            <Dialog className='My_Mat_Dialog' open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
-                <DialogTitle>
-                    Import CSV DATA{" "}
-                    <button onClick={closepopupCSV} style={{ float: "right" }}>
-                        <CloseIcon color="primary"></CloseIcon>
-                    </button>{" "}
-                </DialogTitle>
-                <DialogContent>
-                    <div className="maincon">
-                        <div
-                            style={{ justifyContent: "space-between" }}
-                            className="con1 d-flex"
-                        >
-                            <label for="formFile" class="form-label">
-                                Upload CSV File
-                            </label>
-                            <a href={frontendKey + "/AddLeads_EmployeeSample.xlsx"} download>
-                                Download Sample
-                            </a>
-                        </div>
+           
+            
 
-                        <div class="mb-3">
-                            <input
-                                onChange={handleFileChange}
-                                className="form-control"
-                                type="file"
-                                id="formFile"
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-                <button onClick={handleUploadData} className="btn btn-primary bdr-radius-none">
-                    Submit
-                </button>
-            </Dialog>
-            {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
-
-            <Dialog className='My_Mat_Dialog'
-                open={feedbackPopupOpen}
-                onClose={closeFeedbackPopup}
-                fullWidth
-                maxWidth="xs"
-            >
-                <DialogTitle>
-                    <div className="d-flex align-items-center justify-content-between">
-                        <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" > {feedbackCompany}</span></div>
-                        <div>
-                            <button onClick={closeFeedbackPopup} style={{ float: "right" }}>
-                                <CloseIcon color="primary"></CloseIcon>
-                            </button>{" "}
-                        </div>
-                    </div>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="remarks-content">
-                        {(feedbackRemarks || feedbakPoints) && (
-                            <div className="col-sm-12">
-                                <div className="card RemarkCard position-relative">
-                                    <div>A. How was the quality of Information?</div>
-                                    <IOSSlider className="mt-4"
-                                        aria-label="ios slider"
-                                        disabled
-                                        defaultValue={feedbakPoints[0]}
-                                        min={0}
-                                        max={10}
-                                        valueLabelDisplay="on"
-                                    />
-                                </div>
-                                <div className="card RemarkCard position-relative">
-                                    <div>B. How was the clarity of communication with lead?</div>
-                                    <IOSSlider className="mt-4"
-                                        aria-label="ios slider"
-                                        disabled
-                                        defaultValue={feedbakPoints[1]}
-                                        min={0}
-                                        max={10}
-                                        valueLabelDisplay="on"
-                                    />
-                                </div>
-                                <div className="card RemarkCard position-relative">
-                                    <div>C. How was the accuracy of lead qualification?</div>
-                                    <IOSSlider className="mt-4"
-                                        aria-label="ios slider"
-                                        disabled
-                                        defaultValue={feedbakPoints[2]}
-                                        min={0}
-                                        max={10}
-                                        valueLabelDisplay="on"
-                                    />
-                                </div>
-                                <div className="card RemarkCard position-relative">
-                                    <div>D. How was engagement level of lead?</div>
-                                    <IOSSlider className="mt-4"
-                                        aria-label="ios slider"
-                                        disabled
-                                        defaultValue={feedbakPoints[3]}
-                                        min={0}
-                                        max={10}
-                                        valueLabelDisplay="on"
-                                    />
-                                </div>
-                                <div className="card RemarkCard position-relative">
-                                    <div>E. Payment Chances?</div>
-                                    <IOSSlider className="mt-4"
-                                        aria-label="ios slider"
-                                        disabled
-                                        defaultValue={feedbakPoints[4]}
-                                        min={0}
-                                        max={100}
-                                        valueLabelDisplay="on"
-                                    />
-                                </div>
-                                <div className="card RemarkCard position-relative">
-                                    <div className="d-flex justify-content-between">
-                                        <div className="reamrk-card-innerText">
-                                            <pre className="remark-text">{feedbackRemarks}</pre>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {openBdmNamePopup && (
-                <>
-                    <div
-                        className="popup-overlay d-flex justify-content-center align-items-center"
-                        style={{
-                            position: "fixed",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black backdrop
-                            zIndex: 1000, // Ensure it is on top of other content
-                        }}
-                    >
-                        <div
-                            className="popup-content"
-                            style={{
-                                backgroundColor: "#fff",
-                                paddingTop: "20px",
-                                paddingLeft: "20px",
-                                paddingRight: "20px",
-                                borderRadius: "10px",
-                                width: "800px",
-                                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-                                overflowY: "auto", // Add scrolling for larger content
-                            }}
-                        >
-                            <div className="d-flex justify-content-between">
-                                <h3>BDM Matured Cases</h3>
-                                <div>
-                                    {/* <button className="cursor-pointer d-flex align-items-center" onClick={() => setOpenBdmNamePopoup(false)}> */}
-                                    <IoMdClose className="cursor-pointer" onClick={() => setOpenBdmNamePopoup(false)} />
-                                    {/* </button> */}
-                                </div>
-                            </div>
-                            <BdmMaturedCasesDialogBox
-                                currentData={currentData}
-                                //bdmData={bdmNames}
-                                forwardedCompany={forwardedCompany}
-                                forwardCompanyId={forwardCompanyId}
-                                bdeOldStatus={bdeOldStatus}
-                                bdmNewAcceptStatus={bdmNewAcceptStatus}
-                                closeBdmNamePopup={closeBdmNamePopup}
-                                fetchNewData={fetchNewData}
-                            />
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* Drawer for Follow Up Projection  */}
             <div>
-                {/* <Drawer
-          style={{ top: "50px" }}
-          anchor="right"
-          open={openProjection}
-          onClose={closeProjection}
-        >
-          <div style={{ width: "31em" }} className="container-xl">
-            <div
-              className="header d-flex justify-content-between align-items-center"
-              style={{ margin: "10px 0px" }}
-            >
-              <h1
-                style={{ marginBottom: "0px", fontSize: "23px" }}
-                className="title"
-              >
-                Projection Form
-              </h1>
-              <div>
-                {projectingCompany &&
-                  projectionData &&
-                  projectionData.some(
-                    (item) => item.companyName === projectingCompany
-                  ) ? (
-                  <>
-                    <button
-                      onClick={() => {
-                        setIsEditProjection(true);
-                      }}
-                    >
-                      <EditIcon color="grey"></EditIcon>
-                    </button>
-                  </>
-                ) : null}
-
-                <button>
-                  <IoClose onClick={closeProjection} />
-                </button>
-              </div>
-            </div>
-            <hr style={{ margin: "0px" }} />
-            <div className="body-projection">
-              <div className="header d-flex align-items-center justify-content-between">
-                <div>
-                  <h1
-                    title={projectingCompany}
-                    style={{
-                      fontSize: "14px",
-                      textShadow: "none",
-                      fontFamily: "sans-serif",
-                      fontWeight: "400",
-                      fontFamily: "Poppins, sans-serif",
-                      margin: "10px 0px",
-                      width: "200px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {projectingCompany}
-                  </h1>
-                </div>
-                <div>
-                  <button
-                    onClick={() => handleDelete(projectingCompany)}
-                    className="btn btn-link"
-                    style={{ color: "grey" }}
-                  >
-                    Clear Form
-                  </button>
-                </div>
-              </div>
-              <div className="label">
-                <strong>
-                  Offered Services{" "}
-                  {selectedValues.length === 0 && (
-                    <span style={{ color: "red" }}>*</span>
-                  )}{" "}
-                  :
-                </strong>
-                <div className="services mb-3">
-                  <Select
-                    isMulti
-                    options={options}
-                    onChange={(selectedOptions) => {
-                      setSelectedValues(
-                        selectedOptions.map((option) => option.value)
-                      );
-                    }}
-                    value={selectedValues.map((value) => ({
-                      value,
-                      label: value,
-                    }))}
-                    placeholder="Select Services..."
-                    isDisabled={!isEditProjection}
-                  />
-                </div>
-              </div>
-              <div className="label">
-                <strong>
-                  Offered Prices(With GST){" "}
-                  {!currentProjection.offeredPrize && (
-                    <span style={{ color: "red" }}>*</span>
-                  )}{" "}
-                  :
-                </strong>
-                <div className="services mb-3">
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Please enter offered Prize"
-                    value={currentProjection.offeredPrize}
-                    onChange={(e) => {
-                      setCurrentProjection((prevLeadData) => ({
-                        ...prevLeadData,
-                        offeredPrize: e.target.value,
-                      }));
-                    }}
-                    disabled={!isEditProjection}
-                  />
-                </div>
-              </div>
-              <div className="label">
-                <strong>
-                  Expected Price (With GST)
-                  {currentProjection.totalPayment === 0 && (
-                    <span style={{ color: "red" }}>*</span>
-                  )}{" "}
-                  :
-                </strong>
-                <div className="services mb-3">
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Please enter total Payment"
-                    value={currentProjection.totalPayment}
-                    onChange={(e) => {
-                      const newTotalPayment = e.target.value;
-                      if (
-                        Number(newTotalPayment) <=
-                        Number(currentProjection.offeredPrize)
-                      ) {
-                        setCurrentProjection((prevLeadData) => ({
-                          ...prevLeadData,
-                          totalPayment: newTotalPayment,
-                          totalPaymentError: "",
-                        }));
-                      } else {
-                        setCurrentProjection((prevLeadData) => ({
-                          ...prevLeadData,
-                          totalPayment: newTotalPayment,
-                          totalPaymentError:
-                            "Expected Price should be less than or equal to Offered Price.",
-                        }));
-                      }
-                    }}
-                    disabled={!isEditProjection}
-                  />
-
-                  <div style={{ color: "lightred" }}>
-                    {currentProjection.totalPaymentError}
-                  </div>
-                </div>
-              </div>
-
-              <div className="label">
-                <strong>
-                  Last Follow Up Date{" "}
-                  {!currentProjection.lastFollowUpdate && (
-                    <span style={{ color: "red" }}>*</span>
-                  )}
-                  :{" "}
-                </strong>
-                <div className="services mb-3">
-                  <input
-                    type="date"
-                    className="form-control"
-                    placeholder="Please enter offered Prize"
-                    value={currentProjection.lastFollowUpdate}
-                    onChange={(e) => {
-                      setCurrentProjection((prevLeadData) => ({
-                        ...prevLeadData,
-                        lastFollowUpdate: e.target.value,
-                      }));
-                    }}
-                    disabled={!isEditProjection}
-                  />
-                </div>
-              </div>
-              <div className="label">
-                <strong>
-                  Payment Expected on{" "}
-                  {!currentProjection.estPaymentDate && (
-                    <span style={{ color: "red" }}>*</span>
-                  )}
-                  :
-                </strong>
-                <div className="services mb-3">
-                  <input
-                    type="date"
-                    className="form-control"
-                    placeholder="Please enter Estimated Payment Date"
-                    value={currentProjection.estPaymentDate}
-                    onChange={(e) => {
-                      setCurrentProjection((prevLeadData) => ({
-                        ...prevLeadData,
-                        estPaymentDate: e.target.value,
-                      }));
-                    }}
-                    disabled={!isEditProjection}
-                  />
-                </div>
-              </div>
-              <div className="label">
-                <strong>
-                  Remarks{" "}
-                  {currentProjection.remarks === "" && (
-                    <span style={{ color: "red" }}>*</span>
-                  )}
-                  :
-                </strong>
-                <div className="remarks mb-3">
-                  <textarea
-                    type="text"
-                    className="form-control"
-                    placeholder="Enter any Remarks"
-                    value={currentProjection.remarks}
-                    onChange={(e) => {
-                      setCurrentProjection((prevLeadData) => ({
-                        ...prevLeadData,
-                        remarks: e.target.value,
-                      }));
-                    }}
-                    disabled={!isEditProjection}
-                  />
-                </div>
-              </div>
-              <div className="submitBtn">
-                <button
-                  disabled={!isEditProjection}
-                  onClick={handleProjectionSubmit}
-                  style={{ width: "100%" }}
-                  type="submit"
-                  class="btn btn-primary mb-3"
-                >
-                  Submit
-                </button>
-              </div>
-              <div>
-              </div>
-            </div>
-          </div>
-        </Drawer> */}
-
                 {/* //----------------leads filter drawer------------------------------- */}
                 <Drawer
                     style={{ top: "50px" }}

@@ -78,13 +78,13 @@ function EmpNav({ userId, bdmWork }) {
           <div className="navbar">
             <div className="container-xl">
               <ul className="navbar-nav">
-                <Link style={{ textDecoration: "none", color: "black" }} className={
+                {/* <Link style={{ textDecoration: "none", color: "black" }} className={
                   location.pathname === `/employee-dashboard/${userId}` ? "nav-item active" : "nav-item"
                 } to={`/employee-dashboard/${userId}`}>
 
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}
+                      
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon"
@@ -105,7 +105,7 @@ function EmpNav({ userId, bdmWork }) {
                     </span>
                     <span className="nav-link-title">Dashboard</span>
                   </a>
-                </Link>
+                </Link> */}
                 <Link to={`/employee-data/${userId}`}
                   className={
                     location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
