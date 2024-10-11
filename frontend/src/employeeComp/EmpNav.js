@@ -84,7 +84,7 @@ function EmpNav({ userId, bdmWork }) {
 
                   <a className="nav-link" href="#">
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
-                      {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}
+                      
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon"
