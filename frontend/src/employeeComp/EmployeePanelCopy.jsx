@@ -95,8 +95,6 @@ function EmployeePanelCopy() {
     const [openAnchor, setOpenAnchor] = useState(false);
     const [openProjection, setOpenProjection] = useState(false);
     const [data, setData] = useState([]);
-
-    const [emailData, setEmailData] = useState({ to: "", subject: "", body: "" });
     const [forwardEname, setForrwardEname] = useState("");
     const [forwardStatus, setForrwardStatus] = useState("");
     const [teamInfo, setTeamInfo] = useState([]);
