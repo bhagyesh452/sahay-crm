@@ -19,6 +19,8 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
     const [searchQuery, setSearchQuery] = useState("");
     const [currentEmployeeName, setCurrentEmployeeName] = useState(null);
     const [searchedData, setSearchedData] = useState([]); // New state for searched data
+    const [showSuccessModal, setShowSuccessModal] = useState(false); // To trigger success modal
+    const [selectedBdmRatio, setSelectedBdmRatio] = useState(0); // Store the ratio of selected BDM
 
     // Fetch current employee based on userId
     const fetchCurrentEmployee = async () => {
@@ -92,11 +94,19 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                 caseType: "Forwarded",
                 bdmName: selectedBdm
             });
-            Swal.fire("success", "Company Forwarded", "success");
+            // Find the ratio for the selected BDM
+            const selectedBdmData = maturedCases.find((item) => item.bdmName === selectedBdm);
+            const ratio = selectedBdmData ? selectedBdmData.ratio : 0;
+            setSelectedBdmRatio(ratio); // Store the ratio for success message
+
+            // Show success modal
+            setShowSuccessModal(true);
             fetchNewData(bdeOldStatus);
+            setSelectedBdm(null);
+            Swal.fire("Lead Forwarded Successful!!",`By forwarding this lead to ${selectedBdm}, you raised the chances of closing it by ${ratio}%`, "success");
         } catch (error) {
             console.log(error);
-            Swal.fire("Error", "Error Assigning Data", "error");
+            Swal.fire("Error", "Error Forwarding Lead", "error");
         }
     };
 
@@ -168,10 +178,8 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                         </div>
 
                         <div className="modal-body">
-
-
-
                             <div className='table table-responsive table-style-2 m-0'>
+
                                 <table className="table">
                                     {/* Render the table header regardless of loading or data state */}
                                     <thead>
@@ -242,14 +250,14 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
 
                         <div className="modal-footer p-0 m-0">
                             <div className='d-flex w-100 m-0'>
-                                <button style={{border:"none",borderRadius:"0px"}}
+                                <button style={{ border: "none", borderRadius: "0px" }}
                                     className='btn btn-danger w-50 m-0'
                                     data-bs-dismiss="modal"
-                                onClick={() => setSelectedBdm(null)}// This will close the modal after clicking Forward
+                                    onClick={() => setSelectedBdm(null)}// This will close the modal after clicking Forward
                                 >
                                     Cancel
                                 </button>
-                                <button style={{border:"none",borderRadius:"0px"}}
+                                <button style={{ border: "none", borderRadius: "0px" }}
                                     className='btn btn-primary w-50 m-0'
                                     onClick={handleForwardBdm}
                                     disabled={!selectedBdm}
@@ -263,6 +271,33 @@ function BdmMaturedCasesDialogBox({ currentData, forwardedCompany, forwardCompan
                     </div>
                 </div>
             </div>
+
+            {/* {showSuccessModal && (
+                <div className="modal show d-block" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                    <div className="modal-dialog modal-lg modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <h2>Lead Forwarded Successful!!</h2>
+                                <p className='h3'>By forwarding this lead to {selectedBdm}, you raised the chances of closing it by {selectedBdmRatio}%</p>
+                            </div>
+                            <div className="modal-footer p-0 m-0">
+                                <div className="d-flex w-100 m-0">
+                                    <button
+                                        style={{ border: "none", borderRadius: "0px" }}
+                                        className='btn btn-primary w-100 m-0'
+                                        onClick={() => {
+                                            setShowSuccessModal(false);
+                                            setSelectedBdm(null);
+                                        }}
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )} */}
         </div>
     );
 }
