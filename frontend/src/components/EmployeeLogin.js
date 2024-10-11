@@ -27,31 +27,25 @@ function EmployeeLogin({ setnewToken }) {
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employee/einfo`);
+      const user = response.data.find(
+        (user) => user.email === email && user.password === password
+      );
+      console.log("user", user)
       setData(response.data);
+      if (user) {
+        setUserId(user._id);
+      }else{
+        setUserId(null);
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const findUserId = () => {
-    const user = data.find(
-      (user) => user.email === email && user.password === password
-    );
-    console.log("user", user)
-
-    if (user) {
-      setDesignation(user.designation)
-      setUserId(user._id);
-    } else {
-      setUserId(null);
-    }
-  };
-  //console.log(userId)
-
   useEffect(() => {
     fetchData();
   }, []);
-  
+
   // async function getLocationInfo(latitude, longitude) {
   //   try {
   //     const response = await fetch(
@@ -110,7 +104,7 @@ function EmployeeLogin({ setnewToken }) {
   }, []);
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
-    findUserId();
+    fetchData();
   }, [email, password]);
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -135,11 +129,15 @@ function EmployeeLogin({ setnewToken }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!userId) {
+      setErrorMessage("Invalid email or password");
+      return; // Prevent further execution if userId is null or undefined
+    }
     const date = getCurrentDate();
     const time = getCurrentTime();
     const address = address1 !== "" ? address1 : "No Location Found";
     const ename = email;
-  
+    
     try {
       const response = await axios.post(`${secretKey}/employeelogin`, {
         email,
@@ -147,24 +145,24 @@ function EmployeeLogin({ setnewToken }) {
         designation,
       });
       const response2 = await axios.post(`${secretKey}/loginDetails`, {
-              ename,
-               date,
-               time,
-              address,
-             });
-  
+        ename,
+        date,
+        time,
+        address,
+      });
+
       const { newtoken } = response.data;
-      
+
       setnewToken(newtoken);
       localStorage.setItem("newtoken", newtoken);
       localStorage.setItem("userId", userId);
-      
+
       // Store designation, login time, and date in localStorage
       localStorage.setItem("designation", designation);
       localStorage.setItem("loginTime", new Date().toISOString());
       localStorage.setItem("loginDate", new Date().toISOString().substr(0, 10)); // Store YYYY-MM-DD format
 
-      window.location.replace(`/employee-dashboard/${userId}`);     
+      window.location.replace(`/employee-dashboard/${userId}`);
     } catch (error) {
       console.error("Login failed:", error.response.data.message);
       if (error.response.status === 401) {
@@ -180,26 +178,26 @@ function EmployeeLogin({ setnewToken }) {
       }
     }
   };
-  const logout = () => {
-    localStorage.removeItem("newtoken");
-    console.log("Token removed after 1 minute");
-    window.location.replace("/");
-  };
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem("newtoken");
-    if (token) {
-      // Set timeout to log out user after 1 minute
-      const timer = setTimeout(logout, 60000); // 60000 milliseconds = 1 minute
+  // const logout = () => {
+  //   localStorage.removeItem("newtoken");
+  //   console.log("Token removed after 1 minute");
+  //   window.location.replace("/");
+  // };
+  // useEffect(() => {
+  //   // Check if user is logged in
+  //   const token = localStorage.getItem("newtoken");
+  //   if (token) {
+  //     // Set timeout to log out user after 1 minute
+  //     const timer = setTimeout(logout, 60000); // 60000 milliseconds = 1 minute
 
-      // Clear timeout if the component unmounts
-      return () => clearTimeout(timer);
-    }
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+  //     // Clear timeout if the component unmounts
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, []); // Empty dependency array ensures this runs once when the component mounts
 
 
-  
-  
+
+
   //console.log(email)
   //console.log(password)
 
@@ -214,7 +212,7 @@ function EmployeeLogin({ setnewToken }) {
                 <div className="card card-md h-100">
                   <div className="card-body d-flex align-items-center justify-content-center">
                     <div className="logo">
-                        <img src={logo}></img>
+                      <img src={logo}></img>
                     </div>
                   </div>
                 </div>
