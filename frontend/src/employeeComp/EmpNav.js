@@ -78,7 +78,7 @@ function EmpNav({ userId, bdmWork }) {
           <div className="navbar">
             <div className="container-xl">
               <ul className="navbar-nav">
-                {/* <Link style={{ textDecoration: "none", color: "black" }} className={
+                <Link style={{ textDecoration: "none", color: "black" }} className={
                   location.pathname === `/employee-dashboard/${userId}` ? "nav-item active" : "nav-item"
                 } to={`/employee-dashboard/${userId}`}>
 
@@ -105,7 +105,7 @@ function EmpNav({ userId, bdmWork }) {
                     </span>
                     <span className="nav-link-title">Dashboard</span>
                   </a>
-                </Link> */}
+                </Link>
                 <Link to={`/employee-data/${userId}`}
                   className={
                     location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
