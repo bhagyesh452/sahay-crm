@@ -144,20 +144,6 @@ function FetchingEmployeeData({ status = "All" }) {
         }
     }, [queryData, dataStatus]);
 
-    const nextPage = () => {
-        if (currentPage < Math.ceil(fetchedData.length / itemsPerPage) - 1) {
-            setCurrentPage((prevPage) => prevPage + 1);
-            refetch(); // Trigger a refetch when the page changes
-        }
-    };
-
-    const prevPage = () => {
-        if (currentPage > 0) {
-            setCurrentPage((prevPage) => prevPage - 1);
-            refetch(); // Trigger a refetch when the page changes
-        }
-    };
-
     console.log("fetchedData", fetchedData);
     console.log("revertedData", revertedData); // Log the reverted data for verification
 
@@ -604,14 +590,14 @@ function FetchingEmployeeData({ status = "All" }) {
                                                     {dataStatus === "FollowUp" && <td>
                                                         <input style={{ border: "none" }}
                                                             type="date"
-                                                        // value={formatDateNow(company.bdeNextFollowUpDate)}
-                                                        // onChange={(e) => {
-                                                        //     //setNextFollowUpDate(e.target.value);
-                                                        //     functionSubmitNextFollowUpDate(e.target.value,
-                                                        //         company._id,
-                                                        //         company["Status"]
-                                                        //     );
-                                                        // }}
+                                                            // value={formatDateNow(company.bdeNextFollowUpDate)}
+                                                            // onChange={(e) => {
+                                                            //     //setNextFollowUpDate(e.target.value);
+                                                            //     functionSubmitNextFollowUpDate(e.target.value,
+                                                            //         company._id,
+                                                            //         company["Status"]
+                                                            //     );
+                                                            // }}
                                                         //className="hide-placeholder"
                                                         /></td>}
                                                     {dataStatus === "Forwarded" &&
@@ -831,26 +817,7 @@ function FetchingEmployeeData({ status = "All" }) {
                                     )}
                                 </table>
                             </div>
-                            {fetchedData.length !== 0 && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                    }}
-                                    className="pagination"
-                                >
-                                    <button onClick={prevPage} disabled={currentPage === 0}>
-                                        <IconChevronLeft />
-                                    </button>
-                                    <span>
-                                        Page {currentPage + 1} of {Math.ceil(employeeData.length / itemsPerPage)}
-                                    </span>
-                                    <button onClick={nextPage} disabled={currentPage >= Math.ceil(employeeData.length / itemsPerPage) - 1}>
-                                        <IconChevronRight />
-                                    </button>
-                                </div>
-                            )}
+
                         </div>
 
                     </div>

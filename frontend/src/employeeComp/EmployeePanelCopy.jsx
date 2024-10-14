@@ -45,7 +45,7 @@ import EmployeeAddLeadDialog from "./ExtraComponents/EmployeeAddLeadDialog.jsx";
 import EmployeeRequestDataDialog from "./ExtraComponents/EmployeeRequestDataDialog.jsx";
 import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
 import { MdOutlinePostAdd } from "react-icons/md";
-import eGeneralLeads from "./EmployeeTabPanels/eGeneralLeads.jsx";
+import EmployeeGeneralLeads from "./EmployeeTabPanels/EmployeeGeneralLeads.jsx";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -1245,7 +1245,7 @@ function EmployeePanelCopy() {
                                     </div>
                                     <div className="tab-content card-body">
                                         <div class="tab-pane active" id="k">
-                                           <eGeneralLeads/> hrllo
+                                           <EmployeeGeneralLeads/>
                                         </div>
                                     </div>
                                 </div>
@@ -2119,7 +2119,9 @@ function EmployeePanelCopy() {
                                 </div>
                             </div>
                         </div>
-                    </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />}
+                    </div> : <CallHistory handleCloseHistory={hanleCloseCallHistory} clientNumber={clientNumber} />
+
+                    }
                 </>
             )}
 

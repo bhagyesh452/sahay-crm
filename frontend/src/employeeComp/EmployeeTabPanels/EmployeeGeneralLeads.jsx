@@ -1,7 +1,7 @@
 import React from 'react';
 import { LuHistory } from "react-icons/lu";
 
-function eGeneralLeads() {
+function EmployeeGeneralLeads() {
   return (
     <div className="RM-my-booking-lists">
         <div className="table table-responsive table-style-3 m-0">
@@ -46,4 +46,4 @@ function eGeneralLeads() {
   );
 }
 
-export default eGeneralLeads;
+export default EmployeeGeneralLeads;
