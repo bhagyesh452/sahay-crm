@@ -2014,6 +2014,63 @@ router.get("/employees/:ename", async (req, res) => {
 //   }
 // });
 
+// router.get("/employees/:ename", async (req, res) => {
+//   try {
+//       const employeeName = req.params.ename;
+//       console.log("Employee name:", employeeName);
+
+//       // Fetch data from CompanyModel where ename matches employeeName
+//       const data = await CompanyModel.find({
+//           $or: [
+//               { ename: employeeName },
+//               { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+//               { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+//           ]
+//       })
+//       .sort({ AssignDate: -1 }) // Sort by AssignDate in descending order
+//       .select("ename maturedBdmName Status multiBdmName RevertBackAcceptedCompanyRequest AssignDate company") // Include necessary fields
+//       .lean();
+
+//       // Check if data is empty
+//       if (!data.length) {
+//           return res.json({ data: [], revertedData: [] });
+//       }
+
+//       // Fetch redesigned data only for the relevant companies
+//       const companyIds = data.map(item => item._id);
+//       const redesignedData = await RedesignedLeadformModel.find({
+//           company: { $in: companyIds }
+//       }).select("company bookingDate bookingPublishDate").lean(); // Only select necessary fields
+
+//       // Create a map for quick access to redesigned data
+//       const redesignedMap = redesignedData.reduce((acc, item) => {
+//           acc[item.company] = {
+//               bookingDate: item.bookingDate,
+//               bookingPublishDate: item.bookingPublishDate
+//           };
+//           return acc;
+//       }, {});
+
+//       // Update data with booking information
+//       const updatedData = data.map(item => ({
+//           ...item,
+//           bookingDate: redesignedMap[item.company]?.bookingDate || null,
+//           bookingPublishDate: redesignedMap[item.company]?.bookingPublishDate || null
+//       }));
+
+//       // Filter reverted data
+//       const revertedData = updatedData.filter(item => item.RevertBackAcceptedCompanyRequest === 'Reject');
+
+//       // Send both original updated data and revertedData in the response
+//       res.json({ data: updatedData, revertedData });
+//   } catch (error) {
+//       console.error("Error fetching data:", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+
 
 
 router.post("/postData", async (req, res) => {
