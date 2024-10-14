@@ -47,6 +47,7 @@ import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
 import { MdOutlinePostAdd } from "react-icons/md";
 import EmployeeGeneralLeads from "./EmployeeTabPanels/EmployeeGeneralLeads.jsx";
 import { useQuery } from '@tanstack/react-query';
+import EmployeeInterestedleads from "./EmployeeTabPanels/EmployeeInterestedLeads.jsx";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -1063,15 +1064,15 @@ function EmployeePanelCopy() {
 
     const { data: queryData, isLoading, isError, refetch } = useQuery(
         {
-            queryKey: ['newData', cleanString(data.ename), dataStatus , currentPage],
+            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage],
             queryFn: async () => {
                 const skip = currentPage * itemsPerPage; // Calculate skip based on current page
                 const response = await axios.get(`${secretKey}/company-data/employees/${cleanString(data.ename)}`, {
-                    params: { 
+                    params: {
                         dataStatus: dataStatus,
-                        limit : itemsPerPage,
-                        skip:skip
-                     } // Send dataStatus as a query parameter
+                        limit: itemsPerPage,
+                        skip: skip
+                    } // Send dataStatus as a query parameter
                 });
                 return response.data; // Directly return the data
             },
@@ -1203,12 +1204,12 @@ function EmployeePanelCopy() {
                                                     <MdOutlinePostAdd className='mr-1' /> Request Data
                                                 </button>
                                                 {open &&
-                                                <EmployeeRequestDataDialog
-                                                    secretKey={secretKey}
-                                                    ename={data.ename}
-                                                    setOpenChange={openchange}
-                                                    open={open}
-                                                /> }
+                                                    <EmployeeRequestDataDialog
+                                                        secretKey={secretKey}
+                                                        ename={data.ename}
+                                                        setOpenChange={openchange}
+                                                        open={open}
+                                                    />}
 
                                             </div>
                                         </div>
@@ -1245,11 +1246,11 @@ function EmployeePanelCopy() {
                                         <ul className="nav nav-tabs hr_emply_list_navtabs nav-fill p-0">
                                             <li class="nav-item hr_emply_list_navitem">
                                                 <a class="nav-link active" data-bs-toggle="tab" href="#k"
-                                                onClick={() => {
-                                                    setdataStatus("All");
-                                                    setCurrentPage(0);
-                                                    refetch();
-                                                }}
+                                                    onClick={() => {
+                                                        setdataStatus("All");
+                                                        setCurrentPage(0);
+                                                        refetch();
+                                                    }}
                                                 >
                                                     <div className="d-flex align-items-center justify-content-between w-100">
                                                         <div className="rm_txt_tsn">
@@ -1262,7 +1263,12 @@ function EmployeePanelCopy() {
                                                 </a>
                                             </li>
                                             <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link" data-bs-toggle="tab" href="#Interested">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#Interested"
+                                                    onClick={() => {
+                                                        setdataStatus("Interested");
+                                                        setCurrentPage(0);
+                                                        refetch();
+                                                    }}>
                                                     <div className="d-flex align-items-center justify-content-between w-100">
                                                         <div className="rm_txt_tsn">
                                                             Interested
@@ -1301,7 +1307,7 @@ function EmployeePanelCopy() {
                                                 <a class="nav-link" data-bs-toggle="tab" href="#Not_Interested">
                                                     <div className="d-flex align-items-center justify-content-between w-100">
                                                         <div className="rm_txt_tsn">
-                                                           Not Interested
+                                                            Not Interested
                                                         </div>
                                                         <div className="rm_tsn_bdge">
                                                             {totalCounts.notInterested}
@@ -1313,17 +1319,32 @@ function EmployeePanelCopy() {
                                     </div>
                                     <div className="tab-content card-body">
                                         <div class="tab-pane active" id="k">
-                                           <EmployeeGeneralLeads 
-                                           generalData= {fetchedData}
-                                           isLoading={isLoading}
-                                           refetch={refetch}
-                                           formatDateNew={formatDateNew}
-                                           startIndex={startIndex}
-                                           endIndex={endIndex}
-                                           totalPages={totalPages}
-                                           setCurrentPage={setCurrentPage}
-                                           currentPage={currentPage}
-                                           />
+                                            <EmployeeGeneralLeads
+                                                generalData={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="tab-content card-body">
+                                        <div class="tab-pane active" id="Interested">
+                                            <EmployeeInterestedleads
+                                                interestedData={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                            />
                                         </div>
                                     </div>
                                 </div>
