@@ -46,6 +46,8 @@ import EmployeeRequestDataDialog from "./ExtraComponents/EmployeeRequestDataDial
 import RemarksDialog from "./ExtraComponents/RemarksDialog.jsx";
 import { MdOutlinePostAdd } from "react-icons/md";
 import EmployeeGeneralLeads from "./EmployeeTabPanels/EmployeeGeneralLeads.jsx";
+import { useQuery } from '@tanstack/react-query';
+import EmployeeInterestedleads from "./EmployeeTabPanels/EmployeeInterestedLeads.jsx";
 
 function EmployeePanelCopy() {
     const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -56,6 +58,7 @@ function EmployeePanelCopy() {
     const [sortStatus, setSortStatus] = useState("");
     //const [maturedID, setMaturedID] = useState("");
     const [currentForm, setCurrentForm] = useState(null);
+
     const [projectionData, setProjectionData] = useState([]);
     const [requestDeletes, setRequestDeletes] = useState([]);
     const [openLogin, setOpenLogin] = useState(false);
@@ -1045,6 +1048,66 @@ function EmployeePanelCopy() {
         openchange(true);
     };
 
+    // Fetch employee data using React Query
+    const [fetchedData, setFetchedData] = useState([]);
+    const [totalCounts, setTotalCounts] = useState({
+        untouched: 0,
+        interested: 0,
+        matured: 0,
+        forwarded: 0,
+        notInterested: 0
+    });
+    const [totalPages, setTotalPages] = useState(0)
+    const cleanString = (str) => {
+        return typeof str === 'string' ? str.replace(/\u00A0/g, ' ').trim() : '';
+    };
+
+    const { data: queryData, isLoading, isError, refetch } = useQuery(
+        {
+            queryKey: ['newData', cleanString(data.ename), dataStatus, currentPage],
+            queryFn: async () => {
+                const skip = currentPage * itemsPerPage; // Calculate skip based on current page
+                const response = await axios.get(`${secretKey}/company-data/employees/${cleanString(data.ename)}`, {
+                    params: {
+                        dataStatus: dataStatus,
+                        limit: itemsPerPage,
+                        skip: skip
+                    } // Send dataStatus as a query parameter
+                });
+                return response.data; // Directly return the data
+            },
+            enabled: !!data.ename, // Only fetch if data.ename is available
+            staleTime: 300000, // Cache for 5 minutes
+            cacheTime: 300000, // Cache for 5 minutes
+        }
+    );
+
+    useEffect(() => {
+        if (queryData) {
+            // Assuming queryData now contains both data and revertedData
+            setFetchedData(queryData.data); // Update the fetched data
+            setRevertedData(queryData.revertedData); // Set revertedData based on response
+            setmoreEmpData(queryData.data);
+            setEmployeeData(queryData.data);
+            setTotalCounts(queryData.totalCounts);
+            setTotalPages(Math.ceil(queryData.totalPages)); // Calculate total pages
+        }
+    }, [queryData, dataStatus, currentPage]);
+
+    const nextPage = () => {
+        if (currentPage < totalPages - 1) {
+            setCurrentPage((prevPage) => prevPage + 1);
+            refetch(); // Trigger a refetch when the page changes
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage((prevPage) => prevPage - 1);
+            refetch(); // Trigger a refetch when the page changes
+        }
+    };
+
     return (
         <div>
 
@@ -1141,12 +1204,12 @@ function EmployeePanelCopy() {
                                                     <MdOutlinePostAdd className='mr-1' /> Request Data
                                                 </button>
                                                 {open &&
-                                                <EmployeeRequestDataDialog
-                                                    secretKey={secretKey}
-                                                    ename={data.ename}
-                                                    setOpenChange={openchange}
-                                                    open={open}
-                                                /> }
+                                                    <EmployeeRequestDataDialog
+                                                        secretKey={secretKey}
+                                                        ename={data.ename}
+                                                        setOpenChange={openchange}
+                                                        open={open}
+                                                    />}
 
                                             </div>
                                         </div>
@@ -1182,25 +1245,36 @@ function EmployeePanelCopy() {
                                     <div className="my-tab card-header">
                                         <ul className="nav nav-tabs hr_emply_list_navtabs nav-fill p-0">
                                             <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link active" data-bs-toggle="tab" href="#k">
+                                                <a class="nav-link active" data-bs-toggle="tab" href="#k"
+                                                    onClick={() => {
+                                                        setdataStatus("All");
+                                                        setCurrentPage(0);
+                                                        refetch();
+                                                    }}
+                                                >
                                                     <div className="d-flex align-items-center justify-content-between w-100">
                                                         <div className="rm_txt_tsn">
                                                             General
                                                         </div>
                                                         <div className="rm_tsn_bdge">
-                                                            12
+                                                            {totalCounts.untouched}
                                                         </div>
                                                     </div>
                                                 </a>
                                             </li>
                                             <li class="nav-item hr_emply_list_navitem">
-                                                <a class="nav-link" data-bs-toggle="tab" href="#Interested">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#Interested"
+                                                    onClick={() => {
+                                                        setdataStatus("Interested");
+                                                        setCurrentPage(0);
+                                                        refetch();
+                                                    }}>
                                                     <div className="d-flex align-items-center justify-content-between w-100">
                                                         <div className="rm_txt_tsn">
                                                             Interested
                                                         </div>
                                                         <div className="rm_tsn_bdge">
-                                                            12
+                                                            {totalCounts.interested}
                                                         </div>
                                                     </div>
                                                 </a>
@@ -1212,7 +1286,7 @@ function EmployeePanelCopy() {
                                                             Matured
                                                         </div>
                                                         <div className="rm_tsn_bdge">
-                                                            12
+                                                            {totalCounts.matured}
                                                         </div>
                                                     </div>
                                                 </a>
@@ -1224,7 +1298,7 @@ function EmployeePanelCopy() {
                                                             BDM Forwarded
                                                         </div>
                                                         <div className="rm_tsn_bdge">
-                                                            12
+                                                            {totalCounts.forwarded}
                                                         </div>
                                                     </div>
                                                 </a>
@@ -1233,10 +1307,10 @@ function EmployeePanelCopy() {
                                                 <a class="nav-link" data-bs-toggle="tab" href="#Not_Interested">
                                                     <div className="d-flex align-items-center justify-content-between w-100">
                                                         <div className="rm_txt_tsn">
-                                                           Not Interested
+                                                            Not Interested
                                                         </div>
                                                         <div className="rm_tsn_bdge">
-                                                            12
+                                                            {totalCounts.notInterested}
                                                         </div>
                                                     </div>
                                                 </a>
@@ -1245,7 +1319,32 @@ function EmployeePanelCopy() {
                                     </div>
                                     <div className="tab-content card-body">
                                         <div class="tab-pane active" id="k">
-                                           <EmployeeGeneralLeads/>
+                                            <EmployeeGeneralLeads
+                                                generalData={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="tab-content card-body">
+                                        <div class="tab-pane active" id="Interested">
+                                            <EmployeeInterestedleads
+                                                interestedData={fetchedData}
+                                                isLoading={isLoading}
+                                                refetch={refetch}
+                                                formatDateNew={formatDateNew}
+                                                startIndex={startIndex}
+                                                endIndex={endIndex}
+                                                totalPages={totalPages}
+                                                setCurrentPage={setCurrentPage}
+                                                currentPage={currentPage}
+                                            />
                                         </div>
                                     </div>
                                 </div>

@@ -7,7 +7,7 @@ import { IconChevronRight } from "@tabler/icons-react";
 import Nodata from '../../components/Nodata';
 
 
-function EmployeeGeneralLeads({ generalData, isLoading, refetch, formatDateNew, startIndex, endIndex , totalPages , setCurrentPage , currentPage}) {
+function EmployeeInterestedLeads({ interestedData, isLoading, refetch, formatDateNew, startIndex, endIndex , totalPages , setCurrentPage , currentPage}) {
    
     const nextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -60,7 +60,7 @@ function EmployeeGeneralLeads({ generalData, isLoading, refetch, formatDateNew, 
                         </tbody>
                     ) : (
                         <tbody>
-                            {generalData.map((company, index) => (
+                            {interestedData.map((company, index) => (
                                 <tr
                                     key={index}
                                     style={{ border: "1px solid #ddd" }}
@@ -142,7 +142,7 @@ function EmployeeGeneralLeads({ generalData, isLoading, refetch, formatDateNew, 
                             ))}
                         </tbody>
                     )}
-                    {generalData && generalData.length === 0 && !isLoading && (
+                    {interestedData && interestedData.length === 0 && !isLoading && (
                         <tbody>
                             <tr>
                                 <td colSpan="11" className="p-2 particular">
@@ -153,7 +153,7 @@ function EmployeeGeneralLeads({ generalData, isLoading, refetch, formatDateNew, 
                     )}
                 </table>
             </div>
-            {generalData && generalData.length !== 0 && (
+            {interestedData && interestedData.length !== 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} className="pagination">
                     <button onClick={prevPage} disabled={currentPage === 0}>
                         <IconChevronLeft />
@@ -170,4 +170,4 @@ function EmployeeGeneralLeads({ generalData, isLoading, refetch, formatDateNew, 
     );
 }
 
-export default EmployeeGeneralLeads;
+export default EmployeeInterestedLeads;
