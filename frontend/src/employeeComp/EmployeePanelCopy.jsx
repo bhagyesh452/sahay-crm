@@ -3,8 +3,6 @@ import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
-import Papa from "papaparse";
-import * as XLSX from "xlsx";
 import axios from "axios";
 import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
@@ -12,20 +10,10 @@ import { Drawer } from "@mui/material";
 import { IoIosClose } from "react-icons/io";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import Swal from "sweetalert2";
-import SaveIcon from "@mui/icons-material/Save";
-import CloseIcon from "@mui/icons-material/Close";
-import Form from "../components/Form.jsx";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import "../assets/table.css";
 import "../assets/styles.css";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import Nodata from "../components/Nodata.jsx";
-import EditForm from "../components/EditForm.jsx";
-import { useCallback } from "react";
-import debounce from "lodash/debounce";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import { options } from "../components/Options.js";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import io from "socket.io-client";
 import AddCircle from "@mui/icons-material/AddCircle.js";
 import { HiOutlineEye } from "react-icons/hi";
@@ -37,26 +25,15 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
 import LeadFormPreview from "../admin/LeadFormPreview.jsx";
-import Edit from "@mui/icons-material/Edit";
-import EditableLeadform from "../admin/EditableLeadform.jsx";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
 import { FaWhatsapp } from "react-icons/fa";
-import EditableMoreBooking from "../admin/EditableMoreBooking.jsx";
-import { RiShareForwardBoxFill } from "react-icons/ri";
-import { RiShareForward2Fill } from "react-icons/ri";
 import { TiArrowBack } from "react-icons/ti";
 import { TiArrowForward } from "react-icons/ti";
-import { MdNotInterested } from "react-icons/md";
-import { RiInformationLine } from "react-icons/ri";
 import PropTypes from "prop-types";
-import Slider, { SliderThumb } from "@mui/material/Slider";
-import { styled } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 import { IoFilterOutline } from "react-icons/io5";
 import { Country, State, City } from 'country-state-city';
 import { jwtDecode } from "jwt-decode";
-import { MdPayment } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
 import CallHistory from "./CallHistory.jsx";
 import { LuHistory } from "react-icons/lu";
@@ -144,7 +121,25 @@ function EmployeePanelCopy() {
     //const [editFormOpen, setEditFormOpen] = useState(false);
     const [addFormOpen, setAddFormOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [extraData, setExtraData] = useState([])
+    const [extraData, setExtraData] = useState([]);
+    const stateList = State.getStatesOfCountry("IN")
+    const cityList = City.getCitiesOfCountry("IN")
+    const [selectedStateCode, setSelectedStateCode] = useState("")
+    const [selectedState, setSelectedState] = useState("")
+    const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
+    const [selectedNewCity, setSelectedNewCity] = useState("")
+    const [selectedYear, setSelectedYear] = useState("")
+    const [selectedMonth, setSelectedMonth] = useState("")
+    const [selectedStatus, setSelectedStatus] = useState("")
+    const [selectedBDEName, setSelectedBDEName] = useState("")
+    const [selectedAssignDate, setSelectedAssignDate] = useState(null)
+    const [selectedAdminName, setSelectedAdminName] = useState("")
+    const [daysInMonth, setDaysInMonth] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(0)
+    const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
+    const [openBacdrop, setOpenBacdrop] = useState(false)
+    const [companyIncoDate, setCompanyIncoDate] = useState(null);
+    const [monthIndex, setMonthIndex] = useState(0)
 
     //console.log(companyName, companyInco);
 
@@ -177,34 +172,6 @@ function EmployeePanelCopy() {
     useEffect(() => {
         document.title = `Employee-Sahay-CRM`;
     }, [data.ename]);
-
-    const playNotificationSound = () => {
-        const audio = new Audio(notificationSound);
-        audio.play();
-    };
-
-    //console.log(nextFollowUpdate)
-
-    function convertDateFormat(dateString) {
-        // Check if dateString is undefined or null
-        if (!dateString) {
-            return "Invalid date";
-        }
-
-        // Split the date string by "/"
-        var parts = dateString.split('/');
-
-        // Check if parts has exactly 3 elements
-        if (parts.length !== 3) {
-            return "Invalid date format";
-        }
-
-        // Rearrange the parts to the desired format "YYYY-MM-DD"
-        var formattedDate = parts[2] + '-' + parts[1] + '-' + parts[0];
-
-        return formattedDate;
-    }
-
 
     useEffect(() => {
         const socket = secretKey === "http://localhost:3001/api" ? io("http://localhost:3001") : io("wss://startupsahay.in", {
@@ -258,11 +225,7 @@ function EmployeePanelCopy() {
             console.error("Error fetching data:", error);
         }
     };
-    const functionopenAnchor = () => {
-        setTimeout(() => {
-            setOpenAnchor(true);
-        }, 1000);
-    };
+
     const fetchData = async () => {
         try {
             const response = await axios.get(`${secretKey}/employee/fetchEmployeeFromId/${userId}`);
@@ -298,7 +261,6 @@ function EmployeePanelCopy() {
         };
 
         const cleanedEname = cleanString(data.ename);
-        console.log("fetchhuayahan")
         try {
             if (!status) {
                 setLoading(true);
@@ -432,25 +394,12 @@ function EmployeePanelCopy() {
     };
     useEffect(() => {
         fetchData();
+        fetchProjections();
     }, [userId]);
 
     useEffect(() => {
-        fetchProjections();
+
     }, [data]);
-
-    useEffect(() => {
-        fetchRemarksHistory();
-        fetchBookingDeleteRequests();
-        fetchRequestDetails();
-        fetchEditRequests();
-
-        if (userId !== localStorage.getItem("userId")) {
-            localStorage.removeItem("newtoken");
-            window.location.replace("/");
-        }
-
-    }, []);
-
 
     const handleSearch = (searchQuery) => {
         const searchQueryLower = searchQuery.toLowerCase();
@@ -693,15 +642,6 @@ function EmployeePanelCopy() {
     };
 
 
-    const fetchBookingDeleteRequests = async () => {
-        try {
-            const response = await axios.get(`${secretKey}/requests/deleterequestbybde`);
-            setRequestDeletes(response.data); // Assuming your data is returned as an array
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
     function formatDate(inputDate) {
         const options = { year: "numeric", month: "long", day: "numeric" };
         const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -740,65 +680,6 @@ function EmployeePanelCopy() {
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
-    };
-
-    const formatDateAndTime = (AssignDate) => {
-        // Convert AssignDate to a Date object
-        const date = new Date(AssignDate);
-
-        // Convert UTC date to Indian time zone
-        const options = { timeZone: "Asia/Kolkata" };
-        const indianDate = date.toLocaleString("en-IN", options);
-        return indianDate;
-    };
-    
-    const createNewArray = (data) => {
-        let dataArray;
-
-        if (dataStatus === "All") {
-            // Filter data for all statuses
-            dataArray = data.filter(
-                (obj) =>
-                    obj.Status === "Untouched" ||
-                    obj.Status === "Busy" ||
-                    obj.Status === "Not Picked Up"
-            );
-        } else if (dataStatus === "Interested") {
-            // Filter data for Interested status
-            dataArray = data.filter((obj) => obj.Status === "Interested");
-        } else if (dataStatus === "Not Interested") {
-            // Filter data for Not Interested status
-            dataArray = data.filter((obj) => obj.Status === "Not Interested");
-        } else {
-            // Handle other cases if needed
-            dataArray = data;
-        }
-        const newArray = [];
-
-        // Iterate over each object in the original array
-        dataArray.forEach((obj) => {
-            const date = new Date(obj["Company Incorporation Date  "]);
-            const year = date.getFullYear();
-            const month = date.toLocaleString("default", { month: "short" });
-
-            // Check if year already exists in newArray
-            const yearIndex = newArray.findIndex((item) => item.year === year);
-            if (yearIndex !== -1) {
-                // Year already exists, check if month exists in the corresponding year's month array
-                const monthIndex = newArray[yearIndex].month.findIndex(
-                    (m) => m === month
-                );
-                if (monthIndex === -1) {
-                    // Month doesn't exist, add it to the month array
-                    newArray[yearIndex].month.push(month);
-                }
-            } else {
-                // Year doesn't exist, create a new entry
-                newArray.push({ year: year, month: [month] });
-            }
-        });
-
-        return newArray;
     };
 
     // --------------------------------------forward to bdm function---------------------------------------------\
@@ -887,28 +768,6 @@ function EmployeePanelCopy() {
             Swal.fire("Cannot Reforward Data");
         } else if (bdmAcceptStatus === "Accept") {
             Swal.fire("BDM already accepted this data!");
-        }
-    };
-    // ------------------------------------- Request BDM functions --------------------------------
-    const handleAcceptRequest = async () => {
-        try {
-            const id = BDMrequests._id;
-            // Send a POST request to your backend API to update the object
-            const response = await axios.post(
-                `${secretKey}/requests/update-bdm-Request/${id}`,
-                {
-                    requestStatus: "Accepted",
-                }
-            );
-            Swal.fire("Accepted!", "Successfully Accepted the Request", "success");
-            setOpenbdmRequest(false);
-            //console.log(response.data); // Log the response data if needed
-            // Optionally, you can update the UI or perform any other actions after the request is successful
-        } catch (error) {
-            Swal.fire("Error!", "Error Accepting the Request", "error");
-            setOpenbdmRequest(false);
-            console.error("Error accepting request:", error);
-            // Handle the error or display a message to the user
         }
     };
 
@@ -1017,24 +876,6 @@ function EmployeePanelCopy() {
     }
 
     //----------------filter for employee section-----------------------------
-    const stateList = State.getStatesOfCountry("IN")
-    const cityList = City.getCitiesOfCountry("IN")
-    const [selectedStateCode, setSelectedStateCode] = useState("")
-    const [selectedState, setSelectedState] = useState("")
-    const [selectedCity, setSelectedCity] = useState(City.getCitiesOfCountry("IN"))
-    const [selectedNewCity, setSelectedNewCity] = useState("")
-    const [selectedYear, setSelectedYear] = useState("")
-    const [selectedMonth, setSelectedMonth] = useState("")
-    const [selectedStatus, setSelectedStatus] = useState("")
-    const [selectedBDEName, setSelectedBDEName] = useState("")
-    const [selectedAssignDate, setSelectedAssignDate] = useState(null)
-    const [selectedAdminName, setSelectedAdminName] = useState("")
-    const [daysInMonth, setDaysInMonth] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(0)
-    const [selectedCompanyIncoDate, setSelectedCompanyIncoDate] = useState(null)
-    const [openBacdrop, setOpenBacdrop] = useState(false)
-    const [companyIncoDate, setCompanyIncoDate] = useState(null);
-    const [monthIndex, setMonthIndex] = useState(0)
 
     const functionCloseFilterDrawer = () => {
         setOpenFilterDrawer(false)
@@ -2399,3 +2240,7 @@ function EmployeePanelCopy() {
 }
 
 export default EmployeePanelCopy;
+
+
+
+
