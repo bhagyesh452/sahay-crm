@@ -1895,26 +1895,26 @@ router.post(`/post-bdenextfollowupdate/:id`, async (req, res) => {
   }
 });
 
-// router.get("/employees/:ename", async (req, res) => {
-//   try {
-//     const employeeName = req.params.ename;
-//     console.log("Employee name:", employeeName);
+router.get("/employees/:ename", async (req, res) => {
+  try {
+    const employeeName = req.params.ename;
+    console.log("Employee name:", employeeName);
 
-//     // Fetch data from CompanyModel where ename matches employeeName
-//     const data = await CompanyModel.find({
-//       $or: [
-//         { ename: employeeName },
-//         { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
-//         { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
-//       ]
-//     });
+    // Fetch data from CompanyModel where ename matches employeeName
+    const data = await CompanyModel.find({
+      $or: [
+        { ename: employeeName },
+        { $and: [{ maturedBdmName: employeeName }, { Status: "Matured" }] },
+        { $and: [{ multiBdmName: { $in: [employeeName] } }, { Status: "Matured" }] }
+      ]
+    });
 
-//     res.json(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 router.get("/employees/:ename", async (req, res) => {
